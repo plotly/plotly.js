@@ -76,10 +76,7 @@
         "color": "rgba(0, 0, 0, 1)"
       }
     },
-    "value": 35,
-    "number": {
-      "valueformat": "0"
-    }
+    "value": 35
   }, {
     "domain": {
       "x": [0.25, 1],

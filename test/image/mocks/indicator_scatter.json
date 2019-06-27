@@ -7,10 +7,9 @@
     "title": {"text": "Users online"},
     "type": "indicator",
     "mode": "number+delta",
-    "delta": {"reference": 512},
+    "delta": {"reference": 512, "valueformat": ".0f"},
     "ticker": {
-      "showticker": true,
-      "showpercentage": true
+      "showticker": true
     },
     "vmax": 500,
     "value": 492

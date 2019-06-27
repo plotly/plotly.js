@@ -55,6 +55,17 @@ describe('Indicator defaults', function() {
         expect(out.delta.reference).toBe(1);
     });
 
+    it('defaults gauge.axis.range[0] to 0', function() {
+        var out = _supply({type: 'indicator', mode: 'gauge', value: 1, gauge: {axis: {range: [null, 500]}}});
+        expect(out.gauge.axis.range[0]).toBe(0);
+    });
+
+    it('defaults gauge.axis.range[1] to 1.5 * value', function() {
+        var out = _supply({type: 'indicator', mode: 'gauge', value: 100, gauge: {axis: {range: [50, null]}}});
+        expect(out.gauge.axis.range[0]).toBe(50);
+        expect(out.gauge.axis.range[1]).toBe(150);
+    });
+
     // text alignment
     ['number'].forEach(function(mode) {
         it('aligns to center', function() {
@@ -318,6 +329,52 @@ describe('Indicator plot', function() {
             })
             .then(function() {
                 assertContent(gd._fullData[0].delta.increasing.symbol + '0.100');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('angular gauge', function() {
+        it('properly order elements', function(done) {
+            Plotly.newPlot(gd, {data: [{
+                type: 'indicator',
+                mode: 'gauge',
+                gauge: {
+                    shape: 'angular',
+                    steps: [{
+                        range: [0, 250],
+                    }],
+                    threshold: {
+                        value: 410
+                    }
+                }
+            }]})
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['g.bg-arc', 'g.value-arc', 'g.threshold-arc', 'g.gauge-outline']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('bullet gauge', function() {
+        it('properly order elements', function(done) {
+            Plotly.newPlot(gd, {data: [{
+                type: 'indicator',
+                mode: 'gauge',
+                gauge: {
+                    shape: 'bullet',
+                    steps: [{
+                        range: [0, 250],
+                    }],
+                    threshold: {
+                        value: 410
+                    }
+                }
+            }]})
+            .then(function() {
+                customAssertions.assertMultiNodeOrder(['g.bg-bullet', 'g.value-bullet', 'g.threshold-bullet', 'g.gauge-outline']);
             })
             .catch(failTest)
             .then(done);

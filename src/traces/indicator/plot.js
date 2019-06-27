@@ -291,16 +291,16 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
 
     // Draw bullet background, steps
     var boxes = [gaugeBg].concat(trace.gauge.steps);
-    var targetBullet = bullet.selectAll('g.target-bullet').data(boxes);
-    targetBullet.enter().append('g').classed('target-bullet', true).append('rect');
-    targetBullet.select('rect')
+    var bgBullet = bullet.selectAll('g.bg-bullet').data(boxes);
+    bgBullet.enter().append('g').classed('bg-bullet', true).append('rect');
+    bgBullet.select('rect')
         .call(drawRect)
         .call(styleShape);
-    targetBullet.exit().remove();
+    bgBullet.exit().remove();
 
     // Draw value bar with transitions
-    var fgBullet = bullet.selectAll('g.fg-bullet').data([trace.gauge.bar]);
-    fgBullet.enter().append('g').classed('fg-bullet', true).append('rect');
+    var fgBullet = bullet.selectAll('g.value-bullet').data([trace.gauge.bar]);
+    fgBullet.enter().append('g').classed('value-bullet', true).append('rect');
     fgBullet.select('rect')
         .attr('height', innerBulletHeight)
         .attr('y', (bulletHeight - innerBulletHeight) / 2)
@@ -320,8 +320,8 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
     fgBullet.exit().remove();
 
     var data = cd.filter(function() {return trace.gauge.threshold.value;});
-    var threshold = bullet.selectAll('g.threshold').data(data);
-    threshold.enter().append('g').classed('threshold', true).append('line');
+    var threshold = bullet.selectAll('g.threshold-bullet').data(data);
+    threshold.enter().append('g').classed('threshold-bullet', true).append('line');
     threshold.select('line')
         .attr('x1', ax.c2p(trace.gauge.threshold.value))
         .attr('x2', ax.c2p(trace.gauge.threshold.value))
@@ -331,8 +331,8 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
         .style('stroke-width', trace.gauge.threshold.line.width);
     threshold.exit().remove();
 
-    var bulletOutline = bullet.selectAll('g.bullet-outline').data([gaugeOutline]);
-    bulletOutline.enter().append('g').classed('bullet-outline', true).append('rect');
+    var bulletOutline = bullet.selectAll('g.gauge-outline').data([gaugeOutline]);
+    bulletOutline.enter().append('g').classed('gauge-outline', true).append('rect');
     bulletOutline.select('rect')
         .call(drawRect)
         .call(styleShape);
@@ -462,44 +462,53 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
         });
     }
 
-    // Reexpress threshold for drawing
-    var v = trace.gauge.threshold.value;
-    var thresholdArc = {
-        range: [v, v],
-        color: trace.gauge.threshold.color,
-        line: {
-            color: trace.gauge.threshold.line.color,
-            width: trace.gauge.threshold.line.width
-        },
-        thickness: trace.gauge.threshold.thickness
-    };
-
     // Draw background + steps
     var arcs = [gaugeBg].concat(trace.gauge.steps);
-    if(v) arcs.push(thresholdArc);
-    var targetArc = angularGauge.selectAll('g.target-arc').data(arcs);
-    targetArc.enter().append('g').classed('target-arc', true).append('path');
-    targetArc.select('path').call(drawArc).call(styleShape);
-    targetArc.exit().remove();
+    var bgArc = angularGauge.selectAll('g.bg-arc').data(arcs);
+    bgArc.enter().append('g').classed('bg-arc', true).append('path');
+    bgArc.select('path').call(drawArc).call(styleShape);
+    bgArc.exit().remove();
+
     // Draw foreground with transition
-    var valueArcPath = arcPathGenerator(trace.gauge.bar.thickness);
-    var fgArc = angularGauge.selectAll('g.fg-arc').data([trace.gauge.bar]);
-    fgArc.enter().append('g').classed('fg-arc', true).append('path');
-    var fgArcPath = fgArc.select('path');
+    var valueArcPathGenerator = arcPathGenerator(trace.gauge.bar.thickness);
+    var valueArc = angularGauge.selectAll('g.value-arc').data([trace.gauge.bar]);
+    valueArc.enter().append('g').classed('value-arc', true).append('path');
+    var valueArcPath = valueArc.select('path');
     if(hasTransition) {
-        fgArcPath
+        valueArcPath
             .transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
             .each('end', function() { trace._lastValue = cd[0].y; onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); })
-            .attrTween('d', arcTween(valueArcPath, valueToAngle(cd[0].lastY), valueToAngle(cd[0].y)));
+            .attrTween('d', arcTween(valueArcPathGenerator, valueToAngle(cd[0].lastY), valueToAngle(cd[0].y)));
     } else {
-        fgArcPath
-            .attr('d', valueArcPath.endAngle(valueToAngle(cd[0].y)));
+        valueArcPath
+            .attr('d', valueArcPathGenerator.endAngle(valueToAngle(cd[0].y)));
     }
-    fgArcPath.call(styleShape);
-    fgArc.exit().remove();
+    valueArcPath.call(styleShape);
+    valueArc.exit().remove();
+
+    // Draw threshold
+    arcs = [];
+    var v = trace.gauge.threshold.value;
+    if(v) {
+        arcs.push({
+            range: [v, v],
+            color: trace.gauge.threshold.color,
+            line: {
+                color: trace.gauge.threshold.line.color,
+                width: trace.gauge.threshold.line.width
+            },
+            thickness: trace.gauge.threshold.thickness
+        });
+    }
+    var thresholdArc = angularGauge.selectAll('g.threshold-arc').data(arcs);
+    thresholdArc.enter().append('g').classed('threshold-arc', true).append('path');
+    thresholdArc.select('path').call(drawArc).call(styleShape);
+    thresholdArc.exit().remove();
+
+    // Draw border last
     var gaugeBorder = angularGauge.selectAll('g.gauge-outline').data([gaugeOutline]);
     gaugeBorder.enter().append('g').classed('gauge-outline', true).append('path');
     gaugeBorder.select('path').call(drawArc).call(styleShape);
@@ -616,7 +625,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var delta = numbers.select('tspan.delta');
         delta
             .call(Drawing.font, trace.delta.font)
-            .each(function() { Color.fill(d3.select(this), deltaFill(cd[0]));})
+            .call(Color.fill, deltaFill(cd[0]))
             .attr('x', deltaX)
             .attr('dy', deltaDy);
 

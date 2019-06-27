@@ -77,16 +77,17 @@ var rangeAttr = {
     ],
     editType: 'plot',
     description: [
-        'Sets the range of this axis.',
-        'If the axis `type` is *log*, then you must take the log of your',
-        'desired range (e.g. to set the range from 1 to 100,',
-        'set the range from 0 to 2).',
-        'If the axis `type` is *date*, it should be date strings,',
-        'like date data, though Date objects and unix milliseconds',
-        'will be accepted and converted to strings.',
-        'If the axis `type` is *category*, it should be numbers,',
-        'using the scale where each category is assigned a serial',
-        'number from zero in the order it appears.'
+        'Sets the range of this axis.'
+        // TODO: add support for other axis type
+        // 'If the axis `type` is *log*, then you must take the log of your',
+        // 'desired range (e.g. to set the range from 1 to 100,',
+        // 'set the range from 0 to 2).',
+        // 'If the axis `type` is *date*, it should be date strings,',
+        // 'like date data, though Date objects and unix milliseconds',
+        // 'will be accepted and converted to strings.',
+        // 'If the axis `type` is *category*, it should be numbers,',
+        // 'using the scale where each category is assigned a serial',
+        // 'number from zero in the order it appears.'
     ].join(' ')
 };
 
@@ -364,6 +365,7 @@ module.exports = {
                     ].join(' ')
                 }),
                 width: extendFlat({}, gaugeBarAttrs.line.width, {
+                    dflt: 1,
                     description: [
                         'Sets the width (in px) of the threshold line.'
                     ].join(' ')
