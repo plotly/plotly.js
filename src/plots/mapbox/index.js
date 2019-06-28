@@ -43,7 +43,7 @@ exports.attributes = {
     }
 };
 
-var layoutAttrs = exports.layoutAttributes = require('./layout_attributes');
+exports.layoutAttributes = require('./layout_attributes');
 
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
@@ -142,7 +142,7 @@ function findAccessToken(gd, mapboxIds) {
         var style = opts.style;
         var token = opts.accesstoken;
 
-        if(typeof style === 'string' && layoutAttrs.style.values.indexOf(style) !== -1) {
+        if(typeof style === 'string' && constants.styleValuesMapbox.indexOf(style) !== -1) {
             if(token) {
                 Lib.pushUnique(tokensUseful, token);
             } else {

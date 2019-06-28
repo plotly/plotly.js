@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,6 +15,8 @@ var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+
+var constants = require('./constants');
 
 var fontAttr = fontAttrs({
     description: [
@@ -43,13 +44,14 @@ var attrs = module.exports = overrideAll({
     },
     style: {
         valType: 'any',
-        values: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
-        dflt: 'basic',
+        values: constants.styleValuesMapbox.concat(constants.styleValueOSM),
+        dflt: constants.styleValueDflt,
         role: 'style',
         description: [
             'Sets the Mapbox map style.',
             'Either input one of the default Mapbox style names or the URL to a custom style',
-            'or a valid Mapbox style JSON.'
+            'or a valid Mapbox style JSON.',
+            'From OpenStreetMap raster tiles, use *open-street-map*.'
         ].join(' ')
     },
 
