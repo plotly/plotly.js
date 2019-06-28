@@ -432,7 +432,7 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-    doubleClickDelay: {
+    /*doubleClickDelay: {
         valType: 'number',
         min: 0,
         max: 1000,
@@ -441,7 +441,7 @@ module.exports = {
         description: [
             'Sets the delay for registering a doubleclick in ms'
         ].join(' ')
-    },
+    },*/
     _deprecated: {
         title: {
             valType: 'string',

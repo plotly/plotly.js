@@ -172,6 +172,15 @@ var configAttributes = {
             'to their autorange values.'
         ].join(' ')
     },
+    doubleClickDelay: {
+        valType: 'number',
+        dflt: 300,
+        min: 0,
+        max: 1000,
+        description: [
+            'Sets the delay for registering a doubleclick in ms'
+        ].join(' ')
+    },
 
     showAxisDragHandles: {
         valType: 'boolean',

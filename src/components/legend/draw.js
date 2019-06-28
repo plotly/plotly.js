@@ -36,10 +36,8 @@ var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
-
-    if(gd.layout.doubleClickDelay) {
-        DBLCLICKDELAY = gd.layout.doubleClickDelay;
-    }
+    console.log(gd);
+    DBLCLICKDELAY = gd._context.doubleClickDelay ? gd._context.doubleClickDelay : DBLCLICKDELAY;
 
     if(!fullLayout._infolayer || !gd.calcdata) return;
 
@@ -362,6 +360,7 @@ module.exports = function draw(gd) {
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
+    
     var evtData = {
         event: evt,
         node: legendItem.node(),

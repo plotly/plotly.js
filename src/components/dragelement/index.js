@@ -82,10 +82,8 @@ dragElement.unhoverRaw = unhover.raw;
 dragElement.init = function init(options) {
     var gd = options.gd;
     var numClicks = 1;
-    var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
-    if(options.gd.layout.doubleClickDelay) {
-        DBLCLICKDELAY = options.gd.layout.doubleClickDelay;
-    }
+    var DBLCLICKDELAY = gd._context.doubleClickDelay ? gd._context.doubleClickDelay : interactConstants.DBLCLICKDELAY;
+    
     var element = options.element;
 
     var startX,
