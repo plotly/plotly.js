@@ -36,7 +36,6 @@ var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
-    console.log(gd);
     DBLCLICKDELAY = gd._context.doubleClickDelay ? gd._context.doubleClickDelay : DBLCLICKDELAY;
 
     if(!fullLayout._infolayer || !gd.calcdata) return;
