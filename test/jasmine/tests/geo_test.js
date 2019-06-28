@@ -1338,18 +1338,58 @@ describe('Test geo interactions', function() {
         .then(done);
     });
 
-    it('should not make request for topojson when not needed', function(done) {
-        var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
+    describe('should not make request for topojson when not needed', function() {
+        var gd;
 
-        spyOn(d3, 'json').and.callThrough();
+        beforeEach(function() {
+            if(window.PlotlyGeoAssets && window.PlotlyGeoAssets.topojson) {
+                delete window.PlotlyGeoAssets.topojson.world_110m;
+            }
+            gd = createGraphDiv();
+            spyOn(d3, 'json').and.callThrough();
+        });
 
-        Plotly.plot(gd, fig)
-        .then(function() {
-            expect(d3.json).toHaveBeenCalledTimes(0);
-        })
-        .catch(failTest)
-        .then(done);
+        function _assert(cnt) {
+            return function() {
+                expect(d3.json).toHaveBeenCalledTimes(cnt);
+            };
+        }
+
+        it('- no base layers + lon/lat traces', function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
+
+            Plotly.plot(gd, fig)
+            .then(_assert(0))
+            .then(function() { return Plotly.relayout(gd, 'geo.showcoastlines', true); })
+            .then(_assert(1))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- no base layers + choropleth', function(done) {
+            Plotly.plot(gd, [{
+                type: 'choropleth',
+                locations: ['CAN'],
+                z: [10]
+            }], {
+                geo: {showcoastlines: false}
+            })
+            .then(_assert(1))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- no base layers + location scattergeo', function(done) {
+            Plotly.plot(gd, [{
+                type: 'scattergeo',
+                locations: ['CAN'],
+            }], {
+                geo: {showcoastlines: false}
+            })
+            .then(_assert(1))
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
