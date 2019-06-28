@@ -199,8 +199,9 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
 };
 
 var traceType2orderIndex = {
-    'choroplethmapbox': 0,
-    'scattermapbox': 1
+    choroplethmapbox: 0,
+    densitymapbox: 1,
+    scattermapbox: 2
 };
 
 proto.updateData = function(calcData) {
