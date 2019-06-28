@@ -1,0 +1,168 @@
+{
+  "data": [{
+    "domain": {
+      "x": [0.25, 1],
+      "y": [0.0833, 0.25]
+    },
+    "title": {
+      "text": "<b>Revenue</b><br><span style='color: gray; font-size:0.8em'>U.S. $ (1,000s)</span>",
+      "font": {"size": 14}
+    },
+    "type": "indicator",
+    "mode": "number+gauge+delta",
+    "delta": {"reference": 200, "position": "right"},
+    "gauge": {
+      "shape": "bullet",
+      "axis": {
+        "range": [null, 300]
+      },
+      "threshold": {
+        "line": {
+          "color": "black",
+          "width": 2
+        },
+        "thickness": 0.75,
+        "value": 170
+      },
+      "bgcolor": "rgba(0, 0, 0, 0.1)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(0, 0, 0, 0.1)",
+      "steps": [{
+        "range": [0, 150],
+        "color": "rgba(0, 0, 0, 0.5)"
+      }, {
+        "range": [150, 250],
+        "color": "rgba(0, 0, 0, 0.25)"
+      }],
+      "bar": {
+        "color": "rgba(0, 0, 0, 1)"
+      }
+    },
+    "value": 180
+  }, {
+    "domain": {
+      "x": [0.25, 1],
+      "y": [0.4166, 0.5833]
+    },
+    "title": {"text": "<b>Profit</b>", "font": {"size": 14}},
+    "type": "indicator",
+    "mode": "number+gauge+delta",
+    "delta": {"reference": 200, "position": "bottom"},
+    "target": 75,
+    "gauge": {
+      "shape": "bullet",
+      "axis": {
+        "range": [null, 100]
+      },
+      "threshold": {
+        "line": {
+          "color": "black",
+          "width": 2
+        },
+        "thickness": 0.75,
+        "value": 50
+      },
+      "bgcolor": "rgba(0, 0, 0, 0.1)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(0, 0, 0, 0.1)",
+      "steps": [{
+        "range": [0, 25],
+        "color": "rgba(0, 0, 0, 0.5)"
+      }, {
+        "range": [25, 75],
+        "color": "rgba(0, 0, 0, 0.25)"
+      }],
+      "bar": {
+        "color": "rgba(0, 0, 0, 1)"
+      }
+    },
+    "value": 35
+  }, {
+    "domain": {
+      "x": [0.25, 1],
+      "y": [0.7499, 0.9166]
+    },
+    "title": {
+      "text" :"<b>Avg Order Size</b><br><span style='color: gray; font-size:0.8em'>U.S. $</span>",
+      "font": {"size": 14}
+    },
+    "type": "indicator",
+    "mode": "number+gauge+delta",
+    "delta": {"reference": 200, "position": "top"},
+    "gauge": {
+      "shape": "bullet",
+      "axis": {
+        "range": [null, 300]
+      },
+      "threshold": {
+        "line": {
+          "color": "black",
+          "width": 2
+        },
+        "thickness": 0.75,
+        "value": 210
+      },
+      "bgcolor": "rgba(0, 0, 0, 0.1)",
+      "borderwidth": 2,
+      "bordercolor": "rgba(0, 0, 0, 0.1)",
+      "steps": [{
+        "range": [0, 150],
+        "color": "rgba(0, 0, 0, 0.5)"
+      }, {
+        "range": [150, 250],
+        "color": "rgba(0, 0, 0, 0.25)"
+      }],
+      "bar": {
+        "color": "rgba(0, 0, 0, 1)"
+      }
+    },
+    "value": 220
+  }],
+  "layout": {
+    "width": 600,
+    "height": 250,
+    "margin": {
+      "t": 10,
+      "r": 25,
+      "l": 25,
+      "b": 10
+    },
+    "shapes": [{
+      "type": "rect",
+      "x0": 0.25,
+      "x1": 1,
+      "y0": 0.0833,
+      "y1": 0.25,
+      "line": {
+        "color": "rgba(0, 0, 0, 0.25)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.25,
+      "x1": 1,
+      "y0": 0.4166,
+      "y1": 0.5833,
+      "line": {
+        "color": "rgba(0, 0, 0, 0.25)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.25,
+      "x1": 1,
+      "y0": 0.7499,
+      "y1": 0.9166,
+      "line": {
+        "color": "rgba(0, 0, 0, 0.25)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }]
+  },
+  "config": {
+    "responsive": true
+  }
+}

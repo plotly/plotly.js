@@ -146,6 +146,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd, showSendToCloud) {
     if(hasCartesian) {
         hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
     }
+    if(hasNoHover(fullData)) {
+        hoverGroup = [];
+    }
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
@@ -214,6 +217,14 @@ function isSelectable(fullData) {
     }
 
     return selectable;
+}
+
+// check whether all trace are 'noHover'
+function hasNoHover(fullData) {
+    for(var i = 0; i < fullData.length; i++) {
+        if(!Registry.traceIs(fullData[i], 'noHover')) return false;
+    }
+    return true;
 }
 
 function appendButtonsToGroups(groups, buttons) {

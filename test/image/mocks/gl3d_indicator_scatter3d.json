@@ -1,0 +1,52 @@
+{
+  "data": [{
+    "domain": {
+      "y": [0, 1],
+      "x": [0.25, 0.75]
+    },
+    "title": {"text": "Sensor"},
+    "type": "indicator",
+    "mode": "number+delta",
+    "delta": {"reference": 9},
+    "ticker": {
+      "showticker": true,
+      "showpercentage": true
+    },
+    "value": 10
+  }, {
+    "type": "scatter3d",
+    "name": "Sensor",
+    "z":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "x":[0, 1, 3, 5, 7, 9, 12, 15, 13, 15],
+    "y":[50, 32, 12, 78, 65, 54, 69, 23, 32, 100],
+    "marker": {
+      "opacity": 1,
+      "color": "rgba(125, 125, 125, 0.1)"
+    }
+  }],
+  "layout": {
+    "width": 400,
+    "height": 300,
+    "scene": {
+      "camera": {
+        "eye": {"x":-1.172852145187388,"y":1.8080244316159928,"z":0.20728121045818126}
+      }
+    },
+    "font": {
+      "color": "white",
+      "family": "Dosis"
+    },
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
+    "margin": {
+      "t": 25,
+      "r": 25,
+      "l": 25,
+      "b": 25
+    },
+    "autosize": true
+  },
+  "config": {
+    "responsive": true
+  }
+}
