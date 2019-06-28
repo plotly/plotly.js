@@ -8,19 +8,16 @@
 
 'use strict';
 
-var convert = require('./convert').convert;
-var convertOnSelect = require('./convert').convertOnSelect;
+var convert = require('./convert');
 
-function ChoroplethMapbox(subplot, uid) {
+function DensityMapbox(subplot, uid) {
     this.subplot = subplot;
     this.uid = uid;
 
-    // N.B. fill and line layers share same source
     this.sourceId = uid + '-source';
 
     this.layerList = [
-        ['fill', uid + '-layer-fill'],
-        ['line', uid + '-layer-line']
+        ['heatmap', uid + '-layer-heatmap']
     ];
 
     // previous 'below' value,
@@ -28,19 +25,12 @@ function ChoroplethMapbox(subplot, uid) {
     this.below = null;
 }
 
-var proto = ChoroplethMapbox.prototype;
+var proto = DensityMapbox.prototype;
 
 proto.update = function(calcTrace) {
-    this._update(convert(calcTrace));
-};
-
-proto.updateOnSelect = function(calcTrace) {
-    this._update(convertOnSelect(calcTrace));
-};
-
-proto._update = function(optsAll) {
     var subplot = this.subplot;
     var layerList = this.layerList;
+    var optsAll = convert(calcTrace);
 
     subplot.map
         .getSource(this.sourceId)
@@ -111,30 +101,22 @@ proto.getBelow = function(optsAll) {
     var mapLayers = this.subplot.map.getStyle().layers;
     var out = '';
 
-    // find layer just above top-most "water" layer
+    // find first layer with `type: 'symbol'`
     for(var i = 0; i < mapLayers.length; i++) {
-        var layerId = mapLayers[i].id;
-
-        if(typeof layerId === 'string') {
-            var isWaterLayer = layerId.indexOf('water') === 0;
-
-            if(out && !isWaterLayer) {
-                out = layerId;
-                break;
-            }
-            if(isWaterLayer) {
-                out = layerId;
-            }
+        var layer = mapLayers[i];
+        if(layer.type === 'symbol') {
+            out = layer.id;
+            break;
         }
     }
 
     return out;
 };
 
-module.exports = function createChoroplethMapbox(subplot, calcTrace) {
+module.exports = function createDensityMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
-    var choroplethMapbox = new ChoroplethMapbox(subplot, trace.uid);
-    var sourceId = choroplethMapbox.sourceId;
+    var densityMapbox = new DensityMapbox(subplot, trace.uid);
+    var sourceId = densityMapbox.sourceId;
 
     var optsAll = convert(calcTrace);
 
@@ -143,10 +125,7 @@ module.exports = function createChoroplethMapbox(subplot, calcTrace) {
         data: optsAll.geojson
     });
 
-    choroplethMapbox._addLayers(optsAll);
+    densityMapbox._addLayers(optsAll);
 
-    // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = choroplethMapbox;
-
-    return choroplethMapbox;
+    return densityMapbox;
 };
