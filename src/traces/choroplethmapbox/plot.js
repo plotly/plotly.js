@@ -92,7 +92,7 @@ proto._removeLayers = function() {
     var map = this.subplot.map;
     var layerList = this.layerList;
 
-    for(var i = 0; i < layerList.length; i++) {
+    for(var i = layerList.length - 1; i >= 0; i--) {
         map.removeLayer(layerList[i][1]);
     }
 };
