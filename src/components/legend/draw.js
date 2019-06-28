@@ -359,7 +359,6 @@ module.exports = function draw(gd) {
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
-    
     var evtData = {
         event: evt,
         node: legendItem.node(),

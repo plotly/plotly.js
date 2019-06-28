@@ -432,16 +432,6 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-    /*doubleClickDelay: {
-        valType: 'number',
-        min: 0,
-        max: 1000,
-        dflt: 300,
-        role: 'info',
-        description: [
-            'Sets the delay for registering a doubleclick in ms'
-        ].join(' ')
-    },*/
     _deprecated: {
         title: {
             valType: 'string',
