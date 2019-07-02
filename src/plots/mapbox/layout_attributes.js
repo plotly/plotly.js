@@ -102,12 +102,11 @@ var attrs = module.exports = overrideAll({
         },
         sourcetype: {
             valType: 'enumerated',
-            values: ['geojson', 'vector', 'raster'],
+            values: ['geojson', 'vector', 'raster', 'image'],
             dflt: 'geojson',
             role: 'info',
             description: [
-                'Sets the source type for this layer.',
-                'Support for *raster*, *image* and *video* source types is coming soon.'
+                'Sets the source type for this layer.'
             ].join(' ')
         },
 
@@ -142,6 +141,17 @@ var attrs = module.exports = overrideAll({
                 'Support for *raster*, *background* types is coming soon.',
                 'Note that *line* and *fill* are not compatible with Point',
                 'GeoJSON geometries.'
+            ].join(' ')
+        },
+
+        coordinates: {
+            valType: 'any',
+            role: 'info',
+            description: [
+                'Sets the coordinates array contains [longitude, latitude] pairs',
+                'for the image corners listed in clockwise order:',
+                'top left, top right, bottom right, bottom left.',
+                'Only has an effect for *image* `sourcetype`.'
             ].join(' ')
         },
 

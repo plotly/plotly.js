@@ -54,7 +54,13 @@ function handleLayerDefaults(layerIn, layerOut) {
         var sourceType = coerce('sourcetype');
         coerce('source');
 
-        if(sourceType === 'vector') coerce('sourcelayer');
+        if(sourceType === 'vector') {
+            coerce('sourcelayer');
+        }
+
+        if(sourceType === 'image') {
+            coerce('coordinates');
+        }
 
         // maybe add smart default based off GeoJSON geometry?
         var type = coerce('type');

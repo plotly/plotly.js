@@ -212,6 +212,9 @@ function convertSourceOpts(opts) {
     } else if(sourceType === 'raster') {
         field = 'tiles';
         sourceOpts.tileSize = 256;
+    } else if(sourceType === 'image') {
+        field = 'url';
+        sourceOpts.coordinates = opts.coordinates;
     }
 
     sourceOpts[field] = source;
