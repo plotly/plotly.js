@@ -184,6 +184,52 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox.layers[3].circle).toBeUndefined();
     });
 
+    it('should not allow to set layer type other than *raster* for sourcetype value *raster* and *image*', function() {
+        spyOn(Lib, 'log');
+
+        layoutIn = {
+            mapbox: {
+                layers: [{
+                    sourcetype: 'raster',
+                    source: 'url',
+                    type: 'circle'
+                }, {
+                    sourcetype: 'image',
+                    source: 'url',
+                    type: 'fill'
+                }]
+            }
+        };
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+        expect(Lib.log).toHaveBeenCalledTimes(2);
+        expect(Lib.log).toHaveBeenCalledWith('Source types *raster* and *image* must drawn *raster* layer type.');
+
+        expect(layoutOut.mapbox.layers[0].type).toBe('raster');
+        expect(layoutOut.mapbox.layers[1].type).toBe('raster');
+    });
+
+    it('should default layer with sourcetype *raster* and *image* to type *raster', function() {
+        spyOn(Lib, 'log');
+
+        layoutIn = {
+            mapbox: {
+                layers: [{
+                    sourcetype: 'raster',
+                    source: 'url'
+                }, {
+                    sourcetype: 'image',
+                    source: 'url'
+                }]
+            }
+        };
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+        expect(Lib.log).toHaveBeenCalledTimes(0);
+        expect(layoutOut.mapbox.layers[0].type).toBe('raster');
+        expect(layoutOut.mapbox.layers[1].type).toBe('raster');
+    });
+
     it('should set *layout.dragmode* to pan while zoom is not available', function() {
         var gd = {
             data: fullData,

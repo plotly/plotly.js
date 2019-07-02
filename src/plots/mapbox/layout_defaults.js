@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -52,6 +51,8 @@ function handleLayerDefaults(layerIn, layerOut) {
     var visible = coerce('visible');
     if(visible) {
         var sourceType = coerce('sourcetype');
+        var mustBeRasterLayer = sourceType === 'raster' || sourceType === 'image';
+
         coerce('source');
 
         if(sourceType === 'vector') {
@@ -62,8 +63,15 @@ function handleLayerDefaults(layerIn, layerOut) {
             coerce('coordinates');
         }
 
-        // maybe add smart default based off GeoJSON geometry?
-        var type = coerce('type');
+        var typeDflt;
+        if(mustBeRasterLayer) typeDflt = 'raster';
+
+        var type = coerce('type', typeDflt);
+
+        if(mustBeRasterLayer && type !== 'raster') {
+            type = layerOut.type = 'raster';
+            Lib.log('Source types *raster* and *image* must drawn *raster* layer type.');
+        }
 
         coerce('below');
         coerce('color');
