@@ -255,35 +255,6 @@ describe('Plotly.Snapshot', function() {
                 expect((actual || '').substr(0, 6)).toBe('url(\"#', msg);
             }
 
-            it('- tspans', function(done) {
-                var fontFamily = '"Times New Roman"';
-                Plotly.newPlot(gd, [{
-                    type: 'indicator',
-                    mode: 'delta+number',
-                    value: 10
-                }], {font: {family: fontFamily}})
-                .then(function() {
-                    d3.selectAll('tspan').each(function() {
-                        expect(this.style.fontFamily).toEqual(fontFamily);
-                    });
-
-                    return Plotly.Snapshot.toSVG(gd);
-                })
-                .then(function(svg) {
-                    var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
-                    var i;
-
-                    var tspanElements = svgDOM.getElementsByTagName('tspan');
-                    expect(tspanElements.length).toEqual(2);
-
-                    for(i = 0; i < tspanElements.length; i++) {
-                        expect(tspanElements[i].style.fontFamily).toEqual(fontFamily);
-                    }
-                })
-                .catch(failTest)
-                .then(done);
-            });
-
             it('- marker-gradient case', function(done) {
                 Plotly.plot(gd, [{
                     y: [1, 2, 1],

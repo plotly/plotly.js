@@ -74,7 +74,6 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         var centerX = size.l + size.w / 2;
         var centerY = size.t + size.h / 2;
 
-
         // Angular gauge size
         var radius = Math.min(size.w / 2, size.h); // fill domain
         var innerRadius = cn.innerRadius * radius;
@@ -519,39 +518,15 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     var trace = cd[0].trace;
     var numbersX = opts.numbersX;
     var numbersY = opts.numbersY;
-    var numbersAnchor = anchor[trace.align || 'center'];
+    var numbersAlign = trace.align || 'center';
+    var numbersAnchor = anchor[numbersAlign];
 
     var hasTransition = opts.hasTransition;
     var transitionOpts = opts.transitionOpts;
     var onComplete = opts.onComplete;
 
-    var bignumberFontSize, deltaFontSize;
-    if(trace._hasNumber) bignumberFontSize = trace.number.font.size;
-    if(trace._hasDelta) deltaFontSize = trace.delta.font.size;
-
-    // Position delta relative to bignumber
-    var deltaDy = 0;
-    var deltaX = 0;
-    var bignumberY = 0;
-
-    if(trace._hasDelta && trace._hasNumber) {
-        if(trace.delta.position === 'bottom') {
-            deltaDy = deltaFontSize * 1.5;
-        }
-        if(trace.delta.position === 'top') {
-            deltaDy = -bignumberFontSize + MID_SHIFT * deltaFontSize;
-        }
-        if(trace.delta.position === 'right') {
-            deltaX = undefined;
-        }
-        if(trace.delta.position === 'left') {
-            deltaX = undefined;
-            bignumberY = MID_SHIFT * bignumberFontSize / 2;
-        }
-    }
-    deltaDy -= MID_SHIFT * deltaFontSize;
-
-    var numbers = Lib.ensureSingle(plotGroup, 'text', 'numbers');
+    var numbers = Lib.ensureSingle(plotGroup, 'g', 'numbers');
+    var bignumberbBox, deltabBox;
 
     var data = [];
     if(trace._hasNumber) data.push('number');
@@ -559,19 +534,15 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         data.push('delta');
         if(trace.delta.position === 'left') data.reverse();
     }
-    var sel = numbers.selectAll('tspan').data(data);
-    sel.enter().append('tspan');
+    var sel = numbers.selectAll('text').data(data);
+    sel.enter().append('text');
     sel
         .attr('text-anchor', function() {return numbersAnchor;})
         .attr('class', function(d) { return d;})
-        .attr('dx', function(d, i) {
-            // Add padding to the second tspan when it's a one-liner
-            if(i === 1) {
-                var pos = trace.delta.position;
-                if(pos === 'left' || pos === 'right') return 10;
-            }
-            return null;
-        });
+        .attr('x', null)
+        .attr('y', null)
+        .attr('dx', null)
+        .attr('dy', null);
     sel.exit().remove();
 
     function drawBignumber() {
@@ -581,11 +552,9 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var bignumberSuffix = trace.number.suffix;
         var bignumberPrefix = trace.number.prefix;
 
-        var number = numbers.select('tspan.number');
+        var number = numbers.select('text.number');
         number
-            .call(Drawing.font, trace.number.font)
-            .attr('x', null)
-            .attr('dy', bignumberY);
+            .call(Drawing.font, trace.number.font);
 
         if(hasTransition) {
             number
@@ -604,6 +573,11 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         } else {
             number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
         }
+
+        number.attr('data-unformatted', bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
+        bignumberbBox = Drawing.bBox(number.node());
+
+        return number;
     }
 
     function drawDelta() {
@@ -622,12 +596,10 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var deltaFill = function(d) {
             return d.delta >= 0 ? trace.delta.increasing.color : trace.delta.decreasing.color;
         };
-        var delta = numbers.select('tspan.delta');
+        var delta = numbers.select('text.delta');
         delta
             .call(Drawing.font, trace.delta.font)
-            .call(Color.fill, deltaFill(cd[0]))
-            .attr('x', deltaX)
-            .attr('dy', deltaDy);
+            .call(Color.fill, deltaFill(cd[0]));
 
         if(hasTransition) {
             delta
@@ -650,10 +622,45 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                 return deltaFormatText(deltaValue(cd[0]));
             });
         }
+
+        delta.attr('data-unformatted', deltaFormatText(deltaValue(cd[0])));
+        deltabBox = Drawing.bBox(delta.node());
+
+        return delta;
     }
 
-    if(trace._hasDelta) drawDelta();
+    // Position delta relative to bignumber
+    var delta;
+    if(trace._hasDelta) delta = drawDelta();
     if(trace._hasNumber) drawBignumber();
+
+    if(trace._hasDelta && trace._hasNumber) {
+        var bignumberCenter = [
+            (bignumberbBox.left + bignumberbBox.right) / 2,
+            (bignumberbBox.top + bignumberbBox.bottom) / 2
+        ];
+        var deltaCenter = [
+            (deltabBox.left + deltabBox.right) / 2,
+            (deltabBox.top + deltabBox.bottom) / 2
+        ];
+
+        if(trace.delta.position === 'left') {
+            delta.attr('dx', bignumberbBox.left - deltabBox.right - cn.horizontalPadding);
+            delta.attr('dy', bignumberCenter[1] - deltaCenter[1]);
+        }
+        if(trace.delta.position === 'right') {
+            delta.attr('dx', bignumberbBox.right - deltabBox.left + cn.horizontalPadding);
+            delta.attr('dy', bignumberCenter[1] - deltaCenter[1]);
+        }
+        if(trace.delta.position === 'bottom') {
+            delta.attr('dx', null);
+            delta.attr('dy', deltabBox.height);
+        }
+        if(trace.delta.position === 'top') {
+            delta.attr('dx', null);
+            delta.attr('dy', bignumberbBox.top);
+        }
+    }
 
     // Resize numbers to fit within space and position
     numbers.attr('transform', function() {
@@ -677,7 +684,10 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         // Stash the top position of numbersbBox for title positioning
         trace._numbersTop = scaleRatio * (numbersbBox.top) + translateY;
 
-        return strTranslate(numbersX, translateY) + ' scale(' + scaleRatio + ')';
+        var ref = numbersbBox[numbersAlign];
+        if(numbersAlign === 'center') ref = (numbersbBox.left + numbersbBox.right) / 2;
+        var translateX = numbersX - scaleRatio * ref;
+        return strTranslate(translateX, translateY) + ' scale(' + scaleRatio + ')';
     });
 }
 
