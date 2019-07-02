@@ -143,7 +143,7 @@ describe('Indicator plot', function() {
 
     describe('numbers', function() {
         function checkNumbersScale(value, msg) {
-            var numbers = d3.selectAll('text.numbers');
+            var numbers = d3.selectAll('g.numbers');
             expect(numbers.length).toBe(1);
 
             var transform = numbers.attr('transform');
@@ -220,39 +220,11 @@ describe('Indicator plot', function() {
                 .then(done);
             });
         });
-
-        it('always positions tspans in the right order', function(done) {
-            Plotly.newPlot(gd, [{
-                type: 'indicator',
-                value: 10
-            }])
-            .then(function() {
-                customAssertions.assertMultiNodeOrder(['tspan.number']);
-                return Plotly.restyle(gd, 'mode', 'delta');
-            })
-            .then(function() {
-                customAssertions.assertMultiNodeOrder(['tspan.delta']);
-                return Plotly.restyle(gd, 'mode', 'number+delta');
-            })
-            .then(function() {
-                customAssertions.assertMultiNodeOrder(['tspan.number', 'tspan.delta']);
-                return Plotly.restyle(gd, 'delta.position', 'left');
-            })
-            .then(function() {
-                customAssertions.assertMultiNodeOrder(['tspan.delta', 'tspan.number']);
-                return Plotly.restyle(gd, 'mode', 'gauge');
-            })
-            .then(function() {
-                customAssertions.assertMultiNodeOrder([]);
-            })
-            .catch(failTest)
-            .then(done);
-        });
     });
 
     describe('number', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('tspan.number');
+            var sel = d3.selectAll('text.number');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -308,7 +280,7 @@ describe('Indicator plot', function() {
 
     describe('delta', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('tspan.delta');
+            var sel = d3.selectAll('text.delta');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -402,7 +374,7 @@ describe('Indicator plot', function() {
                 var t = d3.selectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var numbers = d3.selectAll('text.numbers').node();
+                var numbers = d3.selectAll('g.numbers').node();
                 var numbersBBox = numbers.getBoundingClientRect();
 
                 expect(titleBBox.bottom).toBeCloseTo(numbersBBox.top - cn.titlePadding, 0);
@@ -465,7 +437,7 @@ describe('Indicator plot', function() {
         }
         function assert(flags) {
             // flags is an array denoting whether the figure [hasNumber, hasDelta, hasAngular, hasBullet]
-            var selector = ['tspan.number', 'tspan.delta', 'g.angular', 'g.bullet'];
+            var selector = ['text.number', 'text.delta', 'g.angular', 'g.bullet'];
             [0, 1].forEach(function(i) { assertElementCnt(selector[i], flags[i]);});
             [2, 3].forEach(function(i) { assertGauge(selector[i], flags[i]);});
 

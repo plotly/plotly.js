@@ -4,7 +4,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "number": {
-      "align": "middle",
       "suffix": " km/h"
     },
     "value": 43,
@@ -17,7 +16,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "number": {
-      "align": "middle",
       "suffix": " km/h"
     },
     "value": 43,
@@ -30,7 +28,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "number": {
-      "align": "middle",
       "suffix": " km/h"
     },
     "value": 43,
@@ -43,7 +40,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "number": {
-      "align": "middle",
       "suffix": " km/h"
     },
     "value": 43,
