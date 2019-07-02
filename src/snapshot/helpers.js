@@ -55,6 +55,10 @@ exports.createBlob = function(url, format) {
     }
 };
 
+exports.octetStream = function(s) {
+    document.location.href = 'data:application/octet-stream' + s;
+};
+
 // Taken from https://bl.ocks.org/nolanlawson/0eac306e4dac2114c752
 function fixBinary(b) {
     var len = b.length;

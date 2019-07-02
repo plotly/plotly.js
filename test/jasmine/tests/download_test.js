@@ -1,11 +1,13 @@
 var Plotly = require('@lib/index');
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
-var textchartMock = require('@mocks/text_chart_arrays.json');
-var failTest = require('../assets/fail_test');
-
 var Lib = require('@src/lib');
 
+var helpers = require('@src/snapshot/helpers');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
+
+var textchartMock = require('@mocks/text_chart_arrays.json');
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Plotly.downloadImage', function() {
@@ -136,6 +138,26 @@ describe('Plotly.downloadImage', function() {
         .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
+
+    it('should produce right output in Safari', function(done) {
+        spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
+        spyOn(helpers, 'octetStream');
+
+        Plotly.plot(gd, textchartMock.data, textchartMock.layout)
+        .then(function() { return Plotly.downloadImage(gd, {format: 'svg'}); })
+        .then(function() { return Plotly.downloadImage(gd, {format: 'png'}); })
+        .then(function() { return Plotly.downloadImage(gd, {format: 'jpeg'}); })
+        .then(function() { return Plotly.downloadImage(gd, {format: 'webp'}); })
+        .then(function() {
+            var args = helpers.octetStream.calls.allArgs();
+            expect(args[0][0].slice(0, 15)).toBe(',%3Csvg%20class', 'format:svg');
+            expect(args[1][0].slice(0, 8)).toBe(';base64,', 'format:png');
+            expect(args[2][0].slice(0, 8)).toBe(';base64,', 'format:jpeg');
+            expect(args[3][0].slice(0, 8)).toBe(';base64,', 'format:webp');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 function downloadTest(gd, format) {

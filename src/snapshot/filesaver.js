@@ -38,8 +38,8 @@ function fileSaver(url, name, format) {
         // Safari doesn't allow downloading of blob urls
         if(Lib.isSafari()) {
             var prefix = format === 'svg' ? ',' : ';base64,';
-            document.location.href = 'data:application/octet-stream' + prefix + encodeURIComponent(url);
-            return resolve();
+            helpers.octetStream(prefix + encodeURIComponent(url));
+            return resolve(name);
         }
 
         // IE 10+ (native saveAs)
