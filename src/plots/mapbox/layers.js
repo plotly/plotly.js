@@ -202,10 +202,9 @@ function convertOpts(opts) {
 function convertSourceOpts(opts) {
     var sourceType = opts.sourcetype;
     var source = opts.source;
-    var sourceOpts = {
-        type: sourceType
-    };
+    var sourceOpts = {type: sourceType};
     var field;
+
     if(sourceType === 'geojson') {
         field = 'data';
     } else if(sourceType === 'vector') {
@@ -213,10 +212,6 @@ function convertSourceOpts(opts) {
     } else if(sourceType === 'raster') {
         field = 'tiles';
         sourceOpts.tileSize = 256;
-        for(var index = 0; index < source.length; index++) {
-            var url = source[index];
-            source[index] = decodeURIComponent(url);
-        }
     }
 
     sourceOpts[field] = source;
