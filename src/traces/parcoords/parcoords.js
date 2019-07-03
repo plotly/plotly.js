@@ -27,9 +27,23 @@ var c = require('./constants');
 var brush = require('./axisbrush');
 var lineLayerMaker = require('./lines');
 
+function findExtreme(fn, values, len) {
+    return Lib.aggNums(fn, null, values, len);
+}
+
+function findExtremes(values, len) {
+    return [
+        findExtreme(Math.min, values, len),
+        findExtreme(Math.max, values, len)
+    ];
+}
+
 function dimensionExtent(dimension) {
-    var lo = dimension.range ? dimension.range[0] : Lib.aggNums(Math.min, null, dimension.values, dimension._length);
-    var hi = dimension.range ? dimension.range[1] : Lib.aggNums(Math.max, null, dimension.values, dimension._length);
+    var range = dimension.range;
+    if(!range) range = findExtremes(dimension.values, dimension._length);
+
+    var lo = range[0];
+    var hi = range[1];
 
     if(isNaN(lo) || !isFinite(lo)) {
         lo = 0;
@@ -152,11 +166,13 @@ function model(layout, d, i) {
     var rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeepNoArrays({}, line, {
-        color: lineColor.map(d3.scale.linear().domain(dimensionExtent({
-            values: lineColor,
-            range: [cOpts.min, cOpts.max],
-            _length: trace._length
-        }))),
+        color: lineColor.map(d3.scale.linear().domain(
+            dimensionExtent({
+                values: lineColor,
+                range: [cOpts.min, cOpts.max],
+                _length: trace._length
+            })
+        )),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -381,7 +397,6 @@ function calcAllTicks(cd) {
     for(var i = 0; i < cd.length; i++) {
         for(var j = 0; j < cd[i].length; j++) {
             var trace = cd[i][j].trace;
-            var len = trace._length;
             var dimensions = trace.dimensions;
 
             for(var k = 0; k < dimensions.length; k++) {
@@ -389,20 +404,8 @@ function calcAllTicks(cd) {
                 var dim = dimensions[k]._ax;
 
                 if(dim) {
-                    if(!dim.range) {
-                        var max = -Infinity;
-                        var min = Infinity;
-                        for(var q = 0; q < len; q++) {
-                            var v = values[q];
-                            if(isFinite(v)) {
-                                if(max < v) max = v;
-                                if(min > v) min = v;
-                            }
-                        }
-                        dim.range = [min, max];
-                    }
-
-                    if(!dim.dtick) dim.dtick = 0.01 * Math.abs(dim.range[1] - dim.range[0]);
+                    if(!dim.range) dim.range = findExtremes(values, trace._length);
+                    if(!dim.dtick) dim.dtick = 0.01 * (Math.abs(dim.range[1] - dim.range[0]) || 1);
 
                     dim.tickformat = dimensions[k].tickformat;
                     Axes.calcTicks(dim);
