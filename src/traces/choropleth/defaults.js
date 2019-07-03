@@ -25,6 +25,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
     traceOut._length = Math.min(locations.length, z.length);
 
     coerce('locationmode');
@@ -33,13 +34,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
-    coerce('marker.line.color');
-    coerce('marker.line.width');
+    var mlw = coerce('marker.line.width');
+    if(mlw) coerce('marker.line.color');
     coerce('marker.opacity');
 
-    colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-    );
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

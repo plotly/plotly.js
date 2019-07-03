@@ -881,7 +881,7 @@ describe('@noCIdep Plotly.react', function() {
     });
 
     mockLists.mapbox.forEach(function(mockSpec) {
-        it('@noCI can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
+        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
             Plotly.setPlotConfig({
                 mapboxAccessToken: MAPBOX_ACCESS_TOKEN
             });

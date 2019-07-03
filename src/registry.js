@@ -269,13 +269,24 @@ function registerTraceModule(_module) {
         extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
     }
 
-    // add mapbox-gl CSS here to avoid console warning on instantiation
     var basePlotModule = _module.basePlotModule;
-    if(basePlotModule.name === 'mapbox') {
+    var bpmName = basePlotModule.name;
+
+    // add mapbox-gl CSS here to avoid console warning on instantiation
+    if(bpmName === 'mapbox') {
         var styleRules = basePlotModule.constants.styleRules;
         for(var k in styleRules) {
             addStyleRule('.mapboxgl-' + k, styleRules[k]);
         }
+    }
+
+    // if `plotly-geo-assets.js` is not included,
+    // add `PlotlyGeoAssets` global to stash references to all fetched
+    // topojson / geojson data
+    if((bpmName === 'geo' || bpmName === 'mapbox') &&
+        (typeof window !== undefined && window.PlotlyGeoAssets === undefined)
+    ) {
+        window.PlotlyGeoAssets = {topojson: {}};
     }
 }
 

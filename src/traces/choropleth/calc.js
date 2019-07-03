@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -16,17 +15,36 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
+function isNonBlankString(v) {
+    return v && typeof v === 'string';
+}
+
 module.exports = function calc(gd, trace) {
     var len = trace._length;
     var calcTrace = new Array(len);
+
+    var isValidLoc;
+
+    if(trace.geojson) {
+        isValidLoc = function(v) { return isNonBlankString(v) || isNumeric(v); };
+    } else {
+        isValidLoc = isNonBlankString;
+    }
 
     for(var i = 0; i < len; i++) {
         var calcPt = calcTrace[i] = {};
         var loc = trace.locations[i];
         var z = trace.z[i];
 
-        calcPt.loc = typeof loc === 'string' ? loc : null;
-        calcPt.z = isNumeric(z) ? z : BADNUM;
+        if(isValidLoc(loc) && isNumeric(z)) {
+            calcPt.loc = loc;
+            calcPt.z = z;
+        } else {
+            calcPt.loc = null;
+            calcPt.z = BADNUM;
+        }
+
+        calcPt.index = i;
     }
 
     arraysToCalcdata(calcTrace, trace);

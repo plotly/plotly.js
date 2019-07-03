@@ -29,8 +29,6 @@ Plotly.setPlotConfig({
 });
 
 describe('mapbox defaults', function() {
-    'use strict';
-
     var layoutIn, layoutOut, fullData;
 
     beforeEach(function() {
@@ -285,7 +283,7 @@ describe('mapbox credentials', function() {
         });
     });
 
-    it('should throw error if token is not registered', function() {
+    it('@gl should throw error if token is not registered', function() {
         spyOn(Lib, 'error');
 
         expect(function() {
@@ -299,7 +297,7 @@ describe('mapbox credentials', function() {
         expect(Lib.error).toHaveBeenCalledWith('Uses Mapbox map style, but did not set an access token.');
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should throw error if token is invalid', function(done) {
+    it('@gl should throw error if token is invalid', function(done) {
         var cnt = 0;
 
         Plotly.plot(gd, [{
@@ -319,7 +317,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should use access token in mapbox layout options if present', function(done) {
+    it('@gl should use access token in mapbox layout options if present', function(done) {
         var cnt = 0;
 
         Plotly.plot(gd, [{
@@ -341,7 +339,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should warn when multiple tokens in mapbox layout options are present', function(done) {
+    it('@gl should warn when multiple tokens in mapbox layout options are present', function(done) {
         spyOn(Lib, 'warn');
         var cnt = 0;
 
@@ -367,7 +365,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should not throw when using a custom non-mapbox style', function(done) {
+    it('@gl should not throw when using a custom non-mapbox style', function(done) {
         var cnt = 0;
 
         Plotly.plot(gd, [{
@@ -385,7 +383,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should log when an access token is set while using a custom non-mapbox style', function(done) {
+    it('@gl should log when an access token is set while using a custom non-mapbox style', function(done) {
         spyOn(Lib, 'log');
         var cnt = 0;
 
@@ -411,7 +409,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should bypass access token in mapbox layout options when config points to an Atlas server', function(done) {
+    it('@gl should bypass access token in mapbox layout options when config points to an Atlas server', function(done) {
         var cnt = 0;
         var msg = [
             'An API access token is required to use Mapbox GL.',
@@ -451,8 +449,6 @@ describe('mapbox credentials', function() {
 });
 
 describe('@noCI, mapbox plots', function() {
-    'use strict';
-
     var mock = require('@mocks/mapbox_0.json');
     var gd;
 
@@ -472,7 +468,7 @@ describe('@noCI, mapbox plots', function() {
         destroyGraphDiv();
     });
 
-    it('should be able to toggle trace visibility', function(done) {
+    it('@gl should be able to toggle trace visibility', function(done) {
         var modes = ['line', 'circle'];
 
         expect(countVisibleTraces(gd, modes)).toEqual(2);
@@ -509,7 +505,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to delete and add traces', function(done) {
+    it('@gl should be able to delete and add traces', function(done) {
         var modes = ['line', 'circle'];
 
         expect(countVisibleTraces(gd, modes)).toEqual(2);
@@ -550,7 +546,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to restyle', function(done) {
+    it('@gl should be able to restyle', function(done) {
         var restyleCnt = 0;
         var relayoutCnt = 0;
 
@@ -610,7 +606,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to relayout', function(done) {
+    it('@gl should be able to relayout', function(done) {
         var restyleCnt = 0;
         var relayoutCnt = 0;
 
@@ -671,7 +667,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to relayout the map style', function(done) {
+    it('@gl should be able to relayout the map style', function(done) {
         function assertLayout(style) {
             var mapInfo = getMapInfo(gd);
             expect(mapInfo.style.name).toEqual(style);
@@ -696,7 +692,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to add, update and remove layers', function(done) {
+    it('@gl should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('@mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
@@ -854,7 +850,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to react to layer changes', function(done) {
+    it('@gl should be able to react to layer changes', function(done) {
         function makeFigure(color) {
             return {
                 data: [{type: 'scattermapbox'}],
@@ -909,7 +905,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to update the access token', function(done) {
+    it('@gl should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
@@ -924,7 +920,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should be able to update traces', function(done) {
+    it('@gl should be able to update traces', function(done) {
         function assertDataPts(lengths) {
             var lines = getGeoJsonData(gd, 'lines');
             var markers = getGeoJsonData(gd, 'markers');
@@ -962,7 +958,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should display to hover labels on mouse over', function(done) {
+    it('@gl should display to hover labels on mouse over', function(done) {
         function assertMouseMove(pos, len) {
             return _mouseEvent('mousemove', pos, function() {
                 var hoverLabels = d3.select('.hoverlayer').selectAll('g');
@@ -1000,7 +996,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should respond to hover interactions by', function(done) {
+    it('@gl should respond to hover interactions by', function(done) {
         var hoverCnt = 0;
         var unhoverCnt = 0;
 
@@ -1048,7 +1044,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should respond drag / scroll / double-click interactions', function(done) {
+    it('@gl should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
         var relayoutingCnt = 0;
@@ -1123,8 +1119,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-
-    it('should respond to click interactions by', function(done) {
+    it('@gl should respond to click interactions by', function(done) {
         var ptData;
 
         gd.on('plotly_click', function(eventData) {
@@ -1151,7 +1146,7 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should respect scrollZoom config option', function(done) {
+    it('@gl should respect scrollZoom config option', function(done) {
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.config = {scrollZoom: false};
 
@@ -1338,6 +1333,72 @@ describe('@noCI, mapbox plots', function() {
     }
 });
 
+describe('@noCI Test mapbox GeoJSON fetching:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 200);
+    });
+
+    it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
+        var url = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-red-data.json';
+        var url2 = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-blue-data.json';
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: url
+        }, {
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: url2
+        }])
+        .catch(function() {
+            cnt++;
+        })
+        .then(function() {
+            expect(cnt).toBe(0, 'no failures!');
+            expect(Lib.isPlainObject(window.PlotlyGeoAssets[url])).toBe(true, 'is a GeoJSON object');
+            expect(Lib.isPlainObject(window.PlotlyGeoAssets[url2])).toBe(true, 'is a GeoJSON object');
+        })
+        .then(done);
+    });
+
+    it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
+        var actual = '';
+
+        Plotly.plot(gd, [{
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: 'invalidUrl'
+        }, {
+            type: 'choroplethmapbox',
+            locations: ['a'],
+            z: [1],
+            geojson: 'invalidUrl-two'
+        }])
+        .catch(function(reason) {
+            // bails up after first failure
+            actual = reason;
+        })
+        .then(function() {
+            expect(actual).toEqual(new Error('GeoJSON at URL "invalidUrl" does not exist.'));
+            expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
+        })
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+});
+
 describe('@noCI, mapbox toImage', function() {
     // decreased from 1e5 - perhaps chrome got better at encoding these
     // because I get 99330 and the image still looks correct
@@ -1355,7 +1416,7 @@ describe('@noCI, mapbox toImage', function() {
         destroyGraphDiv();
     });
 
-    it('should generate image data with global credentials', function(done) {
+    it('@gl should generate image data with global credentials', function(done) {
         Plotly.setPlotConfig({
             mapboxAccessToken: MAPBOX_ACCESS_TOKEN
         });
@@ -1375,7 +1436,7 @@ describe('@noCI, mapbox toImage', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should generate image data with config credentials', function(done) {
+    it('@gl should generate image data with config credentials', function(done) {
         Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [0, 10, 20],
@@ -1393,7 +1454,7 @@ describe('@noCI, mapbox toImage', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should generate image data with layout credentials', function(done) {
+    it('@gl should generate image data with layout credentials', function(done) {
         Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [0, 10, 20],

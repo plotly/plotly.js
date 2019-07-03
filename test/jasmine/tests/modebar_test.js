@@ -1234,7 +1234,7 @@ describe('ModeBar', function() {
         });
 
         describe('@noCI mapbox handlers', function() {
-            it('button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
+            it('@gl button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
                 function _assert(centerLon, centerLat, zoom) {

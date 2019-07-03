@@ -55,7 +55,7 @@ case $1 in
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
-            retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --showSkipped
+            retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --showSkipped --doNotFailOnEmptyTestSuite
         done
 
         exit $EXIT_STATE
