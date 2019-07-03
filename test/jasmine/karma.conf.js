@@ -283,13 +283,13 @@ func.defaultConfig = {
         }
     },
 
-    // use 'karma-spec-reporter' to log info about skipped specs
     specReporter: {
-        suppressErrorSummary: true,
+        suppressErrorSummary: false,
         suppressFailed: !hasSpecReporter,
         suppressPassed: !hasSpecReporter,
+        // use 'karma-spec-reporter' to log info about skipped specs
         suppressSkipped: !argv.showSkipped,
-        showSpecTiming: false
+        showSpecTiming: true
     }
 };
 
