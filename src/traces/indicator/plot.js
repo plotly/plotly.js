@@ -629,11 +629,19 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         return delta;
     }
 
-    // Position delta relative to bignumber
+    var key = trace.mode + trace.align;
     var delta;
-    if(trace._hasDelta) delta = drawDelta();
-    if(trace._hasNumber) drawBignumber();
+    if(trace._hasDelta) {
+        delta = drawDelta();
+        key += trace.delta.position + trace.delta.font.size + trace.delta.font.family + trace.delta.valueformat;
+        key += trace.delta.increasing.symbol + trace.delta.decreasing.symbol;
+    }
+    if(trace._hasNumber) {
+        drawBignumber();
+        key += trace.number.font.size + trace.number.font.family + trace.number.valueformat + trace.number.suffix + trace.number.prefix;
+    }
 
+    // Position delta relative to bignumber
     if(trace._hasDelta && trace._hasNumber) {
         var bignumberCenter = [
             (bignumberbBox.left + bignumberbBox.right) / 2,
@@ -644,32 +652,32 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             (deltabBox.top + deltabBox.bottom) / 2
         ];
 
+        var dx, dy;
         if(trace.delta.position === 'left') {
-            delta.attr('dx', bignumberbBox.left - deltabBox.right - cn.horizontalPadding);
-            delta.attr('dy', bignumberCenter[1] - deltaCenter[1]);
+            dx = cache(trace, 'deltaPos', 0, bignumberbBox.left - deltabBox.right - 0.75 * trace.delta.font.size, key, Math.min);
+            dy = bignumberCenter[1] - deltaCenter[1];
         }
         if(trace.delta.position === 'right') {
-            delta.attr('dx', bignumberbBox.right - deltabBox.left + cn.horizontalPadding);
-            delta.attr('dy', bignumberCenter[1] - deltaCenter[1]);
+            dx = cache(trace, 'deltaPos', 0, bignumberbBox.right - deltabBox.left + 0.75 * trace.delta.font.size, key, Math.max);
+            dy = bignumberCenter[1] - deltaCenter[1];
         }
         if(trace.delta.position === 'bottom') {
-            delta.attr('dx', null);
-            delta.attr('dy', deltabBox.height);
+            dx = null;
+            dy = deltabBox.height;
         }
         if(trace.delta.position === 'top') {
-            delta.attr('dx', null);
-            delta.attr('dy', bignumberbBox.top);
+            dx = null;
+            dy = bignumberbBox.top;
         }
+
+        delta.attr({dx: dx, dy: dy});
     }
 
     // Resize numbers to fit within space and position
     numbers.attr('transform', function() {
         var m = opts.numbersScaler(numbers);
-        var key = m[2];
-        if(!(trace._numbersScale && trace._numbersScale.key === key)) {
-            trace._numbersScale = {key: key, value: 1};
-        }
-        var scaleRatio = trace._numbersScale.value = Math.min(trace._numbersScale.value, m[0]);
+        key += m[2];
+        var scaleRatio = cache(trace, 'numbersScale', 1, m[0], key, Math.min);
         var numbersbBox = m[1];
         var translateY;
         if(!trace._scaleNumbers) scaleRatio = 1;
@@ -687,6 +695,9 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var ref = numbersbBox[numbersAlign];
         if(numbersAlign === 'center') ref = (numbersbBox.left + numbersbBox.right) / 2;
         var translateX = numbersX - scaleRatio * ref;
+
+        // Stash translateX
+        translateX = cache(trace, 'numbersTranslate', 0, translateX, key, Math.max);
         return strTranslate(translateX, translateY) + ' scale(' + scaleRatio + ')';
     });
 }
@@ -782,4 +793,15 @@ function fitTextInsideCircle(el, radius) {
     var elRadius = Math.sqrt((textBB.width / 2) * (textBB.width / 2) + textBB.height * textBB.height);
     var ratio = radius / elRadius;
     return [ratio, textBB, radius];
+}
+
+function cache(trace, name, initialValue, value, key, fn) {
+    var objName = '_cache' + name;
+    if(!(trace[objName] && trace[objName].key === key)) {
+        trace[objName] = {key: key, value: initialValue};
+    }
+    var v = Lib.aggNums(fn, null, [trace[objName].value, value], 2);
+    trace[objName].value = v;
+
+    return v;
 }
