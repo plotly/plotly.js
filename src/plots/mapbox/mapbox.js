@@ -21,7 +21,6 @@ var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
 var constants = require('./constants');
-var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
 
 function Mapbox(gd, id) {
@@ -632,8 +631,6 @@ proto.getViewEdits = function(cont) {
 };
 
 function getStyleObj(val) {
-    var styleValues = layoutAttributes.style.values;
-    var styleDflt = layoutAttributes.style.dflt;
     var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
@@ -641,12 +638,17 @@ function getStyleObj(val) {
         styleObj.style = val;
     } else if(typeof val === 'string') {
         styleObj.id = val;
-        styleObj.style = (styleValues.indexOf(val) !== -1) ?
-             convertStyleVal(val) :
-             val;
+
+        if(constants.styleValuesMapbox.indexOf(val) !== -1) {
+            styleObj.style = convertStyleVal(val);
+        } else if(val === constants.styleValueOSM) {
+            styleObj.style = constants.styleOSM;
+        } else {
+            styleObj.style = val;
+        }
     } else {
-        styleObj.id = styleDflt;
-        styleObj.style = convertStyleVal(styleDflt);
+        styleObj.id = constants.styleValueDflt;
+        styleObj.style = convertStyleVal(constants.styleValueDflt);
     }
 
     styleObj.transition = {duration: 0, delay: 0};

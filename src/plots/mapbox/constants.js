@@ -8,13 +8,39 @@
 
 'use strict';
 
-var requiredVersion = '1.0.0';
+var requiredVersion = '1.1.0';
 
 module.exports = {
     requiredVersion: requiredVersion,
 
     styleUrlPrefix: 'mapbox://styles/mapbox/',
     styleUrlSuffix: 'v9',
+
+    styleValuesMapbox: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
+    styleValueOSM: 'open-street-map',
+    styleValueDflt: 'basic',
+
+    styleOSM: {
+        id: 'osm',
+        version: 8,
+        sources: {
+            'plotly-osm-tiles': {
+                type: 'raster',
+                tiles: [
+                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                ],
+                tileSize: 256
+            }
+        },
+        layers: [{
+            id: 'plotly-osm-tiles',
+            type: 'raster',
+            source: 'plotly-osm-tiles',
+            minzoom: 0,
+            maxzoom: 22
+        }]
+    },
 
     controlContainerClassName: 'mapboxgl-control-container',
 
