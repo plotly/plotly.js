@@ -13,6 +13,7 @@ var hasColorscale = require('../../components/colorscale/helpers').hasColorscale
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var Axes = require('../../plots/cartesian/axes');
 
 var attributes = require('./attributes');
 var axisBrush = require('./axisbrush');
@@ -37,7 +38,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     return Infinity;
 }
 
-function dimensionDefaults(dimensionIn, dimensionOut) {
+function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
@@ -53,7 +54,17 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         coerce('tickvals');
         coerce('ticktext');
         coerce('tickformat');
-        coerce('range');
+        var range = coerce('range');
+
+        dimensionOut._ax = {
+            _id: 'y',
+            type: 'linear',
+            showexponent: 'all',
+            exponentformat: 'B',
+            range: range
+        };
+
+        Axes.setConvert(dimensionOut._ax, opts.layout);
 
         coerce('multiselect');
         var constraintRange = coerce('constraintrange');
@@ -76,6 +87,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
         name: 'dimensions',
+        layout: layout,
         handleItemDefaults: dimensionDefaults
     });
 
@@ -100,4 +112,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'labelfont', fontDflt);
     Lib.coerceFont(coerce, 'tickfont', fontDflt);
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
+
+    coerce('labelangle');
+    coerce('labelside');
 };

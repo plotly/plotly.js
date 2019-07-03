@@ -17,18 +17,46 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 module.exports = {
-    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'plot'}),
+
+    labelangle: {
+        valType: 'angle',
+        dflt: 0,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Sets the angle of the labels with respect to the horizontal.',
+            'For example, a `tickangle` of -90 draws the labels vertically.',
+            'Tilted labels with *labelangle* may be positioned better',
+            'inside margins when `labelposition` is set to *bottom*.'
+        ].join(' ')
+    },
+
+    labelside: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['top', 'bottom'],
+        dflt: 'top',
+        editType: 'plot',
+        description: [
+            'Specifies the location of the `label`.',
+            '*top* positions labels above, next to the title',
+            '*bottom* positions labels below the graph',
+            'Tilted labels with *labelangle* may be positioned better',
+            'inside margins when `labelposition` is set to *bottom*.'
+        ].join(' ')
+    },
 
     labelfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` labels.'
     }),
     tickfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` tick values.'
     }),
     rangefont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` range values.'
     }),
 
@@ -36,49 +64,41 @@ module.exports = {
         label: {
             valType: 'string',
             role: 'info',
-            editType: 'calc',
+            editType: 'plot',
             description: 'The shown name of the dimension.'
         },
         // TODO: better way to determine ordinal vs continuous axes,
         // so users can use tickvals/ticktext with a continuous axis.
         tickvals: extendFlat({}, axesAttrs.tickvals, {
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'Sets the values at which ticks on this axis appear.'
             ].join(' ')
         }),
         ticktext: extendFlat({}, axesAttrs.ticktext, {
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'Sets the text displayed at the ticks position via `tickvals`.'
             ].join(' ')
         }),
-        tickformat: {
-            valType: 'string',
-            dflt: '3s',
-            role: 'style',
-            editType: 'calc',
-            description: [
-                'Sets the tick label formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
-            ].join(' ')
-        },
+        tickformat: extendFlat({}, axesAttrs.tickformat, {
+            editType: 'plot'
+        }),
         visible: {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'calc',
+            editType: 'plot',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         },
         range: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'},
+                {valType: 'number', editType: 'plot'}
             ],
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'The domain range that represents the full, shown axis extent. Defaults to the `values` extent.',
                 'Must be an array of `[fromValue, toValue]` with finite numbers as elements.'
@@ -90,10 +110,10 @@ module.exports = {
             freeLength: true,
             dimensions: '1-2',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'},
+                {valType: 'number', editType: 'plot'}
             ],
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'The domain range to which the filter on the dimension is constrained. Must be an array',
                 'of `[fromValue, toValue]` with `fromValue <= toValue`, or if `multiselect` is not',
@@ -104,7 +124,7 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'calc',
+            editType: 'plot',
             description: 'Do we allow multiple selection ranges or just a single range?'
         },
         values: {

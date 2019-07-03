@@ -13,10 +13,11 @@ var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var fillText = require('../../lib').fillText;
+var delta = require('../../constants/delta.js');
 
 var DIRSYMBOL = {
-    increasing: '▲',
-    decreasing: '▼'
+    increasing: delta.INCREASING.SYMBOL,
+    decreasing: delta.DECREASING.SYMBOL
 };
 
 function hoverPoints(pointData, xval, yval, hovermode) {

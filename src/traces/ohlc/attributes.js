@@ -13,9 +13,10 @@ var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
+var delta = require('../../constants/delta.js');
 
-var INCREASING_COLOR = '#3D9970';
-var DECREASING_COLOR = '#FF4136';
+var INCREASING_COLOR = delta.INCREASING.COLOR;
+var DECREASING_COLOR = delta.DECREASING.COLOR;
 
 var lineAttrs = scatterAttrs.line;
 

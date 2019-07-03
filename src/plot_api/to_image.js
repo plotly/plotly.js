@@ -74,8 +74,6 @@ var attrs = {
     }
 };
 
-var IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
-
 /** Plotly.toImage
  *
  * @param {object | string | HTML div} gd
@@ -179,7 +177,7 @@ function toImage(gd, opts) {
                 if(imageDataOnly) {
                     return resolve(svg);
                 } else {
-                    return resolve('data:image/svg+xml,' + encodeURIComponent(svg));
+                    return resolve(helpers.encodeSVG(svg));
                 }
             }
 
@@ -206,7 +204,7 @@ function toImage(gd, opts) {
 
     function urlToImageData(url) {
         if(imageDataOnly) {
-            return url.replace(IMAGE_URL_PREFIX, '');
+            return url.replace(helpers.IMAGE_URL_PREFIX, '');
         } else {
             return url;
         }

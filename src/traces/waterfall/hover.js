@@ -11,10 +11,11 @@
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
+var delta = require('../../constants/delta.js');
 
 var DIRSYMBOL = {
-    increasing: '▲',
-    decreasing: '▼'
+    increasing: delta.INCREASING.SYMBOL,
+    decreasing: delta.DECREASING.SYMBOL
 };
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {

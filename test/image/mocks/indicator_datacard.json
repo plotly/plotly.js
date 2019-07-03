@@ -1,0 +1,102 @@
+{
+  "data": [{
+    "domain": {"x": [0, 0.5], "y": [0, 0.5]},
+    "type": "indicator",
+    "mode": "number+delta",
+    "number": {
+      "suffix": " km/h"
+    },
+    "value": 43,
+    "delta": {
+      "position": "left",
+      "reference": 20
+    }
+  }, {
+    "domain": {"x": [0, 0.5], "y": [0.5, 1.0]},
+    "type": "indicator",
+    "mode": "number+delta",
+    "number": {
+      "suffix": " km/h"
+    },
+    "value": 43,
+    "delta": {
+      "position": "bottom",
+      "reference": 20
+    }
+  }, {
+    "domain": {"x": [0.5, 1.0], "y": [0, 0.5]},
+    "type": "indicator",
+    "mode": "number+delta",
+    "number": {
+      "suffix": " km/h"
+    },
+    "value": 43,
+    "delta": {
+      "position": "right",
+      "reference": 20
+    }
+  }, {
+    "domain": {"x": [0.5, 1.0], "y": [0.5, 1.0]},
+    "type": "indicator",
+    "mode": "number+delta",
+    "number": {
+      "suffix": " km/h"
+    },
+    "value": 43,
+    "delta": {
+      "position": "top",
+      "reference": 20
+    }
+  }],
+  "layout": {
+    "paper_bgcolor": "orange",
+    "width": 600,
+    "height": 200,
+    "margin": {"t": 0, "b": 0, "l": 0, "r": 0},
+    "shapes": [{
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.5,
+      "y0": 0.5,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.5,
+      "y0": 0,
+      "y1": 0.5,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.5,
+      "x1": 1.0,
+      "y0": 0.5,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.5,
+      "x1": 1.0,
+      "y0": 0,
+      "y1": 0.5,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }]
+  }
+}

@@ -36,10 +36,9 @@ module.exports = function(type, x, y, opts) {
         fullOpts.shiftKey = opts.shiftKey;
     }
 
-
     ev = new window.TouchEvent(type, Lib.extendFlat({}, fullOpts, opts));
 
-    el.dispatchEvent(ev);
+    if(el) el.dispatchEvent(ev);
 
     return el;
 };
