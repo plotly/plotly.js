@@ -55,19 +55,6 @@ function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
         coerce('ticktext');
         coerce('tickformat');
         var range = coerce('range');
-        if(!range) {
-            var max = -Infinity;
-            var min = Infinity;
-            for(var i = 0; i < values.length; i++) {
-                var v = values[i];
-                if(isFinite(v)) {
-                    if(max < v) max = v;
-                    if(min > v) min = v;
-                }
-            }
-
-            range = [min, max];
-        }
 
         dimensionOut._ax = {
             _id: 'y',

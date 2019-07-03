@@ -380,16 +380,32 @@ function updatePanelLayout(yAxis, vm) {
 function calcAllTicks(cd) {
     for(var i = 0; i < cd.length; i++) {
         for(var j = 0; j < cd[i].length; j++) {
-            var dimensions = cd[i][j].trace.dimensions;
+            var trace = cd[i][j].trace;
+            var len = trace._length;
+            var dimensions = trace.dimensions;
+
             for(var k = 0; k < dimensions.length; k++) {
+                var values = dimensions[k].values;
                 var dim = dimensions[k]._ax;
 
                 if(dim) {
+                    if(!dim.range) {
+                        var max = -Infinity;
+                        var min = Infinity;
+                        for(var q = 0; q < len; q++) {
+                            var v = values[q];
+                            if(isFinite(v)) {
+                                if(max < v) max = v;
+                                if(min > v) min = v;
+                            }
+                        }
+                        dim.range = [min, max];
+                    }
+
                     if(!dim.dtick) dim.dtick = 0.01 * Math.abs(dim.range[1] - dim.range[0]);
+
                     dim.tickformat = dimensions[k].tickformat;
-
                     Axes.calcTicks(dim);
-
                     dim.cleanRange();
                 }
             }
