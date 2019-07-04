@@ -13,7 +13,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
     calc: require('./calc'),
-    plot: require('./plot'),
+    plot: require('./plot').plot,
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover'),

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,6 +15,8 @@ var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+
+var constants = require('./constants');
 
 var fontAttr = fontAttrs({
     description: [
@@ -43,13 +44,14 @@ var attrs = module.exports = overrideAll({
     },
     style: {
         valType: 'any',
-        values: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
-        dflt: 'basic',
+        values: constants.styleValuesMapbox.concat(constants.styleValueOSM),
+        dflt: constants.styleValueDflt,
         role: 'style',
         description: [
             'Sets the Mapbox map style.',
             'Either input one of the default Mapbox style names or the URL to a custom style',
-            'or a valid Mapbox style JSON.'
+            'or a valid Mapbox style JSON.',
+            'From OpenStreetMap raster tiles, use *open-street-map*.'
         ].join(' ')
     },
 
@@ -100,12 +102,11 @@ var attrs = module.exports = overrideAll({
         },
         sourcetype: {
             valType: 'enumerated',
-            values: ['geojson', 'vector'],
+            values: ['geojson', 'vector', 'raster', 'image'],
             dflt: 'geojson',
             role: 'info',
             description: [
-                'Sets the source type for this layer.',
-                'Support for *raster*, *image* and *video* source types is coming soon.'
+                'Sets the source type for this layer.'
             ].join(' ')
         },
 
@@ -132,7 +133,7 @@ var attrs = module.exports = overrideAll({
 
         type: {
             valType: 'enumerated',
-            values: ['circle', 'line', 'fill', 'symbol'],
+            values: ['circle', 'line', 'fill', 'symbol', 'raster'],
             dflt: 'circle',
             role: 'info',
             description: [
@@ -140,6 +141,17 @@ var attrs = module.exports = overrideAll({
                 'Support for *raster*, *background* types is coming soon.',
                 'Note that *line* and *fill* are not compatible with Point',
                 'GeoJSON geometries.'
+            ].join(' ')
+        },
+
+        coordinates: {
+            valType: 'any',
+            role: 'info',
+            description: [
+                'Sets the coordinates array contains [longitude, latitude] pairs',
+                'for the image corners listed in clockwise order:',
+                'top left, top right, bottom right, bottom left.',
+                'Only has an effect for *image* `sourcetype`.'
             ].join(' ')
         },
 

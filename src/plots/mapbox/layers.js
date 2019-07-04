@@ -120,7 +120,7 @@ proto.removeLayer = function() {
     }
 };
 
-proto.dispose = function dispose() {
+proto.dispose = function() {
     var map = this.map;
     map.removeLayer(this.idLayer);
     map.removeSource(this.idSource);
@@ -131,7 +131,7 @@ function isVisible(opts) {
 
     return opts.visible && (
         Lib.isPlainObject(source) ||
-        (typeof source === 'string' && source.length > 0)
+        ((typeof source === 'string' || Array.isArray(source)) && source.length > 0)
     );
 }
 
@@ -193,7 +193,10 @@ function convertOpts(opts) {
             break;
     }
 
-    return { layout: layout, paint: paint };
+    return {
+        layout: layout,
+        paint: paint
+    };
 }
 
 function convertSourceOpts(opts) {
@@ -206,9 +209,16 @@ function convertSourceOpts(opts) {
         field = 'data';
     } else if(sourceType === 'vector') {
         field = typeof source === 'string' ? 'url' : 'tiles';
+    } else if(sourceType === 'raster') {
+        field = 'tiles';
+        sourceOpts.tileSize = 256;
+    } else if(sourceType === 'image') {
+        field = 'url';
+        sourceOpts.coordinates = opts.coordinates;
     }
 
     sourceOpts[field] = source;
+
     return sourceOpts;
 }
 

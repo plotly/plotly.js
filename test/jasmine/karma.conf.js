@@ -10,7 +10,8 @@ var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
         'info',
-        'nowatch', 'failFast', 'randomize',
+        'nowatch', 'randomize',
+        'failFast', 'doNotFailOnEmptyTestSuite',
         'Chrome', 'Firefox', 'IE11',
         'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
     ],
@@ -20,13 +21,14 @@ var argv = minimist(process.argv.slice(4), {
         'IE11': ['ie11'],
         'bundleTest': ['bundletest', 'bundle_test'],
         'nowatch': 'no-watch',
-        'failFast': 'fail-fast'
+        'failFast': 'fail-fast',
     },
     'default': {
         info: false,
         nowatch: isCI,
         randomize: false,
         failFast: false,
+        doNotFailOnEmptyTestSuite: false,
         width: '1035',
         height: '617',
         verbose: false,
@@ -65,8 +67,9 @@ if(argv.info) {
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
-        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
+        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
+        '  - `--doNotFailOnEmptyTestSuite` (dflt: `false`): do not fail run when no spec are ran (either from bundle error OR tag filtering)',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
         '  - `--height` (dflt: 617): set height of the browser window',
@@ -290,7 +293,11 @@ func.defaultConfig = {
         // use 'karma-spec-reporter' to log info about skipped specs
         suppressSkipped: !argv.showSkipped,
         showSpecTiming: true
-    }
+    },
+
+    // set to `true` e.g. for mapbox suites where:
+    //   --tags=gl --skip-tags=noCI result in empty test run
+    failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
