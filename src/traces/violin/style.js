@@ -12,8 +12,8 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var stylePoints = require('../scatter/style').stylePoints;
 
-module.exports = function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.violins');
+module.exports = function style(gd) {
+    var s = d3.select(gd).selectAll('g.trace.violins');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
 
