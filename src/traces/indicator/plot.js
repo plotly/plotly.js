@@ -561,11 +561,12 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                 .transition()
                 .duration(transitionOpts.duration)
                 .ease(transitionOpts.easing)
-                .each('end', function() { trace._lastValue = cd[0].y; onComplete && onComplete(); })
+                .each('end', function() { onComplete && onComplete(); })
                 .each('interrupt', function() { onComplete && onComplete(); })
                 .attrTween('text', function() {
                     var that = d3.select(this);
                     var interpolator = d3.interpolateNumber(cd[0].lastY, cd[0].y);
+                    trace._lastValue = cd[0].y;
                     return function(t) {
                         that.text(bignumberPrefix + fmt(interpolator(t)) + bignumberSuffix);
                     };
@@ -584,7 +585,6 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         // delta
         var deltaAx = mockAxis(gd, {tickformat: trace.delta.valueformat});
         var deltaFmt = function(v) { return Axes.tickText(deltaAx, v).text;};
-        if(!trace._deltaLastValue) trace._deltaLastValue = 0;
         var deltaValue = function(d) {
             var value = trace.delta.relative ? d.relativeDelta : d.delta;
             return value;
@@ -596,31 +596,37 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var deltaFill = function(d) {
             return d.delta >= 0 ? trace.delta.increasing.color : trace.delta.decreasing.color;
         };
+        if(trace._deltaLastValue === undefined) {
+            trace._deltaLastValue = deltaValue(cd[0]);
+        }
         var delta = numbers.select('text.delta');
         delta
             .call(Drawing.font, trace.delta.font)
-            .call(Color.fill, deltaFill(cd[0]));
+            .call(Color.fill, deltaFill({delta: trace._deltaLastValue}));
 
         if(hasTransition) {
             delta
                 .transition()
                 .duration(transitionOpts.duration)
                 .ease(transitionOpts.easing)
-                .each('end', function(d) { trace._deltaLastValue = deltaValue(d); onComplete && onComplete(); })
-                .each('interrupt', function() { onComplete && onComplete(); })
-                .attrTween('text', function() {
+                .tween('text', function() {
                     var that = d3.select(this);
                     var to = deltaValue(cd[0]);
                     var from = trace._deltaLastValue;
                     var interpolator = d3.interpolateNumber(from, to);
+                    trace._deltaLastValue = to;
                     return function(t) {
                         that.text(deltaFormatText(interpolator(t)));
+                        that.call(Color.fill, deltaFill({delta: interpolator(t)}));
                     };
-                });
+                })
+                .each('end', function() { onComplete && onComplete(); })
+                .each('interrupt', function() { onComplete && onComplete(); });
         } else {
             delta.text(function() {
                 return deltaFormatText(deltaValue(cd[0]));
-            });
+            })
+            .call(Color.fill, deltaFill(cd[0]));
         }
 
         delta.attr('data-unformatted', deltaFormatText(deltaValue(cd[0])));

@@ -510,7 +510,7 @@ describe('Indicator animations', function() {
 
             Plotly.plot(gd, mock)
             .then(function() {
-                gd.data[0].value = '400';
+                gd.data[0].value = 400;
                 return Plotly.react(gd, gd.data, gd.layout);
             })
             .then(delay(300))

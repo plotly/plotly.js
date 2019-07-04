@@ -14,13 +14,14 @@ function calc(gd, trace) {
     var cd = [];
 
     var lastReading = trace.value;
-    var secondLastReading = trace.delta ? trace.delta.reference : trace._lastValue || trace.value;
+    var secondLastReading = trace._lastValue || trace.value;
+    var deltaRef = trace._hasDelta ? trace.delta.reference || secondLastReading : secondLastReading;
     cd[0] = {
         y: lastReading,
         lastY: secondLastReading,
 
-        delta: lastReading - secondLastReading,
-        relativeDelta: (lastReading - secondLastReading) / secondLastReading,
+        delta: lastReading - deltaRef,
+        relativeDelta: (lastReading - deltaRef) / deltaRef,
     };
     return cd;
 }
