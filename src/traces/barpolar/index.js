@@ -24,7 +24,9 @@ module.exports = {
 
     plot: require('./plot'),
     colorbar: require('../scatter/marker_colorbar'),
+
     style: require('../bar/style').style,
+    styleOnSelect: require('../bar/style').styleOnSelect,
 
     hoverPoints: require('./hover'),
     selectPoints: require('../bar/select'),
