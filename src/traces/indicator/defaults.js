@@ -39,6 +39,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var bignumberFontSize;
     if(traceOut._hasNumber) {
         coerce('number.valueformat');
+        if(!traceOut.number.valueformat) traceOut.number.valueformat = attributes.number.valueformat.dflt;
         coerce('number.font.color', layout.font.color);
         coerce('number.font.family', layout.font.family);
         coerce('number.font.size');
@@ -63,7 +64,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         }
         coerce('delta.reference', traceOut.value);
         coerce('delta.relative');
-        coerce('delta.valueformat', traceOut.delta.relative ? '+2%' : '+.3s');
+        coerce('delta.valueformat');
+        if(!traceOut.delta.valueformat) traceOut.delta.valueformat = traceOut.delta.relative ? '+2%' : '+.3s';
         coerce('delta.increasing.symbol');
         coerce('delta.increasing.color');
         coerce('delta.decreasing.symbol');

@@ -50,6 +50,12 @@ describe('Indicator defaults', function() {
         expect(out.delta.valueformat).toBe('+2%');
     });
 
+    it('ignores empty valueformat', function() {
+        var out = _supply({type: 'indicator', mode: 'number+delta', number: {valueformat: ''}, delta: {valueformat: ''}, value: 1});
+        expect(out.delta.valueformat).toBe('+.3s');
+        expect(out.number.valueformat).toBe('.3s');
+    });
+
     it('defaults delta.reference to current value', function() {
         var out = _supply({type: 'indicator', mode: 'delta', value: 1});
         expect(out.delta.reference).toBe(1);
