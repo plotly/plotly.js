@@ -26,7 +26,6 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         var cd0 = cd[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
         // whisker width
         t.wdPos = t.bdPos * trace.whiskerwidth;

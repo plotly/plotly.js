@@ -37,7 +37,7 @@ module.exports = function plot(gd, geo, calcData) {
     gTraces.selectAll('*').remove();
 
     gTraces.each(function(calcTrace) {
-        var s = calcTrace[0].node3 = d3.select(this);
+        var s = d3.select(this);
         var trace = calcTrace[0].trace;
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
