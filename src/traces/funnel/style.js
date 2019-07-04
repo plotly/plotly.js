@@ -16,8 +16,8 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var styleTextPoints = require('../bar/style').styleTextPoints;
 
-function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.funnellayer').selectAll('g.trace');
+function style(gd, cd, sel) {
+    var s = sel ? sel : d3.select(gd).selectAll('g.funnellayer').selectAll('g.trace');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
 

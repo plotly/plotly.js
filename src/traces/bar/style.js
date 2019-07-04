@@ -62,16 +62,14 @@ function styleTextPoints(sel, trace, gd) {
     });
 }
 
-function styleOnSelect(gd, cd) {
-    var s = cd[0].node3;
+function styleOnSelect(gd, cd, sel) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
-        stylePointsInSelectionMode(s, trace, gd);
+        stylePointsInSelectionMode(sel, trace, gd);
     } else {
-        stylePoints(s, trace, gd);
-
-        Registry.getComponentMethod('errorbars', 'style')(s);
+        stylePoints(sel, trace, gd);
+        Registry.getComponentMethod('errorbars', 'style')(sel);
     }
 }
 
