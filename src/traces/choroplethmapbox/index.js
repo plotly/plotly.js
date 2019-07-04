@@ -18,7 +18,7 @@ module.exports = {
     eventData: require('../choropleth/event_data'),
     selectPoints: require('../choropleth/select'),
 
-    style: function(_, cd) {
+    styleOnSelect: function(_, cd) {
         if(cd) {
             var trace = cd[0].trace;
             trace._glTrace.updateOnSelect(cd);
