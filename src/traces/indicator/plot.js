@@ -527,6 +527,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
 
     var numbers = Lib.ensureSingle(plotGroup, 'g', 'numbers');
     var bignumberbBox, deltabBox;
+    var numbersbBox;
 
     var data = [];
     if(trace._hasNumber) data.push('number');
@@ -575,9 +576,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
         }
 
-        number.attr('data-unformatted', bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
-        bignumberbBox = Drawing.bBox(number.node());
-
+        bignumberbBox = measureText(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor);
         return number;
     }
 
@@ -629,9 +628,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             .call(Color.fill, deltaFill(cd[0]));
         }
 
-        delta.attr('data-unformatted', deltaFormatText(deltaValue(cd[0])));
-        deltabBox = Drawing.bBox(delta.node());
-
+        deltabBox = measureText(deltaFormatText(deltaValue(cd[0])), trace.delta.font, numbersAnchor);
         return delta;
     }
 
@@ -641,10 +638,12 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         delta = drawDelta();
         key += trace.delta.position + trace.delta.font.size + trace.delta.font.family + trace.delta.valueformat;
         key += trace.delta.increasing.symbol + trace.delta.decreasing.symbol;
+        numbersbBox = deltabBox;
     }
     if(trace._hasNumber) {
         drawBignumber();
         key += trace.number.font.size + trace.number.font.family + trace.number.valueformat + trace.number.suffix + trace.number.prefix;
+        numbersbBox = bignumberbBox;
     }
 
     // Position delta relative to bignumber
@@ -659,53 +658,91 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         ];
 
         var dx, dy;
+        var padding = 0.75 * trace.delta.font.size;
         if(trace.delta.position === 'left') {
-            dx = cache(trace, 'deltaPos', 0, bignumberbBox.left - deltabBox.right - 0.75 * trace.delta.font.size, key, Math.min);
+            dx = cache(trace, 'deltaPos', 0, -1 * (bignumberbBox.width * (position[trace.align]) + deltabBox.width * (1 - position[trace.align]) + padding), key, Math.min);
             dy = bignumberCenter[1] - deltaCenter[1];
+
+            numbersbBox = {
+                width: bignumberbBox.width + deltabBox.width + padding,
+                height: Math.max(bignumberbBox.height, deltabBox.height),
+                left: deltabBox.left + dx,
+                right: bignumberbBox.right,
+                top: Math.min(bignumberbBox.top, deltabBox.top + dy),
+                bottom: Math.max(bignumberbBox.bottom, deltabBox.bottom + dy)
+            };
         }
         if(trace.delta.position === 'right') {
-            dx = cache(trace, 'deltaPos', 0, bignumberbBox.right - deltabBox.left + 0.75 * trace.delta.font.size, key, Math.max);
+            dx = cache(trace, 'deltaPos', 0, bignumberbBox.width * (1 - position[trace.align]) + deltabBox.width * position[trace.align] + padding, key, Math.max);
             dy = bignumberCenter[1] - deltaCenter[1];
+
+            numbersbBox = {
+                width: bignumberbBox.width + deltabBox.width + padding,
+                height: Math.max(bignumberbBox.height, deltabBox.height),
+                left: bignumberbBox.left,
+                right: deltabBox.right + dx,
+                top: Math.min(bignumberbBox.top, deltabBox.top + dy),
+                bottom: Math.max(bignumberbBox.bottom, deltabBox.bottom + dy)
+            };
         }
         if(trace.delta.position === 'bottom') {
             dx = null;
             dy = deltabBox.height;
+
+            numbersbBox = {
+                width: Math.max(bignumberbBox.width, deltabBox.width),
+                height: bignumberbBox.height + deltabBox.height,
+                left: Math.min(bignumberbBox.left, deltabBox.left),
+                right: Math.max(bignumberbBox.right, deltabBox.right),
+                top: bignumberbBox.bottom - bignumberbBox.height,
+                bottom: bignumberbBox.bottom + deltabBox.height
+            };
         }
         if(trace.delta.position === 'top') {
             dx = null;
             dy = bignumberbBox.top;
+
+            numbersbBox = {
+                width: Math.max(bignumberbBox.width, deltabBox.width),
+                height: bignumberbBox.height + deltabBox.height,
+                left: Math.min(bignumberbBox.left, deltabBox.left),
+                right: Math.max(bignumberbBox.right, deltabBox.right),
+                top: bignumberbBox.bottom - bignumberbBox.height - deltabBox.height,
+                bottom: bignumberbBox.bottom
+            };
         }
 
         delta.attr({dx: dx, dy: dy});
     }
 
     // Resize numbers to fit within space and position
-    numbers.attr('transform', function() {
-        var m = opts.numbersScaler(numbers);
-        key += m[2];
-        var scaleRatio = cache(trace, 'numbersScale', 1, m[0], key, Math.min);
-        var numbersbBox = m[1];
-        var translateY;
-        if(!trace._scaleNumbers) scaleRatio = 1;
-        if(trace._isAngular) {
-            // align vertically to bottom
-            translateY = numbersY - scaleRatio * numbersbBox.bottom;
-        } else {
-            // align vertically to center
-            translateY = numbersY - scaleRatio * (numbersbBox.top + numbersbBox.bottom) / 2;
-        }
+    if(trace._hasNumber || trace._hasDelta) {
+        numbers.attr('transform', function() {
+            var m = opts.numbersScaler(numbersbBox);
+            key += m[2];
+            var scaleRatio = cache(trace, 'numbersScale', 1, m[0], key, Math.min);
+            var translateY;
+            if(!trace._scaleNumbers) scaleRatio = 1;
+            if(trace._isAngular) {
+                // align vertically to bottom
+                translateY = numbersY - scaleRatio * numbersbBox.bottom;
+            } else {
+                // align vertically to center
+                translateY = numbersY - scaleRatio * (numbersbBox.top + numbersbBox.bottom) / 2;
+            }
 
-        // Stash the top position of numbersbBox for title positioning
-        trace._numbersTop = scaleRatio * (numbersbBox.top) + translateY;
+            // Stash the top position of numbersbBox for title positioning
+            trace._numbersTop = scaleRatio * (numbersbBox.top) + translateY;
 
-        var ref = numbersbBox[numbersAlign];
-        if(numbersAlign === 'center') ref = (numbersbBox.left + numbersbBox.right) / 2;
-        var translateX = numbersX - scaleRatio * ref;
+            var ref = numbersbBox[numbersAlign];
+            if(numbersAlign === 'center') ref = (numbersbBox.left + numbersbBox.right) / 2;
+            var translateX = numbersX - scaleRatio * ref;
 
-        // Stash translateX
-        translateX = cache(trace, 'numbersTranslate', 0, translateX, key, Math.max);
-        return strTranslate(translateX, translateY) + ' scale(' + scaleRatio + ')';
-    });
+            // Stash translateX
+            translateX = cache(trace, 'numbersTranslate', 0, translateX, key, Math.max);
+            return strTranslate(translateX, translateY) + ' scale(' + scaleRatio + ')';
+        });
+    }
 }
 
 // Apply fill, stroke, stroke-width to SVG shape
@@ -786,19 +823,31 @@ function strTranslate(x, y) {
     return 'translate(' + x + ',' + y + ')';
 }
 
-function fitTextInsideBox(el, width, height) {
+function fitTextInsideBox(textBB, width, height) {
     // compute scaling ratio to have text fit within specified width and height
-    var textBB = Drawing.bBox(el.node());
+    // var textBB = Drawing.bBox(el.node());
     var ratio = Math.min(width / textBB.width, height / textBB.height);
     return [ratio, textBB, width + 'x' + height];
 }
 
-function fitTextInsideCircle(el, radius) {
+function fitTextInsideCircle(textBB, radius) {
     // compute scaling ratio to have text fit within specified radius
-    var textBB = Drawing.bBox(el.node());
+    // var textBB = Drawing.bBox(el.node());
     var elRadius = Math.sqrt((textBB.width / 2) * (textBB.width / 2) + textBB.height * textBB.height);
     var ratio = radius / elRadius;
     return [ratio, textBB, radius];
+}
+
+function measureText(txt, font, textAnchor) {
+    var element = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    var sel = d3.select(element);
+    sel.text(txt)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('text-anchor', textAnchor)
+      .attr('data-unformatted', txt)
+      .call(Drawing.font, font);
+    return Drawing.bBox(sel.node());
 }
 
 function cache(trace, name, initialValue, value, key, fn) {
