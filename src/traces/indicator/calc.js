@@ -15,7 +15,10 @@ function calc(gd, trace) {
 
     var lastReading = trace.value;
     var secondLastReading = trace._lastValue || trace.value;
-    var deltaRef = trace._hasDelta ? trace.delta.reference || secondLastReading : secondLastReading;
+    var deltaRef = secondLastReading;
+    if(trace._hasDelta && typeof trace.delta.reference === 'number') {
+        deltaRef = trace.delta.reference;
+    }
     cd[0] = {
         y: lastReading,
         lastY: secondLastReading,
