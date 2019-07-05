@@ -23,8 +23,8 @@ module.exports = function plot(gd, subplot, cdbar) {
     var pathFn = makePathFn(subplot);
     var barLayer = subplot.layers.frontplot.select('g.barlayer');
 
-    Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
-        var plotGroup = cd[0].node3 = d3.select(this);
+    Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function() {
+        var plotGroup = d3.select(this);
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
         var bars = pointGroup.selectAll('g.point').data(Lib.identity);
 

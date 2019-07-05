@@ -12,8 +12,8 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
-function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.boxes');
+function style(gd, cd, sel) {
+    var s = sel ? sel : d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
 
@@ -55,10 +55,9 @@ function style(gd, cd) {
     });
 }
 
-function styleOnSelect(gd, cd) {
-    var s = cd[0].node3;
+function styleOnSelect(gd, cd, sel) {
     var trace = cd[0].trace;
-    var pts = s.selectAll('path.point');
+    var pts = sel.selectAll('path.point');
 
     if(trace.selectedpoints) {
         Drawing.selectedPointStyle(pts, trace);

@@ -1452,7 +1452,7 @@ describe('Test Scatter.style', function() {
                 // make sure styleOnSelect (called during selection)
                 // gives same results as restyle
                 gd.calcdata.forEach(function(cd) {
-                    Scatter.styleOnSelect(gd, cd);
+                    Scatter.styleOnSelect(gd, cd, cd[0].node3);
                 });
                 assertPts(attr, getterFn, expectation, ' (' + msg + ' via Scatter.styleOnSelect)');
             });

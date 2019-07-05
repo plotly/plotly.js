@@ -78,8 +78,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        if(!plotinfo.isRangePlot) cd[0].node3 = plotGroup;
-
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
         var bars = pointGroup.selectAll('g.point').data(Lib.identity);

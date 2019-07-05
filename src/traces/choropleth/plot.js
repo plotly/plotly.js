@@ -24,7 +24,7 @@ function plot(gd, geo, calcData) {
 
     var choroplethLayer = geo.layers.backplot.select('.choroplethlayer');
     Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function(calcTrace) {
-        var sel = calcTrace[0].node3 = d3.select(this);
+        var sel = d3.select(this);
 
         var paths = sel.selectAll('path.choroplethlocation')
             .data(Lib.identity);

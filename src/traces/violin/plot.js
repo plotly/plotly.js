@@ -38,7 +38,6 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var cd0 = cd[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
         if(trace.visible !== true || t.empty) {
             plotGroup.remove();
