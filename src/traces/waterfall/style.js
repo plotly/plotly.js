@@ -12,6 +12,7 @@ var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var styleTextPoints = require('../bar/style').styleTextPoints;
 
@@ -32,7 +33,7 @@ function style(gd, cd) {
                     .call(Color.fill, cont.color)
                     .call(Color.stroke, cont.line.color)
                     .call(Drawing.dashLine, cont.line.dash, cont.line.width)
-                    .style('opacity', trace.selectedpoints && !di.selected ? 0.3 : 1);
+                    .style('opacity', trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
             }
         });
 
