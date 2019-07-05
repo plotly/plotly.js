@@ -282,7 +282,7 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
 
     function drawRect(s) {
         s
-            .attr('width', function(d) { return Math.max(0, ax.c2p(d.range[1] - d.range[0]));})
+            .attr('width', function(d) { return Math.max(0, ax.c2p(d.range[1]) - ax.c2p(d.range[0]));})
             .attr('x', function(d) { return ax.c2p(d.range[0]);})
             .attr('y', function(d) { return 0.5 * (1 - d.thickness) * bulletHeight;})
             .attr('height', function(d) { return d.thickness * bulletHeight; });
