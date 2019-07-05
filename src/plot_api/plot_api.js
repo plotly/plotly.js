@@ -3620,7 +3620,7 @@ function deleteFrames(gd, frameList) {
         }
     }
 
-    frameList = frameList.slice(0);
+    frameList = frameList.slice();
     frameList.sort();
 
     for(i = frameList.length - 1; i >= 0; i--) {
