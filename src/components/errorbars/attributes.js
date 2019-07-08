@@ -35,7 +35,7 @@ module.exports = {
             'If *sqrt*, the bar lengths correspond to the sqaure of the',
             'underlying data.',
 
-            'If *array*, the bar lengths are set with data set `array`.'
+            'If *data*, the bar lengths are set with data set `array`.'
         ].join(' ')
     },
     symmetric: {
