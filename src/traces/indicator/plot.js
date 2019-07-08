@@ -478,9 +478,10 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
             .transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
-            .each('end', function() { trace._lastValue = cd[0].y; onComplete && onComplete(); })
+            .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); })
             .attrTween('d', arcTween(valueArcPathGenerator, valueToAngle(cd[0].lastY), valueToAngle(cd[0].y)));
+        trace._lastValue = cd[0].y;
     } else {
         valueArcPath
             .attr('d', valueArcPathGenerator.endAngle(valueToAngle(cd[0].y)));
