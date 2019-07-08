@@ -377,6 +377,22 @@ describe('plot schema', function() {
         expect(traces.parcoords.attributes.hoverinfo).toBe(undefined, 'no hover attrs for parcoords');
         expect(traces.scatter3d.attributes.selectedpoints).toBe(undefined, 'no selectedpoints for gl3d traces');
     });
+
+    it('traces that are not animatable should not list `anim:true` attributes', function() {
+        var notAnimatable = Object.keys(plotSchema.traces).filter(function(traceType) {
+            return !plotSchema.traces[traceType].animatable;
+        });
+
+        notAnimatable.forEach(function(traceType) {
+            Plotly.PlotSchema.crawl(plotSchema.traces[traceType].attributes, function() {
+                var attr = arguments[0];
+                var astr = arguments[4];
+                if(Plotly.PlotSchema.isValObject(attr) && 'anim' in attr) {
+                    fail('Trace module ' + traceType + ' sets *' + astr + '* with anim:true');
+                }
+            });
+        });
+    });
 });
 
 describe('getTraceValObject', function() {
