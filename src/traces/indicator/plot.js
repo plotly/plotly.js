@@ -826,14 +826,12 @@ function strTranslate(x, y) {
 
 function fitTextInsideBox(textBB, width, height) {
     // compute scaling ratio to have text fit within specified width and height
-    // var textBB = Drawing.bBox(el.node());
     var ratio = Math.min(width / textBB.width, height / textBB.height);
     return [ratio, textBB, width + 'x' + height];
 }
 
 function fitTextInsideCircle(textBB, radius) {
     // compute scaling ratio to have text fit within specified radius
-    // var textBB = Drawing.bBox(el.node());
     var elRadius = Math.sqrt((textBB.width / 2) * (textBB.width / 2) + textBB.height * textBB.height);
     var ratio = radius / elRadius;
     return [ratio, textBB, radius];

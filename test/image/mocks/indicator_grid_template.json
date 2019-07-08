@@ -3,12 +3,12 @@
       "type": "indicator",
       "value": 120,
       "delta": {"reference": 60},
-      "gauge": {"axis": {"visible": false}},
+      "gauge": {"axis": {"visible": false, "range": [0, 200]}},
       "domain": {"row": 0, "column": 0}
   }, {
       "type": "indicator",
       "value": 120,
-      "gauge": {"shape": "bullet", "axis": {"visible": false}},
+      "gauge": {"shape": "bullet", "axis": {"visible": false, "range": [-200, 200]}},
       "domain": {"x": [0.05, 0.5], "y": [0.15, 0.35]}
   }, {
       "type": "indicator",
