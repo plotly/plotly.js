@@ -36,15 +36,17 @@ var position = {
 
 var SI_PREFIX = /[yzafpnµmkMGTPEZY]/;
 
+function hasTransition(transitionOpts) {
+    // If transition config is provided, then it is only a partial replot and traces not
+    // updated are removed.
+    return transitionOpts && transitionOpts.duration > 0;
+}
+
 module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var onComplete;
 
-    // If transition config is provided, then it is only a partial replot and traces not
-    // updated are removed.
-    var hasTransition = transitionOpts && transitionOpts.duration > 0;
-
-    if(hasTransition) {
+    if(hasTransition(transitionOpts)) {
         if(makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
@@ -56,6 +58,7 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
     Lib.makeTraceGroups(fullLayout._indicatorlayer, cdModule, 'trace').each(function(cd) {
         var cd0 = cd[0];
         var trace = cd0.trace;
+
         var plotGroup = d3.select(this);
 
         // Elements in trace
@@ -109,15 +112,13 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         }
 
         // Draw numbers
-        var numbersOpts = {
+        drawNumbers(gd, plotGroup, cd, {
             numbersX: numbersX,
             numbersY: numbersY,
             numbersScaler: numbersScaler,
-            hasTransition: hasTransition,
             transitionOpts: transitionOpts,
             onComplete: onComplete
-        };
-        drawNumbers(gd, plotGroup, cd, numbersOpts);
+        });
 
         // Reexpress our gauge background attributes for drawing
         var gaugeBg, gaugeOutline;
@@ -149,19 +150,20 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         var angularaxisLayer = plotGroup.selectAll('g.angularaxis').data(isAngular ? cd : []);
         angularaxisLayer.exit().remove();
 
-        var gaugeOpts = {
-            size: size,
-            radius: radius,
-            innerRadius: innerRadius,
-            gaugeBg: gaugeBg,
-            gaugeOutline: gaugeOutline,
-            angularaxisLayer: angularaxisLayer,
-            angularGauge: angularGauge,
-            hasTransition: hasTransition,
-            transitionOpts: transitionOpts,
-            onComplete: onComplete
-        };
-        if(isAngular) drawAngularGauge(gd, plotGroup, cd, gaugeOpts);
+        if(isAngular) {
+            drawAngularGauge(gd, plotGroup, cd, {
+                radius: radius,
+                innerRadius: innerRadius,
+
+                gauge: angularGauge,
+                layer: angularaxisLayer,
+                size: size,
+                gaugeBg: gaugeBg,
+                gaugeOutline: gaugeOutline,
+                transitionOpts: transitionOpts,
+                onComplete: onComplete
+            });
+        }
 
         // Prepare bullet layers
         var bulletGauge = plotGroup.selectAll('g.bullet').data(isBullet ? cd : []);
@@ -169,17 +171,17 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         var bulletaxisLayer = plotGroup.selectAll('g.bulletaxis').data(isBullet ? cd : []);
         bulletaxisLayer.exit().remove();
 
-        gaugeOpts = {
-            size: size,
-            gaugeBg: gaugeBg,
-            gaugeOutline: gaugeOutline,
-            bulletGauge: bulletGauge,
-            bulletaxisLayer: bulletaxisLayer,
-            hasTransition: hasTransition,
-            transitionOpts: transitionOpts,
-            onComplete: onComplete
-        };
-        if(isBullet) drawBulletGauge(gd, plotGroup, cd, gaugeOpts);
+        if(isBullet) {
+            drawBulletGauge(gd, plotGroup, cd, {
+                gauge: bulletGauge,
+                layer: bulletaxisLayer,
+                size: size,
+                gaugeBg: gaugeBg,
+                gaugeOutline: gaugeOutline,
+                transitionOpts: transitionOpts,
+                onComplete: onComplete
+            });
+        }
 
         // title
         var title = plotGroup.selectAll('text.title').data(cd);
@@ -223,32 +225,30 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
     });
 };
 
-function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
+function drawBulletGauge(gd, plotGroup, cd, opts) {
     var trace = cd[0].trace;
 
-    var bullet = gaugeOpts.bulletGauge;
-    var bulletaxis = gaugeOpts.bulletaxisLayer;
-    var gaugeBg = gaugeOpts.gaugeBg;
-    var gaugeOutline = gaugeOpts.gaugeOutline;
-    var size = gaugeOpts.size;
+    var bullet = opts.gauge;
+    var axisLayer = opts.layer;
+    var gaugeBg = opts.gaugeBg;
+    var gaugeOutline = opts.gaugeOutline;
+    var size = opts.size;
     var domain = trace.domain;
 
-    var hasTransition = gaugeOpts.hasTransition;
-    var transitionOpts = gaugeOpts.transitionOpts;
-    var onComplete = gaugeOpts.onComplete;
+    var transitionOpts = opts.transitionOpts;
+    var onComplete = opts.onComplete;
 
     // preparing axis
     var ax, vals, transFn, tickSign, shift;
-    var opts = trace.gauge.axis;
 
     // Enter bullet, axis
     bullet.enter().append('g').classed('bullet', true);
     bullet.attr('transform', 'translate(' + size.l + ', ' + size.t + ')');
 
-    bulletaxis.enter().append('g')
+    axisLayer.enter().append('g')
         .classed('bulletaxis', true)
         .classed('crisp', true);
-    bulletaxis.selectAll('g.' + 'xbulletaxis' + 'tick,path,text').remove();
+    axisLayer.selectAll('g.' + 'xbulletaxis' + 'tick,path,text').remove();
 
     // Draw bullet
     var bulletHeight = size.h; // use all vertical domain
@@ -256,7 +256,7 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
     var bulletLeft = domain.x[0];
     var bulletRight = domain.x[0] + (domain.x[1] - domain.x[0]) * ((trace._hasNumber || trace._hasDelta) ? (1 - cn.bulletNumberDomainSize) : 1);
 
-    ax = mockAxis(gd, opts, trace.gauge.axis.range);
+    ax = mockAxis(gd, trace.gauge.axis, trace.gauge.axis.range);
     ax._id = 'xbulletaxis';
     ax.domain = [bulletLeft, bulletRight];
     ax.setScale();
@@ -269,14 +269,14 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
     if(ax.visible) {
         Axes.drawTicks(gd, ax, {
             vals: ax.ticks === 'inside' ? Axes.clipEnds(ax, vals) : vals,
-            layer: bulletaxis,
+            layer: axisLayer,
             path: Axes.makeTickPath(ax, shift, tickSign),
             transFn: transFn
         });
 
         Axes.drawLabels(gd, ax, {
             vals: vals,
-            layer: bulletaxis,
+            layer: axisLayer,
             transFn: transFn,
             labelFns: Axes.makeLabelFns(ax, shift)
         });
@@ -306,7 +306,7 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
         .attr('height', innerBulletHeight)
         .attr('y', (bulletHeight - innerBulletHeight) / 2)
         .call(styleShape);
-    if(hasTransition) {
+    if(hasTransition(transitionOpts)) {
         fgBullet.select('rect')
             .transition()
             .duration(transitionOpts.duration)
@@ -340,21 +340,20 @@ function drawBulletGauge(gd, plotGroup, cd, gaugeOpts) {
     bulletOutline.exit().remove();
 }
 
-function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
+function drawAngularGauge(gd, plotGroup, cd, opts) {
     var trace = cd[0].trace;
 
-    var size = gaugeOpts.size;
-    var radius = gaugeOpts.radius;
-    var innerRadius = gaugeOpts.innerRadius;
-    var gaugeBg = gaugeOpts.gaugeBg;
-    var gaugeOutline = gaugeOpts.gaugeOutline;
+    var size = opts.size;
+    var radius = opts.radius;
+    var innerRadius = opts.innerRadius;
+    var gaugeBg = opts.gaugeBg;
+    var gaugeOutline = opts.gaugeOutline;
     var gaugePosition = [size.l + size.w / 2, size.t + size.h / 2 + radius / 2];
-    var angularGauge = gaugeOpts.angularGauge;
-    var angularaxisLayer = gaugeOpts.angularaxisLayer;
+    var gauge = opts.gauge;
+    var axisLayer = opts.layer;
 
-    var hasTransition = gaugeOpts.hasTransition;
-    var transitionOpts = gaugeOpts.transitionOpts;
-    var onComplete = gaugeOpts.onComplete;
+    var transitionOpts = opts.transitionOpts;
+    var onComplete = opts.onComplete;
 
     // circular gauge
     var theta = Math.PI / 2;
@@ -385,18 +384,17 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
 
     // preparing axis
     var ax, vals, transFn, tickSign;
-    var opts = trace.gauge.axis;
 
     // Enter gauge and axis
-    angularGauge.enter().append('g').classed('angular', true);
-    angularGauge.attr('transform', strTranslate(gaugePosition[0], gaugePosition[1]));
+    gauge.enter().append('g').classed('angular', true);
+    gauge.attr('transform', strTranslate(gaugePosition[0], gaugePosition[1]));
 
-    angularaxisLayer.enter().append('g')
+    axisLayer.enter().append('g')
         .classed('angularaxis', true)
         .classed('crisp', true);
-    angularaxisLayer.selectAll('g.' + 'xangularaxis' + 'tick,path,text').remove();
+    axisLayer.selectAll('g.' + 'xangularaxis' + 'tick,path,text').remove();
 
-    ax = mockAxis(gd, opts);
+    ax = mockAxis(gd, trace.gauge.axis);
     ax.type = 'linear';
     ax.range = trace.gauge.axis.range;
     ax._id = 'xangularaxis'; // or 'y', but I don't think this makes a difference here
@@ -451,13 +449,13 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
         var pad = (ax.linewidth || 1) / 2;
         Axes.drawTicks(gd, ax, {
             vals: vals,
-            layer: angularaxisLayer,
+            layer: axisLayer,
             path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
             transFn: transFn2
         });
         Axes.drawLabels(gd, ax, {
             vals: vals,
-            layer: angularaxisLayer,
+            layer: axisLayer,
             transFn: transFn,
             labelFns: labelFns
         });
@@ -465,17 +463,17 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
 
     // Draw background + steps
     var arcs = [gaugeBg].concat(trace.gauge.steps);
-    var bgArc = angularGauge.selectAll('g.bg-arc').data(arcs);
+    var bgArc = gauge.selectAll('g.bg-arc').data(arcs);
     bgArc.enter().append('g').classed('bg-arc', true).append('path');
     bgArc.select('path').call(drawArc).call(styleShape);
     bgArc.exit().remove();
 
     // Draw foreground with transition
     var valueArcPathGenerator = arcPathGenerator(trace.gauge.bar.thickness);
-    var valueArc = angularGauge.selectAll('g.value-arc').data([trace.gauge.bar]);
+    var valueArc = gauge.selectAll('g.value-arc').data([trace.gauge.bar]);
     valueArc.enter().append('g').classed('value-arc', true).append('path');
     var valueArcPath = valueArc.select('path');
-    if(hasTransition) {
+    if(hasTransition(transitionOpts)) {
         valueArcPath
             .transition()
             .duration(transitionOpts.duration)
@@ -505,13 +503,13 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
             thickness: trace.gauge.threshold.thickness
         });
     }
-    var thresholdArc = angularGauge.selectAll('g.threshold-arc').data(arcs);
+    var thresholdArc = gauge.selectAll('g.threshold-arc').data(arcs);
     thresholdArc.enter().append('g').classed('threshold-arc', true).append('path');
     thresholdArc.select('path').call(drawArc).call(styleShape);
     thresholdArc.exit().remove();
 
     // Draw border last
-    var gaugeBorder = angularGauge.selectAll('g.gauge-outline').data([gaugeOutline]);
+    var gaugeBorder = gauge.selectAll('g.gauge-outline').data([gaugeOutline]);
     gaugeBorder.enter().append('g').classed('gauge-outline', true).append('path');
     gaugeBorder.select('path').call(drawArc).call(styleShape);
     gaugeBorder.exit().remove();
@@ -519,12 +517,12 @@ function drawAngularGauge(gd, plotGroup, cd, gaugeOpts) {
 
 function drawNumbers(gd, plotGroup, cd, opts) {
     var trace = cd[0].trace;
+
     var numbersX = opts.numbersX;
     var numbersY = opts.numbersY;
     var numbersAlign = trace.align || 'center';
     var numbersAnchor = anchor[numbersAlign];
 
-    var hasTransition = opts.hasTransition;
     var transitionOpts = opts.transitionOpts;
     var onComplete = opts.onComplete;
 
@@ -582,7 +580,8 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         function writeNumber() {
             number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
         }
-        if(hasTransition) {
+
+        if(hasTransition(transitionOpts)) {
             number
                 .transition()
                 .duration(transitionOpts.duration)
@@ -635,7 +634,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                 .call(Color.fill, deltaFill(cd[0]));
         }
 
-        if(hasTransition) {
+        if(hasTransition(transitionOpts)) {
             delta
                 .transition()
                 .duration(transitionOpts.duration)
