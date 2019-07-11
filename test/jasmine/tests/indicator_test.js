@@ -42,17 +42,17 @@ describe('Indicator defaults', function() {
     it('defaults to formatting numbers using SI prefix', function() {
         var out = _supply({type: 'indicator', mode: 'number+delta', value: 1});
         expect(out.number.valueformat).toBe('.3s');
-        expect(out.delta.valueformat).toBe('+.3s');
+        expect(out.delta.valueformat).toBe('.3s');
     });
 
     it('defaults to displaying relative changes in percentage', function() {
         var out = _supply({type: 'indicator', mode: 'delta', delta: {relative: true}, value: 1});
-        expect(out.delta.valueformat).toBe('+2%');
+        expect(out.delta.valueformat).toBe('2%');
     });
 
     it('ignores empty valueformat', function() {
         var out = _supply({type: 'indicator', mode: 'number+delta', number: {valueformat: ''}, delta: {valueformat: ''}, value: 1});
-        expect(out.delta.valueformat).toBe('+.3s');
+        expect(out.delta.valueformat).toBe('.3s');
         expect(out.number.valueformat).toBe('.3s');
     });
 
@@ -298,11 +298,11 @@ describe('Indicator plot', function() {
                 delta: {reference: 200}
             }], {width: 400, height: 400})
             .then(function() {
-                assertContent(gd._fullData[0].delta.increasing.symbol + '+20.0');
+                assertContent(gd._fullData[0].delta.increasing.symbol + '20.0');
                 return Plotly.restyle(gd, 'delta.relative', true);
             })
             .then(function() {
-                assertContent(gd._fullData[0].delta.increasing.symbol + '+10%');
+                assertContent(gd._fullData[0].delta.increasing.symbol + '10%');
                 return Plotly.restyle(gd, 'delta.valueformat', '.3f');
             })
             .then(function() {

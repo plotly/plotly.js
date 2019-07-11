@@ -65,7 +65,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('delta.reference', traceOut.value);
         coerce('delta.relative');
         coerce('delta.valueformat');
-        if(!traceOut.delta.valueformat) traceOut.delta.valueformat = traceOut.delta.relative ? '+2%' : '+.3s';
+        if(!traceOut.delta.valueformat) traceOut.delta.valueformat = traceOut.delta.relative ? '2%' : '.3s';
         coerce('delta.increasing.symbol');
         coerce('delta.increasing.color');
         coerce('delta.decreasing.symbol');
