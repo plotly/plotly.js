@@ -229,7 +229,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     var trace = cd[0].trace;
 
     var bullet = opts.gauge;
-    var layer = opts.layer;
+    var axisLayer = opts.layer;
     var gaugeBg = opts.gaugeBg;
     var gaugeOutline = opts.gaugeOutline;
     var size = opts.size;
@@ -245,10 +245,10 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     bullet.enter().append('g').classed('bullet', true);
     bullet.attr('transform', 'translate(' + size.l + ', ' + size.t + ')');
 
-    layer.enter().append('g')
+    axisLayer.enter().append('g')
         .classed('bulletaxis', true)
         .classed('crisp', true);
-    layer.selectAll('g.' + 'xbulletaxis' + 'tick,path,text').remove();
+    axisLayer.selectAll('g.' + 'xbulletaxis' + 'tick,path,text').remove();
 
     // Draw bullet
     var bulletHeight = size.h; // use all vertical domain
@@ -269,14 +269,14 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     if(ax.visible) {
         Axes.drawTicks(gd, ax, {
             vals: ax.ticks === 'inside' ? Axes.clipEnds(ax, vals) : vals,
-            layer: layer,
+            layer: axisLayer,
             path: Axes.makeTickPath(ax, shift, tickSign),
             transFn: transFn
         });
 
         Axes.drawLabels(gd, ax, {
             vals: vals,
-            layer: layer,
+            layer: axisLayer,
             transFn: transFn,
             labelFns: Axes.makeLabelFns(ax, shift)
         });
@@ -350,7 +350,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     var gaugeOutline = opts.gaugeOutline;
     var gaugePosition = [size.l + size.w / 2, size.t + size.h / 2 + radius / 2];
     var gauge = opts.gauge;
-    var layer = opts.layer;
+    var axisLayer = opts.layer;
 
     var transitionOpts = opts.transitionOpts;
     var onComplete = opts.onComplete;
@@ -389,10 +389,10 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     gauge.enter().append('g').classed('angular', true);
     gauge.attr('transform', strTranslate(gaugePosition[0], gaugePosition[1]));
 
-    layer.enter().append('g')
+    axisLayer.enter().append('g')
         .classed('angularaxis', true)
         .classed('crisp', true);
-    layer.selectAll('g.' + 'xangularaxis' + 'tick,path,text').remove();
+    axisLayer.selectAll('g.' + 'xangularaxis' + 'tick,path,text').remove();
 
     ax = mockAxis(gd, trace.gauge.axis);
     ax.type = 'linear';
@@ -449,13 +449,13 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
         var pad = (ax.linewidth || 1) / 2;
         Axes.drawTicks(gd, ax, {
             vals: vals,
-            layer: layer,
+            layer: axisLayer,
             path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
             transFn: transFn2
         });
         Axes.drawLabels(gd, ax, {
             vals: vals,
-            layer: layer,
+            layer: axisLayer,
             transFn: transFn,
             labelFns: labelFns
         });
