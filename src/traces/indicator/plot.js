@@ -34,6 +34,8 @@ var position = {
     'right': 1
 };
 
+var SI_PREFIX = /[yzafpnµmkMGTPEZY]/;
+
 module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var onComplete;
@@ -547,6 +549,25 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         .attr('dy', null);
     sel.exit().remove();
 
+    // Function to override the number formatting used during transitions
+    function transitionFormat(valueformat, fmt, from, to) {
+        // For now, do not display SI prefix if start and end value do not have any
+        if(valueformat.match('s') && // If using SI prefix
+            (from >= 0 !== to >= 0) && // If sign change
+            (!fmt(from).slice(-1).match(SI_PREFIX) && !fmt(to).slice(-1).match(SI_PREFIX)) // Has no SI prefix
+        ) {
+            var transitionValueFormat = valueformat.slice().replace('s', 'f').replace(/\d+/, function(m) { return parseInt(m) - 1;});
+            var transitionAx = mockAxis(gd, {tickformat: transitionValueFormat});
+            return function(v) {
+                // Switch to fixed precision if number is smaller than one
+                if(Math.abs(v) < 1) return Axes.tickText(transitionAx, v).text;
+                return fmt(v);
+            };
+        } else {
+            return fmt;
+        }
+    }
+
     function drawBignumber() {
         // bignumber
         var bignumberAx = mockAxis(gd, {tickformat: trace.number.valueformat});
@@ -558,23 +579,28 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         number
             .call(Drawing.font, trace.number.font);
 
+        function writeNumber() {
+            number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
+        }
         if(hasTransition) {
             number
                 .transition()
                 .duration(transitionOpts.duration)
                 .ease(transitionOpts.easing)
-                .each('end', function() { onComplete && onComplete(); })
-                .each('interrupt', function() { onComplete && onComplete(); })
+                .each('end', function() { writeNumber(); onComplete && onComplete(); })
+                .each('interrupt', function() { writeNumber(); onComplete && onComplete(); })
                 .attrTween('text', function() {
                     var that = d3.select(this);
                     var interpolator = d3.interpolateNumber(cd[0].lastY, cd[0].y);
                     trace._lastValue = cd[0].y;
+
+                    var transitionFmt = transitionFormat(trace.number.valueformat, fmt, cd[0].lastY, cd[0].y);
                     return function(t) {
-                        that.text(bignumberPrefix + fmt(interpolator(t)) + bignumberSuffix);
+                        that.text(bignumberPrefix + transitionFmt(interpolator(t)) + bignumberSuffix);
                     };
                 });
         } else {
-            number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
+            writeNumber();
         }
 
         bignumberbBox = measureText(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor);
@@ -589,9 +615,9 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             var value = trace.delta.relative ? d.relativeDelta : d.delta;
             return value;
         };
-        var deltaFormatText = function(value) {
+        var deltaFormatText = function(value, numberFmt) {
             if(value === 0) return '-';
-            return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + deltaFmt(value);
+            return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + numberFmt(value);
         };
         var deltaFill = function(d) {
             return d.delta >= 0 ? trace.delta.increasing.color : trace.delta.decreasing.color;
@@ -604,6 +630,11 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             .call(Drawing.font, trace.delta.font)
             .call(Color.fill, deltaFill({delta: trace._deltaLastValue}));
 
+        function writeDelta() {
+            delta.text(function() { return deltaFormatText(deltaValue(cd[0]), deltaFmt);})
+                .call(Color.fill, deltaFill(cd[0]));
+        }
+
         if(hasTransition) {
             delta
                 .transition()
@@ -613,23 +644,21 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                     var that = d3.select(this);
                     var to = deltaValue(cd[0]);
                     var from = trace._deltaLastValue;
+                    var transitionFmt = transitionFormat(trace.delta.valueformat, deltaFmt, from, to);
                     var interpolator = d3.interpolateNumber(from, to);
                     trace._deltaLastValue = to;
                     return function(t) {
-                        that.text(deltaFormatText(interpolator(t)));
+                        that.text(deltaFormatText(interpolator(t), transitionFmt));
                         that.call(Color.fill, deltaFill({delta: interpolator(t)}));
                     };
                 })
-                .each('end', function() { onComplete && onComplete(); })
-                .each('interrupt', function() { onComplete && onComplete(); });
+                .each('end', function() { writeDelta(); onComplete && onComplete(); })
+                .each('interrupt', function() { writeDelta(); onComplete && onComplete(); });
         } else {
-            delta.text(function() {
-                return deltaFormatText(deltaValue(cd[0]));
-            })
-            .call(Color.fill, deltaFill(cd[0]));
+            writeDelta();
         }
 
-        deltabBox = measureText(deltaFormatText(deltaValue(cd[0])), trace.delta.font, numbersAnchor);
+        deltabBox = measureText(deltaFormatText(deltaValue(cd[0]), deltaFmt), trace.delta.font, numbersAnchor);
         return delta;
     }
 
