@@ -48,10 +48,16 @@ var attrs = module.exports = overrideAll({
         dflt: constants.styleValueDflt,
         role: 'style',
         description: [
-            'Sets the Mapbox map style.',
-            'Either input one of the default Mapbox style names or the URL to a custom style',
-            'or a valid Mapbox style JSON.',
-            'From OpenStreetMap raster tiles, use *open-street-map*.'
+            'Sets the Mapbox base map style.',
+            'Base map styles are rendered below all traces and layout layers.',
+            'Either input one of the default Mapbox style names:', constants.styleValuesMapbox, '.',
+            'Note that to use these, a Mapbox access token must be set either in the `accesstoken` attribute',
+            'or in the `mapboxAccessToken` config option.',
+            'From OpenStreetMap raster tiles, use:', constants.styleValueOSM, '.',
+            'No access token is required to render the', constants.styleValueOSM, 'style.',
+            'One can also set `style` as a URL to a Mapbox custom style, e.g. created in Mapbox Studio.',
+            'Finally, one can set `style` as a Mapbox style JSON, see',
+            'https://docs.mapbox.com/mapbox-gl-js/style-spec for more info.'
         ].join(' ')
     },
 
