@@ -9,6 +9,6 @@
 'use strict';
 
 module.exports = {
-    FORMAT_LINK: 'https://github.com/d3/d3-format/blob/master/README.md#locale_format',
-    DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format/blob/master/README.md#locale_format'
+    FORMAT_LINK: 'https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format',
+    DATE_FORMAT_LINK: 'https://github.com/d3/d3-3.x-api-reference/blob/master/Time-Formatting.md#format'
 };
