@@ -14,6 +14,8 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+
 var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
 
@@ -58,7 +60,7 @@ var attrs = module.exports = overrideAll({
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
 
@@ -138,7 +140,7 @@ var attrs = module.exports = overrideAll({
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
 
