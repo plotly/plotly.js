@@ -39,7 +39,10 @@ var attrs = module.exports = overrideAll({
         description: [
             'Sets the mapbox access token to be used for this mapbox map.',
             'Alternatively, the mapbox access token can be set in the',
-            'configuration options under `mapboxAccessToken`.'
+            'configuration options under `mapboxAccessToken`.',
+            'Note that accessToken are only required when `style`',
+            '(e.g with values :', constants.styleValuesMapbox.join(', '), ')',
+            'and/or a layout layer references the Mapbox server.'
         ].join(' ')
     },
     style: {
@@ -48,12 +51,13 @@ var attrs = module.exports = overrideAll({
         dflt: constants.styleValueDflt,
         role: 'style',
         description: [
-            'Sets the Mapbox base map style.',
+            'Sets the base map style.',
             'Base map styles are rendered below all traces and layout layers.',
-            'Either input one of the default Mapbox style names:', constants.styleValuesMapbox, '.',
+            'Base map styles can include multiple layers.',
+            'Either input one of the default Mapbox style names: ', constants.styleValuesMapbox.join(', '), '.',
             'Note that to use these, a Mapbox access token must be set either in the `accesstoken` attribute',
             'or in the `mapboxAccessToken` config option.',
-            'From OpenStreetMap raster tiles, use:', constants.styleValueOSM, '.',
+            'For OpenStreetMap raster tiles, use: ', constants.styleValueOSM, '.',
             'No access token is required to render the', constants.styleValueOSM, 'style.',
             'One can also set `style` as a URL to a Mapbox custom style, e.g. created in Mapbox Studio.',
             'Finally, one can set `style` as a Mapbox style JSON, see',
@@ -123,7 +127,7 @@ var attrs = module.exports = overrideAll({
                 'Sets the source data for this layer (mapbox.layer.source).',
                 'Source can be either a URL,',
                 'a geojson object (with `sourcetype` set to *geojson*)',
-                'or an array of tile URLS (with `sourcetype` set to *vector*).'
+                'or an array of URLs (with `sourcetype` set to *vector* or *raster*).'
             ].join(' ')
         },
 
@@ -144,9 +148,11 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: [
                 'Sets the layer type (mapbox.layer.type).',
-                'Support for *raster*, *background* types is coming soon.',
-                'Note that *line* and *fill* are not compatible with Point',
-                'GeoJSON geometries.'
+                'With `sourcetype` set to *geojson*, *circle*, *line*, *fill* and *symbol* are available',
+                'but note that *line* and *fill* are not compatible with Point',
+                'GeoJSON geometries.',
+                'With `sourcetype` set to *vector*, *circle*, *line*, *fill* and *symbol* are available.',
+                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is available.'
             ].join(' ')
         },
 
