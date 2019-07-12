@@ -176,9 +176,10 @@ var configAttributes = {
         valType: 'number',
         dflt: 300,
         min: 0,
-        max: 1000,
         description: [
-            'Sets the delay for registering a doubleclick in ms'
+            'Sets the delay for registering a double-click in ms.',
+            'This is the time interval (in ms) between first mousedown and',
+            '2nd mouseup to constitute a double-click.'
         ].join(' ')
     },
 
