@@ -108,7 +108,7 @@
     "regl-splom": "^1.0.7",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
-    "sane-topojson": "^3.0.1",
+    "sane-topojson": "^4.0.0",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
     "svg-path-sdf": "^1.1.3",
