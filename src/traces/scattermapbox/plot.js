@@ -10,6 +10,7 @@
 
 var convert = require('./convert');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
+var ORDER = ['fill', 'line', 'circle', 'symbol'];
 
 function ScatterMapbox(subplot, uid) {
     this.subplot = subplot;
@@ -29,11 +30,13 @@ function ScatterMapbox(subplot, uid) {
         symbol: LAYER_PREFIX + uid + '-symbol'
     };
 
-    this.order = ['fill', 'line', 'circle', 'symbol'];
-
     // We could merge the 'fill' source with the 'line' source and
     // the 'circle' source with the 'symbol' source if ever having
     // for up-to 4 sources per 'scattermapbox' traces becomes a problem.
+
+    // previous 'below' value,
+    // need this to update it properly
+    this.below = null;
 }
 
 var proto = ScatterMapbox.prototype;
@@ -51,23 +54,42 @@ proto.setSourceData = function(k, opts) {
         .setData(opts.geojson);
 };
 
-proto.addLayer = function(k, opts) {
-    this.subplot.map.addLayer({
+proto.addLayer = function(k, opts, below) {
+    var subplot = this.subplot;
+
+    subplot.map.addLayer({
         type: k,
         id: this.layerIds[k],
         source: this.sourceIds[k],
         layout: opts.layout,
         paint: opts.paint
-    });
+    }, below);
 };
 
 proto.update = function update(calcTrace) {
     var subplot = this.subplot;
+    var map = subplot.map;
     var optsAll = convert(calcTrace);
+    var below = subplot.belowLookup['trace-' + this.uid];
+    var i, k, opts;
 
-    for(var i = 0; i < this.order.length; i++) {
-        var k = this.order[i];
-        var opts = optsAll[k];
+    if(below !== this.below) {
+        // console.log('update below', [below, this.below])
+        for(i = ORDER.length - 1; i >= 0; i--) {
+            k = ORDER[i];
+            map.removeLayer(this.layerIds[k]);
+        }
+        for(i = 0; i < ORDER.length; i++) {
+            k = ORDER[i];
+            opts = optsAll[k];
+            this.addLayer(k, opts, below);
+        }
+        this.below = below;
+    }
+
+    for(i = 0; i < ORDER.length; i++) {
+        k = ORDER[i];
+        opts = optsAll[k];
 
         subplot.setOptions(this.layerIds[k], 'setLayoutProperty', opts.layout);
 
@@ -84,8 +106,8 @@ proto.update = function update(calcTrace) {
 proto.dispose = function dispose() {
     var map = this.subplot.map;
 
-    for(var i = 0; i < this.order.length; i++) {
-        var k = this.order[i];
+    for(var i = ORDER.length - 1; i >= 0; i--) {
+        var k = ORDER[i];
         map.removeLayer(this.layerIds[k]);
         map.removeSource(this.sourceIds[k]);
     }
@@ -95,13 +117,13 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var scatterMapbox = new ScatterMapbox(subplot, trace.uid);
     var optsAll = convert(calcTrace);
+    var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
 
-    for(var i = 0; i < scatterMapbox.order.length; i++) {
-        var k = scatterMapbox.order[i];
+    for(var i = 0; i < ORDER.length; i++) {
+        var k = ORDER[i];
         var opts = optsAll[k];
-
         scatterMapbox.addSource(k, opts);
-        scatterMapbox.addLayer(k, opts);
+        scatterMapbox.addLayer(k, opts, below);
     }
 
     // link ref for quick update during selections

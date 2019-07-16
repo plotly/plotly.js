@@ -32,14 +32,16 @@ proto.update = function(calcTrace) {
     var subplot = this.subplot;
     var layerList = this.layerList;
     var optsAll = convert(calcTrace);
+    var below = subplot.belowLookup['trace-' + this.uid];
 
     subplot.map
         .getSource(this.sourceId)
         .setData(optsAll.geojson);
 
-    if(optsAll.below !== this.below) {
+    if(below !== this.below) {
         this._removeLayers();
-        this._addLayers(optsAll);
+        this._addLayers(optsAll, below);
+        this.below = below;
     }
 
     for(var i = 0; i < layerList.length; i++) {
@@ -56,11 +58,10 @@ proto.update = function(calcTrace) {
     }
 };
 
-proto._addLayers = function(optsAll) {
+proto._addLayers = function(optsAll, below) {
     var subplot = this.subplot;
     var layerList = this.layerList;
     var sourceId = this.sourceId;
-    var below = this.getBelow(optsAll);
 
     for(var i = 0; i < layerList.length; i++) {
         var item = layerList[i];
@@ -75,8 +76,6 @@ proto._addLayers = function(optsAll) {
             paint: opts.paint
         }, below);
     }
-
-    this.below = below;
 };
 
 proto._removeLayers = function() {
@@ -94,39 +93,19 @@ proto.dispose = function() {
     map.removeSource(this.sourceId);
 };
 
-proto.getBelow = function(optsAll) {
-    if(optsAll.below !== undefined) {
-        return optsAll.below;
-    }
-
-    var mapLayers = this.subplot.map.getStyle().layers;
-    var out = '';
-
-    // find first layer with `type: 'symbol'`
-    for(var i = 0; i < mapLayers.length; i++) {
-        var layer = mapLayers[i];
-        if(layer.type === 'symbol') {
-            out = layer.id;
-            break;
-        }
-    }
-
-    return out;
-};
-
 module.exports = function createDensityMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var densityMapbox = new DensityMapbox(subplot, trace.uid);
     var sourceId = densityMapbox.sourceId;
-
     var optsAll = convert(calcTrace);
+    var below = densityMapbox.below = subplot.belowLookup['trace-' + trace.uid];
 
     subplot.map.addSource(sourceId, {
         type: 'geojson',
         data: optsAll.geojson
     });
 
-    densityMapbox._addLayers(optsAll);
+    densityMapbox._addLayers(optsAll, below);
 
     return densityMapbox;
 };

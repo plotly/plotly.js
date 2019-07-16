@@ -17,6 +17,7 @@ function MapboxLayer(subplot, index) {
     this.map = subplot.map;
 
     this.uid = subplot.uid + '-' + index;
+    this.index = index;
 
     this.idSource = 'source-' + this.uid;
     this.idLayer = constants.layoutLayerPrefix + this.uid;
@@ -66,7 +67,7 @@ proto.needsNewSource = function(opts) {
 proto.needsNewLayer = function(opts) {
     return (
         this.layerType !== opts.type ||
-        this.below !== opts.below
+        this.below !== this.subplot.belowLookup['layout-' + this.index]
     );
 };
 
@@ -89,8 +90,27 @@ proto.updateLayer = function(opts) {
     var map = this.map;
     var convertedOpts = convertOpts(opts);
 
+    var below = this.subplot.belowLookup['layout-' + this.index];
+    var _below;
+
+    if(below === 'traces') {
+        var mapLayers = this.subplot.getMapLayers();
+
+        // find id of first plotly trace layer
+        for(var i = 0; i < mapLayers.length; i++) {
+            var layerId = mapLayers[i].id;
+            if(typeof layerId === 'string' &&
+                layerId.indexOf(constants.traceLayerPrefix) === 0
+            ) {
+                _below = layerId;
+                break;
+            }
+        }
+    } else {
+        _below = below;
+    }
+
     this.removeLayer();
-    this.layerType = opts.type;
 
     if(isVisible(opts)) {
         map.addLayer({
@@ -102,8 +122,11 @@ proto.updateLayer = function(opts) {
             maxzoom: opts.maxzoom,
             layout: convertedOpts.layout,
             paint: convertedOpts.paint
-        }, opts.below);
+        }, _below);
     }
+
+    this.layerType = opts.type;
+    this.below = below;
 };
 
 proto.updateStyle = function(opts) {

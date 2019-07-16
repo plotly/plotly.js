@@ -42,14 +42,16 @@ proto.updateOnSelect = function(calcTrace) {
 proto._update = function(optsAll) {
     var subplot = this.subplot;
     var layerList = this.layerList;
+    var below = subplot.belowLookup['trace-' + this.uid];
 
     subplot.map
         .getSource(this.sourceId)
         .setData(optsAll.geojson);
 
-    if(optsAll.below !== this.below) {
+    if(below !== this.below) {
         this._removeLayers();
-        this._addLayers(optsAll);
+        this._addLayers(optsAll, below);
+        this.below = below;
     }
 
     for(var i = 0; i < layerList.length; i++) {
@@ -66,11 +68,10 @@ proto._update = function(optsAll) {
     }
 };
 
-proto._addLayers = function(optsAll) {
+proto._addLayers = function(optsAll, below) {
     var subplot = this.subplot;
     var layerList = this.layerList;
     var sourceId = this.sourceId;
-    var below = this.getBelow(optsAll);
 
     for(var i = 0; i < layerList.length; i++) {
         var item = layerList[i];
@@ -85,8 +86,6 @@ proto._addLayers = function(optsAll) {
             paint: opts.paint
         }, below);
     }
-
-    this.below = below;
 };
 
 proto._removeLayers = function() {
@@ -104,47 +103,19 @@ proto.dispose = function() {
     map.removeSource(this.sourceId);
 };
 
-proto.getBelow = function(optsAll) {
-    if(optsAll.below !== undefined) {
-        return optsAll.below;
-    }
-
-    var mapLayers = this.subplot.map.getStyle().layers;
-    var out = '';
-
-    // find layer just above top-most "water" layer
-    for(var i = 0; i < mapLayers.length; i++) {
-        var layerId = mapLayers[i].id;
-
-        if(typeof layerId === 'string') {
-            var isWaterLayer = layerId.indexOf('water') === 0;
-
-            if(out && !isWaterLayer) {
-                out = layerId;
-                break;
-            }
-            if(isWaterLayer) {
-                out = layerId;
-            }
-        }
-    }
-
-    return out;
-};
-
 module.exports = function createChoroplethMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var choroplethMapbox = new ChoroplethMapbox(subplot, trace.uid);
     var sourceId = choroplethMapbox.sourceId;
-
     var optsAll = convert(calcTrace);
+    var below = choroplethMapbox.below = subplot.belowLookup['trace-' + trace.uid];
 
     subplot.map.addSource(sourceId, {
         type: 'geojson',
         data: optsAll.geojson
     });
 
-    choroplethMapbox._addLayers(optsAll);
+    choroplethMapbox._addLayers(optsAll, below);
 
     // link ref for quick update during selections
     calcTrace[0].trace._glTrace = choroplethMapbox;

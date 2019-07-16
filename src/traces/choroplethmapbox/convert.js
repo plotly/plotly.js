@@ -176,7 +176,6 @@ function convert(calcTrace) {
     line.layout.visibility = 'visible';
 
     opts.geojson = {type: 'FeatureCollection', features: featuresOut};
-    opts.below = trace.below;
 
     convertOnSelect(calcTrace);
 
