@@ -42,8 +42,6 @@ module.exports = {
         }]
     },
 
-    controlContainerClassName: 'mapboxgl-control-container',
-
     wrongVersionErrorMsg: [
         'Your custom plotly.js bundle is not using the correct mapbox-gl version',
         'Please install mapbox-gl@' + requiredVersion + '.'
