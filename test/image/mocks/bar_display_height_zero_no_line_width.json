@@ -2,11 +2,6 @@
     "data": [
         {
             "type": "bar",
-            "marker": {
-                "line": {
-                    "width": 0
-                }
-            },
             "x": [
                 "A",
                 "b",
@@ -15,17 +10,17 @@
                 "E"
             ],
             "y": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "text": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "textposition": "auto",
@@ -36,7 +31,7 @@
             "type": "bar",
             "marker": {
                 "line": {
-                    "width": ["1e1", "-5", "1e1", "0.0", "1e1"]
+                    "width": "1e1"
                 }
             },
             "x": [
@@ -49,14 +44,14 @@
             "y": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
             "text": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
@@ -66,11 +61,6 @@
         },
         {
             "type": "bar",
-            "marker": {
-                "line": {
-                    "width": 0
-                }
-            },
             "x": [
                 "A",
                 "b",
@@ -79,17 +69,17 @@
                 "E"
             ],
             "y": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "text": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "textposition": "auto",
@@ -102,7 +92,7 @@
             "type": "bar",
             "marker": {
                 "line": {
-                    "width": ["1e1", "-5", "1e1", "0.0", "1e1"]
+                    "width": "1e1"
                 }
             },
             "x": [
@@ -115,14 +105,14 @@
             "y": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
             "text": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
@@ -134,11 +124,6 @@
         },
         {
             "type": "bar",
-            "marker": {
-                "line": {
-                    "width": 0
-                }
-            },
             "orientation": "h",
             "y": [
                 "A",
@@ -148,17 +133,17 @@
                 "E"
             ],
             "x": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "text": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "textposition": "auto",
@@ -171,7 +156,7 @@
             "type": "bar",
             "marker": {
                 "line": {
-                    "width": ["1e1", "-5", "1e1", "0.0", "1e1"]
+                    "width": "1e1"
                 }
             },
             "orientation": "h",
@@ -185,14 +170,14 @@
             "x": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
             "text": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
@@ -204,11 +189,6 @@
         },
         {
             "type": "bar",
-            "marker": {
-                "line": {
-                    "width": 0
-                }
-            },
             "orientation": "h",
             "y": [
                 "A",
@@ -218,17 +198,17 @@
                 "E"
             ],
             "x": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "text": [
-                0,
-                0,
                 null,
-                null,
+                0.25,
+                0.5,
+                0.75,
                 1
             ],
             "textposition": "auto",
@@ -241,7 +221,7 @@
             "type": "bar",
             "marker": {
                 "line": {
-                    "width": ["1e1", "-5", "1e1", "0.0", "1e1"]
+                    "width": "1e1"
                 }
             },
             "orientation": "h",
@@ -255,14 +235,14 @@
             "x": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
             "text": [
                 0,
                 0,
-                null,
+                0.5,
                 null,
                 1
             ],
@@ -278,6 +258,7 @@
         "width": 800,
         "height": 800,
         "dragmode": "pan",
+        "barmode": "relative",
         "xaxis": {
             "zeroline": false,
             "domain": [

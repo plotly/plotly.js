@@ -111,12 +111,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
                 !isNumeric(y1)
             );
             // display zeros if line.width > 0
-            if(isBlank && shouldDisplayZeros) {
-                if(isHorizontal ? x1 - x0 === 0 : y1 - y0 === 0) {
-                    if(di.mlw || trace.marker.line.width > 0) {
-                        isBlank = false;
-                    }
-                }
+            if(isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di) && (isHorizontal ? x1 - x0 === 0 : y1 - y0 === 0)) {
+                isBlank = false;
             }
             di.isBlank = isBlank;
 
@@ -141,8 +137,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
                     mc = cont.color;
                 }
             } else {
-                lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+                lw = helpers.getLineWidth(trace, di);
                 mc = di.mc || trace.marker.color;
             }
 

@@ -64,3 +64,12 @@ exports.getValue = function(arrayOrScalar, index) {
     else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
     return value;
 };
+
+exports.getLineWidth = function(trace, di) {
+    var w =
+        (0 < di.mlw) ? di.mlw :
+        (0 < trace.marker.line.width) ? trace.marker.line.width : // Note: we don't want to get true & return an array when trace.marker.line.width is an array containing zeros.
+        0;
+
+    return w;
+};

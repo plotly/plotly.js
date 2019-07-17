@@ -19,13 +19,13 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
     var marker = trace.marker;
     if(marker) {
-        mergeArray(marker.opacity, cd, 'mo');
+        mergeArray(marker.opacity, cd, 'mo', true);
         mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;
         if(markerLine) {
             mergeArray(markerLine.color, cd, 'mlc');
-            mergeArray(markerLine.width, cd, 'mlw');
+            mergeArray(markerLine.width, cd, 'mlw', true);
         }
     }
 };
