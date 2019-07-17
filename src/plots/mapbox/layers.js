@@ -11,11 +11,11 @@
 var Lib = require('../../lib');
 var convertTextOpts = require('./convert_text_opts');
 
-function MapboxLayer(mapbox, index) {
-    this.mapbox = mapbox;
-    this.map = mapbox.map;
+function MapboxLayer(subplot, index) {
+    this.subplot = subplot;
+    this.map = subplot.map;
 
-    this.uid = mapbox.uid + '-' + 'layer' + index;
+    this.uid = subplot.uid + '-' + 'layer' + index;
 
     this.idSource = this.uid + '-source';
     this.idLayer = this.uid + '-layer';
@@ -108,8 +108,8 @@ proto.updateLayer = function(opts) {
 proto.updateStyle = function(opts) {
     if(isVisible(opts)) {
         var convertedOpts = convertOpts(opts);
-        this.mapbox.setOptions(this.idLayer, 'setLayoutProperty', convertedOpts.layout);
-        this.mapbox.setOptions(this.idLayer, 'setPaintProperty', convertedOpts.paint);
+        this.subplot.setOptions(this.idLayer, 'setLayoutProperty', convertedOpts.layout);
+        this.subplot.setOptions(this.idLayer, 'setPaintProperty', convertedOpts.paint);
     }
 };
 
@@ -222,8 +222,8 @@ function convertSourceOpts(opts) {
     return sourceOpts;
 }
 
-module.exports = function createMapboxLayer(mapbox, index, opts) {
-    var mapboxLayer = new MapboxLayer(mapbox, index);
+module.exports = function createMapboxLayer(subplot, index, opts) {
+    var mapboxLayer = new MapboxLayer(subplot, index);
 
     mapboxLayer.update(opts);
 
