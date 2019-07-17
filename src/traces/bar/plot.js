@@ -69,7 +69,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
         var isWaterfall = (trace.type === 'waterfall');
         var isFunnel = (trace.type === 'funnel');
         var isBar = (trace.type === 'bar');
-        var shouldDisplayZeros = isBar || isFunnel;
+        var shouldDisplayZeros = (isBar || isFunnel);
 
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
@@ -102,12 +102,23 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
             var y0 = xy[1][0];
             var y1 = xy[1][1];
 
-            var isBlank = di.isBlank = !(
-                isNumeric(x0) && isNumeric(x1) &&
-                isNumeric(y0) && isNumeric(y1) &&
-                (x0 !== x1 || (shouldDisplayZeros && isHorizontal)) &&
-                (y0 !== y1 || (shouldDisplayZeros && !isHorizontal))
+            var isBlank = (
+                x0 === x1 ||
+                y0 === y1 ||
+                !isNumeric(x0) ||
+                !isNumeric(x1) ||
+                !isNumeric(y0) ||
+                !isNumeric(y1)
             );
+            // display zeros if line.width > 0
+            if(isBlank && shouldDisplayZeros) {
+                if(isHorizontal ? x1 - x0 === 0 : y1 - y0 === 0) {
+                    if(di.mlw || trace.marker.line.width > 0) {
+                        isBlank = false;
+                    }
+                }
+            }
+            di.isBlank = isBlank;
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel) {
