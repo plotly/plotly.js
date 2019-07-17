@@ -42,6 +42,9 @@ module.exports = {
         }]
     },
 
+    traceLayerPrefix: 'plotly-trace-layer-',
+    layoutLayerPrefix: 'plotly-layout-layer-',
+
     wrongVersionErrorMsg: [
         'Your custom plotly.js bundle is not using the correct mapbox-gl version',
         'Please install mapbox-gl@' + requiredVersion + '.'

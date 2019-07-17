@@ -9,15 +9,16 @@
 'use strict';
 
 var convert = require('./convert');
+var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function DensityMapbox(subplot, uid) {
     this.subplot = subplot;
     this.uid = uid;
 
-    this.sourceId = uid + '-source';
+    this.sourceId = 'source-' + uid;
 
     this.layerList = [
-        ['heatmap', uid + '-layer-heatmap']
+        ['heatmap', LAYER_PREFIX + uid + '-heatmap']
     ];
 
     // previous 'below' value,

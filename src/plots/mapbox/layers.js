@@ -10,15 +10,16 @@
 
 var Lib = require('../../lib');
 var convertTextOpts = require('./convert_text_opts');
+var constants = require('./constants');
 
 function MapboxLayer(subplot, index) {
     this.subplot = subplot;
     this.map = subplot.map;
 
-    this.uid = subplot.uid + '-' + 'layer' + index;
+    this.uid = subplot.uid + '-' + index;
 
-    this.idSource = this.uid + '-source';
-    this.idLayer = this.uid + '-layer';
+    this.idSource = 'source-' + this.uid;
+    this.idLayer = constants.layoutLayerPrefix + this.uid;
 
     // some state variable to check if a remove/add step is needed
     this.sourceType = null;

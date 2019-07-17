@@ -10,17 +10,18 @@
 
 var convert = require('./convert').convert;
 var convertOnSelect = require('./convert').convertOnSelect;
+var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function ChoroplethMapbox(subplot, uid) {
     this.subplot = subplot;
     this.uid = uid;
 
     // N.B. fill and line layers share same source
-    this.sourceId = uid + '-source';
+    this.sourceId = 'source-' + uid;
 
     this.layerList = [
-        ['fill', uid + '-layer-fill'],
-        ['line', uid + '-layer-line']
+        ['fill', LAYER_PREFIX + uid + '-fill'],
+        ['line', LAYER_PREFIX + uid + '-line']
     ];
 
     // previous 'below' value,

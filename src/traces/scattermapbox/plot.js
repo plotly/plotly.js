@@ -9,23 +9,24 @@
 'use strict';
 
 var convert = require('./convert');
+var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function ScatterMapbox(subplot, uid) {
     this.subplot = subplot;
     this.uid = uid;
 
     this.sourceIds = {
-        fill: uid + '-source-fill',
-        line: uid + '-source-line',
-        circle: uid + '-source-circle',
-        symbol: uid + '-source-symbol'
+        fill: 'source-' + uid + '-fill',
+        line: 'source-' + uid + '-line',
+        circle: 'source-' + uid + '-circle',
+        symbol: 'source-' + uid + '-symbol'
     };
 
     this.layerIds = {
-        fill: uid + '-layer-fill',
-        line: uid + '-layer-line',
-        circle: uid + '-layer-circle',
-        symbol: uid + '-layer-symbol'
+        fill: LAYER_PREFIX + uid + '-fill',
+        line: LAYER_PREFIX + uid + '-line',
+        circle: LAYER_PREFIX + uid + '-circle',
+        symbol: LAYER_PREFIX + uid + '-symbol'
     };
 
     this.order = ['fill', 'line', 'circle', 'symbol'];

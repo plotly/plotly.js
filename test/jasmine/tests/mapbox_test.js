@@ -1210,11 +1210,11 @@ describe('@noCI, mapbox plots', function() {
         var uid = subplot.uid;
 
         var traceSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf('-source-') !== -1;
+            return k.indexOf('source-') === 0;
         });
 
         var traceLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf('-layer-') !== -1;
+            return k.indexOf('plotly-trace-layer-') === 0;
         });
 
         var layoutSources = Object.keys(sources).filter(function(k) {
