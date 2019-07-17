@@ -78,7 +78,7 @@ proto._addLayers = function(optsAll, below) {
         var k = item[0];
         var opts = optsAll[k];
 
-        subplot.map.addLayer({
+        subplot.addLayer({
             type: k,
             id: item[1],
             source: sourceId,

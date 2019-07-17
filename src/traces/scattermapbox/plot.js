@@ -55,9 +55,7 @@ proto.setSourceData = function(k, opts) {
 };
 
 proto.addLayer = function(k, opts, below) {
-    var subplot = this.subplot;
-
-    subplot.map.addLayer({
+    this.subplot.addLayer({
         type: k,
         id: this.layerIds[k],
         source: this.sourceIds[k],

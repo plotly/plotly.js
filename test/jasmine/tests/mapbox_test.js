@@ -1521,6 +1521,80 @@ describe('@noCI test mapbox trace/layout *below* interactions', function() {
         .catch(failTest)
         .then(done);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+        spyOn(Lib, 'warn');
+
+        var notGonnaWork = 'not-gonna-work';
+        var arg = [
+            'Trying to add layer with *below* value',
+            notGonnaWork,
+            'referencing a layer that does not exist',
+            'or that does not yet exist.'
+        ].join(' ');
+
+        function _assertFallback(msg, exp) {
+            var allArgs = Lib.warn.calls.allArgs();
+
+            if(allArgs.length === exp.warnCnt) {
+                for(var i = 0; i < exp.warnCnt; i++) {
+                    expect(allArgs[i][0]).toBe(arg, 'Lib.warn call #' + i);
+                }
+            } else {
+                fail('Incorrect number of Lib.warn calls');
+            }
+            Lib.warn.calls.reset();
+
+            getLayerIds().slice(20, -1).forEach(function(id) {
+                expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35]
+        }, {
+            type: 'densitymapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            z: [1, 20, 5]
+        }, {
+            type: 'choroplethmapbox',
+            geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
+            locations: ['AL'],
+            z: [10]
+        }], {
+            mapbox: {
+                style: 'basic',
+                layers: [{
+                    sourcetype: 'vector',
+                    source: 'mapbox://mapbox.mapbox-terrain-v2',
+                    sourcelayer: 'contour',
+                    type: 'line'
+                }]
+            }
+        })
+        .then(function() {
+            expect(Lib.warn).toHaveBeenCalledTimes(0);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', notGonnaWork); })
+        .then(function() {
+            // 7 for 4 scattermapbox + 2 choroplethmapbox + 1 densitymapbox layer
+            _assertFallback('not-gonna-work for traces', {warnCnt: 7});
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'not-gonna-work'); })
+        .then(function() {
+            // same as last but + layout layer
+            _assertFallback('not-gonna-work for traces', {warnCnt: 8});
+        })
+        .then(function() { return Plotly.update(gd, {below: null}, {'mapbox.layers[0].below': null}); })
+        .then(function() {
+            expect(Lib.warn).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
 describe('@noCI Test mapbox GeoJSON fetching:', function() {

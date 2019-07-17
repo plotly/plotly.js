@@ -690,6 +690,36 @@ proto.getMapLayers = function() {
     return this.map.getStyle().layers;
 };
 
+// convenience wrapper that first check in 'below' references
+// a layer that exist and then add the layer to the map,
+proto.addLayer = function(opts, below) {
+    var map = this.map;
+
+    if(typeof below === 'string') {
+        if(below === '') {
+            map.addLayer(opts, below);
+            return;
+        }
+
+        var mapLayers = this.getMapLayers();
+        for(var i = 0; i < mapLayers.length; i++) {
+            if(below === mapLayers[i].id) {
+                map.addLayer(opts, below);
+                return;
+            }
+        }
+
+        Lib.warn([
+            'Trying to add layer with *below* value',
+            below,
+            'referencing a layer that does not exist',
+            'or that does not yet exist.'
+        ].join(' '));
+    }
+
+    map.addLayer(opts);
+};
+
 // convenience method to project a [lon, lat] array to pixel coords
 proto.project = function(v) {
     return this.map.project(new mapboxgl.LngLat(v[0], v[1]));

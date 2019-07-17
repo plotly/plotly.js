@@ -14,7 +14,6 @@ var constants = require('./constants');
 
 function MapboxLayer(subplot, index) {
     this.subplot = subplot;
-    this.map = subplot.map;
 
     this.uid = subplot.uid + '-' + index;
     this.index = index;
@@ -72,7 +71,7 @@ proto.needsNewLayer = function(opts) {
 };
 
 proto.updateSource = function(opts) {
-    var map = this.map;
+    var map = this.subplot.map;
 
     if(map.getSource(this.idSource)) map.removeSource(this.idSource);
 
@@ -87,14 +86,14 @@ proto.updateSource = function(opts) {
 };
 
 proto.updateLayer = function(opts) {
-    var map = this.map;
+    var subplot = this.subplot;
     var convertedOpts = convertOpts(opts);
 
     var below = this.subplot.belowLookup['layout-' + this.index];
     var _below;
 
     if(below === 'traces') {
-        var mapLayers = this.subplot.getMapLayers();
+        var mapLayers = subplot.getMapLayers();
 
         // find id of first plotly trace layer
         for(var i = 0; i < mapLayers.length; i++) {
@@ -113,7 +112,7 @@ proto.updateLayer = function(opts) {
     this.removeLayer();
 
     if(isVisible(opts)) {
-        map.addLayer({
+        subplot.addLayer({
             id: this.idLayer,
             source: this.idSource,
             'source-layer': opts.sourcelayer || '',
@@ -138,14 +137,14 @@ proto.updateStyle = function(opts) {
 };
 
 proto.removeLayer = function() {
-    var map = this.map;
+    var map = this.subplot.map;
     if(map.getLayer(this.idLayer)) {
         map.removeLayer(this.idLayer);
     }
 };
 
 proto.dispose = function() {
-    var map = this.map;
+    var map = this.subplot.map;
     map.removeLayer(this.idLayer);
     map.removeSource(this.idSource);
 };
