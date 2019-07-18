@@ -19,6 +19,9 @@ describe('dragElement', function() {
         this.gd._fullLayout = {
             _hoverlayer: d3.select(this.hoverlayer)
         };
+        this.gd._context = {
+            doubleClickDelay: 300
+        };
         this.element.innerHTML = 'drag element';
 
         this.gd.appendChild(this.element);
