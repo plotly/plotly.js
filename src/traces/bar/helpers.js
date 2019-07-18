@@ -10,6 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 exports.coerceString = function(attributeDefinition, value, defaultValue) {
     if(typeof value === 'string') {
@@ -68,7 +69,7 @@ exports.getValue = function(arrayOrScalar, index) {
 exports.getLineWidth = function(trace, di) {
     var w =
         (0 < di.mlw) ? di.mlw :
-        (0 < trace.marker.line.width) ? trace.marker.line.width : // Note: we don't want to get true & return an array when trace.marker.line.width is an array containing zeros.
+        !isArrayOrTypedArray(trace.marker.line.width) ? trace.marker.line.width :
         0;
 
     return w;
