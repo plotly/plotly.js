@@ -15,6 +15,7 @@ var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Mapbox = require('./mapbox');
 
@@ -170,21 +171,41 @@ exports.toSVG = function(gd) {
               'font-family': 'Arial',
               'color': 'rgba(0, 0, 0, 0.75)',
               'text-anchor': 'end',
-              'data-unformatted': attributions,
-              x: size.l + size.w * domain.x[1] - 3,
-              y: size.t + size.h * (1 - domain.y[0]) - 4
+              'data-unformatted': attributions
           });
 
         var bBox = Drawing.bBox(attributionText.node());
+
+        // Break into multiple lines twice larger than domain
+        var maxWidth = size.w * (domain.x[1] - domain.x[0]);
+        if((bBox.width > maxWidth / 2)) {
+            var multilineAttributions = attributions.split('|').join('<br>');
+            attributionText
+              .text(multilineAttributions)
+              .attr('data-unformatted', multilineAttributions)
+              .call(svgTextUtils.convertToTspans, gd);
+
+            bBox = Drawing.bBox(attributionText.node());
+        }
+        attributionText.attr('transform', 'translate(-3, ' + (-bBox.height + 8) + ')');
+
+        // Draw white rectangle behind text
         attributionGroup
           .insert('rect', '.static-attribution')
           .attr({
-              x: size.l + size.w * domain.x[1] - bBox.width - 6,
-              y: size.t + size.h * (1 - domain.y[0]) - (bBox.height + 3),
+              x: -bBox.width - 6,
+              y: -bBox.height - 3,
               width: bBox.width + 6,
               height: bBox.height + 3,
               fill: 'rgba(255, 255, 255, 0.75)'
           });
+
+        // Scale down if larger than domain
+        var scaleRatio = 1;
+        if((bBox.width + 6) > maxWidth) scaleRatio = maxWidth / (bBox.width + 6);
+
+        var offset = [(size.l + size.w * domain.x[1]), (size.t + size.h * (1 - domain.y[0]))];
+        attributionGroup.attr('transform', 'translate(' + offset[0] + ',' + offset[1] + ') scale(' + scaleRatio + ')');
     }
 };
 
