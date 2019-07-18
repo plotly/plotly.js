@@ -431,6 +431,47 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
+    it('should no try to transition a trace which is not *animatable:true* yet', function(done) {
+        addSpies();
+
+        var trace = {
+            type: 'bar',
+            y: [1],
+            marker: {line: {width: 1}}
+        };
+
+        var data = [trace];
+        var layout = {transition: {duration: 10}};
+
+        // sanity check that this test actually tests what was intended
+        var Bar = Registry.modules.bar._module;
+        if(Bar.animatable || Bar.attributes.marker.line.width.anim !== true) {
+            fail('Test no longer tests its indented code path:' +
+                ' This test is meant to test that Plotly.react with' +
+                ' *anim:true* attributes in *animatable:false* modules' +
+                ' does not trigger Plots.transitionFromReact calls.'
+            );
+        }
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertSpies('first draw', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .then(function() {
+            trace.marker.line.width = 5;
+            return Plotly.react(gd, data, layout);
+        })
+        .then(function() {
+            assertSpies('after (transition) react call', [
+                [Plots, 'transitionFromReact', 0]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should not try to transition when the *config* has changed', function(done) {
         addSpies();
 

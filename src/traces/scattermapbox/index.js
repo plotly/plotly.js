@@ -18,7 +18,7 @@ module.exports = {
     eventData: require('./event_data'),
     selectPoints: require('./select'),
 
-    style: function(_, cd) {
+    styleOnSelect: function(_, cd) {
         if(cd) {
             var trace = cd[0].trace;
             trace._glTrace.update(cd);

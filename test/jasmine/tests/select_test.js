@@ -652,16 +652,25 @@ describe('Click-to-select', function() {
               });
           });
 
-        // The gl and mapbox traces: use @gl and @noCI tag
         [
             testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []]),
-            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        [
+            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('choroplethmapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ]
+          .forEach(function(testCase) {
+              it('@noCI @gl trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });
@@ -746,9 +755,11 @@ describe('Click-to-select', function() {
         // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
         [
             testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('mapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ].forEach(function(testCase) {
-            it('@noCI for base plot ' + testCase.label, function(done) {
+            it('@noCI @gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
             });
         });
@@ -1934,7 +1945,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
-    it('@noCI should work on scattermapbox traces', function(done) {
+    it('@noCI @gl should work on scattermapbox traces', function(done) {
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('mapbox');
         var assertLassoPoints = makeAssertLassoPoints('mapbox');
@@ -1985,6 +1996,54 @@ describe('Test select box and lasso per trace:', function() {
         .then(function() {
             return _run(
                 [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapbox pan'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@noCI @gl should work on choroplethmapbox traces', function(done) {
+        var assertPoints = makeAssertPoints(['location', 'z']);
+        var assertRanges = makeAssertRanges('mapbox');
+        var assertLassoPoints = makeAssertLassoPoints('mapbox');
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth0.json'));
+
+        fig.data[0].locations.push(null);
+
+        fig.layout.dragmode = 'select';
+        fig.config = {
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        };
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig).then(function() {
+            return _run(
+                [[150, 150], [300, 300]],
+                function() {
+                    assertPoints([['NY', 10]]);
+                    assertRanges([[-83.29, 46.13], [-73.97, 39.29]]);
+                    assertSelectedPoints({0: [0]});
+                },
+                null, BOXEVENTS, 'choroplethmapbox select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(
+                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                function() {
+                    assertPoints([['MA', 20]]);
+                    assertSelectedPoints({0: [1]});
+                    assertLassoPoints([
+                        [-73.97, 43.936], [-73.97, 39.293], [-67.756, 39.293],
+                        [-67.756, 43.936], [-73.971, 43.936]
+                    ]);
+                },
+                null, LASSOEVENTS, 'choroplethmapbox lasso'
             );
         })
         .catch(failTest)
@@ -2743,7 +2802,7 @@ describe('Test select box and lasso per trace:', function() {
                             [tv, bv, bv, tv, tv]
                         ]);
                         expect(countUnSelectedPaths('.cartesianlayer .trace path')).toBe(2);
-                        expect(countUnSelectedPaths('.rangeslider-rangeplot .trace path')).toBe(0);
+                        expect(countUnSelectedPaths('.rangeslider-rangeplot .trace path')).toBe(2);
                     },
                     null, LASSOEVENTS, type + ' lasso'
                 );
@@ -3058,6 +3117,101 @@ describe('Test that selections persist:', function() {
                 selected: [undefined, 1, undefined, undefined, undefined],
                 style: [0.2, 1, 0.2, 0.2, 0.2],
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test that selection styles propagate to range-slider plot:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function makeAssertFn(query) {
+        return function(msg, expected) {
+            var gd3 = d3.select(gd);
+            var mainPlot3 = gd3.select('.cartesianlayer');
+            var rangePlot3 = gd3.select('.rangeslider-rangeplot');
+
+            mainPlot3.selectAll(query).each(function(_, i) {
+                expect(this.style.opacity).toBe(String(expected[i]), msg + ' opacity for mainPlot pt ' + i);
+            });
+            rangePlot3.selectAll(query).each(function(_, i) {
+                expect(this.style.opacity).toBe(String(expected[i]), msg + ' opacity for rangePlot pt ' + i);
+            });
+        };
+    }
+
+    it('- svg points case', function(done) {
+        var _assert = makeAssertFn('path.point,.point>path');
+
+        Plotly.plot(gd, [
+            { mode: 'markers', x: [1], y: [1] },
+            { type: 'bar', x: [2], y: [2], },
+            { type: 'histogram', x: [3, 3, 3] },
+            { type: 'box', x: [4], y: [4], boxpoints: 'all' },
+            { type: 'violin', x: [5], y: [5], points: 'all' },
+            { type: 'waterfall', x: [6], y: [6]},
+            { type: 'funnel', x: [7], y: [7], orientation: 'v'}
+        ], {
+            dragmode: 'select',
+            xaxis: { rangeslider: {visible: true} },
+            width: 500,
+            height: 500,
+            margin: {l: 10, t: 10, r: 10, b: 10},
+            showlegend: false
+        })
+        .then(function() {
+            _assert('base', [1, 1, 1, 1, 1, 1, 1]);
+        })
+        .then(function() {
+            resetEvents(gd);
+            drag([[20, 20], [40, 40]]);
+            return selectedPromise;
+        })
+        .then(function() {
+            _assert('after empty selection', [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]);
+        })
+        .then(function() { return doubleClick(200, 200); })
+        .then(function() {
+            _assert('after double-click reset', [1, 1, 1, 1, 1, 1, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('- svg finance case', function(done) {
+        var _assert = makeAssertFn('path.box,.ohlc>path');
+
+        Plotly.plot(gd, [
+            { type: 'ohlc', x: [6], open: [6], high: [6], low: [6], close: [6] },
+            { type: 'candlestick', x: [7], open: [7], high: [7], low: [7], close: [7] },
+        ], {
+            dragmode: 'select',
+            width: 500,
+            height: 500,
+            margin: {l: 10, t: 10, r: 10, b: 10},
+            showlegend: false
+        })
+        .then(function() {
+            _assert('base', [1, 1]);
+        })
+        .then(function() {
+            resetEvents(gd);
+            drag([[20, 20], [40, 40]]);
+            return selectedPromise;
+        })
+        .then(function() {
+            _assert('after empty selection', [0.3, 0.3]);
+        })
+        .then(function() { return doubleClick(200, 200); })
+        .then(function() {
+            _assert('after double-click reset', [1, 1]);
         })
         .catch(failTest)
         .then(done);

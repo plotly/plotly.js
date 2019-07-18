@@ -6,8 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
+
+var d3 = require('d3');
 
 /**
  * General helper to manage trace groups based on calcdata
@@ -30,6 +31,11 @@ module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
         .attr('class', cls);
 
     traces.order();
+
+    // stash ref node to trace group in calcdata,
+    // useful for (fast) styleOnSelect
+    var k = traceLayer.classed('rangeplot') ? 'nodeRangePlot3' : 'node3';
+    traces.each(function(cd) { cd[0][k] = d3.select(this); });
 
     return traces;
 };

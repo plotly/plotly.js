@@ -611,7 +611,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     }
 
-    it('should generate hover label info (base case)', function() {
+    it('@gl should generate hover label info (base case)', function() {
         var xval = 11;
         var yval = 11;
 
@@ -625,7 +625,7 @@ describe('@noCI scattermapbox hover', function() {
         expect(out.color).toEqual('#1f77b4');
     });
 
-    it('should generate hover label info (lon > 180 case)', function() {
+    it('@gl should generate hover label info (lon > 180 case)', function() {
         var xval = 301;
         var yval = 11;
         var out = hoverPoints(getPointData(gd), xval, yval)[0];
@@ -638,7 +638,7 @@ describe('@noCI scattermapbox hover', function() {
         expect(out.color).toEqual('#1f77b4');
     });
 
-    it('should skip over blank and non-string text items', function(done) {
+    it('@gl should skip over blank and non-string text items', function(done) {
         var xval = 11;
         var yval = 11;
         var out;
@@ -668,7 +668,7 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 
-    it('should generate hover label info (positive winding case)', function() {
+    it('@gl should generate hover label info (positive winding case)', function() {
         var xval = 11 + 720;
         var yval = 11;
 
@@ -682,7 +682,7 @@ describe('@noCI scattermapbox hover', function() {
         expect(out.color).toEqual('#1f77b4');
     });
 
-    it('should generate hover label info (negative winding case)', function() {
+    it('@gl should generate hover label info (negative winding case)', function() {
         var xval = 11 - 1080;
         var yval = 11;
 
@@ -696,7 +696,7 @@ describe('@noCI scattermapbox hover', function() {
         expect(out.color).toEqual('#1f77b4');
     });
 
-    it('should generate hover label info (hoverinfo: \'lon\' case)', function(done) {
+    it('@gl should generate hover label info (hoverinfo: \'lon\' case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lon').then(function() {
             var xval = 11;
             var yval = 11;
@@ -708,7 +708,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
+    it('@gl should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lat').then(function() {
             var xval = 11;
             var yval = 11;
@@ -720,7 +720,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
+    it('@gl should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'text').then(function() {
             var xval = 11;
             var yval = 11;
@@ -732,7 +732,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
+    it('@gl should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
             var xval = 11;
             var yval = 11;
@@ -744,7 +744,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should generate hover label (\'marker.color\' array case)', function(done) {
+    it('@gl should generate hover label (\'marker.color\' array case)', function(done) {
         Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]).then(function() {
             var out = hoverPoints(getPointData(gd), 11, 11)[0];
 
@@ -753,7 +753,7 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 
-    it('should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
+    it('@gl should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
         Plotly.restyle(gd, 'marker.color', [[10, 5, 30]]).then(function() {
             var out = hoverPoints(getPointData(gd), 11, 11)[0];
 
@@ -762,7 +762,7 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 
-    it('should generate hover label (\'hoverinfo\' array case)', function(done) {
+    it('@gl should generate hover label (\'hoverinfo\' array case)', function(done) {
         function check(expected) {
             var out = hoverPoints(getPointData(gd), 11, 11)[0];
             expect(out.extraText).toEqual(expected);
@@ -787,7 +787,7 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 
-    it('should pass along hovertemplate', function(done) {
+    it('@gl should pass along hovertemplate', function(done) {
         Plotly.restyle(gd, 'hovertemplate', 'tpl').then(function() {
             var xval = 11;
             var yval = 11;
@@ -799,7 +799,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should always display hoverlabel when hovertemplate is defined', function(done) {
+    it('@gl should always display hoverlabel when hovertemplate is defined', function(done) {
         Plotly.restyle(gd, {
             name: '',
             hovertemplate: 'tpl2<extra></extra>'
@@ -845,12 +845,12 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             });
         });
 
-        it('should not be trigged when not on data points', function() {
+        it('@gl should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(undefined);
         });
 
-        it('should contain the correct fields', function() {
+        it('@gl should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
 
             var pt = futureData.points[0];
@@ -889,12 +889,12 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             });
         });
 
-        it('should not be trigged when not on data points', function() {
+        it('@gl should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
             expect(futureData).toBe(undefined);
         });
 
-        it('does not register right-clicks', function() {
+        it('@gl does not register right-clicks', function() {
             click(pointPos[0], pointPos[1], clickOpts);
             expect(futureData).toBe(undefined);
 
@@ -933,7 +933,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             });
         });
 
-        it('should contain the correct fields', function() {
+        it('@gl should contain the correct fields', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
@@ -965,7 +965,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             });
         });
 
-        it('should contain the correct fields', function(done) {
+        it('@gl should contain the correct fields', function(done) {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
                 var pt = futureData.points[0];
                 var evt = futureData.event;

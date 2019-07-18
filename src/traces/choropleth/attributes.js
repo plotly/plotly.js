@@ -12,6 +12,7 @@ var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes')
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var plotAttrs = require('../../plots/attributes');
+var defaultLine = require('../../components/color/attributes').defaultLine;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -40,7 +41,7 @@ module.exports = extendFlat({
     }),
     marker: {
         line: {
-            color: scatterGeoMarkerLineAttrs.color,
+            color: extendFlat({}, scatterGeoMarkerLineAttrs.color, {dflt: defaultLine}),
             width: extendFlat({}, scatterGeoMarkerLineAttrs.width, {dflt: 1}),
             editType: 'calc'
         },

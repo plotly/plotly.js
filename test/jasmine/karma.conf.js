@@ -10,8 +10,10 @@ var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
         'info',
-        'nowatch', 'failFast', 'verbose', 'randomize',
-        'Chrome', 'Firefox', 'IE11'
+        'nowatch', 'randomize',
+        'failFast', 'doNotFailOnEmptyTestSuite',
+        'Chrome', 'Firefox', 'IE11',
+        'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
     ],
     alias: {
         'Chrome': 'chrome',
@@ -19,16 +21,18 @@ var argv = minimist(process.argv.slice(4), {
         'IE11': ['ie11'],
         'bundleTest': ['bundletest', 'bundle_test'],
         'nowatch': 'no-watch',
-        'failFast': 'fail-fast'
+        'failFast': 'fail-fast',
     },
     'default': {
         info: false,
         nowatch: isCI,
-        failFast: false,
-        verbose: false,
         randomize: false,
+        failFast: false,
+        doNotFailOnEmptyTestSuite: false,
         width: '1035',
-        height: '617'
+        height: '617',
+        verbose: false,
+        showSkipped: isCI
     }
 });
 
@@ -63,13 +67,17 @@ if(argv.info) {
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
-        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
-        '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
-        '  - `--showSkipped` (dflt: `false`): show tests that are skipped',
         '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
+        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
+        '  - `--doNotFailOnEmptyTestSuite` (dflt: `false`): do not fail run when no spec are ran (either from bundle error OR tag filtering)',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
         '  - `--height` (dflt: 617): set height of the browser window',
+        '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
+        '  - `--showSkipped` show tests that are skipped',
+        '  - `--report-progress`: use *progress* reporter',
+        '  - `--report-spec`: use *spec* reporter',
+        '  - `--report-dots`: use *dots* reporter',
         '',
         'For info on the karma CLI options run `npm run test-jasmine -- --help`'
     ].join('\n'));
@@ -119,7 +127,26 @@ var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
 
-var reporters = ((isFullSuite && !argv.tags) || argv.showSkipped) ? ['dots', 'spec'] : ['progress'];
+var reporters = [];
+if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
+    if(argv['report-progress']) reporters.push('progress');
+    if(argv['report-spec']) reporters.push('spec');
+    if(argv['report-dots']) reporters.push('dots');
+} else {
+    if(isCI) {
+        reporters.push('spec');
+    } else {
+        if(isFullSuite) {
+            reporters.push('dots');
+        } else {
+            reporters.push('progress');
+        }
+    }
+}
+
+var hasSpecReporter = reporters.indexOf('spec') !== -1;
+
+if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
 if(argv.verbose) reporters.push('verbose');
 
 function func(config) {
@@ -259,14 +286,18 @@ func.defaultConfig = {
         }
     },
 
-    // use 'karma-spec-reporter' to log info about skipped specs
     specReporter: {
-        suppressErrorSummary: true,
-        suppressFailed: true,
-        suppressPassed: true,
-        suppressSkipped: false,
-        showSpecTiming: false
-    }
+        suppressErrorSummary: false,
+        suppressFailed: !hasSpecReporter,
+        suppressPassed: !hasSpecReporter,
+        // use 'karma-spec-reporter' to log info about skipped specs
+        suppressSkipped: !argv.showSkipped,
+        showSpecTiming: true
+    },
+
+    // set to `true` e.g. for mapbox suites where:
+    //   --tags=gl --skip-tags=noCI result in empty test run
+    failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];

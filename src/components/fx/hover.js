@@ -897,7 +897,7 @@ function createHoverText(hoverData, opts, gd) {
         if(d.zLabel !== undefined) {
             if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
             if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-            if(d.trace.type !== 'choropleth') {
+            if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
                 text += (text ? 'z: ' : '') + d.zLabel;
             }
         } else if(showCommonLabel && d[hovermode + 'Label'] === t0) {

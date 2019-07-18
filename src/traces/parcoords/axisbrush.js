@@ -419,7 +419,7 @@ function getBrushExtent(brush) {
 
 function brushClear(brush) {
     brush.filterSpecified = false;
-    brush.svgBrush.extent = [[0, 1]];
+    brush.svgBrush.extent = [[-Infinity, Infinity]];
 }
 
 function axisBrushMoved(callback) {
@@ -458,6 +458,14 @@ function makeFilter() {
             filter = a
                 .map(function(d) { return d.slice().sort(sortAsc); })
                 .sort(startAsc);
+
+            // handle unselected case
+            if(filter.length === 1 &&
+                filter[0][0] === -Infinity &&
+                filter[0][1] === Infinity) {
+                filter = [[0, -1]];
+            }
+
             consolidated = dedupeRealRanges(filter);
             bounds = filter.reduce(function(p, n) {
                 return [Math.min(p[0], n[0]), Math.max(p[1], n[1])];

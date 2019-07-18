@@ -4,6 +4,7 @@ var d3 = require('d3');
 var Plots = require('@src/plots/plots');
 var Parcoords = require('@src/traces/parcoords');
 var attributes = require('@src/traces/parcoords/attributes');
+var PC = require('@src/traces/parcoords/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
@@ -13,6 +14,8 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var readPixel = require('../assets/read_pixel');
+
+var mock3 = require('@mocks/gl2d_parcoords_style_labels.json');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
 var mock2 = require('@mocks/gl2d_parcoords_2.json');
@@ -162,7 +165,7 @@ describe('parcoords initialization tests', function() {
             expect(fullTrace.dimensions).toEqual([jasmine.objectContaining({
                 values: [1],
                 visible: true,
-                tickformat: '3s',
+                tickformat: '',
                 multiselect: true,
                 _index: 0,
                 _length: 1
@@ -319,7 +322,7 @@ describe('parcoords initialization tests', function() {
                 color: '#444'
             });
         });
-
+/* TODO: write a new test for typed arrays
         it('\'dimensions.values\' and \'line.color\' should convert typed arrays to normal arrays', function() {
             var fullTrace = _calc(Lib.extendDeep({}, base, {
                 dimensions: [{
@@ -343,6 +346,7 @@ describe('parcoords initialization tests', function() {
             expect(Array.isArray(fullTrace.dimensions[1].values) === true).toEqual(true);
             expect(Array.isArray(fullTrace.dimensions[2].values) === true).toEqual(true);
         });
+        */
     });
 });
 
@@ -1156,6 +1160,128 @@ describe('parcoords basic use', function() {
     });
 });
 
+describe('parcoords react more attributes', function() {
+    var gd;
+
+    beforeEach(function(done) {
+        var hasGD = !!gd;
+        if(!hasGD) gd = createGraphDiv();
+
+        Plotly.react(gd, mock3)
+        .catch(failTest)
+        .then(done);
+    });
+
+    afterAll(purgeGraphDiv);
+
+    it('@gl should change various axis parameters', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock3);
+        var m0 = mockCopy.data[0];
+        m0.labelangle = '-90';
+        m0.labelfont = { size: '24', family: 'Times', color: 'orange' };
+        m0.rangefont = { size: '20', family: 'Times', color: 'brown' };
+        m0.tickfont = { size: '16', family: 'Times', color: 'yellow' };
+        m0.dimensions[0].label = 'Changed!';
+        m0.dimensions[1].range = ['-2', '2'];
+        m0.dimensions[2].constraintrange = [];
+        m0.dimensions[1].multiselect = false;
+        m0.dimensions[1].constraintrange = [
+          [-1.5, -0.5],
+          [0, 1.5] // won't be selected because multiselect is tuned off.
+        ];
+        m0.dimensions[0].constraintrange = [[2, 4], [7, 10], [11, 12]];
+        m0.dimensions[0].tickvals = ['1', '2', '3', '5', '8', '13'];
+        m0.dimensions[0].ticktext = ['1/1', '2/1', '3/2', '5/3', '8/5', '13/8'];
+        m0.domain = { x: [0, 0.5], y: [0, 0.5] };
+
+        Plotly.react(gd, mockCopy.data).then(function() {
+            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+
+            var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
+            expect(allLabels.size()).toBe(3);
+            allLabels.each(function(d) {
+                expect(d.model.labelAngle).toEqual(-90);
+                expect(d.model.labelFont.size).toEqual(24);
+                expect(d.model.labelFont.family).toEqual('Times');
+                expect(d.model.labelFont.color).toEqual('orange');
+            });
+            expect(allLabels[0][2].getAttribute('data-unformatted'), 'Changed!');
+
+            var allTopRanges = allParcoords.selectAll('.' + PC.cn.axisExtentTopText);
+            expect(allTopRanges.size()).toBe(3);
+            allTopRanges.each(function(d) {
+                expect(d.model.rangeFont.size).toEqual(20);
+                expect(d.model.rangeFont.family).toEqual('Times');
+                expect(d.model.rangeFont.color).toEqual('brown');
+            });
+
+            var allBottomRanges = allParcoords.selectAll('.' + PC.cn.axisExtentBottomText);
+            expect(allBottomRanges.size()).toBe(3);
+            allBottomRanges.each(function(d) {
+                expect(d.model.rangeFont.size).toEqual(20);
+                expect(d.model.rangeFont.family).toEqual('Times');
+                expect(d.model.rangeFont.color).toEqual('brown');
+            });
+
+            var allTicks = allParcoords.selectAll('.' + PC.cn.axis);
+            expect(allTicks.size()).toBe(3);
+            var allTickVals = [];
+            var allTickText = [];
+            allTicks.each(function(d) {
+                expect(d.model.tickFont.size).toEqual(16);
+                expect(d.model.tickFont.family).toEqual('Times');
+                expect(d.model.tickFont.color).toEqual('yellow');
+
+                allTickVals.push(d.tickvals);
+                allTickText.push(d.ticktext);
+            });
+            expect(allTickVals[2]).toBeCloseToArray([1, 2, 3, 5, 8, 13]);
+            expect(allTickText[2]).toBeCloseToArray(['1/1', '2/1', '3/2', '5/3', '8/5', '13/8']);
+
+            var allHighlights = allParcoords.selectAll('.' + PC.cn.axisBrush).selectAll('.highlight');
+            expect(allHighlights.size()).toBe(3);
+            var nHighlight = [];
+            allHighlights.each(function() {
+                var highlight = d3.select(this)[0][0];
+                nHighlight.push(
+                    highlight.getAttribute('stroke-dasharray').split(',').length
+                );
+            });
+            expect(nHighlight[2]).toBe(6);
+            expect(nHighlight[1]).toBe(2);
+            expect(nHighlight[0]).toBe(4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should change axis visibility', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock3);
+        var m0 = mockCopy.data[0];
+
+        m0.dimensions[1].visible = false;
+
+        Plotly.react(gd, mockCopy.data).then(function() {
+            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+
+            var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
+            expect(allLabels.size()).toBe(2);
+
+            m0.dimensions[1].visible = true;
+        })
+        .then(function() {
+            Plotly.react(gd, mockCopy.data).then(function() {
+                var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+
+                var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
+                expect(allLabels.size()).toBe(3);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('parcoords constraint interactions', function() {
     var gd, initialDashArray0, initialDashArray1;
 
@@ -1181,19 +1307,18 @@ describe('parcoords constraint interactions', function() {
         };
     }
 
-    var parcoordsConstants = require('@src/traces/parcoords/constants');
     var initialSnapDuration;
     var shortenedSnapDuration = 20;
     var snapDelay = 100;
     var noSnapDelay = 20;
     beforeAll(function() {
-        initialSnapDuration = parcoordsConstants.bar.snapDuration;
-        parcoordsConstants.bar.snapDuration = shortenedSnapDuration;
+        initialSnapDuration = PC.bar.snapDuration;
+        PC.bar.snapDuration = shortenedSnapDuration;
     });
 
     afterAll(function() {
         purgeGraphDiv();
-        parcoordsConstants.bar.snapDuration = initialSnapDuration;
+        PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function(done) {
@@ -1359,7 +1484,7 @@ describe('parcoords constraint interactions', function() {
         .then(done);
     });
 
-    it('@gl will only select one region when multiselect is disabled', function(done) {
+    it('@noCI @gl will only select one region when multiselect is disabled', function(done) {
         var newDashArray;
 
         Plotly.restyle(gd, {'dimensions[1].multiselect': false})

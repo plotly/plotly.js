@@ -18,7 +18,7 @@ module.exports = function selectButton(modeBar, name) {
 
     button.click = function() {
         var ev = new window.MouseEvent('click');
-        node.dispatchEvent(ev);
+        if(node) node.dispatchEvent(ev);
     };
 
     button.isActive = function() {

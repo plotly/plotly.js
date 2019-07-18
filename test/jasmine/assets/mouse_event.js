@@ -45,7 +45,7 @@ module.exports = function(type, x, y, opts) {
         ev = new window.MouseEvent(type, fullOpts);
     }
 
-    el.dispatchEvent(ev);
+    if(el) el.dispatchEvent(ev);
 
     return el;
 };

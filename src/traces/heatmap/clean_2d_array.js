@@ -25,11 +25,11 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
         for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
         if(rowlen === 0) return false;
         getCollen = function(zOld) { return zOld.length; };
-        old2new = function(zOld, i, j) { return zOld[j][i]; };
+        old2new = function(zOld, i, j) { return (zOld[j] || [])[i]; };
     } else {
         rowlen = zOld.length;
         getCollen = function(zOld, i) { return zOld[i].length; };
-        old2new = function(zOld, i, j) { return zOld[i][j]; };
+        old2new = function(zOld, i, j) { return (zOld[i] || [])[j]; };
     }
 
     var padOld2new = function(zOld, i, j) {
@@ -58,9 +58,9 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
     var xMap = axisMapping(xa);
     var yMap = axisMapping(ya);
 
+    if(ya && ya.type === 'category') rowlen = ya._categories.length;
     var zNew = new Array(rowlen);
 
-    if(ya && ya.type === 'category') rowlen = ya._categories.length;
     for(i = 0; i < rowlen; i++) {
         if(xa && xa.type === 'category') {
             collen = xa._categories.length;

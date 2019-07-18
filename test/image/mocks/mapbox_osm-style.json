@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "type": "scattermapbox",
+      "name": "on custom style pointing to OSM",
+      "lon": [ 10, 20 ],
+      "lat": [ 20, 10 ]
+    },
+    {
+      "type": "scattermapbox",
+      "name": "using style:open-street-map",
+      "lon": [ 10, 20 ],
+      "lat": [ 20, 10 ],
+      "subplot": "mapbox2"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 2, "columns": 1},
+
+    "legend": {
+      "x": 0,
+      "y": 1, "yanchor": "bottom"
+    },
+
+    "mapbox": {
+      "domain": {"row": 0, "column": 0},
+
+      "style": {
+        "id": "osm",
+        "version": 8,
+        "sources": {
+          "simple-tiles": {
+            "type": "raster",
+            "tiles": [
+              "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            ],
+            "tileSize": 256
+          }
+        },
+        "layers": [
+          {
+            "id": "simple-tiles",
+            "type": "raster",
+            "source": "simple-tiles",
+            "minzoom": 0,
+            "maxzoom": 22
+          }
+        ]
+      }
+    },
+    "mapbox2": {
+      "domain": {"row": 1, "column": 0},
+
+      "style": "open-street-map"
+    }
+  }
+}

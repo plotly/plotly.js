@@ -240,28 +240,56 @@ describe('Plots.computeAPICommandBindings', function() {
                 });
 
                 it('with an array value', function() {
-                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7], [1]]);
+                    var value = [7];
+                    var traces = [1];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', value, traces]);
                     expect(result).toEqual([{prop: 'marker.size', traces: [1], type: 'data', value: [7]}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
+                    expect(result[0].traces).not.toBe(traces, 'should not mutate traces array');
                 });
 
                 it('with two array values and two traces specified', function() {
-                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0, 1]]);
+                    var value = [7, 5];
+                    var traces = [0, 1];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', value, traces]);
                     expect(result).toEqual([{prop: 'marker.size', traces: [0, 1], type: 'data', value: [7, 5]}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
+                    expect(result[0].traces).not.toBe(traces, 'should not mutate traces array');
                 });
 
                 it('with traces specified in reverse order', function() {
-                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1, 0]]);
+                    var value = [7, 5];
+                    var traces = [1, 0];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', value, traces]);
                     expect(result).toEqual([{prop: 'marker.size', traces: [1, 0], type: 'data', value: [7, 5]}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
+                    expect(result[0].traces).not.toBe(traces, 'should not mutate traces array');
                 });
 
                 it('with two values and a single trace specified', function() {
-                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0]]);
+                    var value = [7, 5];
+                    var traces = [0];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', value, traces]);
                     expect(result).toEqual([{prop: 'marker.size', traces: [0], type: 'data', value: [7]}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
+                    expect(result[0].traces).not.toBe(traces, 'should not mutate traces array');
                 });
 
                 it('with two values and a different trace specified', function() {
-                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1]]);
+                    var value = [7, 5];
+                    var traces = [1];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', value, traces]);
                     expect(result).toEqual([{prop: 'marker.size', traces: [1], type: 'data', value: [7]}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
+                    expect(result[0].traces).not.toBe(traces, 'should not mutate traces array');
+                });
+
+                it('with two values and no trace specified', function() {
+                    gd.data.length = 0;
+                    var value = [false, true];
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['visible', value]);
+                    expect(result).toEqual([{prop: 'visible', traces: [], type: 'data', value: []}]);
+                    expect(result[0].value).not.toBe(value, 'should not mutate value array');
                 });
             });
         });
