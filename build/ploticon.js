@@ -121,6 +121,12 @@ module.exports = {
         'path': 'M512 409c0-57-46-104-103-104-57 0-104 47-104 104 0 57 47 103 104 103 57 0 103-46 103-103z m-327-39l92 0 0 92-92 0z m-185 0l92 0 0 92-92 0z m370-186l92 0 0 93-92 0z m0-184l92 0 0 92-92 0z',
         'transform': 'matrix(1.5 0 0 -1.5 0 850)'
     },
+    'pencil': {
+        'width': 1792,
+        'height': 1792,
+        'path': 'M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z',
+        'transform': 'matrix(1 0 0 1 0 1)'
+    },
     'newplotlylogo': {
         'name': 'newplotlylogo',
         'svg': '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'><defs><style>.cls-1 {fill: #119dff;} .cls-2 {fill: #25fefd;} .cls-3 {fill: #fff;}</style></defs><title>plotly-logomark</title><g id=\'symbol\'><rect class=\'cls-1\' width=\'132\' height=\'132\' rx=\'6\' ry=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'54\' r=\'6\'/><circle class=\'cls-2\' cx=\'102\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'54\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/><path class=\'cls-3\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/><path class=\'cls-3\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/><path class=\'cls-3\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/><path class=\'cls-3\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/></g></svg>'

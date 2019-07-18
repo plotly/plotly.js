@@ -16,13 +16,23 @@ module.exports = function pullFontSVG(data, pathOut) {
 
         fontObj.glyph.forEach(function(glyph) {
             var name = glyph.$['glyph-name'];
-            var transform = name === 'spikeline' ?
-                'matrix(1.5 0 0 -1.5 0 ' + ascent + ')' :
-                'matrix(1 0 0 -1 0 ' + ascent + ')';
+            var transform;
+
+            switch(name) {
+                case 'spikeline':
+                    transform = 'matrix(1.5 0 0 -1.5 0 ' + ascent + ')';
+                    break;
+                case 'pencil':
+                    transform = 'matrix(1 0 0 1 0 1)';
+                    break;
+                default:
+                    transform = 'matrix(1 0 0 -1 0 ' + ascent + ')';
+                    break;
+            }
 
             chars[name] = {
                 width: Number(glyph.$['horiz-adv-x']) || defaultWidth,
-                height: ascent - descent,
+                height: Number(glyph.$['vert-adv-y']) || ascent - descent,
                 path: glyph.$.d,
                 transform: transform,
             };
