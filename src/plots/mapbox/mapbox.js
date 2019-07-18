@@ -104,8 +104,14 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         preserveDrawingBuffer: self.isStatic,
 
         doubleClickZoom: false,
-        boxZoom: false
-    });
+        boxZoom: false,
+
+        attributionControl: false
+    })
+    .addControl(new mapboxgl.AttributionControl({
+        compact: true
+    }));
+
 
     // make sure canvas does not inherit left and top css
     map._canvas.style.left = '0px';

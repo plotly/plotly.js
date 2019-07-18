@@ -1201,6 +1201,103 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    describe('attributions', function() {
+        it('@gl should be displayed for style "open-street-map"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'open-street-map'}})
+            .then(function() {
+                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© OpenStreetMap');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl should be displayed for style from Mapbox', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'basic'}})
+            .then(function() {
+                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        function mockLayoutCustomStyle() {
+            return {
+                'mapbox': {
+                    'style': {
+                        'id': 'osm',
+                        'version': 8,
+                        'sources': {
+                            'simple-tiles': {
+                                'type': 'raster',
+                                'tiles': [
+                                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                                ],
+                                'tileSize': 256
+                            }
+                        },
+                        'layers': [
+                            {
+                                'id': 'simple-tiles',
+                                'type': 'raster',
+                                'source': 'simple-tiles',
+                                'minzoom': 0,
+                                'maxzoom': 22
+                            }
+                        ]
+                    }
+                }
+            };
+        }
+
+        it('@gl should not be displayed for custom style without attribution', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], mockLayoutCustomStyle())
+            .then(function() {
+                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl should be displayed for custom style with attribution', function(done) {
+            var attr = 'custom attribution';
+            var layout = mockLayoutCustomStyle();
+            layout.mapbox.style.sources['simple-tiles'].attribution = attr;
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], layout)
+            .then(function() {
+                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual(attr);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
+            var mock = require('@mocks/mapbox_layers.json');
+            var customMock = Lib.extendDeep(mock);
+
+            var attr = 'super custom attribution';
+            customMock.data.pop();
+            customMock.layout.mapbox.layers[0].sourceattribution = attr;
+
+            Plotly.newPlot(gd, customMock)
+            .then(function() {
+                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual([attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     function getMapInfo(gd) {
         var subplot = gd._fullLayout.mapbox._subplot;
         var map = subplot.map;

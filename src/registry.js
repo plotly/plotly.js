@@ -276,7 +276,7 @@ function registerTraceModule(_module) {
     if(bpmName === 'mapbox') {
         var styleRules = basePlotModule.constants.styleRules;
         for(var k in styleRules) {
-            addStyleRule('.mapboxgl-' + k, styleRules[k]);
+            addStyleRule('.js-plotly-plot .plotly .mapboxgl-' + k, styleRules[k]);
         }
     }
 
