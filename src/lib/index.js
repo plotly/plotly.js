@@ -470,20 +470,6 @@ lib.mergeArray = function(traceAttr, cd, cdAttr, fn) {
     }
 };
 
-// cast numbers to numbers and if not return 0
-lib.mergeArrayCastIfNumber = function(traceAttr, cd, cdAttr) {
-    return lib.mergeArray(traceAttr, cd, cdAttr, function(v) {
-        return isNumeric(v) ? +v : v;
-    });
-};
-
-// cast numbers to numbers, NaN to NaN, null to 0
-lib.mergeArrayCastNumber = function(traceAttr, cd, cdAttr) {
-    return lib.mergeArray(traceAttr, cd, cdAttr, function(v) {
-        return +v;
-    });
-};
-
 // cast numbers to positive numbers, returns 0 if not greater than 0
 lib.mergeArrayCastPositive = function(traceAttr, cd, cdAttr) {
     return lib.mergeArray(traceAttr, cd, cdAttr, function(v) {
