@@ -20,27 +20,136 @@ module.exports = {
     styleValueOSM: 'open-street-map',
     styleValueDflt: 'basic',
 
-    styleOSM: {
-        id: 'osm',
-        version: 8,
-        sources: {
-            'plotly-osm-tiles': {
+    styles: {
+        'open-street-map': {
+            id: 'osm',
+            version: 8,
+            sources: {
+                'plotly-osm-tiles': {
+                    type: 'raster',
+                    attribution: '<a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
+                    tiles: [
+                        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    ],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-osm-tiles',
                 type: 'raster',
-                attribution: '<a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
-                tiles: [
-                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                ],
-                tileSize: 256
-            }
+                source: 'plotly-osm-tiles',
+                minzoom: 0,
+                maxzoom: 22
+            }]
         },
-        layers: [{
-            id: 'plotly-osm-tiles',
-            type: 'raster',
-            source: 'plotly-osm-tiles',
-            minzoom: 0,
-            maxzoom: 22
-        }]
+        'white-bg': {
+            id: 'white-bg',
+            version: 8,
+            sources: {},
+            layers: [{
+                id: 'white-bg',
+                type: 'background',
+                paint: {'background-color': '#FFFFFF'},
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        },
+        cartodb: {
+            id: 'cartodb-positron',
+            version: 8,
+            sources: {
+                'plotly-cartodb-positron': {
+                    type: 'raster',
+                    attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                    tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-cartodb-positron',
+                type: 'raster',
+                source: 'plotly-cartodb-positron',
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        },
+        'cartodb-dark': {
+            id: 'cartodb-dark',
+            version: 8,
+            sources: {
+                'plotly-cartodb-dark': {
+                    type: 'raster',
+                    attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                    tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-cartodb-dark',
+                type: 'raster',
+                source: 'plotly-cartodb-dark',
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        },
+        'stamen-terrain': {
+            id: 'stamen-terrain',
+            version: 8,
+            sources: {
+                'plotly-stamen-terrain': {
+                    type: 'raster',
+                    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                    tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-stamen-terrain',
+                type: 'raster',
+                source: 'plotly-stamen-terrain',
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        },
+        'stamen-toner': {
+            id: 'stamen-toner',
+            version: 8,
+            sources: {
+                'plotly-stamen-toner': {
+                    type: 'raster',
+                    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                    tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-stamen-toner',
+                type: 'raster',
+                source: 'plotly-stamen-toner',
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        },
+        'stamen-watercolor': {
+            id: 'stamen-watercolor',
+            version: 8,
+            sources: {
+                'plotly-stamen-watercolor': {
+                    type: 'raster',
+                    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+                    tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
+                    tileSize: 256
+                }
+            },
+            layers: [{
+                id: 'plotly-stamen-watercolor',
+                type: 'raster',
+                source: 'plotly-stamen-watercolor',
+                minzoom: 0,
+                maxzoom: 22
+            }]
+        }
     },
 
     controlContainerClassName: 'mapboxgl-control-container',

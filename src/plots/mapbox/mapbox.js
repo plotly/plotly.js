@@ -647,8 +647,8 @@ function getStyleObj(val) {
 
         if(constants.styleValuesMapbox.indexOf(val) !== -1) {
             styleObj.style = convertStyleVal(val);
-        } else if(val === constants.styleValueOSM) {
-            styleObj.style = constants.styleOSM;
+        } else if(constants.styles[val]) {
+            styleObj.style = constants.styles[val];
         } else {
             styleObj.style = val;
         }
