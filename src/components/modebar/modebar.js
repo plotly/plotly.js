@@ -13,7 +13,7 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var Icons = require('../../../build/ploticon');
+var Icons = require('../../fonts/ploticon');
 var Parser = new DOMParser();
 
 /**
