@@ -89,6 +89,15 @@ modeBarButtons.sendDataToCloud = {
     }
 };
 
+modeBarButtons.editInChartStudio = {
+    name: 'editInChartStudio',
+    title: function(gd) { return _(gd, 'Edit in Chart Studio'); },
+    icon: Icons.pencil,
+    click: function(gd) {
+        Plots.sendDataToCloud(gd);
+    }
+};
+
 modeBarButtons.zoom2d = {
     name: 'zoom2d',
     title: function(gd) { return _(gd, 'Zoom'); },

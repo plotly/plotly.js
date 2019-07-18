@@ -52,6 +52,7 @@ describe('ModeBar', function() {
             _context: {
                 displaylogo: true,
                 showSendToCloud: false,
+                showEditInChartStudio: false,
                 displayModeBar: true,
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
@@ -804,7 +805,7 @@ describe('ModeBar', function() {
             expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
-        it('displays/hides cloud link according to showSendToCloud config arg', function() {
+        it('displays/hides cloud link according to showSendToCloud and/or showEditInChartStudio config arg', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'pie' }];
             gd._fullData = [{type: 'pie'}];
@@ -815,9 +816,26 @@ describe('ModeBar', function() {
             ]), 1);
 
             gd._context.showSendToCloud = true;
+            gd._context.showEditInChartStudio = false;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
                 ['toImage', 'sendDataToCloud'],
+                ['hoverClosestPie']
+            ]), 1);
+
+            gd._context.showSendToCloud = false;
+            gd._context.showEditInChartStudio = true;
+            manageModeBar(gd);
+            checkButtons(gd._fullLayout._modeBar, getButtons([
+                ['toImage', 'editInChartStudio'],
+                ['hoverClosestPie']
+            ]), 1);
+
+            gd._context.showSendToCloud = true;
+            gd._context.showEditInChartStudio = true;
+            manageModeBar(gd);
+            checkButtons(gd._fullLayout._modeBar, getButtons([
+                ['toImage', 'editInChartStudio'],
                 ['hoverClosestPie']
             ]), 1);
         });
