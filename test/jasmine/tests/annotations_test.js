@@ -1547,7 +1547,9 @@ describe('annotation effects', function() {
 
                 setTimeout(function() {
                     var input = d3.select('.plugin-editable.editable');
-                    input.node().dispatchEvent(new KeyboardEvent('blur'));
+                    if(input.node()) {
+                        input.node().dispatchEvent(new KeyboardEvent('blur'));
+                    }
                 }, DBLCLICKDELAY * 1.1);
             });
         }

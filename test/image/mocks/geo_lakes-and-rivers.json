@@ -1,0 +1,264 @@
+{
+  "data": [
+    {
+      "type": "scattergeo",
+      "geo": "geo"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo2"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo3"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo4"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo5"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo6"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo7"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo8"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo9"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo10"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo11"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo12"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo13"
+    },
+    {
+      "type": "scattergeo",
+      "geo": "geo14"
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 7,
+      "columns": 2
+    },
+    "width": 600,
+    "height": 1500,
+    "geo": {
+      "scope": "world",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 0
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo2": {
+      "scope": "usa",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 1
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo3": {
+      "scope": "europe",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 2
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo4": {
+      "scope": "asia",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 3
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo5": {
+      "scope": "africa",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 4
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo6": {
+      "scope": "north america",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 5
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo7": {
+      "scope": "south america",
+      "resolution": 110,
+      "domain": {
+        "column": 0,
+        "row": 6
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo8": {
+      "scope": "world",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 0
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo9": {
+      "scope": "usa",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 1
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo10": {
+      "scope": "europe",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 2
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo11": {
+      "scope": "asia",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 3
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo12": {
+      "scope": "africa",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 4
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo13": {
+      "scope": "north america",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 5
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    },
+    "geo14": {
+      "scope": "south america",
+      "resolution": 50,
+      "domain": {
+        "column": 1,
+        "row": 6
+      },
+      "landcolor": "brown",
+      "showland": true,
+      "lakecolor": "blue",
+      "showlakes": true,
+      "rivercolor": "blue",
+      "showrivers": true
+    }
+  }
+}

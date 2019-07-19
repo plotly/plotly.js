@@ -69,7 +69,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
         var isWaterfall = (trace.type === 'waterfall');
         var isFunnel = (trace.type === 'funnel');
         var isBar = (trace.type === 'bar');
-        var shouldDisplayZeros = isBar || isFunnel;
+        var shouldDisplayZeros = (isBar || isFunnel);
 
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
@@ -77,8 +77,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
         }
 
         var isHorizontal = (trace.orientation === 'h');
-
-        if(!plotinfo.isRangePlot) cd[0].node3 = plotGroup;
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
@@ -104,12 +102,19 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
             var y0 = xy[1][0];
             var y1 = xy[1][1];
 
-            var isBlank = di.isBlank = !(
-                isNumeric(x0) && isNumeric(x1) &&
-                isNumeric(y0) && isNumeric(y1) &&
-                (x0 !== x1 || (shouldDisplayZeros && isHorizontal)) &&
-                (y0 !== y1 || (shouldDisplayZeros && !isHorizontal))
+            var isBlank = (
+                x0 === x1 ||
+                y0 === y1 ||
+                !isNumeric(x0) ||
+                !isNumeric(x1) ||
+                !isNumeric(y0) ||
+                !isNumeric(y1)
             );
+            // display zeros if line.width > 0
+            if(isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di) && (isHorizontal ? x1 - x0 === 0 : y1 - y0 === 0)) {
+                isBlank = false;
+            }
+            di.isBlank = isBlank;
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel) {
@@ -132,8 +137,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts) {
                     mc = cont.color;
                 }
             } else {
-                lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1;
+                lw = helpers.getLineWidth(trace, di);
                 mc = di.mc || trace.marker.color;
             }
 

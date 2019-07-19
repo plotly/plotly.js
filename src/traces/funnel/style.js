@@ -12,11 +12,12 @@ var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var styleTextPoints = require('../bar/style').styleTextPoints;
 
-function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.funnellayer').selectAll('g.trace');
+function style(gd, cd, sel) {
+    var s = sel ? sel : d3.select(gd).selectAll('g.funnellayer').selectAll('g.trace');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
 
@@ -32,7 +33,7 @@ function style(gd, cd) {
                     .call(Color.fill, di.mc || cont.color)
                     .call(Color.stroke, di.mlc || cont.line.color)
                     .call(Drawing.dashLine, cont.line.dash, di.mlw || cont.line.width)
-                    .style('opacity', trace.selectedpoints && !di.selected ? 0.3 : 1);
+                    .style('opacity', trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
             }
         });
 

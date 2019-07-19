@@ -143,6 +143,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('align', 'center');
         traceOut._isAngular = traceOut._isBullet = false;
     }
+
+    // disable 1D transforms
+    traceOut._length = null;
 }
 
 function stepDefaults(stepIn, stepOut) {

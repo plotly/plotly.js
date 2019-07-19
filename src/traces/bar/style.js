@@ -20,8 +20,8 @@ var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
-function style(gd, cd) {
-    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+function style(gd) {
+    var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
@@ -62,16 +62,14 @@ function styleTextPoints(sel, trace, gd) {
     });
 }
 
-function styleOnSelect(gd, cd) {
-    var s = cd[0].node3;
+function styleOnSelect(gd, cd, sel) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
-        stylePointsInSelectionMode(s, trace, gd);
+        stylePointsInSelectionMode(sel, trace, gd);
     } else {
-        stylePoints(s, trace, gd);
-
-        Registry.getComponentMethod('errorbars', 'style')(s);
+        stylePoints(sel, trace, gd);
+        Registry.getComponentMethod('errorbars', 'style')(sel);
     }
 }
 

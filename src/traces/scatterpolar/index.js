@@ -20,6 +20,7 @@ module.exports = {
     calc: require('./calc'),
     plot: require('./plot'),
     style: require('../scatter/style').style,
+    styleOnSelect: require('../scatter/style').styleOnSelect,
     hoverPoints: require('./hover').hoverPoints,
     selectPoints: require('../scatter/select'),
 

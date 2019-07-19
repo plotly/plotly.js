@@ -21,10 +21,15 @@
           "#7570b3"
         ]
       }
+    },
+    {
+      "type": "scattermapbox",
+      "subplot": "mapbox2"
     }
   ],
   "layout": {
     "mapbox": {
+      "domain": {"x": [0, 0.48], "y": [0, 1]},
       "style": "light",
       "center": {
         "lon": -73.59194521800514,
@@ -547,8 +552,33 @@
         }
       ]
     },
+
+    "mapbox2": {
+      "domain": {"x": [0.52, 1], "y": [0, 1]},
+      "style": "mapbox://styles/mapbox/light-v10",
+      "zoom": 4.5,
+      "center": {"lon": -74.5, "lat": 42},
+      "layers": [
+        {
+          "sourcetype": "raster",
+          "source": [
+            "https://img.nj.gov/imagerywms/Natural2015?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2015"
+          ],
+          "below": "aeroway-line"
+        },
+        {
+          "sourcetype": "image",
+          "coordinates": [
+            [-80.425, 46.437],
+            [-71.516, 46.437],
+            [-71.516, 37.936],
+            [-80.425, 37.936]
+          ],
+          "source": "https://docs.mapbox.com/mapbox-gl-js/assets/radar.gif"
+        }
+      ]
+    },
     "height": 450,
-    "width": 1100,
-    "autosize": true
+    "width": 900
   }
 }
