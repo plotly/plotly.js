@@ -39,15 +39,22 @@ describe('Indicator defaults', function() {
         });
     });
 
-    it('defaults to formatting numbers using SI prefix', function() {
-        var out = _supply({type: 'indicator', mode: 'number+delta', value: 1});
-        expect(out.number.valueformat).toBe('.3s');
-        expect(out.delta.valueformat).toBe('.3s');
+    it('defaults to blank formatting', function() {
+        var out = _supply({type: 'indicator', mode: 'number+delta+gauge', value: 1});
+        expect(out.number.valueformat).toBe('');
+        expect(out.delta.valueformat).toBe('');
+        expect(out.gauge.axis.tickformat).toBe('');
     });
 
     it('defaults to displaying relative changes in percentage', function() {
         var out = _supply({type: 'indicator', mode: 'delta', delta: {relative: true}, value: 1});
         expect(out.delta.valueformat).toBe('2%');
+    });
+
+    it('should not ignore empty valueformat', function() {
+        var out = _supply({type: 'indicator', mode: 'number+delta', number: {valueformat: ''}, delta: {valueformat: ''}, value: 1});
+        expect(out.delta.valueformat).toBe('');
+        expect(out.number.valueformat).toBe('');
     });
 
     it('defaults delta.reference to current value', function() {
@@ -292,7 +299,7 @@ describe('Indicator plot', function() {
                 delta: {reference: 200}
             }], {width: 400, height: 400})
             .then(function() {
-                assertContent(gd._fullData[0].delta.increasing.symbol + '20.0');
+                assertContent(gd._fullData[0].delta.increasing.symbol + '20');
                 return Plotly.restyle(gd, 'delta.relative', true);
             })
             .then(function() {
@@ -480,6 +487,39 @@ describe('Indicator plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should draw blank path when value is NaN', function(done) {
+        function getArcPath() {
+            return d3.selectAll('g.value-arc > path').attr('d');
+        }
+
+        function getBulletRect() {
+            return d3.selectAll('g.value-bullet > rect').attr('width');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'indicator',
+            mode: 'number+delta+gauge',
+            value: null
+        }])
+        .then(function() {
+            expect(getArcPath()).toBe('M0,0Z', 'blank path with value:null');
+        })
+        .then(function() { return Plotly.restyle(gd, 'value', 10); })
+        .then(function() {
+            expect(getArcPath()).not.toBe('M0,0Z', 'non blank path with value:10');
+        })
+        .then(function() { return Plotly.restyle(gd, 'gauge.shape', 'bullet'); })
+        .then(function() {
+            expect(getBulletRect()).toBe('270', 'bullet of value:10');
+        })
+        .then(function() { return Plotly.restyle(gd, 'value', null); })
+        .then(function() {
+            expect(getBulletRect()).toBe('0', 'width-less bullet of value:null');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Indicator animations', function() {
@@ -504,7 +544,7 @@ describe('Indicator animations', function() {
 
             Plotly.plot(gd, mock)
             .then(function() {
-                gd.data[0].value = '400';
+                gd.data[0].value = 400;
                 return Plotly.react(gd, gd.data, gd.layout);
             })
             .then(delay(300))
