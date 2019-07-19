@@ -103,7 +103,7 @@ module.exports = overrideAll({
         valType: 'string',
         role: 'info',
         description: [
-            'Determines if this scattermapbox trace\'s layers are inserted',
+            'Determines if this scattermapbox trace\'s layers are to be inserted',
             'before the layer with the specified ID.',
             'By default, scattermapbox layers are inserted',
             'above all the base layers.',

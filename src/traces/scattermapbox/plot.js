@@ -72,7 +72,6 @@ proto.update = function update(calcTrace) {
     var i, k, opts;
 
     if(below !== this.below) {
-        // console.log('update below', [below, this.below])
         for(i = ORDER.length - 1; i >= 0; i--) {
             k = ORDER[i];
             map.removeLayer(this.layerIds[k]);
