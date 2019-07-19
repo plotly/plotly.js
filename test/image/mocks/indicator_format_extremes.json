@@ -1,0 +1,271 @@
+{
+    "data": [
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "0.0008765432109"
+            },
+            "value": 0.0008765432109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0,
+                    0.3
+                ],
+                "y": [
+                    0,
+                    0.3
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "0.08765432109"
+            },
+            "value": 0.08765432109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0.35,
+                    0.65
+                ],
+                "y": [
+                    0,
+                    0.3
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "8.765432109"
+            },
+            "value": 8.765432109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0.7,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.3
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "876.5432109"
+            },
+            "value": 876.5432109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0,
+                    0.3
+                ],
+                "y": [
+                    0.35,
+                    0.65
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "87654.32109"
+            },
+            "value": 87654.32109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0.35,
+                    0.65
+                ],
+                "y": [
+                    0.35,
+                    0.65
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "8765432.109"
+            },
+            "value": 8765432.109,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0.7,
+                    1
+                ],
+                "y": [
+                    0.35,
+                    0.65
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "876543210.9"
+            },
+            "value": 876543210.9,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0,
+                    0.3
+                ],
+                "y": [
+                    0.7,
+                    1
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "87654321090000001"
+            },
+            "value": 87654321090000001,
+            "number": {
+                "valueformat": ""
+            },
+            "domain": {
+                "x": [
+                    0.35,
+                    0.65
+                ],
+                "y": [
+                    0.7,
+                    1
+                ]
+            }
+        },
+        {
+            "type": "indicator",
+            "mode": "number+delta+gauge",
+            "title": {
+                "text": "null"
+            },
+            "number": {
+                "valueformat": ""
+            },
+            "value": null,
+            "domain": {
+                "x": [
+                    0.7,
+                    1
+                ],
+                "y": [
+                    0.7,
+                    1
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "shapes": [
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0,
+                "x1": 0.3,
+                "y0": 0,
+                "y1": 0.3
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0,
+                "x1": 0.3,
+                "y0": 0.35,
+                "y1": 0.65
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0,
+                "x1": 0.3,
+                "y0": 0.7,
+                "y1": 1
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.35,
+                "x1": 0.65,
+                "y0": 0,
+                "y1": 0.3
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.35,
+                "x1": 0.65,
+                "y0": 0.35,
+                "y1": 0.65
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.35,
+                "x1": 0.65,
+                "y0": 0.7,
+                "y1": 1
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.7,
+                "x1": 1,
+                "y0": 0,
+                "y1": 0.3
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.7,
+                "x1": 1,
+                "y0": 0.35,
+                "y1": 0.65
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.7,
+                "x1": 1,
+                "y0": 0.7,
+                "y1": 1
+            }
+        ]
+    }
+}
