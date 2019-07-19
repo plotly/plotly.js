@@ -39,10 +39,11 @@ describe('Indicator defaults', function() {
         });
     });
 
-    it('defaults to formatting numbers using SI prefix', function() {
-        var out = _supply({type: 'indicator', mode: 'number+delta', value: 1});
-        expect(out.number.valueformat).toBe('.3s');
-        expect(out.delta.valueformat).toBe('.3s');
+    it('defaults to blank formatting', function() {
+        var out = _supply({type: 'indicator', mode: 'number+delta+gauge', value: 1});
+        expect(out.number.valueformat).toBe('');
+        expect(out.delta.valueformat).toBe('');
+        expect(out.gauge.axis.tickformat).toBe('');
     });
 
     it('defaults to displaying relative changes in percentage', function() {
@@ -50,10 +51,10 @@ describe('Indicator defaults', function() {
         expect(out.delta.valueformat).toBe('2%');
     });
 
-    it('ignores empty valueformat', function() {
+    it('should not ignore empty valueformat', function() {
         var out = _supply({type: 'indicator', mode: 'number+delta', number: {valueformat: ''}, delta: {valueformat: ''}, value: 1});
-        expect(out.delta.valueformat).toBe('.3s');
-        expect(out.number.valueformat).toBe('.3s');
+        expect(out.delta.valueformat).toBe('');
+        expect(out.number.valueformat).toBe('');
     });
 
     it('defaults delta.reference to current value', function() {
@@ -298,7 +299,7 @@ describe('Indicator plot', function() {
                 delta: {reference: 200}
             }], {width: 400, height: 400})
             .then(function() {
-                assertContent(gd._fullData[0].delta.increasing.symbol + '20.0');
+                assertContent(gd._fullData[0].delta.increasing.symbol + '20');
                 return Plotly.restyle(gd, 'delta.relative', true);
             })
             .then(function() {

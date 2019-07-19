@@ -162,7 +162,7 @@ module.exports = {
     number: {
         valueformat: {
             valType: 'string',
-            dflt: '.3s',
+            dflt: '',
             role: 'info',
             editType: 'plot',
             description: [

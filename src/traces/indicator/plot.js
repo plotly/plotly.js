@@ -256,7 +256,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     var bulletLeft = domain.x[0];
     var bulletRight = domain.x[0] + (domain.x[1] - domain.x[0]) * ((trace._hasNumber || trace._hasDelta) ? (1 - cn.bulletNumberDomainSize) : 1);
 
-    ax = mockAxis(gd, trace.gauge.axis, trace.gauge.axis.range);
+    ax = mockAxis(gd, trace.gauge.axis);
     ax._id = 'xbulletaxis';
     ax.domain = [bulletLeft, bulletRight];
     ax.setScale();
@@ -567,8 +567,10 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     }
 
     function drawBignumber() {
-        // bignumber
-        var bignumberAx = mockAxis(gd, {tickformat: trace.number.valueformat});
+        var bignumberAx = mockAxis(gd, {tickformat: trace.number.valueformat}, trace._range);
+        bignumberAx.setScale();
+        Axes.calcTicks(bignumberAx);
+
         var fmt = function(v) { return Axes.tickText(bignumberAx, v).text;};
         var bignumberSuffix = trace.number.suffix;
         var bignumberPrefix = trace.number.prefix;
@@ -607,8 +609,10 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     }
 
     function drawDelta() {
-        // delta
-        var deltaAx = mockAxis(gd, {tickformat: trace.delta.valueformat});
+        var deltaAx = mockAxis(gd, {tickformat: trace.delta.valueformat}, trace._range);
+        deltaAx.setScale();
+        Axes.calcTicks(deltaAx);
+
         var deltaFmt = function(v) { return Axes.tickText(deltaAx, v).text;};
         var deltaValue = function(d) {
             var value = trace.delta.relative ? d.relativeDelta : d.delta;
@@ -797,34 +801,12 @@ function arcTween(arc, endAngle, newAngle) {
 function mockAxis(gd, opts, zrange) {
     var fullLayout = gd._fullLayout;
 
-    var axisIn = {
-        visible: opts.visible,
+    var axisIn = Lib.extendFlat({
         type: 'linear',
         ticks: 'outside',
         range: zrange,
-        tickmode: opts.tickmode,
-        nticks: opts.nticks,
-        tick0: opts.tick0,
-        dtick: opts.dtick,
-        tickvals: opts.tickvals,
-        ticktext: opts.ticktext,
-        ticklen: opts.ticklen,
-        tickwidth: opts.tickwidth,
-        tickcolor: opts.tickcolor,
-        showticklabels: opts.showticklabels,
-        tickfont: opts.tickfont,
-        tickangle: opts.tickangle,
-        tickformat: opts.tickformat,
-        exponentformat: opts.exponentformat,
-        separatethousands: opts.separatethousands,
-        showexponent: opts.showexponent,
-        showtickprefix: opts.showtickprefix,
-        tickprefix: opts.tickprefix,
-        showticksuffix: opts.showticksuffix,
-        ticksuffix: opts.ticksuffix,
-        title: opts.title,
         showline: true
-    };
+    }, opts);
 
     var axisOut = {
         type: 'linear',
