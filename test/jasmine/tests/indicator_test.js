@@ -487,6 +487,39 @@ describe('Indicator plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should draw blank path when value is NaN', function(done) {
+        function getArcPath() {
+            return d3.selectAll('g.value-arc > path').attr('d');
+        }
+
+        function getBulletRect() {
+            return d3.selectAll('g.value-bullet > rect').attr('width');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'indicator',
+            mode: 'number+delta+gauge',
+            value: null
+        }])
+        .then(function() {
+            expect(getArcPath()).toBe('M0,0Z', 'blank path with value:null');
+        })
+        .then(function() { return Plotly.restyle(gd, 'value', 10); })
+        .then(function() {
+            expect(getArcPath()).not.toBe('M0,0Z', 'non blank path with value:10');
+        })
+        .then(function() { return Plotly.restyle(gd, 'gauge.shape', 'bullet'); })
+        .then(function() {
+            expect(getBulletRect()).toBe('270', 'bullet of value:10');
+        })
+        .then(function() { return Plotly.restyle(gd, 'value', null); })
+        .then(function() {
+            expect(getBulletRect()).toBe('0', 'width-less bullet of value:null');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Indicator animations', function() {

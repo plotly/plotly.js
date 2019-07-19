@@ -316,7 +316,9 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
             .attr('width', Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))));
     } else {
         fgBullet.select('rect')
-            .attr('width', Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))));
+            .attr('width', typeof cd[0].y === 'number' ?
+                Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))) :
+                0);
     }
     fgBullet.exit().remove();
 
@@ -483,8 +485,9 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
             .attrTween('d', arcTween(valueArcPathGenerator, valueToAngle(cd[0].lastY), valueToAngle(cd[0].y)));
         trace._lastValue = cd[0].y;
     } else {
-        valueArcPath
-            .attr('d', valueArcPathGenerator.endAngle(valueToAngle(cd[0].y)));
+        valueArcPath.attr('d', typeof cd[0].y === 'number' ?
+            valueArcPathGenerator.endAngle(valueToAngle(cd[0].y)) :
+            'M0,0Z');
     }
     valueArcPath.call(styleShape);
     valueArc.exit().remove();
