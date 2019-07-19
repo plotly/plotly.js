@@ -576,11 +576,14 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         var bignumberPrefix = trace.number.prefix;
 
         var number = numbers.select('text.number');
-        number
-            .call(Drawing.font, trace.number.font);
 
         function writeNumber() {
-            number.text(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix);
+            var txt = typeof cd[0].y === 'number' ?
+                bignumberPrefix + fmt(cd[0].y) + bignumberSuffix :
+                '-';
+            number.text(txt)
+                .call(Drawing.font, trace.number.font)
+                .call(svgTextUtils.convertToTspans, gd);
         }
 
         if(hasTransition(transitionOpts)) {
@@ -604,7 +607,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             writeNumber();
         }
 
-        bignumberbBox = measureText(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor);
+        bignumberbBox = measureText(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor, gd);
         return number;
     }
 
@@ -619,7 +622,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             return value;
         };
         var deltaFormatText = function(value, numberFmt) {
-            if(value === 0) return '-';
+            if(value === 0 || typeof value !== 'number' || isNaN(value)) return '-';
             return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + numberFmt(value);
         };
         var deltaFill = function(d) {
@@ -634,8 +637,9 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             .call(Color.fill, deltaFill({delta: trace._deltaLastValue}));
 
         function writeDelta() {
-            delta.text(function() { return deltaFormatText(deltaValue(cd[0]), deltaFmt);})
-                .call(Color.fill, deltaFill(cd[0]));
+            delta.text(deltaFormatText(deltaValue(cd[0]), deltaFmt))
+                .call(Color.fill, deltaFill(cd[0]))
+                .call(svgTextUtils.convertToTspans, gd);
         }
 
         if(hasTransition(transitionOpts)) {
@@ -661,7 +665,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             writeDelta();
         }
 
-        deltabBox = measureText(deltaFormatText(deltaValue(cd[0]), deltaFmt), trace.delta.font, numbersAnchor);
+        deltabBox = measureText(deltaFormatText(deltaValue(cd[0]), deltaFmt), trace.delta.font, numbersAnchor, gd);
         return delta;
     }
 
@@ -847,7 +851,7 @@ function fitTextInsideCircle(textBB, radius) {
     return [ratio, textBB, radius];
 }
 
-function measureText(txt, font, textAnchor) {
+function measureText(txt, font, textAnchor, gd) {
     var element = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     var sel = d3.select(element);
     sel.text(txt)
@@ -855,6 +859,7 @@ function measureText(txt, font, textAnchor) {
       .attr('y', 0)
       .attr('text-anchor', textAnchor)
       .attr('data-unformatted', txt)
+      .call(svgTextUtils.convertToTspans, gd)
       .call(Drawing.font, font);
     return Drawing.bBox(sel.node());
 }

@@ -32,8 +32,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     traceOut._hasDelta = traceOut.mode.indexOf('delta') !== -1;
     traceOut._hasGauge = traceOut.mode.indexOf('gauge') !== -1;
 
-    coerce('value');
-    traceOut._range = [0, 1.5 * traceOut.value];
+    var value = coerce('value');
+    traceOut._range = [0, (typeof value === 'number' ? 1.5 * value : 1)];
 
     // Number attributes
     var auto = new Array(2);
