@@ -129,7 +129,7 @@ exports.toSVG = function(gd) {
             var logo = fullLayout._glimages.append('g');
             logo.attr('transform', 'translate(' + (size.l + size.w * domain.x[0] + 10) + ', ' + (size.t + size.h * (1 - domain.y[0]) - 31) + ')');
             logo.append('path')
-              .attr('d', 'm 10.5,1.24 c -5.11,0 -9.25,4.15 -9.25,9.25 0,5.1 4.15,9.25 9.25,9.25 5.1,0 9.25,-4.15 9.25,-9.25 0,-5.11 -4.14,-9.25 -9.25,-9.25 z m 4.39,11.53 c -1.93,1.93 -4.78,2.31 -6.7,2.31 -0.7,0 -1.41,-0.05 -2.1,-0.16 0,0 -1.02,-5.64 2.14,-8.81 0.83,-0.83 1.95,-1.28 3.13,-1.28 1.27,0 2.49,0.51 3.39,1.42 1.84,1.84 1.89,4.75 0.14,6.52 z')
+              .attr('d', constants.mapboxLogo.path0)
               .style({
                   opacity: 0.9,
                   fill: '#ffffff',
@@ -137,17 +137,17 @@ exports.toSVG = function(gd) {
               });
 
             logo.append('path')
-              .attr('d', 'M 10.5,-0.01 C 4.7,-0.01 0,4.7 0,10.49 c 0,5.79 4.7,10.5 10.5,10.5 5.8,0 10.5,-4.7 10.5,-10.5 C 20.99,4.7 16.3,-0.01 10.5,-0.01 Z m 0,19.75 c -5.11,0 -9.25,-4.15 -9.25,-9.25 0,-5.1 4.14,-9.26 9.25,-9.26 5.11,0 9.25,4.15 9.25,9.25 0,5.13 -4.14,9.26 -9.25,9.26 z')
+              .attr('d', constants.mapboxLogo.path1)
               .style('opacity', 0.35)
               .style('enable-background', 'new');
 
             logo.append('path')
-              .attr('d', 'M 14.74,6.25 C 12.9,4.41 9.98,4.35 8.23,6.1 5.07,9.27 6.09,14.91 6.09,14.91 c 0,0 5.64,1.02 8.81,-2.14 C 16.64,11 16.59,8.09 14.74,6.25 Z m -2.27,4.09 -0.91,1.87 -0.9,-1.87 -1.86,-0.91 1.86,-0.9 0.9,-1.87 0.91,1.87 1.86,0.9 z')
+              .attr('d', constants.mapboxLogo.path2)
               .style('opacity', 0.35)
               .style('enable-background', 'new');
 
             logo.append('polygon')
-              .attr('points', '11.56,12.21 10.66,10.34 8.8,9.43 10.66,8.53 11.56,6.66 12.47,8.53 14.33,9.43 12.47,10.34')
+              .attr('points', constants.mapboxLogo.polygon)
               .style({
                   opacity: 0.9,
                   fill: '#ffffff',
