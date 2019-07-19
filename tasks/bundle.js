@@ -22,11 +22,11 @@ var arg = process.argv[2];
 var DEV = (arg === 'dev') || (arg === '--dev');
 
 
-// Check if style and font build files are there
+// Check if style build file is there
 var doesFileExist = common.doesFileExist;
-if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFontSVG)) {
+if(!doesFileExist(constants.pathToCSSBuild)) {
     throw new Error([
-        'build/ is missing one or more files',
+        'build/plotcss.js is missing',
         'Please run `npm run preprocess` first'
     ].join('\n'));
 }

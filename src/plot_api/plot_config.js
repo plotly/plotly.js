@@ -257,6 +257,15 @@ var configAttributes = {
             'until you arrive at the Chart Studio and explicitly click "Save".'
         ].join(' ')
     },
+    showEditInChartStudio: {
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Same as `showSendToCloud`, but use a pencil icon instead of a floppy-disk.',
+            'Note that if both `showSendToCloud` and `showEditInChartStudio` are turned,',
+            'only `showEditInChartStudio` will be honored.'
+        ].join(' ')
+    },
     modeBarButtonsToRemove: {
         valType: 'any',
         dflt: [],
