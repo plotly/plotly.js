@@ -63,9 +63,6 @@ module.exports = {
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
-    pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
-    pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
-
     pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 

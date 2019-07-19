@@ -12,7 +12,7 @@ var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Lib = require('../../lib');
-var Icons = require('../../../build/ploticon');
+var Icons = require('../../fonts/ploticon');
 
 var _ = Lib._;
 
