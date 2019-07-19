@@ -2,13 +2,13 @@
   "data": [
     {
       "type": "scattermapbox",
-      "name": "cartodb",
+      "name": "carto-positron",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ]
     },
     {
       "type": "scattermapbox",
-      "name": "cartodb-dark",
+      "name": "carto-darkmatter",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ],
       "subplot": "mapbox2"
@@ -24,11 +24,11 @@
 
     "mapbox": {
       "domain": {"row": 0, "column": 0},
-      "style": "cartodb"
+      "style": "carto-positron"
     },
     "mapbox2": {
       "domain": {"row": 0, "column": 1},
-      "style": "cartodb-dark"
+      "style": "carto-darkmatter"
     }
   }
 }

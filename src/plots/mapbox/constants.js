@@ -55,11 +55,11 @@ module.exports = {
                 maxzoom: 22
             }]
         },
-        cartodb: {
-            id: 'cartodb-positron',
+        'carto-positron': {
+            id: 'carto-positron',
             version: 8,
             sources: {
-                'plotly-cartodb-positron': {
+                'plotly-carto-positron': {
                     type: 'raster',
                     attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
                     tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
@@ -67,18 +67,18 @@ module.exports = {
                 }
             },
             layers: [{
-                id: 'plotly-cartodb-positron',
+                id: 'plotly-carto-positron',
                 type: 'raster',
-                source: 'plotly-cartodb-positron',
+                source: 'plotly-carto-positron',
                 minzoom: 0,
                 maxzoom: 22
             }]
         },
-        'cartodb-dark': {
-            id: 'cartodb-dark',
+        'carto-darkmatter': {
+            id: 'carto-darkmatter',
             version: 8,
             sources: {
-                'plotly-cartodb-dark': {
+                'plotly-carto-darkmatter': {
                     type: 'raster',
                     attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
                     tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
@@ -86,9 +86,9 @@ module.exports = {
                 }
             },
             layers: [{
-                id: 'plotly-cartodb-dark',
+                id: 'plotly-carto-darkmatter',
                 type: 'raster',
-                source: 'plotly-cartodb-dark',
+                source: 'plotly-carto-darkmatter',
                 minzoom: 0,
                 maxzoom: 22
             }]
