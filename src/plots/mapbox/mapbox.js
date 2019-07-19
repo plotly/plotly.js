@@ -48,6 +48,7 @@ function Mapbox(gd, id) {
     this.styleObj = null;
     this.traceHash = {};
     this.layerList = [];
+    this.belowLookup = {};
 }
 
 var proto = Mapbox.prototype;
@@ -126,6 +127,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     promises = promises.concat(self.fetchMapData(calcData, fullLayout));
 
     Promise.all(promises).then(function() {
+        self.fillBelowLookup(calcData, fullLayout);
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
@@ -191,10 +193,92 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     promises = promises.concat(self.fetchMapData(calcData, fullLayout));
 
     Promise.all(promises).then(function() {
+        self.fillBelowLookup(calcData, fullLayout);
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
     }).catch(reject);
+};
+
+proto.fillBelowLookup = function(calcData, fullLayout) {
+    var opts = fullLayout[this.id];
+    var layers = opts.layers;
+    var i, val;
+
+    var belowLookup = this.belowLookup = {};
+    var hasTraceAtTop = false;
+
+    for(i = 0; i < calcData.length; i++) {
+        var trace = calcData[i][0].trace;
+        var _module = trace._module;
+
+        if(typeof trace.below === 'string') {
+            val = trace.below;
+        } else if(_module.getBelow) {
+            // 'smart' default that depend the map's base layers
+            val = _module.getBelow(trace, this);
+        }
+
+        if(val === '') {
+            hasTraceAtTop = true;
+        }
+
+        belowLookup['trace-' + trace.uid] = val || '';
+    }
+
+    for(i = 0; i < layers.length; i++) {
+        var item = layers[i];
+
+        if(typeof item.below === 'string') {
+            val = item.below;
+        } else if(hasTraceAtTop) {
+            // if one or more trace(s) set `below:''` and
+            // layers[i].below is unset,
+            // place layer below traces
+            val = 'traces';
+        } else {
+            val = '';
+        }
+
+        belowLookup['layout-' + i] = val;
+    }
+
+    // N.B. If multiple layers have the 'below' value,
+    // we must clear the stashed 'below' field in order
+    // to make `traceHash[k].update()` and `layerList[i].update()`
+    // remove/add the all those layers to have preserve
+    // the correct layer ordering
+    var val2list = {};
+    var k, id;
+
+    for(k in belowLookup) {
+        val = belowLookup[k];
+        if(val2list[val]) {
+            val2list[val].push(k);
+        } else {
+            val2list[val] = [k];
+        }
+    }
+
+    for(val in val2list) {
+        var list = val2list[val];
+        if(list.length > 1) {
+            for(i = 0; i < list.length; i++) {
+                k = list[i];
+                if(k.indexOf('trace-') === 0) {
+                    id = k.split('trace-')[1];
+                    if(this.traceHash[id]) {
+                        this.traceHash[id].below = null;
+                    }
+                } else if(k.indexOf('layout-') === 0) {
+                    id = k.split('layout-')[1];
+                    if(this.layerList[id]) {
+                        this.layerList[id].below = null;
+                    }
+                }
+            }
+        }
+    }
 };
 
 var traceType2orderIndex = {
@@ -207,6 +291,10 @@ proto.updateData = function(calcData) {
     var traceHash = this.traceHash;
     var traceObj, trace, i, j;
 
+    // Need to sort here by trace type here,
+    // in case traces with different `type` have the same
+    // below value, but sorting we ensure that
+    // e.g. choroplethmapbox traces will be below scattermapbox traces
     var calcDataSorted = calcData.slice().sort(function(a, b) {
         return (
             traceType2orderIndex[a[0].trace.type] -
@@ -596,6 +684,40 @@ proto.setOptions = function(id, methodName, opts) {
     for(var k in opts) {
         this.map[methodName](id, k, opts[k]);
     }
+};
+
+proto.getMapLayers = function() {
+    return this.map.getStyle().layers;
+};
+
+// convenience wrapper that first check in 'below' references
+// a layer that exist and then add the layer to the map,
+proto.addLayer = function(opts, below) {
+    var map = this.map;
+
+    if(typeof below === 'string') {
+        if(below === '') {
+            map.addLayer(opts, below);
+            return;
+        }
+
+        var mapLayers = this.getMapLayers();
+        for(var i = 0; i < mapLayers.length; i++) {
+            if(below === mapLayers[i].id) {
+                map.addLayer(opts, below);
+                return;
+            }
+        }
+
+        Lib.warn([
+            'Trying to add layer with *below* value',
+            below,
+            'referencing a layer that does not exist',
+            'or that does not yet exist.'
+        ].join(' '));
+    }
+
+    map.addLayer(opts);
 };
 
 // convenience method to project a [lon, lat] array to pixel coords

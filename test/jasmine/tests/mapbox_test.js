@@ -1210,11 +1210,11 @@ describe('@noCI, mapbox plots', function() {
         var uid = subplot.uid;
 
         var traceSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf('-source-') !== -1;
+            return k.indexOf('source-') === 0;
         });
 
         var traceLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf('-layer-') !== -1;
+            return k.indexOf('plotly-trace-layer-') === 0;
         });
 
         var layoutSources = Object.keys(sources).filter(function(k) {
@@ -1331,6 +1331,270 @@ describe('@noCI, mapbox plots', function() {
 
         return promise;
     }
+});
+
+describe('@noCI test mapbox trace/layout *below* interactions', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        setTimeout(done, 200);
+    });
+
+    function getLayerIds() {
+        var subplot = gd._fullLayout.mapbox._subplot;
+        var layers = subplot.map.getStyle().layers;
+        var layerIds = layers.map(function(l) { return l.id; });
+        return layerIds;
+    }
+
+    it('@gl should be able to update *below* - scattermapbox + layout layer case', function(done) {
+        function _assert(msg, exp) {
+            var layersIds = getLayerIds();
+            var tracePrefix = 'plotly-trace-layer-' + gd._fullData[0].uid;
+
+            expect(layersIds.indexOf(tracePrefix + '-fill')).toBe(exp.trace[0], msg + '| fill');
+            expect(layersIds.indexOf(tracePrefix + '-line')).toBe(exp.trace[1], msg + '| line');
+            expect(layersIds.indexOf(tracePrefix + '-circle')).toBe(exp.trace[2], msg + '| circle');
+            expect(layersIds.indexOf(tracePrefix + '-symbol')).toBe(exp.trace[3], msg + '| symbol');
+
+            var layoutLayerId = ['plotly-layout-layer', gd._fullLayout._uid, 'mapbox-0'].join('-');
+            expect(layersIds.indexOf(layoutLayerId)).toBe(exp.layout, msg + '| layout layer');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            uid: 'a'
+        }], {
+            mapbox: {
+                style: 'basic',
+                layers: [{
+                    sourcetype: 'vector',
+                    source: 'mapbox://mapbox.mapbox-terrain-v2',
+                    sourcelayer: 'contour',
+                    type: 'line'
+                }]
+            }
+        })
+        .then(function() {
+            _assert('default *below*', {
+                trace: [20, 21, 22, 23],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'traces'); })
+        .then(function() {
+            _assert('with layout layer *below:traces*', {
+                trace: [21, 22, 23, 24],
+                layout: 20
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', null); })
+        .then(function() {
+            _assert('back to default *below* (1)', {
+                trace: [20, 21, 22, 23],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', ''); })
+        .then(function() {
+            _assert('with trace *below:""*', {
+                trace: [21, 22, 23, 24],
+                layout: 20
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', null); })
+        .then(function() {
+            _assert('back to default *below* (2)', {
+                trace: [20, 21, 22, 23],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', 'water'); })
+        .then(function() {
+            _assert('with trace *below:water*', {
+                trace: [4, 5, 6, 7],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'water'); })
+        .then(function() {
+            _assert('with trace AND layout layer *below:water*', {
+                trace: [4, 5, 6, 7],
+                layout: 8
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', ''); })
+        .then(function() {
+            _assert('with trace *below:water* and layout layer *below:""*', {
+                trace: [4, 5, 6, 7],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', ''); })
+        .then(function() {
+            _assert('with trace AND layout layer *below:water*', {
+                trace: [20, 21, 22, 23],
+                layout: 24
+            });
+        })
+        .then(function() { return Plotly.update(gd, {below: null}, {'mapbox.layers[0].below': null}); })
+        .then(function() {
+            _assert('back to default *below* (3)', {
+                trace: [20, 21, 22, 23],
+                layout: 24
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('@gl should be able to update *below* - scattermapbox + choroplethmapbox + densitymapbox case', function(done) {
+        function _assert(msg, exp) {
+            var layersIds = getLayerIds();
+            var tracePrefix = 'plotly-trace-layer-';
+
+            var scatterPrefix = tracePrefix + 'scatter';
+            expect(layersIds.indexOf(scatterPrefix + '-fill')).toBe(exp.scatter[0], msg + '| scatter fill');
+            expect(layersIds.indexOf(scatterPrefix + '-line')).toBe(exp.scatter[1], msg + '| scatter line');
+            expect(layersIds.indexOf(scatterPrefix + '-circle')).toBe(exp.scatter[2], msg + '| scatter circle');
+            expect(layersIds.indexOf(scatterPrefix + '-symbol')).toBe(exp.scatter[3], msg + '| scatter symbol');
+
+            var densityPrefix = tracePrefix + 'density';
+            expect(layersIds.indexOf(densityPrefix + '-heatmap')).toBe(exp.density[0], msg + '| density heatmap');
+
+            var choroplethPrefix = tracePrefix + 'choropleth';
+            expect(layersIds.indexOf(choroplethPrefix + '-fill')).toBe(exp.choropleth[0], msg + '| choropleth fill');
+            expect(layersIds.indexOf(choroplethPrefix + '-line')).toBe(exp.choropleth[1], msg + '| choropleth line');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            uid: 'scatter'
+        }, {
+            type: 'densitymapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            z: [1, 20, 5],
+            uid: 'density'
+        }, {
+            type: 'choroplethmapbox',
+            geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
+            locations: ['AL'],
+            z: [10],
+            uid: 'choropleth'
+        }], {
+            mapbox: {style: 'basic'}
+        })
+        .then(function() {
+            _assert('base', {
+                scatter: [23, 24, 25, 26],
+                density: [17],
+                choropleth: [5, 6]
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', ''); })
+        .then(function() {
+            _assert('all traces *below:""', {
+                scatter: [23, 24, 25, 26],
+                density: [22],
+                choropleth: [20, 21]
+            });
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', null); })
+        .then(function() {
+            _assert('back to base', {
+                scatter: [23, 24, 25, 26],
+                density: [17],
+                choropleth: [5, 6]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+        spyOn(Lib, 'warn');
+
+        var notGonnaWork = 'not-gonna-work';
+        var arg = [
+            'Trying to add layer with *below* value',
+            notGonnaWork,
+            'referencing a layer that does not exist',
+            'or that does not yet exist.'
+        ].join(' ');
+
+        function _assertFallback(msg, exp) {
+            var allArgs = Lib.warn.calls.allArgs();
+
+            if(allArgs.length === exp.warnCnt) {
+                for(var i = 0; i < exp.warnCnt; i++) {
+                    expect(allArgs[i][0]).toBe(arg, 'Lib.warn call #' + i);
+                }
+            } else {
+                fail('Incorrect number of Lib.warn calls');
+            }
+            Lib.warn.calls.reset();
+
+            getLayerIds().slice(20, -1).forEach(function(id) {
+                expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35]
+        }, {
+            type: 'densitymapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            z: [1, 20, 5]
+        }, {
+            type: 'choroplethmapbox',
+            geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
+            locations: ['AL'],
+            z: [10]
+        }], {
+            mapbox: {
+                style: 'basic',
+                layers: [{
+                    sourcetype: 'vector',
+                    source: 'mapbox://mapbox.mapbox-terrain-v2',
+                    sourcelayer: 'contour',
+                    type: 'line'
+                }]
+            }
+        })
+        .then(function() {
+            expect(Lib.warn).toHaveBeenCalledTimes(0);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', notGonnaWork); })
+        .then(function() {
+            // 7 for 4 scattermapbox + 2 choroplethmapbox + 1 densitymapbox layer
+            _assertFallback('not-gonna-work for traces', {warnCnt: 7});
+        })
+        .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'not-gonna-work'); })
+        .then(function() {
+            // same as last but + layout layer
+            _assertFallback('not-gonna-work for traces', {warnCnt: 8});
+        })
+        .then(function() { return Plotly.update(gd, {below: null}, {'mapbox.layers[0].below': null}); })
+        .then(function() {
+            expect(Lib.warn).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
 describe('@noCI Test mapbox GeoJSON fetching:', function() {

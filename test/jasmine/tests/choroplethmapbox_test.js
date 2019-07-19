@@ -692,7 +692,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             expect(getLayerIds()).withContext('default *below*').toEqual([
                 'background', 'landuse_overlay_national_park', 'landuse_park',
                 'waterway', 'water',
-                'a-layer-fill', 'a-layer-line',
+                'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line',
                 'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country', 'poi_label', 'road_major_label',
@@ -701,26 +701,38 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
-            expect(getLayerIds()).withContext('default *below*').toEqual([
+            expect(getLayerIds()).withContext('*below* set to \'\'').toEqual([
                 'background', 'landuse_overlay_national_park', 'landuse_park',
                 'waterway', 'water',
                 'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country', 'poi_label', 'road_major_label',
                 'place_label_other', 'place_label_city', 'country_label',
-                'a-layer-fill', 'a-layer-line'
+                'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line'
             ]);
         })
         .then(function() { return Plotly.restyle(gd, 'below', 'place_label_other'); })
         .then(function() {
-            expect(getLayerIds()).withContext('default *below*').toEqual([
+            expect(getLayerIds()).withContext('*below* set to same base layer').toEqual([
                 'background', 'landuse_overlay_national_park', 'landuse_park',
                 'waterway', 'water',
                 'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country', 'poi_label', 'road_major_label',
-                'a-layer-fill', 'a-layer-line',
+                'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line',
                 'place_label_other', 'place_label_city', 'country_label',
+            ]);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', null); })
+        .then(function() {
+            expect(getLayerIds()).withContext('back to default *below*').toEqual([
+                'background', 'landuse_overlay_national_park', 'landuse_park',
+                'waterway', 'water',
+                'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line',
+                'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
+                'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
+                'admin_country', 'poi_label', 'road_major_label',
+                'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
         .catch(failTest)

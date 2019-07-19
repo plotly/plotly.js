@@ -158,7 +158,6 @@ var attrs = module.exports = overrideAll({
         // attributes shared between all types
         below: {
             valType: 'string',
-            dflt: '',
             role: 'info',
             description: [
                 'Determines if the layer will be inserted',
