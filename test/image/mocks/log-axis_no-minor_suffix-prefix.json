@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "y": [
+        1e8,
+        1e6,
+        1e7
+      ],
+      "type": "scatter"
+    }
+  ],
+  "layout": {
+    "yaxis": {
+        "type": "log",
+        "tickprefix": "$",
+        "ticksuffix": "Hz"
+    },
+    "height": 600,
+    "width": 300,
+    "margin": {
+        "l": 150
+    }
+  }
+}
