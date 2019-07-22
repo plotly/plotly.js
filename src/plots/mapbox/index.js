@@ -220,20 +220,23 @@ function findAccessToken(gd, mapboxIds) {
 
     var tokensUseful = [];
     var tokensListed = [];
+    var hasOneSetMapboxStyle = false;
     var wontWork = false;
 
     // Take the first token we find in a mapbox subplot.
     // These default to the context value but may be overridden.
     for(var i = 0; i < mapboxIds.length; i++) {
         var opts = fullLayout[mapboxIds[i]];
-        var style = opts.style;
         var token = opts.accesstoken;
 
-        if(typeof style === 'string' && constants.styleValuesMapbox.indexOf(style) !== -1) {
+        if(isMapboxStyle(opts.style)) {
             if(token) {
                 Lib.pushUnique(tokensUseful, token);
             } else {
-                Lib.error('Uses Mapbox map style, but did not set an access token.');
+                if(isMapboxStyle(opts._input.style)) {
+                    Lib.error('Uses Mapbox map style, but did not set an access token.');
+                    hasOneSetMapboxStyle = true;
+                }
                 wontWork = true;
             }
         }
@@ -244,7 +247,10 @@ function findAccessToken(gd, mapboxIds) {
     }
 
     if(wontWork) {
-        throw new Error(constants.noAccessTokenErrorMsg);
+        var msg = hasOneSetMapboxStyle ?
+            constants.noAccessTokenErrorMsg :
+            constants.missingStyleErrorMsg;
+        throw new Error(msg);
     }
 
     if(tokensUseful.length) {
@@ -261,6 +267,10 @@ function findAccessToken(gd, mapboxIds) {
         }
         return '';
     }
+}
+
+function isMapboxStyle(s) {
+    return typeof s === 'string' && constants.styleValuesMapbox.indexOf(s) !== -1;
 }
 
 exports.updateFx = function(gd) {
