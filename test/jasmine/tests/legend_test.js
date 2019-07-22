@@ -1759,3 +1759,71 @@ describe('legend DOM', function() {
         .then(done);
     });
 });
+
+describe('legend with custom doubleClickDelay', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function click(index) {
+        return function() {
+            var item = d3.selectAll('rect.legendtoggle')[0][index];
+            item.dispatchEvent(new MouseEvent('mousedown'));
+            item.dispatchEvent(new MouseEvent('mouseup'));
+        };
+    }
+
+    it('should differentiate clicks and double-clicks according *doubleClickDelay* config', function(done) {
+        var tLong = 1.5 * DBLCLICKDELAY;
+        var tShort = 0.75 * DBLCLICKDELAY;
+
+        var clickCnt = 0;
+        var dblClickCnt = 0;
+
+        function _assert(msg, _clickCnt, _dblClickCnt) {
+            return function() {
+                expect(clickCnt).toBe(_clickCnt, msg + '| clickCnt');
+                expect(dblClickCnt).toBe(_dblClickCnt, msg + '| dblClickCnt');
+                clickCnt = 0;
+                dblClickCnt = 0;
+            };
+        }
+
+        Plotly.plot(gd, [
+            {y: [1, 2, 1]},
+            {y: [2, 1, 2]}
+        ], {}, {
+            doubleClickDelay: tLong
+        })
+        .then(function() {
+            gd.on('plotly_legendclick', function() { clickCnt++; });
+            gd.on('plotly_legenddoubleclick', function() { dblClickCnt++; });
+        })
+        .then(click(0)).then(delay(tLong / 2))
+        .then(_assert('[long] after click + (t/2) delay', 1, 0))
+        .then(delay(tLong + 10))
+        .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
+        .then(_assert('[long] after click + (DBLCLICKDELAY+1) delay + click', 2, 1))
+        .then(delay(tLong + 10))
+        .then(click(0)).then(delay(1.1 * tLong)).then(click(0))
+        .then(_assert('[long] after click + (1.1*t) delay + click', 2, 0))
+        .then(delay(tLong + 10))
+        .then(function() {
+            return Plotly.plot(gd, [], {}, {doubleClickDelay: tShort});
+        })
+        .then(click(0)).then(delay(tShort / 2))
+        .then(_assert('[short] after click + (t/2) delay', 1, 0))
+        .then(delay(tShort + 10))
+        .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
+        .then(_assert('[short] after click + (DBLCLICKDELAY+1) delay + click', 2, 0))
+        .then(delay(tShort + 10))
+        .then(click(0)).then(delay(1.1 * tShort)).then(click(0))
+        .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
+        .catch(failTest)
+        .then(done);
+    }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+});

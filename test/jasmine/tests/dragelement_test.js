@@ -6,7 +6,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 
-
 describe('dragElement', function() {
     'use strict';
 
@@ -139,6 +138,49 @@ describe('dragElement', function() {
         expect(args.length).toBe(2);
         expect(args[0]).toEqual(2);
         expect(args[1].type).toBe('mousedown');
+    });
+
+    it('should pass numClicks and event to clickFn on mouseup after no/small mousemove w/ custom doubleClickDelay', function(done) {
+        var args = [];
+
+        this.gd._context.doubleClickDelay = 1000;
+
+        var options = {
+            element: this.element,
+            gd: this.gd,
+            clickFn: function() {
+                args = arguments;
+            },
+            moveFn: function() {
+                expect('should not call moveFn').toBe(true);
+            },
+            doneFn: function() {
+                expect('should not call doneFn').toBe(true);
+            }
+        };
+        dragElement.init(options);
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(args.length).toBe(2);
+        expect(args[0]).toEqual(1);
+        // click gets the mousedown event, as that's guaranteed to have
+        // the correct target
+        expect(args[1].type).toBe('mousedown');
+
+        var _this = this;
+        setTimeout(function() {
+            mouseEvent('mousedown', _this.x, _this.y);
+            mouseEvent('mousemove', _this.x + 3, _this.y + 3);
+            mouseEvent('mouseup', _this.x, _this.y);
+
+            expect(args.length).toBe(2);
+            expect(args[0]).toEqual(2);
+            expect(args[1].type).toBe('mousedown');
+
+            done();
+        }, 500);
     });
 
     it('should add a cover slip div to the DOM', function() {
