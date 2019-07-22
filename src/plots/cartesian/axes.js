@@ -581,7 +581,8 @@ axes.calcTicks = function calcTicks(ax) {
     var maxTicks = Math.max(1000, ax._length || 0);
     for(var x = ax._tmin;
             (axrev) ? (x >= endTick) : (x <= endTick);
-            x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
+            x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
+    ) {
         // prevent infinite loops - no more than one tick per pixel,
         // and make sure each value is different from the previous
         if(vals.length > maxTicks || x === xPrevious) break;
@@ -846,7 +847,27 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     var axSign = axrev ? -1 : 1;
 
     // includes linear, all dates smaller than month, and pure 10^n in log
-    if(isNumeric(dtick)) return x + axSign * dtick;
+    if(isNumeric(dtick)) {
+        // Note 1:
+        // 0.3 != 0.1 + 0.2 but 0.3 == ((10 * 0.1) + (10 * 0.2)) / 10
+        // Attempt to use integer steps to increment
+        var magic = 1 / dtick;
+        var newX = (
+            magic * x +
+            magic * axSign * dtick
+        ) / magic;
+
+        // Note 2: now we may also consider rounding to cover few more edge cases
+        var lenDt = ('' + dtick).length;
+        var lenX0 = ('' + x).length;
+        var lenX1 = ('' + newX).length;
+
+        if(lenX1 > lenX0 + lenDt) { // this is likey a rounding error!
+            newX = +parseFloat(newX).toPrecision(12);
+        }
+
+        return newX;
+    }
 
     // everything else is a string, one character plus a number
     var tType = dtick.charAt(0);
