@@ -17,7 +17,7 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var drag = require('../assets/drag');
 
-var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
