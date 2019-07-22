@@ -8,7 +8,7 @@
 
 'use strict';
 
-var requiredVersion = '1.1.0';
+var requiredVersion = '1.1.1';
 
 module.exports = {
     requiredVersion: requiredVersion,
