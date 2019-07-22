@@ -54,6 +54,7 @@ function handleLayerDefaults(layerIn, layerOut) {
         var mustBeRasterLayer = sourceType === 'raster' || sourceType === 'image';
 
         coerce('source');
+        coerce('sourceattribution');
 
         if(sourceType === 'vector') {
             coerce('sourcelayer');

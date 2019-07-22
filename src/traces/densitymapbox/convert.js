@@ -109,7 +109,6 @@ module.exports = function convert(calcTrace) {
 
     opts.geojson = {type: 'FeatureCollection', features: features};
     opts.heatmap.layout.visibility = 'visible';
-    opts.below = trace.below;
 
     return opts;
 };

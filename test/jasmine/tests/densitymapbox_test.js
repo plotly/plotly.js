@@ -452,7 +452,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
                 'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country',
-                'a-layer-heatmap',
+                'plotly-trace-layer-a-heatmap',
                 'poi_label', 'road_major_label',
                 'place_label_other', 'place_label_city', 'country_label'
             ]);
@@ -466,7 +466,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country', 'poi_label', 'road_major_label',
                 'place_label_other', 'place_label_city', 'country_label',
-                'a-layer-heatmap'
+                'plotly-trace-layer-a-heatmap'
             ]);
         })
         .then(function() { return Plotly.restyle(gd, 'below', 'place_label_other'); })
@@ -477,8 +477,21 @@ describe('@noCI Test densitymapbox interactions:', function() {
                 'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
                 'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
                 'admin_country', 'poi_label', 'road_major_label',
-                'a-layer-heatmap',
+                'plotly-trace-layer-a-heatmap',
                 'place_label_other', 'place_label_city', 'country_label',
+            ]);
+        })
+        .then(function() { return Plotly.restyle(gd, 'below', null); })
+        .then(function() {
+            expect(getLayerIds()).withContext('back to default *below*').toEqual([
+                'background', 'landuse_overlay_national_park', 'landuse_park',
+                'waterway', 'water',
+                'building', 'tunnel_minor', 'tunnel_major', 'road_minor', 'road_major',
+                'bridge_minor case', 'bridge_major case', 'bridge_minor', 'bridge_major',
+                'admin_country',
+                'plotly-trace-layer-a-heatmap',
+                'poi_label', 'road_major_label',
+                'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
         .catch(failTest)

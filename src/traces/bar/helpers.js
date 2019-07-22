@@ -10,6 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 exports.coerceString = function(attributeDefinition, value, defaultValue) {
     if(typeof value === 'string') {
@@ -63,4 +64,13 @@ exports.getValue = function(arrayOrScalar, index) {
     if(!Array.isArray(arrayOrScalar)) value = arrayOrScalar;
     else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
     return value;
+};
+
+exports.getLineWidth = function(trace, di) {
+    var w =
+        (0 < di.mlw) ? di.mlw :
+        !isArrayOrTypedArray(trace.marker.line.width) ? trace.marker.line.width :
+        0;
+
+    return w;
 };

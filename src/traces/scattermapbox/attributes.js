@@ -99,6 +99,18 @@ module.exports = overrideAll({
     textfont: mapboxAttrs.layers.symbol.textfont,
     textposition: mapboxAttrs.layers.symbol.textposition,
 
+    below: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Determines if this scattermapbox trace\'s layers are to be inserted',
+            'before the layer with the specified ID.',
+            'By default, scattermapbox layers are inserted',
+            'above all the base layers.',
+            'To place the scattermapbox layers above every other layer, set `below` to *\'\'*.'
+        ].join(' ')
+    },
+
     selected: {
         marker: scatterAttrs.selected.marker
     },

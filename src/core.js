@@ -66,7 +66,7 @@ register([
 ]);
 
 // plot icons
-exports.Icons = require('../build/ploticon');
+exports.Icons = require('./fonts/ploticon');
 
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = require('./plots/plots');

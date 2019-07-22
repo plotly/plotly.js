@@ -32,7 +32,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     traceOut._hasDelta = traceOut.mode.indexOf('delta') !== -1;
     traceOut._hasGauge = traceOut.mode.indexOf('gauge') !== -1;
 
-    coerce('value');
+    var value = coerce('value');
+    traceOut._range = [0, (typeof value === 'number' ? 1.5 * value : 1)];
 
     // Number attributes
     var auto = new Array(2);
@@ -63,7 +64,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         }
         coerce('delta.reference', traceOut.value);
         coerce('delta.relative');
-        coerce('delta.valueformat', traceOut.delta.relative ? '2%' : '.3s');
+        coerce('delta.valueformat', traceOut.delta.relative ? '2%' : '');
         coerce('delta.increasing.symbol');
         coerce('delta.increasing.color');
         coerce('delta.decreasing.symbol');
@@ -87,6 +88,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerceGaugeAxis(attr, dflt) {
         return Lib.coerce(axisIn, axisOut, attributes.gauge.axis, attr, dflt);
     }
+
     if(traceOut._hasGauge) {
         gaugeIn = traceIn.gauge;
         if(!gaugeIn) gaugeIn = {};
@@ -130,7 +132,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         if(gaugeIn) axisIn = gaugeIn.axis || {};
         axisOut = Template.newContainer(gaugeOut, 'axis');
         coerceGaugeAxis('visible');
-        coerceGaugeAxis('range', [0, 1.5 * traceOut.value]);
+        traceOut._range = coerceGaugeAxis('range', traceOut._range);
 
         var opts = {outerTicks: true};
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');

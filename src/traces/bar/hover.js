@@ -14,6 +14,7 @@ var Registry = require('../../registry');
 var Color = require('../../components/color');
 
 var fillText = require('../../lib').fillText;
+var getLineWidth = require('./helpers').getLineWidth;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
@@ -165,7 +166,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 function getTraceColor(trace, di) {
     var mc = di.mcc || trace.marker.color;
     var mlc = di.mlcc || trace.marker.line.color;
-    var mlw = di.mlw || trace.marker.line.width;
+    var mlw = getLineWidth(trace, di);
 
     if(Color.opacity(mc)) return mc;
     else if(Color.opacity(mlc) && mlw) return mlc;

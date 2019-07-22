@@ -19,6 +19,8 @@ var filterOps = require('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
 
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+
 var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = extendFlat({
@@ -181,7 +183,7 @@ module.exports = extendFlat({
             description: [
                 'Sets the contour label formatting rule using d3 formatting',
                 'mini-language which is very similar to Python, see:',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
+                FORMAT_LINK
             ].join(' ')
         },
         operation: {

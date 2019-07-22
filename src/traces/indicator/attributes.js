@@ -17,6 +17,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var delta = require('../../constants/delta.js');
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var textFontAttrs = fontAttrs({
     editType: 'plot',
@@ -162,13 +163,13 @@ module.exports = {
     number: {
         valueformat: {
             valType: 'string',
-            dflt: '.3s',
+            dflt: '',
             role: 'info',
             editType: 'plot',
             description: [
                 'Sets the value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
         font: extendFlat({}, textFontAttrs, {
@@ -232,7 +233,7 @@ module.exports = {
             description: [
                 'Sets the value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
         increasing: {

@@ -108,7 +108,7 @@
     "regl-splom": "^1.0.7",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
-    "sane-topojson": "^3.0.1",
+    "sane-topojson": "^4.0.0",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
     "svg-path-sdf": "^1.1.3",
@@ -159,7 +159,6 @@
     "run-series": "^1.1.8",
     "through2": "^3.0.1",
     "true-case-path": "^1.0.3",
-    "watchify": "^3.11.1",
-    "xml2js": "^0.4.19"
+    "watchify": "^3.11.1"
   }
 }
