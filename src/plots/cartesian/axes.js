@@ -577,7 +577,7 @@ axes.calcTicks = function calcTicks(ax) {
             Math.min(ax._categories.length - 0.5, endTick);
     }
 
-    var isLog = (ax.type === 'log');
+    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
 
     var xPrevious = null;
     var maxTicks = Math.max(1000, ax._length || 0);
@@ -590,7 +590,7 @@ axes.calcTicks = function calcTicks(ax) {
         xPrevious = x;
 
         var minor = false;
-        if(isLog && (x !== (x | 0))) {
+        if(isDLog && (x !== (x | 0))) {
             minor = true;
         }
 
