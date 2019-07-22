@@ -125,7 +125,8 @@ var attrs = module.exports = overrideAll({
             dflt: 'geojson',
             role: 'info',
             description: [
-                'Sets the source type for this layer.'
+                'Sets the source type for this layer,',
+                'that is the type of the layer data.'
             ].join(' ')
         },
 
@@ -164,7 +165,8 @@ var attrs = module.exports = overrideAll({
             dflt: 'circle',
             role: 'info',
             description: [
-                'Sets the layer type (mapbox.layer.type).',
+                'Sets the layer type,',
+                'that is the how the layer data set in `source` will be rendered',
                 'With `sourcetype` set to *geojson*, *circle*, *line*, *fill* and *symbol* are available',
                 'but note that *line* and *fill* are not compatible with Point',
                 'GeoJSON geometries.',
