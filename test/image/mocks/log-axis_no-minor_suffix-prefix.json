@@ -1,6 +1,7 @@
 {
   "data": [
     {
+      "name": "L10000000",
       "y": [
         1e8,
         1e6,
@@ -9,6 +10,7 @@
       "type": "scatter"
     },
     {
+      "name": "dtick=0.5 | tick0=1",
       "xaxis": "x2",
       "yaxis": "y2",
       "y": [
@@ -19,6 +21,7 @@
       "type": "scatter"
     },
     {
+      "name": "D1",
       "xaxis": "x3",
       "yaxis": "y3",
       "y": [
@@ -29,6 +32,7 @@
       "type": "scatter"
     },
     {
+      "name": "default",
       "xaxis": "x4",
       "yaxis": "y4",
       "y": [
