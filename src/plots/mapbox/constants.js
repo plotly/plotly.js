@@ -142,6 +142,8 @@ var stylesNonMapbox = {
     }
 };
 
+var styleValuesNonMapbox = Object.keys(stylesNonMapbox);
+
 module.exports = {
     requiredVersion: requiredVersion,
 
@@ -149,9 +151,9 @@ module.exports = {
     styleUrlSuffix: 'v9',
 
     styleValuesMapbox: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
-    styleValueOSM: 'open-street-map',
     styleValueDflt: 'basic',
     stylesNonMapbox: stylesNonMapbox,
+    styleValuesNonMapbox: styleValuesNonMapbox,
 
     traceLayerPrefix: 'plotly-trace-layer-',
     layoutLayerPrefix: 'plotly-layout-layer-',
@@ -171,7 +173,7 @@ module.exports = {
 
     missingStyleErrorMsg: [
         'No valid mapbox style found, please set `mapbox.style` to one of:',
-        Object.keys(stylesNonMapbox).join(', '),
+        styleValuesNonMapbox.join(', '),
         'or register a Mapbox access token to use a Mapbox-served style.'
     ].join('\n'),
 
