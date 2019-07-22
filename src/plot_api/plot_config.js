@@ -179,7 +179,9 @@ var configAttributes = {
         description: [
             'Sets the delay for registering a double-click in ms.',
             'This is the time interval (in ms) between first mousedown and',
-            '2nd mouseup to constitute a double-click.'
+            '2nd mouseup to constitute a double-click.',
+            'This setting propagates to all on-subplot double clicks',
+            '(except for geo and mapbox) and on-legend double clicks.'
         ].join(' ')
     },
 
