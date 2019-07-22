@@ -242,6 +242,8 @@ function convertSourceOpts(opts) {
 
     sourceOpts[field] = source;
 
+    if(opts.sourceattribution) sourceOpts.attribution = opts.sourceattribution;
+
     return sourceOpts;
 }
 
