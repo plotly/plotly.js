@@ -2247,6 +2247,24 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('texttemplateString', function() {
+        it('evaluates attributes', function() {
+            var locale = false;
+            expect(Lib.texttemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.texttemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.texttemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(11);
+        });
+    });
+
     describe('relativeAttr()', function() {
         it('replaces the last part always', function() {
             expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');

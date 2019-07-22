@@ -14,6 +14,7 @@ var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -1236,4 +1237,18 @@ describe('Test sunburst interactions edge cases', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test texttemplate:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Esther'],
+        values: [11, 12, 13, 14, 15],
+        text: ['1', '2', '3', '4', '5'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth' ]
+    }], 'g.slicetext', [
+      ['txt: %{label}', ['txt: Eve', 'txt: Cain', 'txt: Seth', 'txt: Enos', 'txt: Esther']],
+      [['txt: %{label}', '%{text}', 'value: %{value}'], ['txt: Eve', '2', 'value: 13', '', '']],
+      ['%{color}', ['rgba(0,0,0,0)', '#1f77b4', '#ff7f0e', '#1f77b4', '#1f77b4']]
+    ]);
 });

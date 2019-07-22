@@ -78,6 +78,7 @@ module.exports = function plot(gd, cdModule) {
                 slicePath.attr('d', shape);
 
                 // add text
+                piePlot.formatSliceLabel(gd, pt, cd0);
                 var textPosition = pieHelpers.castOption(trace.textposition, pt.pts);
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);

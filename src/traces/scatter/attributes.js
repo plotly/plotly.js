@@ -8,6 +8,7 @@
 
 'use strict';
 
+var texttemplateAttrs = require('../../components/fx/texttemplate_attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
@@ -166,6 +167,10 @@ module.exports = {
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+
+    texttemplate: texttemplateAttrs({arrayOk: true}, {
+
+    }),
     hovertext: {
         valType: 'string',
         role: 'info',

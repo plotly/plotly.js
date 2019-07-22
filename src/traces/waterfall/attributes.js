@@ -12,6 +12,7 @@ var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var plotAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var texttemplateAttrs = require('../../components/fx/texttemplate_attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
@@ -98,7 +99,9 @@ module.exports = {
             'are computed separately (per trace).'
         ].join(' ')
     },
-
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['label', 'text', 'initial', 'delta', 'final']
+    }),
     text: barAttrs.text,
     textposition: barAttrs.textposition,
     insidetextanchor: barAttrs.insidetextanchor,

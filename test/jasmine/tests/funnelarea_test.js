@@ -14,6 +14,7 @@ var rgb = require('../../../src/components/color').rgb;
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 var SLICES_SELECTOR = '.slice path';
 var SLICES_TEXT_SELECTOR = '.funnelarealayer text.slicetext';
@@ -637,6 +638,18 @@ describe('Funnelarea traces', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'funnelarea',
+        values: [1, 5, 3, 2],
+        labels: ['A', 'B', 'C', 'D'],
+        text: ['textA', 'textB', 'textC', 'textD'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'g.slicetext', [
+      ['%{label}-%{color}-%{value}-%{percent}-%{text}', ['A-#1f77b4-1-9.09%-textA', 'B-#ff7f0e-5-45.5%-textB', 'C-#2ca02c-3-27.3%-textC', 'D-#d62728-2-18.2%-textD']],
+      [['%{label} - %{value}', '%{text}', '%{value}', '%{percent}'], ['A - 1', 'textB', '3', '18.2%']],
+    ]);
 });
 
 describe('funnelarea hovering', function() {

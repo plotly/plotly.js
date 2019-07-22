@@ -25,6 +25,7 @@ var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -1095,6 +1096,17 @@ describe('A bar plot', function() {
             });
         };
     }
+
+    checkTextTemplate([{
+        type: 'bar',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
+      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
+    ]);
 
     it('should show bar texts (inside case)', function(done) {
         var data = [{

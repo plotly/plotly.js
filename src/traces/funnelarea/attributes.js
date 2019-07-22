@@ -12,6 +12,7 @@ var pieAttrs = require('../pie/attributes');
 var plotAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var texttemplateAttrs = require('../../components/fx/texttemplate_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -51,6 +52,10 @@ module.exports = {
 
     textinfo: extendFlat({}, pieAttrs.textinfo, {
         flags: ['label', 'text', 'value', 'percent']
+    }),
+
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['label', 'color', 'value', 'percent', 'text']
     }),
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {

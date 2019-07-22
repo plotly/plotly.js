@@ -719,30 +719,50 @@ function makeEventData(pt, trace) {
 }
 
 function formatSliceLabel(pt, trace, fullLayout) {
+    var texttemplate = trace.texttemplate;
     var textinfo = trace.textinfo;
 
-    if(!textinfo || textinfo === 'none') {
+    if(!texttemplate && (!textinfo || textinfo === 'none')) {
         return '';
     }
 
     var cdi = pt.data.data;
     var separators = fullLayout.separators;
-    var parts = textinfo.split('+');
-    var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
-    var thisText = [];
+    if(!texttemplate) {
+        var parts = textinfo.split('+');
+        var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
+        var thisText = [];
 
-    if(hasFlag('label') && cdi.label) thisText.push(cdi.label);
+        if(hasFlag('label') && cdi.label) {
+            thisText.push(cdi.label);
+        }
 
-    if(cdi.hasOwnProperty('v') && hasFlag('value')) {
-        thisText.push(formatPieValue(cdi.v, separators));
+        if(cdi.hasOwnProperty('v') && hasFlag('value')) {
+            thisText.push(formatPieValue(cdi.v, separators));
+        }
+
+        if(hasFlag('text')) {
+            var tx = Lib.castOption(trace, cdi.i, 'text');
+            if(Lib.isValidTextValue(tx)) thisText.push(tx);
+        }
+
+        return thisText.join('<br>');
     }
 
-    if(hasFlag('text')) {
-        var tx = Lib.castOption(trace, cdi.i, 'text');
-        if(Lib.isValidTextValue(tx)) thisText.push(tx);
+    var txt = Lib.castOption(trace, cdi.i, 'texttemplate');
+    if(!txt) return '';
+    var obj = {};
+    if(cdi.label) obj.label = cdi.label;
+    if(cdi.hasOwnProperty('v')) {
+        obj.value = cdi.v;
+        obj.valueLabel = formatPieValue(cdi.v, separators);
     }
-
-    return thisText.join('<br>');
+    if(cdi.hasOwnProperty('color')) {
+        obj.color = cdi.color;
+    }
+    var ptTx = Lib.castOption(trace, cdi.i, 'text');
+    if(Lib.isValidTextValue(ptTx)) obj.text = ptTx;
+    return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
 }
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
