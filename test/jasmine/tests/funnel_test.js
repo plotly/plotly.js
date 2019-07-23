@@ -351,6 +351,34 @@ describe('Funnel.calc', function() {
         assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
         assertPointField(cd, 'x', [[0.5, 1, 5, 15]]);
     });
+
+    it('should guard against negative marker.line.width values', function() {
+        var gd = mockFunnelPlot([{
+            marker: {
+                line: {
+                    width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}]
+                }
+            },
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
+    });
+
+    it('should guard against negative marker.line.width values', function() {
+        var gd = mockFunnelPlot([{
+            marker: {
+                line: {
+                    width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}]
+                }
+            },
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
+    });
 });
 
 describe('Funnel.crossTraceCalc', function() {
