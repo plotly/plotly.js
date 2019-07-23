@@ -32,7 +32,6 @@ module.exports = function(opts, extra) {
     var texttemplate = {
         valType: 'string',
         role: 'info',
-        dflt: '',
         editType: opts.editType || 'calc',
         description: [
             'Template string used for rendering the information that appear on points.',
