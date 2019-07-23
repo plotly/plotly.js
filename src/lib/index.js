@@ -149,6 +149,8 @@ lib.clearResponsive = require('./clear_responsive');
 
 lib.makeTraceGroups = require('./make_trace_groups');
 
+lib.incrementNumeric = require('./increment_numeric');
+
 lib._ = require('./localize');
 
 lib.notifier = require('./notifier');
