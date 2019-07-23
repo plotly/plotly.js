@@ -135,9 +135,11 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: [
                 'Sets the source data for this layer (mapbox.layer.source).',
-                'Source can be either a URL,',
-                'a geojson object (with `sourcetype` set to *geojson*)',
-                'or an array of URLs (with `sourcetype` set to *vector* or *raster*).'
+                'When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON',
+                'or a GeoJSON object.',
+                'When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or',
+                'an array of tile URLs.',
+                'When `sourcetype` is set to *image*, `source` can be a URL to an image.'
             ].join(' ')
         },
 
@@ -167,11 +169,13 @@ var attrs = module.exports = overrideAll({
             description: [
                 'Sets the layer type,',
                 'that is the how the layer data set in `source` will be rendered',
-                'With `sourcetype` set to *geojson*, *circle*, *line*, *fill* and *symbol* are available',
+                'With `sourcetype` set to *geojson*, the following values are allowed:',
+                '*circle*, *line*, *fill* and *symbol*.',
                 'but note that *line* and *fill* are not compatible with Point',
                 'GeoJSON geometries.',
-                'With `sourcetype` set to *vector*, *circle*, *line*, *fill* and *symbol* are available.',
-                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is available.'
+                'With `sourcetype` set to *vector*, the following values are allowed:',
+                ' *circle*, *line*, *fill* and *symbol*.',
+                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is allowed.'
             ].join(' ')
         },
 
