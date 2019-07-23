@@ -980,7 +980,8 @@ function formatSliceLabel(gd, pt, cd0) {
             percent: pt.v / cd0.vTotal,
             percentLabel: helpers.formatPiePercent(pt.v / cd0.vTotal, fullLayout.separators),
             color: pt.color,
-            text: pt.text
+            text: pt.text,
+            customdata: Lib.castOption(trace, pt.i, 'customdata')
         };
     }
 

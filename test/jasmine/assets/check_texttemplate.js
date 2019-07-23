@@ -17,8 +17,17 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
         expect(gd._fullData[0].textinfo).toBe(undefined);
     });
 
+    // Generate customdata
+    var N = tests[0][1].length;
+    var customdata = [];
+    for(var i = 0; i < N; i++) {
+        customdata.push(Lib.randstr({}));
+    }
+    mock[0].customdata = customdata;
+    tests.push(['%{customdata}', customdata]);
+
     tests.forEach(function(test) {
-        it('should support textemplate', function(done) {
+        it('should support texttemplate', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep(mock, {});
             mockCopy[0].texttemplate = test[0];

@@ -591,6 +591,8 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
         obj.percenTotalLabel = Lib.formatPercent(cdi.sumR);
     }
 
+    var customdata = Lib.castOption(trace, cdi.i, 'customdata');
+    if(customdata) obj.customdata = customdata;
     return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, obj, trace._meta || {});
 }
 

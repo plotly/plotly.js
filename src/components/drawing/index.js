@@ -700,7 +700,7 @@ drawing.textPointStyle = function(s, trace, gd) {
         }
 
         if(template) {
-            text = Lib.texttemplateString(text, {}, gd._fullLayout._d3locale, d, trace._meta || {});
+            text = Lib.texttemplateString(text, {}, gd._fullLayout._d3locale, d, trace._meta || {}, {customdata: d.data});
         }
 
         var pos = d.tp || trace.textposition;

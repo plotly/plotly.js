@@ -1239,7 +1239,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 });
 
-describe('Test texttemplate:', function() {
+describe('Test sunburst texttemplate:', function() {
     checkTextTemplate([{
         type: 'sunburst',
         labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Esther'],

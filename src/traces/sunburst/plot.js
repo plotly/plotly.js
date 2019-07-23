@@ -762,6 +762,7 @@ function formatSliceLabel(pt, trace, fullLayout) {
     }
     var ptTx = Lib.castOption(trace, cdi.i, 'text');
     if(Lib.isValidTextValue(ptTx)) obj.text = ptTx;
+    obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
     return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
 }
 
