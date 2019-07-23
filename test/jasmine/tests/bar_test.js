@@ -407,6 +407,20 @@ describe('Bar.calc', function() {
         assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
         assertPointField(cd, 'y', [[1, 2, 10, 30]]);
     });
+
+    it('should guard against negative marker.line.width values', function() {
+        var gd = mockBarPlot([{
+            marker: {
+                line: {
+                    width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                }
+            },
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+    });
 });
 
 describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {

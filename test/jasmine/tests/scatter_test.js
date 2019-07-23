@@ -3,6 +3,7 @@ var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');
 var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 
 var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -17,6 +18,8 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 var checkEventData = require('../assets/check_event_data');
 var constants = require('@src/traces/scatter/constants');
+
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -270,6 +273,55 @@ describe('Test scatter', function() {
                 _supply();
                 expect(traceOut._length).toBe(6);
             });
+        });
+    });
+
+    describe('calc', function() {
+        function assertPointField(calcData, prop, expectation) {
+            var values = [];
+
+            calcData.forEach(function(calcTrace) {
+                var vals = calcTrace.map(function(pt) {
+                    return Lib.nestedProperty(pt, prop).get();
+                });
+
+                values.push(vals);
+            });
+
+            expect(values).toBeCloseTo2DArray(expectation, undefined, '(field ' + prop + ')');
+        }
+
+        it('should guard against negative size values', function() {
+            var gd = {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers+text',
+                    marker: {
+                        line: {
+                            width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                        },
+                        opacity: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1'],
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                    },
+                    textfont: {
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                    },
+                    text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                }],
+                layout: {},
+                calcdata: [],
+                _context: {locale: 'en', locales: {}}
+            };
+
+            supplyAllDefaults(gd);
+            Plots.doCalcdata(gd);
+
+            var cd = gd.calcdata;
+            assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'mo', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ms', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ts', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
         });
     });
 
