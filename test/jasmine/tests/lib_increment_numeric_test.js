@@ -339,6 +339,120 @@ describe('incrementNumeric', function() {
         });
     });
 
+    it('should increment numbers from 0 to 10000.1 by 1000.01', function() {
+        examine({
+            start: 0,
+            step: 1000.01,
+            expected: [
+                1000.01,
+                2000.02,
+                3000.03,
+                4000.04,
+                5000.05,
+                6000.06,
+                7000.07,
+                8000.08,
+                9000.09,
+                10000.1
+            ]
+        });
+    });
+
+    it('should increment numbers from 99 to 10099.1 by 1099.01', function() {
+        examine({
+            start: 99,
+            step: 1000.01,
+            expected: [
+                1099.01,
+                2099.02,
+                3099.03,
+                4099.04,
+                5099.05,
+                6099.06,
+                7099.07,
+                8099.08,
+                9099.09,
+                10099.1
+            ]
+        });
+    });
+
+    it('should increment numbers from 0 to 100001.1 by 10000.11', function() {
+        examine({
+            start: 0,
+            step: 10000.11,
+            expected: [
+                10000.11,
+                20000.22,
+                30000.33,
+                40000.44,
+                50000.55,
+                60000.66,
+                70000.77,
+                80000.88,
+                90000.99,
+                100001.1
+            ]
+        });
+    });
+
+    it('should increment numbers from 1000 to 1100.001 by 10.0001', function() {
+        examine({
+            start: 1000,
+            step: 10.0001,
+            expected: [
+                1010.0001,
+                1020.0002,
+                1030.0003,
+                1040.0004,
+                1050.0005,
+                1060.0006,
+                1070.0007,
+                1080.0008,
+                1090.0009,
+                1100.001
+            ]
+        });
+    });
+
+    it('should increment numbers from 9000 to 9111.111 by 11.1111', function() {
+        examine({
+            start: 9000,
+            step: 11.1111,
+            expected: [
+                9011.1111,
+                9022.2222,
+                9033.3333,
+                9044.4444,
+                9055.5555,
+                9066.6666,
+                9077.7777,
+                9088.8888,
+                9099.9999,
+                9111.111
+            ]
+        });
+    });
+
+    it('should increment numbers from 9 to 9.1111 by 0.01111', function() {
+        examine({
+            start: 9,
+            step: 0.01111,
+            expected: [
+                9.01111,
+                9.02222,
+                9.03333,
+                9.04444,
+                9.05555,
+                9.06666,
+                9.07777,
+                9.08888,
+                9.09999,
+                9.1111
+            ]
+        });
+    });
+
     it('should increment numbers from 0.999 to 1.999 by 0.1', function() {
         examine({
             start: 0.999,

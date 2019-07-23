@@ -16,11 +16,12 @@ module.exports = function incrementNumeric(x, delta) {
     // 0.3 != 0.1 + 0.2 == 0.30000000000000004
     // but 0.3 == (10 * 0.1 + 10 * 0.2) / 10
     // Attempt to use integer steps to increment
-    var magic = 1 / Math.abs(delta);
+    var scale = 1 / Math.abs(delta);
+    if(scale < 1) scale = 1;
     var newX = (
-        magic * x +
-        magic * delta
-    ) / magic;
+        scale * x +
+        scale * delta
+    ) / scale;
 
     // Note 2:
     // now we may also consider rounding to cover few more edge cases
