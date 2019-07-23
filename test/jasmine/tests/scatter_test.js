@@ -298,16 +298,16 @@ describe('Test scatter', function() {
                     mode: 'markers+text',
                     marker: {
                         line: {
-                            width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}]
+                            width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
                         },
-                        opacity: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}],
-                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}]
+                        opacity: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1'],
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
                     },
                     textfont: {
-                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}]
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
                     },
-                    text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                    text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
                 }],
                 layout: {},
                 calcdata: [],
@@ -318,10 +318,10 @@ describe('Test scatter', function() {
             Plots.doCalcdata(gd);
 
             var cd = gd.calcdata;
-            assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
-            assertPointField(cd, 'mo', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
-            assertPointField(cd, 'ms', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
-            assertPointField(cd, 'ts', [[2, 1, 0, 0, 0, 1, 0, 0, 0, Infinity, NaN, NaN]]);
+            assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'mo', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ms', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ts', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
         });
     });
 

@@ -474,7 +474,7 @@ lib.mergeArray = function(traceAttr, cd, cdAttr, fn) {
 lib.mergeArrayCastPositive = function(traceAttr, cd, cdAttr) {
     return lib.mergeArray(traceAttr, cd, cdAttr, function(v) {
         var w = +v;
-        return isNaN(w) ? NaN : w > 0 ? w : 0;
+        return !isFinite(w) ? 0 : w > 0 ? w : 0;
     });
 };
 

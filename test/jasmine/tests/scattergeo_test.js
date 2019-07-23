@@ -215,7 +215,7 @@ describe('Test scattergeo calc', function() {
 
         expect(calcTrace).toEqual([
             { lonlat: [10, 20], mc: 0, ms: 10 },
-            { lonlat: [20, 30], mc: null, ms: NaN },
+            { lonlat: [20, 30], mc: null, ms: 0 },
             { lonlat: [BADNUM, BADNUM], mc: 5, ms: 8 },
             { lonlat: [30, 10], mc: 10, ms: 10 }
         ]);
