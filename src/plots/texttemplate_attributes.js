@@ -8,7 +8,7 @@
 
 'use strict';
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+var FORMAT_LINK = require('../constants/docs').FORMAT_LINK;
 
 module.exports = function(opts, extra) {
     opts = opts || {};

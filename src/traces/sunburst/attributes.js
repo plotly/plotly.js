@@ -10,7 +10,7 @@
 
 var plotAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var texttemplateAttrs = require('../../components/fx/texttemplate_attributes');
+var texttemplateAttrs = require('../../plots/texttemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var pieAtts = require('../pie/attributes');
 
