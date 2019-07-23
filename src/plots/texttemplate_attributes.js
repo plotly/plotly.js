@@ -34,9 +34,10 @@ module.exports = function(opts, extra) {
         role: 'info',
         editType: opts.editType || 'calc',
         description: [
-            'Template string used for rendering the information that appear on points.',
+            'Template string used for rendering the information text that appear on points.',
             'Note that this will override `textinfo`.',
             'Variables are inserted using %{variable}, for example "y: %{y}".',
+            'If the `text` attribute is set, it will be available via "%{text}"',
             'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
             FORMAT_LINK,
             'for details on the formatting syntax.',
