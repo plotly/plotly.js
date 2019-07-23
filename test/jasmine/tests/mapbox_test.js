@@ -283,7 +283,7 @@ describe('mapbox credentials', function() {
         });
     });
 
-    it('@gl should throw error if token is not registered', function() {
+    it('@gl should throw error when no non-mapbox style is set and missing a mapbox access token token', function() {
         spyOn(Lib, 'error');
 
         expect(function() {
@@ -292,6 +292,22 @@ describe('mapbox credentials', function() {
                 lon: [10, 20, 30],
                 lat: [10, 20, 30]
             }]);
+        }).toThrow(new Error(constants.missingStyleErrorMsg));
+
+        expect(Lib.error).toHaveBeenCalledTimes(0);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should throw error when setting a Mapbox style w/o a registered token', function() {
+        spyOn(Lib, 'error');
+
+        expect(function() {
+            Plotly.plot(gd, [{
+                type: 'scattermapbox',
+                lon: [10, 20, 30],
+                lat: [10, 20, 30]
+            }], {
+                mapbox: {style: 'basic'}
+            });
         }).toThrow(new Error(constants.noAccessTokenErrorMsg));
 
         expect(Lib.error).toHaveBeenCalledWith('Uses Mapbox map style, but did not set an access token.');

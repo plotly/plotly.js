@@ -39,19 +39,38 @@ var attrs = module.exports = overrideAll({
         description: [
             'Sets the mapbox access token to be used for this mapbox map.',
             'Alternatively, the mapbox access token can be set in the',
-            'configuration options under `mapboxAccessToken`.'
+            'configuration options under `mapboxAccessToken`.',
+            'Note that accessToken are only required when `style`',
+            '(e.g with values :', constants.styleValuesMapbox.join(', '), ')',
+            'and/or a layout layer references the Mapbox server.'
         ].join(' ')
     },
     style: {
         valType: 'any',
-        values: constants.styleValuesMapbox.concat(constants.styleValueOSM),
+        values: constants.styleValuesMapbox.concat(Object.keys(constants.styleValuesNonMapbox)),
         dflt: constants.styleValueDflt,
         role: 'style',
         description: [
-            'Sets the Mapbox map style.',
-            'Either input one of the default Mapbox style names or the URL to a custom style',
-            'or a valid Mapbox style JSON.',
-            'From OpenStreetMap raster tiles, use *open-street-map*.'
+            'Defines the map layers that are rendered by default below the trace layers defined in `data`,',
+            'which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.',
+            '',
+            'These layers can be defined either explicitly as a Mapbox Style object which can contain multiple',
+            'layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS)',
+            'or implicitly by using one of the built-in style objects which use WMSes which do not require any',
+            'access tokens, or by using a default Mapbox style or custom Mapbox style URL, both of',
+            'which require a Mapbox access token',
+            '',
+            'Note that Mapbox access token can be set in the `accesstoken` attribute',
+            'or in the `mapboxAccessToken` config option.',
+            '',
+            'Mapbox Style objects are of the form described in the Mapbox GL JS documentation available at',
+            'https://docs.mapbox.com/mapbox-gl-js/style-spec',
+            '',
+            'The built-in plotly.js styles objects are:', constants.styleValuesNonMapbox.join(', '),
+            '',
+            'The built-in Mapbox styles are:', constants.styleValuesMapbox.join(', '),
+            '',
+            'Mapbox style URLs are of the form: mapbox://mapbox.mapbox-<name>-<version>'
         ].join(' ')
     },
 
@@ -106,7 +125,8 @@ var attrs = module.exports = overrideAll({
             dflt: 'geojson',
             role: 'info',
             description: [
-                'Sets the source type for this layer.'
+                'Sets the source type for this layer,',
+                'that is the type of the layer data.'
             ].join(' ')
         },
 
@@ -115,9 +135,11 @@ var attrs = module.exports = overrideAll({
             role: 'info',
             description: [
                 'Sets the source data for this layer (mapbox.layer.source).',
-                'Source can be either a URL,',
-                'a geojson object (with `sourcetype` set to *geojson*)',
-                'or an array of tile URLS (with `sourcetype` set to *vector*).'
+                'When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON',
+                'or a GeoJSON object.',
+                'When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or',
+                'an array of tile URLs.',
+                'When `sourcetype` is set to *image*, `source` can be a URL to an image.'
             ].join(' ')
         },
 
@@ -145,10 +167,15 @@ var attrs = module.exports = overrideAll({
             dflt: 'circle',
             role: 'info',
             description: [
-                'Sets the layer type (mapbox.layer.type).',
-                'Support for *raster*, *background* types is coming soon.',
-                'Note that *line* and *fill* are not compatible with Point',
-                'GeoJSON geometries.'
+                'Sets the layer type,',
+                'that is the how the layer data set in `source` will be rendered',
+                'With `sourcetype` set to *geojson*, the following values are allowed:',
+                '*circle*, *line*, *fill* and *symbol*.',
+                'but note that *line* and *fill* are not compatible with Point',
+                'GeoJSON geometries.',
+                'With `sourcetype` set to *vector*, the following values are allowed:',
+                ' *circle*, *line*, *fill* and *symbol*.',
+                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is allowed.'
             ].join(' ')
         },
 
