@@ -999,7 +999,7 @@ var hovertemplateWarnings = {
     name: 'hovertemplate'
 };
 lib.hovertemplateString = function() {
-    return lib.templateFormatString.apply(hovertemplateWarnings, arguments);
+    return templateFormatString.apply(hovertemplateWarnings, arguments);
 };
 
 var texttemplateWarnings = {
@@ -1008,7 +1008,7 @@ var texttemplateWarnings = {
     name: 'texttemplate'
 };
 lib.texttemplateString = function() {
-    return lib.templateFormatString.apply(texttemplateWarnings, arguments);
+    return templateFormatString.apply(texttemplateWarnings, arguments);
 };
 
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
@@ -1028,7 +1028,7 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
  *
  * @return {string} templated string
  */
-lib.templateFormatString = function(string, labels, d3locale) {
+function templateFormatString(string, labels, d3locale) {
     var opts = this;
     var args = arguments;
     // Not all that useful, but cache nestedProperty instantiation
@@ -1078,7 +1078,7 @@ lib.templateFormatString = function(string, labels, d3locale) {
         }
         return value;
     });
-};
+}
 
 /*
  * alphanumeric string sort, tailored for subplot IDs like scene2, scene10, x10y13 etc
