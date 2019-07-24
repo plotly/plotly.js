@@ -28,6 +28,8 @@ var TEXTOFFSETSIGN = {
     start: 1, left: 1, end: -1, right: -1, middle: 0, center: 0, bottom: 1, top: -1
 };
 
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+
 function convertStyle(gd, trace) {
     var i;
 
@@ -111,7 +113,26 @@ function convertTextStyle(trace) {
     var optsOut = {};
     var i;
 
-    optsOut.text = trace.text;
+    var texttemplate = trace.texttemplate;
+    if(texttemplate) {
+        optsOut.text = [];
+        var pt;
+        if(Array.isArray(texttemplate)) {
+            for(i = 0; i < texttemplate.length; i++) {
+                pt = {};
+                appendArrayPointValue(pt, trace, i);
+                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, function() {}, pt));
+            }
+        } else {
+            for(i = 0; i < trace.x.length; i++) {
+                pt = {};
+                appendArrayPointValue(pt, trace, i);
+                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, function() {}, pt));
+            }
+        }
+    } else {
+        optsOut.text = trace.text;
+    }
     optsOut.opacity = trace.opacity;
     optsOut.font = {};
     optsOut.align = [];
