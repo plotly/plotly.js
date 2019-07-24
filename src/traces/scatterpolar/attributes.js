@@ -9,6 +9,7 @@
 'use strict';
 
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var texttemplateAttrs = require('../../plots/texttemplate_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
@@ -85,6 +86,9 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['r', 'theta', 'text']
+    }),
     hovertext: scatterAttrs.hovertext,
 
     line: {

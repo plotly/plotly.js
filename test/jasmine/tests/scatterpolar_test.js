@@ -9,6 +9,7 @@ var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('Test scatterpolar trace defaults:', function() {
     var traceOut;
@@ -197,4 +198,18 @@ describe('Test scatterpolar hover:', function() {
             run(specs).catch(failTest).then(done);
         });
     });
+});
+
+describe('Test scatterpolar texttemplate:', function() {
+    checkTextTemplate([{
+        'type': 'scatterpolar',
+        'mode': 'markers+text',
+        'text': ['A', 'B', 'C'],
+        'textposition': 'top center',
+        'r': [1, 0.5, 1],
+        'theta': [0, 90, 180],
+    }], 'g.textpoint', [
+        ['%{text}: (%{r:0.2f}, %{theta:0.2f})', ['A: (1.00, 0.00)', 'B: (0.50, 1.57)', 'C: (1.00, 3.14)']],
+        [['', '', '%{theta:0.2f}'], ['', '', '3.14']]
+    ]);
 });

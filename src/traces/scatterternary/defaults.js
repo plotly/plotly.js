@@ -58,6 +58,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('sum');
 
     coerce('text');
+    coerce('texttemplate');
     coerce('hovertext');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 

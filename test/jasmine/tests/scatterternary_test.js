@@ -11,6 +11,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -553,4 +554,17 @@ describe('Test scatterternary *cliponaxis*', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test scattergeo texttemplate:', function() {
+    checkTextTemplate([{
+        'type': 'scatterternary',
+        'a': [3, 2, 5],
+        'b': [2, 5, 2],
+        'c': [5, 2, 2 ],
+        'mode': 'markers+text',
+        'text': ['A', 'B', 'C']
+    }], 'g.textpoint', [
+        ['%{text} (%{a:.2f}, %{b:.2f}, %{c:.2f})', ['A (0.30, 0.20, 0.50)', 'B (0.22, 0.56, 0.22)', 'C (0.56, 0.22, 0.22)']]
+    ]);
 });
