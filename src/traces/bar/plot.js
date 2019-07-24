@@ -26,6 +26,8 @@ var attributes = require('./attributes');
 var attributeText = attributes.text;
 var attributeTextPosition = attributes.textposition;
 
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+
 // padding in pixels around text
 var TEXTPAD = 3;
 
@@ -567,8 +569,8 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
     obj.value = cdi.s;
     obj.valueLabel = formatNumber(cdi.s);
 
-    obj.x = cdi.x;
-    obj.y = cdi.y;
+    var pt = {};
+    appendArrayPointValue(pt, trace, cdi.i);
 
     if(isWaterfall) {
         obj.delta = +cdi.rawS || cdi.s;
@@ -593,7 +595,7 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
 
     var customdata = Lib.castOption(trace, cdi.i, 'customdata');
     if(customdata) obj.customdata = customdata;
-    return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, obj, trace._meta || {});
+    return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
 }
 
 // TODO: calcTextinfo should build a texttemplate pass it to calcTexttemplate()

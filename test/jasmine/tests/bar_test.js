@@ -1108,6 +1108,17 @@ describe('A bar plot', function() {
       [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
     ]);
 
+    checkTextTemplate([{
+        type: 'bar',
+        textposition: 'outside',
+        x: ['2019-01-01', '2019-02-01'],
+        y: [1, 2],
+        hovertemplate: '%{x}',
+        texttemplate: '%{x}'
+    }], 'text.bartext', [
+      ['%{x}', ['2019-01-01', '2019-02-01']]
+    ]);
+
     it('should show bar texts (inside case)', function(done) {
         var data = [{
             y: [10, 20, 30],

@@ -565,6 +565,6 @@ describe('Test scattergeo texttemplate:', function() {
         'mode': 'markers+text',
         'text': ['A', 'B', 'C']
     }], 'g.textpoint', [
-        ['%{text} (%{a:.2f}, %{b:.2f}, %{c:.2f})', ['A (0.30, 0.20, 0.50)', 'B (0.22, 0.56, 0.22)', 'C (0.56, 0.22, 0.22)']]
+        ['%{text} (%{a:.1f}, %{b:.1f}, %{c:.1f})', ['A (3.0, 2.0, 5.0)', 'B (2.0, 5.0, 2.0)', 'C (5.0, 2.0, 2.0)']]
     ]);
 });
