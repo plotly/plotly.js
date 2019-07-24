@@ -66,7 +66,7 @@ module.exports = overrideAll({
         ].join(' ')
     }),
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['latlon', 'text']
+        keys: ['lat', 'lon', 'location', 'text']
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
