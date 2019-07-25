@@ -340,22 +340,22 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
             trace.constraintext === 'both' ||
             trace.constraintext === 'outside';
 
-        transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, {
+        transform = getTransform(toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: trace.textangle
-        });
+        }));
     } else {
         constrained =
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, {
+        transform = getTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: trace.textangle,
             anchor: trace.insidetextanchor
-        });
+        }));
     }
 
     textSelection.attr('transform', transform);
@@ -365,7 +365,7 @@ function getRotationFromAngle(angle) {
     return (angle === 'auto') ? 0 : angle;
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
+function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
@@ -440,10 +440,17 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     // lastly apply auto rotation
     if(isAutoRotated) rotation += 90;
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotation);
+    return {
+        textX: textX,
+        textY: textY,
+        targetX: targetX,
+        targetY: targetY,
+        scale: scale,
+        rotation: rotation
+    };
 }
 
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
+function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
@@ -491,10 +498,24 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotation);
+    return {
+        textX: textX,
+        textY: textY,
+        targetX: targetX,
+        targetY: targetY,
+        scale: scale,
+        rotation: rotation
+    };
 }
 
-function getTransform(textX, textY, targetX, targetY, scale, rotation) {
+function getTransform(opts) {
+    var textX = opts.textX;
+    var textY = opts.textY;
+    var targetX = opts.targetX;
+    var targetY = opts.targetY;
+    var scale = opts.scale;
+    var rotation = opts.rotation;
+
     var transformScale;
     var transformRotate;
     var transformTranslate;
@@ -610,6 +631,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
 
 module.exports = {
     plot: plot,
-    getTransformToMoveInsideBar: getTransformToMoveInsideBar,
-    getTransformToMoveOutsideBar: getTransformToMoveOutsideBar
+    getTransform: getTransform,
+    toMoveInsideBar: toMoveInsideBar,
+    toMoveOutsideBar: toMoveOutsideBar
 };
