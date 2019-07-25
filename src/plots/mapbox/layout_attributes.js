@@ -47,7 +47,7 @@ var attrs = module.exports = overrideAll({
     },
     style: {
         valType: 'any',
-        values: constants.styleValuesMapbox.concat(Object.keys(constants.styleValuesNonMapbox)),
+        values: constants.styleValuesMapbox.concat(constants.styleValuesNonMapbox),
         dflt: constants.styleValueDflt,
         role: 'style',
         description: [
