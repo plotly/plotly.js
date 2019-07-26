@@ -361,7 +361,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts) {
     textSelection.attr('transform', transform);
 }
 
-function getRotationFromAngle(angle) {
+function getRotateFromAngle(angle) {
     return (angle === 'auto') ? 0 : angle;
 }
 
@@ -402,9 +402,9 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
         lx = tmp;
     }
 
-    var rotation = getRotationFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotation));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotation));
+    var rotate = getRotateFromAngle(angle);
+    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
+    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
 
     // compute and apply text padding
     var dx = Math.max(lx * absCos, ly * absSin);
@@ -438,7 +438,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var textY = (textBB.top + textBB.bottom) / 2;
 
     // lastly apply auto rotation
-    if(isAutoRotated) rotation += 90;
+    if(isAutoRotated) rotate += 90;
 
     return {
         textX: textX,
@@ -446,7 +446,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
         targetX: targetX,
         targetY: targetY,
         scale: scale,
-        rotation: rotation
+        rotate: rotate
     };
 }
 
@@ -469,7 +469,7 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
         textpad = (lx > 2 * TEXTPAD) ? TEXTPAD : 0;
     }
 
-    // compute rotation and scale
+    // compute rotate and scale
     var scale = 1;
     if(constrained) {
         scale = (isHorizontal) ?
@@ -477,9 +477,9 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
             Math.min(1, lx / textWidth);
     }
 
-    var rotation = getRotationFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotation));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotation));
+    var rotate = getRotateFromAngle(angle);
+    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
+    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
 
     // compute text and target positions
     var targetWidth = scale * (isHorizontal ? textHeight : textWidth);
@@ -504,7 +504,7 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
         targetX: targetX,
         targetY: targetY,
         scale: scale,
-        rotation: rotation
+        rotate: rotate
     };
 }
 
@@ -514,7 +514,7 @@ function getTransform(opts) {
     var targetX = opts.targetX;
     var targetY = opts.targetY;
     var scale = opts.scale;
-    var rotation = opts.rotation;
+    var rotate = opts.rotate;
 
     var transformScale;
     var transformRotate;
@@ -526,8 +526,8 @@ function getTransform(opts) {
         transformScale = '';
     }
 
-    transformRotate = (rotation) ?
-        'rotate(' + rotation + ' ' + textX + ' ' + textY + ') ' : '';
+    transformRotate = (rotate) ?
+        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
 
     // Note that scaling also affects the center of the text box
     var translateX = (targetX - scale * textX);
