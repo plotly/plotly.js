@@ -840,7 +840,6 @@ function autoTickRound(ax) {
         ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
         var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
-
         var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
         if(Math.abs(rangeexp) > 3) {
             if(isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {

@@ -360,7 +360,7 @@ describe('parcoords edge cases', function() {
 
     it('@gl Works fine with one panel only', function(done) {
         var mockCopy = Lib.extendDeep({}, mock2);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(2);
@@ -378,7 +378,7 @@ describe('parcoords edge cases', function() {
 
     it('@gl Do something sensible if there is no panel i.e. dimension count is less than 2', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(1);
             expect(document.querySelectorAll('.axis').length).toEqual(1); // sole axis still shows up
@@ -395,10 +395,29 @@ describe('parcoords edge cases', function() {
     it('@gl Does not error with zero dimensions', function(done) {
         var mockCopy = Lib.extendDeep({}, mock0);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(0);
             expect(document.querySelectorAll('.axis').length).toEqual(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl Does not error with dimensions including only 0', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'parcoords',
+                dimensions: [{
+                    label: 'all zero',
+                    values: [0, 0]
+                }]
+            }],
+            layout: {}
+        }).then(function() {
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(1);
+            expect(document.querySelectorAll('.axis').length).toEqual(1);
         })
         .catch(failTest)
         .then(done);
@@ -410,7 +429,7 @@ describe('parcoords edge cases', function() {
         mockCopy.layout.width = 320;
         mockCopy.data[0].dimensions[1].label = mockCopy.data[0].dimensions[0].label;
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(2);
@@ -434,7 +453,7 @@ describe('parcoords edge cases', function() {
             }
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(2);
@@ -456,7 +475,7 @@ describe('parcoords edge cases', function() {
             dim.values = [];
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(0);
@@ -482,7 +501,7 @@ describe('parcoords edge cases', function() {
             }
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(2);
@@ -511,7 +530,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -537,7 +556,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -564,7 +583,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -595,7 +614,7 @@ describe('parcoords edge cases', function() {
         mockCopy.data[0].dimensions[0] = 'This is not a plain object';
         mockCopy.data[0].dimensions[1].values = 'This is not an array';
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
             expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
@@ -921,7 +940,7 @@ describe('parcoords basic use', function() {
         reversedMockCopy.data[0].dimensions.forEach(function(d) {d.id = 'R_' + d.id;});
         reversedMockCopy.data[0].dimensions.forEach(function(d) {d.label = 'R_' + d.label;});
 
-        Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
+        Plotly.plot(gd, reversedMockCopy).then(function() {
             expect(gd.data.length).toEqual(2);
 
             expect(gd.data[0].dimensions.length).toEqual(11);
