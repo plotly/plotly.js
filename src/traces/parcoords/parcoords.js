@@ -32,19 +32,20 @@ function findExtreme(fn, values, len) {
 }
 
 function findExtremes(values, len) {
-    return [
+    return fixExtremes(
         findExtreme(Math.min, values, len),
         findExtreme(Math.max, values, len)
-    ];
+    );
 }
 
 function dimensionExtent(dimension) {
     var range = dimension.range;
-    if(!range) range = findExtremes(dimension.values, dimension._length);
+    return range ?
+        fixExtremes(range[0], range[1]) :
+        findExtremes(dimension.values, dimension._length);
+}
 
-    var lo = range[0];
-    var hi = range[1];
-
+function fixExtremes(lo, hi) {
     if(isNaN(lo) || !isFinite(lo)) {
         lo = 0;
     }
@@ -404,8 +405,15 @@ function calcAllTicks(cd) {
                 var dim = dimensions[k]._ax;
 
                 if(dim) {
-                    if(!dim.range) dim.range = findExtremes(values, trace._length);
-                    if(!dim.dtick) dim.dtick = 0.01 * (Math.abs(dim.range[1] - dim.range[0]) || 1);
+                    if(!dim.range) {
+                        dim.range = findExtremes(values, trace._length);
+                    } else {
+                        dim.range = fixExtremes(dim.range[0], dim.range[1]);
+                    }
+
+                    if(!dim.dtick) {
+                        dim.dtick = 0.01 * (Math.abs(dim.range[1] - dim.range[0]) || 1);
+                    }
 
                     dim.tickformat = dimensions[k].tickformat;
                     Axes.calcTicks(dim);
