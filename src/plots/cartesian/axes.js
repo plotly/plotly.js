@@ -839,7 +839,7 @@ function autoTickRound(ax) {
         // 2 digits past largest digit of dtick
         ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
-        var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
+        var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1])) || 1;
 
         var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
         if(Math.abs(rangeexp) > 3) {
