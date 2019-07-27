@@ -102,7 +102,7 @@ function setHighlight(d) {
 
 function unitToPx(unitRanges, height) {
     return unitRanges.map(function(pr) {
-        return pr.map(function(v) { return v * height; }).sort(sortAsc);
+        return pr.map(function(v) { return Math.max(0, v * height); }).sort(sortAsc);
     });
 }
 
