@@ -1,0 +1,154 @@
+{
+    "data": [
+        {
+            "type": "parcoords",
+            "dimensions": [
+                {
+                    "label": "A+1",
+                    "range": [
+                        1,
+                        2
+                    ],
+                    "constraintrange": [
+                        1.25,
+                        1.75
+                    ],
+                    "values": [
+                        1,
+                        1.25,
+                        1.5,
+                        1.75,
+                        2
+                    ]
+                },
+                {
+                    "label": "2A",
+                    "range": [
+                        0,
+                        2
+                    ],
+                    "constraintrange": [
+                        0.5,
+                        1.5
+                    ],
+                    "values": [
+                        0,
+                        0.5,
+                        1,
+                        1.5,
+                        2
+                    ]
+                },
+                {
+                    "label": "A",
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "constraintrange": [
+                        0.25,
+                        0.75
+                    ],
+                    "values": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ]
+                },
+                {
+                    "label": "Above",
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "constraintrange": [
+                        0.25,
+                        1.25
+                    ],
+                    "values": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ]
+                },
+                {
+                    "label": "Below",
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "constraintrange": [
+                        -0.25,
+                        0.75
+                    ],
+                    "values": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ]
+                },
+                {
+                    "label": "2/above",
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "constraintrange": [
+                        [
+                            0.25,
+                            0.5
+                        ],
+                        [
+                            0.75,
+                            1.25
+                        ]
+                    ],
+                    "values": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ]
+                },
+                {
+                    "label": "2/below",
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "constraintrange": [
+                        [
+                            -0.25,
+                            0.25
+                        ],
+                        [
+                            0.5,
+                            0.75
+                        ]
+                    ],
+                    "values": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ]
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 400,
+        "title": {
+            "text": "Should display & select constraintrange below/above ranges"
+        }
+    }
+}
