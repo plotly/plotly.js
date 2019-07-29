@@ -1496,8 +1496,7 @@ describe('parcoords constraint interactions', function() {
         .then(delay(noSnapDelay))
         .then(function() {
             expect(getDashArray(1)).toBeCloseToArray(newDashArray);
-            // TODO: ideally this would get clipped to [0, 9]...
-            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-0.1020, 9]);
+            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-2.913369429404415, 9]);
         })
         .catch(failTest)
         .then(done);
