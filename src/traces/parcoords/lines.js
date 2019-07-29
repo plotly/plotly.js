@@ -225,9 +225,11 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
 
 function expandedPixelRange(bounds) {
     var dh = maskHeight - 1;
+    var a = Math.max(0, Math.floor(bounds[0] * dh), 0);
+    var b = Math.min(dh, Math.ceil(bounds[1] * dh), dh);
     return [
-        Math.max(0, Math.floor(bounds[0] * dh), 0),
-        Math.min(dh, Math.ceil(bounds[1] * dh), dh)
+        Math.min(a, b),
+        Math.max(a, b)
     ];
 }
 
