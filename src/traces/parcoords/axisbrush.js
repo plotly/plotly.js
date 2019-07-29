@@ -78,6 +78,7 @@ function setHighlight(d) {
     if(!d.brush.filterSpecified) {
         return '0,' + d.height;
     }
+
     var pixelRanges = unitToPx(d.brush.filter.getConsolidated(), d.height);
     var dashArray = [0]; // we start with a 0 length selection as filter ranges are inclusive, not exclusive
     var p, sectionHeight, iNext;
@@ -102,7 +103,7 @@ function setHighlight(d) {
 
 function unitToPx(unitRanges, height) {
     return unitRanges.map(function(pr) {
-        return pr.map(function(v) { return v * height; }).sort(sortAsc);
+        return pr.map(function(v) { return Math.max(0, v * height); }).sort(sortAsc);
     });
 }
 
@@ -270,13 +271,6 @@ function attachDragBehavior(selection) {
                 var topViolation = Math.max(0, s.newExtent[1] - 1);
                 s.newExtent[0] += bottomViolation;
                 s.newExtent[1] -= topViolation;
-                if(s.grabbingBar) {
-                    // in case of bar dragging (non-resizing interaction, unlike north/south resize or new bar creation)
-                    // the constraint adjustment must apply to the other end of the bar as well, otherwise it'd
-                    // shorten or lengthen
-                    s.newExtent[1] += bottomViolation;
-                    s.newExtent[0] -= topViolation;
-                }
 
                 d.brush.filterSpecified = true;
                 s.extent = s.stayingIntervals.concat([s.newExtent]);
