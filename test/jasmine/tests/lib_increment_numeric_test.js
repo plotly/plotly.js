@@ -59,6 +59,63 @@ describe('incrementNumeric', function() {
         reverseAndNegative(opts);
     }
 
+    it('should increment numbers from 0 to 10 by 1', function() {
+        examine({
+            start: 0,
+            step: 1,
+            expected: [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ]
+        });
+    });
+
+    it('should increment numbers from 0.1 to 0.10007 by 0.000007', function() {
+        examine({
+            start: 0.1,
+            step: 0.000007,
+            expected: [
+                0.100007,
+                0.100014,
+                0.100021,
+                0.100028,
+                0.100035,
+                0.100042,
+                0.100049,
+                0.100056,
+                0.100063,
+                0.10007
+            ]
+        });
+    });
+
+    it('should increment numbers from 0 to 0.00007 by 0.000007', function() {
+        examine({
+            start: 0,
+            step: 0.000007,
+            expected: [
+                0.000007,
+                0.000014,
+                0.000021,
+                0.000028,
+                0.000035,
+                0.000042,
+                0.000049,
+                0.000056,
+                0.000063,
+                0.00007
+            ]
+        });
+    });
+
     it('should increment numbers from 0 to 7 by 0.7', function() {
         examine({
             start: 0,
@@ -377,6 +434,25 @@ describe('incrementNumeric', function() {
         });
     });
 
+    it('should increment numbers from 0.0099 to 1.0099.1 by 0.109901', function() {
+        examine({
+            start: 0.0099,
+            step: 0.100001,
+            expected: [
+                0.109901,
+                0.209902,
+                0.309903,
+                0.409904,
+                0.509905,
+                0.609906,
+                0.709907,
+                0.809908,
+                0.909909,
+                1.00991
+            ]
+        });
+    });
+
     it('should increment numbers from 0 to 100001.1 by 10000.11', function() {
         examine({
             start: 0,
@@ -434,6 +510,44 @@ describe('incrementNumeric', function() {
         });
     });
 
+    it('should increment numbers from 0.9 to 0.91111 by 0.001111', function() {
+        examine({
+            start: 0.9,
+            step: 0.001111,
+            expected: [
+                0.901111,
+                0.902222,
+                0.903333,
+                0.904444,
+                0.905555,
+                0.906666,
+                0.907777,
+                0.908888,
+                0.909999,
+                0.91111
+            ]
+        });
+    });
+
+    it('should increment numbers from 0 to 0.1111 by 0.01111', function() {
+        examine({
+            start: 0,
+            step: 0.01111,
+            expected: [
+                0.01111,
+                0.02222,
+                0.03333,
+                0.04444,
+                0.05555,
+                0.06666,
+                0.07777,
+                0.08888,
+                0.09999,
+                0.1111
+            ]
+        });
+    });
+
     it('should increment numbers from 9 to 9.1111 by 0.01111', function() {
         examine({
             start: 9,
@@ -472,59 +586,59 @@ describe('incrementNumeric', function() {
         });
     });
 
-    it('should increment numbers from 0.99999 to 1.99999 by 0.1', function() {
+    it('should increment numbers from 0.999999999 to 1.999999999 by 0.1', function() {
         examine({
-            start: 0.99999,
+            start: 0.99999999999,
             step: 0.1,
             expected: [
-                1.09999,
-                1.19999,
-                1.29999,
-                1.39999,
-                1.49999,
-                1.59999,
-                1.69999,
-                1.79999,
-                1.89999,
-                1.99999
+                1.09999999999,
+                1.19999999999,
+                1.29999999999,
+                1.39999999999,
+                1.49999999999,
+                1.59999999999,
+                1.69999999999,
+                1.79999999999,
+                1.89999999999,
+                1.99999999999
             ]
         });
     });
 
-    it('should increment numbers from 654320.99999 to 654321.99999 by 0.1', function() {
+    it('should increment numbers from 7654320.99999 to 7654321.99999 by 0.1', function() {
         examine({
-            start: 654320.99999,
+            start: 7654320.99999,
             step: 0.1,
             expected: [
-                654321.09999,
-                654321.19999,
-                654321.29999,
-                654321.39999,
-                654321.49999,
-                654321.59999,
-                654321.69999,
-                654321.79999,
-                654321.89999,
-                654321.99999
+                7654321.09999,
+                7654321.19999,
+                7654321.29999,
+                7654321.39999,
+                7654321.49999,
+                7654321.59999,
+                7654321.69999,
+                7654321.79999,
+                7654321.89999,
+                7654321.99999
             ]
         });
     });
 
-    it('should increment numbers from 654320.001 to 654321.001 by 0.1', function() {
+    it('should increment numbers from 7654320.001 to 7654321.001 by 0.1', function() {
         examine({
-            start: 654320.00001,
+            start: 7654320.00001,
             step: 0.1,
             expected: [
-                654320.10001,
-                654320.20001,
-                654320.30001,
-                654320.40001,
-                654320.50001,
-                654320.60001,
-                654320.70001,
-                654320.80001,
-                654320.90001,
-                654321.00001
+                7654320.10001,
+                7654320.20001,
+                7654320.30001,
+                7654320.40001,
+                7654320.50001,
+                7654320.60001,
+                7654320.70001,
+                7654320.80001,
+                7654320.90001,
+                7654321.00001
             ]
         });
     });
@@ -548,40 +662,40 @@ describe('incrementNumeric', function() {
         });
     });
 
-    it('should increment numbers from 0.12345 to 10000.12345 by 1000', function() {
+    it('should increment numbers from 0.12345678 to 10000.12345678 by 1000', function() {
         examine({
-            start: 0.12345,
+            start: 0.12345678,
             step: 1000,
             expected: [
-                1000.12345,
-                2000.12345,
-                3000.12345,
-                4000.12345,
-                5000.12345,
-                6000.12345,
-                7000.12345,
-                8000.12345,
-                9000.12345,
-                10000.12345
+                1000.12345678,
+                2000.12345678,
+                3000.12345678,
+                4000.12345678,
+                5000.12345678,
+                6000.12345678,
+                7000.12345678,
+                8000.12345678,
+                9000.12345678,
+                10000.12345678
             ]
         });
     });
 
-    it('should increment numbers from 0.9999 to 100000.9999 by 1000', function() {
+    it('should increment numbers from 0.9999 to 100000.9999 by 10000', function() {
         examine({
             start: 0.99999,
-            step: 1000,
+            step: 10000,
             expected: [
-                1000.99999,
-                2000.99999,
-                3000.99999,
-                4000.99999,
-                5000.99999,
-                6000.99999,
-                7000.99999,
-                8000.99999,
-                9000.99999,
-                10000.99999
+                10000.99999,
+                20000.99999,
+                30000.99999,
+                40000.99999,
+                50000.99999,
+                60000.99999,
+                70000.99999,
+                80000.99999,
+                90000.99999,
+                100000.99999
             ]
         });
     });
