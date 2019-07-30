@@ -266,12 +266,6 @@ function attachDragBehavior(selection) {
                     s.newExtent = [s.startExtent, d.unitToPaddedPx.invert(y)].sort(sortAsc);
                 }
 
-                // take care of the parcoords axis height constraint: bar can't breach it
-                var bottomViolation = Math.max(0, -s.newExtent[0]);
-                var topViolation = Math.max(0, s.newExtent[1] - 1);
-                s.newExtent[0] += bottomViolation;
-                s.newExtent[1] -= topViolation;
-
                 d.brush.filterSpecified = true;
                 s.extent = s.stayingIntervals.concat([s.newExtent]);
                 s.brushCallback(d);
