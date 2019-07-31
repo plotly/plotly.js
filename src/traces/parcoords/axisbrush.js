@@ -206,6 +206,140 @@ function getInterval(d, y) {
     return out;
 }
 
+function dragstart(lThis, d) {
+    d3.event.sourceEvent.stopPropagation();
+    var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
+    var unitLocation = d.unitToPaddedPx.invert(y);
+    var b = d.brush;
+    var interval = getInterval(d, y);
+    var unitRange = interval.interval;
+    var s = b.svgBrush;
+    s.wasDragged = false; // we start assuming there won't be a drag - useful for reset
+    s.grabbingBar = interval.region === 'ns';
+    if(s.grabbingBar) {
+        var pixelRange = unitRange.map(d.unitToPaddedPx);
+        s.grabPoint = y - pixelRange[0] - c.verticalPadding;
+        s.barLength = pixelRange[1] - pixelRange[0];
+    }
+    s.clickableOrdinalRange = interval.clickableOrdinalRange;
+    s.stayingIntervals = (d.multiselect && b.filterSpecified) ? b.filter.getConsolidated() : [];
+    if(unitRange) {
+        s.stayingIntervals = s.stayingIntervals.filter(function(int2) {
+            return int2[0] !== unitRange[0] && int2[1] !== unitRange[1];
+        });
+    }
+    s.startExtent = interval.region ? unitRange[interval.region === 's' ? 1 : 0] : unitLocation;
+    d.parent.inBrushDrag = true;
+    s.brushStartCallback();
+}
+
+function drag(lThis, d) {
+    d3.event.sourceEvent.stopPropagation();
+    var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
+    var s = d.brush.svgBrush;
+    s.wasDragged = true;
+    s._dragging = true;
+
+    if(s.grabbingBar) { // moving the bar
+        s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitToPaddedPx.invert);
+    } else { // south/north drag or new bar creation
+        s.newExtent = [s.startExtent, d.unitToPaddedPx.invert(y)].sort(sortAsc);
+    }
+
+    d.brush.filterSpecified = true;
+    s.extent = s.stayingIntervals.concat([s.newExtent]);
+    s.brushCallback(d);
+    renderHighlight(lThis.parentNode);
+}
+
+function dragend(lThis, d) {
+    var brush = d.brush;
+    var filter = brush.filter;
+    var s = brush.svgBrush;
+
+    if(!s._dragging) { // i.e. click
+        // mock zero drag
+        mousemove(lThis, d);
+        drag(lThis, d);
+        // remember it is a click not a drag
+        d.brush.svgBrush.wasDragged = false;
+    }
+    s._dragging = false;
+
+    var e = d3.event;
+    e.sourceEvent.stopPropagation();
+    var grabbingBar = s.grabbingBar;
+    s.grabbingBar = false;
+    s.grabLocation = undefined;
+    d.parent.inBrushDrag = false;
+    clearCursor(); // instead of clearing, a nicer thing would be to set it according to current location
+    if(!s.wasDragged) { // a click+release on the same spot (ie. w/o dragging) means a bar or full reset
+        s.wasDragged = undefined; // logic-wise unneeded, just shows `wasDragged` has no longer a meaning
+        if(s.clickableOrdinalRange) {
+            if(brush.filterSpecified && d.multiselect) {
+                s.extent.push(s.clickableOrdinalRange);
+            } else {
+                s.extent = [s.clickableOrdinalRange];
+                brush.filterSpecified = true;
+            }
+        } else if(grabbingBar) {
+            s.extent = s.stayingIntervals;
+            if(s.extent.length === 0) {
+                brushClear(brush);
+            }
+        } else {
+            brushClear(brush);
+        }
+        s.brushCallback(d);
+        renderHighlight(lThis.parentNode);
+        s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
+        return; // no need to fuse intervals or snap to ordinals, so we can bail early
+    }
+
+    var mergeIntervals = function() {
+        // Key piece of logic: once the button is released, possibly overlapping intervals will be fused:
+        // Here it's done immediately on click release while on ordinal snap transition it's done at the end
+        filter.set(filter.getConsolidated());
+    };
+
+    if(d.ordinal) {
+        var a = d.unitTickvals;
+        if(a[a.length - 1] < a[0]) a.reverse();
+        s.newExtent = [
+            ordinalScaleSnap(0, a, s.newExtent[0], s.stayingIntervals),
+            ordinalScaleSnap(1, a, s.newExtent[1], s.stayingIntervals)
+        ];
+        var hasNewExtent = s.newExtent[1] > s.newExtent[0];
+        s.extent = s.stayingIntervals.concat(hasNewExtent ? [s.newExtent] : []);
+        if(!s.extent.length) {
+            brushClear(brush);
+        }
+        s.brushCallback(d);
+        if(hasNewExtent) {
+            // merging intervals post the snap tween
+            renderHighlight(lThis.parentNode, mergeIntervals);
+        } else {
+            // if no new interval, don't animate, just redraw the highlight immediately
+            mergeIntervals();
+            renderHighlight(lThis.parentNode);
+        }
+    } else {
+        mergeIntervals(); // merging intervals immediately
+    }
+    s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
+}
+
+function mousemove(lThis, d) {
+    var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
+    var interval = getInterval(d, y);
+
+    var cursor = 'crosshair';
+    if(interval.clickableOrdinalRange) cursor = 'pointer';
+    else if(interval.region) cursor = interval.region + '-resize';
+    d3.select(document.body)
+        .style('cursor', cursor);
+}
+
 function attachDragBehavior(selection) {
     // There's some fiddling with pointer cursor styling so that the cursor preserves its shape while dragging a brush
     // even if the cursor strays from the interacting bar, which is bound to happen as bars are thin and the user
@@ -213,130 +347,15 @@ function attachDragBehavior(selection) {
     selection
         .on('mousemove', function(d) {
             d3.event.preventDefault();
-            if(!d.parent.inBrushDrag) {
-                var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-                var interval = getInterval(d, y);
-
-                var cursor = 'crosshair';
-                if(interval.clickableOrdinalRange) cursor = 'pointer';
-                else if(interval.region) cursor = interval.region + '-resize';
-                d3.select(document.body)
-                    .style('cursor', cursor);
-            }
+            if(!d.parent.inBrushDrag) mousemove(this, d);
         })
         .on('mouseleave', function(d) {
             if(!d.parent.inBrushDrag) clearCursor();
         })
         .call(d3.behavior.drag()
-            .on('dragstart', function(d) {
-                d3.event.sourceEvent.stopPropagation();
-                var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-                var unitLocation = d.unitToPaddedPx.invert(y);
-                var b = d.brush;
-                var interval = getInterval(d, y);
-                var unitRange = interval.interval;
-                var s = b.svgBrush;
-                s.wasDragged = false; // we start assuming there won't be a drag - useful for reset
-                s.grabbingBar = interval.region === 'ns';
-                if(s.grabbingBar) {
-                    var pixelRange = unitRange.map(d.unitToPaddedPx);
-                    s.grabPoint = y - pixelRange[0] - c.verticalPadding;
-                    s.barLength = pixelRange[1] - pixelRange[0];
-                }
-                s.clickableOrdinalRange = interval.clickableOrdinalRange;
-                s.stayingIntervals = (d.multiselect && b.filterSpecified) ? b.filter.getConsolidated() : [];
-                if(unitRange) {
-                    s.stayingIntervals = s.stayingIntervals.filter(function(int2) {
-                        return int2[0] !== unitRange[0] && int2[1] !== unitRange[1];
-                    });
-                }
-                s.startExtent = interval.region ? unitRange[interval.region === 's' ? 1 : 0] : unitLocation;
-                d.parent.inBrushDrag = true;
-                s.brushStartCallback();
-            })
-            .on('drag', function(d) {
-                d3.event.sourceEvent.stopPropagation();
-                var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-                var s = d.brush.svgBrush;
-                s.wasDragged = true;
-
-                if(s.grabbingBar) { // moving the bar
-                    s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitToPaddedPx.invert);
-                } else { // south/north drag or new bar creation
-                    s.newExtent = [s.startExtent, d.unitToPaddedPx.invert(y)].sort(sortAsc);
-                }
-
-                d.brush.filterSpecified = true;
-                s.extent = s.stayingIntervals.concat([s.newExtent]);
-                s.brushCallback(d);
-                renderHighlight(this.parentNode);
-            })
-            .on('dragend', function(d) {
-                var e = d3.event;
-                e.sourceEvent.stopPropagation();
-                var brush = d.brush;
-                var filter = brush.filter;
-                var s = brush.svgBrush;
-                var grabbingBar = s.grabbingBar;
-                s.grabbingBar = false;
-                s.grabLocation = undefined;
-                d.parent.inBrushDrag = false;
-                clearCursor(); // instead of clearing, a nicer thing would be to set it according to current location
-                if(!s.wasDragged) { // a click+release on the same spot (ie. w/o dragging) means a bar or full reset
-                    s.wasDragged = undefined; // logic-wise unneeded, just shows `wasDragged` has no longer a meaning
-                    if(s.clickableOrdinalRange) {
-                        if(brush.filterSpecified && d.multiselect) {
-                            s.extent.push(s.clickableOrdinalRange);
-                        } else {
-                            s.extent = [s.clickableOrdinalRange];
-                            brush.filterSpecified = true;
-                        }
-                    } else if(grabbingBar) {
-                        s.extent = s.stayingIntervals;
-                        if(s.extent.length === 0) {
-                            brushClear(brush);
-                        }
-                    } else {
-                        brushClear(brush);
-                    }
-                    s.brushCallback(d);
-                    renderHighlight(this.parentNode);
-                    s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
-                    return; // no need to fuse intervals or snap to ordinals, so we can bail early
-                }
-
-                var mergeIntervals = function() {
-                    // Key piece of logic: once the button is released, possibly overlapping intervals will be fused:
-                    // Here it's done immediately on click release while on ordinal snap transition it's done at the end
-                    filter.set(filter.getConsolidated());
-                };
-
-                if(d.ordinal) {
-                    var a = d.unitTickvals;
-                    if(a[a.length - 1] < a[0]) a.reverse();
-                    s.newExtent = [
-                        ordinalScaleSnap(0, a, s.newExtent[0], s.stayingIntervals),
-                        ordinalScaleSnap(1, a, s.newExtent[1], s.stayingIntervals)
-                    ];
-                    var hasNewExtent = s.newExtent[1] > s.newExtent[0];
-                    s.extent = s.stayingIntervals.concat(hasNewExtent ? [s.newExtent] : []);
-                    if(!s.extent.length) {
-                        brushClear(brush);
-                    }
-                    s.brushCallback(d);
-                    if(hasNewExtent) {
-                        // merging intervals post the snap tween
-                        renderHighlight(this.parentNode, mergeIntervals);
-                    } else {
-                        // if no new interval, don't animate, just redraw the highlight immediately
-                        mergeIntervals();
-                        renderHighlight(this.parentNode);
-                    }
-                } else {
-                    mergeIntervals(); // merging intervals immediately
-                }
-                s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
-            })
+            .on('dragstart', function(d) { dragstart(this, d); })
+            .on('drag', function(d) { drag(this, d); })
+            .on('dragend', function(d) { dragend(this, d); })
         );
 }
 

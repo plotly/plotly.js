@@ -40,6 +40,12 @@ function mouseTo(x, y) {
     mouseEvent('mouseover', x, y);
 }
 
+function mouseClick(x, y) {
+    mouseTo(x, y);
+    mouseEvent('mousedown', x, y);
+    mouseEvent('mouseup', x, y);
+}
+
 function mostOfDrag(x1, y1, x2, y2) {
     mouseTo(x1, y1);
     mouseEvent('mousedown', x1, y1);
@@ -1620,6 +1626,72 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
         .then(delay(noSnapDelay))
         .then(function() {
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([3.75, 6.25]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('parcoords constraint click interactions - with pre-defined constraint ranges', function() {
+    function initialFigure() {
+        return {
+            data: [{
+                type: 'parcoords',
+                dimensions: [{
+                    values: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                }, {
+                    values: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
+                    tickvals: [0, 1, 2, 3, 4, 5, 6],
+                    ticktext: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+                    constraintrange: [1, 2]
+                }]
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100}
+            }
+        };
+    }
+
+    var gd;
+    var initialSnapDuration;
+    var shortenedSnapDuration = 20;
+    var snapDelay = 100;
+    beforeAll(function() {
+        initialSnapDuration = PC.bar.snapDuration;
+        PC.bar.snapDuration = shortenedSnapDuration;
+    });
+
+    afterAll(function() {
+        purgeGraphDiv();
+        PC.bar.snapDuration = initialSnapDuration;
+    });
+
+    beforeEach(function(done) {
+        var hasGD = !!gd;
+        if(!hasGD) gd = createGraphDiv();
+
+        Plotly.react(gd, initialFigure())
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@noCI @gl should not drop constraintrange on click', function(done) {
+        expect(gd._fullData[0].dimensions[1].constraintrange).toBeCloseToArray([0.75, 2.25]);
+
+        // click to add a new item to the selection
+        mouseClick(295, 200);
+        delay(snapDelay)()
+        .then(function() {
+            expect(gd._fullData[0].dimensions[1].constraintrange).toBeCloseToArray([[0.75, 2.25], [2.75, 3.25]]);
+
+            // click to deselect all
+            mouseClick(295, 205);
+        })
+        .then(delay(snapDelay)())
+        .then(function() {
+            expect(gd._fullData[0].dimensions[1].constraintrange).toEqual(undefined);
         })
         .catch(failTest)
         .then(done);
