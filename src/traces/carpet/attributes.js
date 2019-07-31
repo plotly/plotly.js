@@ -28,7 +28,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
-            '`scattercontour` traces can specify a carpet plot on which',
+            '`contourcarpet` traces can specify a carpet plot on which',
             'they lie'
         ].join(' ')
     },
