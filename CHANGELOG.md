@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.1] -- 2019-07-31
+
+### Fixed
+- Fix `parcoords` bug when dimension values are all zeroes (bug introduced in 1.49.0) [#4080]
+- Fix `parcoords` select line rendering when constraint range falls below range [#4083]
+- Fix `parcoords` select line rendering when selecting outside displayed axis range [#4087]
+- Fix `parcoords` select by click when preceded by click away from axis [#4089]
+- Fix `mapbox.style` values in attribution declaration [#4079]
+- Remove unused variable from `scatter3d` shader [#4090]
+
+
 ## [1.49.0] -- 2019-07-24
 
 ### Added
