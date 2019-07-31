@@ -233,15 +233,12 @@ function dragstart(lThis, d) {
     s.brushStartCallback();
 }
 
-var dragging = false;
-
 function drag(lThis, d) {
-    dragging = true;
-
     d3.event.sourceEvent.stopPropagation();
     var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
     var s = d.brush.svgBrush;
     s.wasDragged = true;
+    s._dragging = true;
 
     if(s.grabbingBar) { // moving the bar
         s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitToPaddedPx.invert);
@@ -256,20 +253,21 @@ function drag(lThis, d) {
 }
 
 function dragend(lThis, d) {
-    if(!dragging) { // i.e. click
+    var brush = d.brush;
+    var filter = brush.filter;
+    var s = brush.svgBrush;
+
+    if(!s._dragging) { // i.e. click
         // mock zero drag
         mousemove(lThis, d);
         drag(lThis, d);
         // remember it is a click not a drag
         d.brush.svgBrush.wasDragged = false;
     }
-    dragging = false;
+    s._dragging = false;
 
     var e = d3.event;
     e.sourceEvent.stopPropagation();
-    var brush = d.brush;
-    var filter = brush.filter;
-    var s = brush.svgBrush;
     var grabbingBar = s.grabbingBar;
     s.grabbingBar = false;
     s.grabLocation = undefined;
