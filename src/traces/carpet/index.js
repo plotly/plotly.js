@@ -19,7 +19,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'carpet',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable', 'noMultiCategory'],
+    categories: ['cartesian', 'svg', 'carpet', 'carpetAxis', 'notLegendIsolatable', 'noMultiCategory', 'noHover'],
     meta: {
         description: [
             'The data describing carpet axis layout is set in `y` and (optionally)',
