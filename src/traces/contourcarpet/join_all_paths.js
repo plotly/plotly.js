@@ -87,12 +87,14 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpe
                 var ptNew = pi.edgepaths[possiblei][0];
                 // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
                 if(Math.abs(endpt[0] - newendpt[0]) < atol) {
-                    if(Math.abs(endpt[0] - ptNew[0]) < atol && (ptNew[1] - endpt[1]) * (newendpt[1] - ptNew[1]) >= 0) {
+                    if(Math.abs(endpt[0] - ptNew[0]) < atol &&
+                            (ptNew[1] - endpt[1]) * (newendpt[1] - ptNew[1]) >= 0) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }
                 } else if(Math.abs(endpt[1] - newendpt[1]) < btol) {
-                    if(Math.abs(endpt[1] - ptNew[1]) < btol && (ptNew[0] - endpt[0]) * (newendpt[0] - ptNew[0]) >= 0) {
+                    if(Math.abs(endpt[1] - ptNew[1]) < btol &&
+                            (ptNew[0] - endpt[0]) * (newendpt[0] - ptNew[0]) >= 0) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }

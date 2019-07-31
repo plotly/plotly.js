@@ -37,10 +37,10 @@ module.exports = function(pathinfo, operation) {
             for(i = 0; i < pi0.edgepaths.length; i++) {
                 pi0.edgepaths[i] = op0(pi0.edgepaths[i]);
             }
-
             for(i = 0; i < pi0.paths.length; i++) {
                 pi0.paths[i] = op0(pi0.paths[i]);
             }
+
             return pathinfo;
         case '][':
             var tmp = op0;

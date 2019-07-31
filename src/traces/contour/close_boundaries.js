@@ -15,7 +15,7 @@ module.exports = function(pathinfo, operation, perimeter, trace) {
     var na = pi0.x.length;
     var nb = pi0.y.length;
     var z = pi0.z;
-    var contours = trace.contours;
+    var contoursValue = trace.contours.value;
 
     var boundaryMax = -Infinity;
     var boundaryMin = Infinity;
@@ -38,25 +38,25 @@ module.exports = function(pathinfo, operation, perimeter, trace) {
 
     switch(operation) {
         case '>':
-            if(contours.value > boundaryMax) {
+            if(contoursValue > boundaryMax) {
                 pi0.prefixBoundary = true;
             }
             break;
         case '<':
-            if(contours.value < boundaryMin) {
+            if(contoursValue < boundaryMin) {
                 pi0.prefixBoundary = true;
             }
             break;
         case '[]':
-            v1 = Math.min.apply(null, contours.value);
-            v2 = Math.max.apply(null, contours.value);
+            v1 = Math.min(contoursValue[0], contoursValue[1]);
+            v2 = Math.max(contoursValue[0], contoursValue[1]);
             if(v2 < boundaryMin || v1 > boundaryMax) {
                 pi0.prefixBoundary = true;
             }
             break;
         case '][':
-            v1 = Math.min.apply(null, contours.value);
-            v2 = Math.max.apply(null, contours.value);
+            v1 = Math.min(contoursValue[0], contoursValue[1]);
+            v2 = Math.max(contoursValue[0], contoursValue[1]);
             if(v1 < boundaryMin && v2 > boundaryMax) {
                 pi0.prefixBoundary = true;
             }

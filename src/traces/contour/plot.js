@@ -612,17 +612,18 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
 };
 
 function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
+    var trace = cd0.trace;
     var clips = gd._fullLayout._clips;
-    var clipId = 'clip' + cd0.trace.uid;
+    var clipId = 'clip' + trace.uid;
 
     var clipPath = clips.selectAll('#' + clipId)
-        .data(cd0.trace.connectgaps ? [] : [0]);
+        .data(trace.connectgaps ? [] : [0]);
     clipPath.enter().append('clipPath')
         .classed('contourclip', true)
         .attr('id', clipId);
     clipPath.exit().remove();
 
-    if(cd0.trace.connectgaps === false) {
+    if(trace.connectgaps === false) {
         var clipPathInfo = {
             // fraction of the way from missing to present point
             // to draw the boundary.
