@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,6 @@ var Lib = require('../../lib');
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
-
     // so each point knows which index it originally came from
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
@@ -23,22 +22,22 @@ module.exports = function arraysToCalcdata(cd, trace) {
     Lib.mergeArray(trace.customdata, cd, 'data');
     Lib.mergeArray(trace.textposition, cd, 'tp');
     if(trace.textfont) {
-        Lib.mergeArray(trace.textfont.size, cd, 'ts');
+        Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
         Lib.mergeArray(trace.textfont.color, cd, 'tc');
         Lib.mergeArray(trace.textfont.family, cd, 'tf');
     }
 
     var marker = trace.marker;
     if(marker) {
-        Lib.mergeArray(marker.size, cd, 'ms');
-        Lib.mergeArray(marker.opacity, cd, 'mo');
+        Lib.mergeArrayCastPositive(marker.size, cd, 'ms');
+        Lib.mergeArrayCastPositive(marker.opacity, cd, 'mo');
         Lib.mergeArray(marker.symbol, cd, 'mx');
         Lib.mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;
         if(marker.line) {
             Lib.mergeArray(markerLine.color, cd, 'mlc');
-            Lib.mergeArray(markerLine.width, cd, 'mlw');
+            Lib.mergeArrayCastPositive(markerLine.width, cd, 'mlw');
         }
 
         var markerGradient = marker.gradient;

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -25,11 +25,11 @@ var Registry = require('../registry');
  *  or the whole object)
  */
 module.exports = function containerArrayMatch(astr) {
-    var rootContainers = Registry.layoutArrayContainers,
-        regexpContainers = Registry.layoutArrayRegexes,
-        rootPart = astr.split('[')[0],
-        arrayStr,
-        match;
+    var rootContainers = Registry.layoutArrayContainers;
+    var regexpContainers = Registry.layoutArrayRegexes;
+    var rootPart = astr.split('[')[0];
+    var arrayStr;
+    var match;
 
     // look for regexp matches first, because they may be nested inside root matches
     // eg updatemenus[i].buttons is nested inside updatemenus

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,6 +8,7 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
@@ -26,6 +27,49 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the angular coordinates'
+    },
+
+    r0: {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Alternate to `r`.',
+            'Builds a linear space of r coordinates.',
+            'Use with `dr`',
+            'where `r0` is the starting coordinate and `dr` the step.'
+        ].join(' ')
+    },
+    dr: {
+        valType: 'number',
+        dflt: 1,
+        role: 'info',
+        editType: 'calc',
+        description: 'Sets the r coordinate step.'
+    },
+
+    theta0: {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Alternate to `theta`.',
+            'Builds a linear space of theta coordinates.',
+            'Use with `dtheta`',
+            'where `theta0` is the starting coordinate and `dtheta` the step.'
+        ].join(' ')
+    },
+    dtheta: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets the theta coordinate step.',
+            'By default, the `dtheta` step equals the subplot\'s period divided',
+            'by the length of the `r` coordinates.'
+        ].join(' ')
     },
 
     thetaunit: {
@@ -63,6 +107,7 @@ module.exports = {
 
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'toself', 'tonext'],
+        dflt: 'none',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',
@@ -86,6 +131,7 @@ module.exports = {
         flags: ['r', 'theta', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
+    hovertemplate: hovertemplateAttrs(),
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected

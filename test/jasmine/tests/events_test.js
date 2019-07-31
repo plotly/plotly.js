@@ -20,7 +20,6 @@ describe('Events', function() {
     });
 
     describe('init', function() {
-
         it('instantiates an emitter on incoming plot object', function() {
             expect(plotObj._ev).not.toBeDefined();
             expect(Events.init(plotObj)._ev).toBeDefined();
@@ -86,7 +85,6 @@ describe('Events', function() {
     });
 
     describe('triggerHandler', function() {
-
         it('triggers node handlers and returns last value', function() {
             var eventBaton = 0;
 
@@ -220,6 +218,25 @@ describe('Events', function() {
             expect(eventBaton).toBe(3);
             expect(result).toBe('pong');
         });
+
+        it('works with *once* event handlers', function() {
+            var eventBaton = 0;
+
+            Events.init(plotDiv);
+
+            plotDiv.once('ping', function() {
+                eventBaton++;
+                return 'pong';
+            });
+
+            var result = Events.triggerHandler(plotDiv, 'ping');
+            expect(result).toBe('pong');
+            expect(eventBaton).toBe(1);
+
+            var nop = Events.triggerHandler(plotDiv, 'ping');
+            expect(nop).toBeUndefined();
+            expect(eventBaton).toBe(1);
+        });
     });
 
     describe('purge', function() {
@@ -232,7 +249,6 @@ describe('Events', function() {
     });
 
     describe('when jQuery.noConflict is set, ', function() {
-
         beforeEach(function() {
             $.noConflict();
         });
@@ -242,7 +258,6 @@ describe('Events', function() {
         });
 
         it('triggers jquery events', function(done) {
-
             Events.init(plotDiv);
 
             jQuery(plotDiv).bind('ping', function(event, data) {

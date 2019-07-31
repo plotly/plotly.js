@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,6 @@
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
 module.exports = function isPlainObject(obj) {
-
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
     //

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,53 +12,37 @@ var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function plot(gd, subplot, moduleCalcData) {
-    var i, j;
+    var mlayer = subplot.layers.frontplot.select('g.scatterlayer');
 
     var plotinfo = {
         xaxis: subplot.xaxis,
         yaxis: subplot.yaxis,
         plot: subplot.framework,
-        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.circle : null
+        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null
     };
 
     var radialAxis = subplot.radialAxis;
-    var radialRange = radialAxis.range;
-    var rFilter;
+    var angularAxis = subplot.angularAxis;
 
-    if(radialRange[0] > radialRange[1]) {
-        rFilter = function(v) { return v <= 0; };
-    } else {
-        rFilter = function(v) { return v >= 0; };
-    }
+    // convert:
+    // 'c' (r,theta) -> 'geometric' (r,theta) -> (x,y)
+    for(var i = 0; i < moduleCalcData.length; i++) {
+        var cdi = moduleCalcData[i];
 
-    // map (r, theta) first to a 'geometric' r and then to (x,y)
-    // on-par with what scatterPlot expects.
+        for(var j = 0; j < cdi.length; j++) {
+            var cd = cdi[j];
+            var r = cd.r;
 
-    for(i = 0; i < moduleCalcData.length; i++) {
-        for(j = 0; j < moduleCalcData[i].length; j++) {
-            var cdi = moduleCalcData[i][j];
-            var r = cdi.r;
-
-            if(r !== BADNUM) {
-                // convert to 'r' data to fit with mocked polar x/y axis
-                // which are always `type: 'linear'`
-                var rr = radialAxis.c2r(r) - radialRange[0];
-                if(rFilter(rr)) {
-                    var rad = cdi.rad;
-                    cdi.x = rr * Math.cos(rad);
-                    cdi.y = rr * Math.sin(rad);
-                    continue;
-                } else {
-                    // flag for scatter/line_points.js
-                    // to extend line (and fills) into center
-                    cdi.intoCenter = [subplot.cxx, subplot.cyy];
-                }
+            if(r === BADNUM) {
+                cd.x = cd.y = BADNUM;
+            } else {
+                var rg = radialAxis.c2g(r);
+                var thetag = angularAxis.c2g(cd.theta);
+                cd.x = rg * Math.cos(thetag);
+                cd.y = rg * Math.sin(thetag);
             }
-
-            cdi.x = BADNUM;
-            cdi.y = BADNUM;
         }
     }
 
-    scatterPlot(gd, plotinfo, moduleCalcData);
+    scatterPlot(gd, plotinfo, moduleCalcData, mlayer);
 };

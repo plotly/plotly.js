@@ -12,15 +12,15 @@ var mouseEvent = require('../assets/mouse_event');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test scattergeo defaults', function() {
     var traceIn,
         traceOut;
 
-    var defaultColor = '#444',
-        layout = {};
+    var defaultColor = '#444';
+    var layout = {};
 
     beforeEach(function() {
         traceOut = {};
@@ -88,9 +88,8 @@ describe('Test scattergeo defaults', function() {
 });
 
 describe('Test scattergeo calc', function() {
-
     function _calc(opts) {
-        var base = { type: 'scattermapbox' };
+        var base = { type: 'scattergeo' };
         var trace = Lib.extendFlat({}, base, opts);
         var gd = { data: [trace] };
 
@@ -216,7 +215,7 @@ describe('Test scattergeo calc', function() {
 
         expect(calcTrace).toEqual([
             { lonlat: [10, 20], mc: 0, ms: 10 },
-            { lonlat: [20, 30], mc: null, ms: NaN },
+            { lonlat: [20, 30], mc: null, ms: 0 },
             { lonlat: [BADNUM, BADNUM], mc: 5, ms: 8 },
             { lonlat: [30, 10], mc: 10, ms: 10 }
         ]);
@@ -252,7 +251,7 @@ describe('Test scattergeo hover', function() {
             lat: [10, 20, 30],
             text: ['A', 'B', 'C']
         }])
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -287,7 +286,26 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
             check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should use the hovertemplate', function(done) {
+        Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
+            check([381, 221], ['tpl 10', 'x']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not hide hover label when hovertemplate', function(done) {
+        Plotly.restyle(gd, {
+            name: '',
+            hovertemplate: 'tpl %{lat}<extra>x</extra>'
+        }).then(function() {
+            check([381, 221], ['tpl 10', 'x']);
+        })
+        .catch(failTest)
         .then(done);
     });
 
@@ -295,7 +313,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], ['(10°, 10°)\ntext', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -303,7 +321,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
             check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -311,7 +329,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
             check([381, 221], ['(10°, 10°)\nApple', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -329,7 +347,7 @@ describe('Test scattergeo hover', function() {
                 fontFamily: 'Arial'
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -337,12 +355,38 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
             check([381, 221], ['lon: 10°', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
+    });
+
+    describe('should preserve lon/lat formatting hovetemplate equivalence', function() {
+        var pos = [381, 221];
+        var exp = ['(10.00012°, 10.00088°)\nA'];
+
+        it('- base case (truncate z decimals)', function(done) {
+            Plotly.restyle(gd, {
+                lon: [[10.0001221321]],
+                lat: [[10.00087683]]
+            })
+            .then(function() { check(pos, exp); })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('- hovertemplate case (same lon/lat truncation)', function(done) {
+            Plotly.restyle(gd, {
+                lon: [[10.0001221321]],
+                lat: [[10.00087683]],
+                hovertemplate: '(%{lon}°, %{lat}°)<br>%{text}<extra></extra>'
+            })
+            .then(function() { check(pos, exp); })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
-describe('scattergeo bad data', function() {
+describe('scattergeo drawing', function() {
     var gd;
 
     beforeEach(function() {
@@ -362,7 +406,33 @@ describe('scattergeo bad data', function() {
             // only utopia logs - others are silently ignored
             expect(Lib.log).toHaveBeenCalledTimes(1);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]},
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]}
+        ])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
         .then(done);
     });
 });

@@ -8,12 +8,12 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
 
 describe('filter transforms defaults:', function() {
-
     var fullLayout = {
         _transformModules: [],
         _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
@@ -30,7 +30,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -53,7 +53,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -79,12 +79,39 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms[0].target).toEqual('x');
         expect(traceOut.transforms[1].target).toEqual('x');
         expect(traceOut.transforms[2].target).toEqual('x');
         expect(traceOut.transforms[3].target).toEqual('marker.color');
+    });
+
+    it('supplyTraceDefaults should set *enabled:false* and return early when *target* is an empty array', function() {
+        // see https://github.com/plotly/plotly.js/issues/2908
+        // this solves multiple problems downstream
+
+        traceIn = {
+            x: [1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: []
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual([]);
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
+
+        traceIn = {
+            x: new Float32Array([1, 2, 3]),
+            transforms: [{
+                type: 'filter',
+                target: new Float32Array()
+            }]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        expect(traceOut.transforms[0].target).toEqual(new Float32Array());
+        expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
     });
 });
 
@@ -365,6 +392,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
         expect(out[0].y).toEqual([undefined, undefined, undefined, undefined, 2, 3, 1]);
         expect(out[0].marker.color).toEqual([undefined, undefined, undefined, undefined, 0.2, 0.3, 0.4]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({4: [4], 5: [5], 6: [6]});
     });
 
     it('two filter transforms with `preservegaps: true` should commute', function() {
@@ -391,6 +419,11 @@ describe('filter transforms calc:', function() {
         var out1 = _transform([Lib.extendDeep({}, base, {
             transforms: [transform1, transform0]
         })]);
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({3: [3], 4: [4], 5: [5], 6: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
 
         ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
             var v0 = Lib.nestedProperty(out0[0], k).get();
@@ -424,6 +457,12 @@ describe('filter transforms calc:', function() {
             transforms: [transform1, transform0]
         })]);
 
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({0: [3], 1: [4], 2: [5], 3: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+
         ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
             var v0 = Lib.nestedProperty(out0[0], k).get();
             var v1 = Lib.nestedProperty(out1[0], k).get();
@@ -431,7 +470,7 @@ describe('filter transforms calc:', function() {
         });
     });
 
-    it('two filter transforms with different `preservegaps` values should not necessary commute', function() {
+    it('two filter transforms with different `preservegaps` values should not necessarily commute', function() {
         var transform0 = {
             type: 'filter',
             preservegaps: true,
@@ -637,7 +676,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, [-2, -3], [3, 1], [0.3, 0.4]);
         });
-
     });
 
     describe('filters should handle categories', function() {
@@ -705,7 +743,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, ['a', 'c'], [1, 3], ['0', '2']);
         });
-
     });
 
     describe('filters should handle dates', function() {
@@ -832,7 +869,6 @@ describe('filter transforms calc:', function() {
 
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
-
     });
 
     it('filters should handle ids', function() {
@@ -861,6 +897,36 @@ describe('filter transforms calc:', function() {
 
         it('with numeric items', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer target', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer data', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                x: _base.x.concat(_base.x),
+                y: _base.y.concat(_base.y),
+                ids: _base.ids.concat(['a1', 'a2', 'a3', 'a4']),
+                marker: {color: _base.marker.color.concat(_base.marker.color)},
                 transforms: [{
                     target: [1, 1, 0, 0, 1, 0, 1],
                     operation: '{}',
@@ -1036,11 +1102,11 @@ describe('filter transforms interactions', function() {
         Plotly.plot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
 
-            var uid = data[0].uid;
+            var uid = gd._fullData[0]._fullInput.uid;
             expect(gd._fullData[0].uid).toEqual(uid + '0');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -1053,11 +1119,11 @@ describe('filter transforms interactions', function() {
         var uid;
         function assertUid(gd) {
             expect(gd._fullData[0].uid)
-                .toEqual(uid + '0', 'should preserve uid on restyle');
+                .toBe(uid + '0', 'should preserve uid on restyle');
         }
 
         Plotly.plot(gd, data).then(function() {
-            uid = gd.data[0].uid;
+            uid = gd._fullData[0]._fullInput.uid;
 
             expect(gd._fullData[0].marker.color).toEqual('red');
             assertUid(gd);
@@ -1085,9 +1151,9 @@ describe('filter transforms interactions', function() {
 
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -1110,9 +1176,9 @@ describe('filter transforms interactions', function() {
             expect(gd._fullData[0].x.length).toEqual(5);
 
             assertDims([5]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -1130,10 +1196,9 @@ describe('filter transforms interactions', function() {
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
             assertDims([]);
-
-            done();
-        });
-
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('toggling trace visibility should work', function(done) {
@@ -1155,9 +1220,9 @@ describe('filter transforms interactions', function() {
             return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
         }).then(function() {
             assertDims([3, 4]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('zooming in/out should not change filtered data', function(done) {
@@ -1183,6 +1248,7 @@ describe('filter transforms interactions', function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -1226,7 +1292,96 @@ describe('filter transforms interactions', function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
         })
+        .catch(failTest)
         .then(done);
     });
 
+    it('should clear indexToPoints on removal', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.react(gd, [{
+            y: [1, 2, 3, 1, 2, 3],
+            transforms: [{
+                type: 'filter',
+                target: 'y',
+                operation: '<',
+                value: 3
+            }]
+        }])
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [3], 3: [4]});
+            return Plotly.react(gd, [{ y: [1, 2, 3, 1, 2, 3] }]);
+        })
+        .then(function() {
+            expect(gd._fullData[0]._indexToPoints).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('filter resulting in empty coordinate arrays', function() {
+    var gd;
+
+    afterEach(function(done) {
+        Plotly.purge(gd);
+        setTimeout(function() {
+            destroyGraphDiv();
+            done();
+        }, 200);
+    });
+
+    function filter2empty(mock) {
+        var fig = Lib.extendDeep({}, mock);
+        var data = fig.data || [];
+
+        data.forEach(function(trace) {
+            trace.transforms = [{
+                type: 'filter',
+                target: [null]
+            }];
+        });
+
+        return fig;
+    }
+
+    describe('svg mocks', function() {
+        var mockList = require('../assets/mock_lists').svg;
+
+        mockList.forEach(function(d) {
+            it(d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('gl mocks', function() {
+        var mockList = require('../assets/mock_lists').gl;
+
+        mockList.forEach(function(d) {
+            it('@gl ' + d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
+
+    describe('mapbox mocks', function() {
+        var mockList = require('../assets/mock_lists').mapbox;
+
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        mockList.forEach(function(d) {
+            it('@noCI @gl' + d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+            });
+        });
+    });
 });

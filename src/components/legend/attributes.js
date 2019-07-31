@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -78,6 +78,45 @@ module.exports = {
             'Sets the amount of vertical space (in px) between legend groups.'
         ].join(' ')
     },
+    itemsizing: {
+        valType: 'enumerated',
+        values: ['trace', 'constant'],
+        dflt: 'trace',
+        role: 'style',
+        editType: 'legend',
+        description: [
+            'Determines if the legend items symbols scale with their corresponding *trace* attributes',
+            'or remain *constant* independent of the symbol size on the graph.'
+        ].join(' ')
+    },
+
+    itemclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        dflt: 'toggle',
+        role: 'info',
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend item click.',
+            '*toggle* toggles the visibility of the item clicked on the graph.',
+            '*toggleothers* makes the clicked item the sole visible item on the graph.',
+            '*false* disable legend item click interactions.'
+        ].join(' ')
+    },
+    itemdoubleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        dflt: 'toggleothers',
+        role: 'info',
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend item double-click.',
+            '*toggle* toggles the visibility of the item clicked on the graph.',
+            '*toggleothers* makes the clicked item the sole visible item on the graph.',
+            '*false* disable legend item double-click interactions.'
+        ].join(' ')
+    },
+
     x: {
         valType: 'number',
         min: -2,
@@ -118,6 +157,25 @@ module.exports = {
             'Sets the legend\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
             'or *bottom* of the legend.'
+        ].join(' ')
+    },
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of legend-driven changes in trace and pie label',
+            'visibility. Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
+    valign: {
+        valType: 'enumerated',
+        values: ['top', 'middle', 'bottom'],
+        dflt: 'middle',
+        role: 'style',
+        editType: 'legend',
+        description: [
+            'Sets the vertical alignment of the symbols with respect to their associated text.',
         ].join(' ')
     },
     editType: 'legend'

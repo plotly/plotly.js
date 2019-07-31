@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,11 +28,13 @@ module.exports = function calc(gd) {
         // don't include hover calc fields for pie traces
         // as calcdata items might be sorted by value and
         // won't match the data array order.
-        if(Registry.traceIs(trace, 'pie')) continue;
+        if(Registry.traceIs(trace, 'pie-like')) continue;
 
         var fillFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.fillArray;
 
         fillFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
+
+        if(trace.hovertemplate) fillFn(trace.hovertemplate, cd, 'ht');
 
         if(!trace.hoverlabel) continue;
 
@@ -42,6 +44,7 @@ module.exports = function calc(gd) {
         fillFn(trace.hoverlabel.font.color, cd, 'htc');
         fillFn(trace.hoverlabel.font.family, cd, 'htf');
         fillFn(trace.hoverlabel.namelength, cd, 'hnl');
+        fillFn(trace.hoverlabel.align, cd, 'hta');
     }
 };
 

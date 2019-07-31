@@ -3,25 +3,42 @@ var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');
 var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 
 var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
-var fail = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
+var failTest = require('../assets/fail_test');
+var transitions = require('../assets/transitions');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
+var checkEventData = require('../assets/check_event_data');
+var constants = require('@src/traces/scatter/constants');
+
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+var getOpacity = function(node) { return Number(node.style.opacity); };
+var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
+var getColor = function(node) { return node.style.fill; };
+var getMarkerSize = function(node) {
+    // find path arc multiply by 2 to get the corresponding marker.size value
+    // (works for circles only)
+    return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
+};
 
 describe('Test scatter', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {};
+        var defaultColor = '#444';
+        var layout = {};
 
         var supplyDefaults = Scatter.supplyDefaults;
 
@@ -68,6 +85,22 @@ describe('Test scatter', function() {
             };
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
+        });
+
+        [{letter: 'y', counter: 'x'}, {letter: 'x', counter: 'y'}].forEach(function(spec) {
+            var l = spec.letter;
+            var c = spec.counter;
+            var c0 = c + '0';
+            var dc = 'd' + c;
+            it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
+                traceIn = {};
+                traceIn[spec.letter] = [1, 2];
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+                expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
+                expect(traceOut._length).toBe(2, l);
+                expect(traceOut[c0]).toBe(0, c0);
+                expect(traceOut[dc]).toBe(1, dc);
+            });
         });
 
         it('should correctly assign \'hoveron\' default', function() {
@@ -130,11 +163,12 @@ describe('Test scatter', function() {
         });
 
         describe('selected / unselected attribute containers', function() {
-            function _supply(patch) { traceIn = Lib.extendFlat({
-                mode: 'markers',
-                x: [1, 2, 3],
-                y: [2, 1, 2]
-            }, patch);
+            function _supply(patch) {
+                traceIn = Lib.extendFlat({
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [2, 1, 2]
+                }, patch);
                 traceOut = {visible: true};
                 supplyDefaults(traceIn, traceOut, defaultColor, layout);
             }
@@ -174,61 +208,175 @@ describe('Test scatter', function() {
             });
         });
 
+        describe('should find correct coordinate length', function() {
+            function _supply() {
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('- x 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 1d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    y: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 1d / y 2d', function() {
+                traceIn = {
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b']
+                    ],
+                    x: [1, 2, 3, 4, 5, 6]
+                };
+                _supply();
+                expect(traceOut._length).toBe(4);
+            });
+
+            it('- x 2d / y 2d', function() {
+                traceIn = {
+                    x: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c']
+                    ],
+                    y: [
+                        ['1', '2', '1', '2', '1', '2'],
+                        ['a', 'a', 'b', 'b', 'c', 'c', 'd', 'd']
+                    ]
+                };
+                _supply();
+                expect(traceOut._length).toBe(6);
+            });
+        });
+    });
+
+    describe('calc', function() {
+        function assertPointField(calcData, prop, expectation) {
+            var values = [];
+
+            calcData.forEach(function(calcTrace) {
+                var vals = calcTrace.map(function(pt) {
+                    return Lib.nestedProperty(pt, prop).get();
+                });
+
+                values.push(vals);
+            });
+
+            expect(values).toBeCloseTo2DArray(expectation, undefined, '(field ' + prop + ')');
+        }
+
+        it('should guard against negative size values', function() {
+            var gd = {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers+text',
+                    marker: {
+                        line: {
+                            width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                        },
+                        opacity: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1'],
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                    },
+                    textfont: {
+                        size: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                    },
+                    text: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                }],
+                layout: {},
+                calcdata: [],
+                _context: {locale: 'en', locales: {}}
+            };
+
+            supplyAllDefaults(gd);
+            Plots.doCalcdata(gd);
+
+            var cd = gd.calcdata;
+            assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'mo', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ms', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+            assertPointField(cd, 'ts', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
+        });
     });
 
     describe('isBubble', function() {
         it('should return true when marker.size is an Array', function() {
             var trace = {
-                    marker: {
-                        size: [1, 4, 2, 10]
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: [1, 4, 2, 10]
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(true);
         });
 
         it('should return false when marker.size is an number', function() {
             var trace = {
-                    marker: {
-                        size: 10
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    size: 10
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker.size is not defined', function() {
             var trace = {
-                    marker: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                marker: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
         it('should return false when marker is not defined', function() {
             var trace = {
-                    line: {
-                        color: 'red'
-                    }
-                },
-                isBubble = Scatter.isBubble(trace);
+                line: {
+                    color: 'red'
+                }
+            };
+            var isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
-
     });
 
     describe('makeBubbleSizeFn', function() {
         var markerSizes = [
-                0, '1', 2.21321321, 'not-a-number',
-                100, 1000.213213, 1e7, undefined, null, -100
-            ],
-            trace = { marker: {} };
+            0, '1', 2.21321321, 'not-a-number',
+            100, 1000.213213, 1e7, undefined, null, -100
+        ];
+        var trace = { marker: {} };
 
         var sizeFn, expected;
 
@@ -279,15 +427,15 @@ describe('Test scatter', function() {
 
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
-        var ax = {_length: 100, c2p: Lib.identity},
-            baseOpts = {
-                xaxis: ax,
-                yaxis: ax,
-                connectGaps: false,
-                baseTolerance: 1,
-                shape: 'linear',
-                simplify: true
-            };
+        var ax = {_length: 100, c2p: Lib.identity};
+        var baseOpts = {
+            xaxis: ax,
+            yaxis: ax,
+            connectGaps: false,
+            baseTolerance: 1,
+            shape: 'linear',
+            simplify: true
+        };
 
         function makeCalcData(ptsIn) {
             return ptsIn.map(function(pt) {
@@ -320,6 +468,12 @@ describe('Test scatter', function() {
         });
 
         it('should not collapse straight lines if simplify is false', function() {
+            var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [15, 30], [15, 30], [15, 30]];
+            var ptsOut = callLinePoints(ptsIn, {simplify: false});
+            expect(ptsOut).toEqual([ptsIn]);
+        });
+
+        it('should not collapse duplicate end points if simplify is false', function() {
             var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [22, 16], [28, 4], [30, 0]];
             var ptsOut = callLinePoints(ptsIn, {simplify: false});
             expect(ptsOut).toEqual([ptsIn]);
@@ -380,6 +534,10 @@ describe('Test scatter', function() {
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
 
+        function reverseXY(v) { return [v[1], v[0]]; }
+
+        function reverseXY2(v) { return v.map(reverseXY); }
+
         it('should clip extreme points without changing on-screen paths', function() {
             var ptsIn = [
                 // first bunch: rays going in/out in many directions
@@ -433,8 +591,6 @@ describe('Test scatter', function() {
                 [[2100, 2100], [-2000, 2100], [-2000, -2000], [2100, -2000], [2100, 2100]]
             ];
 
-            function reverseXY(v) { return [v[1], v[0]]; }
-
             ptsIn.forEach(function(ptsIni, i) {
                 // disable clustering for these tests
                 var ptsOut = callLinePoints(ptsIni, {simplify: false});
@@ -447,8 +603,48 @@ describe('Test scatter', function() {
                 expect(ptsOut2[0]).toBeCloseTo2DArray(ptsExpected[i].map(reverseXY), 1, i);
             });
         });
-    });
 
+        it('works when far off-screen points cross the viewport', function() {
+            function _check(ptsIn, ptsExpected) {
+                var ptsOut = callLinePoints(ptsIn);
+                expect(JSON.stringify(ptsOut)).toEqual(JSON.stringify([ptsExpected]));
+
+                var ptsOut2 = callLinePoints(ptsIn.map(reverseXY)).map(reverseXY2);
+                expect(JSON.stringify(ptsOut2)).toEqual(JSON.stringify([ptsExpected]));
+            }
+
+            // first cross the viewport horizontally/vertically
+            _check([
+                [-822, 20], [-802, 2], [-801.5, 1.1], [-800, 0],
+                [900, 0], [901.5, 1.1], [902, 2], [922, 20]
+            ], [
+                // all that's really important here (and the next check) is that
+                // the points [-800, 0] and [900, 0] are connected. What we do
+                // with other points beyond those doesn't matter too much.
+                [-822, 20], [-800, 0],
+                [900, 0], [922, 20]
+            ]);
+
+            _check([
+                [-804, 4], [-802, 2], [-801.5, 1.1], [-800, 0],
+                [900, 0], [901.5, 1.1], [902, 2], [904, 4]
+            ], [
+                [-804, 4], [-800, 0],
+                [900, 0]
+            ]);
+
+            // now cross the viewport diagonally
+            _check([
+                [-801, 925], [-800, 902], [-800.5, 901.1], [-800, 900],
+                [900, -800], [900.5, -801.1], [900, -802], [901, -825]
+            ], [
+                // similarly here, we just care that
+                // [-800, 900] connects to [900, -800]
+                [-801, 925], [-800, 900],
+                [900, -800], [901, -825]
+            ]);
+        });
+    });
 });
 
 describe('end-to-end scatter tests', function() {
@@ -486,8 +682,7 @@ describe('end-to-end scatter tests', function() {
             points.each(function() {
                 expect(d3.select(this).classed('plotly-customdata')).toBe(false);
             });
-
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('adds "textpoint" class to scatter text points', function(done) {
@@ -498,7 +693,7 @@ describe('end-to-end scatter tests', function() {
             text: ['a', 'b', 'c']
         }]).then(function() {
             expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
@@ -551,8 +746,96 @@ describe('end-to-end scatter tests', function() {
             assertNodeCnt(3, 3);
             assertText(['A', 'B', 'C']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
+    });
+
+    it('should keep layering correct as mode & fill change', function(done) {
+        var fillCase = {name: 'fill', edit: {mode: 'none', fill: 'tonexty'}};
+        var i, j;
+
+        var cases = [fillCase];
+        var modeParts = ['lines', 'markers', 'text'];
+        for(i = 0; i < modeParts.length; i++) {
+            var modePart = modeParts[i];
+            var prevCasesLength = cases.length;
+
+            cases.push({name: modePart, edit: {mode: modePart, fill: 'none'}});
+            for(j = 0; j < prevCasesLength; j++) {
+                var prevCase = cases[j];
+                cases.push({
+                    name: prevCase.name + '_' + modePart,
+                    edit: {
+                        mode: (prevCase.edit.mode === 'none' ? '' : (prevCase.edit.mode + '+')) + modePart,
+                        fill: prevCase.edit.fill
+                    }
+                });
+            }
+        }
+
+        // visit each case N times, in an order that covers each *transition*
+        // from any case to any other case.
+        var indices = transitions(cases.length);
+
+        var p = Plotly.plot(gd, [
+            {y: [1, 2], text: 'a'},
+            {y: [2, 3], text: 'b'},
+            {y: [3, 4], text: 'c'}
+        ]);
+
+        function setMode(i) {
+            return function() {
+                return Plotly.restyle(gd, cases[indices[i]].edit);
+            };
+        }
+
+        function testOrdering(i) {
+            return function() {
+                var name = cases[indices[i]].name;
+                var hasFills = name.indexOf('fill') !== -1;
+                var hasLines = name.indexOf('lines') !== -1;
+                var hasMarkers = name.indexOf('markers') !== -1;
+                var hasText = name.indexOf('text') !== -1;
+                var tracei, prefix;
+
+            // construct the expected ordering based on case name
+                var selectorArray = [];
+                for(tracei = 0; tracei < 3; tracei++) {
+                    prefix = '.xy .trace:nth-child(' + (tracei + 1) + ') ';
+
+                // two fills are attached to the first trace, one to the second
+                    if(hasFills) {
+                        if(tracei === 0) {
+                            selectorArray.push(
+                            prefix + 'g:first-child>.js-fill',
+                            prefix + 'g:last-child>.js-fill');
+                        } else if(tracei === 1) selectorArray.push(prefix + 'g:last-child>.js-fill');
+                    }
+                    if(hasLines) selectorArray.push(prefix + '.js-line');
+                    if(hasMarkers) selectorArray.push(prefix + '.point');
+                    if(hasText) selectorArray.push(prefix + '.textpoint');
+                }
+
+            // ordering in the legend
+                for(tracei = 0; tracei < 3; tracei++) {
+                    prefix = '.legend .traces:nth-child(' + (tracei + 1) + ') ';
+                    if(hasFills) selectorArray.push(prefix + '.js-fill');
+                    if(hasLines) selectorArray.push(prefix + '.js-line');
+                    if(hasMarkers) selectorArray.push(prefix + '.scatterpts');
+                    if(hasText) selectorArray.push(prefix + '.pointtext');
+                }
+
+                var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
+                msg += name;
+                assertMultiNodeOrder(selectorArray, msg);
+            };
+        }
+
+        for(i = 0; i < indices.length; i++) {
+            p = p.then(setMode(i)).then(testOrdering(i));
+        }
+
+        p.catch(failTest).then(done);
     });
 
     function _assertNodes(ptStyle, txContent) {
@@ -609,7 +892,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -653,7 +936,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -689,7 +972,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'dragon fruit']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -711,7 +994,7 @@ describe('end-to-end scatter tests', function() {
             );
         }).then(function() {
             expect(fill()).toEqual('rgb(0, 0, 255)');
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('clears fills tonext when either trace is emptied out', function(done) {
@@ -722,7 +1005,7 @@ describe('end-to-end scatter tests', function() {
         function checkFill(visible, msg) {
             var fillSelection = d3.select(gd).selectAll('.scatterlayer .js-fill');
             expect(fillSelection.size()).toBe(1, msg);
-            expect(fillSelection.attr('d')).negateIf(visible).toBe('M0,0Z', msg);
+            negateIf(visible, expect(fillSelection.attr('d'))).toBe('M0,0Z', msg);
         }
 
         Plotly.newPlot(gd, [trace0, trace1, trace2], {}, {scrollZoom: true})
@@ -754,13 +1037,370 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             checkFill(false, 'null out both traces');
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {y: [3, 4, 5], fill: 'tonexty'},
+            {y: [4, 5, 6], fill: 'tonexty'},
+            {y: [3, 4, 5], fill: 'tonexty', yaxis: 'y2'},
+            {y: [4, 5, 6], fill: 'tonexty', yaxis: 'y2'}
+        ], {})
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+            // when we had a single `gd.firstscatter` this one was ~2.73
+            // even though the fill was correctly drawn down to zero
+            expect(gd._fullLayout.yaxis2.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly autoranges fill tonext traces with only one point', function(done) {
+        Plotly.newPlot(gd, [{y: [3], fill: 'tonexty'}])
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work with typed arrays', function(done) {
+        function _assert(colors, sizes) {
+            var pts = d3.selectAll('.point');
+            expect(pts.size()).toBe(3, '# of pts');
+
+            pts.each(function(_, i) {
+                expect(getColor(this)).toBe(colors[i], 'color ' + i);
+                expect(getMarkerSize(this)).toBe(sizes[i], 'size ' + i);
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: new Float32Array([1, 2, 3]),
+            y: new Float32Array([1, 2, 1]),
+            marker: {
+                size: new Float32Array([20, 30, 10]),
+                color: new Float32Array([10, 30, 20]),
+                cmin: 10,
+                cmax: 30,
+                colorscale: [
+                    [0, 'rgb(255, 0, 0)'],
+                    [0.5, 'rgb(0, 255, 0)'],
+                    [1, 'rgb(0, 0, 255)']
+                ]
+            }
+        }])
+        .then(function() {
+            _assert(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)'],
+                [20, 30, 10]
+            );
+
+            return Plotly.restyle(gd, {
+                'marker.size': [new Float32Array([40, 30, 20])],
+                'marker.color': [new Float32Array([20, 30, 10])]
+            });
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
+
+            return Plotly.relayout(gd, 'showlegend', true);
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
+
+            var legendPts = d3.select('.legend').selectAll('.scatterpts');
+            expect(legendPts.size()).toBe(1, '# legend items');
+            expect(getColor(legendPts.node())).toBe('rgb(0, 0, 0)', 'legend pt color');
+            expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    function assertAxisRanges(msg, xrng, yrng) {
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+    }
+
+    var schema = Plotly.PlotSchema.get();
+
+    it('should update axis range accordingly on marker.size edits', function(done) {
+        // edit types are important to this test
+        expect(schema.traces.scatter.attributes.marker.size.editType)
+            .toBe('calc', 'marker.size editType');
+        expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
+            .toBe('axrange', 'ax autorange editType');
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() {
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+            return Plotly.relayout(gd, {
+                'xaxis.range': [0, 2],
+                'yaxis.range': [0, 2]
+            });
+        })
+        .then(function() {
+            assertAxisRanges('set rng / base marker.size', [0, 2], [0, 2]);
+            return Plotly.restyle(gd, 'marker.size', 50);
+        })
+        .then(function() {
+            assertAxisRanges('set rng / big marker.size', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            assertAxisRanges('auto rng / big marker.size', [-0.28, 2.28], [0.75, 2.25]);
+            return Plotly.restyle(gd, 'marker.size', null);
+        })
+        .then(function() {
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range according to visible edits', function(done) {
+        Plotly.plot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 1]},
+            {x: [4, 5, 6], y: [-1, -2, -1]}
+        ])
+        .then(function() {
+            assertAxisRanges('both visible', [0.676, 6.323], [-2.29, 2.29]);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [true,false]', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            assertAxisRanges('both invisible', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [false,true]', [3.871, 6.128], [-2.07, -0.926]);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            assertAxisRanges('back to both visible', [0.676, 6.323], [-2.29, 2.29]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to start from visible:false', function(done) {
+        function _assert(msg, cnt) {
+            var layer = d3.select(gd).select('g.scatterlayer');
+            expect(layer.selectAll('.point').size()).toBe(cnt, msg + '- scatter pts cnt');
+        }
+
+        Plotly.plot(gd, [{
+            visible: false,
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('visible:false', 0);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('visible:true', 3);
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert('back to visible:false', 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not error out when segment-less marker-less fill traces', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4],
+            y: [null, null, null, null],
+            fill: 'tonexty'
+        }])
+        .then(function() {
+            expect(d3.selectAll('.js-fill').size()).toBe(1, 'js-fill is there');
+            expect(d3.select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('stacked area', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+    var mock = require('@mocks/stacked_area');
+
+    it('updates ranges correctly when traces are toggled', function(done) {
+        function checkRanges(ranges, msg) {
+            for(var axId in ranges) {
+                var axName = axId.charAt(0) + 'axis' + axId.slice(1);
+                expect(gd._fullLayout[axName].range)
+                    .toBeCloseToArray(ranges[axId], 0.1, msg + ' - ' + axId);
+            }
+        }
+
+        var bottoms = [0, 3, 6, 9, 12, 15];
+        var middles = [1, 4, 7, 10, 13, 16];
+        var midsAndBottoms = bottoms.concat(middles);
+
+        Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+        .then(function() {
+            // initial ranges, as in the baseline image
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 8.42], y2: [0, 10.53],
+                // TODO: for normalized data, perhaps we want to
+                // remove padding from the top (like we do from the zero)
+                // when data stay within the normalization limit?
+                // (y3&4 are more padded because they have markers)
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'base case');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', middles);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 5.26],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'middle trace legendonly');
+
+            return Plotly.restyle(gd, 'visible', false, middles);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                // now we lose the explicit config from the bottom trace,
+                // which we kept when it was visible: 'legendonly'
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'middle trace visible: false');
+
+            // put the bottom traces back to legendonly so they still contribute
+            // config attributes, and hide the middles too
+            return Plotly.restyle(gd, 'visible', 'legendonly', midsAndBottoms);
+        })
+        .then(function() {
+            var xr = [3, 5];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 2.11], y2: [0, 2.11],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'only top trace showing');
+
+            return Plotly.restyle(gd, 'visible', true, middles);
+        })
+        .then(function() {
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 7.37], y2: [0, 7.37],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'top and middle showing');
+
+            return Plotly.restyle(gd, {x: null, y: null}, middles);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'visible', true, bottoms);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            // an invalid trace (no data) implicitly has visible: false, and is
+            // equivalent to explicit visible: false in removing stack config.
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'middle trace *implicit* visible: false');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can add/delete stack groups', function(done) {
+        var data01 = [
+            {mode: 'markers', y: [1, 2, -1, 2, 1], stackgroup: 'a'},
+            {mode: 'markers', y: [2, 3, 2, 3, 2], stackgroup: 'b'}
+        ];
+        var data0 = [Lib.extendDeep({}, data01[0])];
+        var data1 = [Lib.extendDeep({}, data01[1])];
+
+        function _assert(yRange, nTraces) {
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
+            expect(gd.querySelectorAll('g.trace.scatter').length).toBe(nTraces);
+        }
+
+        Plotly.newPlot(gd, data01)
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data0);
+        })
+        .then(function() {
+            _assert([-1.220, 2.220], 1);
+            return Plotly.react(gd, data01);
+        })
+        .then(function() {
+            _assert([-1.293, 3.293], 2);
+            return Plotly.react(gd, data1);
+        })
+        .then(function() {
+            _assert([0, 3.205], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on date axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'},
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            expect(gd.layout.yaxis.range.map(function(v) { return v.slice(0, 4); }))
+                // if we had stacked, this would go into the 2060s since we'd be
+                // adding milliseconds since 1970
+                .toEqual(['2015', '2017']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on category axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['a', 'b'], stackgroup: 'a'},
+            {y: ['b', 'c'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            // if we had stacked, we'd calculate a new category 3
+            // and autorange to ~[-0.2, 3.2]
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.1, 2.1], 1);
+        })
+        .catch(failTest)
         .then(done);
     });
 });
 
 describe('scatter hoverPoints', function() {
-
     afterEach(destroyGraphDiv);
 
     function _hover(gd, xval, yval, hovermode) {
@@ -823,7 +1463,7 @@ describe('scatter hoverPoints', function() {
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -837,37 +1477,39 @@ describe('Test Scatter.style', function() {
 
     afterEach(destroyGraphDiv);
 
+    function assertPts(attr, getterFn, expectation, msg2) {
+        var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
+
+        d3.select(gd).selectAll('.trace').each(function(_, i) {
+            var pts = d3.select(this).selectAll(selector);
+            var expi = expectation[i];
+
+            expect(pts.size())
+                .toBe(expi.length, '# of pts for trace ' + i + msg2);
+
+            pts.each(function(_, j) {
+                var msg3 = ' for pt ' + j + ' in trace ' + i + msg2;
+                expect(getterFn(this)).toBe(expi[j], attr + msg3);
+            });
+        });
+    }
+
     function makeCheckFn(attr, getterFn) {
         return function(update, expectation, msg) {
-            var msg2 = ' (' + msg + ')';
             var promise = update ? Plotly.restyle(gd, update) : Promise.resolve();
-            var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
 
             return promise.then(function() {
-                d3.selectAll('.trace').each(function(_, i) {
-                    var pts = d3.select(this).selectAll(selector);
-                    var expi = expectation[i];
+                assertPts(attr, getterFn, expectation, ' (' + msg + ' after restyle)');
 
-                    expect(pts.size())
-                        .toBe(expi.length, '# of pts for trace ' + i + msg2);
-
-                    pts.each(function(_, j) {
-                        var msg3 = ' for pt ' + j + ' in trace ' + i + msg2;
-                        expect(getterFn(this)).toBe(expi[j], attr + msg3);
-                    });
+                // make sure styleOnSelect (called during selection)
+                // gives same results as restyle
+                gd.calcdata.forEach(function(cd) {
+                    Scatter.styleOnSelect(gd, cd, cd[0].node3);
                 });
+                assertPts(attr, getterFn, expectation, ' (' + msg + ' via Scatter.styleOnSelect)');
             });
         };
     }
-
-    var getOpacity = function(node) { return Number(node.style.opacity); };
-    var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
-    var getColor = function(node) { return node.style.fill; };
-    var getMarkerSize = function(node) {
-        // find path arc multiply by 2 to get the corresponding marker.size value
-        // (works for circles only)
-        return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
-    };
 
     var r = 'rgb(255, 0, 0)';
     var g = 'rgb(0, 255, 0)';
@@ -950,7 +1592,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 1 w/ set unselected.marker.opacity'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1037,7 +1679,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.marker.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1081,7 +1723,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 0 w/ set unselected.marker.size'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1164,7 +1806,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.textfont.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1184,13 +1826,27 @@ describe('Test scatter *clipnaxis*:', function() {
         // add lines
         fig.data[0].mode = 'markers+lines+text';
 
+        // add a non-scatter trace to make sure its module layer gets clipped
+        fig.data.push({
+            type: 'contour',
+            z: [[0, 0.5, 1], [0.5, 1, 3]]
+        });
+
+        function _assertClip(sel, exp, size, msg) {
+            if(exp === null) {
+                expect(sel.size()).toBe(0, msg + 'selection should not exist');
+            } else {
+                assertClip(sel, exp, size, msg);
+            }
+        }
+
         function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
             var subplotLayer = d3.select('.plot');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
-            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
-            assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
+            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
+            _assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
 
             assertNodeDisplay(
                 scatterLayer.selectAll('.point'),
@@ -1227,7 +1883,7 @@ describe('Test scatter *clipnaxis*:', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [false, 0],
                 [false, 0]
@@ -1245,7 +1901,7 @@ describe('Test scatter *clipnaxis*:', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [false, 0],
                 [false, 0]
@@ -1296,7 +1952,21 @@ describe('Test scatter *clipnaxis*:', function() {
                 [true, 1]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
+});
+
+describe('event data', function() {
+    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mockCopy = Lib.extendDeep({}, mock);
+
+    var marker = mockCopy.data[0].marker;
+    marker.opacity = [];
+    marker.symbol = [];
+    for(var i = 0; i < mockCopy.data[0].y.length; ++i) {
+        marker.opacity.push(0.5);
+        marker.symbol.push('square');
+    }
+    checkEventData(mockCopy, 540, 260, constants.eventDataKeys);
 });

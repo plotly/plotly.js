@@ -1,0 +1,25 @@
+{
+  "data": [{
+      "y": [1, 5, 3, 4, 5],
+      "name": "Super long name<br>Super long name<br>Super long name<br>Super long name",
+      "type": "scatter",
+      "showlegend": true
+    },
+    {
+      "y": [3, 2, 5, 1, 5],
+      "name": "Also super long name<br>Also super long name<br>Also super long name",
+      "type": "scatter",
+      "showlegend": true
+    }
+  ],
+  "layout": {
+    "width": 800,
+    "legend": {
+      "bgcolor": "rgba(0,255,255,1)",
+      "valign": "middle",
+      "font": {
+        "size": 20
+      }
+    }
+  }
+}

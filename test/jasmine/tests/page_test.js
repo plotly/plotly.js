@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 
 describe('page rendering', function() {
@@ -82,7 +82,7 @@ describe('page rendering', function() {
                 expect(bBox.height).toBe(0);
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

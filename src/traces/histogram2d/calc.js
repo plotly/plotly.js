@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -15,15 +14,13 @@ var Axes = require('../../plots/cartesian/axes');
 var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
-var cleanBins = require('../histogram/clean_bins');
 var getBinSpanLabelRound = require('../histogram/bin_label_vals');
-
+var calcAllAutoBins = require('../histogram/calc').calcAllAutoBins;
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+    var xa = Axes.getFromId(gd, trace.xaxis);
+    var ya = Axes.getFromId(gd, trace.yaxis);
+
     var xcalendar = trace.xcalendar;
     var ycalendar = trace.ycalendar;
     var xr2c = function(v) { return xa.r2c(v, 0, xcalendar); };
@@ -33,32 +30,36 @@ module.exports = function calc(gd, trace) {
 
     var i, j, n, m;
 
-    var serieslen = Math.min(x.length, y.length);
-    if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
-    if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
-
     // calculate the bins
-    cleanAndAutobin(trace, 'x', x, xa, xr2c, xc2r, xcalendar);
-    cleanAndAutobin(trace, 'y', y, ya, yr2c, yc2r, ycalendar);
+    var xBinsAndPos = calcAllAutoBins(gd, trace, xa, 'x');
+    var xBinSpec = xBinsAndPos[0];
+    var xPos0 = xBinsAndPos[1];
+    var yBinsAndPos = calcAllAutoBins(gd, trace, ya, 'y');
+    var yBinSpec = yBinsAndPos[0];
+    var yPos0 = yBinsAndPos[1];
+
+    var serieslen = trace._length;
+    if(xPos0.length > serieslen) xPos0.splice(serieslen, xPos0.length - serieslen);
+    if(yPos0.length > serieslen) yPos0.splice(serieslen, yPos0.length - serieslen);
 
     // make the empty bin array & scale the map
     var z = [];
     var onecol = [];
     var zerocol = [];
-    var nonuniformBinsX = (typeof(trace.xbins.size) === 'string');
-    var nonuniformBinsY = (typeof(trace.ybins.size) === 'string');
+    var nonuniformBinsX = typeof xBinSpec.size === 'string';
+    var nonuniformBinsY = typeof yBinSpec.size === 'string';
     var xEdges = [];
     var yEdges = [];
-    var xbins = nonuniformBinsX ? xEdges : trace.xbins;
-    var ybins = nonuniformBinsY ? yEdges : trace.ybins;
+    var xbins = nonuniformBinsX ? xEdges : xBinSpec;
+    var ybins = nonuniformBinsY ? yEdges : yBinSpec;
     var total = 0;
     var counts = [];
     var inputPoints = [];
     var norm = trace.histnorm;
     var func = trace.histfunc;
-    var densitynorm = (norm.indexOf('density') !== -1);
-    var extremefunc = (func === 'max' || func === 'min');
-    var sizeinit = (extremefunc ? null : 0);
+    var densitynorm = norm.indexOf('density') !== -1;
+    var extremefunc = func === 'max' || func === 'min';
+    var sizeinit = extremefunc ? null : 0;
     var binfunc = binFunctions.count;
     var normfunc = normFunctions[norm];
     var doavg = false;
@@ -80,12 +81,12 @@ module.exports = function calc(gd, trace) {
     }
 
     // decrease end a little in case of rounding errors
-    var binSpec = trace.xbins,
-        binStart = xr2c(binSpec.start),
-        binEnd = xr2c(binSpec.end) +
-            (binStart - Axes.tickIncrement(binStart, binSpec.size, false, xcalendar)) / 1e6;
+    var xBinSize = xBinSpec.size;
+    var xBinStart = xr2c(xBinSpec.start);
+    var xBinEnd = xr2c(xBinSpec.end) +
+        (xBinStart - Axes.tickIncrement(xBinStart, xBinSize, false, xcalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, xcalendar)) {
+    for(i = xBinStart; i < xBinEnd; i = Axes.tickIncrement(i, xBinSize, false, xcalendar)) {
         onecol.push(sizeinit);
         xEdges.push(i);
         if(doavg) zerocol.push(0);
@@ -93,16 +94,15 @@ module.exports = function calc(gd, trace) {
     xEdges.push(i);
 
     var nx = onecol.length;
-    var x0c = xr2c(trace.xbins.start);
-    var dx = (i - x0c) / nx;
-    var x0 = xc2r(x0c + dx / 2);
+    var dx = (i - xBinStart) / nx;
+    var x0 = xc2r(xBinStart + dx / 2);
 
-    binSpec = trace.ybins;
-    binStart = yr2c(binSpec.start);
-    binEnd = yr2c(binSpec.end) +
-        (binStart - Axes.tickIncrement(binStart, binSpec.size, false, ycalendar)) / 1e6;
+    var yBinSize = yBinSpec.size;
+    var yBinStart = yr2c(yBinSpec.start);
+    var yBinEnd = yr2c(yBinSpec.end) +
+        (yBinStart - Axes.tickIncrement(yBinStart, yBinSize, false, ycalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, ycalendar)) {
+    for(i = yBinStart; i < yBinEnd; i = Axes.tickIncrement(i, yBinSize, false, ycalendar)) {
         z.push(onecol.slice());
         yEdges.push(i);
         var ipCol = new Array(nx);
@@ -113,9 +113,8 @@ module.exports = function calc(gd, trace) {
     yEdges.push(i);
 
     var ny = z.length;
-    var y0c = yr2c(trace.ybins.start);
-    var dy = (i - y0c) / ny;
-    var y0 = yc2r(y0c + dy / 2);
+    var dy = (i - yBinStart) / ny;
+    var y0 = yc2r(yBinStart + dy / 2);
 
     if(densitynorm) {
         xinc = makeIncrements(onecol.length, xbins, dx, nonuniformBinsX);
@@ -137,8 +136,8 @@ module.exports = function calc(gd, trace) {
     var yGapLow = Infinity;
     var yGapHigh = Infinity;
     for(i = 0; i < serieslen; i++) {
-        var xi = x[i];
-        var yi = y[i];
+        var xi = xPos0[i];
+        var yi = yPos0[i];
         n = Lib.findBin(xi, xbins);
         m = Lib.findBin(yi, ybins);
         if(n >= 0 && n < nx && m >= 0 && m < ny) {
@@ -150,8 +149,8 @@ module.exports = function calc(gd, trace) {
                 else if(xVals[n] !== xi) uniqueValsPerX = false;
             }
             if(uniqueValsPerY) {
-                if(yVals[n] === undefined) yVals[n] = yi;
-                else if(yVals[n] !== yi) uniqueValsPerY = false;
+                if(yVals[m] === undefined) yVals[m] = yi;
+                else if(yVals[m] !== yi) uniqueValsPerY = false;
             }
 
             xGapLow = Math.min(xGapLow, xi - xEdges[n]);
@@ -169,11 +168,11 @@ module.exports = function calc(gd, trace) {
     }
 
     return {
-        x: x,
+        x: xPos0,
         xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
         x0: x0,
         dx: dx,
-        y: y,
+        y: yPos0,
         yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
         y0: y0,
         dy: dy,
@@ -182,41 +181,12 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-function cleanAndAutobin(trace, axLetter, data, ax, r2c, c2r, calendar) {
-    var binSpecAttr = axLetter + 'bins';
-    var autoBinAttr = 'autobin' + axLetter;
-    var binSpec = trace[binSpecAttr];
-
-    cleanBins(trace, ax, axLetter);
-
-    if(trace[autoBinAttr] || !binSpec || binSpec.start === null || binSpec.end === null) {
-        binSpec = Axes.autoBin(data, ax, trace['nbins' + axLetter], '2d', calendar);
-        if(trace.type === 'histogram2dcontour') {
-            // the "true" last argument reverses the tick direction (which we can't
-            // just do with a minus sign because of month bins)
-            binSpec.start = c2r(Axes.tickIncrement(
-                r2c(binSpec.start), binSpec.size, true, calendar));
-            binSpec.end = c2r(Axes.tickIncrement(
-                r2c(binSpec.end), binSpec.size, false, calendar));
-        }
-
-        // copy bin info back to the source data.
-        trace._input[binSpecAttr] = trace[binSpecAttr] = binSpec;
-        // note that it's possible to get here with an explicit autobin: false
-        // if the bins were not specified.
-        // in that case this will remain in the trace, so that future updates
-        // which would change the autobinning will not do so.
-        trace._input[autoBinAttr] = trace[autoBinAttr];
-    }
-}
-
 function makeIncrements(len, bins, dv, nonuniform) {
     var out = new Array(len);
     var i;
     if(nonuniform) {
         for(i = 0; i < len; i++) out[i] = 1 / (bins[i + 1] - bins[i]);
-    }
-    else {
+    } else {
         var inc = 1 / dv;
         for(i = 0; i < len; i++) out[i] = inc;
     }
@@ -235,12 +205,13 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     var i;
     var len = edges.length - 1;
     var out = new Array(len);
-    if(uniqueVals) {
-        for(i = 0; i < len; i++) out[i] = [uniqueVals[i], uniqueVals[i]];
-    }
-    else {
-        var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
-        for(i = 0; i < len; i++) out[i] = [roundFn(edges[i]), roundFn(edges[i + 1], true)];
+    var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
+
+    for(i = 0; i < len; i++) {
+        var v = (uniqueVals || [])[i];
+        out[i] = v === undefined ?
+            [roundFn(edges[i]), roundFn(edges[i + 1], true)] :
+            [v, v];
     }
     return out;
 }

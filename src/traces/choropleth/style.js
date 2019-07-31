@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,9 +13,9 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
 
-module.exports = function style(gd, calcTrace) {
+function style(gd, calcTrace) {
     if(calcTrace) styleTrace(gd, calcTrace);
-};
+}
 
 function styleTrace(gd, calcTrace) {
     var trace = calcTrace[0].trace;
@@ -24,13 +24,7 @@ function styleTrace(gd, calcTrace) {
     var marker = trace.marker || {};
     var markerLine = marker.line || {};
 
-    var sclFunc = Colorscale.makeColorScaleFunc(
-        Colorscale.extractScale(
-            trace.colorscale,
-            trace.zmin,
-            trace.zmax
-        )
-    );
+    var sclFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
 
     locs.each(function(d) {
         d3.select(this)
@@ -40,5 +34,21 @@ function styleTrace(gd, calcTrace) {
             .style('opacity', marker.opacity);
     });
 
-    Drawing.selectedPointStyle(locs, trace);
+    Drawing.selectedPointStyle(locs, trace, gd);
 }
+
+function styleOnSelect(gd, calcTrace) {
+    var s = calcTrace[0].node3;
+    var trace = calcTrace[0].trace;
+
+    if(trace.selectedpoints) {
+        Drawing.selectedPointStyle(s.selectAll('.choroplethlocation'), trace, gd);
+    } else {
+        styleTrace(gd, calcTrace);
+    }
+}
+
+module.exports = {
+    style: style,
+    styleOnSelect: styleOnSelect
+};

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -31,8 +31,7 @@ module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, la
 
     if(operation === '=') {
         showLines = contours.showlines = true;
-    }
-    else {
+    } else {
         showLines = coerce('contours.showlines');
         fillColor = coerce('fillcolor', addOpacity(
             (traceIn.line || {}).color || defaultColor, 0.5

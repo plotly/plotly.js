@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,13 +17,12 @@ var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
-var orderedCategories = require('../../plots/cartesian/ordered_categories');
 var autoType = require('../../plots/cartesian/axis_autotype');
 
 /**
  * options: object containing:
  *
- *  letter: 'x' or 'y'
+ *  letter: 'a' or 'b'
  *  title: name of the axis (ie 'Colorbar') to go in default title
  *  name: axis object name (ie 'xaxis') if one should be stored
  *  font: the default font to inherit
@@ -33,9 +32,9 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  bgColor: the plot background color, to calculate default gridline colors
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
-    var letter = options.letter,
-        font = options.font || {},
-        attributes = carpetAttrs[letter + 'axis'];
+    var letter = options.letter;
+    var font = options.font || {};
+    var attributes = carpetAttrs[letter + 'axis'];
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -58,8 +57,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
         if(containerOut.type === '-') {
             containerOut.type = 'linear';
-        }
-        else {
+        } else {
             // copy autoType back to input axis
             // note that if this object didn't exist
             // in the input layout, we have to put it in
@@ -104,21 +102,25 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
+    // we need some of the other functions setConvert attaches, but for
+    // path finding, override pixel scaling to simple passthrough (identity)
     setConvert(containerOut, options.fullLayout);
+    containerOut.c2p = Lib.identity;
 
     var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
-    coerce('title');
-    Lib.coerceFont(coerce, 'titlefont', {
-        family: font.family,
-        size: Math.round(font.size * 1.2),
-        color: dfltFontColor
-    });
-
-    coerce('titleoffset');
+    var title = coerce('title.text');
+    if(title) {
+        Lib.coerceFont(coerce, 'title.font', {
+            family: font.family,
+            size: Math.round(font.size * 1.2),
+            color: dfltFontColor
+        });
+        coerce('title.offset');
+    }
 
     coerce('tickangle');
 
@@ -133,7 +135,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce, {
+        data: options.data,
+        dataAttr: letter
+    });
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
@@ -176,11 +181,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         }
     }
 
-    // fill in categories
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
-
     if(containerOut.showticklabels === 'none') {
         delete containerOut.tickfont;
         delete containerOut.tickangle;
@@ -203,11 +203,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // but no, we *actually* want to coerce this.
     coerce('tickmode');
 
-    if(!containerOut.title || (containerOut.title && containerOut.title.length === 0)) {
-        delete containerOut.titlefont;
-        delete containerOut.titleoffset;
-    }
-
     return containerOut;
 };
 
@@ -216,11 +211,11 @@ function setAutoType(ax, data) {
     // only autotype if type is '-'
     if(ax.type !== '-') return;
 
-    var id = ax._id,
-        axLetter = id.charAt(0);
+    var id = ax._id;
+    var axLetter = id.charAt(0);
 
-    var calAttr = axLetter + 'calendar',
-        calendar = ax[calAttr];
+    var calAttr = axLetter + 'calendar';
+    var calendar = ax[calAttr];
 
     ax.type = autoType(data, calendar);
 }

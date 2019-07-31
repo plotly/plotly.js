@@ -1,0 +1,48 @@
+{
+  "data": [
+    {
+      "x": [3],
+      "y": [0],
+      "z": [2],
+      "text": ["This <i>text</i> was <b>too</b> long.<br>But <i><b>right now</b></i> it is <br>presented on<br>multiple <b><i>lines!<br>It is now<br>also possible</i></b> to use <sup>Super</sup> and <sub>Sub</sub><br>texts either <i>lower</i> or <b>UPPER</b> cases.<br><br>Aa<sup>Xx<sup>23.5<sup>Ab</sup></sup></sup><br>Aa<sub>Xx<sub>23.5<sub>Ab</sub></sub></sub>"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "middle center"
+    }
+  ],
+  "layout": {
+    "title":"Now texts could be displayed in 3D on multiple lines.",
+    "width": 1200,
+    "height": 900,
+    "scene":{
+      "xaxis":{
+        "titlefont": {
+          "color": "#f00",
+          "family": "Sans-Serif",
+          "size": 18
+        },
+        "title": "An axis with<br><i>Italic</i> & <b>bold</b> info! &\nSay no to '\\n'.<br>Only use <'br'> for line breaks."
+      },
+      "yaxis":{
+        "titlefont": {
+          "color": "#00f",
+          "family": "Times New Roman",
+          "size": 32
+        },
+        "title": "I<sub>x<sub>2<sub>n<sup>3</sup></sub></sub></sub> + z<sup>(n<sup>i</sup>+Log[y<sub>x<sup>2</sup></sub>])</sup>"
+      },
+      "zaxis":{
+        "titlefont": {
+          "color": "#0f0",
+          "family": "Courier New",
+          "size": 18
+        },
+        "title": "A <b>long</b><br>axis presented<br>on <i>multiple</i> lines."},
+      "camera":{
+        "eye":{"x":-1.5,"y":1.5,"z":1.5},
+        "center":{"x":0,"y":0,"z":0},
+        "up":{"x":0,"y":0,"z":1}
+      }
+    }
+  }
+}

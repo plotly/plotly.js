@@ -1,0 +1,16 @@
+{
+  "data": [{
+    "type": "box",
+    "x0": 1,
+    "y": [1, 2, 1, 2, 1, 2, 3, 4, 4]
+  }, {
+    "type": "box",
+    "x0": 2,
+    "y": [2, 1, 2, 3, 3, 1, 0, 0, 1]
+  }],
+  "layout": {
+    "title": {"text": "single-box groups!"},
+    "boxmode": "group",
+    "showlegend": false
+  }
+}

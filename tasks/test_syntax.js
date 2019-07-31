@@ -8,6 +8,11 @@ var readLastLines = require('read-last-lines');
 var eslint = require('eslint');
 var trueCasePath = require('true-case-path');
 
+var common = require('./util/common');
+var isJasmineTestIt = common.isJasmineTestIt;
+var isJasmineTestDescribe = common.isJasmineTestDescribe;
+var hasJasmineTestTag = common.hasJasmineTestTag;
+
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
 var libGlob = path.join(constants.pathToLib, '**/*.js');
@@ -28,26 +33,60 @@ assertES5();
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
+    var TAGS = ['noCI', 'noCIdep', 'gl', 'flaky'];
+    var IT_ONLY_TAGS = ['gl', 'flaky'];
     var logs = [];
+
+    var addTagPrefix = function(t) { return '@' + t; };
 
     glob(combineGlobs([testGlob, bundleTestGlob]), function(err, files) {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
+            var bn = path.basename(file);
 
             falafel(code, {locations: true}, function(node) {
+                var lineInfo = '[line ' + node.loc.start.line + '] :';
+
                 if(node.type === 'Identifier' && BLACK_LIST.indexOf(node.name) !== -1) {
                     logs.push([
-                        path.basename(file),
-                        '[line ' + node.loc.start.line + '] :',
+                        bn, lineInfo,
                         'contains either a *fdescribe*, *fit*,',
                         '*xdescribe* or *xit* block.'
                     ].join(' '));
                 }
-            });
 
+                if(isJasmineTestIt(node)) {
+                    if(hasJasmineTestTag(node)) {
+                        if(TAGS.every(function(t) { return !hasJasmineTestTag(node, t); })) {
+                            logs.push([
+                                bn, lineInfo,
+                                'contains an unrecognized tag,',
+                                'not one of: ' + TAGS.map(addTagPrefix).join(', ')
+                            ].join(' '));
+                        }
+                    }
+
+                    if(hasJasmineTestTag(node, 'gl') && hasJasmineTestTag(node, 'flaky')) {
+                        logs.push([
+                            bn, lineInfo,
+                            'contains a @gl tag AND a @flaky tag, which is not allowed'
+                        ].join(' '));
+                    }
+                }
+
+                IT_ONLY_TAGS.forEach(function(t) {
+                    if(isJasmineTestDescribe(node, t)) {
+                        logs.push([
+                            bn, lineInfo,
+                            'contains a', addTagPrefix(t), 'tag is a *describe* block,',
+                            addTagPrefix(t), 'tags are only allowed in jasmine *it* blocks.'
+                        ].join(' '));
+                    }
+                });
+            });
         });
 
-        log('no jasmine suites focus/exclude blocks', logs);
+        log('no jasmine suites focus/exclude blocks or wrong tag patterns', logs);
     });
 }
 
@@ -73,6 +112,9 @@ function assertSrcContents() {
     // Forbidden in IE in any context
     var IE_BLACK_LIST = ['classList'];
 
+    // not implemented in FF, or inconsistent with others
+    var FF_BLACK_LIST = ['offsetX', 'offsetY'];
+
     // require'd built-in modules
     var BUILTINS = ['events'];
 
@@ -93,29 +135,32 @@ function assertSrcContents() {
 
                     if(source === 'Math.sign') {
                         logs.push(file + ' : contains Math.sign (IE failure)');
-                    }
-                    else if(source === 'window.getComputedStyle') {
+                    } else if(source === 'window.getComputedStyle') {
                         getComputedStyleCnt++;
-                    }
-                    else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
+                    } else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
+                    } else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
+                        // add special case for sunburst where we use 'children'
+                        // off the d3-hierarchy output
+                        var dirParts = path.dirname(file).split(path.sep);
+                        var isSunburstFile = dirParts[dirParts.length - 1] === 'sunburst';
+                        var isLinkedToObject = ['pt', 'd', 'parent'].indexOf(parts[parts.length - 2]) !== -1;
+                        if(!(isSunburstFile && isLinkedToObject)) {
+                            logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
+                        }
+                    } else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
+                        logs.push(file + ' : contains .' + lastPart + ' (FF failure)');
                     }
-                    else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
-                    }
-                }
-                else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
+                } else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
                     if(node.parent.source() !== 'window.getComputedStyle') {
                         logs.push(file + ' : getComputedStyle must be called as a `window` property.');
                     }
-                }
-                else if(node.type === 'CallExpression' && node.callee.name === 'require') {
+                } else if(node.type === 'CallExpression' && node.callee.name === 'require') {
                     var pathNode = node.arguments[0];
                     var pathStr = pathNode.value;
                     if(pathNode.type !== 'Literal') {
                         logs.push(file + ' : You may only `require` literals.');
-                    }
-                    else if(BUILTINS.indexOf(pathStr) === -1) {
+                    } else if(BUILTINS.indexOf(pathStr) === -1) {
                         // node version 8.9.0+ can use require.resolve(request, {paths: [...]})
                         // and avoid this explicit conversion to the current location
                         if(pathStr.charAt(0) === '.') {
@@ -199,6 +244,7 @@ function assertFileNames() {
                 base === 'CONTRIBUTING.md' ||
                 base === 'CHANGELOG.md' ||
                 base === 'SECURITY.md' ||
+                base === 'BUILDING.md' ||
                 file.indexOf('mathjax') !== -1
             ) return;
 
@@ -260,12 +306,9 @@ function assertCircularDeps() {
         var circularDeps = res.circular();
         var logs = [];
 
-        // see https://github.com/plotly/plotly.js/milestone/9
-        var MAX_ALLOWED_CIRCULAR_DEPS = 16;
-
-        if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+        if(circularDeps.length) {
             console.log(circularDeps.join('\n'));
-            logs.push('some new circular dependencies were added to src/');
+            logs.push('some circular dependencies were found in src/');
         }
 
         log('circular dependencies: ' + circularDeps.length, logs);
@@ -285,7 +328,7 @@ function assertES5() {
     });
 
     var files = constants.partialBundlePaths.map(function(f) { return f.dist; });
-    files.unshift(constants.pathToPlotlyDist);
+    files.unshift(constants.pathToPlotlyBuild, constants.pathToPlotlyDist);
 
     var report = cli.executeOnFiles(files);
     var formatter = cli.getFormatter();

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,21 +8,42 @@
 
 'use strict';
 
-var lineLayerMaker = require('./lines');
-var c = require('./constants');
-var Lib = require('../../lib');
 var d3 = require('d3');
-var Drawing = require('../../components/drawing');
-var keyFun = require('../../lib/gup').keyFun;
-var repeat = require('../../lib/gup').repeat;
-var unwrap = require('../../lib/gup').unwrap;
+var rgba = require('color-rgba');
 
-function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
+var Axes = require('../../plots/cartesian/axes');
+var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var Drawing = require('../../components/drawing');
+var Colorscale = require('../../components/colorscale');
+
+var gup = require('../../lib/gup');
+var keyFun = gup.keyFun;
+var repeat = gup.repeat;
+var unwrap = gup.unwrap;
+
+var helpers = require('./helpers');
+var c = require('./constants');
+var brush = require('./axisbrush');
+var lineLayerMaker = require('./lines');
+
+function findExtreme(fn, values, len) {
+    return Lib.aggNums(fn, null, values, len);
+}
+
+function findExtremes(values, len) {
+    return [
+        findExtreme(Math.min, values, len),
+        findExtreme(Math.max, values, len)
+    ];
+}
 
 function dimensionExtent(dimension) {
+    var range = dimension.range;
+    if(!range) range = findExtremes(dimension.values, dimension._length);
 
-    var lo = dimension.range ? dimension.range[0] : d3.min(dimension.values);
-    var hi = dimension.range ? dimension.range[1] : d3.max(dimension.values);
+    var lo = range[0];
+    var hi = range[1];
 
     if(isNaN(lo) || !isFinite(lo)) {
         lo = 0;
@@ -34,10 +55,7 @@ function dimensionExtent(dimension) {
 
     // avoid a degenerate (zero-width) domain
     if(lo === hi) {
-        if(lo === void(0)) {
-            lo = 0;
-            hi = 1;
-        } else if(lo === 0) {
+        if(lo === 0) {
             // no use to multiplying zero, so add/subtract in this case
             lo -= 1;
             hi += 1;
@@ -51,63 +69,62 @@ function dimensionExtent(dimension) {
     return [lo, hi];
 }
 
-function ordinalScaleSnap(scale, v) {
-    var i, a, prevDiff, prevValue, diff;
-    for(i = 0, a = scale.range(), prevDiff = Infinity, prevValue = a[0], diff; i < a.length; i++) {
-        if((diff = Math.abs(a[i] - v)) > prevDiff) {
-            return prevValue;
-        }
-        prevDiff = diff;
-        prevValue = a[i];
-    }
-    return a[a.length - 1];
-}
-
 function toText(formatter, texts) {
-    return function(v, i) {
-        if(texts) {
+    if(texts) {
+        return function(v, i) {
             var text = texts[i];
-            if(text === null || text === undefined) {
-                return formatter(v);
-            } else {
-                return text;
-            }
-        } else {
-            return formatter(v);
-        }
-    };
+            if(text === null || text === undefined) return formatter(v);
+            return text;
+        };
+    }
+    return formatter;
 }
 
-function domainScale(height, padding, dimension) {
+function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
-    var texts = dimension.ticktext;
-    return dimension.tickvals ?
-        d3.scale.ordinal()
-            .domain(dimension.tickvals.map(toText(d3.format(dimension.tickformat), texts)))
-            .range(dimension.tickvals
-                .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
-                .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
-        d3.scale.linear()
-            .domain(extent)
-            .range([height - padding, padding]);
+    if(tickvals) {
+        return d3.scale.ordinal()
+            .domain(tickvals.map(toText(d3.format(dimension.tickformat), ticktext)))
+            .range(tickvals
+                .map(function(d) {
+                    var unitVal = (d - extent[0]) / (extent[1] - extent[0]);
+                    return (height - padding + unitVal * (2 * padding - height));
+                })
+            );
+    }
+    return d3.scale.linear()
+        .domain(extent)
+        .range([height - padding, padding]);
 }
 
-function unitScale(height, padding) {return d3.scale.linear().range([height - padding, padding]);}
-function domainToUnitScale(dimension) {return d3.scale.linear().domain(dimensionExtent(dimension));}
+function unitToPaddedPx(height, padding) {
+    return d3.scale.linear().range([padding, height - padding]);
+}
+
+function domainToPaddedUnitScale(dimension, padFraction) {
+    return d3.scale.linear()
+        .domain(dimensionExtent(dimension))
+        .range([padFraction, 1 - padFraction]);
+}
 
 function ordinalScale(dimension) {
+    if(!dimension.tickvals) return;
+
     var extent = dimensionExtent(dimension);
-    return dimension.tickvals && d3.scale.ordinal()
-            .domain(dimension.tickvals)
-            .range(dimension.tickvals.map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);}));
+    return d3.scale.ordinal()
+        .domain(dimension.tickvals)
+        .range(dimension.tickvals.map(function(d) {
+            return (d - extent[0]) / (extent[1] - extent[0]);
+        }));
 }
 
 function unitToColorScale(cscale) {
-
-    var colorStops = cscale.map(function(d) {return d[0];});
-    var colorStrings = cscale.map(function(d) {return d[1];});
-    var colorTuples = colorStrings.map(function(c) {return d3.rgb(c);});
-    var prop = function(n) {return function(o) {return o[n];};};
+    var colorStops = cscale.map(function(d) { return d[0]; });
+    var colorTuples = cscale.map(function(d) {
+        var RGBA = rgba(d[1]);
+        return d3.rgb('rgb(' + RGBA[0] + ',' + RGBA[1] + ',' + RGBA[2] + ')');
+    });
+    var prop = function(n) { return function(o) { return o[n]; }; };
 
     // We can't use d3 color interpolation as we may have non-uniform color palette raster
     // (various color stop distances).
@@ -125,21 +142,37 @@ function unitToColorScale(cscale) {
     };
 }
 
-function model(layout, d, i) {
-    var cd0 = unwrap(d),
-        trace = cd0.trace,
-        lineColor = cd0.lineColor,
-        cscale = cd0.cscale,
-        line = trace.line,
-        domain = trace.domain,
-        dimensions = trace.dimensions,
-        width = layout.width,
-        labelFont = trace.labelfont,
-        tickFont = trace.tickfont,
-        rangeFont = trace.rangefont;
+function someFiltersActive(view) {
+    return view.dimensions.some(function(p) {
+        return p.brush.filterSpecified;
+    });
+}
 
-    var lines = Lib.extendDeep({}, line, {
-        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
+function model(layout, d, i) {
+    var cd0 = unwrap(d);
+    var trace = cd0.trace;
+    var lineColor = helpers.convertTypedArray(cd0.lineColor);
+    var line = trace.line;
+    var deselectedLines = {color: rgba(c.deselectedLineColor)};
+    var cOpts = Colorscale.extractOpts(line);
+    var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
+    var domain = trace.domain;
+    var dimensions = trace.dimensions;
+    var width = layout.width;
+    var labelAngle = trace.labelangle;
+    var labelSide = trace.labelside;
+    var labelFont = trace.labelfont;
+    var tickFont = trace.tickfont;
+    var rangeFont = trace.rangefont;
+
+    var lines = Lib.extendDeepNoArrays({}, line, {
+        color: lineColor.map(d3.scale.linear().domain(
+            dimensionExtent({
+                values: lineColor,
+                range: [cOpts.min, cOpts.max],
+                _length: trace._length
+            })
+        )),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -153,11 +186,14 @@ function model(layout, d, i) {
 
     return {
         key: i,
-        colCount: dimensions.filter(visible).length,
+        colCount: dimensions.filter(helpers.isVisible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
         lines: lines,
+        deselectedLines: deselectedLines,
+        labelAngle: labelAngle,
+        labelSide: labelSide,
         labelFont: labelFont,
         tickFont: tickFont,
         rangeFont: rangeFont,
@@ -175,8 +211,7 @@ function model(layout, d, i) {
     };
 }
 
-function viewModel(model) {
-
+function viewModel(state, callbacks, model) {
     var width = model.width;
     var height = model.height;
     var dimensions = model.dimensions;
@@ -184,51 +219,131 @@ function viewModel(model) {
 
     var xScale = function(d) {return width * d / Math.max(1, model.colCount - 1);};
 
-    var unitPad = c.verticalPadding / (height * canvasPixelRatio);
-    var unitPadScale = (1 - 2 * unitPad);
-    var paddedUnitScale = function(d) {return unitPad + unitPadScale * d;};
+    var unitPad = c.verticalPadding / height;
+    var _unitToPaddedPx = unitToPaddedPx(height, c.verticalPadding);
 
-    var viewModel = {
+    var vm = {
         key: model.key,
         xScale: xScale,
-        model: model
+        model: model,
+        inBrushDrag: false // consider factoring it out and putting it in a centralized global-ish gesture state object
     };
 
     var uniqueKeys = {};
 
-    viewModel.dimensions = dimensions.filter(visible).map(function(dimension, i) {
-        var domainToUnit = domainToUnitScale(dimension);
+    vm.dimensions = dimensions.filter(helpers.isVisible).map(function(dimension, i) {
+        var domainToPaddedUnit = domainToPaddedUnitScale(dimension, unitPad);
         var foundKey = uniqueKeys[dimension.label];
         uniqueKeys[dimension.label] = (foundKey || 0) + 1;
         var key = dimension.label + (foundKey ? '__' + foundKey : '');
+        var specifiedConstraint = dimension.constraintrange;
+        var filterRangeSpecified = specifiedConstraint && specifiedConstraint.length;
+        if(filterRangeSpecified && !Array.isArray(specifiedConstraint[0])) {
+            specifiedConstraint = [specifiedConstraint];
+        }
+        var filterRange = filterRangeSpecified ?
+            specifiedConstraint.map(function(d) { return d.map(domainToPaddedUnit); }) :
+            [[-Infinity, Infinity]];
+        var brushMove = function() {
+            var p = vm;
+            p.focusLayer && p.focusLayer.render(p.panels, true);
+            var filtersActive = someFiltersActive(p);
+            if(!state.contextShown() && filtersActive) {
+                p.contextLayer && p.contextLayer.render(p.panels, true);
+                state.contextShown(true);
+            } else if(state.contextShown() && !filtersActive) {
+                p.contextLayer && p.contextLayer.render(p.panels, true, true);
+                state.contextShown(false);
+            }
+        };
+
+        var truncatedValues = dimension.values;
+        if(truncatedValues.length > dimension._length) {
+            truncatedValues = truncatedValues.slice(0, dimension._length);
+        }
+
+        var tickvals = dimension.tickvals;
+        var ticktext;
+        function makeTickItem(v, i) { return {val: v, text: ticktext[i]}; }
+        function sortTickItem(a, b) { return a.val - b.val; }
+        if(Array.isArray(tickvals) && tickvals.length) {
+            ticktext = dimension.ticktext;
+
+            // ensure ticktext and tickvals have same length
+            if(!Array.isArray(ticktext) || !ticktext.length) {
+                ticktext = tickvals.map(d3.format(dimension.tickformat));
+            } else if(ticktext.length > tickvals.length) {
+                ticktext = ticktext.slice(0, tickvals.length);
+            } else if(tickvals.length > ticktext.length) {
+                tickvals = tickvals.slice(0, ticktext.length);
+            }
+
+            // check if we need to sort tickvals/ticktext
+            for(var j = 1; j < tickvals.length; j++) {
+                if(tickvals[j] < tickvals[j - 1]) {
+                    var tickItems = tickvals.map(makeTickItem).sort(sortTickItem);
+                    for(var k = 0; k < tickvals.length; k++) {
+                        tickvals[k] = tickItems[k].val;
+                        ticktext[k] = tickItems[k].text;
+                    }
+                    break;
+                }
+            }
+        } else tickvals = undefined;
+
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
+        truncatedValues = helpers.convertTypedArray(truncatedValues);
+
         return {
             key: key,
             label: dimension.label,
             tickFormat: dimension.tickformat,
-            tickvals: dimension.tickvals,
-            ticktext: dimension.ticktext,
-            ordinal: !!dimension.tickvals,
-            scatter: c.scatter || dimension.scatter,
+            tickvals: tickvals,
+            ticktext: ticktext,
+            ordinal: helpers.isOrdinal(dimension),
+            multiselect: dimension.multiselect,
             xIndex: i,
             crossfilterDimensionIndex: i,
             visibleIndex: dimension._index,
             height: height,
-            values: dimension.values,
-            paddedUnitValues: dimension.values.map(domainToUnit).map(paddedUnitScale),
+            values: truncatedValues,
+            paddedUnitValues: truncatedValues.map(domainToPaddedUnit),
+            unitTickvals: tickvals && tickvals.map(domainToPaddedUnit),
             xScale: xScale,
             x: xScale(i),
             canvasX: xScale(i) * canvasPixelRatio,
-            unitScale: unitScale(height, c.verticalPadding),
-            domainScale: domainScale(height, c.verticalPadding, dimension),
+            unitToPaddedPx: _unitToPaddedPx,
+            domainScale: domainScale(height, c.verticalPadding, dimension, tickvals, ticktext),
             ordinalScale: ordinalScale(dimension),
-            domainToUnitScale: domainToUnit,
-            filter: dimension.constraintrange ? dimension.constraintrange.map(domainToUnit) : [0, 1],
-            parent: viewModel,
-            model: model
+            parent: vm,
+            model: model,
+            brush: brush.makeBrush(
+                state,
+                filterRangeSpecified,
+                filterRange,
+                function() {
+                    state.linePickActive(false);
+                },
+                brushMove,
+                function(f) {
+                    vm.focusLayer.render(vm.panels, true);
+                    vm.pickLayer && vm.pickLayer.render(vm.panels, true);
+                    state.linePickActive(true);
+                    if(callbacks && callbacks.filterChanged) {
+                        var invScale = domainToPaddedUnit.invert;
+
+                        // update gd.data as if a Plotly.restyle were fired
+                        var newRanges = f.map(function(r) {
+                            return r.map(invScale).sort(Lib.sorterAsc);
+                        }).sort(function(a, b) { return a[0] - b[0]; });
+                        callbacks.filterChanged(vm.key, dimension._index, newRanges);
+                    }
+                }
+            )
         };
     });
 
-    return viewModel;
+    return vm;
 }
 
 function styleExtentTexts(selection) {
@@ -239,75 +354,115 @@ function styleExtentTexts(selection) {
         .style('user-select', 'none');
 }
 
-module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, callbacks) {
-    var domainBrushing = false;
+function parcoordsInteractionState() {
     var linePickActive = true;
+    var contextShown = false;
+    return {
+        linePickActive: function(val) {return arguments.length ? linePickActive = !!val : linePickActive;},
+        contextShown: function(val) {return arguments.length ? contextShown = !!val : contextShown;}
+    };
+}
 
-    function enterSvgDefs(root) {
-        var defs = root.selectAll('defs')
-            .data(repeat, keyFun);
+function calcTilt(angle, position) {
+    var dir = (position === 'top') ? 1 : -1;
+    var radians = angle * Math.PI / 180;
+    var dx = Math.sin(radians);
+    var dy = Math.cos(radians);
+    return {
+        dir: dir,
+        dx: dx,
+        dy: dy,
+        degrees: angle
+    };
+}
 
-        defs.enter()
-            .append('defs');
-
-        var filterBarPattern = defs.selectAll('#' + c.id.filterBarPattern)
-            .data(repeat, keyFun);
-
-        filterBarPattern.enter()
-            .append('pattern')
-            .attr('id', c.id.filterBarPattern)
-            .attr('patternUnits', 'userSpaceOnUse');
-
-        filterBarPattern
-            .attr('x', -c.bar.width)
-            .attr('width', c.bar.capturewidth)
-            .attr('height', function(d) {return d.model.height;});
-
-        var filterBarPatternGlyph = filterBarPattern.selectAll('rect')
-            .data(repeat, keyFun);
-
-        filterBarPatternGlyph.enter()
-            .append('rect')
-            .attr('shape-rendering', 'crispEdges');
-
-        filterBarPatternGlyph
-            .attr('height', function(d) {return d.model.height;})
-            .attr('width', c.bar.width)
-            .attr('x', c.bar.width / 2)
-            .attr('fill', c.bar.fillcolor)
-            .attr('fill-opacity', c.bar.fillopacity)
-            .attr('stroke', c.bar.strokecolor)
-            .attr('stroke-opacity', c.bar.strokeopacity)
-            .attr('stroke-width', c.bar.strokewidth);
+function updatePanelLayout(yAxis, vm) {
+    var panels = vm.panels || (vm.panels = []);
+    var data = yAxis.data();
+    for(var i = 0; i < data.length - 1; i++) {
+        var p = panels[i] || (panels[i] = {});
+        var dim0 = data[i];
+        var dim1 = data[i + 1];
+        p.dim0 = dim0;
+        p.dim1 = dim1;
+        p.canvasX = dim0.canvasX;
+        p.panelSizeX = dim1.canvasX - dim0.canvasX;
+        p.panelSizeY = vm.model.canvasHeight;
+        p.y = 0;
+        p.canvasY = 0;
     }
+}
 
-    var vm = styledData
+function calcAllTicks(cd) {
+    for(var i = 0; i < cd.length; i++) {
+        for(var j = 0; j < cd[i].length; j++) {
+            var trace = cd[i][j].trace;
+            var dimensions = trace.dimensions;
+
+            for(var k = 0; k < dimensions.length; k++) {
+                var values = dimensions[k].values;
+                var dim = dimensions[k]._ax;
+
+                if(dim) {
+                    if(!dim.range) dim.range = findExtremes(values, trace._length);
+                    if(!dim.dtick) dim.dtick = 0.01 * (Math.abs(dim.range[1] - dim.range[0]) || 1);
+
+                    dim.tickformat = dimensions[k].tickformat;
+                    Axes.calcTicks(dim);
+                    dim.cleanRange();
+                }
+            }
+        }
+    }
+}
+
+function linearFormat(dim, v) {
+    return Axes.tickText(dim._ax, v, false).text;
+}
+
+function extremeText(d, isTop) {
+    if(d.ordinal) return '';
+    var domain = d.domainScale.domain();
+    var v = (domain[isTop ? domain.length - 1 : 0]);
+
+    return linearFormat(d.model.dimensions[d.visibleIndex], v);
+}
+
+
+module.exports = function parcoords(gd, cdModule, layout, callbacks) {
+    var fullLayout = gd._fullLayout;
+    var svg = fullLayout._toppaper;
+    var glContainer = fullLayout._glcontainer;
+
+    calcAllTicks(cdModule);
+
+    var state = parcoordsInteractionState();
+
+    var vm = cdModule
         .filter(function(d) { return unwrap(d).trace.visible; })
         .map(model.bind(0, layout))
-        .map(viewModel);
+        .map(viewModel.bind(0, state, callbacks));
 
-    parcoordsLineLayers.each(function(d, i) {
+    glContainer.each(function(d, i) {
         return Lib.extendFlat(d, vm[i]);
     });
 
-    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
+    var glLayers = glContainer.selectAll('.gl-canvas')
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
             d.model = d.viewModel ? d.viewModel.model : null;
         });
 
-    var tweakables = {renderers: [], dimensions: []};
-
     var lastHovered = null;
 
-    parcoordsLineLayer
-        .filter(function(d) {
-            return d.pick;
-        })
+    var pickLayer = glLayers.filter(function(d) {return d.pick;});
+
+    // emit hover / unhover event
+    pickLayer
         .style('pointer-events', 'auto')
         .on('mousemove', function(d) {
-            if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
+            if(state.linePickActive() && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;
                 var cw = this.width;
                 var ch = this.height;
@@ -341,170 +496,109 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
             }
         });
 
-    parcoordsLineLayer
-        .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
+    glLayers
+        .style('opacity', function(d) {return d.pick ? 0 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
-    var parcoordsControlOverlay = svg.selectAll('.' + c.cn.parcoords)
+    var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
         .data(vm, keyFun);
 
-    parcoordsControlOverlay.exit().remove();
+    controlOverlay.exit().remove();
 
-    parcoordsControlOverlay.enter()
+    controlOverlay.enter()
         .append('g')
         .classed(c.cn.parcoords, true)
-        .attr('overflow', 'visible')
-        .style('box-sizing', 'content-box')
-        .style('position', 'absolute')
-        .style('left', 0)
-        .style('overflow', 'visible')
         .style('shape-rendering', 'crispEdges')
-        .style('pointer-events', 'none')
-        .call(enterSvgDefs);
+        .style('pointer-events', 'none');
 
-    parcoordsControlOverlay
-        .attr('width', function(d) {return d.model.width + d.model.pad.l + d.model.pad.r;})
-        .attr('height', function(d) {return d.model.height + d.model.pad.t + d.model.pad.b;})
-        .attr('transform', function(d) {
-            return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
-        });
+    controlOverlay.attr('transform', function(d) {
+        return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
+    });
 
-    var parcoordsControlView = parcoordsControlOverlay.selectAll('.' + c.cn.parcoordsControlView)
+    var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
         .data(repeat, keyFun);
 
     parcoordsControlView.enter()
         .append('g')
-        .classed(c.cn.parcoordsControlView, true)
-        .style('box-sizing', 'content-box');
+        .classed(c.cn.parcoordsControlView, true);
 
-    parcoordsControlView
-        .attr('transform', function(d) {return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';});
+    parcoordsControlView.attr('transform', function(d) {
+        return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';
+    });
 
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
-        .data(function(vm) {return vm.dimensions;}, keyFun);
-
-    function someFiltersActive(view) {
-        return view.dimensions.some(function(p) {return p.filter[0] !== 0 || p.filter[1] !== 1;});
-    }
-
-    function updatePanelLayoutParcoords(yAxis, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var yAxes = yAxis.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
-        var panelCount = yAxes.length - 1;
-        var rowCount = 1;
-        for(var row = 0; row < rowCount; row++) {
-            for(var p = 0; p < panelCount; p++) {
-                var panel = panels[p + row * panelCount] || (panels[p + row * panelCount] = {});
-                var dim1 = yAxes[p];
-                var dim2 = yAxes[p + 1];
-                panel.dim1 = dim1;
-                panel.dim2 = dim2;
-                panel.canvasX = dim1.canvasX;
-                panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-                panel.panelSizeY = vm.model.canvasHeight / rowCount;
-                panel.y = row * panel.panelSizeY;
-                panel.canvasY = vm.model.canvasHeight - panel.y - panel.panelSizeY;
-            }
-        }
-    }
-
-    function updatePanelLayoutScatter(yAxis, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var yAxes = yAxis.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
-        var panelCount = yAxes.length - 1;
-        var rowCount = panelCount;
-        for(var row = 0; row < panelCount; row++) {
-            for(var p = 0; p < panelCount; p++) {
-                var panel = panels[p + row * panelCount] || (panels[p + row * panelCount] = {});
-                var dim1 = yAxes[p];
-                var dim2 = yAxes[p + 1];
-                panel.dim1 = yAxes[row + 1];
-                panel.dim2 = dim2;
-                panel.canvasX = dim1.canvasX;
-                panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-                panel.panelSizeY = vm.model.canvasHeight / rowCount;
-                panel.y = row * panel.panelSizeY;
-                panel.canvasY = vm.model.canvasHeight - panel.y - panel.panelSizeY;
-            }
-        }
-    }
-
-    function updatePanelLayout(yAxis, vm) {
-        return (c.scatter ? updatePanelLayoutScatter : updatePanelLayoutParcoords)(yAxis, vm);
-    }
+        .data(function(p) { return p.dimensions; }, keyFun);
 
     yAxis.enter()
         .append('g')
-        .classed(c.cn.yAxis, true)
-        .each(function(d) {tweakables.dimensions.push(d);});
+        .classed(c.cn.yAxis, true);
 
-    parcoordsControlView.each(function(vm) {
-        updatePanelLayout(yAxis, vm);
+    parcoordsControlView.each(function(p) {
+        updatePanelLayout(yAxis, p);
     });
 
-    parcoordsLineLayer
-        .filter(function(d) {return !!d.viewModel;})
+    glLayers
         .each(function(d) {
-            d.lineLayer = lineLayerMaker(this, d, c.scatter);
-            d.viewModel[d.key] = d.lineLayer;
-            tweakables.renderers.push(function() {d.lineLayer.render(d.viewModel.panels, true);});
-            d.lineLayer.render(d.viewModel.panels, !d.context);
+            if(d.viewModel) {
+                if(!d.lineLayer || callbacks) { // recreate in case of having callbacks e.g. restyle. Should we test for callback to be a restyle?
+                    d.lineLayer = lineLayerMaker(this, d);
+                } else d.lineLayer.update(d);
+
+                if(d.key || d.key === 0) d.viewModel[d.key] = d.lineLayer;
+
+                var setChanged = (!d.context || // don't update background
+                                  callbacks);   // unless there is a callback on the context layer. Should we test the callback?
+
+                d.lineLayer.render(d.viewModel.panels, setChanged);
+            }
         });
 
-    yAxis
-        .attr('transform', function(d) {return 'translate(' + d.xScale(d.xIndex) + ', 0)';});
+    yAxis.attr('transform', function(d) {
+        return 'translate(' + d.xScale(d.xIndex) + ', 0)';
+    });
 
-    yAxis
-        .call(d3.behavior.drag()
-            .origin(function(d) {return d;})
-            .on('drag', function(d) {
-                var p = d.parent;
-                linePickActive = false;
-                if(domainBrushing) {
-                    return;
-                }
-                d.x = Math.max(-c.overdrag, Math.min(d.model.width + c.overdrag, d3.event.x));
-                d.canvasX = d.x * d.model.canvasPixelRatio;
-                yAxis
-                    .sort(function(a, b) {return a.x - b.x;})
-                    .each(function(dd, i) {
-                        dd.xIndex = i;
-                        dd.x = d === dd ? dd.x : dd.xScale(dd.xIndex);
-                        dd.canvasX = dd.x * dd.model.canvasPixelRatio;
-                    });
+    // drag column for reordering columns
+    yAxis.call(d3.behavior.drag()
+        .origin(function(d) { return d; })
+        .on('drag', function(d) {
+            var p = d.parent;
+            state.linePickActive(false);
+            d.x = Math.max(-c.overdrag, Math.min(d.model.width + c.overdrag, d3.event.x));
+            d.canvasX = d.x * d.model.canvasPixelRatio;
+            yAxis
+                .sort(function(a, b) { return a.x - b.x; })
+                .each(function(e, i) {
+                    e.xIndex = i;
+                    e.x = d === e ? e.x : e.xScale(e.xIndex);
+                    e.canvasX = e.x * e.model.canvasPixelRatio;
+                });
 
-                updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p);
 
-                yAxis.filter(function(dd) {return Math.abs(d.xIndex - dd.xIndex) !== 0;})
-                    .attr('transform', function(d) {return 'translate(' + d.xScale(d.xIndex) + ', 0)';});
-                d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
-                yAxis.each(function(dd, i, ii) {if(ii === d.parent.key) p.dimensions[i] = dd;});
-                p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
-                p.focusLayer.render && p.focusLayer.render(p.panels);
-            })
-            .on('dragend', function(d) {
-                var p = d.parent;
-                if(domainBrushing) {
-                    if(domainBrushing === 'ending') {
-                        domainBrushing = false;
-                    }
-                    return;
-                }
-                d.x = d.xScale(d.xIndex);
-                d.canvasX = d.x * d.model.canvasPixelRatio;
-                updatePanelLayout(yAxis, p);
-                d3.select(this)
-                    .attr('transform', function(d) {return 'translate(' + d.x + ', 0)';});
-                p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
-                p.focusLayer && p.focusLayer.render(p.panels);
-                p.pickLayer && p.pickLayer.render(p.panels, true);
-                linePickActive = true;
+            yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
+                .attr('transform', function(d) { return 'translate(' + d.xScale(d.xIndex) + ', 0)'; });
+            d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
+            yAxis.each(function(e, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = e; });
+            p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
+            p.focusLayer.render && p.focusLayer.render(p.panels);
+        })
+        .on('dragend', function(d) {
+            var p = d.parent;
+            d.x = d.xScale(d.xIndex);
+            d.canvasX = d.x * d.model.canvasPixelRatio;
+            updatePanelLayout(yAxis, p);
+            d3.select(this)
+                .attr('transform', function(d) { return 'translate(' + d.x + ', 0)'; });
+            p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
+            p.focusLayer && p.focusLayer.render(p.panels);
+            p.pickLayer && p.pickLayer.render(p.panels, true);
+            state.linePickActive(true);
 
-                if(callbacks && callbacks.axesMoved) {
-                    callbacks.axesMoved(p.key, p.dimensions.map(function(dd) {return dd.crossfilterDimensionIndex;}));
-                }
-            })
-        );
+            if(callbacks && callbacks.axesMoved) {
+                callbacks.axesMoved(p.key, p.dimensions.map(function(e) {return e.crossfilterDimensionIndex;}));
+            }
+        })
+    );
 
     yAxis.exit()
         .remove();
@@ -539,20 +633,20 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
                         null)
-                    .tickFormat(d.ordinal ? function(d) {return d;} : null)
+                    .tickFormat(function(v) {
+                        return helpers.isOrdinal(d) ? v : linearFormat(d.model.dimensions[d.visibleIndex], v);
+                    })
                     .scale(scale));
             Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
 
-    axis
-        .selectAll('.domain, .tick>line')
+    axis.selectAll('.domain, .tick>line')
         .attr('fill', 'none')
         .attr('stroke', 'black')
         .attr('stroke-opacity', 0.25)
         .attr('stroke-width', '1px');
 
-    axis
-        .selectAll('text')
+    axis.selectAll('text')
         .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
         .style('cursor', 'default')
         .style('user-select', 'none');
@@ -576,9 +670,32 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .style('pointer-events', 'auto');
 
     axisTitle
-        .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
-        .text(function(d) {return d.label;})
-        .each(function(d) {Drawing.font(axisTitle, d.model.labelFont);});
+        .text(function(d) { return d.label; })
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.model.labelFont);
+            svgTextUtils.convertToTspans(e, gd);
+        })
+        .attr('transform', function(d) {
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
+            var r = c.axisTitleOffset;
+            return (
+                (tilt.dir > 0 ? '' : 'translate(0,' + (2 * r + d.model.height) + ')') +
+                'rotate(' + tilt.degrees + ')' +
+                'translate(' + (-r * tilt.dx) + ',' + (-r * tilt.dy) + ')'
+            );
+        })
+        .attr('text-anchor', function(d) {
+            var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
+            var adx = Math.abs(tilt.dx);
+            var ady = Math.abs(tilt.dy);
+
+            if(2 * adx > ady) {
+                return (tilt.dir * tilt.dx < 0) ? 'start' : 'end';
+            } else {
+                return 'middle';
+            }
+        });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
         .data(repeat, keyFun);
@@ -600,18 +717,14 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
         .data(repeat, keyFun);
 
-    function formatExtreme(d) {
-        return d.ordinal ? function() {return '';} : d3.format(d.tickFormat);
-    }
-
     axisExtentTopText.enter()
         .append('text')
         .classed(c.cn.axisExtentTopText, true)
         .call(styleExtentTexts);
 
     axisExtentTopText
-        .text(function(d) {return formatExtreme(d)(d.domainScale.domain().slice(-1)[0]);})
-        .each(function(d) {Drawing.font(axisExtentTopText, d.model.rangeFont);});
+        .text(function(d) { return extremeText(d, true); })
+        .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
         .data(repeat, keyFun);
@@ -621,7 +734,9 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .classed(c.cn.axisExtentBottom, true);
 
     axisExtentBottom
-        .attr('transform', function(d) {return 'translate(' + 0 + ',' + (d.model.height + c.axisExtentOffset) + ')';});
+        .attr('transform', function(d) {
+            return 'translate(' + 0 + ',' + (d.model.height + c.axisExtentOffset) + ')';
+        });
 
     var axisExtentBottomText = axisExtentBottom.selectAll('.' + c.cn.axisExtentBottomText)
         .data(repeat, keyFun);
@@ -633,121 +748,8 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .call(styleExtentTexts);
 
     axisExtentBottomText
-        .text(function(d) {return formatExtreme(d)(d.domainScale.domain()[0]);})
-        .each(function(d) {Drawing.font(axisExtentBottomText, d.model.rangeFont);});
+        .text(function(d) { return extremeText(d, false); })
+        .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
-        .data(repeat, keyFun);
-
-    var axisBrushEnter = axisBrush.enter()
-        .append('g')
-        .classed(c.cn.axisBrush, true);
-
-    axisBrush
-        .each(function(d) {
-            if(!d.brush) {
-                d.brush = d3.svg.brush()
-                    .y(d.unitScale)
-                    .on('brushstart', axisBrushStarted)
-                    .on('brush', axisBrushMoved)
-                    .on('brushend', axisBrushEnded);
-                if(d.filter[0] !== 0 || d.filter[1] !== 1) {
-                    d.brush.extent(d.filter);
-                }
-                d3.select(this).call(d.brush);
-            }
-        });
-
-    axisBrushEnter
-        .selectAll('rect')
-        .attr('x', -c.bar.capturewidth / 2)
-        .attr('width', c.bar.capturewidth);
-
-    axisBrushEnter
-        .selectAll('rect.extent')
-        .attr('fill', 'url(#' + c.id.filterBarPattern + ')')
-        .style('cursor', 'ns-resize')
-        .filter(function(d) {return d.filter[0] === 0 && d.filter[1] === 1;})
-        .attr('y', -100); //  // zero-size rectangle pointer issue workaround
-
-    axisBrushEnter
-        .selectAll('.resize rect')
-        .attr('height', c.bar.handleheight)
-        .attr('opacity', 0)
-        .style('visibility', 'visible');
-
-    axisBrushEnter
-        .selectAll('.resize.n rect')
-        .style('cursor', 'n-resize')
-        .attr('y', c.bar.handleoverlap - c.bar.handleheight);
-
-    axisBrushEnter
-        .selectAll('.resize.s rect')
-        .style('cursor', 's-resize')
-        .attr('y', c.bar.handleoverlap);
-
-    var justStarted = false;
-    var contextShown = false;
-
-    function axisBrushStarted() {
-        justStarted = true;
-        domainBrushing = true;
-    }
-
-    function axisBrushMoved(dimension) {
-        linePickActive = false;
-        var p = dimension.parent;
-        var extent = dimension.brush.extent();
-        var dimensions = p.dimensions;
-        var filter = dimensions[dimension.xIndex].filter;
-        var reset = justStarted && (extent[0] === extent[1]);
-        if(reset) {
-            dimension.brush.clear();
-            d3.select(this).select('rect.extent').attr('y', -100); // zero-size rectangle pointer issue workaround
-        }
-        var newExtent = reset ? [0, 1] : extent.slice();
-        if(newExtent[0] !== filter[0] || newExtent[1] !== filter[1]) {
-            dimensions[dimension.xIndex].filter = newExtent;
-            p.focusLayer && p.focusLayer.render(p.panels, true);
-            var filtersActive = someFiltersActive(p);
-            if(!contextShown && filtersActive) {
-                p.contextLayer && p.contextLayer.render(p.panels, true);
-                contextShown = true;
-            } else if(contextShown && !filtersActive) {
-                p.contextLayer && p.contextLayer.render(p.panels, true, true);
-                contextShown = false;
-            }
-        }
-        justStarted = false;
-    }
-
-    function axisBrushEnded(dimension) {
-        var p = dimension.parent;
-        var extent = dimension.brush.extent();
-        var empty = extent[0] === extent[1];
-        var dimensions = p.dimensions;
-        var f = dimensions[dimension.xIndex].filter;
-        if(!empty && dimension.ordinal) {
-            f[0] = ordinalScaleSnap(dimension.ordinalScale, f[0]);
-            f[1] = ordinalScaleSnap(dimension.ordinalScale, f[1]);
-            if(f[0] === f[1]) {
-                f[0] = Math.max(0, f[0] - 0.05);
-                f[1] = Math.min(1, f[1] + 0.05);
-            }
-            d3.select(this).transition().duration(150).call(dimension.brush.extent(f));
-            p.focusLayer.render(p.panels, true);
-        }
-        p.pickLayer && p.pickLayer.render(p.panels, true);
-        linePickActive = true;
-        domainBrushing = 'ending';
-        if(callbacks && callbacks.filterChanged) {
-            var invScale = dimension.domainToUnitScale.invert;
-
-            // update gd.data as if a Plotly.restyle were fired
-            var newRange = f.map(invScale);
-            callbacks.filterChanged(p.key, dimension.visibleIndex, newRange);
-        }
-    }
-
-    return tweakables;
+    brush.ensureAxisBrush(axisOverlays);
 };

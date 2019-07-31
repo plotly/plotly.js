@@ -1,0 +1,50 @@
+{
+  "data": [{
+    "type": "bar",
+    "x": ["giraffes", "orangutans", "monkeys"],
+    "y": [20, 14, 1],
+    "text": ["giraffes", "orangutans", "monkeys"],
+    "textposition": "auto"
+  }, {
+    "type": "bar",
+    "x": ["giraffes", "orangutans", "monkeys"],
+    "y": [20, 14, 1],
+    "text": ["giraffes", "orangutans", "monkeys"],
+    "textposition": "auto",
+    "xaxis": "x2",
+    "yaxis": "y2"
+  }, {
+    "type": "bar",
+    "y": ["giraffes", "orangutans", "monkeys"],
+    "x": [20, 14, 1],
+    "text": ["giraffes", "orangutans", "monkeys"],
+    "orientation": "h",
+    "textposition": "auto",
+    "xaxis": "x3",
+    "yaxis": "y3"
+  }, {
+    "type": "bar",
+    "y": ["giraffes", "orangutans", "monkeys"],
+    "x": [20, 14, 1],
+    "text": ["giraffes", "orangutans", "monkeys"],
+    "orientation": "h",
+    "textposition": "auto",
+    "xaxis": "x4",
+    "yaxis": "y4"
+  }],
+  "layout": {
+    "showlegend": false,
+    "grid": {"rows": 2, "columns": 2, "pattern": "independent", "xgap": 0.1, "ygap": 0.1},
+    "xaxis": {"showticklabels": false},
+    "yaxis": {"type": "log"},
+    "xaxis2": {"showticklabels": false},
+    "yaxis2": {"type": "log", "autorange": "reversed", "side": "right"},
+    "xaxis3": {"type": "log"},
+    "yaxis3": {"showticklabels": false},
+    "xaxis4": {"type": "log", "autorange": "reversed"},
+    "yaxis4": {"showticklabels": false},
+    "width": 600,
+    "height": 600,
+    "margin": {"l": 20, "t": 20, "r": 20, "b": 20}
+  }
+}

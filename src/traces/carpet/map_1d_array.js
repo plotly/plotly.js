@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,6 +7,8 @@
 */
 
 'use strict';
+
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 /*
  * Map an array of x or y coordinates (c) to screen-space pixel coordinates (p).
@@ -16,7 +18,7 @@
 module.exports = function mapArray(out, data, func) {
     var i;
 
-    if(!Array.isArray(out)) {
+    if(!isArrayOrTypedArray(out)) {
         // If not an array, make it an array:
         out = [];
     } else if(out.length > data.length) {

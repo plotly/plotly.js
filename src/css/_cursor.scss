@@ -14,3 +14,7 @@
 .cursor-nw-resize { cursor: nw-resize; }
 .cursor-n-resize { cursor: n-resize; }
 .cursor-ne-resize { cursor: ne-resize; }
+.cursor-grab {
+  cursor: -webkit-grab; // For Chrome
+  cursor: grab;
+}

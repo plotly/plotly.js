@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ module.exports = function styleOne(s, pt, trace) {
     var lineColor = castOption(line.color, pt.pts) || Color.defaultLine;
     var lineWidth = castOption(line.width, pt.pts) || 0;
 
-    s.style({'stroke-width': lineWidth})
+    s.style('stroke-width', lineWidth)
         .call(Color.fill, pt.color)
         .call(Color.stroke, lineColor);
 };

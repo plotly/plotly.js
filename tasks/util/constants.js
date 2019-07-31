@@ -8,9 +8,20 @@ var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
-var pathToTopojsonSrc = path.join(
-    path.dirname(require.resolve('sane-topojson')), 'dist/'
-);
+var pathToTopojsonSrc;
+try {
+    pathToTopojsonSrc = path.join(path.dirname(require.resolve('sane-topojson')), 'dist/');
+} catch(e) {
+    console.log([
+        '',
+        'WARN: Cannot resolve path to *sane-topojson* package.',
+        '  This can happen when one `npm link sane-topojson`',
+        '  and runs a command in a Docker container.',
+        '  There is nothing to worry, if you see this warning while running',
+        '  `npm run test-image`, `npm run test-export` or `npm run baseline` ;)',
+        ''
+    ].join('\n'));
+}
 
 var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance'
@@ -52,9 +63,6 @@ module.exports = {
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
-    pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
-    pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
-
     pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
@@ -85,14 +93,22 @@ module.exports = {
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
     uglifyOptions: {
+        ecma: 5,
         mangle: true,
         compress: {
-            warnings: false
+            // see full list of compress option
+            // https://github.com/fabiosantoscode/terser#compress-options
+            //
+            // need to turn off 'typeofs' to make mapbox-gl work in
+            // minified bundles, for more info see:
+            // https://github.com/plotly/plotly.js/issues/2787
+            typeofs: false
         },
         output: {
             beautify: false,
             ascii_only: true
         },
+
         sourceMap: false
     },
 

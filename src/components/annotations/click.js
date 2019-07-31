@@ -1,16 +1,16 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../../plotly');
-
+var Lib = require('../../lib');
+var Registry = require('../../registry');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 module.exports = {
     hasClickToShow: hasClickToShow,
@@ -43,23 +43,28 @@ function hasClickToShow(gd, hoverData) {
  * returns: Promise that the update is complete
  */
 function onClick(gd, hoverData) {
-    var toggleSets = getToggleSets(gd, hoverData),
-        onSet = toggleSets.on,
-        offSet = toggleSets.off.concat(toggleSets.explicitOff),
-        update = {},
-        i;
+    var toggleSets = getToggleSets(gd, hoverData);
+    var onSet = toggleSets.on;
+    var offSet = toggleSets.off.concat(toggleSets.explicitOff);
+    var update = {};
+    var annotationsOut = gd._fullLayout.annotations;
+    var i, editHelpers;
 
     if(!(onSet.length || offSet.length)) return;
 
     for(i = 0; i < onSet.length; i++) {
-        update['annotations[' + onSet[i] + '].visible'] = true;
+        editHelpers = arrayEditor(gd.layout, 'annotations', annotationsOut[onSet[i]]);
+        editHelpers.modifyItem('visible', true);
+        Lib.extendFlat(update, editHelpers.getUpdateObj());
     }
 
     for(i = 0; i < offSet.length; i++) {
-        update['annotations[' + offSet[i] + '].visible'] = false;
+        editHelpers = arrayEditor(gd.layout, 'annotations', annotationsOut[offSet[i]]);
+        editHelpers.modifyItem('visible', false);
+        Lib.extendFlat(update, editHelpers.getUpdateObj());
     }
 
-    return Plotly.update(gd, {}, update);
+    return Registry.call('update', gd, {}, update);
 }
 
 /*
@@ -77,11 +82,11 @@ function onClick(gd, hoverData) {
  * }
  */
 function getToggleSets(gd, hoverData) {
-    var annotations = gd._fullLayout.annotations,
-        onSet = [],
-        offSet = [],
-        explicitOffSet = [],
-        hoverLen = (hoverData || []).length;
+    var annotations = gd._fullLayout.annotations;
+    var onSet = [];
+    var offSet = [];
+    var explicitOffSet = [];
+    var hoverLen = (hoverData || []).length;
 
     var i, j, anni, showMode, pointj, xa, ya, toggleType;
 
@@ -106,8 +111,7 @@ function getToggleSets(gd, hoverData) {
                     if(anni.visible) {
                         if(showMode === 'onout') toggleType = offSet;
                         else toggleType = explicitOffSet;
-                    }
-                    else {
+                    } else {
                         toggleType = onSet;
                     }
                     toggleType.push(i);

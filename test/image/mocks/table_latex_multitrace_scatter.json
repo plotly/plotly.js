@@ -25,7 +25,7 @@
             "header": {
                 "values": [["<b>#</b>"], ["Half-angle form"], ["Equivalent"]],
                 "align": ["right", "center", "center"],
-                "line": {"width": 0.0},
+                "line": {"width": 1, "color": ["dimgray", "grey"]},
                 "fill": {"color": ["dimgray", "grey"]},
                 "font": {"family": "Arial", "size": 14, "color": "white"}
             },
@@ -55,7 +55,7 @@
             "header": {
                 "values": [["<b>#</b>"], ["$$\\theta$$"], ["Half-angle sine"], ["Half-angle cosine"]],
                 "align": "right",
-                "line": {"width": 0.0},
+                "line": {"width": 1, "color": ["dimgray", "grey"]},
                 "fill": {"color": ["dimgray", "grey"]},
                 "font": {"family": "Arial", "size": 14, "color": "white"}
             },
@@ -88,7 +88,7 @@
             "header": {
                 "values": [["Trig function"], ["Double-angle form"]],
                 "align": ["right", "left"],
-                "line": {"width": 0.0},
+                "line": {"width": 1, "color": ["dimgray", "grey"]},
                 "fill": {"color": ["dimgray", "grey"]},
                 "font": {"family": "Arial", "size": 14, "color": "white"}
             },
@@ -117,7 +117,7 @@
             "header": {
                 "values": [["<b>#</b>"], ["$$\\theta$$"], ["Double-angle sine"], ["Double-angle cosine"]],
                 "align": "right",
-                "line": {"width": 0.0},
+                "line": {"width": 1, "color": ["dimgray", "grey"]},
                 "fill": {"color": ["dimgray", "grey"]},
                 "font": {"family": "Arial", "size": 14, "color": "white"}
             },

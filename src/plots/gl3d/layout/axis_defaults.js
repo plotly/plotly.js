@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@
 var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../../lib');
+var Template = require('../../../plot_api/plot_template');
 
 var layoutAttributes = require('./axis_attributes');
 var handleTypeDefaults = require('../../cartesian/type_defaults');
@@ -34,12 +35,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         var axName = axesNames[j];
         containerIn = layoutIn[axName] || {};
 
-        containerOut = layoutOut[axName] = {
-            _id: axName[0] + options.scene,
-            _name: axName
-        };
+        containerOut = Template.newContainer(layoutOut, axName);
+        containerOut._id = axName[0] + options.scene;
+        containerOut._name = axName;
 
-        handleTypeDefaults(containerIn, containerOut, coerce, options.data);
+        handleTypeDefaults(containerIn, containerOut, coerce, options);
 
         handleAxisDefaults(
             containerIn,
@@ -50,13 +50,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
+                noTickson: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },
             options.fullLayout);
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
-        coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
+        coerce('title.text', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = Lib.noop;
 

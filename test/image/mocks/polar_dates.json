@@ -47,6 +47,12 @@
       "line": {
         "shape": "spline"
       }
+    },
+    {
+      "type": "scatterpolar",
+      "subplot": "polar3",
+      "r": ["2018-08-1", "2018-09-5", "2018-10-8"],
+      "marker": {"size": 20}
     }
   ],
   "layout": {
@@ -71,8 +77,18 @@
         "direction": "clockwise"
       }
     },
+    "xaxis": {
+      "domain": [0, 0.46]
+    },
     "yaxis": {
       "domain": [0, 0.46]
+    },
+    "polar3": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
+      },
+      "radialaxis": {"range": ["2018-07-01", "2018-10-05"]}
     },
     "hovermode": "closest",
     "showlegend": false,

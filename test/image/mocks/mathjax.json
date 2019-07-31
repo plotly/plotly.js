@@ -4,18 +4,18 @@
         "y": [0, 1.414],
         "text": ["Hx+yH", "H\\sqrt{2}H"],
         "mode": "text+markers",
-        "name": "HE^2=m^2c^4+p^2c^2H"
+        "name": "$E^2=m^2c^4+p^2c^2$"
     }, {
         "x": [0, 1],
         "y": [1.4, 0.1],
         "text": ["H1.400 \\pm 0.023H", "H0.100 \\pm 0.002H"],
         "textposition": "auto",
         "type": "bar",
-        "name": "Hx=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}H"
+        "name": "$x=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$"
     }, {
         "type": "pie",
         "values": [1, 9],
-        "labels": ["H\\frac{1}{10}=10\\%H", "H\\frac{9}{10}=90\\%H"],
+        "labels": ["$\\frac{1}{10}=10\\%$", "$\\frac{9}{10}=90\\%$"],
         "textinfo": "label",
         "domain": {"x": [0.3, 0.75], "y": [0.55, 1]}
     }, {
@@ -43,6 +43,7 @@
         },
         "height":500,
         "width":800,
+        "margin": {"r": 250},
         "title": "$i\\hbar\\frac{d\\Psi}{dt}=-[V-\\frac{-\\hbar^2}{2m}\\nabla^2]\\Psi$",
         "annotations":[
             {

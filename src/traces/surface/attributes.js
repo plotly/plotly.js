@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,8 +9,8 @@
 'use strict';
 
 var Color = require('../../components/color');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -41,6 +41,40 @@ function makeContourAttr(axLetter) {
             description: [
                 'Determines whether or not contour lines about the', axLetter,
                 'dimension are drawn.'
+            ].join(' ')
+        },
+        start: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the starting contour level value.',
+                'Must be less than `contours.end`'
+            ].join(' ')
+        },
+        end: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the end contour level value.',
+                'Must be more than `contours.start`'
+            ].join(' ')
+        },
+        size: {
+            valType: 'number',
+            dflt: null,
+            min: 0,
+            role: 'style',
+            editType: 'plot',
+         // impliedEdits: {'^autocontour': false},
+            description: [
+                'Sets the step between each contour level.',
+                'Must be positive.'
             ].join(' ')
         },
         project: {
@@ -98,7 +132,7 @@ function makeContourAttr(axLetter) {
     };
 }
 
-var attrs = module.exports = overrideAll({
+var attrs = module.exports = overrideAll(extendFlat({
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -123,6 +157,26 @@ var attrs = module.exports = overrideAll({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: 'Same as `text`.'
+    },
+    hovertemplate: hovertemplateAttrs(),
+
+    connectgaps: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
+        ].join(' ')
+    },
 
     surfacecolor: {
         valType: 'data_array',
@@ -131,17 +185,14 @@ var attrs = module.exports = overrideAll({
             'used for setting a color scale independent of `z`.'
         ].join(' ')
     },
+},
 
-    cauto: colorscaleAttrs.zauto,
-    cmin: colorscaleAttrs.zmin,
-    cmax: colorscaleAttrs.zmax,
-    colorscale: colorscaleAttrs.colorscale,
-    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
-        {dflt: false}),
-    reversescale: colorscaleAttrs.reversescale,
-    showscale: colorscaleAttrs.showscale,
-    colorbar: colorbarAttrs,
-
+colorScaleAttrs('', {
+    colorAttr: 'z or surfacecolor',
+    showScaleDflt: true,
+    autoColorDflt: false,
+    editTypeOverride: 'calc'
+}), {
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),
@@ -238,22 +289,29 @@ var attrs = module.exports = overrideAll({
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of the surface.'
+        description: [
+            'Sets the opacity of the surface.',
+            'Please note that in the case of using high `opacity` values for example a value',
+            'greater than or equal to 0.5 on two surfaces (and 0.25 with four surfaces), an',
+            'overlay of multiple transparent surfaces may not perfectly be sorted in depth by the',
+            'webgl API. This behavior may be improved in the near future and is subject to change.'
+        ].join(' ')
     },
 
     _deprecated: {
-        zauto: extendFlat({}, colorscaleAttrs.zauto, {
+        zauto: extendFlat({}, colorScaleAttrs.zauto, {
             description: 'Obsolete. Use `cauto` instead.'
         }),
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {
+        zmin: extendFlat({}, colorScaleAttrs.zmin, {
             description: 'Obsolete. Use `cmin` instead.'
         }),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {
+        zmax: extendFlat({}, colorScaleAttrs.zmax, {
             description: 'Obsolete. Use `cmax` instead.'
         })
     },
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
-}, 'calc', 'nested');
+}), 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
+attrs.transforms = undefined;

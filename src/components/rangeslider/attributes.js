@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,14 +15,14 @@ module.exports = {
         valType: 'color',
         dflt: colorAttributes.background,
         role: 'style',
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the background color of the range slider.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttributes.defaultLine,
         role: 'style',
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the border color of the range slider.'
     },
     borderwidth: {
@@ -30,8 +30,8 @@ module.exports = {
         dflt: 0,
         min: 0,
         role: 'style',
-        editType: 'calc',
-        description: 'Sets the border color of the range slider.'
+        editType: 'plot',
+        description: 'Sets the border width of the range slider.'
     },
     autorange: {
         valType: 'boolean',
@@ -73,7 +73,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'The height of the range slider as a fraction of the',
             'total plot area height.'

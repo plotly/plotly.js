@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "x": [
+        "giraffes",
+        "orangutans",
+        "monkeys"
+      ],
+      "y": [
+        50,
+        14,
+        23
+      ],
+      "name": "SF Zoo",
+      "type": "bar",
+      "text": "SF Zoo",
+      "textposition": [
+        "none",
+        "auto",
+        "none"
+      ]
+    },
+    {
+      "x": [
+        "giraffes",
+        "orangutans",
+        "monkeys"
+      ],
+      "y": [
+        12,
+        180,
+        29
+      ],
+      "name": "LA Zoo",
+      "type": "bar",
+      "text": "LA Zoo",
+      "textposition": [
+        "inside",
+        "none",
+        "none"
+      ]
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "font": {
+      "size": 16
+    },
+    "yaxis": {
+      "type": "log"
+    }
+  }
+}

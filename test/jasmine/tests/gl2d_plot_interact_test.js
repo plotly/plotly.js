@@ -4,32 +4,33 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
-var ScatterGl = require('@src/traces/scattergl');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
-var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 var touchEvent = require('../assets/touch_event');
 var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
-var readPixel = require('../assets/read_pixel');
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
-describe('@gl Test removal of gl contexts', function() {
+describe('Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
-    it('Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+    it('@gl Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         Plotly.plot(gd, [{
             type: 'scattergl',
             x: [1, 2, 3],
@@ -39,12 +40,13 @@ describe('@gl Test removal of gl contexts', function() {
             expect(gd._fullLayout._plots.xy._scene).toBeDefined();
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
 
-            expect(gd._fullLayout._plots.xy._scene).toBeUndefined();
+            expect(!!gd._fullLayout._plots.xy._scene).toBe(false);
         })
+        .catch(failTest)
         .then(done);
     });
 
-    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+    it('@gl Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
         Plotly.plot(gd, [{
@@ -83,23 +85,26 @@ describe('@gl Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
+        .catch(failTest)
         .then(done);
     });
 });
 
-describe('@gl Test gl plot side effects', function() {
+describe('Test gl plot side effects', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
+        setTimeout(done, 1000);
     });
 
-    it('should not draw the rangeslider', function(done) {
+    it('@gl should not draw the rangeslider', function(done) {
         var data = [{
             x: [1, 2, 3],
             y: [2, 3, 4],
@@ -118,11 +123,11 @@ describe('@gl Test gl plot side effects', function() {
             var rangeSlider = document.getElementsByClassName('range-slider')[0];
             expect(rangeSlider).not.toBeDefined();
         })
+        .catch(failTest)
         .then(done);
     });
 
-    it('should be able to replot from a blank graph', function(done) {
-
+    it('@gl should be able to replot from a blank graph', function(done) {
         function countCanvases(cnt) {
             var nodes = d3.selectAll('canvas');
             expect(nodes.size()).toEqual(cnt);
@@ -160,11 +165,12 @@ describe('@gl Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         })
+        .catch(failTest)
         .then(done);
     });
 
-    it('should be able to switch trace type', function(done) {
-        Plotly.newPlot(gd, [{
+    it('@gl should be able to switch trace type', function(done) {
+        Plotly.plot(gd, [{
             type: 'parcoords',
             x: [1, 2, 3],
             y: [2, 1, 2],
@@ -184,10 +190,11 @@ describe('@gl Test gl plot side effects', function() {
         .then(function() {
             expect(d3.selectAll('canvas').size()).toEqual(0);
         })
+        .catch(failTest)
         .then(done);
     });
 
-    it('should be able to resize canvas properly', function(done) {
+    it('@gl should be able to resize canvas properly', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl2d_10.json'));
         _mock.data[0].line.width = 5;
 
@@ -197,19 +204,188 @@ describe('@gl Test gl plot side effects', function() {
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
 
-            Plotly.relayout(gd, {width: 300});
+            return Plotly.relayout(gd, {width: 300});
         })
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
+
+        function _trigger(name) {
+            var ev = new window.WebGLContextEvent('webglcontextlost');
+            var canvas = gd.querySelector('.gl-canvas-' + name);
+            canvas.dispatchEvent(ev);
+        }
+
+        Plotly.plot(gd, _mock).then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+                _trigger('context');
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('contextLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+                _trigger('focus');
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('focusLayer');
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_webglcontextlost', reject);
+                setTimeout(resolve, 10);
+                _trigger('pick');
+            });
+        })
+        .then(function(eventData) {
+            // should add event listener on pick canvas which
+            // isn't used for scattergl traces
+            expect(eventData).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should not clear context when dimensions are not integers', function(done) {
+        spyOn(Plots, 'cleanPlot').and.callThrough();
+        spyOn(Lib, 'log').and.callThrough();
+
+        var w = 500.5;
+        var h = 400.5;
+        var w0 = Math.floor(w);
+        var h0 = Math.floor(h);
+
+        function assertDims(msg) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.width).toBe(w, msg);
+            expect(fullLayout.height).toBe(h, msg);
+
+            var canvas = fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w0, msg);
+            expect(canvas.node().height).toBe(h0, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w0, msg);
+            expect(gl.drawingBufferHeight).toBe(h0, msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            y: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertDims('base state');
+
+            // once from supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        })
+        .then(function() {
+            assertDims('after restyle');
+
+            // one more supplyDefaults
+            expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should be able to toggle from svg to gl', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 1],
+        }])
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            return Plotly.restyle(gd, 'type', 'scattergl');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            return Plotly.restyle(gd, 'type', 'scatter');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should create two WebGL contexts per graph', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_stacked_subplots.json'));
+
+        Plotly.plot(gd, fig).then(function() {
+            var cnt = 0;
+            d3.select(gd).selectAll('canvas').each(function(d) {
+                if(d.regl) cnt++;
+            });
+            expect(cnt).toBe(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should clear canvases on *replot* edits', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            y: [1, 2, 1]
+        }, {
+            type: 'scattergl',
+            y: [2, 1, 2]
+        }])
+        .then(function() {
+            expect(gd._fullLayout._glcanvas).toBeDefined();
+            expect(gd._fullLayout._glcanvas.size()).toBe(3);
+
+            expect(gd._fullLayout._glcanvas.data()[0].regl).toBeDefined();
+            expect(gd._fullLayout._glcanvas.data()[1].regl).toBeDefined();
+            // this is canvas is for parcoords only
+            expect(gd._fullLayout._glcanvas.data()[2].regl).toBeUndefined();
+
+            spyOn(gd._fullLayout._glcanvas.data()[0].regl, 'clear').and.callThrough();
+            spyOn(gd._fullLayout._glcanvas.data()[1].regl, 'clear').and.callThrough();
+
+            return Plotly.update(gd,
+                {visible: [false]},
+                {'xaxis.title': 'Tsdads', 'yaxis.ditck': 0.2},
+                [0]
+            );
+        })
+        .then(function() {
+            expect(gd._fullLayout._glcanvas.data()[0].regl.clear).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._glcanvas.data()[1].regl.clear).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
         .then(done);
     });
 });
 
-describe('@gl Test gl2d plots', function() {
+describe('Test gl2d plot interactions:', function() {
     var gd;
-
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
@@ -217,47 +393,28 @@ describe('@gl Test gl2d plots', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
+        setTimeout(done, 1000);
     });
 
     function mouseTo(p0, p1) {
         var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
-        return drag(node, dx, dy, null, p0[0], p0[1]);
+        return drag({node: node, dpos: [dx, dy], pos0: p0});
     }
 
-    function select(path) {
-        return new Promise(function(resolve) {
-            gd.once('plotly_selected', resolve);
-
-            var len = path.length;
-
-            // do selection
-            Lib.clearThrottle();
-            mouseEvent('mousemove', path[0][0], path[0][1]);
-            mouseEvent('mousedown', path[0][0], path[0][1]);
-
-            path.slice(1, len).forEach(function(pt) {
-                Lib.clearThrottle();
-                mouseEvent('mousemove', pt[0], pt[1]);
-            });
-
-            mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
-        });
-    }
-
-    it('@flaky should respond to drag interactions', function(done) {
+    it('@gl should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5, 6.1];
-        var newX = [-0.5, 5];
-        var newY = [-1.7, 4.95];
+        var originalY = [-0.5806379476536665, 6.218528262566369];
+        var newX = [-0.5516431924882629, 5.082159624413145];
+        var newY = [-1.7947747709072441, 5.004391439312791];
         var precision = 1;
 
         Plotly.newPlot(gd, _mock)
@@ -283,10 +440,16 @@ describe('@gl Test gl2d plots', function() {
             gd.on('plotly_relayout', relayoutCallback);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            spyOn(scene, 'draw');
+
             // Drag scene along the X axis
             return mouseTo([200, 200], [220, 200]);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.draw).toHaveBeenCalledTimes(3);
+
             expect(gd.layout.xaxis.autorange).toBe(false);
             expect(gd.layout.yaxis.autorange).toBe(false);
             expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
@@ -345,133 +508,11 @@ describe('@gl Test gl2d plots', function() {
                 'yaxis.range[1]': jasmine.any(Number)
             }));
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should be able to toggle visibility', function(done) {
-        var _mock = Lib.extendDeep({}, mock);
-        _mock.data[0].line.width = 5;
-
-        Plotly.plot(gd, _mock)
-        .then(delay(30))
-        .then(function() {
-            return Plotly.restyle(gd, 'visible', 'legendonly');
-        })
-        .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
-
-            return Plotly.restyle(gd, 'visible', true);
-        })
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
-
-            return Plotly.restyle(gd, 'visible', false);
-        })
-        .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
-
-            return Plotly.restyle(gd, 'visible', true);
-        })
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('@noCI should display selection of big number of regular points', function(done) {
-        // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n;
-        for(var i = 0; i < N; i++) {
-            x.push((i % n) / n);
-            y.push(i / N);
-        }
-
-        var mock = {
-            data: [{
-                x: x, y: y, type: 'scattergl', mode: 'markers'
-            }],
-            layout: {
-                dragmode: 'select'
-            }
-        };
-
-        Plotly.plot(gd, mock)
-        .then(select([[160, 100], [180, 100]]))
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
-            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('@noCI should display selection of big number of miscellaneous points', function(done) {
-        var colorList = [
-            '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
-            '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',
-            '#5DA5DA', '#F06E75', '#F15854', '#B2912F', '#B276B2',
-            '#DECF3F', '#FAA43A', '#4D4D4D', '#F17CB0', '#60BD68'
-        ];
-
-        // generate large number of points
-        var x = [], y = [], n = 2e2, N = n * n, color = [], symbol = [], size = [];
-        for(var i = 0; i < N; i++) {
-            x.push((i % n) / n);
-            y.push(i / N);
-            color.push(colorList[i % colorList.length]);
-            symbol.push('x');
-            size.push(6);
-        }
-
-        var mock = {
-            data: [{
-                x: x, y: y, type: 'scattergl', mode: 'markers',
-                marker: {symbol: symbol, size: size, color: color}
-            }],
-            layout: {
-                dragmode: 'select'
-            }
-        };
-
-        Plotly.plot(gd, mock)
-        .then(select([[160, 100], [180, 100]]))
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
-            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should be able to toggle from svg to gl', function(done) {
-        Plotly.plot(gd, [{
-            y: [1, 2, 1],
-        }])
-        .then(function() {
-            expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
-
-            return Plotly.restyle(gd, 'type', 'scattergl');
-        })
-        .then(function() {
-            expect(countCanvases()).toBe(3);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
-
-            return Plotly.restyle(gd, 'type', 'scatter');
-        })
-        .then(function() {
-            expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('supports 1D and 2D Zoom', function(done) {
+    it('@gl supports 1D and 2D Zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -520,11 +561,11 @@ describe('@gl Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('supports axis constraints with zoom', function(done) {
+    it('@gl supports axis constraints with zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -584,27 +625,14 @@ describe('@gl Test gl2d plots', function() {
             });
         })
         .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.2, 24.2], 1);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.12, 16.1], 1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should change plot type with incomplete data', function(done) {
-        Plotly.plot(gd, [{}]);
-        expect(function() {
-            Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
-        }).not.toThrow();
-
-        expect(function() {
-            Plotly.restyle(gd, {y: [[1]]}, 0);
-        }).not.toThrow();
-
-        done();
-    });
-
-    it('data-referenced annotations should update on drag', function(done) {
+    it('@gl data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
@@ -643,11 +671,11 @@ describe('@gl Test gl2d plots', function() {
         .then(function() {
             assertAnnotation([327, 331]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should not scroll document while panning', function(done) {
+    it('@gl should not scroll document while panning', function(done) {
         var mock = {
             data: [
                 { type: 'scattergl', y: [1, 2, 3], x: [1, 2, 3] }
@@ -658,7 +686,8 @@ describe('@gl Test gl2d plots', function() {
             }
         };
 
-        var sceneTarget, relayoutCallback = jasmine.createSpy('relayoutCallback');
+        var sceneTarget;
+        var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         function scroll(target, amt) {
             return new Promise(function(resolve) {
@@ -695,142 +724,8 @@ describe('@gl Test gl2d plots', function() {
         })
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
-
         })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should restyle opacity', function(done) {
-        // #2299
-        spyOn(ScatterGl, 'calc');
-
-        var dat = [{
-            'x': [1, 2, 3],
-            'y': [1, 2, 3],
-            'type': 'scattergl',
-            'mode': 'markers'
-        }];
-
-        Plotly.plot(gd, dat, {width: 500, height: 500})
-        .then(function() {
-            expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
-
-            return Plotly.restyle(gd, {'opacity': 0.1});
-        })
-        .then(function() {
-            expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should update selected points', function(done) {
-        // #2298
-        var dat = [{
-            'x': [1],
-            'y': [1],
-            'type': 'scattergl',
-            'mode': 'markers',
-            'selectedpoints': [0]
-        }];
-
-        Plotly.plot(gd, dat, {
-            width: 500,
-            height: 500,
-            dragmode: 'select'
-        })
-        .then(function() {
-            var scene = gd._fullLayout._plots.xy._scene;
-
-            expect(scene.count).toBe(1);
-            expect(scene.selectBatch).toEqual([[0]]);
-            expect(scene.unselectBatch).toEqual([[]]);
-            spyOn(scene.scatter2d, 'draw');
-
-            var trace = {
-                x: [2],
-                y: [1],
-                type: 'scattergl',
-                mode: 'markers',
-                marker: {color: 'red'}
-            };
-
-            return Plotly.addTraces(gd, trace);
-        })
-        .then(function() {
-            var scene = gd._fullLayout._plots.xy._scene;
-
-            expect(scene.count).toBe(2);
-            expect(scene.selectBatch).toBeDefined();
-            expect(scene.unselectBatch).toBeDefined();
-            expect(scene.markerOptions.length).toBe(2);
-            expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
-            expect(scene.scatter2d.draw).toHaveBeenCalled();
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should remove fill2d', function(done) {
-        var mock = require('@mocks/gl2d_axes_labels2.json');
-
-        Plotly.plot(gd, mock.data, mock.layout)
-        .then(delay(1000))
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).not.toBe(0);
-
-            return Plotly.restyle(gd, {fill: 'none'});
-        })
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).toBe(0);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should be able to draw more than 4096 colors', function(done) {
-        var x = [];
-        var color = [];
-        var N = 1e5;
-        var w = 500;
-        var h = 500;
-
-        Lib.seedPseudoRandom();
-
-        for(var i = 0; i < N; i++) {
-            x.push(i);
-            color.push(Lib.pseudoRandom());
-        }
-
-        Plotly.newPlot(gd, [{
-            type: 'scattergl',
-            mode: 'markers',
-            x: x,
-            y: color,
-            marker: {
-                color: color,
-                colorscale: [
-                    [0, 'rgb(255, 0, 0)'],
-                    [0.5, 'rgb(0, 255, 0)'],
-                    [1.0, 'rgb(0, 0, 255)']
-                ]
-            }
-        }], {
-            width: w,
-            height: h,
-            margin: {l: 0, t: 0, b: 0, r: 0}
-        })
-        .then(function() {
-            var total = readPixel(gd.querySelector('.gl-canvas-context'), 0, 0, w, h)
-                .reduce(function(acc, v) { return acc + v; }, 0);
-
-            // the total value was 3777134 before PR
-            // https://github.com/plotly/plotly.js/pull/2377
-            // and 105545275 after.
-            expect(total).toBeGreaterThan(4e6);
-        })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

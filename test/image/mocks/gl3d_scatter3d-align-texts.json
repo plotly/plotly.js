@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "x": [3],
+      "y": [0],
+      "z": [2],
+      "text": ["top"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "top center"
+    }, {
+      "x": [0],
+      "y": [0],
+      "z": [0],
+      "text": ["left"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "center left"
+    }, {
+      "x": [1],
+      "y": [0],
+      "z": [1],
+      "text": ["right"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "center right"
+    }, {
+      "x": [2],
+      "y": [0],
+      "z": [0],
+      "text": ["bottom"],
+      "type": "scatter3d",
+      "mode":"markers+text",
+      "textposition": "bottom center"
+    }
+  ],
+  "layout": {
+    "title":"Texts in scatter3d should be aligned to left, right, top or bottom & displayed well on WEBGL",
+    "width": 800,
+    "height": 600,
+    "scene":{
+      "camera":{
+        "eye":{"x":-1.25,"y":1.25,"z":1.25},
+        "center":{"x":0,"y":0,"z":0},
+        "up":{"x":0,"y":0,"z":1}
+      }
+    }
+  }
+}

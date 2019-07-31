@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -99,8 +99,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
         if(scene.substr(0, 5) === 'scene') {
             ax = fullLayout[scene][type + 'axis'];
         }
-    }
-    else {
+    } else {
         ax = exports.getFromId(gd, fullTrace[type + 'axis'] || type);
     }
 
@@ -113,4 +112,14 @@ exports.idSort = function(id1, id2) {
     var letter2 = id2.charAt(0);
     if(letter1 !== letter2) return letter1 > letter2 ? 1 : -1;
     return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
+};
+
+exports.getAxisGroup = function getAxisGroup(fullLayout, axId) {
+    var matchGroups = fullLayout._axisMatchGroups;
+
+    for(var i = 0; i < matchGroups.length; i++) {
+        var group = matchGroups[i];
+        if(group[axId]) return 'g' + i;
+    }
+    return axId;
 };

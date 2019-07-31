@@ -1143,7 +1143,7 @@
     "polar20": {
       "sector": [
         -180,
-        180
+        200
       ],
       "bgcolor": "#d3d3d3",
       "domain": {

@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "type": "splom",
+      "showupperhalf": false,
+      "diagonal": {"visible": false },
+      "dimensions": [
+        {
+          "label": "numeric",
+          "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        },
+        {
+          "label": "decimal",
+          "values": [-3.3, 2.2, -1.1, 0, 1.1, -2.2, 3.3, 4.4, -5, 6]
+        },
+        {
+          "label": "bool",
+          "values": [false, true, true, true, false, true, false, false, false, true],
+          "axis": {"type": "category"}
+        },
+        {
+          "label": "0/1",
+          "values": [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+          "axis": {"type": "category"}
+        },
+        {
+          "label": "blank",
+          "values": []
+        },
+        {
+          "label": "string",
+          "values": ["lyndon", "richard", "gerald", "jimmy", "ronald", "george", "bill", "georgeW", "barack", "donald"]
+        }
+      ]
+    }
+  ],
+  "layout": {
+    "hovermode": "closest",
+    "margin": {"b": 80, "l": 80, "r": 30, "t": 30},
+    "xaxis3": {"type": "linear"},
+    "annotations": [{
+      "showarrow": false,
+      "xref": "paper", "yref": "paper",
+      "xanchor": "right", "yanchor": "top",
+      "x": 1, "y": 1,
+      "text": "Should <b>not</b> see points in the \"bool\" dimension<br>as it has conflicting axis types",
+      "borderwidth": 1,
+      "bordercolor": "black",
+      "borderpad": 5
+    }]
+  }
+}

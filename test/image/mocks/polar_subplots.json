@@ -21,7 +21,12 @@
     "text": ["A1", "B1", "C1"],
     "hovertext": ["hover A1", "hover B1", "hover C1"],
     "line": {"shape": "spline"},
-    "marker": {"symbol": "square", "size": 15},
+    "marker": {
+        "symbol": "square",
+        "size": 15,
+        "color": [-1, 1, 2],
+        "showscale": true
+    },
     "textfont": {
       "color": "green",
       "size": [20, 15, 10]

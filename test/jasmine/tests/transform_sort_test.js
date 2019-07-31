@@ -5,7 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -17,7 +17,7 @@ describe('Test sort transform defaults:', function() {
             _modules: [],
             _basePlotModules: []
         });
-        return Plots.supplyTraceDefaults(trace, 0, layout);
+        return Plots.supplyTraceDefaults(trace, {type: trace.type || 'scatter'}, 0, layout);
     }
 
     it('should coerce all attributes', function() {
@@ -214,12 +214,14 @@ describe('Test sort transform calc:', function() {
         expect(out[0].ids).toEqual(['n1', 'n0']);
         expect(out[0].marker.color).toEqual([0.2, 0.1]);
         expect(out[0].marker.size).toEqual([20, 10]);
+        expect(out[0]._length).toBe(2);
 
         expect(out[1].x).toEqual([-2, -1]);
         expect(out[1].y).toEqual([1, 2]);
         expect(out[1].ids).toEqual(['n0', 'n1']);
         expect(out[1].marker.color).toEqual([0.1, 0.2]);
         expect(out[1].marker.size).toEqual([10, 20]);
+        expect(out[1]._length).toBe(2);
     });
 
     it('should truncate transformed arrays to target array length (long target case)', function() {
@@ -235,17 +237,19 @@ describe('Test sort transform calc:', function() {
             transforms: [{ target: 'text' }]
         })]);
 
-        expect(out[0].x).toEqual([1, undefined, -2, 3, undefined, -1, 1, undefined, -2, 0, undefined]);
-        expect(out[0].y).toEqual([1, undefined, 3, 3, undefined, 2, 2, undefined, 1, 1, undefined]);
-        expect(out[0].ids).toEqual(['p3', undefined, 'n2', 'p2', undefined, 'n1', 'p1', undefined, 'n0', 'z', undefined]);
-        expect(out[0].marker.color).toEqual([0.4, undefined, 0.3, 0.3, undefined, 0.2, 0.2, undefined, 0.1, 0.1, undefined]);
-        expect(out[0].marker.size).toEqual([10, undefined, 5, 0, undefined, 20, 6, undefined, 10, 1, undefined]);
+        expect(out[0].x).toEqual([1, -2, 3, -1, 1, -2, 0]);
+        expect(out[0].y).toEqual([1, 3, 3, 2, 2, 1, 1]);
+        expect(out[0].ids).toEqual(['p3', 'n2', 'p2', 'n1', 'p1', 'n0', 'z']);
+        expect(out[0].marker.color).toEqual([0.4, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1]);
+        expect(out[0].marker.size).toEqual([10, 5, 0, 20, 6, 10, 1]);
+        expect(out[0]._length).toBe(7);
 
-        expect(out[1].x).toEqual([-2, -1, -2, 0, 1, 3, 1, undefined, undefined]);
-        expect(out[1].y).toEqual([1, 2, 3, 1, 2, 3, 1, undefined, undefined]);
-        expect(out[1].ids).toEqual(['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'p3', undefined, undefined]);
-        expect(out[1].marker.color).toEqual([0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4, undefined, undefined]);
-        expect(out[1].marker.size).toEqual([10, 20, 5, 1, 6, 0, 10, undefined, undefined]);
+        expect(out[1].x).toEqual([-2, -1, -2, 0, 1, 3, 1]);
+        expect(out[1].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+        expect(out[1].ids).toEqual(['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'p3']);
+        expect(out[1].marker.color).toEqual([0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4]);
+        expect(out[1].marker.size).toEqual([10, 20, 5, 1, 6, 0, 10]);
+        expect(out[1]._length).toBe(7);
     });
 });
 
@@ -287,7 +291,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             _assertFirst('M10,0A10,10 0 1');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -379,7 +383,7 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -416,7 +420,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['A', 'B', 'C']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

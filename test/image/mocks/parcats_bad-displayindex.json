@@ -1,0 +1,17 @@
+{
+  "data": [
+    {"type": "parcats",
+      "dimensions": [
+        {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1],
+          "displayindex": 1, "categoryarray": [1, 2], "ticktext": ["One", "Two"]},
+        {"label": "Two", "values": ["A", "B", "A", "B", "C", "C", "A", "B", "C"],
+          "displayindex": 2, "categoryarray": ["B", "A", "C"]},
+        {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11], "displayindex": 1}]}
+  ],
+  "layout": {
+    "height": 602,
+    "width": 592,
+    "margin": {
+      "l": 40, "r": 40, "t": 50, "b": 40
+    }}
+}

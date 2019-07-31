@@ -5,8 +5,8 @@
  */
 module.exports = function(node, edge) {
     edge = edge || '';
-    var bbox = node.getBoundingClientRect(),
-        x, y;
+    var bbox = node.getBoundingClientRect();
+    var x, y;
 
     if(edge.indexOf('n') !== -1) y = bbox.top;
     else if(edge.indexOf('s') !== -1) y = bbox.bottom;

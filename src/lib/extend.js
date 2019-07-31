@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60,13 +60,14 @@ exports.extendDeepNoArrays = function() {
  *
  */
 function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
-    var target = inputs[0],
-        length = inputs.length;
+    var target = inputs[0];
+    var length = inputs.length;
 
     var input, key, src, copy, copyIsArray, clone, allPrimitives;
 
-    if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
+    // TODO does this do the right thing for typed arrays?
 
+    if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
         allPrimitives = primitivesLoopSplice(inputs[1], target);
 
         if(allPrimitives) {
@@ -83,13 +84,13 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
             src = target[key];
             copy = input[key];
 
-            // Stop early and just transfer the array if array copies are disallowed:
             if(noArrayCopies && isArray(copy)) {
-                target[key] = copy;
-            }
+                // Stop early and just transfer the array if array copies are disallowed:
 
-            // recurse if we're merging plain objects or arrays
-            else if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                target[key] = copy;
+            } else if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                // recurse if we're merging plain objects or arrays
+
                 if(copyIsArray) {
                     copyIsArray = false;
                     clone = src && isArray(src) ? src : [];
@@ -99,10 +100,9 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
 
                 // never move original objects, clone them
                 target[key] = _extend([clone, copy], isDeep, keepAllKeys, noArrayCopies);
-            }
+            } else if(typeof copy !== 'undefined' || keepAllKeys) {
+                // don't bring in undefined values, except for extendDeepAll
 
-            // don't bring in undefined values, except for extendDeepAll
-            else if(typeof copy !== 'undefined' || keepAllKeys) {
                 target[key] = copy;
             }
         }

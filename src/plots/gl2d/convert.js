@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,6 @@
 
 var Axes = require('../cartesian/axes');
 
-var convertHTMLToUnicode = require('../../lib/html2unicode');
 var str2RGBArray = require('../../lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
@@ -86,7 +85,7 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 1]
     ];
 
-    this.borderColor = false;
+    this.borderColor = [0, 0, 0, 0];
     this.backgroundColor = [0, 0, 0, 0];
 
     this.static = this.scene.staticPlot;
@@ -97,7 +96,6 @@ var proto = Axes2DOptions.prototype;
 var AXES = ['xaxis', 'yaxis'];
 
 proto.merge = function(options) {
-
     // titles are rendered in SVG
     this.titleEnable = false;
     this.backgroundColor = str2RGBArray(options.plot_bgcolor);
@@ -114,14 +112,14 @@ proto.merge = function(options) {
         // '_name' is e.g. xaxis, xaxis2, yaxis, yaxis4 ...
         ax = options[this.scene[axisName]._name];
 
-        axTitle = ax.title === this.scene.fullLayout._dfltTitle[axisLetter] ? '' : ax.title;
+        axTitle = ax.title.text === this.scene.fullLayout._dfltTitle[axisLetter] ? '' : ax.title.text;
 
         for(j = 0; j <= 2; j += 2) {
             this.labelEnable[i + j] = false;
-            this.labels[i + j] = convertHTMLToUnicode(axTitle);
-            this.labelColor[i + j] = str2RGBArray(ax.titlefont.color);
-            this.labelFont[i + j] = ax.titlefont.family;
-            this.labelSize[i + j] = ax.titlefont.size;
+            this.labels[i + j] = axTitle;
+            this.labelColor[i + j] = str2RGBArray(ax.title.font.color);
+            this.labelFont[i + j] = ax.title.font.family;
+            this.labelSize[i + j] = ax.title.font.size;
             this.labelPad[i + j] = this.getLabelPad(axisName, ax);
 
             this.tickEnable[i + j] = false;
@@ -208,16 +206,15 @@ proto.hasAxisInAltrPos = function(axisName, ax) {
 };
 
 proto.getLabelPad = function(axisName, ax) {
-    var offsetBase = 1.5,
-        fontSize = ax.titlefont.size,
-        showticklabels = ax.showticklabels;
+    var offsetBase = 1.5;
+    var fontSize = ax.title.font.size;
+    var showticklabels = ax.showticklabels;
 
     if(axisName === 'xaxis') {
         return (ax.side === 'top') ?
             -10 + fontSize * (offsetBase + (showticklabels ? 1 : 0)) :
             -10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));
-    }
-    else if(axisName === 'yaxis') {
+    } else if(axisName === 'yaxis') {
         return (ax.side === 'right') ?
             10 + fontSize * (offsetBase + (showticklabels ? 1 : 0.5)) :
             10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));

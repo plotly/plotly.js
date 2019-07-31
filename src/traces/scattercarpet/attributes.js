@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,14 +10,14 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterMarkerAttrs = scatterAttrs.marker,
-    scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = {
     carpet: {
@@ -33,33 +33,33 @@ module.exports = {
     a: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the quantity of component `a` in each data point.',
-            'If `a`, `b`, and `c` are all provided, they need not be',
-            'normalized, only the relative values matter. If only two',
-            'arrays are provided they must be normalized to match',
-            '`ternary<i>.sum`.'
-        ].join(' ')
+        description: 'Sets the a-axis coordinates.'
     },
     b: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the quantity of component `a` in each data point.',
-            'If `a`, `b`, and `c` are all provided, they need not be',
-            'normalized, only the relative values matter. If only two',
-            'arrays are provided they must be normalized to match',
-            '`ternary<i>.sum`.'
-        ].join(' ')
+        description: 'Sets the b-axis coordinates.'
     },
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
-            'Sets text elements associated with each (a,b,c) point.',
+            'Sets text elements associated with each (a,b) point.',
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of strings, the items are mapped in order to the',
-            'the data points in (a,b,c).'
+            'the data points in (a,b).',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
+    }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: [
+            'Sets hover text elements associated with each (a,b) point.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of strings, the items are mapped in order to the',
+            'the data points in (a,b).',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     }),
     line: {
@@ -74,6 +74,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'toself', 'tonext'],
+        dflt: 'none',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',
@@ -99,14 +100,13 @@ module.exports = {
             width: scatterMarkerLineAttrs.width,
             editType: 'calc'
         },
-            colorAttributes('marker'.line)
+            colorScaleAttrs('marker.line')
         ),
         gradient: scatterMarkerAttrs.gradient,
         editType: 'calc'
-    }, colorAttributes('marker'), {
-        showscale: scatterMarkerAttrs.showscale,
-        colorbar: colorbarAttrs
-    }),
+    },
+        colorScaleAttrs('marker')
+    ),
 
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
@@ -118,4 +118,5 @@ module.exports = {
         flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
+    hovertemplate: hovertemplateAttrs()
 };

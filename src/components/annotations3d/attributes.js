@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,10 +11,9 @@
 
 var annAtts = require('../annotations/attributes');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-module.exports = overrideAll({
-    _isLinkedToArray: 'annotation',
-
+module.exports = overrideAll(templatedArray('annotation', {
     visible: annAtts.visible,
     x: {
         valType: 'any',
@@ -94,4 +93,4 @@ module.exports = overrideAll({
     // xref: 'x'
     // yref: 'y
     // zref: 'z'
-}, 'calc', 'from-root');
+}), 'calc', 'from-root');

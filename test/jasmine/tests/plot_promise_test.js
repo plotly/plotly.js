@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
+var failTest = require('../assets/fail_test');
 
 describe('Plotly.___ methods', function() {
     'use strict';
@@ -10,8 +10,8 @@ describe('Plotly.___ methods', function() {
     afterEach(destroyGraphDiv);
 
     describe('Plotly.plot promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
             var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
@@ -33,9 +33,9 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.plot promise', function() {
-        var gd,
-            promise,
-            promiseRejected = false;
+        var gd;
+        var promise;
+        var promiseRejected = false;
 
         beforeEach(function(done) {
             var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
@@ -62,39 +62,13 @@ describe('Plotly.___ methods', function() {
         });
     });
 
-    describe('Plotly.plot promise', function() {
-        var gd,
-            promise,
-            promiseRejected = false;
+    describe('Plotly.redraw promise', function() {
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
             var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
-
-            gd = createGraphDiv();
-
-            gd._dragging = true;
-
-            promise = Plotly.plot(gd, data, {});
-
-            promise.then(null, function() {
-                promiseRejected = true;
-                done();
-            });
-        });
-
-
-        it('should reject the promise when graph is being dragged', function() {
-            expect(promiseRejected).toBe(true);
-        });
-    });
-
-    describe('Plotly.redraw promise', function() {
-        var promise,
-            promiseGd;
-
-        beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -115,8 +89,8 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.newPlot promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
             var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
@@ -138,12 +112,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.extendTraces promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -164,12 +138,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.prependTraces promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -190,12 +164,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.addTraces promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -216,12 +190,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.deleteTraces promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -246,8 +220,8 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -268,15 +242,15 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.moveTraces promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
             var data = [
-                    { x: [1, 2, 3], y: [4, 5, 6] },
-                    { x: [1, 2, 3], y: [6, 5, 4] }
-                ],
-                initialDiv = createGraphDiv();
+                { x: [1, 2, 3], y: [4, 5, 6] },
+                { x: [1, 2, 3], y: [6, 5, 4] }
+            ];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -297,12 +271,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.restyle promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -323,12 +297,12 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.restyle promise', function() {
-        var promise,
-            promiseRejected = false;
+        var promise;
+        var promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
@@ -346,13 +320,13 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.relayout promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                layout = {hovermode: 'closest'},
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var layout = {hovermode: 'closest'};
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
@@ -373,13 +347,13 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.relayout promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                layout = {hovermode: 'closest'},
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var layout = {hovermode: 'closest'};
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
@@ -400,13 +374,13 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.relayout promise', function() {
-        var promise,
-            promiseGd;
+        var promise;
+        var promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                layout = {hovermode: 'closest'},
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var layout = {hovermode: 'closest'};
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
@@ -427,13 +401,13 @@ describe('Plotly.___ methods', function() {
     });
 
     describe('Plotly.relayout promise', function() {
-        var promise,
-            promiseRejected = false;
+        var promise;
+        var promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
-                layout = {hovermode: 'closest'},
-                initialDiv = createGraphDiv();
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
+            var layout = {hovermode: 'closest'};
+            var initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
@@ -468,7 +442,9 @@ describe('Plotly.___ methods', function() {
                 expect(gd).toBeDefined();
                 expect(typeof gd).toBe('object');
                 expect(gd.layout).toBeDefined();
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should return a rejected promise if gd is hidden', function(done) {
@@ -478,7 +454,9 @@ describe('Plotly.___ methods', function() {
             }, function(err) {
                 expect(err).toBeDefined();
                 expect(err.message).toBe('Resize must be passed a displayed plot div element.');
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should return a rejected promise if gd is detached from the DOM', function(done) {
@@ -488,7 +466,30 @@ describe('Plotly.___ methods', function() {
             }, function(err) {
                 expect(err).toBeDefined();
                 expect(err.message).toBe('Resize must be passed a displayed plot div element.');
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should return a resolved promise if plot has been purged and there is nothing to resize', function(done) {
+            var resizePromise = Plotly.Plots.resize(initialDiv);
+
+            Plotly.purge(initialDiv);
+            destroyGraphDiv();
+
+            resizePromise
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('should return a resolved promise if plot has been hidden and gd is hidden', function(done) {
+            var resizePromise = Plotly.Plots.resize(initialDiv);
+
+            initialDiv.style.display = 'none';
+
+            resizePromise
+                .catch(failTest)
+                .then(done);
         });
 
         it('errors before even generating a promise if gd is not defined', function() {
@@ -496,5 +497,4 @@ describe('Plotly.___ methods', function() {
                 .toThrow(new Error('DOM element provided is null or undefined'));
         });
     });
-
 });

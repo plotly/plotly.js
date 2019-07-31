@@ -1,17 +1,16 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
@@ -21,9 +20,9 @@ var Fx = require('../fx');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../dragelement');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var drawArrowHead = require('./draw_arrow_head');
-
 
 // Annotations are stored in gd.layout.annotations, an array of objects
 // index can point to one item in this array,
@@ -68,6 +67,9 @@ function drawOne(gd, index) {
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
 
+    if(xa) xa.setScale();
+    if(ya) ya.setScale();
+
     drawRaw(gd, options, index, false, xa, ya);
 }
 
@@ -87,16 +89,20 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     var gs = gd._fullLayout._size;
     var edits = gd._context.edits;
 
-    var className;
-    var annbase;
+    var className, containerStr;
 
     if(subplotId) {
         className = 'annotation-' + subplotId;
-        annbase = subplotId + '.annotations[' + index + ']';
+        containerStr = subplotId + '.annotations';
     } else {
         className = 'annotation';
-        annbase = 'annotations[' + index + ']';
+        containerStr = 'annotations';
     }
+
+    var editHelpers = arrayEditor(gd.layout, containerStr, options);
+    var modifyBase = editHelpers.modifyBase;
+    var modifyItem = editHelpers.modifyItem;
+    var getUpdateObj = editHelpers.getUpdateObj;
 
     // remove the existing annotation if there is one
     fullLayout._infolayer
@@ -114,8 +120,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     // calculated pixel positions
     // x & y each will get text, head, and tail as appropriate
-    var annPosPx = {x: {}, y: {}},
-        textangle = +options.textangle || 0;
+    var annPosPx = {x: {}, y: {}};
+    var textangle = +options.textangle || 0;
 
     // create the components
     // made a single group to contain all, so opacity can work right
@@ -133,24 +139,25 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     var editTextPosition = edits[options.showarrow ? 'annotationTail' : 'annotationPosition'];
     var textEvents = options.captureevents || edits.annotationText || editTextPosition;
 
+    function makeEventData(initialEvent) {
+        var eventData = {
+            index: index,
+            annotation: options._input,
+            fullAnnotation: options,
+            event: initialEvent
+        };
+        if(subplotId) {
+            eventData.subplotId = subplotId;
+        }
+        return eventData;
+    }
+
     var annTextGroupInner = annTextGroup.append('g')
         .style('pointer-events', textEvents ? 'all' : null)
-        .call(setCursor, 'default')
+        .call(setCursor, 'pointer')
         .on('click', function() {
             gd._dragging = false;
-
-            var eventData = {
-                index: index,
-                annotation: options._input,
-                fullAnnotation: options,
-                event: d3.event
-            };
-
-            if(subplotId) {
-                eventData.subplotId = subplotId;
-            }
-
-            gd.emit('plotly_clickannotation', eventData);
+            gd.emit('plotly_clickannotation', makeEventData(d3.event));
         });
 
     if(options.hovertext) {
@@ -182,9 +189,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         });
     }
 
-    var borderwidth = options.borderwidth,
-        borderpad = options.borderpad,
-        borderfull = borderwidth + borderpad;
+    var borderwidth = options.borderwidth;
+    var borderpad = options.borderpad;
+    var borderfull = borderwidth + borderpad;
 
     var annTextBG = annTextGroupInner.append('rect')
         .attr('class', 'bg')
@@ -206,9 +213,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var font = options.font;
 
+    var text = fullLayout._meta ?
+        Lib.templateString(options.text, fullLayout._meta) :
+        options.text;
+
     var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
-        .text(options.text);
+        .text(text);
 
     function textLayout(s) {
         s.call(Drawing.font, font)
@@ -247,11 +258,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         var outerWidth = Math.round(annWidth + 2 * borderfull);
         var outerHeight = Math.round(annHeight + 2 * borderfull);
 
-
-        // save size in the annotation object for use by autoscale
-        options._w = annWidth;
-        options._h = annHeight;
-
         function shiftFraction(v, anchor) {
             if(anchor === 'auto') {
                 if(v < 1 / 3) anchor = 'left';
@@ -272,24 +278,24 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         var letters = ['x', 'y'];
 
         for(var i = 0; i < letters.length; i++) {
-            var axLetter = letters[i],
-                axRef = options[axLetter + 'ref'] || axLetter,
-                tailRef = options['a' + axLetter + 'ref'],
-                ax = {x: xa, y: ya}[axLetter],
-                dimAngle = (textangle + (axLetter === 'x' ? 0 : -90)) * Math.PI / 180,
-                // note that these two can be either positive or negative
-                annSizeFromWidth = outerWidth * Math.cos(dimAngle),
-                annSizeFromHeight = outerHeight * Math.sin(dimAngle),
-                // but this one is the positive total size
-                annSize = Math.abs(annSizeFromWidth) + Math.abs(annSizeFromHeight),
-                anchor = options[axLetter + 'anchor'],
-                overallShift = options[axLetter + 'shift'] * (axLetter === 'x' ? 1 : -1),
-                posPx = annPosPx[axLetter],
-                basePx,
-                textPadShift,
-                alignPosition,
-                autoAlignFraction,
-                textShift;
+            var axLetter = letters[i];
+            var axRef = options[axLetter + 'ref'] || axLetter;
+            var tailRef = options['a' + axLetter + 'ref'];
+            var ax = {x: xa, y: ya}[axLetter];
+            var dimAngle = (textangle + (axLetter === 'x' ? 0 : -90)) * Math.PI / 180;
+            // note that these two can be either positive or negative
+            var annSizeFromWidth = outerWidth * Math.cos(dimAngle);
+            var annSizeFromHeight = outerHeight * Math.sin(dimAngle);
+            // but this one is the positive total size
+            var annSize = Math.abs(annSizeFromWidth) + Math.abs(annSizeFromHeight);
+            var anchor = options[axLetter + 'anchor'];
+            var overallShift = options[axLetter + 'shift'] * (axLetter === 'x' ? 1 : -1);
+            var posPx = annPosPx[axLetter];
+            var basePx;
+            var textPadShift;
+            var alignPosition;
+            var autoAlignFraction;
+            var textShift;
 
             /*
              * calculate the *primary* pixel position
@@ -297,35 +303,25 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
              * otherwise the text anchor point
              */
             if(ax) {
-                /*
-                 * hide the annotation if it's pointing outside the visible plot
-                 * as long as the axis isn't autoranged - then we need to draw it
-                 * anyway to get its bounding box. When we're dragging, an axis can
-                 * still look autoranged even though it won't be when the drag finishes.
-                 */
+                // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
-                if((gd._dragging || !ax.autorange) && (posFraction < 0 || posFraction > 1)) {
+                if(posFraction < 0 || posFraction > 1) {
                     if(tailRef === axRef) {
                         posFraction = ax.r2fraction(options['a' + axLetter]);
                         if(posFraction < 0 || posFraction > 1) {
                             annotationIsOffscreen = true;
                         }
-                    }
-                    else {
+                    } else {
                         annotationIsOffscreen = true;
                     }
-
-                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
-            }
-            else {
+            } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
                     basePx = gs.l + gs.w * alignPosition;
-                }
-                else {
+                } else {
                     alignPosition = 1 - options[axLetter];
                     basePx = gs.t + gs.h * alignPosition;
                 }
@@ -347,8 +343,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     posPx.tail = ax._offset + ax.r2p(arrowLength);
                     // tail is data-referenced: autorange pads the text in px from the tail
                     textPadShift = textShift;
-                }
-                else {
+                } else {
                     posPx.tail = basePx + arrowLength;
                     // tail is specified in px from head, so autorange also pads vs head
                     textPadShift = textShift + arrowLength;
@@ -363,13 +358,12 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     posPx.head = Lib.constrain(posPx.head, 1, maxPx - 1);
                 }
                 if(tailRef === 'pixel') {
-                    var shiftPlus = -Math.max(posPx.tail - 3, posPx.text),
-                        shiftMinus = Math.min(posPx.tail + 3, posPx.text) - maxPx;
+                    var shiftPlus = -Math.max(posPx.tail - 3, posPx.text);
+                    var shiftMinus = Math.min(posPx.tail + 3, posPx.text) - maxPx;
                     if(shiftPlus > 0) {
                         posPx.tail += shiftPlus;
                         posPx.text += shiftPlus;
-                    }
-                    else if(shiftMinus > 0) {
+                    } else if(shiftMinus > 0) {
                         posPx.tail -= shiftMinus;
                         posPx.text -= shiftMinus;
                     }
@@ -377,8 +371,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                 posPx.tail += overallShift;
                 posPx.head += overallShift;
-            }
-            else {
+            } else {
                 // with no arrow, the text rotates and *then* we put the anchor
                 // relative to the new bounding box
                 textShift = annSize * shiftFraction(autoAlignFraction, anchor);
@@ -399,7 +392,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             options['_' + axLetter + 'shift'] = textShift;
         }
 
-        if(annotationIsOffscreen) {
+        // We have everything we need for calcAutorange at this point,
+        // we can safely exit - unless we're currently dragging the plot
+        if(!gd._dragging && annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }
@@ -419,14 +414,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 x: borderfull + xShift - 1,
                 y: borderfull + yShift
             })
-            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
-        }
-        else {
+            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null, gd);
+        } else {
             var texty = borderfull + yShift - anntextBB.top;
             var textx = borderfull + xShift - anntextBB.left;
 
             annText.call(svgTextUtils.positionText, textx, texty)
-                .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
+                .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null, gd);
         }
 
         annTextClip.select('rect').call(Drawing.setRect, borderfull, borderfull,
@@ -459,32 +453,32 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 .selectAll('.annotation-arrow-g')
                 .remove();
 
-            var headX = annPosPx.x.head,
-                headY = annPosPx.y.head,
-                tailX = annPosPx.x.tail + dx,
-                tailY = annPosPx.y.tail + dy,
-                textX = annPosPx.x.text + dx,
-                textY = annPosPx.y.text + dy,
+            var headX = annPosPx.x.head;
+            var headY = annPosPx.y.head;
+            var tailX = annPosPx.x.tail + dx;
+            var tailY = annPosPx.y.tail + dy;
+            var textX = annPosPx.x.text + dx;
+            var textY = annPosPx.y.text + dy;
 
-                // find the edge of the text box, where we'll start the arrow:
-                // create transform matrix to rotate the text box corners
-                transform = Lib.rotationXYMatrix(textangle, textX, textY),
-                applyTransform = Lib.apply2DTransform(transform),
-                applyTransform2 = Lib.apply2DTransform2(transform),
+            // find the edge of the text box, where we'll start the arrow:
+            // create transform matrix to rotate the text box corners
+            var transform = Lib.rotationXYMatrix(textangle, textX, textY);
+            var applyTransform = Lib.apply2DTransform(transform);
+            var applyTransform2 = Lib.apply2DTransform2(transform);
 
-                // calculate and transform bounding box
-                width = +annTextBG.attr('width'),
-                height = +annTextBG.attr('height'),
-                xLeft = textX - 0.5 * width,
-                xRight = xLeft + width,
-                yTop = textY - 0.5 * height,
-                yBottom = yTop + height,
-                edges = [
-                    [xLeft, yTop, xLeft, yBottom],
-                    [xLeft, yBottom, xRight, yBottom],
-                    [xRight, yBottom, xRight, yTop],
-                    [xRight, yTop, xLeft, yTop]
-                ].map(applyTransform2);
+            // calculate and transform bounding box
+            var width = +annTextBG.attr('width');
+            var height = +annTextBG.attr('height');
+            var xLeft = textX - 0.5 * width;
+            var xRight = xLeft + width;
+            var yTop = textY - 0.5 * height;
+            var yBottom = yTop + height;
+            var edges = [
+                [xLeft, yTop, xLeft, yBottom],
+                [xLeft, yBottom, xRight, yBottom],
+                [xRight, yBottom, xRight, yTop],
+                [xRight, yTop, xLeft, yTop]
+            ].map(applyTransform2);
 
             // Remove the line if it ends inside the box.  Use ray
             // casting for rotated boxes: see which edges intersect a
@@ -508,9 +502,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 }
             });
 
-            var strokewidth = options.arrowwidth,
-                arrowColor = options.arrowcolor,
-                arrowSide = options.arrowside;
+            var strokewidth = options.arrowwidth;
+            var arrowColor = options.arrowcolor;
+            var arrowSide = options.arrowside;
 
             var arrowGroup = annGroup.append('g')
                 .style({opacity: Color.opacity(arrowColor)})
@@ -536,6 +530,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 var arrowDrag = arrowGroup.append('path')
                     .classed('annotation-arrow', true)
                     .classed('anndrag', true)
+                    .classed('cursor-move', true)
                     .attr({
                         d: 'M3,3H-3V-3H3ZM0,0L' + (tailX - arrowDragHeadX) + ',' + (tailY - arrowDragHeadY),
                         transform: 'translate(' + arrowDragHeadX + ',' + arrowDragHeadY + ')'
@@ -544,9 +539,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     .call(Color.stroke, 'rgba(0,0,0,0)')
                     .call(Color.fill, 'rgba(0,0,0,0)');
 
-                var update,
-                    annx0,
-                    anny0;
+                var annx0, anny0;
 
                 // dragger for the arrow & head: translates the whole thing
                 // (head/tail/text) all together
@@ -558,33 +551,32 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                         annx0 = pos.x;
                         anny0 = pos.y;
-                        update = {};
                         if(xa && xa.autorange) {
-                            update[xa._name + '.autorange'] = true;
+                            modifyBase(xa._name + '.autorange', true);
                         }
                         if(ya && ya.autorange) {
-                            update[ya._name + '.autorange'] = true;
+                            modifyBase(ya._name + '.autorange', true);
                         }
                     },
                     moveFn: function(dx, dy) {
-                        var annxy0 = applyTransform(annx0, anny0),
-                            xcenter = annxy0[0] + dx,
-                            ycenter = annxy0[1] + dy;
+                        var annxy0 = applyTransform(annx0, anny0);
+                        var xcenter = annxy0[0] + dx;
+                        var ycenter = annxy0[1] + dy;
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
-                        update[annbase + '.x'] = xa ?
+                        modifyItem('x', xa ?
                             xa.p2r(xa.r2p(options.x) + dx) :
-                            (options.x + (dx / gs.w));
-                        update[annbase + '.y'] = ya ?
+                            (options.x + (dx / gs.w)));
+                        modifyItem('y', ya ?
                             ya.p2r(ya.r2p(options.y) + dy) :
-                            (options.y - (dy / gs.h));
+                            (options.y - (dy / gs.h)));
 
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
+                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
+                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -594,7 +586,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         });
                     },
                     doneFn: function() {
-                        Plotly.relayout(gd, update);
+                        Registry.call('_guiRelayout', gd, getUpdateObj());
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
@@ -606,8 +598,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
         // user dragging the annotation (text, not arrow)
         if(editTextPosition) {
-            var update,
-                baseTextTransform;
+            var baseTextTransform;
 
             // dragger for the textbox: if there's an arrow, just drag the
             // textbox and tail, leave the head untouched
@@ -616,57 +607,54 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 gd: gd,
                 prepFn: function() {
                     baseTextTransform = annTextGroup.attr('transform');
-                    update = {};
                 },
                 moveFn: function(dx, dy) {
                     var csr = 'pointer';
                     if(options.showarrow) {
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
+                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
                         } else {
-                            update[annbase + '.ax'] = options.ax + dx;
+                            modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
+                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
                         } else {
-                            update[annbase + '.ay'] = options.ay + dy;
+                            modifyItem('ay', options.ay + dy);
                         }
 
                         drawArrow(dx, dy);
-                    }
-                    else if(!subplotId) {
+                    } else if(!subplotId) {
+                        var xUpdate, yUpdate;
                         if(xa) {
-                            update[annbase + '.x'] = xa.p2r(xa.r2p(options.x) + dx);
-
+                            xUpdate = xa.p2r(xa.r2p(options.x) + dx);
                         } else {
-                            var widthFraction = options._xsize / gs.w,
-                                xLeft = options.x + (options._xshift - options.xshift) / gs.w -
-                                    widthFraction / 2;
+                            var widthFraction = options._xsize / gs.w;
+                            var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
 
-                            update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
+                            xUpdate = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
                         if(ya) {
-                            update[annbase + '.y'] = ya.p2r(ya.r2p(options.y) + dy);
+                            yUpdate = ya.p2r(ya.r2p(options.y) + dy);
                         } else {
-                            var heightFraction = options._ysize / gs.h,
-                                yBottom = options.y - (options._yshift + options.yshift) / gs.h -
-                                    heightFraction / 2;
+                            var heightFraction = options._ysize / gs.h;
+                            var yBottom = options.y - (options._yshift + options.yshift) / gs.h - heightFraction / 2;
 
-                            update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
+                            yUpdate = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);
                         }
+                        modifyItem('x', xUpdate);
+                        modifyItem('y', yUpdate);
                         if(!xa || !ya) {
                             csr = dragElement.getCursor(
-                                xa ? 0.5 : update[annbase + '.x'],
-                                ya ? 0.5 : update[annbase + '.y'],
+                                xa ? 0.5 : xUpdate,
+                                ya ? 0.5 : yUpdate,
                                 options.xanchor, options.yanchor
                             );
                         }
-                    }
-                    else return;
+                    } else return;
 
                     annTextGroup.attr({
                         transform: 'translate(' + dx + ',' + dy + ')' + baseTextTransform
@@ -674,9 +662,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                     setCursor(annTextGroupInner, csr);
                 },
+                clickFn: function(_, initialEvent) {
+                    if(options.captureevents) {
+                        gd.emit('plotly_clickannotation', makeEventData(initialEvent));
+                    }
+                },
                 doneFn: function() {
                     setCursor(annTextGroupInner);
-                    Plotly.relayout(gd, update);
+                    Registry.call('_guiRelayout', gd, getUpdateObj());
                     var notesBox = document.querySelector('.js-notes-box-panel');
                     if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
@@ -689,20 +682,19 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
+
                 this.call(textLayout);
 
-                var update = {};
-                update[annbase + '.text'] = options.text;
+                modifyItem('text', _text);
 
                 if(xa && xa.autorange) {
-                    update[xa._name + '.autorange'] = true;
+                    modifyBase(xa._name + '.autorange', true);
                 }
                 if(ya && ya.autorange) {
-                    update[ya._name + '.autorange'] = true;
+                    modifyBase(ya._name + '.autorange', true);
                 }
 
-                Plotly.relayout(gd, update);
+                Registry.call('_guiRelayout', gd, getUpdateObj());
             });
-    }
-    else annText.call(textLayout);
+    } else annText.call(textLayout);
 }

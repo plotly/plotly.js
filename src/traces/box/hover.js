@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = Lib.fillText;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -58,26 +58,33 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         hoverPseudoDistance, spikePseudoDistance;
 
     var boxDelta = t.bdPos;
+    var boxDeltaPos, boxDeltaNeg;
+    var posAcceptance = t.wHover;
     var shiftPos = function(di) { return di.pos + t.bPos - pVal; };
 
     if(isViolin && trace.side !== 'both') {
         if(trace.side === 'positive') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos, pos + boxDelta, hoverPseudoDistance);
+                return Fx.inbox(pos, pos + posAcceptance, hoverPseudoDistance);
             };
+            boxDeltaPos = boxDelta;
+            boxDeltaNeg = 0;
         }
         if(trace.side === 'negative') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos - boxDelta, pos, hoverPseudoDistance);
+                return Fx.inbox(pos - posAcceptance, pos, hoverPseudoDistance);
             };
+            boxDeltaPos = 0;
+            boxDeltaNeg = boxDelta;
         }
     } else {
         dPos = function(di) {
             var pos = shiftPos(di);
-            return Fx.inbox(pos - boxDelta, pos + boxDelta, hoverPseudoDistance);
+            return Fx.inbox(pos - posAcceptance, pos + posAcceptance, hoverPseudoDistance);
         };
+        boxDeltaPos = boxDeltaNeg = boxDelta;
     }
 
     var dVal;
@@ -133,10 +140,9 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     else if(Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
     else pointData.color = trace.fillcolor;
 
-    pointData[pLetter + '0'] = pAxis.c2p(di.pos + t.bPos - t.bdPos, true);
-    pointData[pLetter + '1'] = pAxis.c2p(di.pos + t.bPos + t.bdPos, true);
+    pointData[pLetter + '0'] = pAxis.c2p(di.pos + t.bPos - boxDeltaNeg, true);
+    pointData[pLetter + '1'] = pAxis.c2p(di.pos + t.bPos + boxDeltaPos, true);
 
-    Axes.tickText(pAxis, pAxis.c2l(di.pos), 'hover').text;
     pointData[pLetter + 'LabelVal'] = di.pos;
 
     var spikePosAttr = pLetter + 'Spike';
@@ -145,7 +151,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // box plots: each "point" gets many labels
     var usedVals = {};
-    var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+    var attrs = ['med', 'q1', 'q3', 'min', 'max'];
 
     if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');
@@ -165,17 +171,26 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         var valPx = vAxis.c2p(val, true);
         var pointData2 = Lib.extendFlat({}, pointData);
 
+        pointData2.attr = attr;
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
         pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
 
+        // Note: introduced to be able to distinguish a
+        // clicked point from a box during click-to-select
+        pointData2.hoverOnBox = true;
+
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;
         }
+
         // only keep name and spikes on the first item (median)
         pointData.name = '';
         pointData.spikeDistance = undefined;
         pointData[spikePosAttr] = undefined;
+
+        // no hovertemplate support yet
+        pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
     }
@@ -236,16 +251,27 @@ function hoverOnPoints(pointData, xval, yval) {
         name: trace.name,
         x0: xc - rad,
         x1: xc + rad,
-        xLabelVal: pt.x,
         y0: yc - rad,
         y1: yc + rad,
-        yLabelVal: pt.y,
-        spikeDistance: pointData.distance
+        spikeDistance: pointData.distance,
+        hovertemplate: trace.hovertemplate
     });
-    var pLetter = trace.orientation === 'h' ? 'y' : 'x';
-    var pa = trace.orientation === 'h' ? ya : xa;
+
+    var pa;
+    if(trace.orientation === 'h') {
+        pa = ya;
+        closePtData.xLabelVal = pt.x;
+        closePtData.yLabelVal = di.pos;
+    } else {
+        pa = xa;
+        closePtData.xLabelVal = di.pos;
+        closePtData.yLabelVal = pt.y;
+    }
+
+    var pLetter = pa._id.charAt(0);
     closePtData[pLetter + 'Spike'] = pa.c2p(di.pos, true);
-    fillHoverText(pt, trace, closePtData);
+
+    fillText(pt, trace, closePtData);
 
     return closePtData;
 }

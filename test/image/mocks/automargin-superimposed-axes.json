@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "x": [ 1, 2 ],
+      "y": [ 1, 2 ]
+    },
+    {
+      "x": [ 1, 2 ],
+      "y": [ 1, 2 ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "margin": {"b": 0},
+    "title": {
+      "text": "automargin:true on superimposed x axes"
+    },
+    "xaxis": {
+      "title": {
+        "text": "x"
+      },
+      "automargin": true
+    },
+    "xaxis2": {
+      "title": {
+        "text": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x2"
+      },
+      "automargin": true
+    },
+    "yaxis": {
+      "title": {
+        "text": "hi"
+      },
+      "domain": [0, 0.5]
+    },
+    "yaxis2": {
+      "title": {
+        "text": "hi"
+      },
+      "domain": [0.5, 1]
+    }
+  }
+}

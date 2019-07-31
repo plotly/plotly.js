@@ -75,7 +75,6 @@
     {
       "x": [1.5],
       "y": [1.25],
-      "fill": "tonexty",
       "showlegend": false,
       "yaxis": "y2"
     },
@@ -111,7 +110,6 @@
     {
       "x": [1.5],
       "y": [1.25],
-      "fill": "tonexty",
       "line": {"shape": "spline"},
       "xaxis": "x2",
       "showlegend": false,

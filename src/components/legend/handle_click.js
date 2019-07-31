@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,17 +8,35 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
 var SHOWISOLATETIP = true;
 
 module.exports = function handleClick(g, gd, numClicks) {
+    var fullLayout = gd._fullLayout;
+
     if(gd._dragged || gd._editing) return;
 
-    var hiddenSlices = gd._fullLayout.hiddenlabels ?
-        gd._fullLayout.hiddenlabels.slice() :
+    var itemClick = fullLayout.legend.itemclick;
+    var itemDoubleClick = fullLayout.legend.itemdoubleclick;
+
+    if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
+        SHOWISOLATETIP && gd.data && gd._context.showTips
+    ) {
+        Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
+        SHOWISOLATETIP = false;
+    } else {
+        SHOWISOLATETIP = false;
+    }
+
+    var mode;
+    if(numClicks === 1) mode = itemClick;
+    else if(numClicks === 2) mode = itemDoubleClick;
+    if(!mode) return;
+
+    var hiddenSlices = fullLayout.hiddenlabels ?
+        fullLayout.hiddenlabels.slice() :
         [];
 
     var legendItem = g.data()[0][0];
@@ -86,21 +104,14 @@ module.exports = function handleClick(g, gd, numClicks) {
         }
     }
 
-    if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
-        Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
-        SHOWISOLATETIP = false;
-    } else {
-        SHOWISOLATETIP = false;
-    }
+    if(Registry.traceIs(fullTrace, 'pie-like')) {
+        var thisLabel = legendItem.label;
+        var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
-    if(Registry.traceIs(fullTrace, 'pie')) {
-        var thisLabel = legendItem.label,
-            thisLabelIndex = hiddenSlices.indexOf(thisLabel);
-
-        if(numClicks === 1) {
+        if(mode === 'toggle') {
             if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
             else hiddenSlices.splice(thisLabelIndex, 1);
-        } else if(numClicks === 2) {
+        } else if(mode === 'toggleothers') {
             hiddenSlices = [];
             gd.calcdata[0].forEach(function(d) {
                 if(thisLabel !== d.label) {
@@ -112,7 +123,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
         }
 
-        Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
+        Registry.call('_guiRelayout', gd, 'hiddenlabels', hiddenSlices);
     } else {
         var hasLegendgroup = legendgroup && legendgroup.length;
         var traceIndicesInGroup = [];
@@ -127,7 +138,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
         }
 
-        if(numClicks === 1) {
+        if(mode === 'toggle') {
             var nextVisibility;
 
             switch(fullTrace.visible) {
@@ -151,7 +162,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             } else {
                 setVisibility(fullTrace, nextVisibility);
             }
-        } else if(numClicks === 2) {
+        } else if(mode === 'toggleothers') {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
             var isClicked, isInGroup, otherState;
@@ -218,6 +229,6 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
         }
 
-        Plotly.restyle(gd, attrUpdate, attrIndices);
+        Registry.call('_guiRestyle', gd, attrUpdate, attrIndices);
     }
 };

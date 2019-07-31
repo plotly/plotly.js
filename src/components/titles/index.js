@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,15 +12,17 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var interactConstants = require('../../constants/interactions');
 
-var Titles = module.exports = {};
+module.exports = {
+    draw: draw
+};
 
 var numStripRE = / [XY][0-9]* /;
 
@@ -51,10 +53,12 @@ var numStripRE = / [XY][0-9]* /;
  *          offset - shift up/down in the rotated frame (unused?)
  *      containerGroup - if an svg <g> element already exists to hold this
  *          title, include here. Otherwise it will go in fullLayout._infolayer
+ *      _meta {object (optional} - meta key-value to for title with
+ *          Lib.templateString, default to fullLayout._meta, if not provided
  *
  *  @return {selection} d3 selection of title container group
  */
-Titles.draw = function(gd, titleClass, options) {
+function draw(gd, titleClass, options) {
     var cont = options.propContainer;
     var prop = options.propName;
     var placeholder = options.placeholder;
@@ -65,19 +69,21 @@ Titles.draw = function(gd, titleClass, options) {
     var group = options.containerGroup;
 
     var fullLayout = gd._fullLayout;
-    var titlefont = cont.titlefont || {};
-    var font = titlefont.family;
-    var fontSize = titlefont.size;
-    var fontColor = titlefont.color;
 
     var opacity = 1;
     var isplaceholder = false;
-    var txt = (cont.title || '').trim();
+    var title = cont.title;
+    var txt = (title && title.text ? title.text : '').trim();
+
+    var font = title && title.font ? title.font : {};
+    var fontFamily = font.family;
+    var fontSize = font.size;
+    var fontColor = font.color;
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
     var editAttr;
-    if(prop === 'title') editAttr = 'titleText';
+    if(prop === 'title.text') editAttr = 'titleText';
     else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
     else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
@@ -93,13 +99,16 @@ Titles.draw = function(gd, titleClass, options) {
         if(!editable) txt = '';
     }
 
+    if(options._meta) {
+        txt = Lib.templateString(txt, options._meta);
+    } else if(fullLayout._meta) {
+        txt = Lib.templateString(txt, fullLayout._meta);
+    }
+
     var elShouldExist = txt || editable;
 
     if(!group) {
-        group = fullLayout._infolayer.selectAll('.g-' + titleClass)
-            .data([0]);
-        group.enter().append('g')
-            .classed('g-' + titleClass, true);
+        group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
     }
 
     var el = group.selectAll('text')
@@ -138,7 +147,7 @@ Titles.draw = function(gd, titleClass, options) {
         titleEl.attr('transform', transformVal);
 
         titleEl.style({
-            'font-family': font,
+            'font-family': fontFamily,
             'font-size': d3.round(fontSize, 2) + 'px',
             fill: Color.rgb(fontColor),
             opacity: opacity * Color.opacity(fontColor),
@@ -237,8 +246,11 @@ Titles.draw = function(gd, titleClass, options) {
 
         el.call(svgTextUtils.makeEditable, {gd: gd})
             .on('edit', function(text) {
-                if(traceIndex !== undefined) Plotly.restyle(gd, prop, text, traceIndex);
-                else Plotly.relayout(gd, prop, text);
+                if(traceIndex !== undefined) {
+                    Registry.call('_guiRestyle', gd, prop, text, traceIndex);
+                } else {
+                    Registry.call('_guiRelayout', gd, prop, text);
+                }
             })
             .on('cancel', function() {
                 this.text(this.attr('data-unformatted'))
@@ -252,4 +264,4 @@ Titles.draw = function(gd, titleClass, options) {
     el.classed('js-placeholder', isplaceholder);
 
     return group;
-};
+}

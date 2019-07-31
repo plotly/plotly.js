@@ -18,6 +18,11 @@
     "type": "scatterpolargl",
     "r": [50, 300, 900],
     "theta": [0, 90, 180],
+    "marker": {
+        "size": 20,
+        "color": [1, 2, 3],
+        "showscale": true
+    },
     "subplot": "polar3"
   }, {
     "type": "scatterpolargl",

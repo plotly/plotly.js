@@ -53,7 +53,6 @@ function updateHeadersInSrcFiles() {
     glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
         files.forEach(function(file) {
             fs.readFile(file, 'utf-8', function(err, code) {
-
                 // parse through code string while keeping track of comments
                 var comments = [];
                 falafel(code, {onComment: comments, locations: true}, function() {});
@@ -77,8 +76,7 @@ function updateHeadersInSrcFiles() {
                     var newCode = licenseSrc + '\n' + codeLines.join('\n');
 
                     common.writeFile(file, newCode);
-                }
-                else {
+                } else {
                     // otherwise, throw an error
                     throw new Error(file + ' : has wrong header information.');
                 }
@@ -87,7 +85,10 @@ function updateHeadersInSrcFiles() {
     });
 
     function isCorrect(header) {
-        return (header.value === licenseStr);
+        return (
+            header.value.replace(/\s+$/gm, '') ===
+            licenseStr.replace(/\s+$/gm, '')
+        );
     }
 
     function hasWrongDate(header) {

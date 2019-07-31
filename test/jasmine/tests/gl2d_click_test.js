@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test.js');
+var failTest = require('../assets/fail_test.js');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -64,7 +64,7 @@ var mock4 = {
     layout: {}
 };
 
-describe('@gl Test hover and click interactions', function() {
+describe('Test hover and click interactions', function() {
     var gd;
 
     function makeHoverFn(gd, x, y) {
@@ -124,7 +124,6 @@ describe('@gl Test hover and click interactions', function() {
             'data', 'fullData', 'xaxis', 'yaxis'
         ]), 'event data keys');
 
-        expect(typeof pt.data.uid).toBe('string', msg + ' - uid');
         expect(pt.xaxis.domain.length).toBe(2, msg + ' - xaxis');
         expect(pt.yaxis.domain.length).toBe(2, msg + ' - yaxis');
 
@@ -149,7 +148,7 @@ describe('@gl Test hover and click interactions', function() {
             return delay(100)()
                 .then(_hover)
                 .then(function(eventData) {
-                    assertEventData(eventData, expected);
+                    assertEventData(eventData, expected, opts.msg);
 
                     var g = d3.select('g.hovertext');
                     if(g.node() === null) {
@@ -179,12 +178,13 @@ describe('@gl Test hover and click interactions', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
+        setTimeout(done, 1500);
     });
 
-    it('should output correct event data for scattergl', function(done) {
+    it('@gl should output correct event data for scattergl', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.hoverlabel = {
@@ -217,11 +217,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for scattergl in *select* dragmode', function(done) {
+    it('@gl should output correct event data for scattergl in *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.dragmode = 'select';
@@ -256,11 +256,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for scattergl in *lasso* dragmode', function(done) {
+    it('@gl should output correct event data for scattergl in *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.dragmode = 'lasso';
@@ -295,11 +295,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
+    it('@gl should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hoverinfo = 'none';
 
@@ -315,11 +315,79 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for pointcloud', function(done) {
+    it('@gl should show correct label for scattergl when hovertext is set', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['(15.772, 0.387)\nHoVeRtExT', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 238)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should show last point data for overlapped scattergl points with hovermode set to closest', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([200, 200], {
+            x: 2,
+            y: 0,
+            label: ['(2, 0)\nTRUE', null],
+            curveNumber: 0,
+            pointNumber: 3,
+            bgcolor: 'rgb(31, 119, 180)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
+        });
+
+        Plotly.plot(gd, {
+            data: [{
+                text: ['', 'FALSE', '', 'TRUE'],
+                x: [1, 2, 3, 2],
+                y: [0, 0, 0, 0],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 40 }
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                hovermode: 'closest'
+            }
+        })
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should output correct event data for pointcloud', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         _mock.layout.hoverlabel = { font: {size: 8} };
@@ -343,11 +411,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for heatmapgl', function(done) {
+    it('@gl should output correct event data for heatmapgl', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
         _mock.data[0].type = 'heatmapgl';
 
@@ -376,11 +444,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for heatmapgl (asymmetric case) ', function(done) {
+    it('@gl should output correct event data for heatmapgl (asymmetric case) ', function(done) {
         var _mock = {
             data: [{
                 type: 'heatmapgl',
@@ -409,11 +477,11 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for scattergl after visibility restyle', function(done) {
+    it('@gl should output correct event data for scattergl after visibility restyle', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
 
         var run = makeRunner([435, 216], {
@@ -451,11 +519,11 @@ describe('@gl Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data for scattergl-fancy', function(done) {
+    it('@gl should output correct event data for scattergl-fancy', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
         _mock.data[0].mode = 'markers+lines';
         _mock.data[1].mode = 'markers+lines';
@@ -499,11 +567,11 @@ describe('@gl Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
-    it('should output correct event data contourgl', function(done) {
+    it('@gl should output correct event data contourgl', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
         _mock.data[0].hoverlabel = {
@@ -527,155 +595,7 @@ describe('@gl Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
-        .then(done);
-    });
-});
-
-describe('@noCI @gl Test gl2d lasso/select:', function() {
-    var mockFancy = require('@mocks/gl2d_14.json');
-    var mockFast = Lib.extendDeep({}, mockFancy, {
-        data: [{mode: 'markers'}],
-        layout: {
-            xaxis: {type: 'linear'},
-            yaxis: {type: 'linear'}
-        }
-    });
-
-    var gd;
-    var selectPath = [[98, 193], [108, 193]];
-    var selectPath2 = [[118, 193], [128, 193]];
-    var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
-    var lassoPath2 = [[98, 193], [108, 193], [108, 500], [98, 500], [98, 193]];
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    function drag(path) {
-        var len = path.length;
-
-        Lib.clearThrottle();
-        mouseEvent('mousemove', path[0][0], path[0][1]);
-        mouseEvent('mousedown', path[0][0], path[0][1]);
-
-        path.slice(1, len).forEach(function(pt) {
-            Lib.clearThrottle();
-            mouseEvent('mousemove', pt[0], pt[1]);
-        });
-
-        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
-    }
-
-    function select(path) {
-        return new Promise(function(resolve, reject) {
-            gd.once('plotly_selected', resolve);
-            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
-            drag(path);
-        });
-    }
-
-    function assertEventData(actual, expected) {
-        expect(actual.points.length).toBe(expected.points.length);
-
-        expected.points.forEach(function(e, i) {
-            var a = actual.points[i];
-            if(a) {
-                expect(a.x).toBe(e.x, 'x');
-                expect(a.y).toBe(e.y, 'y');
-            }
-        });
-    }
-
-
-    it('should work under fast mode with *select* dragmode', function(done) {
-        var _mock = Lib.extendDeep({}, mockFast);
-        _mock.layout.dragmode = 'select';
-        gd = createGraphDiv();
-
-        Plotly.plot(gd, _mock)
-        .then(delay(100))
-        .then(function() {
-            expect(gd._fullLayout._plots.xy._scene.select2d).not.toBe(undefined, 'scatter2d renderer');
-
-            return select(selectPath);
-        })
-        .then(delay(100))
-        .then(function(eventData) {
-            assertEventData(eventData, {
-                points: [
-                    {pointNumber: 25, x: 1.425, y: 0.538},
-                    {pointNumber: 26, x: 1.753, y: 0.5},
-                    {pointNumber: 27, x: 2.22, y: 0.45}
-                ]
-            });
-
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should work under fast mode with *lasso* dragmode', function(done) {
-        var _mock = Lib.extendDeep({}, mockFast);
-        _mock.layout.dragmode = 'lasso';
-        gd = createGraphDiv();
-
-        Plotly.plot(gd, _mock)
-        .then(delay(100))
-        .then(function() {
-            return select(lassoPath2);
-        })
-        .then(delay(100))
-        .then(function(eventData) {
-            assertEventData(eventData, {
-                points: [
-                    {pointNumber: 25, x: 1.425, y: 0.538},
-                    {pointNumber: 26, x: 1.753, y: 0.5},
-                    {pointNumber: 27, x: 2.22, y: 0.45}
-                ]
-            });
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should work under fancy mode with *select* dragmode', function(done) {
-        var _mock = Lib.extendDeep({}, mockFancy);
-        _mock.layout.dragmode = 'select';
-        gd = createGraphDiv();
-
-        Plotly.plot(gd, _mock)
-        .then(delay(100))
-        .then(function() {
-            return select(selectPath2);
-        })
-        .then(delay(100))
-        .then(function(eventData) {
-            assertEventData(eventData, {
-                points: [{x: 0.004, y: 12.5}]
-            });
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should work under fancy mode with *lasso* dragmode', function(done) {
-        var _mock = Lib.extendDeep({}, mockFancy);
-        _mock.layout.dragmode = 'lasso';
-        gd = createGraphDiv();
-
-        Plotly.plot(gd, _mock)
-        .then(delay(100))
-        .then(function() {
-            return select(lassoPath);
-        })
-        .then(function(eventData) {
-            assertEventData(eventData, {
-                points: [{ x: 0.099, y: 2.75 }]
-            });
-        })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

@@ -4,7 +4,7 @@ var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
 
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -37,11 +37,11 @@ describe('spikeline hover', function() {
         Lib.clearThrottle();
     }
 
-    function _set_hovermode(hovermode) {
+    function _setHovermode(hovermode) {
         return Plotly.relayout(gd, 'hovermode', hovermode);
     }
 
-    function _set_spikedistance(spikedistance) {
+    function _setSpikedistance(spikedistance) {
         return Plotly.relayout(gd, 'spikedistance', spikedistance);
     }
 
@@ -87,7 +87,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -109,7 +109,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -132,7 +132,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -152,7 +152,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -165,7 +165,7 @@ describe('spikeline hover', function() {
 
         Plotly.plot(gd, _mock)
         .then(function() {
-            _set_spikedistance(200);
+            _setSpikedistance(200);
         })
         .then(function() {
             _hover({xpx: 120, ypx: 180});
@@ -180,7 +180,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -200,7 +200,7 @@ describe('spikeline hover', function() {
                 []
             );
 
-            _set_hovermode('x');
+            _setHovermode('x');
         })
         .then(function() {
             _hover({xval: 2, yval: 3});
@@ -215,7 +215,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -235,7 +235,7 @@ describe('spikeline hover', function() {
                 []
             );
 
-            _set_spikedistance(200);
+            _setSpikedistance(200);
         })
         .then(function() {
             _hover({xval: 1.6, yval: 2.6});
@@ -250,7 +250,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -271,7 +271,7 @@ describe('spikeline hover', function() {
                 []
             );
 
-            _set_spikedistance(-1);
+            _setSpikedistance(-1);
         })
         .then(function() {
             _hover({xval: 1.6, yval: 2.6});
@@ -286,7 +286,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -307,7 +307,7 @@ describe('spikeline hover', function() {
                 []
             );
 
-            _set_spikedistance(0);
+            _setSpikedistance(0);
         })
         .then(function() {
             _hover({xval: 2, yval: 3});
@@ -322,7 +322,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -365,9 +365,9 @@ describe('spikeline hover', function() {
             type: 'bar', y: [2, 1]
         }], spikeLayout())
         .then(_assertBarSpikes)
-        .then(function() { _set_hovermode('closest'); })
+        .then(function() { _setHovermode('closest'); })
         .then(_assertBarSpikes)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -392,7 +392,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -421,7 +421,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -437,7 +437,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -456,7 +456,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -476,7 +476,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

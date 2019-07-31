@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,11 @@
 
 'use strict';
 
-var BADNUM = require('../../constants/numerical').BADNUM;
+var numConstants = require('../../constants/numerical');
+var BADNUM = numConstants.BADNUM;
+var LOG_CLIP = numConstants.LOG_CLIP;
+var LOG_CLIP_PLUS = LOG_CLIP + 0.5;
+var LOG_CLIP_MINUS = LOG_CLIP - 0.5;
 var Lib = require('../../lib');
 var segmentsIntersect = Lib.segmentsIntersect;
 var constrain = Lib.constrain;
@@ -19,14 +23,19 @@ var constants = require('./constants');
 module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
-    var simplify = opts.simplify;
+    var xLog = xa.type === 'log';
+    var yLog = ya.type === 'log';
+    var xLen = xa._length;
+    var yLen = ya._length;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
+    var fill = opts.fill && opts.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
-    var pts = new Array(d.length);
+    var len = d.length;
+    var pts = new Array(len);
     var pti = 0;
 
     var i;
@@ -54,24 +63,65 @@ module.exports = function linePoints(d, opts) {
     // deviation variables are (signed) pixel distances normal to the cluster vector
     var clusterMinDeviation, clusterMaxDeviation, thisDeviation;
 
-    if(!simplify) {
-        baseTolerance = minTolerance = -1;
-    }
-
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
         var di = d[index];
+        if(!di) return false;
         var x = xa.c2p(di.x);
         var y = ya.c2p(di.y);
-        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
+
+        // if non-positive log values, set them VERY far off-screen
+        // so the line looks essentially straight from the previous point.
+        if(x === BADNUM) {
+            if(xLog) x = xa.c2p(di.x, true);
+            if(x === BADNUM) return false;
+            // If BOTH were bad log values, make the line follow a constant
+            // exponent rather than a constant slope
+            if(yLog && y === BADNUM) {
+                x *= Math.abs(xa._m * yLen * (xa._m > 0 ? LOG_CLIP_PLUS : LOG_CLIP_MINUS) /
+                    (ya._m * xLen * (ya._m > 0 ? LOG_CLIP_PLUS : LOG_CLIP_MINUS)));
+            }
+            x *= 1000;
+        }
+        if(y === BADNUM) {
+            if(yLog) y = ya.c2p(di.y, true);
+            if(y === BADNUM) return false;
+            y *= 1000;
+        }
         return [x, y];
     }
 
+    function crossesViewport(xFrac0, yFrac0, xFrac1, yFrac1) {
+        var dx = xFrac1 - xFrac0;
+        var dy = yFrac1 - yFrac0;
+        var dx0 = 0.5 - xFrac0;
+        var dy0 = 0.5 - yFrac0;
+        var norm2 = dx * dx + dy * dy;
+        var dot = dx * dx0 + dy * dy0;
+        if(dot > 0 && dot < norm2) {
+            var cross = dx0 * dy - dy0 * dx;
+            if(cross * cross < norm2) return true;
+        }
+    }
+
+    var latestXFrac, latestYFrac;
     // if we're off-screen, increase tolerance over baseTolerance
-    function getTolerance(pt) {
-        var xFrac = pt[0] / xa._length;
-        var yFrac = pt[1] / ya._length;
-        return (1 + constants.toleranceGrowth * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
+    function getTolerance(pt, nextPt) {
+        var xFrac = pt[0] / xLen;
+        var yFrac = pt[1] / yLen;
+        var offScreenFraction = Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1);
+        if(offScreenFraction && (latestXFrac !== undefined) &&
+            crossesViewport(xFrac, yFrac, latestXFrac, latestYFrac)
+        ) {
+            offScreenFraction = 0;
+        }
+        if(offScreenFraction && nextPt &&
+            crossesViewport(xFrac, yFrac, nextPt[0] / xLen, nextPt[1] / yLen)
+        ) {
+            offScreenFraction = 0;
+        }
+
+        return (1 + constants.toleranceGrowth * offScreenFraction) * baseTolerance;
     }
 
     function ptDist(pt1, pt2) {
@@ -92,10 +142,10 @@ module.exports = function linePoints(d, opts) {
     // if both are outside there will be 0 or 2 intersections
     // (or 1 if it's right at a corner - we'll treat that like 0)
     // returns an array of intersection pts
-    var xEdge0 = -xa._length * maxScreensAway;
-    var xEdge1 = xa._length * (1 + maxScreensAway);
-    var yEdge0 = -ya._length * maxScreensAway;
-    var yEdge1 = ya._length * (1 + maxScreensAway);
+    var xEdge0 = -xLen * maxScreensAway;
+    var xEdge1 = xLen * (1 + maxScreensAway);
+    var yEdge0 = -yLen * maxScreensAway;
+    var yEdge1 = yLen * (1 + maxScreensAway);
     var edges = [
         [xEdge0, yEdge0, xEdge1, yEdge0],
         [xEdge1, yEdge0, xEdge1, yEdge1],
@@ -112,8 +162,10 @@ module.exports = function linePoints(d, opts) {
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
             var edge = edges[i];
-            var ptInt = segmentsIntersect(pt1[0], pt1[1], pt2[0], pt2[1],
-                edge[0], edge[1], edge[2], edge[3]);
+            var ptInt = segmentsIntersect(
+                pt1[0], pt1[1], pt2[0], pt2[1],
+                edge[0], edge[1], edge[2], edge[3]
+            );
             if(ptInt && (!ptCount ||
                 Math.abs(ptInt.x - out[0][0]) > 1 ||
                 Math.abs(ptInt.y - out[0][1]) > 1
@@ -172,8 +224,7 @@ module.exports = function linePoints(d, opts) {
                 var ptToAlter;
                 if(ptInt1 && ptInt2) {
                     ptToAlter = (midShift > 0 === ptInt1[dim] > ptInt2[dim]) ? ptInt1 : ptInt2;
-                }
-                else ptToAlter = ptInt1 || ptInt2;
+                } else ptToAlter = ptInt1 || ptInt2;
 
                 ptToAlter[dim] += midShift;
             }
@@ -185,11 +236,9 @@ module.exports = function linePoints(d, opts) {
     var getEdgeIntersections;
     if(shape === 'linear' || shape === 'spline') {
         getEdgeIntersections = getLinearEdgeIntersections;
-    }
-    else if(shape === 'hv' || shape === 'vh') {
+    } else if(shape === 'hv' || shape === 'vh') {
         getEdgeIntersections = getHVEdgeIntersections;
-    }
-    else if(shape === 'hvh') getEdgeIntersections = getABAEdgeIntersections(0, xEdge0, xEdge1);
+    } else if(shape === 'hvh') getEdgeIntersections = getABAEdgeIntersections(0, xEdge0, xEdge1);
     else if(shape === 'vhv') getEdgeIntersections = getABAEdgeIntersections(1, yEdge0, yEdge1);
 
     // a segment pt1->pt2 entirely outside the nearby region:
@@ -217,14 +266,11 @@ module.exports = function linePoints(d, opts) {
             if(xSame && (x === xEdge0 || x === xEdge1) && xSame2) {
                 if(ySame2) pti--; // backtracking exactly - drop prev pt and don't add
                 else pts[pti - 1] = pt; // not exact: replace the prev pt
-            }
-            else if(ySame && (y === yEdge0 || y === yEdge1) && ySame2) {
+            } else if(ySame && (y === yEdge0 || y === yEdge1) && ySame2) {
                 if(xSame2) pti--;
                 else pts[pti - 1] = pt;
-            }
-            else pts[pti++] = pt;
-        }
-        else pts[pti++] = pt;
+            } else pts[pti++] = pt;
+        } else pts[pti++] = pt;
     }
 
     function updateEdgesForReentry(pt) {
@@ -239,18 +285,20 @@ module.exports = function linePoints(d, opts) {
     }
 
     function addPt(pt) {
+        latestXFrac = pt[0] / xLen;
+        latestYFrac = pt[1] / yLen;
         // Are we more than maxScreensAway off-screen any direction?
         // if so, clip to this box, but in such a way that on-screen
         // drawing is unchanged
         xEdge = (pt[0] < xEdge0) ? xEdge0 : (pt[0] > xEdge1) ? xEdge1 : 0;
         yEdge = (pt[1] < yEdge0) ? yEdge0 : (pt[1] > yEdge1) ? yEdge1 : 0;
         if(xEdge || yEdge) {
-            // to get fills right - if first point is far, push it toward the
-            // screen in whichever direction(s) are far
             if(!pti) {
+                // to get fills right - if first point is far, push it toward the
+                // screen in whichever direction(s) are far
+
                 pts[pti++] = [xEdge || pt[0], yEdge || pt[1]];
-            }
-            else if(lastFarPt) {
+            } else if(lastFarPt) {
                 // both this point and the last are outside the nearby region
                 // check if we're crossing the nearby region
                 var intersections = getEdgeIntersections(lastFarPt, pt);
@@ -258,9 +306,9 @@ module.exports = function linePoints(d, opts) {
                     updateEdgesForReentry(intersections[0]);
                     pts[pti++] = intersections[1];
                 }
-            }
-            // we're leaving the nearby region - add the point where we left it
-            else {
+            } else {
+                // we're leaving the nearby region - add the point where we left it
+
                 edgePt = getEdgeIntersections(pts[pti - 1], pt)[0];
                 pts[pti++] = edgePt;
             }
@@ -276,20 +324,17 @@ module.exports = function linePoints(d, opts) {
                             // need to add the correct extra corner
                             // in order to get the right winding
                             updateEdge(getClosestCorner(lastFarPt, pt));
-                        }
-                        else {
+                        } else {
                             // we're coming from a far edge - the extra corner
                             // we need is determined uniquely by the sectors
                             updateEdge([lastXEdge || xEdge, lastYEdge || yEdge]);
                         }
-                    }
-                    else if(lastXEdge && lastYEdge) {
+                    } else if(lastXEdge && lastYEdge) {
                         updateEdge([lastXEdge, lastYEdge]);
                     }
                 }
                 updateEdge([xEdge, yEdge]);
-            }
-            else if((lastXEdge - xEdge) && (lastYEdge - yEdge)) {
+            } else if((lastXEdge - xEdge) && (lastYEdge - yEdge)) {
                 // we're coming from an edge or far corner to an edge - again the
                 // extra corner we need is uniquely determined by the sectors
                 updateEdge([xEdge || lastXEdge, yEdge || lastYEdge]);
@@ -297,8 +342,7 @@ module.exports = function linePoints(d, opts) {
             lastFarPt = pt;
             lastXEdge = xEdge;
             lastYEdge = yEdge;
-        }
-        else {
+        } else {
             if(lastFarPt) {
                 // this point is in range but the previous wasn't: add its entry pt first
                 updateEdgesForReentry(getEdgeIntersections(lastFarPt, pt)[0]);
@@ -309,7 +353,7 @@ module.exports = function linePoints(d, opts) {
     }
 
     // loop over ALL points in this trace
-    for(i = 0; i < d.length; i++) {
+    for(i = 0; i < len; i++) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
@@ -318,7 +362,7 @@ module.exports = function linePoints(d, opts) {
         addPt(clusterStartPt);
 
         // loop over one segment of the trace
-        for(i++; i < d.length; i++) {
+        for(i++; i < len; i++) {
             clusterHighPt = getPt(i);
             if(!clusterHighPt) {
                 if(connectGaps) continue;
@@ -328,14 +372,18 @@ module.exports = function linePoints(d, opts) {
             // can't decimate if nonlinear line shape
             // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
             // but spline would be verrry awkward to decimate
-            if(!linear) {
+            if(!linear || !opts.simplify) {
                 addPt(clusterHighPt);
                 continue;
             }
 
+            var nextPt = getPt(i + 1);
+
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-            if(clusterRefDist < getTolerance(clusterHighPt) * minTolerance) continue;
+            // #3147 - always include the very first and last points for fills
+            if(!(fill && (pti === 0 || pti === len - 1)) &&
+                clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
 
             clusterUnitVector = [
                 (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
@@ -350,7 +398,8 @@ module.exports = function linePoints(d, opts) {
 
             // loop over one cluster of points that collapse onto one line
             for(i++; i < d.length; i++) {
-                thisPt = getPt(i);
+                thisPt = nextPt;
+                nextPt = getPt(i + 1);
                 if(!thisPt) {
                     if(connectGaps) continue;
                     else break;
@@ -364,7 +413,7 @@ module.exports = function linePoints(d, opts) {
                 clusterMinDeviation = Math.min(clusterMinDeviation, thisDeviation);
                 clusterMaxDeviation = Math.max(clusterMaxDeviation, thisDeviation);
 
-                if(clusterMaxDeviation - clusterMinDeviation > getTolerance(thisPt)) break;
+                if(clusterMaxDeviation - clusterMinDeviation > getTolerance(thisPt, nextPt)) break;
 
                 clusterEndPt = thisPt;
                 thisVal = thisVector[0] * clusterUnitVector[0] + thisVector[1] * clusterUnitVector[1];

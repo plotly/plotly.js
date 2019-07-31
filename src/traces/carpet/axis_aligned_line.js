@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,6 +7,8 @@
 */
 
 'use strict';
+
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 /* This function retrns a set of control points that define a curve aligned along
  * either the a or b axis. Exactly one of a or b must be an array defining the range
@@ -19,7 +21,7 @@ module.exports = function(carpet, carpetcd, a, b) {
     var idx, tangent, tanIsoIdx, tanIsoPar, segment, refidx;
     var p0, p1, v0, v1, start, end, range;
 
-    var axis = Array.isArray(a) ? 'a' : 'b';
+    var axis = isArrayOrTypedArray(a) ? 'a' : 'b';
     var ax = axis === 'a' ? carpet.aaxis : carpet.baxis;
     var smoothing = ax.smoothing;
     var toIdx = axis === 'a' ? carpet.a2i : carpet.b2j;

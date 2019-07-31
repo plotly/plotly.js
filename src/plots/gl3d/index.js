@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -39,16 +39,17 @@ exports.baseLayoutAttrOverrides = overrideAll({
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
-exports.plot = function plotGl3d(gd) {
+exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var sceneIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneId = sceneIds[i],
-            fullSceneData = getSubplotData(fullData, GL3D, sceneId),
-            sceneLayout = fullLayout[sceneId],
-            scene = sceneLayout._scene;
+        var sceneId = sceneIds[i];
+        var fullSceneData = getSubplotData(fullData, GL3D, sceneId);
+        var sceneLayout = fullLayout[sceneId];
+        var camera = sceneLayout.camera;
+        var scene = sceneLayout._scene;
 
         if(!scene) {
             scene = new Scene({
@@ -56,7 +57,8 @@ exports.plot = function plotGl3d(gd) {
                 graphDiv: gd,
                 container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
-                plotGlPixelRatio: gd._context.plotGlPixelRatio
+                plotGlPixelRatio: gd._context.plotGlPixelRatio,
+                camera: camera
             },
                 fullLayout
             );
@@ -65,9 +67,25 @@ exports.plot = function plotGl3d(gd) {
             sceneLayout._scene = scene;
         }
 
-        // save 'initial' camera settings for modebar button
-        if(!scene.cameraInitial) {
-            scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
+        // save 'initial' camera view settings for modebar button
+        if(!scene.viewInitial) {
+            scene.viewInitial = {
+                up: {
+                    x: camera.up.x,
+                    y: camera.up.y,
+                    z: camera.up.z
+                },
+                eye: {
+                    x: camera.eye.x,
+                    y: camera.eye.y,
+                    z: camera.eye.z
+                },
+                center: {
+                    x: camera.center.x,
+                    y: camera.center.y,
+                    z: camera.center.z
+                }
+            };
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);
@@ -129,7 +147,8 @@ exports.cleanId = function cleanId(id) {
     return SCENE + sceneNum;
 };
 
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < subplotIds.length; i++) {

@@ -1,0 +1,125 @@
+{
+  "data": [{
+    "name": "heatmap 1 - coloraxis 1",
+    "type": "heatmap",
+    "x": [1, 2],
+    "z": [[1, 2], [4, -3]],
+    "coloraxis": "coloraxis"
+  }, {
+    "name": "heatmap 2 - coloraxis 1",
+    "type": "heatmap",
+    "x": [3, 4],
+    "z": [[10, 2], [4, 3]],
+    "coloraxis": "coloraxis"
+  }, {
+    "name": "heatmap 3 - coloraxis 1",
+    "type": "heatmap",
+    "x": [5, 6],
+    "z": [[3, -2], [4, 5]],
+    "coloraxis": "coloraxis"
+  },
+
+  {
+    "name": "bar marker.color scale - coloraxis 2",
+    "type": "bar",
+    "y": [1, 2, 1],
+    "marker": {
+      "color": [20, 2, 30],
+      "coloraxis": "coloraxis2"
+    },
+    "xaxis": "x2",
+    "yaxis": "y2"
+  }, {
+    "name": "marker.line.color scale - coloraxis 2",
+    "mode": "markers",
+    "y": [1.5, 2.5, 1.5],
+    "marker": {
+      "color": "#444",
+      "size": 10,
+      "line": {
+        "width": 2,
+        "color": [12, 2, 10],
+        "coloraxis": "coloraxis2"
+      }
+    },
+    "xaxis": "x2",
+    "yaxis": "y2"
+  },
+
+  {
+    "name": "histogram2d 1 - coloraxis 3",
+    "type": "histogram2d",
+    "x": [1, 2, 3, 3, 3, 4, 5],
+    "y": [1, 2, 5, 5, 5, 2, 1],
+    "coloraxis": "coloraxis3",
+    "xaxis": "x3",
+    "yaxis": "y3"
+  }, {
+    "name": "histogram2d 1 - coloraxis 3",
+    "type": "histogram2d",
+    "x": [1, 2, 5, 5, 5, 2, 1],
+    "y": [1, 2, 3, 3, 3, 4, 5],
+    "coloraxis": "coloraxis3",
+    "xaxis": "x3",
+    "yaxis": "y3"
+  },
+
+  {
+    "name": "scatterpolar marker.color - coloraxis 3 <b>N.B.</b> across subplots!",
+    "type": "scatterpolar",
+    "mode": "markers",
+    "r": [1, 2, 3],
+    "marker": {
+      "symbol": "diamond",
+      "size": 10,
+      "color": [2, 3, 4],
+      "coloraxis": "coloraxis3"
+    }
+  }],
+  "layout": {
+    "showlegend": false,
+    "grid": {"rows": 2, "columns": 2, "pattern": "independent"},
+    "polar": {"domain": {"row": 1, "column": 1}},
+
+    "coloraxis": {
+      "colorbar": {
+        "len": 0.5,
+        "x": -0.05, "xanchor": "right",
+        "y": 1, "yanchor": "top"
+      }
+    },
+    "coloraxis2": {
+      "colorbar": {
+        "len": 0.5,
+        "x": 1.05, "xanchor": "left",
+        "y": 1, "yanchor": "top"
+      }
+    },
+    "coloraxis3": {
+      "cauto": false,
+      "cmax": 5,
+      "colorscale": "Viridis",
+      "colorbar": {
+        "len": 0.5,
+        "x": -0.05, "xanchor": "right",
+        "y": 0, "yanchor": "bottom",
+        "dtick": 1
+      }
+    },
+
+    "colorscale": {
+      "sequential": "Greens"
+    },
+
+    "template": {
+      "layout": {
+        "coloraxis": {
+          "colorbar": {"outlinewidth": 2}
+        },
+        "coloraxis3": {
+          "colorbar": {"outlinecolor": "blue", "outlinewidth": 4}
+        }
+      }
+    }
+  }
+}

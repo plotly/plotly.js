@@ -1,0 +1,194 @@
+{
+    "data": [
+{
+"x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,26, 28, 27, 29,null,null,  26, 30, 30 , null  ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hv",
+  "line": {"shape": "hv"},
+  "type": "scattergl"
+},{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,21, 23, 22, 24,null,null, 21, 25 , 25 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scattergl"
+},{
+  "x": [20,21, 22, 23, 24, 25    , null , 26 , 27 , 28 , 29  ],
+  "y": [null,16, 18, 17, 19,null,null , 16, 20 , 20 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scattergl"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,11, 13, 12, 14,null,null,  11, 15 , 15 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scattergl"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,6, 8, 7, 9,null, null, 6, 10 , 10 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scattergl"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    , 26 , 27 , 28 , 29  ],
+  "y": [null,1, 3, 2, 4,null, 1 , 5 , 5 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scattergl"
+},{
+  "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+  "y": [26, 28, 27, 29,null ,26 , 30 , 30, null  , 27,  28 , 28 ,   30, 30  ],
+  "mode": "lines+markers",
+  "name": "hv",
+  "line": {"shape": "hv"},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [21, 23, 22, 24,null, 21, 25 , 25 , null , 22, 23 , 23 ,   25, 25  ],
+  "mode": "lines+markers",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [16, 18,17, 19,null ,16 , 20 , 20, null  , 17, 18 , 18 ,   20, 20  ],
+  "mode": "lines+markers",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [11, 13, 12, 14,null, 11, 15 , 15 , null , 11, 13 , 13 ,   15, 15  ],
+  "mode": "lines+markers",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [ 6,  8, 7,  9,null , 6 , 10 , 10, null  ,  7,  8 ,  8 ,   10, 10  ],
+  "mode": "lines+markers",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [ 1,  3, 2,  4,null,  1,  5 ,  5 , null ,  1,  3 ,  3  ,    5,  5  ],
+  "mode": "lines+markers",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scattergl" , "xaxis": "x", "yaxis": "y"
+},{
+"x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,26, 28, 27, 29,null,null,  26, 30, 30 , null  ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hv",
+  "line": {"shape": "hv"},
+    "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,21, 23, 22, 24,null,null, 21, 25 , 25 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+  "x": [20,21, 22, 23, 24, 25    , null , 26 , 27 , 28 , 29  ],
+  "y": [null,16, 18, 17, 19,null,null , 16, 20 , 20 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,11, 13, 12, 14,null,null,  11, 15 , 15 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    ,null, 26 , 27 , 28 , 29  ],
+  "y": [null,6, 8, 7, 9,null, null, 6, 10 , 10 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},
+{
+  "x": [20,21, 22, 23, 24, 25    , 26 , 27 , 28 , 29  ],
+  "y": [null,1, 3, 2, 4,null, 1 , 5 , 5 , null ],
+  "mode": "lines+markers","fill":"tozeroy",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+  "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+  "y": [26, 28, 27, 29,null ,26 , 30 , 30, null  , 27,  28 , 28 ,   30, 30  ],
+  "mode": "lines+markers",
+  "name": "hv",
+  "line": {"shape": "hv"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [21, 23, 22, 24,null, 21, 25 , 25 , null , 22, 23 , 23 ,   25, 25  ],
+  "mode": "lines+markers",
+  "name": "vh",
+  "line": {"shape": "vh"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [16, 18,17, 19,null ,16 , 20 , 20, null  , 17, 18 , 18 ,   20, 20  ],
+  "mode": "lines+markers",
+  "name": "hvh",
+  "line": {"shape": "hvh"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [11, 13, 12, 14,null, 11, 15 , 15 , null , 11, 13 , 13 ,   15, 15  ],
+  "mode": "lines+markers",
+  "name": "vhv",
+  "line": {"shape": "vhv"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [ 6,  8, 7,  9,null , 6 , 10 , 10, null  ,  7,  8 ,  8 ,   10, 10  ],
+  "mode": "lines+markers",
+  "name": "spline",
+  "line": {"shape": "spline","smoothing":4},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+},{
+    "x": [ 1,  2, 3,  4, 5   , 6 , 7  , 8 , 9     , 10, 11 , 12 , null, 14  ],
+    "y": [ 1,  3, 2,  4,null,  1,  5 ,  5 , null ,  1,  3 ,  3  ,    5,  5  ],
+  "mode": "lines+markers",
+  "name": "linear",
+  "line": {"shape": "linear"},
+  "type": "scatter" , "xaxis": "x2", "yaxis": "y2"
+}
+],
+  "layout": {
+    "margin": {
+      "b": 40,
+      "l": 40,
+      "t": 40,
+      "r": 40
+    },
+    "width": 700,"height": 700,
+    "grid": {"columns": 1, "rows": 2, "pattern": "independent", "roworder": "bottom to top"} ,
+    "xaxis": {	"title": "GL x"     },
+    "yaxis": {  "title": "GL y"     },
+    "xaxis2": {	"title": "REG x"     },
+    "yaxis2": {  "title": "REG y"     },
+    "dragmode": "zoom"
+  }
+}

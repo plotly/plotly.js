@@ -4,10 +4,10 @@ var extendDeep = extendModule.extendDeep;
 var extendDeepAll = extendModule.extendDeepAll;
 var extendDeepNoArrays = extendModule.extendDeepNoArrays;
 
-var str = 'me a test',
-    integer = 10,
-    arr = [1, 'what', new Date(81, 8, 4)],
-    date = new Date(81, 4, 13);
+var str = 'me a test';
+var integer = 10;
+var arr = [1, 'what', new Date(81, 8, 4)];
+var date = new Date(81, 4, 13);
 
 var Foo = function() {};
 
@@ -66,7 +66,6 @@ describe('extendFlat', function() {
         expect(ori).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
         expect(arr).toEqual([1, 'what', new Date(81, 8, 4)]);
         expect(target).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
-
     });
 
     it('extends an array with an array into a clone', function() {
@@ -520,5 +519,4 @@ describe('array by reference vs deep-copy', function() {
         expect(ext.foo.baz).toBe(src.foo.baz);
         expect(ext.foo.bop).toBe(tar.foo.bop);
     });
-
 });

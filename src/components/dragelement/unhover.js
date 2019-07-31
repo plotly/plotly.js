@@ -1,23 +1,20 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var Events = require('../../lib/events');
 var throttle = require('../../lib/throttle');
-var getGraphDiv = require('../../lib/get_graph_div');
+var getGraphDiv = require('../../lib/dom').getGraphDiv;
 
 var hoverConstants = require('../fx/constants');
 
 var unhover = module.exports = {};
-
 
 unhover.wrapped = function(gd, evt, subplot) {
     gd = getGraphDiv(gd);
@@ -32,7 +29,7 @@ unhover.wrapped = function(gd, evt, subplot) {
 
 
 // remove hover effects on mouse out, and emit unhover event
-unhover.raw = function unhoverRaw(gd, evt) {
+unhover.raw = function raw(gd, evt) {
     var fullLayout = gd._fullLayout;
     var oldhoverdata = gd._hoverdata;
 

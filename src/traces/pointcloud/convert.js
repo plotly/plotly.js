@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,9 +11,8 @@
 var createPointCloudRenderer = require('gl-pointcloud2d');
 
 var str2RGBArray = require('../../lib/str2rgbarray');
+var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 var getTraceColor = require('../scatter/get_trace_color');
-
-var AXES = ['xaxis', 'yaxis'];
 
 function Pointcloud(scene, uid) {
     this.scene = scene;
@@ -87,31 +86,26 @@ proto.updateFast = function(options) {
     var userBounds = options.xbounds && options.ybounds;
     var index = options.indices;
 
-    var len,
-        idToIndex,
-        positions,
-        bounds = this.bounds;
+    var len;
+    var idToIndex;
+    var positions;
+    var bounds = this.bounds;
 
     var xx, yy, i;
 
     if(xy) {
-
         positions = xy;
 
         // dividing xy.length by 2 and truncating to integer if xy.length was not even
         len = xy.length >>> 1;
 
         if(userBounds) {
-
             bounds[0] = options.xbounds[0];
             bounds[2] = options.xbounds[1];
             bounds[1] = options.ybounds[0];
             bounds[3] = options.ybounds[1];
-
         } else {
-
             for(i = 0; i < len; i++) {
-
                 xx = positions[i * 2];
                 yy = positions[i * 2 + 1];
 
@@ -120,27 +114,18 @@ proto.updateFast = function(options) {
                 if(yy < bounds[1]) bounds[1] = yy;
                 if(yy > bounds[3]) bounds[3] = yy;
             }
-
         }
 
         if(index) {
-
             idToIndex = index;
-
         } else {
-
             idToIndex = new Int32Array(len);
 
             for(i = 0; i < len; i++) {
-
                 idToIndex[i] = i;
-
             }
-
         }
-
     } else {
-
         len = x.length;
 
         positions = new Float32Array(2 * len);
@@ -160,7 +145,6 @@ proto.updateFast = function(options) {
             if(yy < bounds[1]) bounds[1] = yy;
             if(yy > bounds[3]) bounds[3] = yy;
         }
-
     }
 
     this.idToIndex = idToIndex;
@@ -168,9 +152,9 @@ proto.updateFast = function(options) {
 
     this.pointcloudOptions.positions = positions;
 
-    var markerColor = str2RGBArray(options.marker.color),
-        borderColor = str2RGBArray(options.marker.border.color),
-        opacity = options.opacity * options.marker.opacity;
+    var markerColor = str2RGBArray(options.marker.color);
+    var borderColor = str2RGBArray(options.marker.border.color);
+    var opacity = options.opacity * options.marker.opacity;
 
     markerColor[3] *= opacity;
     this.pointcloudOptions.color = markerColor;
@@ -196,24 +180,11 @@ proto.updateFast = function(options) {
     this.pointcloud.update(this.pointcloudOptions);
 
     // add item for autorange routine
-    this.expandAxesFast(bounds, markerSizeMax / 2); // avoid axis reexpand just because of the adaptive point size
-};
-
-proto.expandAxesFast = function(bounds, markerSize) {
-    var pad = markerSize || 0.5;
-    var ax, min, max;
-
-    for(var i = 0; i < 2; i++) {
-        ax = this.scene[AXES[i]];
-
-        min = ax._min;
-        if(!min) min = [];
-        min.push({ val: bounds[i], pad: pad });
-
-        max = ax._max;
-        if(!max) max = [];
-        max.push({ val: bounds[i + 2], pad: pad });
-    }
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    var pad = markerSizeMax / 2 || 0.5;
+    options._extremes[xa._id] = findExtremes(xa, [bounds[0], bounds[2]], {ppad: pad});
+    options._extremes[ya._id] = findExtremes(ya, [bounds[1], bounds[3]], {ppad: pad});
 };
 
 proto.dispose = function() {

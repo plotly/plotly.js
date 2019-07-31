@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../cartesian/layout_attributes');
-var domainAttrs = require('../domain_attributes');
+var domainAttrs = require('../domain').attributes;
 var extendFlat = require('../../lib').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
@@ -57,9 +57,11 @@ var axisTickAttrs = overrideAll({
 
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
-    type: axesAttrs.type,
+    type: extendFlat({}, axesAttrs.type, {
+        values: ['-', 'linear', 'log', 'date', 'category']
+    }),
 
-    autorange: axesAttrs.autorange,
+    autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',
         values: ['tozero', 'nonnegative', 'normal'],
@@ -75,7 +77,13 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
-    range: axesAttrs.range,
+    range: extendFlat({}, axesAttrs.range, {
+        items: [
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        ],
+        editType: 'plot'
+    }),
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
@@ -106,29 +114,32 @@ var radialAxisAttrs = {
     },
 
 
-    title: extendFlat({}, axesAttrs.title, {editType: 'plot', dflt: ''}),
-    titlefont: overrideAll(axesAttrs.titlefont, 'plot', 'from-root'),
+    title: overrideAll(axesAttrs.title, 'plot', 'from-root'),
     // might need a 'titleside' and even 'titledirection' down the road
 
     hoverformat: axesAttrs.hoverformat,
 
-    // More attributes:
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `range`,',
+            '`autorange`, `angle`, and `title` if in `editable: true` configuration.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
 
-    // We'll need some attribute that determines the span
-    // to draw donut-like charts
-    // e.g. https://github.com/matplotlib/matplotlib/issues/4217
-    //
-    // maybe something like 'span' or 'hole' (like pie, but pie set it in data coords?)
-    // span: {},
-    // hole: 1
+    editType: 'calc',
 
-    // maybe should add a boolean to enable square grid lines
-    // and square axis lines
-    // (most common in radar-like charts)
-    // e.g. squareline/squaregrid or showline/showgrid: 'square' (on-top of true)
-
-    editType: 'calc'
+    _deprecated: {
+        title: axesAttrs._deprecated.title,
+        titlefont: axesAttrs._deprecated.titlefont
+    }
 };
+
+// radial title is not gui-editable, so it needs dflt: '', similar to carpet axes.
+radialAxisAttrs.title.text.dflt = '';
 
 extendFlat(
     radialAxisAttrs,
@@ -153,6 +164,7 @@ var angularAxisAttrs = {
         dflt: '-',
         role: 'info',
         editType: 'calc',
+        _noTemplating: true,
         description: [
             'Sets the angular axis type.',
             'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
@@ -223,6 +235,16 @@ var angularAxisAttrs = {
 
     hoverformat: axesAttrs.hoverformat,
 
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis `rotation`.',
+            'Defaults to `polar<N>.uirevision`.'
+        ].join(' ')
+    },
+
     editType: 'calc'
 };
 
@@ -260,6 +282,17 @@ module.exports = {
             'with *0* corresponding to rightmost limit of the polar subplot.'
         ].join(' ')
     },
+    hole: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0,
+        editType: 'plot',
+        role: 'info',
+        description: [
+            'Sets the fraction of the radius to cut out of the polar subplot.'
+        ].join(' ')
+    },
 
     bgcolor: {
         valType: 'color',
@@ -272,8 +305,35 @@ module.exports = {
     radialaxis: radialAxisAttrs,
     angularaxis: angularAxisAttrs,
 
+    gridshape: {
+        valType: 'enumerated',
+        values: ['circular', 'linear'],
+        dflt: 'circular',
+        role: 'style',
+        editType: 'plot',
+        description: [
+            'Determines if the radial axis grid lines and angular axis line are drawn',
+            'as *circular* sectors or as *linear* (polygon) sectors.',
+            'Has an effect only when the angular axis has `type` *category*.',
+            'Note that `radialaxis.angle` is snapped to the angle of the closest',
+            'vertex when `gridshape` is *circular*',
+            '(so that radial axis scale is the same as the data scale).'
+        ].join(' ')
+    },
+
     // TODO maybe?
     // annotations:
+
+    uirevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Controls persistence of user-driven changes in axis attributes,',
+            'if not overridden in the individual axes.',
+            'Defaults to `layout.uirevision`.'
+        ].join(' ')
+    },
 
     editType: 'calc'
 };

@@ -1,22 +1,28 @@
 var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
 var Lib = require('@src/lib');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
+
+var RESIZE_DELAY = 300;
 
 describe('config argument', function() {
-
     describe('attribute layout.autosize', function() {
-        var layoutWidth = 1111,
-            relayoutWidth = 555,
-            containerWidthBeforePlot = 888,
-            containerWidthBeforeRelayout = 666,
-            containerHeightBeforePlot = 543,
-            containerHeightBeforeRelayout = 321,
-            data = [],
-            gd;
+        var layoutWidth = 1111;
+        var relayoutWidth = 555;
+        var containerWidthBeforePlot = 888;
+        var containerWidthBeforeRelayout = 666;
+        var containerHeightBeforePlot = 543;
+        var containerHeightBeforeRelayout = 321;
+        var data = [];
+
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -40,117 +46,160 @@ describe('config argument', function() {
 
         function testAutosize(autosize, config, layoutHeight, relayoutHeight, done) {
             var layout = {
-                    autosize: autosize,
-                    width: layoutWidth
+                autosize: autosize,
+                width: layoutWidth
+            };
+            var relayout = {
+                width: relayoutWidth,
+                // didn't need this before #3120 - but since we're now
+                // implicitly clearing autosize when edit width, if you really
+                // want height to re-autosize you need to explicitly re-add
+                // autosize
+                autosize: autosize
+            };
 
-                },
-                relayout = {
-                    width: relayoutWidth
-                };
+            var layout2 = Lib.extendDeep({}, layout);
 
-            var container = document.getElementById('graph');
-            container.style.width = containerWidthBeforePlot + 'px';
-            container.style.height = containerHeightBeforePlot + 'px';
+            gd.style.width = containerWidthBeforePlot + 'px';
+            gd.style.height = containerHeightBeforePlot + 'px';
 
-            Plotly.plot(gd, data, layout, config).then(function() {
+            function beforeResize() {
                 checkLayoutSize(layoutWidth, layoutHeight);
                 if(!autosize) compareLayoutAndFullLayout(gd);
 
-                container.style.width = containerWidthBeforeRelayout + 'px';
-                container.style.height = containerHeightBeforeRelayout + 'px';
+                gd.style.width = containerWidthBeforeRelayout + 'px';
+                gd.style.height = containerHeightBeforeRelayout + 'px';
+            }
 
-                Plotly.relayout(gd, relayout).then(function() {
-                    checkLayoutSize(relayoutWidth, relayoutHeight);
-                    if(!autosize) compareLayoutAndFullLayout(gd);
-                    done();
-                });
-            });
+            function afterResize() {
+                checkLayoutSize(relayoutWidth, relayoutHeight);
+                if(!autosize) compareLayoutAndFullLayout(gd);
+            }
+
+            Plotly.plot(gd, data, layout, config).then(function() {
+                beforeResize();
+
+                return Plotly.relayout(gd, relayout);
+            })
+            .then(afterResize)
+            // now redo with Plotly.react
+            .then(function() {
+                gd.style.width = containerWidthBeforePlot + 'px';
+                gd.style.height = containerHeightBeforePlot + 'px';
+
+                return Plotly.newPlot(gd, data, layout2, config);
+            })
+            .then(function() {
+                beforeResize();
+
+                layout2.width = relayoutWidth;
+                return Plotly.react(gd, data, layout2, config);
+            })
+            .then(afterResize)
+            .catch(failTest)
+            .then(done);
         }
 
         it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: true
-                },
-                layoutHeight = window.innerHeight,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: true
+            };
+            var layoutHeight = window.innerHeight;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the frame when autosize: true, fillFrame: true and frameMargins: undefined', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: true
-                },
-                layoutHeight = window.innerHeight,
-                relayoutHeight = window.innerHeight;
+            var autosize = true;
+            var config = {
+                fillFrame: true
+            };
+            var layoutHeight = window.innerHeight;
+            var relayoutHeight = window.innerHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: undefined', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: false
-                },
-                layoutHeight = containerHeightBeforePlot,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: false
+            };
+            var layoutHeight = containerHeightBeforePlot;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: false
-                },
-                layoutHeight = containerHeightBeforePlot,
-                relayoutHeight = containerHeightBeforeRelayout;
+            var autosize = true;
+            var config = {
+                fillFrame: false
+            };
+            var layoutHeight = containerHeightBeforePlot;
+            var relayoutHeight = containerHeightBeforeRelayout;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: 0.1', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: false,
-                    frameMargins: 0.1
-                },
-                layoutHeight = 360,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: false,
+                frameMargins: 0.1
+            };
+            var layoutHeight = Math.round(0.8 * containerHeightBeforePlot);
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: true, fillFrame: false and frameMargins: 0.1', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: false,
-                    frameMargins: 0.1
-                },
-                layoutHeight = 360,
-                relayoutHeight = 288;
+            var autosize = true;
+            var config = {
+                fillFrame: false,
+                frameMargins: 0.1
+            };
+            var layoutHeight = Math.round(0.8 * containerHeightBeforePlot);
+            var relayoutHeight = Math.round(0.8 * containerHeightBeforeRelayout);
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
+        it('should fill the container when autosize: true up its max-width and max-height', function(done) {
+            gd.style.maxWidth = '400px';
+            gd.style.maxHeight = '300px';
+            Plotly.plot(gd, data, {autosize: true})
+            .then(function() {
+                checkLayoutSize(400, 300);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should respect attribute autosizable: false', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: false,
-                    fillFrame: true
-                },
-                layoutHeight = Plots.layoutAttributes.height.dflt,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: false,
+                fillFrame: true
+            };
+            var layoutHeight = Plots.layoutAttributes.height.dflt;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
     });
 
     describe('showLink attribute', function() {
-
         var gd;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
-            done();
         });
 
         afterEach(destroyGraphDiv);
@@ -178,12 +227,13 @@ describe('config argument', function() {
 
 
     describe('editable attribute', function() {
-
         var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
         });
+
+        afterEach(destroyGraphDiv);
 
         function initPlot(editFlag) {
             var edits = {};
@@ -201,17 +251,15 @@ describe('config argument', function() {
             }, { editable: false, edits: edits });
         }
 
-        afterEach(destroyGraphDiv);
-
         function checkIfEditable(elClass, text) {
             return function() {
                 var label = document.getElementsByClassName(elClass)[0];
 
                 expect(label.textContent).toBe(text);
 
-                var labelBox = label.getBoundingClientRect(),
-                    labelX = labelBox.left + labelBox.width / 2,
-                    labelY = labelBox.top + labelBox.height / 2;
+                var labelBox = label.getBoundingClientRect();
+                var labelX = labelBox.left + labelBox.width / 2;
+                var labelY = labelBox.top + labelBox.height / 2;
 
                 mouseEvent('click', labelX, labelY);
 
@@ -226,9 +274,9 @@ describe('config argument', function() {
             return function() {
                 var el = document.getElementsByClassName(elClass)[0];
 
-                var elBox = el.getBoundingClientRect(),
-                    elX = elBox.left + elBox.width / 2,
-                    elY = elBox.top + elBox.height / 2;
+                var elBox = el.getBoundingClientRect();
+                var elX = elBox.left + elBox.width / 2;
+                var elY = elBox.top + elBox.height / 2;
 
                 mouseEvent('mousedown', elX, elY);
                 mouseEvent('mousemove', elX - 20, elY + 20);
@@ -300,57 +348,65 @@ describe('config argument', function() {
                     titleText: false
                 });
             })
+            .catch(failTest)
             .then(done);
         });
 
         it('should make titles editable', function(done) {
             initPlot('titleText')
             .then(checkIfEditable('gtitle', 'Click to enter Plot title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make y axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-ytitle', 'Click to enter Y axis title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make legend labels editable', function(done) {
             initPlot('legendText')
             .then(checkIfEditable('legendtext', 'trace 0'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation labels editable', function(done) {
             initPlot('annotationText')
             .then(checkIfEditable('annotation-text-g', 'testing'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation labels draggable', function(done) {
             initPlot('annotationTail')
             .then(checkIfDraggable('annotation-text-g'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation arrows draggable', function(done) {
             initPlot('annotationPosition')
             .then(checkIfDraggable('annotation-arrow-g'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make legends draggable', function(done) {
             initPlot('legendPosition')
             .then(checkIfDraggable('legend'))
+            .catch(failTest)
             .then(done);
         });
-
     });
 
     describe('axis drag handles attribute', function() {
@@ -367,64 +423,32 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
+        function testDraggers(len) {
+            [
+                'nw', 'ne', 'sw', 'se', 'ew', 'w', 'e', 'ns', 'n', 's'
+            ].forEach(function(dir) {
+                var draggers = document.getElementsByClassName('drag ' + dir + 'drag');
+                expect(draggers.length).toBe(len, dir);
+            });
+        }
+
         it('should have drag rectangles cursors by default', function() {
             Plotly.plot(gd, mockCopy.data, {});
 
-            var nwdrag = document.getElementsByClassName('drag nwdrag');
-            expect(nwdrag.length).toBe(1);
-            var nedrag = document.getElementsByClassName('drag nedrag');
-            expect(nedrag.length).toBe(1);
-            var swdrag = document.getElementsByClassName('drag swdrag');
-            expect(swdrag.length).toBe(1);
-            var sedrag = document.getElementsByClassName('drag sedrag');
-            expect(sedrag.length).toBe(1);
-            var ewdrag = document.getElementsByClassName('drag ewdrag');
-            expect(ewdrag.length).toBe(1);
-            var wdrag = document.getElementsByClassName('drag wdrag');
-            expect(wdrag.length).toBe(1);
-            var edrag = document.getElementsByClassName('drag edrag');
-            expect(edrag.length).toBe(1);
-            var nsdrag = document.getElementsByClassName('drag nsdrag');
-            expect(nsdrag.length).toBe(1);
-            var sdrag = document.getElementsByClassName('drag sdrag');
-            expect(sdrag.length).toBe(1);
-            var ndrag = document.getElementsByClassName('drag ndrag');
-            expect(ndrag.length).toBe(1);
-
+            testDraggers(1);
         });
 
         it('should not have drag rectangles when disabled', function() {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
 
-            var nwdrag = document.getElementsByClassName('drag nwdrag');
-            expect(nwdrag.length).toBe(0);
-            var nedrag = document.getElementsByClassName('drag nedrag');
-            expect(nedrag.length).toBe(0);
-            var swdrag = document.getElementsByClassName('drag swdrag');
-            expect(swdrag.length).toBe(0);
-            var sedrag = document.getElementsByClassName('drag sedrag');
-            expect(sedrag.length).toBe(0);
-            var ewdrag = document.getElementsByClassName('drag ewdrag');
-            expect(ewdrag.length).toBe(0);
-            var wdrag = document.getElementsByClassName('drag wdrag');
-            expect(wdrag.length).toBe(0);
-            var edrag = document.getElementsByClassName('drag edrag');
-            expect(edrag.length).toBe(0);
-            var nsdrag = document.getElementsByClassName('drag nsdrag');
-            expect(nsdrag.length).toBe(0);
-            var sdrag = document.getElementsByClassName('drag sdrag');
-            expect(sdrag.length).toBe(0);
-            var ndrag = document.getElementsByClassName('drag ndrag');
-            expect(ndrag.length).toBe(0);
+            testDraggers(0);
         });
-
     });
 
     describe('axis range entry attribute', function() {
         var mock = require('@mocks/14.json');
 
-        var gd;
-        var mockCopy;
+        var gd, mockCopy;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -434,14 +458,13 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('show allow axis range entry by default', function() {
+        it('allows axis range entry by default', function() {
             Plotly.plot(gd, mockCopy.data, {});
 
             var corner = document.getElementsByClassName('edrag')[0];
-
-            var cornerBox = corner.getBoundingClientRect(),
-                cornerX = cornerBox.left + cornerBox.width / 2,
-                cornerY = cornerBox.top + cornerBox.height / 2;
+            var cornerBox = corner.getBoundingClientRect();
+            var cornerX = cornerBox.left + cornerBox.width / 2;
+            var cornerY = cornerBox.top + cornerBox.height / 2;
 
             click(cornerX, cornerY);
 
@@ -450,21 +473,464 @@ describe('config argument', function() {
             expect(editBox.getAttribute('contenteditable')).toBe('true');
         });
 
-        it('show not allow axis range entry when', function() {
+        it('disallows axis range entry when disabled', function() {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
 
             var corner = document.getElementsByClassName('edrag')[0];
-
-            var cornerBox = corner.getBoundingClientRect(),
-                cornerX = cornerBox.left + cornerBox.width / 2,
-                cornerY = cornerBox.top + cornerBox.height / 2;
+            var cornerBox = corner.getBoundingClientRect();
+            var cornerX = cornerBox.left + cornerBox.width / 2;
+            var cornerY = cornerBox.top + cornerBox.height / 2;
 
             click(cornerX, cornerY);
 
             var editBox = document.getElementsByClassName('plugin-editable editable')[0];
             expect(editBox).toBeUndefined();
         });
+    });
 
+    describe('plotlyServerURL:', function() {
+        var gd;
+        var form;
 
+        beforeEach(function() {
+            gd = createGraphDiv();
+            spyOn(HTMLFormElement.prototype, 'submit').and.callFake(function() {
+                form = this;
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should default to plotly cloud', function(done) {
+            Plotly.plot(gd, [], {})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('https://plot.ly');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toBe('https://plot.ly/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can be set to other base urls', function(done) {
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/dummy/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('has lesser priotiy then window env', function(done) {
+            window.PLOTLYENV = {BASE_URL: 'yo'};
+
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/yo/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(function() {
+                delete window.PLOTLY_ENV;
+                done();
+            });
+        });
+    });
+
+    ['scatter', 'scattergl'].forEach(function(traceType) {
+        describe('responsive ' + traceType + ' trace', function() {
+            var gd;
+            var data = [{type: traceType, x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+            var width = 960;
+            var height = 800;
+
+            var parent, elWidth, elHeight;
+
+            beforeEach(function() {
+                viewport.set(width, height);
+
+                // Prepare a parent container that fills the viewport
+                parent = document.createElement('div');
+                parent.style.width = '100vw';
+                parent.style.height = '100vh';
+                parent.style.position = 'fixed';
+                parent.style.top = '0';
+                parent.style.left = '0';
+            });
+
+            afterEach(function() {
+                Plotly.purge(gd); // Needed to remove all event listeners
+                document.body.removeChild(parent);
+                viewport.reset();
+            });
+
+            function checkLayoutSize(width, height) {
+                expect(gd._fullLayout.width).toBe(width);
+                expect(gd._fullLayout.height).toBe(height);
+            }
+
+            function checkElementsSize(nodeList, width, height) {
+                var i;
+                for(i = 0; i < nodeList.length; i++) {
+                    var domRect = nodeList[i].getBoundingClientRect();
+                    expect(domRect.width).toBe(width);
+                    expect(domRect.height).toBe(height);
+                    expect(+nodeList[i].getAttribute('width')).toBe(width);
+                    expect(+nodeList[i].getAttribute('height')).toBe(height);
+                }
+            }
+
+            function testResponsive() {
+                checkLayoutSize(elWidth, elHeight);
+                viewport.set(width / 2, height / 2);
+
+                return Promise.resolve()
+                .then(delay(RESIZE_DELAY))
+                .then(function() {
+                    checkLayoutSize(elWidth / 2, elHeight / 2);
+
+                    var mainSvgs = document.getElementsByClassName('main-svg');
+                    checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
+
+                    var canvases = document.getElementsByTagName('canvas');
+                    checkElementsSize(canvases, elWidth / 2, elHeight / 2);
+                })
+                .catch(failTest);
+            }
+
+            function fillParent(numRows, numCols, cb) {
+                elWidth = width / numCols, elHeight = height / numRows;
+
+                // Fill parent
+                for(var i = 0; i < (numCols * numRows); i++) {
+                    var col = document.createElement('div');
+                    col.style.height = '100%';
+                    col.style.width = '100%';
+                    if(typeof(cb) === typeof(Function)) cb.call(col, i);
+                    parent.appendChild(col);
+                }
+                document.body.appendChild(parent);
+                gd = parent.childNodes[0];
+            }
+
+            it('@flaky should resize when the viewport width/height changes', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should still be responsive if the plot is edited', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should only have one resize handler when plotted more than once', function(done) {
+                fillParent(1, 1);
+                var cntWindowResize = 0;
+                window.addEventListener('resize', function() {cntWindowResize++;});
+                spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+                .then(function() {viewport.set(width / 2, width / 2);})
+                .then(delay(RESIZE_DELAY))
+                // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
+                .then(function() {
+                    expect(cntWindowResize).toBe(1);
+                    expect(Plotly.Plots.resize.calls.count()).toBe(1);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: false})
+                .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                // Check initial size
+                .then(function() {checkLayoutSize(width, height);})
+                // Turn off responsiveness
+                .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
+                // Resize viewport
+                .then(function() {viewport.set(width / 2, height / 2);})
+                // Wait for resize to happen (Plotly.resize has an internal timeout)
+                .then(delay(RESIZE_DELAY))
+                // Check that final figure's size hasn't changed
+                .then(function() {checkLayoutSize(width, height);})
+                .catch(failTest)
+                .then(done);
+            });
+
+            // Testing fancier CSS layouts
+            it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
+                parent.style.display = 'flex';
+                parent.style.flexDirection = 'row';
+                fillParent(1, 2, function() {
+                    this.style.flexGrow = '1';
+                });
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
+                parent.style.display = 'flex';
+                parent.style.flexDirection = 'column';
+                fillParent(2, 1, function() {
+                    this.style.flexGrow = '1';
+                });
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
+                var numCols = 2;
+                var numRows = 2;
+                parent.style.display = 'grid';
+                parent.style.gridTemplateColumns = 'repeat(' + numCols + ', 1fr)';
+                parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
+                fillParent(numRows, numCols);
+
+                Plotly.plot(gd, data, {}, { responsive: true })
+                .then(testResponsive)
+                .then(done);
+            });
+
+            it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+                fillParent(1, 1, function() {
+                    this.style.display = 'inline-block';
+                    this.style.width = null;
+                    this.style.height = null;
+                });
+                Plotly.plot(gd, data, {autosize: true}, {responsive: true})
+                .then(function() {
+                    checkLayoutSize(700, 450);
+                    expect(gd.clientWidth).toBe(700);
+                    expect(gd.clientHeight).toBe(450);
+                })
+                .then(function() {
+                    return Plotly.newPlot(gd, data, {autosize: true}, {responsive: true});
+                })
+                // It is important to test newPlot to make sure an initially zero size container
+                // is still considered to have zero size after a plot is drawn into it.
+                .then(function() {
+                    checkLayoutSize(700, 450);
+                    expect(gd.clientWidth).toBe(700);
+                    expect(gd.clientHeight).toBe(450);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
+            // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
+            it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+                fillParent(1, 1, function() {
+                    this.style.width = '1000px';
+                    this.style.height = '500px';
+                });
+
+                Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+                .then(function() {
+                    expect(gd.clientWidth).toBe(1000);
+                    expect(gd.clientHeight).toBe(500);
+                    // The plot should overflow the container!
+                    checkLayoutSize(1200, 700);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('should not resize if gd is hidden', function(done) {
+                spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+                fillParent(1, 1);
+                Plotly.plot(gd, data, {}, {responsive: true})
+                .then(function() {
+                    gd.style.display = 'none';
+                    viewport.set(width / 2, height / 2);
+                })
+                .then(delay(RESIZE_DELAY))
+                .then(function() {
+                    expect(Plotly.Plots.resize.calls.count()).toBe(0);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    describe('scrollZoom:', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        function plot(config) {
+            return Plotly.plot(gd, [], {}, config);
+        }
+
+        it('should fill in scrollZoom default', function(done) {
+            plot(undefined).then(function() {
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should fill in blank scrollZoom value', function(done) {
+            plot({scrollZoom: null}).then(function() {
+                expect(gd._context.scrollZoom).toBe(null);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:true', function(done) {
+            plot({scrollZoom: true}).then(function() {
+                expect(gd._context.scrollZoom).toBe(true);
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom:false', function(done) {
+            plot({scrollZoom: false}).then(function() {
+                expect(gd._context.scrollZoom).toBe(false);
+                expect(gd._context._scrollZoom).toEqual({});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should honor scrollZoom flaglist', function(done) {
+            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
+                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('scrollZoom interactions:', function() {
+        var gd;
+
+        afterEach(destroyGraphDiv);
+
+        function _scroll() {
+            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
+        }
+
+        it('should not disable scrollZoom when *responsive:true*', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            gd.style.height = '85vh';
+            gd.style.minHeight = '300px';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/3337
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {}, {
+                scrollZoom: true,
+                responsive: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
+            gd = document.createElement('div');
+            gd.id = 'graph';
+            document.body.appendChild(gd);
+
+            // locking down fix for:
+            // https://github.com/plotly/plotly.js/issues/2371
+
+            var xrng0;
+            var yrng0;
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 2 * window.innerWidth
+            }, {
+                scrollZoom: true
+            })
+            .then(function() {
+                xrng0 = gd._fullLayout.xaxis.range.slice();
+                yrng0 = gd._fullLayout.yaxis.range.slice();
+            })
+            .then(_scroll)
+            .then(function() {
+                var xrng = gd._fullLayout.xaxis.range;
+                expect(xrng[0]).toBeGreaterThan(xrng0[0], 'scrolled x-range[0]');
+                expect(xrng[1]).toBeLessThan(xrng0[1], 'scrolled x-range[1]');
+
+                var yrng = gd._fullLayout.yaxis.range;
+                expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
+                expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -18,7 +18,6 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
-var orderedCategories = require('./ordered_categories');
 
 /**
  * options: object containing:
@@ -29,14 +28,21 @@ var orderedCategories = require('./ordered_categories');
  *  outerTicks: boolean, should ticks default to outside?
  *  showGrid: boolean, should gridlines be shown by default?
  *  noHover: boolean, this axis doesn't support hover effects?
+ *  noTickson: boolean, this axis doesn't support 'tickson'
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
+ *  calendar:
+ *  splomStash:
+ *  visibleDflt: boolean
+ *  reverseDflt: boolean
+ *  automargin: boolean
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
+    var splomStash = options.splomStash || {};
 
-    var visible = coerce('visible', !options.cheateronly);
+    var visible = coerce('visible', !options.visibleDflt);
 
     var axType = containerOut.type;
 
@@ -47,37 +53,39 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
-
-    if(autoRange) coerce('rangemode');
+    var autorangeDflt = !containerOut.isValidRange(containerIn.range);
+    if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
+    var autoRange = coerce('autorange', autorangeDflt);
+    if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
 
     coerce('range');
     containerOut.cleanRange();
 
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
-
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
-
-    if(!visible) return containerOut;
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
-    var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
+    // Compare to dflt rather than to containerIn, so we can provide color via
+    // template too.
+    var dfltFontColor = (dfltColor !== layoutAttributes.color.dflt) ? dfltColor : font.color;
+    // try to get default title from splom trace, fallback to graph-wide value
+    var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
-    coerce('title', layoutOut._dfltTitle[letter]);
-    Lib.coerceFont(coerce, 'titlefont', {
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
+    if(!visible) return containerOut;
+
+    coerce('title.text', dfltTitle);
+    Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: dfltFontColor
     });
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
@@ -87,6 +95,27 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     });
 
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
+
+    if(options.automargin) coerce('automargin');
+
+    var isMultiCategory = containerOut.type === 'multicategory';
+
+    if(!options.noTickson &&
+        (containerOut.type === 'category' || isMultiCategory) &&
+        (containerOut.ticks || containerOut.showgrid)
+    ) {
+        var ticksonDflt;
+        if(isMultiCategory) ticksonDflt = 'boundaries';
+        coerce('tickson', ticksonDflt);
+    }
+
+    if(isMultiCategory) {
+        var showDividers = coerce('showdividers');
+        if(showDividers) {
+            coerce('dividercolor');
+            coerce('dividerwidth');
+        }
+    }
 
     return containerOut;
 };

@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "type": "funnel", "opacity": 0.8, "offset": -0.5, "width": 0.5, "orientation": "v",
+      "cliponaxis": false,
+      "textposition": "inside",
+      "textinfo": "label+value+percent initial",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
+      "x": [
+        ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
+      ],
+      "y": [4000.004, 3000.003, 2000.002, 1000.001, 4000.004, 2000.002, 1000.001, 500.0005]
+    },
+    {
+      "type": "funnel", "opacity": 0.8, "offset": -0.5, "width": 0.5, "orientation": "v",
+      "cliponaxis": false,
+      "textposition": "outside",
+      "textinfo": "label+text+value+percent initial",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
+      "x": [
+        ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
+      ],
+      "y": [5000.005, 4000.004, 3000.003, 2000.002, 8000.008, 4000.004, 2000.002, 1000.001]
+    },
+    {
+      "type": "waterfall", "opacity": 0.8, "offset": 0.0, "width": 0.5,
+      "cliponaxis": false,
+      "textposition": "inside",
+      "textinfo": "label+text+final",
+      "text": ["winter", "spring", "summer", "autumn", "winter", "spring", "summer", "autumn"],
+      "x": [
+        ["2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["q1", "q2", "q3", "q4", "q1", "q2", "q3", "q4"]
+      ],
+      "y": [5000.005, -4000.004, -3000.003, -2000.002, 8000.008, -4000.004, -2000.002, -1000.001]
+    }
+  ],
+  "layout": {
+    "hovermode": "closest",
+    "width": 1800,
+    "height": 600,
+    "margin": { "l": 50, "r": 50, "t": 50, "b": 50 },
+    "xaxis": {
+      "title": "MULTI-CATEGORY two stacked funnels with arrayOK text and one waterfall with textinfo",
+      "tickfont": {"size": 16},
+      "ticks": "outside",
+      "tickprefix": "[",
+      "ticksuffix": "]"
+    },
+    "yaxis": {
+      "visible": false,
+      "tickprefix": "$",
+      "ticksuffix": " m"
+    }
+  }
+}

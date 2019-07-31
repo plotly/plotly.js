@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,10 +15,15 @@ module.exports = {
     mode: scatterPolarAttrs.mode,
     r: scatterPolarAttrs.r,
     theta: scatterPolarAttrs.theta,
+    r0: scatterPolarAttrs.r0,
+    dr: scatterPolarAttrs.dr,
+    theta0: scatterPolarAttrs.theta0,
+    dtheta: scatterPolarAttrs.dtheta,
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,
-    // no hovertext
+    hovertext: scatterPolarAttrs.hovertext,
+    hovertemplate: scatterPolarAttrs.hovertemplate,
 
     line: scatterGlAttrs.line,
     connectgaps: scatterGlAttrs.connectgaps,
@@ -29,8 +34,11 @@ module.exports = {
     fill: scatterGlAttrs.fill,
     fillcolor: scatterGlAttrs.fillcolor,
 
+    textposition: scatterGlAttrs.textposition,
+    textfont: scatterGlAttrs.textfont,
+
     hoverinfo: scatterPolarAttrs.hoverinfo,
-    hoveron: scatterPolarAttrs.hoveron,
+    // no hoveron
 
     selected: scatterPolarAttrs.selected,
     unselected: scatterPolarAttrs.unselected

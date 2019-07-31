@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,10 +9,10 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
-var hasColumns = require('../heatmap/has_columns');
+var Lib = require('../../lib');
+
 var convertColumnData = require('../heatmap/convert_column_xyz');
 var clean2dArray = require('../heatmap/clean_2d_array');
-var maxRowLength = require('../heatmap/max_row_length');
 var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
 var makeBoundArray = require('../heatmap/make_bound_array');
@@ -24,7 +24,7 @@ var setContours = require('../contour/set_contours');
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
+    var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
 
     if(!trace.a || !trace.b) {
@@ -45,8 +45,7 @@ module.exports = function calc(gd, trace) {
     }
 
     var cd = heatmappishCalc(gd, trace);
-
-    setContours(trace);
+    setContours(trace, trace._z);
 
     return cd;
 };
@@ -54,7 +53,7 @@ module.exports = function calc(gd, trace) {
 function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var carpet = trace.carpetTrace;
+    var carpet = trace._carpetTrace;
     var aax = carpet.aaxis;
     var bax = carpet.baxis;
     var a,
@@ -69,26 +68,28 @@ function heatmappishCalc(gd, trace) {
     aax._minDtick = 0;
     bax._minDtick = 0;
 
-    if(hasColumns(trace)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
+    if(Lib.isArray1D(trace.z)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
+    a = trace._a = trace._a || trace.a;
+    b = trace._b = trace._b || trace.b;
 
-    a = trace.a ? aax.makeCalcdata(trace, 'a') : [];
-    b = trace.b ? bax.makeCalcdata(trace, 'b') : [];
+    a = a ? aax.makeCalcdata(trace, '_a') : [];
+    b = b ? bax.makeCalcdata(trace, '_b') : [];
     a0 = trace.a0 || 0;
     da = trace.da || 1;
     b0 = trace.b0 || 0;
     db = trace.db || 1;
 
-    z = clean2dArray(trace.z, trace.transpose);
+    z = trace._z = clean2dArray(trace._z || trace.z, trace.transpose);
 
     trace._emptypoints = findEmpties(z);
-    trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
+    interp2d(z, trace._emptypoints);
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = maxRowLength(z),
-        xIn = trace.xtype === 'scaled' ? '' : a,
-        xArray = makeBoundArray(trace, xIn, a0, da, xlen, aax),
-        yIn = trace.ytype === 'scaled' ? '' : b,
-        yArray = makeBoundArray(trace, yIn, b0, db, z.length, bax);
+    var xlen = Lib.maxRowLength(z);
+    var xIn = trace.xtype === 'scaled' ? '' : a;
+    var xArray = makeBoundArray(trace, xIn, a0, da, xlen, aax);
+    var yIn = trace.ytype === 'scaled' ? '' : b;
+    var yArray = makeBoundArray(trace, yIn, b0, db, z.length, bax);
 
     var cd0 = {
         a: xArray,
@@ -96,9 +97,13 @@ function heatmappishCalc(gd, trace) {
         z: z,
     };
 
-    if(trace.contours.type === 'levels') {
+    if(trace.contours.type === 'levels' && trace.contours.coloring !== 'none') {
         // auto-z and autocolorscale if applicable
-        colorscaleCalc(trace, z, '', 'z');
+        colorscaleCalc(gd, trace, {
+            vals: z,
+            containerStr: '',
+            cLetter: 'z'
+        });
     }
 
     return [cd0];

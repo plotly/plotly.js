@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,19 +19,22 @@ module.exports = {
             'If *group*, the violins are plotted next to one another',
             'centered around the shared location.',
             'If *overlay*, the violins are plotted over one another,',
-            'you might need to set *opacity* to see them multiple violins.'
+            'you might need to set *opacity* to see them multiple violins.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     }),
     violingap: extendFlat({}, boxLayoutAttrs.boxgap, {
         description: [
             'Sets the gap (in plot fraction) between violins of',
-            'adjacent location coordinates.'
+            'adjacent location coordinates.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     }),
     violingroupgap: extendFlat({}, boxLayoutAttrs.boxgroupgap, {
         description: [
             'Sets the gap (in plot fraction) between violins of',
-            'the same location coordinate.'
+            'the same location coordinate.',
+            'Has no effect on traces that have *width* set.'
         ].join(' ')
     })
 };

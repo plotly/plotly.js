@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,22 +32,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut.xaxis = 'x';
     traceOut.yaxis = 'y';
 
-    var a = coerce('a'),
-        b = coerce('b'),
-        len;
-
-    len = Math.min(a.length, b.length);
+    var a = coerce('a');
+    var b = coerce('b');
+    var len = Math.min(a.length, b.length);
 
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
-    // cut all data arrays down to same length
-    if(a && len < a.length) traceOut.a = a.slice(0, len);
-    if(b && len < b.length) traceOut.b = b.slice(0, len);
+    traceOut._length = len;
 
     coerce('text');
+    coerce('hovertext');
 
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
@@ -82,7 +79,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
         dfltHoverOn.push('fills');
     }
-    coerce('hoveron', dfltHoverOn.join('+') || 'points');
+
+    var hoverOn = coerce('hoveron', dfltHoverOn.join('+') || 'points');
+    if(hoverOn !== 'fills') coerce('hovertemplate');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

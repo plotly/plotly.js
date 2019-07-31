@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -26,7 +26,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }
@@ -44,13 +43,18 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     coerce('sizing');
     coerce('opacity');
 
-    var gdMock = { _fullLayout: fullLayout },
-        axLetters = ['x', 'y'];
+    var gdMock = { _fullLayout: fullLayout };
+    var axLetters = ['x', 'y'];
 
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
-        var axLetter = axLetters[i],
-            axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+        var axLetter = axLetters[i];
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+
+        if(axRef !== 'paper') {
+            var ax = Axes.getFromId(gdMock, axRef);
+            ax._imgIndices.push(imageOut._index);
+        }
 
         Axes.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
     }

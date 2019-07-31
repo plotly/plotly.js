@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -69,16 +69,23 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-
     var label = sankeyLink.datum().link.label;
 
-    sankeyLink.style('fill-opacity', 0.4);
+    sankeyLink.style('fill-opacity', function(l) {
+        if(!l.link.concentrationscale) {
+            return 0.4;
+        }
+    });
 
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', 0.4);
+            .style('fill-opacity', function(l) {
+                if(!l.link.concentrationscale) {
+                    return 0.4;
+                }
+            });
     }
 
     if(visitNodes) {
@@ -90,11 +97,9 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-
     var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-
     if(label) {
         ownTrace(sankey, d)
             .selectAll('.' + cn.sankeyLink)
@@ -122,6 +127,21 @@ module.exports = function plot(gd, calcData) {
     var svg = fullLayout._paper;
     var size = fullLayout._size;
 
+    // stash initial view
+    for(var i = 0; i < gd._fullData.length; i++) {
+        if(gd._fullData[i].type !== cn.sankey) continue;
+        if(!gd._fullData[i]._viewInitial) {
+            var node = gd._fullData[i].node;
+            gd._fullData[i]._viewInitial = {
+                node: {
+                    groups: node.groups.slice(),
+                    x: node.x.slice(),
+                    y: node.y.slice()
+                }
+            };
+        }
+    }
+
     var linkSelect = function(element, d) {
         var evt = d.link;
         evt.originalEvent = d3.event;
@@ -130,56 +150,104 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-        gd.emit('plotly_hover', {
-            event: d3.event,
-            points: [d.link]
-        });
+        if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
+            gd.emit('plotly_hover', {
+                event: d3.event,
+                points: [d.link]
+            });
+        }
     };
 
     var sourceLabel = _(gd, 'source:') + ' ';
     var targetLabel = _(gd, 'target:') + ' ';
+    var concentrationLabel = _(gd, 'concentration:') + ' ';
     var incomingLabel = _(gd, 'incoming flow count:') + ' ';
     var outgoingLabel = _(gd, 'outgoing flow count:') + ' ';
 
     var linkHoverFollow = function(element, d) {
-        var trace = d.link.trace;
-        var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
-        var boundingBox = element.getBoundingClientRect();
-        var hoverCenterX = boundingBox.left + boundingBox.width / 2;
-        var hoverCenterY = boundingBox.top + boundingBox.height / 2;
+        if(gd._fullLayout.hovermode === false) return;
+        var obj = d.link.trace.link;
+        if(obj.hoverinfo === 'none' || obj.hoverinfo === 'skip') return;
 
-        var tooltip = Fx.loneHover({
-            x: hoverCenterX - rootBBox.left,
-            y: hoverCenterY - rootBBox.top,
-            name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
-            text: [
-                d.link.label || '',
-                sourceLabel + d.link.source.label,
-                targetLabel + d.link.target.label
-            ].filter(renderableValuePresent).join('<br>'),
-            color: castHoverOption(trace, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
-            borderColor: castHoverOption(trace, 'bordercolor'),
-            fontFamily: castHoverOption(trace, 'font.family'),
-            fontSize: castHoverOption(trace, 'font.size'),
-            fontColor: castHoverOption(trace, 'font.color'),
-            idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
-        }, {
+        var hoverItems = [];
+
+        function hoverCenterPosition(link) {
+            var hoverCenterX, hoverCenterY;
+            if(link.circular) {
+                hoverCenterX = (link.circularPathData.leftInnerExtent + link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
+                hoverCenterY = link.circularPathData.verticalFullExtent + d.parent.translateY;
+            } else {
+                hoverCenterX = (link.source.x1 + link.target.x0) / 2 + d.parent.translateX;
+                hoverCenterY = (link.y0 + link.y1) / 2 + d.parent.translateY;
+            }
+            return [hoverCenterX, hoverCenterY];
+        }
+
+        // For each related links, create a hoverItem
+        var anchorIndex = 0;
+        for(var i = 0; i < d.flow.links.length; i++) {
+            var link = d.flow.links[i];
+            if(gd._fullLayout.hovermode === 'closest' && d.link.pointNumber !== link.pointNumber) continue;
+            if(d.link.pointNumber === link.pointNumber) anchorIndex = i;
+            link.fullData = link.trace;
+            obj = d.link.trace.link;
+            var hoverCenter = hoverCenterPosition(link);
+            var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(link.value) + d.valueSuffix};
+
+            hoverItems.push({
+                x: hoverCenter[0],
+                y: hoverCenter[1],
+                name: hovertemplateLabels.valueLabel,
+                text: [
+                    link.label || '',
+                    sourceLabel + link.source.label,
+                    targetLabel + link.target.label,
+                    link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(link.flow.labelConcentration) : ''
+                ].filter(renderableValuePresent).join('<br>'),
+                color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(link.color, 1),
+                borderColor: castHoverOption(obj, 'bordercolor'),
+                fontFamily: castHoverOption(obj, 'font.family'),
+                fontSize: castHoverOption(obj, 'font.size'),
+                fontColor: castHoverOption(obj, 'font.color'),
+                nameLength: castHoverOption(obj, 'namelength'),
+                textAlign: castHoverOption(obj, 'align'),
+                idealAlign: d3.event.x < hoverCenter[0] ? 'right' : 'left',
+
+                hovertemplate: obj.hovertemplate,
+                hovertemplateLabels: hovertemplateLabels,
+                eventData: [link]
+            });
+        }
+
+        var tooltips = Fx.loneHover(hoverItems, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
-            gd: gd
+            gd: gd,
+            anchorIndex: anchorIndex
         });
 
-        makeTranslucent(tooltip, 0.65);
-        makeTextContrasty(tooltip);
+        tooltips.each(function() {
+            var tooltip = this;
+            if(!d.link.concentrationscale) {
+                makeTranslucent(tooltip, 0.65);
+            }
+            makeTextContrasty(tooltip);
+        });
     };
 
     var linkUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
-        gd.emit('plotly_unhover', {
-            event: d3.event,
-            points: [d.link]
-        });
+        if(d.link.trace.link.hoverinfo !== 'skip') {
+            d.link.fullData = d.link.trace;
+            gd.emit('plotly_unhover', {
+                event: d3.event,
+                points: [d.link]
+            });
+        }
 
         Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
@@ -193,21 +261,31 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-        gd.emit('plotly_hover', {
-            event: d3.event,
-            points: [d.node]
-        });
+        if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
+            gd.emit('plotly_hover', {
+                event: d3.event,
+                points: [d.node]
+            });
+        }
     };
 
     var nodeHoverFollow = function(element, d) {
-        var trace = d.node.trace;
+        if(gd._fullLayout.hovermode === false) return;
+
+        var obj = d.node.trace.node;
+        if(obj.hoverinfo === 'none' || obj.hoverinfo === 'skip') return;
         var nodeRect = d3.select(element).select('.' + cn.nodeRect);
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2 - rootBBox.left;
         var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;
         var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
+
+        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
+        d.node.fullData = d.node.trace;
 
         var tooltip = Fx.loneHover({
             x0: hoverCenterX0,
@@ -219,12 +297,18 @@ module.exports = function plot(gd, calcData) {
                 incomingLabel + d.node.targetLinks.length,
                 outgoingLabel + d.node.sourceLinks.length
             ].filter(renderableValuePresent).join('<br>'),
-            color: castHoverOption(trace, 'bgcolor') || d.tinyColorHue,
-            borderColor: castHoverOption(trace, 'bordercolor'),
-            fontFamily: castHoverOption(trace, 'font.family'),
-            fontSize: castHoverOption(trace, 'font.size'),
-            fontColor: castHoverOption(trace, 'font.color'),
-            idealAlign: 'left'
+            color: castHoverOption(obj, 'bgcolor') || d.tinyColorHue,
+            borderColor: castHoverOption(obj, 'bordercolor'),
+            fontFamily: castHoverOption(obj, 'font.family'),
+            fontSize: castHoverOption(obj, 'font.size'),
+            fontColor: castHoverOption(obj, 'font.color'),
+            nameLength: castHoverOption(obj, 'namelength'),
+            textAlign: castHoverOption(obj, 'align'),
+            idealAlign: 'left',
+
+            hovertemplate: obj.hovertemplate,
+            hovertemplateLabels: hovertemplateLabels,
+            eventData: [d.node]
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node(),
@@ -236,16 +320,21 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
-        gd.emit('plotly_unhover', {
-            event: d3.event,
-            points: [d.node]
-        });
+        if(d.node.trace.node.hoverinfo !== 'skip') {
+            d.node.fullData = d.node.trace;
+            gd.emit('plotly_unhover', {
+                event: d3.event,
+                points: [d.node]
+            });
+        }
 
         Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
 
     render(
+        gd,
         svg,
         calcData,
         {

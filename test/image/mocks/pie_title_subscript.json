@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "values": [2, 3, 5, 7, 9],
+      "labels": ["2", "3", "5", "7", "9"],
+      "type": "pie",
+      "name": "Prime numbers",
+      "textinfo": "none",
+      "title": "CO<sub>2</sub><BR>H<sub>2</sub>O",
+      "titlefont": {
+        "size": 14
+      },
+      "titleposition": "top center"
+    }
+  ],
+  "layout": {
+    "height": 400,
+    "width": 400
+  }
+}

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
 /**
  * aggNums() returns the result of an aggregate function applied to an array of
@@ -28,9 +28,9 @@ var isNumeric = require('fast-isnumeric');
 exports.aggNums = function(f, v, a, len) {
     var i,
         b;
-    if(!len) len = a.length;
+    if(!len || len > a.length) len = a.length;
     if(!isNumeric(v)) v = false;
-    if(Array.isArray(a[0])) {
+    if(isArrayOrTypedArray(a[0])) {
         b = new Array(len);
         for(i = 0; i < len; i++) b[i] = exports.aggNums(f, v, a[i]);
         a = b;
@@ -56,6 +56,11 @@ exports.mean = function(data, len) {
     return exports.aggNums(function(a, b) { return a + b; }, 0, data) / len;
 };
 
+exports.midRange = function(numArr) {
+    if(numArr === undefined || numArr.length === 0) return undefined;
+    return (exports.aggNums(Math.max, null, numArr) + exports.aggNums(Math.min, null, numArr)) / 2;
+};
+
 exports.variance = function(data, len, mean) {
     if(!len) len = exports.len(data);
     if(!isNumeric(mean)) mean = exports.mean(data, len);
@@ -67,6 +72,15 @@ exports.variance = function(data, len, mean) {
 
 exports.stdev = function(data, len, mean) {
     return Math.sqrt(exports.variance(data, len, mean));
+};
+
+/**
+ * median of a finite set of numbers
+ * reference page: https://en.wikipedia.org/wiki/Median#Finite_set_of_numbers
+**/
+exports.median = function(data) {
+    var b = data.slice().sort();
+    return exports.interp(b, 0.5);
 };
 
 /**

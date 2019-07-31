@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,9 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     // standard cartesian event data
     out.x = 'xVal' in pt ? pt.xVal : pt.x;
     out.y = 'yVal' in pt ? pt.yVal : pt.y;
+
+    // for 2d histograms
+    if('zLabelVal' in pt) out.z = pt.zLabelVal;
 
     if(pt.xa) out.xaxis = pt.xa;
     if(pt.ya) out.yaxis = pt.ya;

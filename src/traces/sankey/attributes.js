@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,17 +12,29 @@ var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = overrideAll({
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-    }),
-    hoverlabel: fxAttrs.hoverlabel, // needs editType override
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
+var attrs = module.exports = overrideAll({
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+        flags: [],
+        arrayOk: false,
+        description: [
+            'Determines which trace information appear on hover.',
+            'If `none` or `skip` are set, no information is displayed upon hovering.',
+            'But, if `none` is set, click and hover events are still fired.',
+            'Note that this attribute is superseded by `node.hoverinfo` and `node.hoverinfo`',
+            'for nodes and links respectively.'
+        ].join(' ')
+    }),
+    hoverlabel: fxAttrs.hoverlabel,
     domain: domainAttrs({name: 'sankey', trace: true}),
 
     orientation: {
@@ -40,7 +52,7 @@ module.exports = overrideAll({
         description: [
             'Sets the value formatting rule using d3 formatting mini-language',
             'which is similar to those of Python. See',
-            'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+            FORMAT_LINK
         ].join(' ')
     },
 
@@ -78,6 +90,32 @@ module.exports = overrideAll({
             dflt: [],
             role: 'info',
             description: 'The shown name of the node.'
+        },
+        groups: {
+            valType: 'info_array',
+            impliedEdits: {'x': [], 'y': []},
+            dimensions: 2,
+            freeLength: true,
+            dflt: [],
+            items: {valType: 'number', editType: 'calc'},
+            role: 'info',
+            description: [
+                'Groups of nodes.',
+                'Each group is defined by an array with the indices of the nodes it contains.',
+                'Multiple groups can be specified.'
+            ].join(' ')
+        },
+        x: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized horizontal position of the node.'
+        },
+        y: {
+            valType: 'data_array',
+            dflt: [],
+            role: 'info',
+            description: 'The normalized vertical position of the node.'
         },
         color: {
             valType: 'color',
@@ -127,6 +165,22 @@ module.exports = overrideAll({
             role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering nodes.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            description: 'Variables `sourceLinks` and `targetLinks` are arrays of link objects.',
+            keys: ['value', 'label']
+        }),
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -185,6 +239,53 @@ module.exports = overrideAll({
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
-        description: 'The links of the Sankey plot.'
+        hoverinfo: {
+            valType: 'enumerated',
+            values: ['all', 'none', 'skip'],
+            dflt: 'all',
+            role: 'info',
+            description: [
+                'Determines which trace information appear when hovering links.',
+                'If `none` or `skip` are set, no information is displayed upon hovering.',
+                'But, if `none` is set, click and hover events are still fired.'
+            ].join(' ')
+        },
+        hoverlabel: fxAttrs.hoverlabel, // needs editType override,
+        hovertemplate: hovertemplateAttrs({}, {
+            description: 'Variables `source` and `target` are node objects.',
+            keys: ['value', 'label']
+        }),
+        colorscales: templatedArray('concentrationscales', {
+            editType: 'calc',
+            label: {
+                valType: 'string',
+                role: 'info',
+                editType: 'calc',
+                description: 'The label of the links to color based on their concentration within a flow.',
+                dflt: ''
+            },
+            cmax: {
+                valType: 'number',
+                role: 'info',
+                editType: 'calc',
+                dflt: 1,
+                description: [
+                    'Sets the upper bound of the color domain.'
+                ].join('')
+            },
+            cmin: {
+                valType: 'number',
+                role: 'info',
+                editType: 'calc',
+                dflt: 0,
+                description: [
+                    'Sets the lower bound of the color domain.'
+                ].join('')
+            },
+            colorscale: extendFlat(colorAttributes().colorscale, {dflt: [[0, 'white'], [1, 'black']]})
+        }),
+        description: 'The links of the Sankey plot.',
+        role: 'info'
     }
 }, 'calc', 'nested');
+attrs.transforms = undefined;

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -45,8 +45,7 @@ module.exports = {
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
-            }
-            else if(size[n] > v) {
+            } else if(size[n] > v) {
                 var delta = v - size[n];
                 size[n] = v;
                 return delta;
@@ -62,8 +61,7 @@ module.exports = {
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
-            }
-            else if(size[n] < v) {
+            } else if(size[n] < v) {
                 var delta = v - size[n];
                 size[n] = v;
                 return delta;

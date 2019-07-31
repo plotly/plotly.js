@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,28 +8,27 @@
 
 'use strict';
 
-var ScatterTernary = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    colorbar: require('../scatter/marker_colorbar'),
+    calc: require('./calc'),
+    plot: require('./plot'),
+    style: require('../scatter/style').style,
+    styleOnSelect: require('../scatter/style').styleOnSelect,
+    hoverPoints: require('./hover'),
+    selectPoints: require('../scatter/select'),
+    eventData: require('./event_data'),
 
-ScatterTernary.attributes = require('./attributes');
-ScatterTernary.supplyDefaults = require('./defaults');
-ScatterTernary.colorbar = require('../scatter/colorbar');
-ScatterTernary.calc = require('./calc');
-ScatterTernary.plot = require('./plot');
-ScatterTernary.style = require('../scatter/style').style;
-ScatterTernary.hoverPoints = require('./hover');
-ScatterTernary.selectPoints = require('../scatter/select');
-ScatterTernary.eventData = require('./event_data');
-
-ScatterTernary.moduleType = 'trace';
-ScatterTernary.name = 'scatterternary';
-ScatterTernary.basePlotModule = require('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'];
-ScatterTernary.meta = {
-    hrName: 'scatter_ternary',
-    description: [
-        'Provides similar functionality to the *scatter* type but on a ternary phase diagram.',
-        'The data is provided by at least two arrays out of `a`, `b`, `c` triplets.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'scatterternary',
+    basePlotModule: require('../../plots/ternary'),
+    categories: ['ternary', 'symbols', 'showLegend', 'scatter-like'],
+    meta: {
+        hrName: 'scatter_ternary',
+        description: [
+            'Provides similar functionality to the *scatter* type but on a ternary phase diagram.',
+            'The data is provided by at least two arrays out of `a`, `b`, `c` triplets.'
+        ].join(' ')
+    }
 };
-
-module.exports = ScatterTernary;

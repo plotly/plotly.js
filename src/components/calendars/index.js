@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -126,18 +126,18 @@ var d3ToWorldCalendars = {
 };
 
 function worldCalFmt(fmt, x, calendar) {
-    var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD,
-        cDate = getCal(calendar).fromJD(dateJD),
-        i = 0,
-        modifier, directive, directiveLen, directiveObj, replacementPart;
+    var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD;
+    var cDate = getCal(calendar).fromJD(dateJD);
+    var i = 0;
+    var modifier, directive, directiveLen, directiveObj, replacementPart;
+
     while((i = fmt.indexOf('%', i)) !== -1) {
         modifier = fmt.charAt(i + 1);
         if(modifier === '0' || modifier === '-' || modifier === '_') {
             directiveLen = 3;
             directive = fmt.charAt(i + 2);
             if(modifier === '_') modifier = '-';
-        }
-        else {
+        } else {
             directive = modifier;
             modifier = '0';
             directiveLen = 2;
@@ -145,8 +145,7 @@ function worldCalFmt(fmt, x, calendar) {
         directiveObj = d3ToWorldCalendars[directive];
         if(!directiveObj) {
             i += directiveLen;
-        }
-        else {
+        } else {
             // code is recognized as a date part but world-calendars doesn't support it
             if(directiveObj === UNKNOWN) replacementPart = UNKNOWN;
 

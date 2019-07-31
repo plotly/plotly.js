@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -22,11 +21,21 @@ lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
-lib.isArray = require('./is_array');
-lib.mod = require('./mod');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
-lib.ensureArray = require('./ensure_array');
+
+var arrayModule = require('./array');
+lib.isTypedArray = arrayModule.isTypedArray;
+lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
+lib.isArray1D = arrayModule.isArray1D;
+lib.ensureArray = arrayModule.ensureArray;
+lib.concat = arrayModule.concat;
+lib.maxRowLength = arrayModule.maxRowLength;
+lib.minRowLength = arrayModule.minRowLength;
+
+var modModule = require('./mod');
+lib.mod = modModule.mod;
+lib.modHalf = modModule.modHalf;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;
@@ -58,11 +67,15 @@ lib.sorterAsc = searchModule.sorterAsc;
 lib.sorterDes = searchModule.sorterDes;
 lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
+lib.sort = searchModule.sort;
+lib.findIndexOfMin = searchModule.findIndexOfMin;
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
 lib.len = statsModule.len;
 lib.mean = statsModule.mean;
+lib.median = statsModule.median;
+lib.midRange = statsModule.midRange;
 lib.variance = statsModule.variance;
 lib.stdev = statsModule.stdev;
 lib.interp = statsModule.interp;
@@ -80,8 +93,22 @@ lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 var anglesModule = require('./angles');
 lib.deg2rad = anglesModule.deg2rad;
 lib.rad2deg = anglesModule.rad2deg;
-lib.wrap360 = anglesModule.wrap360;
-lib.wrap180 = anglesModule.wrap180;
+lib.angleDelta = anglesModule.angleDelta;
+lib.angleDist = anglesModule.angleDist;
+lib.isFullCircle = anglesModule.isFullCircle;
+lib.isAngleInsideSector = anglesModule.isAngleInsideSector;
+lib.isPtInsideSector = anglesModule.isPtInsideSector;
+lib.pathArc = anglesModule.pathArc;
+lib.pathSector = anglesModule.pathSector;
+lib.pathAnnulus = anglesModule.pathAnnulus;
+
+var anchorUtils = require('./anchor_utils');
+lib.isLeftAnchor = anchorUtils.isLeftAnchor;
+lib.isCenterAnchor = anchorUtils.isCenterAnchor;
+lib.isRightAnchor = anchorUtils.isRightAnchor;
+lib.isTopAnchor = anchorUtils.isTopAnchor;
+lib.isMiddleAnchor = anchorUtils.isMiddleAnchor;
+lib.isBottomAnchor = anchorUtils.isBottomAnchor;
 
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
@@ -110,7 +137,17 @@ lib.throttle = throttleModule.throttle;
 lib.throttleDone = throttleModule.done;
 lib.clearThrottle = throttleModule.clear;
 
-lib.getGraphDiv = require('./get_graph_div');
+var domModule = require('./dom');
+lib.getGraphDiv = domModule.getGraphDiv;
+lib.isPlotDiv = domModule.isPlotDiv;
+lib.removeElement = domModule.removeElement;
+lib.addStyleRule = domModule.addStyleRule;
+lib.addRelatedStyleRule = domModule.addRelatedStyleRule;
+lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
+
+lib.clearResponsive = require('./clear_responsive');
+
+lib.makeTraceGroups = require('./make_trace_groups');
 
 lib._ = require('./localize');
 
@@ -122,15 +159,43 @@ lib.pushUnique = require('./push_unique');
 
 lib.cleanNumber = require('./clean_number');
 
-lib.ensureNumber = function num(v) {
+lib.ensureNumber = function ensureNumber(v) {
     if(!isNumeric(v)) return BADNUM;
     v = Number(v);
     if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
     return isNumeric(v) ? Number(v) : BADNUM;
 };
 
+/**
+ * Is v a valid array index? Accepts numeric strings as well as numbers.
+ *
+ * @param {any} v: the value to test
+ * @param {Optional[integer]} len: the array length we are indexing
+ *
+ * @return {bool}: v is a valid array index
+ */
+lib.isIndex = function(v, len) {
+    if(len !== undefined && v >= len) return false;
+    return isNumeric(v) && (v >= 0) && (v % 1 === 0);
+};
+
 lib.noop = require('./noop');
 lib.identity = require('./identity');
+
+/**
+ * create an array of length 'cnt' filled with 'v' at all indices
+ *
+ * @param {any} v
+ * @param {number} cnt
+ * @return {array}
+ */
+lib.repeat = function(v, cnt) {
+    var out = new Array(cnt);
+    for(var i = 0; i < cnt; i++) {
+        out[i] = v;
+    }
+    return out;
+};
 
 /**
  * swap x and y of the same attribute in container cont
@@ -141,10 +206,10 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
     if(!part1) part1 = 'x';
     if(!part2) part2 = 'y';
     for(var i = 0; i < attrList.length; i++) {
-        var attr = attrList[i],
-            xp = lib.nestedProperty(cont, attr.replace('?', part1)),
-            yp = lib.nestedProperty(cont, attr.replace('?', part2)),
-            temp = xp.get();
+        var attr = attrList[i];
+        var xp = lib.nestedProperty(cont, attr.replace('?', part1));
+        var yp = lib.nestedProperty(cont, attr.replace('?', part2));
+        var temp = xp.get();
         xp.set(yp.get());
         yp.set(temp);
     }
@@ -193,27 +258,30 @@ lib.bBoxIntersect = function(a, b, pad) {
  * x1, x2: optional extra args
  */
 lib.simpleMap = function(array, func, x1, x2) {
-    var len = array.length,
-        out = new Array(len);
+    var len = array.length;
+    var out = new Array(len);
     for(var i = 0; i < len; i++) out[i] = func(array[i], x1, x2);
     return out;
 };
 
-// random string generator
-lib.randstr = function randstr(existing, bits, base) {
-    /*
-     * Include number of bits, the base of the string you want
-     * and an optional array of existing strings to avoid.
-     */
+/**
+ * Random string generator
+ *
+ * @param {object} existing
+ *     pass in strings to avoid as keys with truthy values
+ * @param {int} bits
+ *     bits of information in the output string, default 24
+ * @param {int} base
+ *     base of string representation, default 16. Should be a power of 2.
+ */
+lib.randstr = function randstr(existing, bits, base, _recursion) {
     if(!base) base = 16;
     if(bits === undefined) bits = 24;
     if(bits <= 0) return '0';
 
-    var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
-        res = '',
-        i,
-        b,
-        x;
+    var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
+    var res = '';
+    var i, b, x;
 
     for(i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
@@ -233,11 +301,14 @@ lib.randstr = function randstr(existing, bits, base) {
     }
 
     var parsed = parseInt(res, base);
-    if((existing && (existing.indexOf(res) > -1)) ||
+    if((existing && existing[res]) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
-        return randstr(existing, bits, base);
-    }
-    else return res;
+        if(_recursion > 10) {
+            lib.warn('randstr failed uniqueness');
+            return res;
+        }
+        return randstr(existing, bits, base, (_recursion || 0) + 1);
+    } else return res;
 };
 
 lib.OptionControl = function(opt, optname) {
@@ -275,15 +346,15 @@ lib.smooth = function(arrayIn, FWHM) {
     FWHM = Math.round(FWHM) || 0; // only makes sense for integers
     if(FWHM < 2) return arrayIn;
 
-    var alen = arrayIn.length,
-        alen2 = 2 * alen,
-        wlen = 2 * FWHM - 1,
-        w = new Array(wlen),
-        arrayOut = new Array(alen),
-        i,
-        j,
-        k,
-        v;
+    var alen = arrayIn.length;
+    var alen2 = 2 * alen;
+    var wlen = 2 * FWHM - 1;
+    var w = new Array(wlen);
+    var arrayOut = new Array(alen);
+    var i;
+    var j;
+    var k;
+    var v;
 
     // first make the window array
     for(i = 0; i < wlen; i++) {
@@ -361,10 +432,10 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
      */
     if(!containerIn) return;
 
-    var hasAny = false,
-        hasAll = true,
-        i,
-        val;
+    var hasAny = false;
+    var hasAll = true;
+    var i;
+    var val;
 
     for(i = 0; i < attrList.length; i++) {
         val = containerIn[attrList[i]];
@@ -388,11 +459,23 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
  * @param {object} cd : calcdata trace
  * @param {string} cdAttr : calcdata key
  */
-lib.mergeArray = function(traceAttr, cd, cdAttr) {
-    if(Array.isArray(traceAttr)) {
+lib.mergeArray = function(traceAttr, cd, cdAttr, fn) {
+    var hasFn = typeof fn === 'function';
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
-        for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
+        for(var i = 0; i < imax; i++) {
+            var v = traceAttr[i];
+            cd[i][cdAttr] = hasFn ? fn(v) : v;
+        }
     }
+};
+
+// cast numbers to positive numbers, returns 0 if not greater than 0
+lib.mergeArrayCastPositive = function(traceAttr, cd, cdAttr) {
+    return lib.mergeArray(traceAttr, cd, cdAttr, function(v) {
+        var w = +v;
+        return !isFinite(w) ? 0 : w > 0 ? w : 0;
+    });
 };
 
 /** fills calcdata field (given by cdAttr) with traceAttr values
@@ -408,7 +491,7 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 lib.fillArray = function(traceAttr, cd, cdAttr, fn) {
     fn = fn || lib.identity;
 
-    if(Array.isArray(traceAttr)) {
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         for(var i = 0; i < cd.length; i++) {
             cd[i][cdAttr] = fn(traceAttr[i]);
         }
@@ -429,8 +512,8 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
 
     var val = lib.nestedProperty(trace, astr).get();
 
-    if(Array.isArray(val)) {
-        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+    if(lib.isArrayOrTypedArray(val)) {
+        if(Array.isArray(ptNumber) && lib.isArrayOrTypedArray(val[ptNumber[0]])) {
             return fn(val[ptNumber[0]][ptNumber[1]]);
         } else {
             return fn(val[ptNumber]);
@@ -460,6 +543,17 @@ lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
     if(!Array.isArray(traceVal)) return traceVal;
 };
 
+function makePtIndex2PtNumber(indexToPoints) {
+    var ptIndex2ptNumber = {};
+    for(var k in indexToPoints) {
+        var pts = indexToPoints[k];
+        for(var j = 0; j < pts.length; j++) {
+            ptIndex2ptNumber[pts[j]] = +k;
+        }
+    }
+    return ptIndex2ptNumber;
+}
+
 /** Tag selected calcdata items
  *
  * N.B. note that point 'index' corresponds to input data array index
@@ -480,17 +574,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
 
     // make pt index-to-number map object, which takes care of transformed traces
     if(indexToPoints) {
-        ptIndex2ptNumber = {};
-        for(var k in indexToPoints) {
-            var pts = indexToPoints[k];
-            for(var j = 0; j < pts.length; j++) {
-                ptIndex2ptNumber[pts[j]] = k;
-            }
-        }
-    }
-
-    function isPtIndexValid(v) {
-        return isNumeric(v) && v >= 0 && v % 1 === 0;
+        ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
     }
 
     function isCdIndexValid(v) {
@@ -500,7 +584,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
     for(var i = 0; i < selectedpoints.length; i++) {
         var ptIndex = selectedpoints[i];
 
-        if(isPtIndexValid(ptIndex)) {
+        if(lib.isIndex(ptIndex)) {
             var ptNumber = ptIndex2ptNumber ? ptIndex2ptNumber[ptIndex] : ptIndex;
             var cdIndex = ptNumber2cdIndex ? ptNumber2cdIndex[ptNumber] : ptNumber;
 
@@ -508,6 +592,30 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
                 calcTrace[cdIndex].selected = 1;
             }
         }
+    }
+};
+
+lib.selIndices2selPoints = function(trace) {
+    var selectedpoints = trace.selectedpoints;
+    var indexToPoints = trace._indexToPoints;
+
+    if(indexToPoints) {
+        var ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
+        var out = [];
+
+        for(var i = 0; i < selectedpoints.length; i++) {
+            var ptIndex = selectedpoints[i];
+            if(lib.isIndex(ptIndex)) {
+                var ptNumber = ptIndex2ptNumber[ptIndex];
+                if(lib.isIndex(ptNumber)) {
+                    out.push(ptNumber);
+                }
+            }
+        }
+
+        return out;
+    } else {
+        return selectedpoints;
     }
 };
 
@@ -543,18 +651,22 @@ lib.getTargetArray = function(trace, transformOpts) {
 lib.minExtend = function(obj1, obj2) {
     var objOut = {};
     if(typeof obj2 !== 'object') obj2 = {};
-    var arrayLen = 3,
-        keys = Object.keys(obj1),
-        i,
-        k,
-        v;
+    var arrayLen = 3;
+    var keys = Object.keys(obj1);
+    var i, k, v;
+
     for(i = 0; i < keys.length; i++) {
         k = keys[i];
         v = obj1[k];
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
-        else if(Array.isArray(v)) objOut[k] = v.slice(0, arrayLen);
-        else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+        else if(Array.isArray(v)) {
+            if(k === 'colorscale') {
+                objOut[k] = v.slice();
+            } else {
+                objOut[k] = v.slice(0, arrayLen);
+            }
+        } else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
         else objOut[k] = v;
     }
 
@@ -581,44 +693,18 @@ lib.containsAny = function(s, fragments) {
     return false;
 };
 
-lib.isPlotDiv = function(el) {
-    var el3 = d3.select(el);
-    return el3.node() instanceof HTMLElement &&
-        el3.size() &&
-        el3.classed('js-plotly-plot');
-};
-
-lib.removeElement = function(el) {
-    var elParent = el && el.parentNode;
-    if(elParent) elParent.removeChild(el);
-};
-
-/**
- * for dynamically adding style rules
- * makes one stylesheet that contains all rules added
- * by all calls to this function
- */
-lib.addStyleRule = function(selector, styleString) {
-    if(!lib.styleSheet) {
-        var style = document.createElement('style');
-        // WebKit hack :(
-        style.appendChild(document.createTextNode(''));
-        document.head.appendChild(style);
-        lib.styleSheet = style.sheet;
-    }
-    var styleSheet = lib.styleSheet;
-
-    if(styleSheet.insertRule) {
-        styleSheet.insertRule(selector + '{' + styleString + '}', 0);
-    }
-    else if(styleSheet.addRule) {
-        styleSheet.addRule(selector, styleString, 0);
-    }
-    else lib.warn('addStyleRule failed');
-};
-
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
+};
+
+var IS_IE9_OR_BELOW_REGEX = /MSIE [1-9]\./;
+lib.isIE9orBelow = function() {
+    return lib.isIE() && IS_IE9_OR_BELOW_REGEX.test(window.navigator.userAgent);
+};
+
+var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
+lib.isSafari = function() {
+    return IS_SAFARI_REGEX.test(window.navigator.userAgent);
 };
 
 /**
@@ -629,6 +715,64 @@ lib.isD3Selection = function(obj) {
     return obj && (typeof obj.classed === 'function');
 };
 
+/**
+ * Append element to DOM only if not present.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} className (optional) : class name of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ *
+ * Previously, we were using the following pattern:
+ *
+ * ```
+ * var sel = parent.selectAll('.' + className)
+ *     .data([0]);
+ *
+ * sel.enter().append(nodeType)
+ *     .classed(className, true);
+ *
+ * return sel;
+ * ```
+ *
+ * in numerous places in our codebase to achieve the same behavior.
+ *
+ * The logic below performs much better, mostly as we are using
+ * `.select` instead `.selectAll` that is `querySelector` instead of
+ * `querySelectorAll`.
+ *
+ */
+lib.ensureSingle = function(parent, nodeType, className, enterFn) {
+    var sel = parent.select(nodeType + (className ? '.' + className : ''));
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType);
+    if(className) layer.classed(className, true);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
+
+/**
+ * Same as Lib.ensureSingle, but using id as selector.
+ * This version is mostly used for clipPath nodes.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} id : id of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ */
+lib.ensureSingleById = function(parent, nodeType, id, enterFn) {
+    var sel = parent.select(nodeType + '#' + id);
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType).attr('id', id);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
 
 /**
  * Converts a string path to an object.
@@ -646,9 +790,9 @@ lib.isD3Selection = function(obj) {
  * @return {Object} the constructed object with a full nested path
  */
 lib.objectFromPath = function(path, value) {
-    var keys = path.split('.'),
-        tmpObj,
-        obj = tmpObj = {};
+    var keys = path.split('.');
+    var tmpObj;
+    var obj = tmpObj = {};
 
     for(var i = 0; i < keys.length; i++) {
         var key = keys[i];
@@ -670,7 +814,6 @@ lib.objectFromPath = function(path, value) {
 
             tmpObj = tmpObj[el];
         } else {
-
             if(i === keys.length - 1) {
                 tmpObj[key] = value;
             } else {
@@ -803,13 +946,13 @@ lib.numSeparate = function(value, separators, separatethousands) {
         value = String(value);
     }
 
-    var thousandsRe = /(\d+)(\d{3})/,
-        decimalSep = separators.charAt(0),
-        thouSep = separators.charAt(1);
+    var thousandsRe = /(\d+)(\d{3})/;
+    var decimalSep = separators.charAt(0);
+    var thouSep = separators.charAt(1);
 
-    var x = value.split('.'),
-        x1 = x[0],
-        x2 = x.length > 1 ? decimalSep + x[1] : '';
+    var x = value.split('.');
+    var x1 = x[0];
+    var x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
     if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
@@ -821,10 +964,10 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-var TEMPLATE_STRING_REGEX = /%{([^\s%{}]*)}/g;
+lib.TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
-/*
+/**
  * Substitute values from an object into a string
  *
  * Examples:
@@ -836,18 +979,85 @@ var SIMPLE_PROPERTY_REGEX = /^\w*$/;
  *
  * @return {string} templated string
  */
-
 lib.templateString = function(string, obj) {
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key) {
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(dummy, key) {
         if(SIMPLE_PROPERTY_REGEX.test(key)) {
             return obj[key] || '';
         }
         getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
         return getterCache[key]() || '';
+    });
+};
+
+var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
+var numberOfHoverTemplateWarnings = 0;
+var maximumNumberOfHoverTemplateWarnings = 10;
+/**
+ * Substitute values from an object into a string and optionally formats them using d3-format,
+ * or fallback to associated labels.
+ *
+ * Examples:
+ *  Lib.hovertemplateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
+ *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
+ *
+ * @param {obj}     d3 locale
+ * @param {string}  input string containing %{...:...} template strings
+ * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
+ * @param {obj}     data objects containing substitution values
+ *
+ * @return {string} templated string
+ */
+lib.hovertemplateString = function(string, labels, d3locale) {
+    var args = arguments;
+    // Not all that useful, but cache nestedProperty instantiation
+    // just in case it speeds things up *slightly*:
+    var getterCache = {};
+
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
+        var obj, value, i;
+        for(i = 3; i < args.length; i++) {
+            obj = args[i];
+            if(obj.hasOwnProperty(key)) {
+                value = obj[key];
+                break;
+            }
+
+            if(!SIMPLE_PROPERTY_REGEX.test(key)) {
+                value = getterCache[key] || lib.nestedProperty(obj, key).get();
+                if(value) getterCache[key] = value;
+            }
+            if(value !== undefined) break;
+        }
+
+        if(value === undefined) {
+            if(numberOfHoverTemplateWarnings < maximumNumberOfHoverTemplateWarnings) {
+                lib.warn('Variable \'' + key + '\' in hovertemplate could not be found!');
+                value = match;
+            }
+
+            if(numberOfHoverTemplateWarnings === maximumNumberOfHoverTemplateWarnings) {
+                lib.warn('Too many hovertemplate warnings - additional warnings will be suppressed');
+            }
+            numberOfHoverTemplateWarnings++;
+        }
+
+        if(format) {
+            var fmt;
+            if(d3locale) {
+                fmt = d3locale.numberFormat;
+            } else {
+                fmt = d3.format;
+            }
+            value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+        } else {
+            if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
+        }
+        return value;
     });
 };
 
@@ -891,4 +1101,52 @@ lib.pseudoRandom = function() {
     // gets away from really trying to be random, in favor of better local uniformity
     if(Math.abs(randSeed - lastVal) < 429496729) return lib.pseudoRandom();
     return randSeed / 4294967296;
+};
+
+
+/** Fill hover 'pointData' container with 'correct' hover text value
+ *
+ * - If trace hoverinfo contains a 'text' flag and hovertext is not set,
+ *   the text elements will be seen in the hover labels.
+ *
+ * - If trace hoverinfo contains a 'text' flag and hovertext is set,
+ *   hovertext takes precedence over text
+ *   i.e. the hoverinfo elements will be seen in the hover labels
+ *
+ *  @param {object} calcPt
+ *  @param {object} trace
+ *  @param {object || array} contOut (mutated here)
+ */
+lib.fillText = function(calcPt, trace, contOut) {
+    var fill = Array.isArray(contOut) ?
+        function(v) { contOut.push(v); } :
+        function(v) { contOut.text = v; };
+
+    var htx = lib.extractOption(calcPt, trace, 'htx', 'hovertext');
+    if(lib.isValidTextValue(htx)) return fill(htx);
+
+    var tx = lib.extractOption(calcPt, trace, 'tx', 'text');
+    if(lib.isValidTextValue(tx)) return fill(tx);
+};
+
+// accept all truthy values and 0 (which gets cast to '0' in the hover labels)
+lib.isValidTextValue = function(v) {
+    return v || v === 0;
+};
+
+lib.formatPercent = function(ratio, n) {
+    n = n || 0;
+    var str = (Math.round(100 * ratio * Math.pow(10, n)) * Math.pow(0.1, n)).toFixed(n) + '%';
+    for(var i = 0; i < n; i++) {
+        if(str.indexOf('.') !== -1) {
+            str = str.replace('0%', '%');
+            str = str.replace('.%', '%');
+        }
+    }
+    return str;
+};
+
+lib.isHidden = function(gd) {
+    var display = window.getComputedStyle(gd).display;
+    return !display || display === 'none';
 };

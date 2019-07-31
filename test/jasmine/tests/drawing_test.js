@@ -4,13 +4,12 @@ var Drawing = require('@src/components/drawing');
 var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 describe('Drawing', function() {
     'use strict';
 
     describe('setClipUrl', function() {
-
         beforeEach(function() {
             this.svg = d3.select('body').append('svg');
             this.g = this.svg.append('g');
@@ -24,13 +23,13 @@ describe('Drawing', function() {
         it('should set the clip-path attribute', function() {
             expect(this.g.attr('clip-path')).toBe(null);
 
-            Drawing.setClipUrl(this.g, 'id1');
+            Drawing.setClipUrl(this.g, 'id1', {_context: {}});
 
-            expect(this.g.attr('clip-path')).toEqual('url(#id1)');
+            expect(this.g.attr('clip-path')).toEqual('url(\'#id1\')');
         });
 
         it('should unset the clip-path if arg is falsy', function() {
-            this.g.attr('clip-path', 'url(#id2)');
+            this.g.attr('clip-path', 'url(\'#id2\')');
 
             Drawing.setClipUrl(this.g, false);
 
@@ -38,7 +37,6 @@ describe('Drawing', function() {
         });
 
         it('should append window URL to clip-path if <base> is present', function() {
-
             // append <base> with href
             var base = d3.select('body')
                 .append('base')
@@ -47,10 +45,10 @@ describe('Drawing', function() {
             // grab window URL
             var href = window.location.href;
 
-            Drawing.setClipUrl(this.g, 'id3');
+            Drawing.setClipUrl(this.g, 'id3', {_context: {_baseUrl: href}});
 
             expect(this.g.attr('clip-path'))
-                .toEqual('url(' + href + '#id3)');
+                .toEqual('url(\'' + href + '#id3\')');
 
             base.remove();
         });
@@ -61,10 +59,12 @@ describe('Drawing', function() {
                 .attr('href', 'https://plot.ly/#hash');
 
             window.location.hash = 'hash';
+            var href = window.location.href;
+            var href2 = href.split('#')[0];
 
-            Drawing.setClipUrl(this.g, 'id4');
+            Drawing.setClipUrl(this.g, 'id4', {_context: {_baseUrl: href2}});
 
-            var expected = 'url(' + window.location.href.split('#')[0] + '#id4)';
+            var expected = 'url(\'' + href2 + '#id4\')';
 
             expect(this.g.attr('clip-path')).toEqual(expected);
 
@@ -74,7 +74,6 @@ describe('Drawing', function() {
     });
 
     describe('getTranslate', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -119,8 +118,8 @@ describe('Drawing', function() {
         });
 
         it('should work with negative values', function() {
-            var el = document.createElement('div'),
-                el3 = d3.select(document.createElement('div'));
+            var el = document.createElement('div');
+            var el3 = d3.select(document.createElement('div'));
 
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
@@ -141,10 +140,10 @@ describe('Drawing', function() {
             ];
 
             for(var i = 0; i < testCases.length; i++) {
-                var testCase = testCases[i],
-                    transform = testCase.transform,
-                    x = testCase.x,
-                    y = testCase.y;
+                var testCase = testCases[i];
+                var transform = testCase.transform;
+                var x = testCase.x;
+                var y = testCase.y;
 
                 el.setAttribute('transform', transform);
                 expect(Drawing.getTranslate(el)).toEqual({ x: x, y: y });
@@ -156,7 +155,6 @@ describe('Drawing', function() {
     });
 
     describe('setTranslate', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -193,7 +191,6 @@ describe('Drawing', function() {
     });
 
     describe('getScale', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -239,7 +236,6 @@ describe('Drawing', function() {
     });
 
     describe('setScale', function() {
-
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
 
@@ -361,7 +357,7 @@ describe('Drawing', function() {
                 'width', 'left', 'right'
             ].forEach(function(dim) {
                 // give larger dimensions some extra tolerance
-                var tol = Math.max(expected[dim] / 10, 3);
+                var tol = Math.max(expected[dim] / 10, 5.5);
                 expect(actual[dim]).toBeWithin(expected[dim], tol, dim);
             });
         }
@@ -420,7 +416,7 @@ describe('Drawing', function() {
                     bottom: 4
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -544,7 +540,37 @@ describe('gradients', function() {
             // full replot and no resulting markers at all -> no gradients
             checkGradientIds([], [], [], []);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
+    });
+
+    it('should append window URL to gradient ref if <base> is present', function(done) {
+        var base = d3.select('body')
+            .append('base')
+            .attr('href', 'https://plot.ly');
+
+        Plotly.plot(gd, [{
+            type: 'heatmap',
+            x: [1, 2],
+            y: [2, 3],
+            z: [[1, 3], [2, 3]]
+        }])
+        .then(function() {
+            var cbfills = d3.select(gd).select('.cbfills > rect');
+            expect(cbfills.node().style.fill).toBe([
+                'url("',
+                window.location.href,
+                'g',
+                gd._fullLayout._uid,
+                '-cb',
+                gd._fullData[0].uid,
+                '")'
+            ].join(''));
+        })
+        .catch(failTest)
+        .then(function() {
+            base.remove();
+            done();
+        });
     });
 });

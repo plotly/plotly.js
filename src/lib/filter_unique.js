@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,9 +32,9 @@
  * @return {array} new filtered array
  */
 module.exports = function filterUnique(array) {
-    var seen = {},
-        out = [],
-        j = 0;
+    var seen = {};
+    var out = [];
+    var j = 0;
 
     for(var i = 0; i < array.length; i++) {
         var item = array[i];

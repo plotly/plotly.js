@@ -1,0 +1,31 @@
+{
+    "data": [
+        {
+            "a": [2, 1, 1],
+            "b": [1, 2, 1],
+            "c": [1, 1, 2.12345],
+            "type": "scatterternary"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "aaxis": {
+                "showticklabels": false,
+                "showline": false,
+                "title": "no labels / no line"
+            },
+            "baxis": {
+                "ticks": "",
+                "showticklabels": false,
+                "title": "no ticks / no labels"
+            },
+            "caxis": {
+                "showticklabels": false,
+                "showgrid": false,
+                "title": "no grid / no labels"
+            }
+        },
+        "height": 450,
+        "width": 700
+    }
+}

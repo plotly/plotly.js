@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,26 +15,16 @@ var polygon = require('../../lib/polygon');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
-var style = require('./style');
+var style = require('./style').style;
 
-module.exports = function plot(gd, geo, calcData) {
+function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
 
-    function keyFunc(d) { return d[0].trace.uid; }
-
-    var gTraces = geo.layers.backplot.select('.choroplethlayer')
-        .selectAll('g.trace.choropleth')
-        .data(calcData, keyFunc);
-
-    gTraces.enter().append('g')
-        .attr('class', 'trace choropleth');
-
-    gTraces.exit().remove();
-
-    gTraces.each(function(calcTrace) {
-        var sel = calcTrace[0].node3 = d3.select(this);
+    var choroplethLayer = geo.layers.backplot.select('.choroplethlayer');
+    Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function(calcTrace) {
+        var sel = d3.select(this);
 
         var paths = sel.selectAll('path.choroplethlocation')
             .data(Lib.identity);
@@ -47,7 +37,7 @@ module.exports = function plot(gd, geo, calcData) {
         // call style here within topojson request callback
         style(gd, calcTrace);
     });
-};
+}
 
 function calcGeoJSON(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
@@ -63,10 +53,8 @@ function calcGeoJSON(calcTrace, topojson) {
             continue;
         }
 
-
         calcPt.geojson = feature;
         calcPt.ct = feature.properties.ct;
-        calcPt.index = i;
         calcPt._polygons = feature2polygons(feature);
     }
 }
@@ -174,3 +162,8 @@ function feature2polygons(feature) {
 
     return polygons;
 }
+
+module.exports = {
+    plot: plot,
+    feature2polygons: feature2polygons
+};

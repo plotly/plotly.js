@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "type": "histogram",
+      "y": [ 1, 2, 3, 4 ],
+      "offsetgroup": 1,
+      "text": "offsetgroup: 1"
+    },
+    {
+      "type": "histogram",
+      "y": [ 2, 3, 1, 5 ],
+      "offsetgroup": 2,
+      "text": "offsetgroup: 2"
+    },
+    {
+      "type": "histogram",
+      "y": [ 1, 2, 3, 4 ],
+      "yaxis": "y2",
+      "offsetgroup": 1,
+      "text": "offsetgroup: 1"
+    },
+    {
+      "type": "histogram",
+      "y": [ 2, 3, 1, 5 ],
+      "yaxis": "y2",
+      "offsetgroup": 2,
+      "text": "offsetgroup: 2"
+    },
+    {
+      "type": "histogram",
+      "y": [ 1, 2, 3, 4 ],
+      "offsetgroup": 1,
+      "xaxis": "x2",
+      "text": "offsetgroup: 1"
+    },
+    {
+      "type": "histogram",
+      "y": [ 2, 3, 1, 5 ],
+      "offsetgroup": 2,
+      "xaxis": "x2",
+      "text": "offsetgroup: 2"
+    },
+    {
+      "type": "histogram",
+      "y": [ 1, 2, 3, 4 ],
+      "yaxis": "y2",
+      "offsetgroup": 3,
+      "xaxis": "x2",
+      "text": "offsetgroup: 3"
+    },
+    {
+      "type": "histogram",
+      "y": [ 2, 3, 1, 5 ],
+      "yaxis": "y2",
+      "offsetgroup": 4,
+      "xaxis": "x2",
+      "text": "offsetgroup: 4"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "title": {
+      "text": "Histogram offset groups"
+    },
+    "yaxis": {
+      "title": {
+        "text": "two distinct<br>offset groups"
+      }
+    },
+    "yaxis2": {
+      "title": {
+        "text": "four distinct<br>offset groups"
+      }
+    }
+  }
+}

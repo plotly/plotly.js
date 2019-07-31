@@ -1,6 +1,5 @@
 build/*
 !build/plotcss.js
-!build/ploticon.js
 !build/README.md
 
 devtools

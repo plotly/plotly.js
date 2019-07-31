@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,8 +10,8 @@
 
 var Lib = require('../../lib');
 
-var INTERPTHRESHOLD = 1e-2,
-    NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+var INTERPTHRESHOLD = 1e-2;
+var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 function correctionOvershoot(maxFractionalChange) {
     // start with less overshoot, until we know it's converging,
@@ -19,25 +19,28 @@ function correctionOvershoot(maxFractionalChange) {
     return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
 }
 
-module.exports = function interp2d(z, emptyPoints, savedInterpZ) {
-    // fill in any missing data in 2D array z using an iterative
-    // poisson equation solver with zero-derivative BC at edges
-    // amazingly, this just amounts to repeatedly averaging all the existing
-    // nearest neighbors (at least if we don't take x/y scaling into account)
-    var maxFractionalChange = 1,
-        i,
-        thisPt;
+/*
+ * interp2d: Fill in missing data from a 2D array using an iterative
+ *   poisson equation solver with zero-derivative BC at edges.
+ *   Amazingly, this just amounts to repeatedly averaging all the existing
+ *   nearest neighbors, at least if we don't take x/y scaling into account,
+ *   which is the right approach here where x and y may not even have the
+ *   same units.
+ *
+ * @param {array of arrays} z
+ *      The 2D array to fill in. Will be mutated here. Assumed to already be
+ *      cleaned, so all entries are numbers except gaps, which are `undefined`.
+ * @param {array of arrays} emptyPoints
+ *      Each entry [i, j, neighborCount] for empty points z[i][j] and the number
+ *      of neighbors that are *not* missing. Assumed to be sorted from most to
+ *      least neighbors, as produced by heatmap/find_empties.
+ */
+module.exports = function interp2d(z, emptyPoints) {
+    var maxFractionalChange = 1;
+    var i;
 
-    if(Array.isArray(savedInterpZ)) {
-        for(i = 0; i < emptyPoints.length; i++) {
-            thisPt = emptyPoints[i];
-            z[thisPt[0]][thisPt[1]] = savedInterpZ[thisPt[0]][thisPt[1]];
-        }
-    }
-    else {
-        // one pass to fill in a starting value for all the empties
-        iterateInterp2d(z, emptyPoints);
-    }
+    // one pass to fill in a starting value for all the empties
+    iterateInterp2d(z, emptyPoints);
 
     // we're don't need to iterate lone empties - remove them
     for(i = 0; i < emptyPoints.length; i++) {
@@ -59,20 +62,20 @@ module.exports = function interp2d(z, emptyPoints, savedInterpZ) {
 };
 
 function iterateInterp2d(z, emptyPoints, overshoot) {
-    var maxFractionalChange = 0,
-        thisPt,
-        i,
-        j,
-        p,
-        q,
-        neighborShift,
-        neighborRow,
-        neighborVal,
-        neighborCount,
-        neighborSum,
-        initialVal,
-        minNeighbor,
-        maxNeighbor;
+    var maxFractionalChange = 0;
+    var thisPt;
+    var i;
+    var j;
+    var p;
+    var q;
+    var neighborShift;
+    var neighborRow;
+    var neighborVal;
+    var neighborCount;
+    var neighborSum;
+    var initialVal;
+    var minNeighbor;
+    var maxNeighbor;
 
     for(p = 0; p < emptyPoints.length; p++) {
         thisPt = emptyPoints[p];
@@ -90,8 +93,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
             if(neighborVal !== undefined) {
                 if(neighborSum === 0) {
                     minNeighbor = maxNeighbor = neighborVal;
-                }
-                else {
+                } else {
                     minNeighbor = Math.min(minNeighbor, neighborVal);
                     maxNeighbor = Math.max(maxNeighbor, neighborVal);
                 }
@@ -113,8 +115,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
 
         if(initialVal === undefined) {
             if(neighborCount < 4) maxFractionalChange = 1;
-        }
-        else {
+        } else {
             // we can make large empty regions converge faster
             // if we overshoot the change vs the previous value
             z[i][j] = (1 + overshoot) * z[i][j] - overshoot * initialVal;

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47,8 +47,8 @@ function equalPts(pt1, pt2, xtol, ytol) {
 
 // distance in index units - uses the 3rd and 4th items in points
 function ptDist(pt1, pt2) {
-    var dx = pt1[2] - pt2[2],
-        dy = pt1[3] - pt2[3];
+    var dx = pt1[2] - pt2[2];
+    var dy = pt1[3] - pt2[3];
     return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -69,8 +69,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         if(mi > 20) {
             mi = constants.CHOOSESADDLE[mi][(marchStep[0] || marchStep[1]) < 0 ? 0 : 1];
             pi.crossings[locStr] = constants.SADDLEREMAINDER[mi];
-        }
-        else {
+        } else {
             delete pi.crossings[locStr];
         }
 
@@ -90,8 +89,8 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         locStr = loc.join(',');
 
         var atEdge = (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
-                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2)),
-            closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
+                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2));
+        var closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
 
         // have we completed a loop, or reached an edge?
         if((closedLoop) || (edgeflag && atEdge)) break;
@@ -134,8 +133,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
             for(cnt2 = cnt - 1; cnt2 >= cropstart; cnt2--) {
                 if(distgroup + alldists[cnt2] < distThreshold) {
                     distgroup += alldists[cnt2];
-                }
-                else break;
+                } else break;
             }
 
             // closed path with close points wrapping around the boundary?
@@ -143,8 +141,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
                 for(cnt3 = 0; cnt3 < cnt2; cnt3++) {
                     if(distgroup + alldists[cnt3] < distThreshold) {
                         distgroup += alldists[cnt3];
-                    }
-                    else break;
+                    } else break;
                 }
             }
             ptcnt = cnt - cnt2 + cnt3 + 1;
@@ -184,8 +181,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     else if(closedpath) {
         pts.pop();
         pi.paths.push(pts);
-    }
-    else {
+    } else {
         if(!edgeflag) {
             Lib.log('Unclosed interior contour?',
                 pi.level, startLocStr, pts.join('L'));
@@ -210,8 +206,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
                         if(j === i) {
                             // the path is now closed
                             pi.paths.push(pts.concat(edgepathj));
-                        }
-                        else {
+                        } else {
                             if(j > i) j--;
                             pi.edgepaths[j] = edgepathj.concat(pts, edgepathi);
                         }
@@ -240,20 +235,18 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 // special function to get the marching step of the
 // first point in the path (leading to loc)
 function startStep(mi, edgeflag, loc) {
-    var dx = 0,
-        dy = 0;
+    var dx = 0;
+    var dy = 0;
     if(mi > 20 && edgeflag) {
         // these saddles start at +/- x
         if(mi === 208 || mi === 1114) {
             // if we're starting at the left side, we must be going right
             dx = loc[0] === 0 ? 1 : -1;
-        }
-        else {
+        } else {
             // if we're starting at the bottom, we must be going up
             dy = loc[1] === 0 ? 1 : -1;
         }
-    }
-    else if(constants.BOTTOMSTART.indexOf(mi) !== -1) dy = 1;
+    } else if(constants.BOTTOMSTART.indexOf(mi) !== -1) dy = 1;
     else if(constants.LEFTSTART.indexOf(mi) !== -1) dx = 1;
     else if(constants.TOPSTART.indexOf(mi) !== -1) dy = -1;
     else dx = -1;
@@ -276,11 +269,11 @@ function startStep(mi, edgeflag, loc) {
  *   points into a path, because those routines require length-2 points.
  */
 function getInterpPx(pi, loc, step) {
-    var locx = loc[0] + Math.max(step[0], 0),
-        locy = loc[1] + Math.max(step[1], 0),
-        zxy = pi.z[locy][locx],
-        xa = pi.xaxis,
-        ya = pi.yaxis;
+    var locx = loc[0] + Math.max(step[0], 0);
+    var locy = loc[1] + Math.max(step[1], 0);
+    var zxy = pi.z[locy][locx];
+    var xa = pi.xaxis;
+    var ya = pi.yaxis;
 
     if(step[1]) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
@@ -288,8 +281,7 @@ function getInterpPx(pi, loc, step) {
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
             ya.c2p(pi.y[locy], true),
             locx + dx, locy];
-    }
-    else {
+    } else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         return [xa.c2p(pi.x[locx], true),
             ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true),

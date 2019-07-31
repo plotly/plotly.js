@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,8 @@
 'use strict';
 
 var Lib = require('../lib');
+var Template = require('../plot_api/plot_template');
+var handleDomainDefaults = require('./domain').defaults;
 
 
 /**
@@ -48,6 +50,8 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     var ids = layoutOut._subplots[subplotType];
     var idsLength = ids.length;
 
+    var baseId = idsLength && ids[0].replace(/\d+$/, '');
+
     var subplotLayoutIn, subplotLayoutOut;
 
     function coerce(attr, dflt) {
@@ -61,10 +65,17 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
         if(layoutIn[id]) subplotLayoutIn = layoutIn[id];
         else subplotLayoutIn = layoutIn[id] = {};
 
-        layoutOut[id] = subplotLayoutOut = {};
+        subplotLayoutOut = Template.newContainer(layoutOut, id, baseId);
 
-        coerce('domain.' + partition, [i / idsLength, (i + 1) / idsLength]);
-        coerce('domain.' + {x: 'y', y: 'x'}[partition]);
+        // All subplot containers get a `uirevision` inheriting from the base.
+        // Currently all subplots containers have some user interaction
+        // attributes, but if we ever add one that doesn't, we would need an
+        // option to skip this step.
+        coerce('uirevision', layoutOut.uirevision);
+
+        var dfltDomains = {};
+        dfltDomains[partition] = [i / idsLength, (i + 1) / idsLength];
+        handleDomainDefaults(subplotLayoutOut, layoutOut, coerce, dfltDomains);
 
         opts.id = id;
         handleDefaults(subplotLayoutIn, subplotLayoutOut, coerce, opts);

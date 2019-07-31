@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,9 +8,8 @@
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/color_attributes');
-var errorBarAttrs = require('../../components/errorbars/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
@@ -22,6 +21,7 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: 'Sets the x coordinates.'
     },
     x0: {
@@ -29,6 +29,7 @@ module.exports = {
         dflt: 0,
         role: 'info',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: [
             'Alternate to `x`.',
             'Builds a linear space of x coordinates.',
@@ -41,6 +42,7 @@ module.exports = {
         dflt: 1,
         role: 'info',
         editType: 'calc',
+        anim: true,
         description: [
             'Sets the x coordinate step.',
             'See `x0` for more info.'
@@ -49,6 +51,7 @@ module.exports = {
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: 'Sets the y coordinates.'
     },
     y0: {
@@ -56,6 +59,7 @@ module.exports = {
         dflt: 0,
         role: 'info',
         editType: 'calc+clearAxisTypes',
+        anim: true,
         description: [
             'Alternate to `y`.',
             'Builds a linear space of y coordinates.',
@@ -68,11 +72,84 @@ module.exports = {
         dflt: 1,
         role: 'info',
         editType: 'calc',
+        anim: true,
         description: [
             'Sets the y coordinate step.',
             'See `y0` for more info.'
         ].join(' ')
     },
+
+    stackgroup: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several scatter traces (on the same subplot) to the same',
+            'stackgroup in order to add their y values (or their x values if',
+            '`orientation` is *h*). If blank or omitted this trace will not be',
+            'stacked. Stacking also turns `fill` on by default, using *tonexty*',
+            '(*tonextx*) if `orientation` is *h* (*v*) and sets the default',
+            '`mode` to *lines* irrespective of point count.',
+            'You can only stack on a numeric (linear or log) axis.',
+            'Traces in a `stackgroup` will only fill to (or be filled to) other',
+            'traces in the same group. With multiple `stackgroup`s or some',
+            'traces stacked and some not, if fill-linked traces are not already',
+            'consecutive, the later ones will be pushed down in the drawing order.'
+        ].join(' ')
+    },
+    orientation: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['v', 'h'],
+        editType: 'calc',
+        description: [
+            'Only relevant when `stackgroup` is used, and only the first',
+            '`orientation` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`. Sets the',
+            'stacking direction. With *v* (*h*), the y (x) values of subsequent',
+            'traces are added. Also affects the default value of `fill`.'
+        ].join(' ')
+    },
+    groupnorm: {
+        valType: 'enumerated',
+        values: ['', 'fraction', 'percent'],
+        dflt: '',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when `stackgroup` is used, and only the first',
+            '`groupnorm` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`.',
+            'Sets the normalization for the sum of this `stackgroup`.',
+            'With *fraction*, the value of each trace at each location is',
+            'divided by the sum of all trace values at that location.',
+            '*percent* is the same but multiplied by 100 to show percentages.',
+            'If there are multiple subplots, or multiple `stackgroup`s on one',
+            'subplot, each will be normalized within its own set.'
+        ].join(' ')
+    },
+    stackgaps: {
+        valType: 'enumerated',
+        values: ['infer zero', 'interpolate'],
+        dflt: 'infer zero',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when `stackgroup` is used, and only the first',
+            '`stackgaps` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`.',
+            'Determines how we handle locations at which other traces in this',
+            'group have data but this one does not.',
+            'With *infer zero* we insert a zero at these locations.',
+            'With *interpolate* we linearly interpolate between existing',
+            'values, and extrapolate a constant beyond the existing values.'
+            // TODO - implement interrupt mode
+            // '*interrupt* omits this trace from the stack at this location by',
+            // 'dropping abruptly, midway between the existing and missing locations.'
+        ].join(' ')
+    },
+
     text: {
         valType: 'string',
         role: 'info',
@@ -115,7 +192,8 @@ module.exports = {
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
             'appear on hover.',
-            'If there are less than ' + constants.PTS_LINESONLY + ' points,',
+            'If there are less than ' + constants.PTS_LINESONLY + ' points',
+            'and the trace is not stacked',
             'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
@@ -131,11 +209,15 @@ module.exports = {
             'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
     line: {
         color: {
             valType: 'color',
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the line color.'
         },
         width: {
@@ -144,6 +226,7 @@ module.exports = {
             dflt: 2,
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the line width (in px).'
         },
         shape: {
@@ -213,11 +296,12 @@ module.exports = {
     fill: {
         valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
-        dflt: 'none',
         role: 'style',
         editType: 'calc',
         description: [
             'Sets the area to fill with a solid color.',
+            'Defaults to *none* unless this trace is stacked, then it gets',
+            '*tonexty* (*tonextx*) if `orientation` is *v* (*h*)',
             'Use with `fillcolor` if not *none*.',
             '*tozerox* and *tozeroy* fill to x=0 and y=0 respectively.',
             '*tonextx* and *tonexty* fill between the endpoints of this',
@@ -230,13 +314,18 @@ module.exports = {
             '*tonext* fills the space between two traces if one completely',
             'encloses the other (eg consecutive contour lines), and behaves like',
             '*toself* if there is no trace before it. *tonext* should not be',
-            'used if one trace does not enclose the other.'
+            'used if one trace does not enclose the other.',
+            'Traces in a `stackgroup` will only fill to (or be filled to) other',
+            'traces in the same group. With multiple `stackgroup`s or some',
+            'traces stacked and some not, if fill-linked traces are not already',
+            'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
     fillcolor: {
         valType: 'color',
         role: 'style',
         editType: 'style',
+        anim: true,
         description: [
             'Sets the fill color.',
             'Defaults to a half-transparent variant of the line color,',
@@ -266,6 +355,7 @@ module.exports = {
             arrayOk: true,
             role: 'style',
             editType: 'style',
+            anim: true,
             description: 'Sets the marker opacity.'
         },
         size: {
@@ -274,7 +364,8 @@ module.exports = {
             dflt: 6,
             arrayOk: true,
             role: 'style',
-            editType: 'calcIfAutorange',
+            editType: 'calc',
+            anim: true,
             description: 'Sets the marker size (in px).'
         },
         maxdisplayed: {
@@ -323,18 +414,6 @@ module.exports = {
             ].join(' ')
         },
 
-        showscale: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: false,
-            editType: 'calc',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Determines whether or not a colorbar is displayed.'
-            ].join(' ')
-        },
-        colorbar: colorbarAttrs,
-
         line: extendFlat({
             width: {
                 valType: 'number',
@@ -342,11 +421,12 @@ module.exports = {
                 arrayOk: true,
                 role: 'style',
                 editType: 'style',
+                anim: true,
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             editType: 'calc'
         },
-            colorAttributes('marker.line')
+            colorScaleAttrs('marker.line', {anim: true})
         ),
         gradient: {
             type: {
@@ -375,7 +455,7 @@ module.exports = {
         },
         editType: 'calc'
     },
-        colorAttributes('marker')
+        colorScaleAttrs('marker', {anim: true})
     ),
     selected: {
         marker: {
@@ -477,21 +557,20 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the radial coordinates.'
+            'r coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the radial coordinates',
+            'for legacy polar chart only.'
         ].join('')
     },
     t: {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'For legacy polar chart only.',
-            'Please switch to *scatterpolar* trace type.',
-            'Sets the angular coordinates.'
+            't coordinates in scatter traces are deprecated!',
+            'Please switch to the *scatterpolar* trace type.',
+            'Sets the angular coordinates',
+            'for legacy polar chart only.'
         ].join('')
-    },
-
-    error_y: errorBarAttrs,
-    error_x: errorBarAttrs
+    }
 };

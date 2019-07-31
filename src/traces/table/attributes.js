@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,9 +12,11 @@ var annAttrs = require('../../components/annotations/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
 
-module.exports = overrideAll({
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+
+var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
 
     columnwidth: {
@@ -58,7 +60,7 @@ module.exports = overrideAll({
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
 
@@ -110,7 +112,7 @@ module.exports = overrideAll({
                 role: 'style',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors.'
+                    ' or an array of colors or a 2D array of colors.'
                 ].join('')
             }
         },
@@ -138,7 +140,7 @@ module.exports = overrideAll({
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                FORMAT_LINK
             ].join(' ')
         },
 
@@ -190,7 +192,7 @@ module.exports = overrideAll({
                 dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors.'
+                    ' or an array of colors or a 2D array of colors.'
                 ].join('')
             }
         },
@@ -198,3 +200,4 @@ module.exports = overrideAll({
         font: extendFlat({}, fontAttrs({arrayOk: true}))
     }
 }, 'calc', 'from-root');
+attrs.transforms = undefined;

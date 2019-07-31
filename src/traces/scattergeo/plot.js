@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,28 +24,20 @@ module.exports = function plot(gd, geo, calcData) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
 
-    function keyFunc(d) { return d[0].trace.uid; }
-
     function removeBADNUM(d, node) {
         if(d.lonlat[0] === BADNUM) {
             d3.select(node).remove();
         }
     }
 
-    var gTraces = geo.layers.frontplot.select('.scatterlayer')
-        .selectAll('g.trace.scattergeo')
-        .data(calcData, keyFunc);
-
-    gTraces.enter().append('g')
-        .attr('class', 'trace scattergeo');
-
-    gTraces.exit().remove();
+    var scatterLayer = geo.layers.frontplot.select('.scatterlayer');
+    var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
 
     // TODO find a way to order the inner nodes on update
     gTraces.selectAll('*').remove();
 
     gTraces.each(function(calcTrace) {
-        var s = calcTrace[0].node3 = d3.select(this);
+        var s = d3.select(this);
         var trace = calcTrace[0].trace;
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {

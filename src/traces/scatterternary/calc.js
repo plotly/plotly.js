@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67,12 +67,11 @@ module.exports = function calc(gd, trace) {
             y = a;
             x = c - b;
             cd[i] = {x: x, y: y, a: a, b: b, c: c};
-        }
-        else cd[i] = {x: false, y: false};
+        } else cd[i] = {x: false, y: false};
     }
 
     calcMarkerSize(trace, serieslen);
-    calcColorscale(trace);
+    calcColorscale(gd, trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
 

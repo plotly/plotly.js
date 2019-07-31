@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "values": [955, 405, 360, 310, 295],
+      "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
+      "textinfo": "label+percent",
+      "hole": 0.1,
+      "title": "Num. speakers",
+      "titleposition": "middle center",
+      "type": "pie"
+    }
+  ],
+  "layout": {
+    "title": "Top 5 languages by number of native speakers (2010, est.)",
+    "height": 600,
+    "width": 600
+  }
+}

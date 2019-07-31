@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,14 +8,13 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var plotAttrs = require('../../plots/attributes');
+var defaultLine = require('../../components/color/attributes').defaultLine;
 
-var extend = require('../../lib/extend');
-var extendFlat = extend.extendFlat;
-var extendDeepAll = extend.extendDeepAll;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterGeoMarkerLineAttrs = scatterGeoAttrs.marker.line;
 
@@ -37,9 +36,12 @@ module.exports = extendFlat({
     text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),
+    hovertext: extendFlat({}, scatterGeoAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
     marker: {
         line: {
-            color: scatterGeoMarkerLineAttrs.color,
+            color: extendFlat({}, scatterGeoMarkerLineAttrs.color, {dflt: defaultLine}),
             width: extendFlat({}, scatterGeoMarkerLineAttrs.width, {dflt: 1}),
             editType: 'calc'
         },
@@ -74,11 +76,12 @@ module.exports = extendFlat({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
-    })
-},
-    extendDeepAll({}, colorscaleAttrs, {
-        zmax: {editType: 'calc'},
-        zmin: {editType: 'calc'}
     }),
-    { colorbar: colorbarAttrs }
+    hovertemplate: hovertemplateAttrs(),
+},
+
+    colorScaleAttrs('', {
+        cLetter: 'z',
+        editTypeOverride: 'calc'
+    })
 );

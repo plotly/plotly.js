@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,27 +8,25 @@
 
 'use strict';
 
-var ContourCarpet = {};
+module.exports = {
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    colorbar: require('../contour/colorbar'),
+    calc: require('./calc'),
+    plot: require('./plot'),
+    style: require('../contour/style'),
 
-ContourCarpet.attributes = require('./attributes');
-ContourCarpet.supplyDefaults = require('./defaults');
-ContourCarpet.colorbar = require('../contour/colorbar');
-ContourCarpet.calc = require('./calc');
-ContourCarpet.plot = require('./plot');
-ContourCarpet.style = require('../contour/style');
-
-ContourCarpet.moduleType = 'trace';
-ContourCarpet.name = 'contourcarpet';
-ContourCarpet.basePlotModule = require('../../plots/cartesian');
-ContourCarpet.categories = ['cartesian', 'carpet', 'contour', 'symbols', 'showLegend', 'hasLines', 'carpetDependent'];
-ContourCarpet.meta = {
-    hrName: 'contour_carpet',
-    description: [
-        'Plots contours on either the first carpet axis or the',
-        'carpet axis with a matching `carpet` attribute. Data `z`',
-        'is interpreted as matching that of the corresponding carpet',
-        'axis.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'contourcarpet',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', 'carpet', 'contour', 'symbols', 'showLegend', 'hasLines', 'carpetDependent'],
+    meta: {
+        hrName: 'contour_carpet',
+        description: [
+            'Plots contours on either the first carpet axis or the',
+            'carpet axis with a matching `carpet` attribute. Data `z`',
+            'is interpreted as matching that of the corresponding carpet',
+            'axis.'
+        ].join(' ')
+    }
 };
-
-module.exports = ContourCarpet;

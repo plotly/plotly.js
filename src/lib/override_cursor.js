@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -37,8 +37,7 @@ module.exports = function overrideCursor(el3, csr) {
             }
         }
         setCursor(el3, csr);
-    }
-    else if(savedCursor) {
+    } else if(savedCursor) {
         el3.attr(STASHATTR, null);
 
         if(savedCursor === NO_CURSOR) setCursor(el3);

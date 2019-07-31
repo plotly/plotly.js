@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,33 +11,33 @@
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) {
+module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     var i, j, j0;
     var eps, bounds, n1, n2, n, value, v;
     var j1, v0, v1, d;
 
-    var data = trace[axisLetter];
+    var data = trace['_' + axisLetter];
     var axis = trace[axisLetter + 'axis'];
 
     var gridlines = axis._gridlines = [];
     var minorgridlines = axis._minorgridlines = [];
     var boundarylines = axis._boundarylines = [];
 
-    var crossData = trace[crossAxisLetter];
+    var crossData = trace['_' + crossAxisLetter];
     var crossAxis = trace[crossAxisLetter + 'axis'];
 
     if(axis.tickmode === 'array') {
         axis.tickvals = data.slice();
     }
 
-    var xcp = trace.xctrl;
-    var ycp = trace.yctrl;
+    var xcp = trace._xctrl;
+    var ycp = trace._yctrl;
     var nea = xcp[0].length;
     var neb = xcp.length;
-    var na = trace.a.length;
-    var nb = trace.b.length;
+    var na = trace._a.length;
+    var nb = trace._b.length;
 
-    Axes.calcTicks(axis);
+    Axes.prepTicks(axis);
 
     // don't leave tickvals in axis looking like an attribute
     if(axis.tickmode === 'array') delete axis.tickvals;

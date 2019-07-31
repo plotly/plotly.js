@@ -1,0 +1,50 @@
+{
+    "data": [{
+        "type": "contour",
+        "colorscale": [
+            [0, "rgb(0,32,255)"],
+            [1, "rgb(0,32,255)"]
+        ],
+        "contours": {
+            "coloring": "lines",
+            "start": 3545.44829464,
+            "end": 9774,
+            "size": 100,
+            "showlabels": true,
+            "labelfont": {
+                "color": "black",
+                "family": "Raleway",
+                "size": 14
+            }
+        },
+        "showscale": false,
+        "y": [
+            30000,
+            63333.3333333,
+            30000,
+            63333.3333333
+        ],
+        "x": [
+            10000,
+            10000,
+            25000,
+            25000
+        ],
+        "line": {
+            "dash": "solid"
+        },
+        "z": [
+            3545.44829464,
+            5401.29856219,
+            4287.07467078,
+            6254.05596683
+        ]
+    }],
+    "layout": {
+        "title": "in_Fz_tar = f(in_Fy_tar)",
+        "margin": {"r": 80},
+        "legend": {
+            "font": {"size": 9}
+        }
+    }
+}

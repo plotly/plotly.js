@@ -3,16 +3,16 @@ var path = require('path');
 
 var d3 = require('d3');
 
-var $plotlist = document.getElementById('plot-list'),
-    $toggles = document.getElementById('plot-toggles'),
-    $images = document.getElementById('plot-images'),
-    $mock = document.getElementById('plot-mock'),
-    $toggleBaseline = document.createElement('button'),
-    $toggleTest = document.createElement('button'),
-    $toggleDiff = document.createElement('button'),
-    $imgBaseline = document.createElement('img'),
-    $imgTest = document.createElement('img'),
-    $imgDiff = document.createElement('img');
+var $plotlist = document.getElementById('plot-list');
+var $toggles = document.getElementById('plot-toggles');
+var $images = document.getElementById('plot-images');
+var $mock = document.getElementById('plot-mock');
+var $toggleBaseline = document.createElement('button');
+var $toggleTest = document.createElement('button');
+var $toggleDiff = document.createElement('button');
+var $imgBaseline = document.createElement('img');
+var $imgTest = document.createElement('img');
+var $imgDiff = document.createElement('img');
 
 $toggles.style.display = 'none';
 $images.style.display = 'none';
@@ -21,13 +21,13 @@ setupToggle($toggleBaseline, $imgBaseline, 'Baseline');
 setupToggle($toggleTest, $imgTest, 'Test');
 setupToggle($toggleDiff, $imgDiff, 'Diff');
 
-var pathToRoot = path.join(__dirname, '../../'),
-    pathToImageTest = path.join(pathToRoot, 'test/image'),
-    pathToBuild = path.join(pathToRoot, 'build/'),
-    dirMocks = path.join(pathToImageTest, 'mocks/'),
-    dirBaseline = path.join(pathToImageTest, 'baselines/'),
-    dirTest = path.join(pathToBuild, 'test_images/'),
-    dirDiff = path.join(pathToBuild, 'test_images_diff/');
+var pathToRoot = path.join(__dirname, '../../');
+var pathToImageTest = path.join(pathToRoot, 'test/image');
+var pathToBuild = path.join(pathToRoot, 'build/');
+var dirMocks = path.join(pathToImageTest, 'mocks/');
+var dirBaseline = path.join(pathToImageTest, 'baselines/');
+var dirTest = path.join(pathToBuild, 'test_images/');
+var dirDiff = path.join(pathToBuild, 'test_images_diff/');
 
 // N.B. brfs only understand hard-coded paths
 var imageNames = fs.readFileSync(

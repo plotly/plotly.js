@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 function defaultColumnOrder(traceOut, coerce) {
     var specifiedColumnOrder = traceOut.columnorder || [];
@@ -28,8 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('columnwidth');
 
@@ -57,4 +57,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cells.line.color');
     coerce('cells.fill.color');
     Lib.coerceFont(coerce, 'cells.font', Lib.extendFlat({}, layout.font));
+
+    // disable 1D transforms
+    traceOut._length = null;
 };

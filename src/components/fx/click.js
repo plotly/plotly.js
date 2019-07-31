@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,8 +27,7 @@ module.exports = function click(gd, evt, subplot) {
     if(gd._hoverdata && evt && evt.target) {
         if(annotationsDone && annotationsDone.then) {
             annotationsDone.then(emitClick);
-        }
-        else emitClick();
+        } else emitClick();
 
         // why do we get a double event without this???
         if(evt.stopImmediatePropagation) evt.stopImmediatePropagation();

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -138,10 +138,16 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
+        var target = coerce('target');
+
+        if(Lib.isArrayOrTypedArray(target) && target.length === 0) {
+            transformOut.enabled = false;
+            return transformOut;
+        }
+
         coerce('preservegaps');
         coerce('operation');
         coerce('value');
-        coerce('target');
 
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(transformIn, transformOut, 'valuecalendar', null);
@@ -158,9 +164,13 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!targetArray) return;
 
     var target = opts.target;
+
     var len = targetArray.length;
+    if(trace._length) len = Math.min(len, trace._length);
+
     var targetCalendar = opts.targetcalendar;
     var arrayAttrs = trace._arrayAttrs;
+    var preservegaps = opts.preservegaps;
 
     // even if you provide targetcalendar, if target is a string and there
     // is a calendar attribute matching target it will get used instead.
@@ -184,7 +194,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var initFn;
     var fillFn;
-    if(opts.preservegaps) {
+    if(preservegaps) {
         initFn = function(np) {
             originalArrays[np.astr] = Lib.extendDeep([], np.get());
             np.set(new Array(len));
@@ -215,7 +225,7 @@ exports.calcTransform = function(gd, trace, opts) {
         if(passed) {
             forAllAttrs(fillFn, i);
             indexToPoints[index++] = originalPointsAccessor(i);
-        }
+        } else if(preservegaps) index++;
     }
 
     opts._indexToPoints = indexToPoints;
@@ -223,33 +233,30 @@ exports.calcTransform = function(gd, trace, opts) {
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {
-    var operation = opts.operation,
-        value = opts.value,
-        hasArrayValue = Array.isArray(value);
+    var operation = opts.operation;
+    var value = opts.value;
+    var hasArrayValue = Array.isArray(value);
 
     function isOperationIn(array) {
         return array.indexOf(operation) !== -1;
     }
 
-    var d2cValue = function(v) { return d2c(v, 0, opts.valuecalendar); },
-        d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
+    var d2cValue = function(v) { return d2c(v, 0, opts.valuecalendar); };
+    var d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
 
     var coercedValue;
 
     if(isOperationIn(COMPARISON_OPS)) {
         coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
-    }
-    else if(isOperationIn(INTERVAL_OPS)) {
+    } else if(isOperationIn(INTERVAL_OPS)) {
         coercedValue = hasArrayValue ?
             [d2cValue(value[0]), d2cValue(value[1])] :
             [d2cValue(value), d2cValue(value)];
-    }
-    else if(isOperationIn(SET_OPS)) {
+    } else if(isOperationIn(SET_OPS)) {
         coercedValue = hasArrayValue ? value.map(d2cValue) : [d2cValue(value)];
     }
 
     switch(operation) {
-
         case '=':
             return function(v) { return d2cTarget(v) === coercedValue; };
 

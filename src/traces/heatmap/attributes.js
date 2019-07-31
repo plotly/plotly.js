@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,12 +9,13 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     z: {
         valType: 'data_array',
         editType: 'calc',
@@ -31,6 +32,11 @@ module.exports = extendFlat({}, {
         valType: 'data_array',
         editType: 'calc',
         description: 'Sets the text elements associated with each z value.'
+    },
+    hovertext: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: 'Same as `text`.'
     },
     transpose: {
         valType: 'boolean',
@@ -108,11 +114,12 @@ module.exports = extendFlat({}, {
         description: [
             'Sets the hover text formatting rule using d3 formatting mini-languages',
             'which are very similar to those in Python. See:',
-            'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+            FORMAT_LINK
         ].join(' ')
     },
+    hovertemplate: hovertemplateAttrs()
+}, {
+    transforms: undefined
 },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
-    { colorbar: colorbarAttrs }
+    colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );

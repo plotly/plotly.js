@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 
 'use strict';
 
-var barHover = require('../bar/hover');
+var barHover = require('../bar/hover').hoverPoints;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
@@ -24,8 +24,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(!trace.cumulative.enabled) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';
 
-        pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.p0, di.p1);
+        pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.ph0, di.ph1);
     }
+
+    if(trace.hovermplate) pointData.hovertemplate = trace.hovertemplate;
 
     return pts;
 };

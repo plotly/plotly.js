@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,7 +17,7 @@ var triangulate = require('delaunay-triangulate');
 
 var Lib = require('../../lib');
 var str2RgbaArray = require('../../lib/str2rgbarray');
-var formatColor = require('../../lib/gl_format_color');
+var formatColor = require('../../lib/gl_format_color').formatColor;
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var DASH_PATTERNS = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
@@ -50,7 +50,10 @@ proto.handlePick = function(selection) {
         (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
          selection.object === this.textMarkers ||
-         selection.object === this.scatterPlot)) {
+         selection.object === this.scatterPlot)
+    ) {
+        var ind = selection.index = selection.data.index;
+
         if(selection.object.highlight) {
             selection.object.highlight(null);
         }
@@ -58,20 +61,22 @@ proto.handlePick = function(selection) {
             selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
+
+        selection.textLabel = '';
         if(this.textLabels) {
-            if(this.textLabels[selection.data.index] !== undefined) {
-                selection.textLabel = this.textLabels[selection.data.index];
+            if(Array.isArray(this.textLabels)) {
+                if(this.textLabels[ind] || this.textLabels[ind] === 0) {
+                    selection.textLabel = this.textLabels[ind];
+                }
             } else {
                 selection.textLabel = this.textLabels;
             }
         }
-        else selection.textLabel = '';
 
-        var selectIndex = selection.index = selection.data.index;
         selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex]
+            this.data.x[ind],
+            this.data.y[ind],
+            this.data.z[ind]
         ];
 
         return true;
@@ -109,33 +114,65 @@ function constructDelaunay(points, color, axis) {
 }
 
 function calculateErrorParams(errors) {
-    var capSize = [0.0, 0.0, 0.0],
-        color = [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-        lineWidth = [0.0, 0.0, 0.0];
+    var capSize = [0.0, 0.0, 0.0];
+    var color = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    var lineWidth = [1.0, 1.0, 1.0];
 
     for(var i = 0; i < 3; i++) {
         var e = errors[i];
 
-        if(e && e.copy_zstyle !== false) e = errors[2];
-        if(!e) continue;
+        if(e && e.copy_zstyle !== false && errors[2].visible !== false) e = errors[2];
+        if(!e || !e.visible) continue;
 
         capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
-        lineWidth = e.thickness;
-
+        lineWidth[i] = e.thickness;
     }
 
     return {capSize: capSize, color: color, lineWidth: lineWidth};
 }
 
+function parseAlignmentX(a) {
+    if(a === null || a === undefined) return 0;
+
+    return (a.indexOf('left') > -1) ? -1 :
+           (a.indexOf('right') > -1) ? 1 : 0;
+}
+
+function parseAlignmentY(a) {
+    if(a === null || a === undefined) return 0;
+
+    return (a.indexOf('top') > -1) ? -1 :
+           (a.indexOf('bottom') > -1) ? 1 : 0;
+}
+
 function calculateTextOffset(tp) {
     // Read out text properties
-    var textOffset = [0, 0];
-    if(Array.isArray(tp)) return [0, -1];
-    if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
-    if(tp.indexOf('top') >= 0) textOffset[1] -= 1;
-    if(tp.indexOf('left') >= 0) textOffset[0] -= 1;
-    if(tp.indexOf('right') >= 0) textOffset[0] += 1;
+
+    var defaultAlignmentX = 0;
+    var defaultAlignmentY = 0;
+
+    var textOffset = [
+        defaultAlignmentX,
+        defaultAlignmentY
+    ];
+
+    if(Array.isArray(tp)) {
+        for(var i = 0; i < tp.length; i++) {
+            textOffset[i] = [
+                defaultAlignmentX,
+                defaultAlignmentY
+            ];
+            if(tp[i]) {
+                textOffset[i][0] = parseAlignmentX(tp[i]);
+                textOffset[i][1] = parseAlignmentY(tp[i]);
+            }
+        }
+    } else {
+        textOffset[0] = parseAlignmentX(tp);
+        textOffset[1] = parseAlignmentY(tp);
+    }
+
     return textOffset;
 }
 
@@ -152,39 +189,38 @@ function calculateSymbol(symbolIn) {
 function formatParam(paramIn, len, calculate, dflt, extraFn) {
     var paramOut = null;
 
-    if(Array.isArray(paramIn)) {
+    if(Lib.isArrayOrTypedArray(paramIn)) {
         paramOut = [];
 
         for(var i = 0; i < len; i++) {
             if(paramIn[i] === undefined) paramOut[i] = dflt;
             else paramOut[i] = calculate(paramIn[i], extraFn);
         }
-
-    }
-    else paramOut = calculate(paramIn, Lib.identity);
+    } else paramOut = calculate(paramIn, Lib.identity);
 
     return paramOut;
 }
 
 
 function convertPlotlyOptions(scene, data) {
-    var params, i,
-        points = [],
-        sceneLayout = scene.fullSceneLayout,
-        scaleFactor = scene.dataScale,
-        xaxis = sceneLayout.xaxis,
-        yaxis = sceneLayout.yaxis,
-        zaxis = sceneLayout.zaxis,
-        marker = data.marker,
-        line = data.line,
-        xc, x = data.x || [],
-        yc, y = data.y || [],
-        zc, z = data.z || [],
-        len = x.length,
-        xcalendar = data.xcalendar,
-        ycalendar = data.ycalendar,
-        zcalendar = data.zcalendar,
-        text;
+    var points = [];
+    var sceneLayout = scene.fullSceneLayout;
+    var scaleFactor = scene.dataScale;
+    var xaxis = sceneLayout.xaxis;
+    var yaxis = sceneLayout.yaxis;
+    var zaxis = sceneLayout.zaxis;
+    var marker = data.marker;
+    var line = data.line;
+    var x = data.x || [];
+    var y = data.y || [];
+    var z = data.z || [];
+    var len = x.length;
+    var xcalendar = data.xcalendar;
+    var ycalendar = data.ycalendar;
+    var zcalendar = data.zcalendar;
+    var xc, yc, zc;
+    var params, i;
+    var text;
 
     // Convert points
     for(i = 0; i < len; i++) {
@@ -228,7 +264,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition);  // arrayOk === false
+        params.textOffset = calculateTextOffset(data.textposition);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
@@ -247,7 +283,7 @@ function convertPlotlyOptions(scene, data) {
         }
     }
 
-    params.errorBounds = calculateError(data, scaleFactor);
+    params.errorBounds = calculateError(data, scaleFactor, sceneLayout);
 
     var errorParams = calculateErrorParams([data.error_x, data.error_y, data.error_z]);
     params.errorColor = errorParams.color;
@@ -275,12 +311,12 @@ function arrayToColor(color) {
 }
 
 proto.update = function(data) {
-    var gl = this.scene.glplot.gl,
-        lineOptions,
-        scatterOptions,
-        errorOptions,
-        textOptions,
-        dashPattern = DASH_PATTERNS.solid;
+    var gl = this.scene.glplot.gl;
+    var lineOptions;
+    var scatterOptions;
+    var errorOptions;
+    var textOptions;
+    var dashPattern = DASH_PATTERNS.solid;
 
     // Save data
     this.data = data;
@@ -304,7 +340,7 @@ proto.update = function(data) {
     this.dataPoints = options.position;
 
     lineOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.lineColor,
         lineWidth: options.lineWidth || 1,
@@ -332,7 +368,7 @@ proto.update = function(data) {
     if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.scatterColor,
         size: options.scatterSize,
@@ -361,7 +397,7 @@ proto.update = function(data) {
     }
 
     textOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         glyph: options.text,
         color: options.textColor,
@@ -392,7 +428,7 @@ proto.update = function(data) {
     }
 
     errorOptions = {
-        gl: gl,
+        gl: this.scene.glplot.gl,
         position: options.position,
         color: options.errorColor,
         error: options.errorBounds,

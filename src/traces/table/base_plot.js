@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ var TABLE = 'table';
 exports.name = TABLE;
 
 exports.plot = function(gd) {
-    var calcData = getModuleCalcData(gd.calcdata, TABLE);
+    var calcData = getModuleCalcData(gd.calcdata, TABLE)[0];
     if(calcData.length) tablePlot(gd, calcData);
 };
 

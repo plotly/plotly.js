@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,17 +8,18 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var scatterMarkerAttrs = scatterAttrs.marker,
-    scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = overrideAll({
     lon: {
@@ -92,7 +93,6 @@ module.exports = overrideAll({
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
         line: extendFlat({
             width: scatterMarkerLineAttrs.width
@@ -123,5 +123,6 @@ module.exports = overrideAll({
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
-    })
+    }),
+    hovertemplate: hovertemplateAttrs(),
 }, 'calc', 'nested');

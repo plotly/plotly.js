@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,7 +21,7 @@ module.exports = function emptyPathinfo(contours, plotinfo, cd0) {
     var pathinfo = [];
     var end = endPlus(contoursFinal);
 
-    var carpet = cd0.trace.carpetTrace;
+    var carpet = cd0.trace._carpetTrace;
 
     var basePathinfo = carpet ? {
         // store axes so we can convert to px

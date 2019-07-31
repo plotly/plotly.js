@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,8 +22,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
             if(trace.contours.type === 'constraint') {
                 if(trace.fillcolor && Color.opacity(trace.fillcolor)) {
                     hoverPt.color = Color.addOpacity(trace.fillcolor, 1);
-                }
-                else if(trace.contours.showlines && Color.opacity(trace.line.color)) {
+                } else if(trace.contours.showlines && Color.opacity(trace.line.color)) {
                     hoverPt.color = Color.addOpacity(trace.line.color, 1);
                 }
             }

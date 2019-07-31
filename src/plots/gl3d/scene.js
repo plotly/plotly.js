@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,8 @@
 
 'use strict';
 
-var createPlot = require('gl-plot3d');
+var createCamera = require('gl-plot3d').createCamera;
+var createPlot = require('gl-plot3d').createScene;
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
 
@@ -22,7 +23,6 @@ var Fx = require('../../components/fx');
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
-var createCamera = require('./camera');
 var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
@@ -32,12 +32,14 @@ var computeTickMarks = require('./layout/tick_marks');
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
+    var gd = scene.graphDiv;
     var trace;
 
     // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
-    var width = clientRect.width, height = clientRect.height;
+    var width = clientRect.width;
+    var height = clientRect.height;
     svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
     svgContainer.setAttributeNS(null, 'width', width);
     svgContainer.setAttributeNS(null, 'height', height);
@@ -69,74 +71,131 @@ function render(scene) {
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
+        var traceNow = gd._fullData[trace.index];
         var ptNumber = selection.index;
-        var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
 
-        var xVal = formatter('xaxis', selection.traceCoordinate[0]),
-            yVal = formatter('yaxis', selection.traceCoordinate[1]),
-            zVal = formatter('zaxis', selection.traceCoordinate[2]);
+        var labels = {
+            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
+            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
+            zLabel: formatter('zaxis', selection.traceCoordinate[2])
+        };
 
-        if(hoverinfo !== 'all') {
-            var hoverinfoParts = hoverinfo.split('+');
-            if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
-            if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
-            if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
+        var hoverinfo = Fx.castHoverinfo(traceNow, scene.fullLayout, ptNumber);
+        var hoverinfoParts = (hoverinfo || '').split('+');
+        var isHoverinfoAll = hoverinfo && hoverinfo === 'all';
+
+        if(!traceNow.hovertemplate && !isHoverinfoAll) {
+            if(hoverinfoParts.indexOf('x') === -1) labels.xLabel = undefined;
+            if(hoverinfoParts.indexOf('y') === -1) labels.yLabel = undefined;
+            if(hoverinfoParts.indexOf('z') === -1) labels.zLabel = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
 
-        if(scene.fullSceneLayout.hovermode) {
-            Fx.loneHover({
-                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
-                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
-                xLabel: xVal,
-                yLabel: yVal,
-                zLabel: zVal,
-                text: selection.textLabel,
-                name: lastPicked.name,
-                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
-                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
-                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
-                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
-                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
-            }, {
-                container: svgContainer,
-                gd: scene.graphDiv
-            });
+        var tx;
+        var vectorTx = [];
+
+        if(trace.type === 'cone' || trace.type === 'streamtube') {
+            labels.uLabel = formatter('xaxis', selection.traceCoordinate[3]);
+            if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
+                vectorTx.push('u: ' + labels.uLabel);
+            }
+
+            labels.vLabel = formatter('yaxis', selection.traceCoordinate[4]);
+            if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
+                vectorTx.push('v: ' + labels.vLabel);
+            }
+
+            labels.wLabel = formatter('zaxis', selection.traceCoordinate[5]);
+            if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
+                vectorTx.push('w: ' + labels.wLabel);
+            }
+
+            labels.normLabel = selection.traceCoordinate[6].toPrecision(3);
+            if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
+                vectorTx.push('norm: ' + labels.normLabel);
+            }
+            if(trace.type === 'streamtube') {
+                labels.divergenceLabel = selection.traceCoordinate[7].toPrecision(3);
+                if(isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1) {
+                    vectorTx.push('divergence: ' + labels.divergenceLabel);
+                }
+            }
+            if(selection.textLabel) {
+                vectorTx.push(selection.textLabel);
+            }
+            tx = vectorTx.join('<br>');
+        } else if(trace.type === 'isosurface' || trace.type === 'volume') {
+            labels.valueLabel = Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            vectorTx.push('value: ' + labels.valueLabel);
+            if(selection.textLabel) {
+                vectorTx.push(selection.textLabel);
+            }
+            tx = vectorTx.join('<br>');
+        } else {
+            tx = selection.textLabel;
         }
 
         var pointData = {
             x: selection.traceCoordinate[0],
             y: selection.traceCoordinate[1],
             z: selection.traceCoordinate[2],
-            data: trace._input,
-            fullData: trace,
-            curveNumber: trace.index,
+            data: traceNow._input,
+            fullData: traceNow,
+            curveNumber: traceNow.index,
             pointNumber: ptNumber
         };
 
-        Fx.appendArrayPointValue(pointData, trace, ptNumber);
+        Fx.appendArrayPointValue(pointData, traceNow, ptNumber);
+
+        if(trace._module.eventData) {
+            pointData = traceNow._module.eventData(pointData, selection, traceNow, {}, ptNumber);
+        }
 
         var eventData = {points: [pointData]};
 
-        if(selection.buttons && selection.distance < 5) {
-            scene.graphDiv.emit('plotly_click', eventData);
+        if(scene.fullSceneLayout.hovermode) {
+            Fx.loneHover({
+                trace: traceNow,
+                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
+                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
+                xLabel: labels.xLabel,
+                yLabel: labels.yLabel,
+                zLabel: labels.zLabel,
+                text: tx,
+                name: lastPicked.name,
+                color: Fx.castHoverOption(traceNow, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(traceNow, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(traceNow, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(traceNow, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(traceNow, ptNumber, 'font.color'),
+                nameLength: Fx.castHoverOption(traceNow, ptNumber, 'namelength'),
+                textAlign: Fx.castHoverOption(traceNow, ptNumber, 'align'),
+                hovertemplate: Lib.castOption(traceNow, ptNumber, 'hovertemplate'),
+                hovertemplateLabels: Lib.extendFlat({}, pointData, labels),
+                eventData: [pointData]
+            }, {
+                container: svgContainer,
+                gd: gd
+            });
         }
-        else {
-            scene.graphDiv.emit('plotly_hover', eventData);
+
+        if(selection.buttons && selection.distance < 5) {
+            gd.emit('plotly_click', eventData);
+        } else {
+            gd.emit('plotly_hover', eventData);
         }
 
         oldEventData = eventData;
-    }
-    else {
+    } else {
         Fx.loneUnhover(svgContainer);
-        scene.graphDiv.emit('plotly_unhover', oldEventData);
+        gd.emit('plotly_unhover', oldEventData);
     }
 
     scene.drawAnnotations(scene);
 }
 
-function initializeGLPlot(scene, fullLayout, canvas, gl) {
+function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
     var glplotOptions = {
         canvas: canvas,
         gl: gl,
@@ -146,7 +205,9 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         pickRadius: 10,
         snapToData: true,
         autoScale: true,
-        autoBounds: false
+        autoBounds: false,
+        cameraObject: cameraObject,
+        pixelRatio: pixelRatio
     };
 
     // for static plots, we reuse the WebGL context
@@ -171,46 +232,64 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     try {
         scene.glplot = createPlot(glplotOptions);
+    } catch(e) {
+        return false;
     }
-    catch(e) {
-        /*
-        * createPlot will throw when webgl is not enabled in the client.
-        * Lets return an instance of the module with all functions noop'd.
-        * The destroy method - which will remove the container from the DOM
-        * is overridden with a function that removes the container only.
-        */
-        showNoWebGlMsg(scene);
-    }
+
+    return true;
+}
+
+function initializeGLPlot(scene, pixelRatio, canvas, gl) {
+    scene.initializeGLCamera();
+
+    var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
+    /*
+    * createPlot will throw when webgl is not enabled in the client.
+    * Lets return an instance of the module with all functions noop'd.
+    * The destroy method - which will remove the container from the DOM
+    * is overridden with a function that removes the container only.
+    */
+    if(!success) return showNoWebGlMsg(scene);
+
+    var gd = scene.graphDiv;
 
     var relayoutCallback = function(scene) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
         update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
-        scene.saveCamera(scene.graphDiv.layout);
+        scene.saveCamera(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
-    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function() {
+        if(gd._context._scrollZoom.gl3d) {
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
+
+    scene.glplot.canvas.addEventListener('mousemove', function() {
+        if(scene.fullSceneLayout.dragmode === false) return;
+        if(scene.camera.mouseListener.buttons === 0) return;
+
+        var update = {};
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        scene.graphDiv.emit('plotly_relayouting', update);
+    });
 
     if(!scene.staticMode) {
-        scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-            Lib.warn('Lost WebGL context.');
-            ev.preventDefault();
-        });
-    }
-
-    if(!scene.camera) {
-        var cameraData = scene.fullSceneLayout.camera;
-        scene.camera = createCamera(scene.container, {
-            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-            eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-            up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-            zoomMin: 0.1,
-            zoomMax: 100,
-            mode: 'orbit'
-        });
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
+            if(gd && gd.emit) {
+                gd.emit('plotly_webglcontextlost', {
+                    event: event,
+                    layer: scene.id
+                });
+            }
+        }, false);
     }
 
     scene.glplot.camera = scene.camera;
@@ -224,11 +303,12 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     // List of scene objects
     scene.traces = {};
 
+    scene.make4thDimension();
+
     return true;
 }
 
 function Scene(options, fullLayout) {
-
     // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
@@ -265,11 +345,11 @@ function Scene(options, fullLayout) {
     /*
      * Move this to calc step? Why does it work here?
      */
-    this.axesOptions = createAxesOptions(fullLayout[this.id]);
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
     this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
     this.container = sceneContainer;
     this.staticMode = !!options.staticPlot;
-    this.pixelRatio = options.plotGlPixelRatio || 2;
+    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
 
     // Coordinate rescaling
     this.dataScale = [1, 1, 1];
@@ -279,15 +359,32 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
+    initializeGLPlot(this, this.pixelRatio);
 }
 
 var proto = Scene.prototype;
+
+proto.initializeGLCamera = function() {
+    var cameraData = this.fullSceneLayout.camera;
+    var isOrtho = (cameraData.projection.type === 'orthographic');
+
+    this.camera = createCamera(this.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        _ortho: isOrtho,
+        zoomMin: 0.01,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
 
 proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
+    var camera = this.glplot.camera;
+    var pixelRatio = this.glplot.pixelRatio;
     this.glplot.dispose();
 
     function tryRecover() {
@@ -295,7 +392,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+        if(!initializeGLPlot(scene, camera, pixelRatio, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -306,43 +403,68 @@ proto.recoverContext = function() {
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-function coordinateBound(axis, coord, len, d, bounds, calendar) {
-    var x;
-    if(!Array.isArray(coord)) {
-        bounds[0][d] = Math.min(bounds[0][d], 0);
-        bounds[1][d] = Math.max(bounds[1][d], len - 1);
-        return;
-    }
+function computeTraceBounds(scene, trace, bounds) {
+    var sceneLayout = scene.fullSceneLayout;
 
-    for(var i = 0; i < (len || coord.length); ++i) {
-        if(Array.isArray(coord[i])) {
-            for(var j = 0; j < coord[i].length; ++j) {
-                x = axis.d2l(coord[i][j], 0, calendar);
-                if(!isNaN(x) && isFinite(x)) {
-                    bounds[0][d] = Math.min(bounds[0][d], x);
-                    bounds[1][d] = Math.max(bounds[1][d], x);
+    for(var d = 0; d < 3; d++) {
+        var axisName = axisProperties[d];
+        var axLetter = axisName.charAt(0);
+        var ax = sceneLayout[axisName];
+        var coords = trace[axLetter];
+        var calendar = trace[axLetter + 'calendar'];
+        var len = trace['_' + axLetter + 'length'];
+
+        if(!Lib.isArrayOrTypedArray(coords)) {
+            bounds[0][d] = Math.min(bounds[0][d], 0);
+            bounds[1][d] = Math.max(bounds[1][d], len - 1);
+        } else {
+            var v;
+
+            for(var i = 0; i < (len || coords.length); i++) {
+                if(Lib.isArrayOrTypedArray(coords[i])) {
+                    for(var j = 0; j < coords[i].length; ++j) {
+                        v = ax.d2l(coords[i][j], 0, calendar);
+                        if(!isNaN(v) && isFinite(v)) {
+                            bounds[0][d] = Math.min(bounds[0][d], v);
+                            bounds[1][d] = Math.max(bounds[1][d], v);
+                        }
+                    }
+                } else {
+                    v = ax.d2l(coords[i], 0, calendar);
+                    if(!isNaN(v) && isFinite(v)) {
+                        bounds[0][d] = Math.min(bounds[0][d], v);
+                        bounds[1][d] = Math.max(bounds[1][d], v);
+                    }
                 }
             }
         }
-        else {
-            x = axis.d2l(coord[i], 0, calendar);
-            if(!isNaN(x) && isFinite(x)) {
-                bounds[0][d] = Math.min(bounds[0][d], x);
-                bounds[1][d] = Math.max(bounds[1][d], x);
+    }
+}
+
+function computeAnnotationBounds(scene, bounds) {
+    var sceneLayout = scene.fullSceneLayout;
+    var annotations = sceneLayout.annotations || [];
+
+    for(var d = 0; d < 3; d++) {
+        var axisName = axisProperties[d];
+        var axLetter = axisName.charAt(0);
+        var ax = sceneLayout[axisName];
+
+        for(var j = 0; j < annotations.length; j++) {
+            var ann = annotations[j];
+
+            if(ann.visible) {
+                var pos = ax.r2l(ann[axLetter]);
+                if(!isNaN(pos) && isFinite(pos)) {
+                    bounds[0][d] = Math.min(bounds[0][d], pos);
+                    bounds[1][d] = Math.max(bounds[1][d], pos);
+                }
             }
         }
     }
 }
 
-function computeTraceBounds(scene, trace, bounds) {
-    var sceneLayout = scene.fullSceneLayout;
-    coordinateBound(sceneLayout.xaxis, trace.x, trace._xlength, 0, bounds, trace.xcalendar);
-    coordinateBound(sceneLayout.yaxis, trace.y, trace._ylength, 1, bounds, trace.ycalendar);
-    coordinateBound(sceneLayout.zaxis, trace.z, trace._zlength, 2, bounds, trace.zcalendar);
-}
-
 proto.plot = function(sceneData, fullLayout, layout) {
-
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
@@ -363,12 +485,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
-    this.axesOptions.merge(fullSceneLayout);
+    this.axesOptions.merge(fullLayout, fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
     this.setCamera(fullSceneLayout.camera);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
+    this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
 
     // Update scene
     this.glplot.update({});
@@ -385,24 +508,21 @@ proto.plot = function(sceneData, fullLayout, layout) {
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
     ];
+
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
-        if(data.visible !== true) continue;
+        if(data.visible !== true || data._length === 0) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
+    computeAnnotationBounds(this, dataBounds);
+
     var dataScale = [1, 1, 1];
     for(j = 0; j < 3; ++j) {
-        if(dataBounds[0][j] > dataBounds[1][j]) {
+        if(dataBounds[1][j] === dataBounds[0][j]) {
             dataScale[j] = 1.0;
-        }
-        else {
-            if(dataBounds[1][j] === dataBounds[0][j]) {
-                dataScale[j] = 1.0;
-            }
-            else {
-                dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
-            }
+        } else {
+            dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
         }
     }
 
@@ -415,12 +535,18 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
-        if(data.visible !== true) {
+        if(data.visible !== true || data._length === 0) {
             continue;
         }
         trace = this.traces[data.uid];
         if(trace) {
-            trace.update(data);
+            if(trace.data.type === data.type) {
+                trace.update(data);
+            } else {
+                trace.dispose();
+                trace = data._module.plot(this, data);
+                this.traces[data.uid] = trace;
+            }
         } else {
             trace = data._module.plot(this, data);
             this.traces[data.uid] = trace;
@@ -431,11 +557,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Remove empty traces
     var traceIds = Object.keys(this.traces);
 
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; ++i) {
         for(j = 0; j < sceneData.length; ++j) {
-            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible === true) {
-                continue trace_id_loop;
+            if(sceneData[j].uid === traceIds[i] &&
+                (sceneData[j].visible === true && sceneData[j]._length !== 0)) {
+                continue traceIdLoop;
             }
         }
         trace = this.traces[traceIds[i]];
@@ -449,9 +576,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     });
 
     // Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = [[0, 0, 0], [0, 0, 0]],
-        axisDataRange = [],
-        axisTypeRatios = {};
+    var sceneBounds = [[0, 0, 0], [0, 0, 0]];
+    var axisDataRange = [];
+    var axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
@@ -460,8 +587,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(axisType in axisTypeRatios) {
             axisTypeRatios[axisType].acc *= dataScale[i];
             axisTypeRatios[axisType].count += 1;
-        }
-        else {
+        } else {
             axisTypeRatios[axisType] = {
                 acc: dataScale[i],
                 count: 1
@@ -477,9 +603,16 @@ proto.plot = function(sceneData, fullLayout, layout) {
             var axLetter = axis._name.charAt(0);
 
             for(j = 0; j < objects.length; j++) {
-                var objBounds = objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
+                var obj = objects[j];
+                var objBounds = obj.bounds;
+                var pad = obj._trace.data._pad || 0;
+
+                if(obj.constructor.name === 'ErrorBars' && axis._lowerLogErrorBound) {
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], axis._lowerLogErrorBound);
+                } else {
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
+                }
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i] + pad);
             }
 
             for(j = 0; j < annotations.length; j++) {
@@ -504,6 +637,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
                 sceneBounds[0][i] -= d / 32.0;
                 sceneBounds[1][i] += d / 32.0;
+            }
+
+            if(axis.autorange === 'reversed') {
+                // swap bounds:
+                var tmp = sceneBounds[0][i];
+                sceneBounds[0][i] = sceneBounds[1][i];
+                sceneBounds[1][i] = tmp;
             }
         } else {
             var range = axis.range;
@@ -538,32 +678,25 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var aspectRatio;
 
     if(fullSceneLayout.aspectmode === 'auto') {
-
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
 
             aspectRatio = axesScaleRatio;
         } else {
-
             /*
              * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
              */
             aspectRatio = [1, 1, 1];
         }
-
     } else if(fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
-
     } else if(fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-
     } else if(fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
-
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
@@ -584,8 +717,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
 
     // Update frame position for multi plots
-    var domain = fullSceneLayout.domain || null,
-        size = fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null;
+    var size = fullLayout._size || null;
 
     if(domain && size) {
         var containerStyle = this.container.style;
@@ -627,7 +760,8 @@ function getLayoutCamera(camera) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
         center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
-        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]}
+        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]},
+        projection: {type: (camera._ortho === true) ? 'orthographic' : 'perspective'}
     };
 }
 
@@ -640,23 +774,48 @@ proto.getCamera = function getCamera() {
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
     this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+
+    var newOrtho = (cameraData.projection.type === 'orthographic');
+    var oldOrtho = this.glplot.camera._ortho;
+
+    if(newOrtho !== oldOrtho) {
+        this.glplot.redraw();
+
+        var pixelRatio = this.glplot.pixelRatio;
+
+        var RGBA = this.glplot.clearColor;
+        this.glplot.gl.clearColor(
+            RGBA[0], RGBA[1], RGBA[2], RGBA[3]
+        );
+        this.glplot.gl.clear(
+            this.glplot.gl.DEPTH_BUFFER_BIT |
+            this.glplot.gl.COLOR_BUFFER_BIT
+        );
+
+        this.glplot.dispose();
+
+        initializeGLPlot(this, pixelRatio);
+        this.glplot.camera._ortho = newOrtho;
+    }
 };
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraData = this.getCamera(),
-        cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera'),
-        cameraDataLastSave = cameraNestedProp.get(),
-        hasChanged = false;
+    var fullLayout = this.fullLayout;
+    var cameraData = this.getCamera();
+    var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+    var cameraDataLastSave = cameraNestedProp.get();
+    var hasChanged = false;
 
     function same(x, y, i, j) {
-        var vectors = ['up', 'center', 'eye'],
-            components = ['x', 'y', 'z'];
+        var vectors = ['up', 'center', 'eye'];
+        var components = ['x', 'y', 'z'];
         return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 
-    if(cameraDataLastSave === undefined) hasChanged = true;
-    else {
+    if(cameraDataLastSave === undefined) {
+        hasChanged = true;
+    } else {
         for(var i = 0; i < 3; i++) {
             for(var j = 0; j < 3; j++) {
                 if(!same(cameraData, cameraDataLastSave, i, j)) {
@@ -665,29 +824,61 @@ proto.saveCamera = function saveCamera(layout) {
                 }
             }
         }
+
+        if(!cameraDataLastSave.projection || (
+            cameraData.projection &&
+            cameraData.projection.type !== cameraDataLastSave.projection.type)) {
+            hasChanged = true;
+        }
     }
 
-    if(hasChanged) cameraNestedProp.set(cameraData);
+    if(hasChanged) {
+        var preGUI = {};
+        preGUI[this.id + '.camera'] = cameraDataLastSave;
+        Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
+
+        cameraNestedProp.set(cameraData);
+
+        var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
+        cameraFullNP.set(cameraData);
+    }
 
     return hasChanged;
 };
 
 proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
-
         } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
 
+            // The setter for camera.mode animates the transition to z-up,
+            // but only if we *don't* explicitly set z-up earlier via the
+            // relayout. So push `up` back to layout & fullLayout manually now.
+            var gd = this.graphDiv;
+            var fullLayout = gd._fullLayout;
+            var fullCamera = this.fullSceneLayout.camera;
+            var x = fullCamera.up.x;
+            var y = fullCamera.up.y;
+            var z = fullCamera.up.z;
+            // only push `up` back to (full)layout if it's going to change
+            if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
+                var attr = this.id + '.camera.up';
+                var zUp = {x: 0, y: 0, z: 1};
+                var edits = {};
+                edits[attr] = zUp;
+                var layout = gd.layout;
+                Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, edits);
+                fullCamera.up = zUp;
+                Lib.nestedProperty(layout, attr).set(zUp);
+            }
         } else {
-
             // none rotation modes [pan or zoom]
             camera.keyBindingMode = dragmode;
         }
@@ -758,6 +949,20 @@ proto.setConvert = function() {
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+};
+
+proto.make4thDimension = function() {
+    var _this = this;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
+
+    // mock axis for hover formatting
+    _this.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(_this.mockAxis, fullLayout);
 };
 
 module.exports = Scene;

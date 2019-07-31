@@ -1,46 +1,62 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
+var extractOpts = require('./helpers').extractOpts;
 
-var scales = require('./scales');
-var flipScale = require('./flip_scale');
+module.exports = function calc(gd, trace, opts) {
+    var fullLayout = gd._fullLayout;
+    var vals = opts.vals;
+    var containerStr = opts.containerStr;
 
+    var container = containerStr ?
+        Lib.nestedProperty(trace, containerStr).get() :
+        trace;
 
-module.exports = function calc(trace, vals, containerStr, cLetter) {
-    var container, inputContainer;
+    var cOpts = extractOpts(container);
+    var auto = cOpts.auto !== false;
+    var min = cOpts.min;
+    var max = cOpts.max;
+    var mid = cOpts.mid;
 
-    if(containerStr) {
-        container = Lib.nestedProperty(trace, containerStr).get();
-        inputContainer = Lib.nestedProperty(trace._input, containerStr).get();
+    var minVal = function() { return Lib.aggNums(Math.min, null, vals); };
+    var maxVal = function() { return Lib.aggNums(Math.max, null, vals); };
+
+    if(min === undefined) {
+        min = minVal();
+    } else if(auto) {
+        if(container._colorAx && isNumeric(min)) {
+            min = Math.min(min, minVal());
+        } else {
+            min = minVal();
+        }
     }
-    else {
-        container = trace;
-        inputContainer = trace._input;
+
+    if(max === undefined) {
+        max = maxVal();
+    } else if(auto) {
+        if(container._colorAx && isNumeric(max)) {
+            max = Math.max(max, maxVal());
+        } else {
+            max = maxVal();
+        }
     }
 
-    var autoAttr = cLetter + 'auto',
-        minAttr = cLetter + 'min',
-        maxAttr = cLetter + 'max',
-        auto = container[autoAttr],
-        min = container[minAttr],
-        max = container[maxAttr],
-        scl = container.colorscale;
-
-    if(auto !== false || min === undefined) {
-        min = Lib.aggNums(Math.min, null, vals);
-    }
-
-    if(auto !== false || max === undefined) {
-        max = Lib.aggNums(Math.max, null, vals);
+    if(auto && mid !== undefined) {
+        if(max - mid > mid - min) {
+            min = mid - (max - mid);
+        } else if(max - mid < mid - min) {
+            max = mid + (mid - min);
+        }
     }
 
     if(min === max) {
@@ -48,30 +64,14 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
         max += 0.5;
     }
 
-    container[minAttr] = min;
-    container[maxAttr] = max;
+    cOpts._sync('min', min);
+    cOpts._sync('max', max);
 
-    inputContainer[minAttr] = min;
-    inputContainer[maxAttr] = max;
-
-    /*
-     * If auto was explicitly false but min or max was missing,
-     * we filled in the missing piece here but later the trace does
-     * not look auto.
-     * Otherwise make sure the trace still looks auto as far as later
-     * changes are concerned.
-     */
-    inputContainer[autoAttr] = (auto !== false ||
-        (min === undefined && max === undefined));
-
-    if(container.autocolorscale) {
-        if(min * max < 0) scl = scales.RdBu;
-        else if(min >= 0) scl = scales.Reds;
-        else scl = scales.Blues;
-
-        // reversescale is handled at the containerOut level
-        inputContainer.colorscale = scl;
-        if(container.reversescale) scl = flipScale(scl);
-        container.colorscale = scl;
+    if(cOpts.autocolorscale) {
+        var scl;
+        if(min * max < 0) scl = fullLayout.colorscale.diverging;
+        else if(min >= 0) scl = fullLayout.colorscale.sequential;
+        else scl = fullLayout.colorscale.sequentialminus;
+        cOpts._sync('colorscale', scl);
     }
 };

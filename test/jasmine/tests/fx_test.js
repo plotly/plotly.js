@@ -58,6 +58,24 @@ describe('Fx defaults', function() {
         expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
+    it('should default (cartesian horizontal version, stacked scatter)', function() {
+        var layoutOut = _supply([{
+            orientation: 'h',
+            stackgroup: '1',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }, {
+            stackgroup: '1',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }])
+        .layout;
+
+        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
+        expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+        expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
+    });
+
     it('should default (gl3d version)', function() {
         var layoutOut = _supply([{
             type: 'scatter3d',
@@ -153,6 +171,7 @@ describe('Fx defaults', function() {
                 size: 40,
                 color: 'pink'
             },
+            align: 'auto',
             namelength: 15
         });
 
@@ -164,6 +183,7 @@ describe('Fx defaults', function() {
                 size: 20,
                 color: 'red'
             },
+            align: 'auto',
             namelength: 15
         });
 
@@ -201,13 +221,12 @@ describe('relayout', function() {
     afterEach(destroyGraphDiv);
 
     it('should update main drag with correct', function(done) {
-
         function assertMainDrag(cursor, isActive) {
             expect(d3.selectAll('rect.nsewdrag').size()).toEqual(1, 'number of nodes');
-            var mainDrag = d3.select('rect.nsewdrag'),
-                node = mainDrag.node();
+            var mainDrag = d3.select('rect.nsewdrag');
+            var node = mainDrag.node();
 
-            expect(mainDrag.classed('cursor-' + cursor)).toBe(true, 'cursor ' + cursor);
+            expect(window.getComputedStyle(node).cursor).toBe(cursor, 'cursor ' + cursor);
             expect(node.style.pointerEvents).toEqual('all', 'pointer event');
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }

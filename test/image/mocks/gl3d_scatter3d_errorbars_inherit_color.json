@@ -1,0 +1,79 @@
+{
+    "data": [
+      {
+        "x": [0, 1, 2, 3, 4],
+        "y": [-5, -10, -30, -35, -5],
+        "z": [0, 0, 0, 0, 0],
+        "type": "scatter3d",
+        "mode": "markers+lines",
+        "error_y": {
+          "type": "sqrt"
+        }
+      },
+      {
+        "x": [0, 1, 2, 3, 4],
+        "y": [-5, -10, -30, -35, -5],
+        "z": [1, 1, 1, 1, 1],
+        "type": "scatter3d",
+        "mode": "markers+lines",
+        "marker": {
+          "line": {
+            "width": 2,
+            "color": "gray"
+          }
+        },
+        "error_y": {
+          "type": "sqrt"
+        }
+      },
+      {
+        "x": [0, 1, 2, 3, 4],
+        "y": [-5, -10, -30, -35, -5],
+        "z": [2, 2, 2, 2, 2],
+        "type": "scatter3d",
+        "mode": "markers+lines",
+        "marker": {
+          "color": "red"
+        },
+        "error_y": {
+          "type": "sqrt"
+        }
+      },
+      {
+        "x": [0, 1, 2, 3, 4],
+        "y": [-5, -10, -30, -35, -5],
+        "z": [3, 3, 3, 3, 3],
+        "type": "scatter3d",
+        "mode": "markers+lines",
+        "line": {
+          "color": "green"
+        },
+        "error_y": {
+          "type": "sqrt"
+        }
+      },
+      {
+        "x": [0, 1, 2, 3, 4],
+        "y": [-5, -10, -30, -35, -5],
+        "z": [4, 4, 4, 4, 4],
+        "type": "scatter3d",
+        "mode": "markers+lines",
+        "line": {
+          "color": "blue"
+        },
+        "marker": {
+          "color": "black"
+        },
+        "error_y": {
+          "type": "sqrt"
+        }
+      }
+    ],
+    "layout": {
+        "width": 600,
+        "heigh": 600,
+        "title": {
+            "text": "Scatter3d error bars inherit color from line or marker"
+        }
+    }
+}

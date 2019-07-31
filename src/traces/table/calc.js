@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,8 @@
 
 var wrap = require('../../lib/gup').wrap;
 
-module.exports = function calc(gd, trace) {
-    return wrap(trace);
+module.exports = function calc() {
+    // we don't actually need to include the trace here, since that will be added
+    // by Plots.doCalcdata, and that's all we actually need later.
+    return wrap({});
 };

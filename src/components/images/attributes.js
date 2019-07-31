@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,11 +9,10 @@
 'use strict';
 
 var cartesianConstants = require('../../plots/cartesian/constants');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 
-module.exports = {
-    _isLinkedToArray: 'image',
-
+module.exports = templatedArray('image', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -178,4 +177,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'arraydraw'
-};
+});

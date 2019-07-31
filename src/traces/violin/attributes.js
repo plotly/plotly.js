@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,17 @@ module.exports = {
     x: boxAttrs.x,
     x0: boxAttrs.x0,
     y0: boxAttrs.y0,
-    name: boxAttrs.name,
+    name: extendFlat({}, boxAttrs.name, {
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.',
+            'For violin traces, the name will also be used for the position',
+            'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
+            'missing and the position axis is categorical.',
+            'Note that the trace name is also used as a default value',
+            'for attribute `scalegroup` (please see its description for details).'
+        ].join(' ')
+    }),
     orientation: extendFlat({}, boxAttrs.orientation, {
         description: [
             'Sets the orientation of the violin(s).',
@@ -44,7 +54,9 @@ module.exports = {
         description: [
             'If there are multiple violins that should be sized according to',
             'to some metric (see `scalemode`), link them by providing a non-empty group id here',
-            'shared by every trace in the same group.'
+            'shared by every trace in the same group.',
+            'If a violin\'s `width` is undefined, `scalegroup` will default to the trace\'s name.',
+            'In this case, violins with the same names will be linked together'
         ].join(' ')
     },
     scalemode: {
@@ -135,8 +147,19 @@ module.exports = {
             'right (left) for vertical violins and above (below) for horizontal violins.'
         ].join(' ')
     }),
+
+    width: extendFlat({}, boxAttrs.width, {
+        description: [
+            'Sets the width of the violin in data coordinates.',
+            'If *0* (default value) the width is automatically selected based on the positions',
+            'of other violin traces in the same subplot.',
+        ].join(' ')
+    }),
+
     marker: boxAttrs.marker,
     text: boxAttrs.text,
+    hovertext: boxAttrs.hovertext,
+    hovertemplate: boxAttrs.hovertemplate,
 
     box: {
         visible: {
@@ -220,7 +243,7 @@ module.exports = {
         values: ['both', 'positive', 'negative'],
         dflt: 'both',
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines on which side of the position value the density function making up',
             'one half of a violin is plotted.',
@@ -228,6 +251,9 @@ module.exports = {
             'has `side` set to *positive* and the other to *negative*.'
         ].join(' ')
     },
+
+    offsetgroup: boxAttrs.offsetgroup,
+    alignmentgroup: boxAttrs.alignmentgroup,
 
     selected: boxAttrs.selected,
     unselected: boxAttrs.unselected,

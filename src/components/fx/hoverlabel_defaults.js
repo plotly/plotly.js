@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,4 +17,5 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     coerce('hoverlabel.bordercolor', opts.bordercolor);
     coerce('hoverlabel.namelength', opts.namelength);
     Lib.coerceFont(coerce, 'hoverlabel.font', opts.font);
+    coerce('hoverlabel.align', opts.align);
 };

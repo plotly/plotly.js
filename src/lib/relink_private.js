@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 
 'use strict';
 
-var isArray = require('./is_array');
+var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 var isPlainObject = require('./is_plain_object');
 
 /**
@@ -28,15 +28,12 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             continue;
         }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
-
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toContainer) continue;
 
             toContainer[k] = fromVal;
-        }
-        else if(isArray(fromVal) && isArray(toVal) && isPlainObject(fromVal[0])) {
-
+        } else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
             // but if the user makes new ones we also don't want to recurse in.
@@ -49,9 +46,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
                     relinkPrivateKeys(toVal[j], fromVal[j]);
                 }
             }
-        }
-        else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
-
+        } else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
 

@@ -2,9 +2,10 @@
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
-plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
+plotly.js is a high-level, declarative charting library. plotly.js ships with over 40
 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
 and more.
 
@@ -19,6 +20,7 @@ and more.
 
 * [Quick start options](#quick-start-options)
 * [Modules](#modules)
+* [Building plotly.js](#building-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -30,28 +32,16 @@ and more.
 
 ## Quick start options
 
-#### Download the latest release
-[Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
-
-and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-
-#### Clone the repo
+### Install with npm
 
 ```bash
-git clone https://github.com/plotly/plotly.js.git
+npm install plotly.js-dist
 ```
 
-and use the plotly.js `dist` file(s).
+and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = require('plotly.js-dist');`.
 
-#### Install with `npm`
+### Use the plotly.js CDN hosted by Fastly
 
-```bash
-npm install plotly.js
-```
-
-and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or use the plotly.js `dist` file(s).
-
-#### Use the plotly.js CDN hosted by Fastly
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -60,18 +50,27 @@ and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or 
 <script src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 
 <!-- OR an un-minified version is also available -->
-<script src="https://cdn.plot.ly/plotly-latest.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
 ```
 
 and use the `Plotly` object in the window scope.
 
-##### Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+### Download the latest release
+
+[Latest Release on GitHub](https://github.com/plotly/plotly.js/releases/)
+
+and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+
+#### Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+
 
 ## Modules
 
-Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
+Starting in `v1.15.0`, plotly.js ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
 
-If you would like to manually pick which plotly.js modules to include, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*:
+Starting in `v1.39.0`, plotly.js publishes _distributed_ npm packages with no dependencies. For example, run `npm install plotly.js-geo-dist` and add `import Plotly from 'plotly.js-geo-dist';` to your code to start using the plotly.js geo package.
+
+If none of the distributed npm packages meet your needs, and you would like to manually pick which plotly.js modules to include, you'll first need to run `npm install plotly.js` and then create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*. For example, in CommonJS:
 
 ```javascript
 // in custom-plotly.js
@@ -102,24 +101,9 @@ Important: the plotly.js code base contains some non-ascii characters. Therefore
 <script src="my-plotly-bundle.js" charset="utf-8"></script>
 ```
 
+## Building plotly.js
 
-#### Building plotly.js with Webpack
-
-For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
-
-A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/rreusser/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
-```js
-...
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'ify-loader'
-            }
-        ]
-    },
-...
-```
+Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
 
 ## Bugs and feature requests
 
@@ -170,13 +154,24 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ## Creators
 
+### Active
+
 |   | Github | Twitter |
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
+|**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | |
+|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) |
+
+### Hall of Fame
+
+|   | Github | Twitter |
+|---|--------|---------|
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
+|**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)|
 |**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) |
+|**Robert Möstl** | [@rmoestl](https://github.com/rmoestl) | [@rmoestl](https://twitter.com/rmoestl) |
 |**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | |
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)|
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
@@ -187,7 +182,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ## Copyright and license
 
-Code and documentation copyright 2018 Plotly, Inc.
+Code and documentation copyright 2019 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 

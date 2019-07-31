@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,5 +17,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleHoverLabelDefaults(traceIn, traceOut, coerce, layout.hoverlabel);
+    var opts = Lib.extendFlat({}, layout.hoverlabel);
+    if(traceOut.hovertemplate) opts.namelength = -1;
+
+    handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };

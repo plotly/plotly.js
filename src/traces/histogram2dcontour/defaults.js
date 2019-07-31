@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -31,4 +31,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    coerce('hovertemplate');
 };

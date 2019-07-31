@@ -1,0 +1,22 @@
+{
+    "data":[{
+        "x": [1, 1, 1, 2, 2],
+        "type": "histogram"
+    }, {
+        "x": [20, 20, 21, 21],
+        "type": "histogram"
+    }, {
+        "x": [1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 7],
+        "type": "histogram",
+        "xaxis": "x2"
+    }, {
+        "x": [6, 6.1, 6.2],
+        "type": "histogram",
+        "xaxis": "x2"
+    }],
+    "layout": {
+        "height": 400, "width": 500,
+        "barmode": "stack",
+        "grid": {"rows": 1, "columns": 2}
+    }
+}

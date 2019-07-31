@@ -4,11 +4,14 @@ var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var mouseEvent = require('../assets/mouse_event');
 
-var mockMulti = require('@mocks/table_latex_multitrace.json');
+var mockMulti = require('@mocks/table_latex_multitrace_scatter.json');
 
 // mock with two columns; lowest column count of general case
 var mock2 = Lib.extendDeep({}, mockMulti);
@@ -27,11 +30,9 @@ mock0.data[0].cells.values = [];
 var mock = require('@mocks/table_plain_birds.json');
 
 describe('table initialization tests', function() {
-
     'use strict';
 
     describe('table global defaults', function() {
-
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock1);
 
@@ -64,11 +65,10 @@ describe('table initialization tests', function() {
     });
 
     describe('table defaults', function() {
-
         function _supply(traceIn) {
-            var traceOut = { visible: true },
-                defaultColor = '#777',
-                layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
+            var traceOut = { visible: true };
+            var defaultColor = '#777';
+            var layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
 
             Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -141,13 +141,10 @@ describe('table initialization tests', function() {
 });
 
 describe('table', function() {
-
     afterEach(destroyGraphDiv);
 
     describe('edge cases', function() {
-
         it('Works with more than one column', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
@@ -160,7 +157,6 @@ describe('table', function() {
         });
 
         it('Works with one column', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock1);
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
@@ -173,7 +169,6 @@ describe('table', function() {
         });
 
         it('Does not error with zero columns', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock0);
             var gd = createGraphDiv();
 
@@ -187,7 +182,6 @@ describe('table', function() {
         });
 
         it('Does not raise an error with zero lines', function(done) {
-
             var mockCopy = Lib.extendDeep({}, mock2);
 
             mockCopy.layout.width = 320;
@@ -196,13 +190,41 @@ describe('table', function() {
 
             var gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
                 done();
             });
+        });
+
+        it('should remove scroll glyph and capture zone when *staticPlot:true*', function(done) {
+            var mockCopy = Lib.extendDeep({}, require('@mocks/table_plain_birds.json'));
+            var gd = createGraphDiv();
+
+            function _assert(msg, exp) {
+                expect(d3.selectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
+                expect(d3.selectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
+            }
+
+            // more info in: https://github.com/plotly/streambed/issues/11618
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                _assert('staticPlot:false (base)', {
+                    captureZone: 1,
+                    glyph: 1
+                });
+            })
+            .then(function() { return Plotly.purge(gd); })
+            .then(function() { return Plotly.plot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
+            .then(function() {
+                _assert('staticPlot:true', {
+                    captureZone: 0,
+                    glyph: 0
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -272,7 +294,6 @@ describe('table', function() {
         });
 
         it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
-
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].header.values.length).toEqual(7);
             expect(gd.data[0].cells.values.length).toEqual(7);
@@ -280,7 +301,6 @@ describe('table', function() {
         });
 
         it('Calling `Plotly.plot` again should add the new table trace', function(done) {
-
             var reversedMockCopy = Lib.extendDeep({}, mockCopy);
             reversedMockCopy.data[0].header.values = reversedMockCopy.data[0].header.values.slice().reverse();
             reversedMockCopy.data[0].cells.values = reversedMockCopy.data[0].cells.values.slice().reverse();
@@ -291,34 +311,28 @@ describe('table', function() {
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
                 done();
             });
-
         });
 
         it('Calling `Plotly.restyle` with a string path should amend the preexisting table', function(done) {
-
             expect(gd.data.length).toEqual(1);
 
             Plotly.restyle(gd, 'header.fill.color', 'magenta').then(function() {
-
                 expect(gd.data.length).toEqual(1);
 
                 expect(gd.data[0].header.fill.color).toEqual('magenta');
                 expect(gd.data[0].header.values.length).toEqual(7);
                 expect(gd.data[0].cells.values.length).toEqual(7);
-                expect(gd.data[0].header.line.color).toEqual('lightgray'); // no change relative to original mock value
+                expect(gd.data[0].header.line.color).toEqual(['dimgray', 'grey']); // no change relative to original mock value
                 expect(gd.data[0].cells.line.color).toEqual(['grey']); // no change relative to original mock value
 
                 done();
             });
-
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
-
             function restyleValues(what, key, setterValue) {
-
                 // array values need to be wrapped in an array; unwrapping here for value comparison
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {
                     return Plotly.restyle(gd, what + '.values[' + key + ']', setterValue).then(function() {
@@ -354,8 +368,7 @@ describe('table', function() {
     });
 
     describe('more restyling tests with scenegraph queries', function() {
-        var mockCopy,
-            gd;
+        var mockCopy, gd;
 
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock2);
@@ -364,10 +377,8 @@ describe('table', function() {
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
-
             function restyleValues(what, fun, setterValue) {
-
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {
                     return Plotly.restyle(gd, what, setterValue).then(function() {
@@ -392,6 +403,104 @@ describe('table', function() {
                 .then(restyleValues('header.line.width', function(gd) {return gd.data[0].header.line.width;}, [[2, 6]]))
                 .then(restyleValues('header.format', function(gd) {return gd.data[0].header.format;}, [['', '']]))
                 .then(done);
+        });
+    });
+
+    describe('scroll effects', function() {
+        var mockCopy, gd, gdWheelEventCount;
+
+        beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mockMulti);
+            gd = createGraphDiv();
+            gdWheelEventCount = 0;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                gd.addEventListener('mousewheel', function(evt) {
+                    gdWheelEventCount++;
+                    // make sure we don't *really* scroll the page.
+                    // that would be annoying!
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                });
+            })
+            .then(done);
+        });
+
+        function assertBubbledEvents(cnt) {
+            expect(gdWheelEventCount).toBe(cnt);
+            gdWheelEventCount = 0;
+        }
+
+        function getCenter(el) {
+            var bBox = el.getBoundingClientRect();
+            // actually above center, since these bboxes are bigger than the
+            // visible table area
+            return {x: bBox.left + bBox.width / 2, y: bBox.top + bBox.height / 4};
+        }
+
+        function scroll(pos, dy) {
+            mouseEvent('mousemove', pos.x, pos.y);
+            mouseEvent('mousewheel', pos.x, pos.y, {deltaX: 0, deltaY: dy});
+        }
+
+        it('bubbles scroll events iff they did not scroll a table', function() {
+            var allTableControls = document.querySelectorAll('.' + cn.tableControlView);
+            var smallCenter = getCenter(allTableControls[0]);
+            var bigCenter = getCenter(allTableControls[1]);
+
+            // table with no scroll bars - events always bubble
+            scroll(smallCenter, -20);
+            assertBubbledEvents(1);
+            scroll(smallCenter, 20);
+            assertBubbledEvents(1);
+
+            // table with scrollbars - events bubble if we don't use them
+            scroll(bigCenter, -20); // up from the top - bubbles
+            assertBubbledEvents(1);
+            scroll(bigCenter, 20); // down from the top - scrolled, so no bubble
+            assertBubbledEvents(0);
+            scroll(bigCenter, -40); // back to the top, with extra dy discarded
+            assertBubbledEvents(0);
+            scroll(bigCenter, -20); // now it bubbles
+            assertBubbledEvents(1);
+            scroll(bigCenter, 200000); // all the way to the bottom
+            assertBubbledEvents(0);
+            scroll(bigCenter, 20); // now it bubbles from the bottom..
+            assertBubbledEvents(1);
+        });
+
+        it('does not scroll any tables with staticPlot', function(done) {
+            var allTableControls = document.querySelectorAll('.' + cn.tableControlView);
+            var bigCenter = getCenter(allTableControls[1]);
+
+            var mock = Lib.extendDeep({}, mockMulti);
+
+            // make sure initially with staticPlot: false, scrolling works
+            // (copied from previous test)
+            scroll(bigCenter, 20);
+            assertBubbledEvents(0);
+            scroll(bigCenter, -40);
+            assertBubbledEvents(0);
+
+            Plotly.react(gd, mock.data, mock.layout, {staticPlot: true})
+            .then(function() {
+                // now the same scrolls bubble
+                scroll(bigCenter, 20);
+                assertBubbledEvents(1);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(1);
+
+                return Plotly.react(gd, mock.data, mock.layout, {staticPlot: false});
+            })
+            .then(function() {
+                // scroll works again!
+                scroll(bigCenter, 20);
+                assertBubbledEvents(0);
+                scroll(bigCenter, -40);
+                assertBubbledEvents(0);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

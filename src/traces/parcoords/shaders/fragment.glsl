@@ -1,4 +1,4 @@
-precision lowp float;
+precision highp float;
 
 varying vec4 fragColor;
 

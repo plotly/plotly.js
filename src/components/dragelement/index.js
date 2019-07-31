@@ -1,11 +1,10 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -13,11 +12,8 @@ var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
 var supportsPassive = require('has-passive-events');
 
-var Plotly = require('../../plotly');
-var Lib = require('../../lib');
-
+var removeElement = require('../../lib').removeElement;
 var constants = require('../../plots/cartesian/constants');
-var interactConstants = require('../../constants/interactions');
 
 var dragElement = module.exports = {};
 
@@ -27,7 +23,6 @@ dragElement.getCursor = require('./cursor');
 var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
-
 
 /**
  * Abstracts click & drag interactions
@@ -86,7 +81,7 @@ dragElement.unhoverRaw = unhover.raw;
 dragElement.init = function init(options) {
     var gd = options.gd;
     var numClicks = 1;
-    var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+    var doubleClickDelay = gd._context.doubleClickDelay;
     var element = options.element;
 
     var startX,
@@ -106,8 +101,7 @@ dragElement.init = function init(options) {
 
     if(!supportsPassive) {
         element.ontouchstart = onStart;
-    }
-    else {
+    } else {
         if(element._ontouchstart) {
             element.removeEventListener('touchstart', element._ontouchstart);
         }
@@ -124,8 +118,6 @@ dragElement.init = function init(options) {
     var clampFn = options.clampFn || _clampFn;
 
     function onStart(e) {
-        e.preventDefault();
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -135,14 +127,19 @@ dragElement.init = function init(options) {
         startY = offset[1];
         initialTarget = e.target;
         initialEvent = e;
-        rightClick = (e.buttons && e.buttons === 2) || e.ctrlKey;
+        rightClick = e.buttons === 2 || e.ctrlKey;
+
+        // fix Fx.hover for touch events
+        if(typeof e.clientX === 'undefined' && typeof e.clientY === 'undefined') {
+            e.clientX = startX;
+            e.clientY = startY;
+        }
 
         newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
+        if(newMouseDownTime - gd._mouseDownTime < doubleClickDelay) {
             // in a click train
             numClicks += 1;
-        }
-        else {
+        } else {
             // new click train
             numClicks = 1;
             gd._mouseDownTime = newMouseDownTime;
@@ -153,18 +150,21 @@ dragElement.init = function init(options) {
         if(hasHover && !rightClick) {
             dragCover = coverSlip();
             dragCover.style.cursor = window.getComputedStyle(element).cursor;
-        }
-        else if(!hasHover) {
+        } else if(!hasHover) {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
             document.documentElement.style.cursor = window.getComputedStyle(element).cursor;
         }
 
-        document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onDone);
-        document.addEventListener('touchmove', onMove);
         document.addEventListener('touchend', onDone);
+
+        if(options.dragmode !== false) {
+            e.preventDefault();
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove);
+        }
 
         return;
     }
@@ -183,23 +183,33 @@ dragElement.init = function init(options) {
             dragElement.unhover(gd);
         }
 
-        if(gd._dragged && options.moveFn && !rightClick) options.moveFn(dx, dy);
+        if(gd._dragged && options.moveFn && !rightClick) {
+            gd._dragdata = {
+                element: element,
+                dx: dx,
+                dy: dy
+            };
+            options.moveFn(dx, dy);
+        }
 
         return;
     }
 
     function onDone(e) {
-        document.removeEventListener('mousemove', onMove);
+        delete gd._dragdata;
+
+        if(options.dragmode !== false) {
+            e.preventDefault();
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+        }
+
         document.removeEventListener('mouseup', onDone);
-        document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onDone);
 
-        e.preventDefault();
-
         if(hasHover) {
-            Lib.removeElement(dragCover);
-        }
-        else if(cursor) {
+            removeElement(dragCover);
+        } else if(cursor) {
             dragCover.documentElement.style.cursor = cursor;
             cursor = null;
         }
@@ -212,14 +222,13 @@ dragElement.init = function init(options) {
 
         // don't count as a dblClick unless the mouseUp is also within
         // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
+        if((new Date()).getTime() - gd._mouseDownTime > doubleClickDelay) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
         if(gd._dragged) {
-            if(options.doneFn) options.doneFn(e);
-        }
-        else {
+            if(options.doneFn) options.doneFn();
+        } else {
             if(options.clickFn) options.clickFn(numClicks, initialEvent);
 
             // If we haven't dragged, this should be a click. But because of the
@@ -231,8 +240,7 @@ dragElement.init = function init(options) {
 
                 try {
                     e2 = new MouseEvent('click', e);
-                }
-                catch(err) {
+                } catch(err) {
                     var offset = pointerOffset(e);
                     e2 = document.createEvent('MouseEvents');
                     e2.initMouseEvent('click',
@@ -248,10 +256,8 @@ dragElement.init = function init(options) {
             }
         }
 
-        finishDrag(gd);
-
+        gd._dragging = false;
         gd._dragged = false;
-
         return;
     }
 };
@@ -275,11 +281,6 @@ function coverSlip() {
 }
 
 dragElement.coverSlip = coverSlip;
-
-function finishDrag(gd) {
-    gd._dragging = false;
-    if(gd._replotPending) Plotly.plot(gd);
-}
 
 function pointerOffset(e) {
     return mouseOffset(

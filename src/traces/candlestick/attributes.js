@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,9 +15,6 @@ var boxAttrs = require('../box/attributes');
 
 function directionAttrs(lineColorDefault) {
     return {
-        name: OHLCattrs.increasing.name,
-        showlegend: OHLCattrs.increasing.showlegend,
-
         line: {
             color: extendFlat({}, boxAttrs.line.color, {dflt: lineColorDefault}),
             width: boxAttrs.line.width,
@@ -53,5 +50,8 @@ module.exports = {
     decreasing: directionAttrs(OHLCattrs.decreasing.line.color.dflt),
 
     text: OHLCattrs.text,
-    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
+    hovertext: OHLCattrs.hovertext,
+    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
+
+    hoverlabel: OHLCattrs.hoverlabel,
 };

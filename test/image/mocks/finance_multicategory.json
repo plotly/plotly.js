@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "name": "ohlc",
+      "type": "ohlc",
+      "open": [ 10, 11, 12, 13, 12, 13, 14, 15, 16 ],
+      "high": [ 15, 16, 17, 18, 17, 18, 19, 20, 21 ],
+      "low": [ 7, 8, 9, 10, 9, 10, 11, 12, 13 ],
+      "close": [ 9, 10, 12, 13, 13, 12, 14, 14, 17 ],
+      "x": [
+        [ "Group 1", "Group 1", "Group 1", "Group 2", "Group 2", "Group 2", "Group 3", "Group 3", "Group 3" ],
+        [ "a", "b", "c", "a", "b", "c", "a", "b", "c" ]
+      ]
+    },
+    {
+      "name": "candlestick",
+      "type": "candlestick",
+      "open": [ 20, 21, 22, 23, 22, 23, 24, 25, 26 ],
+      "high": [ 25, 26, 27, 28, 27, 28, 29, 30, 31 ],
+      "low": [ 17, 18, 19, 20, 19, 20, 21, 22, 23 ],
+      "close": [ 19, 20, 22, 23, 23, 22, 24, 24, 27 ],
+      "x": [
+        [ "Group 1", "Group 1", "Group 1", "Group 2", "Group 2", "Group 2", "Group 3", "Group 3", "Group 3" ],
+        [ "a", "b", "c", "a", "b", "c", "a", "b", "c" ]
+      ]
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Finance traces on multicategory x-axis",
+      "xref": "paper",
+      "x": 0
+    },
+    "legend": {
+      "x": 1,
+      "xanchor": "right",
+      "y": 1,
+      "yanchor": "bottom"
+    }
+  }
+}

@@ -3,10 +3,12 @@ var Lib = require('@src/lib');
 
 var Box = require('@src/traces/box');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -83,7 +85,6 @@ describe('Test boxes supplyDefaults', function() {
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('h');
-
     });
 
     it('should inherit layout.calendar', function() {
@@ -149,6 +150,56 @@ describe('Test boxes supplyDefaults', function() {
         expect(traceOut.marker).toBeDefined();
         expect(traceOut.text).toBeDefined();
     });
+
+    describe('should not coerce hovertemplate when *hoveron* does not contains *points* flag', function() {
+        var ht = '--- %{y}';
+
+        it('- case hoveron:points', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'points',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(ht);
+        });
+
+        it('- case hoveron:points+boxes', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'points+boxes',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(ht);
+        });
+
+        it('- case hoveron:boxes', function() {
+            traceIn = {
+                y: [1, 1, 2],
+                hoveron: 'boxes',
+                hovertemplate: ht
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.hovertemplate).toBe(undefined);
+        });
+    });
+
+    it('should not include alignementgroup/offsetgroup when boxmode is not *group*', function() {
+        var gd = {
+            data: [{type: 'box', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
+            layout: {boxmode: 'group'}
+        };
+
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
+
+        gd.layout.boxmode = 'overlay';
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+    });
 });
 
 describe('Test box hover:', function() {
@@ -172,7 +223,7 @@ describe('Test box hover:', function() {
 
         return Plotly.plot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
-            assertHoverLabelContent(specs);
+            assertHoverLabelContent(specs, specs.desc);
         });
     }
 
@@ -223,8 +274,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'min: 0.2',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9'
+            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
+            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
         ],
         name: [
             '', 'kale', '', '', 'radishes', '', '',
@@ -239,6 +290,7 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
             });
             fig.layout.hovermode = 'closest';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
         nums: '(day 1, 0.7)',
@@ -251,6 +303,7 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
             });
             fig.layout.hovermode = 'x';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
         nums: '0.7',
@@ -264,6 +317,7 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points+boxes';
             });
             fig.layout.hovermode = 'x';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
         pos: [215, 200],
@@ -293,6 +347,7 @@ describe('Test box hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
             fig.layout.hovermode = 'closest';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
         nums: '(day 1, 0.7)\nlook:0.7',
@@ -307,13 +362,251 @@ describe('Test box hover:', function() {
                 trace.hoverinfo = 'text';
             });
             fig.layout.hovermode = 'closest';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
         nums: 'look:0.7',
         name: ''
+    }, {
+        desc: 'only hovertext items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
+                trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
+                trace.hoverinfo = 'text';
+            });
+            fig.layout.hovermode = 'closest';
+            fig.layout.xaxis = {range: [-0.565, 1.5]};
+            return fig;
+        },
+        nums: 'look:0.7',
+        name: ''
+    }, {
+        desc: 'orientation:h | hovermode:y',
+        mock: require('@mocks/box_grouped_horz.json'),
+        pos: [430, 130],
+        nums: [
+            'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
+            'q1: 0.5', 'q3: 0.9', 'median: 0.7'],
+        name: ['', '', '', '', '', 'carrots'],
+        axis: 'day 2',
+        hOrder: [0, 4, 5, 1, 3, 2]
+    }, {
+        desc: 'orientation:h | hovermode:closest',
+        mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        pos: [430, 130],
+        nums: [
+            '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
+            '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
+        name: ['', '', '', '', '', 'carrots'],
+        hOrder: [0, 4, 5, 1, 3, 2]
+    }, {
+        desc: 'on boxpoints with numeric positions | hovermode:closest',
+        mock: {
+            data: [{
+                type: 'box',
+                boxpoints: 'all',
+                jitter: 0,
+                x: [2, 2, 2, 2, 2],
+                y: [13.1, 14.2, 14, 13, 13.3]
+            }],
+            layout: {
+                hovermode: 'closest',
+                xaxis: {range: [1.3775, 2.5]}
+            }
+        },
+        pos: [202, 335],
+        nums: '(2, 13.1)',
+        name: ''
+    }, {
+        desc: 'with hovertemplate for points',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.hovertemplate = '%{y}<extra>pt #%{pointNumber}</extra>';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '0.6',
+        name: 'pt #0'
+    }, {
+        desc: 'when zoomed in, within q1-q3 making min/q1 and max/q3 overlap',
+        mock: {
+            data: [{
+                type: 'box',
+                y: [1, 2, 2, 3]
+            }],
+            layout: {
+                yaxis: {range: [1.6, 2.4]},
+                width: 400,
+                height: 400
+            }
+        },
+        pos: [200, 200],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
+        name: ['', '', '', '', ''],
+        axis: 'trace 0'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
+    });
+});
+
+describe('Box edge cases', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('does not barf on a single outlier with jitter', function(done) {
+        var trace = {
+            boxpoints: 'outliers',
+            jitter: 0.7,
+            type: 'box',
+            y: [46.505, 0.143, 0.649, 0.059, 513, 90, 234]
+        };
+
+        Plotly.newPlot(gd, [trace])
+        .then(function() {
+            var outliers = [];
+            gd.calcdata[0][0].pts.forEach(function(pt) {
+                if(pt.x !== undefined) outliers.push(pt);
+            });
+            expect(outliers.length).toBe(1);
+            expect(outliers[0].x).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test box restyle:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should be able to add/remove innner parts', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/box_plot_jitter.json'));
+        // start with just 1 box
+        delete fig.data[0].boxpoints;
+
+        function _assertOne(msg, exp, trace3, k, query) {
+            expect(trace3.selectAll(query).size())
+                .toBe(exp[k] || 0, k + ' - ' + msg);
+        }
+
+        function _assert(msg, exp) {
+            var trace3 = d3.select(gd).select('.boxlayer > .trace');
+            _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
+            _assertOne(msg, exp, trace3, 'meanlineCnt', 'path.mean');
+            _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert('base', {boxCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'boxmean', true); })
+        .then(function() {
+            _assert('with meanline', {boxCnt: 1, meanlineCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'boxmean', 'sd'); })
+        .then(function() {
+            _assert('with mean+sd line', {boxCnt: 1, meanlineCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'boxpoints', 'all'); })
+        .then(function() {
+            _assert('with mean+sd line + pts', {boxCnt: 1, meanlineCnt: 1, ptsCnt: 9});
+        })
+        .then(function() { return Plotly.restyle(gd, 'boxmean', false); })
+        .then(function() {
+            _assert('with pts', {boxCnt: 1, ptsCnt: 9});
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range accordingly on calc edits', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'box',
+            y: [0, 1, 1, 1, 1, 2, 2, 3, 5, 6, 10]
+        }], {
+            xaxis: {range: [-0.5, 0.5]},
+            yaxis: {range: [-0.5, 10.5]}
+        })
+        .then(function() {
+            _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.5, 10.5]);
+            return Plotly.restyle(gd, 'boxpoints', 'all');
+        })
+        .then(function() {
+            _assert('set rng / all boxpoints', [-0.5, 0.5], [-0.5, 10.5]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            _assert('auto rng / all boxpoints', [-0.5055, 0.5], [-0.555, 10.555]);
+            return Plotly.restyle(gd, 'boxpoints', false);
+        })
+        .then(function() {
+            _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.555, 10.555]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to change axis range when the number of distinct positions changes', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'box',
+            width: 0.4,
+            y: [0, 5, 7, 8],
+            y0: 0
+        }, {
+            type: 'box',
+            y: [0, 5, 7, 8],
+            y0: 0.1
+        }])
+        .then(function() {
+            _assert('base', [-0.289, 1.5], [-0.444, 8.444]);
+            return Plotly.restyle(gd, 'visible', [true, 'legendonly']);
+        })
+        .then(function() {
+            _assert('only trace0 visible', [-0.2222, 0.2222], [-0.444, 8.444]);
+            return Plotly.restyle(gd, 'visible', ['legendonly', true]);
+        })
+        .then(function() {
+            _assert('only trace1 visible', [-0.5, 0.5], [-0.444, 8.444]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

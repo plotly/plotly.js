@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
 
     out.a = cdi.a;
     out.b = cdi.b;
+    out.y = cdi.y;
 
     return out;
 };

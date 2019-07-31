@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,6 +27,11 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     }
 
     if(coloring !== 'none') {
+        // plots/plots always coerces showlegend to true, but in this case
+        // we default to false and (by default) show a colorbar instead
+        if(traceIn.showlegend !== true) traceOut.showlegend = false;
+        traceOut._dfltShowLegend = false;
+
         colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );

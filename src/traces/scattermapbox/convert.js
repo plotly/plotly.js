@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -23,7 +23,7 @@ var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 module.exports = function convert(calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var isVisible = (trace.visible === true);
+    var isVisible = (trace.visible === true && trace._length !== 0);
     var hasFill = (trace.fill !== 'none');
     var hasLines = subTypes.hasLines(trace);
     var hasMarkers = subTypes.hasMarkers(trace);
@@ -109,8 +109,8 @@ module.exports = function convert(calcTrace) {
         }
 
         if(hasText) {
-            var iconSize = (trace.marker || {}).size,
-                textOpts = convertTextOpts(trace.textposition, iconSize);
+            var iconSize = (trace.marker || {}).size;
+            var textOpts = convertTextOpts(trace.textposition, iconSize);
 
             // all data-driven below !!
 
@@ -145,9 +145,9 @@ function makeCircleOpts(calcTrace) {
     var trace = calcTrace[0].trace;
     var marker = trace.marker;
     var selectedpoints = trace.selectedpoints;
-    var arrayColor = Array.isArray(marker.color);
-    var arraySize = Array.isArray(marker.size);
-    var arrayOpacity = Array.isArray(marker.opacity);
+    var arrayColor = Lib.isArrayOrTypedArray(marker.color);
+    var arraySize = Lib.isArrayOrTypedArray(marker.size);
+    var arrayOpacity = Lib.isArrayOrTypedArray(marker.opacity);
     var i;
 
     function addTraceOpacity(o) { return trace.opacity * o; }
@@ -157,9 +157,7 @@ function makeCircleOpts(calcTrace) {
     var colorFn;
     if(arrayColor) {
         if(Colorscale.hasColorscale(trace, 'marker')) {
-            colorFn = Colorscale.makeColorScaleFunc(
-                 Colorscale.extractScale(marker.colorscale, marker.cmin, marker.cmax)
-             );
+            colorFn = Colorscale.makeColorScaleFuncFromTrace(marker);
         } else {
             colorFn = Lib.identity;
         }
@@ -205,33 +203,27 @@ function makeCircleOpts(calcTrace) {
         for(i = 0; i < features.length; i++) {
             var d = features[i].properties;
 
-            var mo2 = fns.opacityFn(d);
-            if(mo2 !== undefined) d.mo = addTraceOpacity(mo2);
-            else if(d.mo === undefined) d.mo = addTraceOpacity(marker.opacity);
-
-            if(fns.colorFn) {
-                var mc2 = fns.colorFn(d);
-                if(mc2) d.mcc = mc2;
-                else if(!d.mcc) d.mcc = marker.color;
+            if(fns.selectedOpacityFn) {
+                d.mo = addTraceOpacity(fns.selectedOpacityFn(d));
             }
-
-            if(fns.sizeFn) {
-                var mrc2 = fns.sizeFn(d);
-                if(mrc2 !== undefined) d.mrc = mrc2;
-                else if(d.mrc === undefined) d.mrc = size2radius(marker.size);
+            if(fns.selectedColorFn) {
+                d.mcc = fns.selectedColorFn(d);
+            }
+            if(fns.selectedSizeFn) {
+                d.mrc = fns.selectedSizeFn(d);
             }
         }
     }
 
     return {
         geojson: {type: 'FeatureCollection', features: features},
-        mcc: arrayColor || (fns && fns.colorFn) ?
+        mcc: arrayColor || (fns && fns.selectedColorFn) ?
             {type: 'identity', property: 'mcc'} :
             marker.color,
-        mrc: arraySize || (fns && fns.sizeFn) ?
+        mrc: arraySize || (fns && fns.selectedSizeFn) ?
             {type: 'identity', property: 'mrc'} :
             size2radius(marker.size),
-        mo: arrayOpacity || selectedpoints ?
+        mo: arrayOpacity || (fns && fns.selectedOpacityFn) ?
             {type: 'identity', property: 'mo'} :
             addTraceOpacity(marker.opacity)
     };
@@ -240,17 +232,17 @@ function makeCircleOpts(calcTrace) {
 function makeSymbolGeoJSON(calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var marker = trace.marker || {},
-        symbol = marker.symbol,
-        text = trace.text;
+    var marker = trace.marker || {};
+    var symbol = marker.symbol;
+    var text = trace.text;
 
     var fillSymbol = (symbol !== 'circle') ?
-            getFillFunc(symbol) :
-            blankFillFunc;
+        getFillFunc(symbol) :
+        blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-            getFillFunc(text) :
-            blankFillFunc;
+        getFillFunc(text) :
+        blankFillFunc;
 
     var features = [];
 
@@ -279,13 +271,11 @@ function makeSymbolGeoJSON(calcTrace) {
 }
 
 function getFillFunc(attr) {
-    if(Array.isArray(attr)) {
+    if(Lib.isArrayOrTypedArray(attr)) {
         return function(v) { return v; };
-    }
-    else if(attr) {
+    } else if(attr) {
         return function() { return attr; };
-    }
-    else {
+    } else {
         return blankFillFunc;
     }
 }

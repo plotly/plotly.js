@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,15 +10,15 @@
 
 var plotAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorAttrs = require('../../components/colorscale/color_attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
-var DASHES = require('../../constants/gl2d_dashes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var DASHES = require('./constants').DASHES;
 
-var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 var attrs = module.exports = overrideAll({
     x: scatterAttrs.x,
@@ -28,18 +28,15 @@ var attrs = module.exports = overrideAll({
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
 
-    text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets text elements associated with each (x,y) pair to appear on hover.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
-        ].join(' ')
-    }),
+    text: scatterAttrs.text,
+    hovertext: scatterAttrs.hovertext,
+
+    textposition: scatterAttrs.textposition,
+    textfont: scatterAttrs.textfont,
+
     mode: {
         valType: 'flaglist',
-        flags: ['lines', 'markers'],
+        flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         role: 'info',
         description: [
@@ -49,6 +46,17 @@ var attrs = module.exports = overrideAll({
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
+        shape: {
+            valType: 'enumerated',
+            values: ['linear', 'hv', 'vh', 'hvh', 'vhv'],
+            dflt: 'linear',
+            role: 'style',
+            editType: 'plot',
+            description: [
+                'Determines the line shape.',
+                'The values correspond to step-wise line shapes.'
+            ].join(' ')
+        },
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),
@@ -57,38 +65,36 @@ var attrs = module.exports = overrideAll({
             description: 'Sets the style of the lines.'
         }
     },
-    marker: extendFlat({}, colorAttrs('marker'), {
+    marker: extendFlat({}, colorScaleAttrs('marker'), {
         symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
-        line: extendFlat({}, colorAttrs('marker.line'), {
+        line: extendFlat({}, colorScaleAttrs('marker.line'), {
             width: scatterMarkerLineAttrs.width
         })
     }),
     connectgaps: scatterAttrs.connectgaps,
-    fill: scatterAttrs.fill,
+    fill: extendFlat({}, scatterAttrs.fill, {dflt: 'none'}),
     fillcolor: scatterAttrs.fillcolor,
 
-    hoveron: scatterAttrs.hoveron,
+    // no hoveron
 
     selected: {
-        marker: scatterAttrs.selected.marker
+        marker: scatterAttrs.selected.marker,
+        textfont: scatterAttrs.selected.textfont
     },
     unselected: {
-        marker: scatterAttrs.unselected.marker
+        marker: scatterAttrs.unselected.marker,
+        textfont: scatterAttrs.unselected.textfont
     },
 
-    opacity: extendFlat({}, plotAttrs.opacity, {
-        editType: 'calc'
-    }),
+    opacity: plotAttrs.opacity
 
-    error_y: scatterAttrs.error_y,
-    error_x: scatterAttrs.error_x
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
+attrs.hovertemplate = scatterAttrs.hovertemplate;

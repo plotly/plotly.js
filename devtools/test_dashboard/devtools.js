@@ -179,7 +179,8 @@ searchBar.addEventListener('keyup', debounce(searchMocks, 250));
 function debounce(func, wait, immediate) {
     var timeout;
     return function() {
-        var context = this, args = arguments;
+        var context = this;
+        var args = arguments;
         var later = function() {
             timeout = null;
             if(!immediate) func.apply(context, args);
@@ -192,7 +193,6 @@ function debounce(func, wait, immediate) {
 }
 
 function searchMocks(e) {
-
     // Clear results.
     while(mocksList.firstChild) {
         mocksList.removeChild(mocksList.firstChild);

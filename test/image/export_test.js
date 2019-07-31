@@ -111,9 +111,9 @@ function testExport(mockName, format, cb) {
         height: HEIGHT
     };
 
-    var requestOpts = getRequestOpts(specs),
-        imagePaths = getImagePaths(mockName, format),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
+    var requestOpts = getRequestOpts(specs);
+    var imagePaths = getImagePaths(mockName, format);
+    var saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkExport(err) {
         if(err) throw err;
@@ -123,8 +123,7 @@ function testExport(mockName, format, cb) {
         if(format === 'svg') {
             var dims = sizeOf(imagePaths.test);
             didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
-        }
-        else {
+        } else {
             var stats = fs.statSync(imagePaths.test);
             didExport = stats.size > MIN_SIZE;
         }

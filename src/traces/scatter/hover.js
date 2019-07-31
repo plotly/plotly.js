@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,10 +10,10 @@
 
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 var getTraceColor = require('./get_trace_color');
 var Color = require('../../components/color');
-var fillHoverText = require('./fill_hover_text');
+var fillText = Lib.fillText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -61,29 +61,43 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // skip the rest (for this trace) if we didn't find a close point
         if(pointData.index !== false) {
-
             // the closest data point
             var di = cd[pointData.index];
             var xc = xa.c2p(di.x, true);
             var yc = ya.c2p(di.y, true);
             var rad = di.mrc || 1;
 
+            // now we're done using the whole `calcdata` array, replace the
+            // index with the original index (in case of inserted point from
+            // stacked area)
+            pointData.index = di.i;
+
+            var orientation = cd[0].t.orientation;
+            // TODO: for scatter and bar, option to show (sub)totals and
+            // raw data? Currently stacked and/or normalized bars just show
+            // the normalized individual sizes, so that's what I'm doing here
+            // for now.
+            var sizeVal = orientation && (di.sNorm || di.s);
+            var xLabelVal = (orientation === 'h') ? sizeVal : di.x;
+            var yLabelVal = (orientation === 'v') ? sizeVal : di.y;
+
             Lib.extendFlat(pointData, {
                 color: getTraceColor(trace, di),
 
                 x0: xc - rad,
                 x1: xc + rad,
-                xLabelVal: di.x,
+                xLabelVal: xLabelVal,
 
                 y0: yc - rad,
                 y1: yc + rad,
-                yLabelVal: di.y,
+                yLabelVal: yLabelVal,
 
-                spikeDistance: dxy(di)
+                spikeDistance: dxy(di),
+                hovertemplate: trace.hovertemplate
             });
 
-            fillHoverText(di, trace, pointData);
-            ErrorBars.hoverInfo(di, trace, pointData);
+            fillText(di, trace, pointData);
+            Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
             return [pointData];
         }
@@ -163,15 +177,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 x1: xmax,
                 y0: yAvg,
                 y1: yAvg,
-                color: color
+                color: color,
+                hovertemplate: false
             });
 
             delete pointData.index;
 
             if(trace.text && !Array.isArray(trace.text)) {
                 pointData.text = String(trace.text);
-            }
-            else pointData.text = trace.name;
+            } else pointData.text = trace.name;
 
             return [pointData];
         }

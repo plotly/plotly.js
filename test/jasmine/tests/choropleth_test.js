@@ -8,6 +8,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -17,27 +18,39 @@ describe('Test choropleth', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+        var traceIn;
+        var traceOut;
 
-        var defaultColor = '#444',
-            layout = {
-                font: Plots.layoutAttributes.font,
-                _dfltTitle: {colorbar: 'cb'}
-            };
+        var defaultColor = '#444';
+        var layout = {
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
+        };
 
         beforeEach(function() {
             traceOut = {};
         });
 
-        it('should slice z if it is longer than locations', function() {
+        it('should set _length based on locations and z but not slice', function() {
             traceIn = {
                 locations: ['CAN', 'USA'],
                 z: [1, 2, 3]
             };
 
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.z).toEqual([1, 2, 3]);
+            expect(traceOut.locations).toEqual(['CAN', 'USA']);
+            expect(traceOut._length).toBe(2);
+
+            traceIn = {
+                locations: ['CAN', 'USA', 'ALB'],
+                z: [1, 2]
+            };
+
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.z).toEqual([1, 2]);
+            expect(traceOut.locations).toEqual(['CAN', 'USA', 'ALB']);
+            expect(traceOut._length).toBe(2);
         });
 
         it('should make trace invisible if locations is not defined', function() {
@@ -51,11 +64,29 @@ describe('Test choropleth', function() {
 
         it('should make trace invisible if z is not an array', function() {
             traceIn = {
+                locations: ['CAN', 'USA'],
                 z: 'no gonna work'
             };
 
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
+        });
+
+        it('should not coerce *marker.line.color* when *marker.line.width* is *0*', function() {
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                marker: {
+                    line: {
+                        color: 'red',
+                        width: 0
+                    }
+                }
+            };
+
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.marker.line.width).toBe(0, 'mlw');
+            expect(traceOut.marker.line.color).toBe(undefined, 'mlc');
         });
     });
 });
@@ -100,6 +131,18 @@ describe('Test choropleth hover:', function() {
         .then(done);
     });
 
+    it('should use the hovertemplate', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
+
+        run(
+            [400, 160],
+            fig,
+            ['tpl 10', 'x']
+        )
+        .then(done);
+    });
+
     it('should generate hover label info (\'text\' single value case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
         fig.data[1].text = 'tExT';
@@ -116,6 +159,20 @@ describe('Test choropleth hover:', function() {
     it('should generate hover label info (\'text\' array case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
         fig.data[1].text = ['tExT', 'TeXt', '-text-'];
+        fig.data[1].hoverinfo = 'text';
+
+        run(
+            [400, 160],
+            fig,
+            ['-text-', null]
+        )
+        .then(done);
+    });
+
+    it('should generate hover labels from `hovertext`', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hovertext = ['tExT', 'TeXt', '-text-'];
+        fig.data[1].text = ['N', 'O', 'P'];
         fig.data[1].hoverinfo = 'text';
 
         run(
@@ -160,9 +217,34 @@ describe('Test choropleth hover:', function() {
         )
         .then(done);
     });
+
+    describe('should preserve z formatting hovetemplate equivalence', function() {
+        var base = function() {
+            return {
+                data: [{
+                    type: 'choropleth',
+                    locations: ['RUS'],
+                    z: [10.02132132143214321]
+                }]
+            };
+        };
+
+        var pos = [400, 160];
+        var exp = ['10.02132', 'RUS'];
+
+        it('- base case (truncate z decimals)', function(done) {
+            run(pos, base(), exp).then(done);
+        });
+
+        it('- hovertemplate case (same z truncation)', function(done) {
+            var fig = base();
+            fig.hovertemplate = '%{z}<extra>%{location}</extra>';
+            run(pos, fig, exp).then(done);
+        });
+    });
 });
 
-describe('choropleth bad data', function() {
+describe('choropleth drawing', function() {
     var gd;
 
     beforeEach(function() {
@@ -183,7 +265,38 @@ describe('choropleth bad data', function() {
             // only utopia logs - others are silently ignored
             expect(Lib.log).toHaveBeenCalledTimes(1);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.choropleth').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'choropleth',
+            locations: ['CAN', 'USA'],
+            z: [1, 2]
+        }, {
+            type: 'choropleth',
+            locations: ['CAN', 'USA'],
+            z: [2, 1]
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
         .then(done);
     });
 });

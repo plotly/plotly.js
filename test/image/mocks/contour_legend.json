@@ -1,0 +1,57 @@
+{
+  "data":[{
+    "type": "contour",
+    "contours":{"coloring":"fills", "showlabels": true},
+    "z":[[1, 2, 1], [2, 4, 1], [3, 4, 4]],
+    "colorscale": "Greys",
+    "showscale": false,
+    "showlegend": true,
+    "name": "fills"
+  }, {
+      "type": "contour",
+      "contours":{"coloring":"lines", "showlabels": true},
+      "z":[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+      "showscale": false,
+      "showlegend": true,
+      "line": {"width": 2, "dash": "dot"},
+      "name": "lines"
+  }, {
+      "type": "contour",
+      "contours":{"coloring":"none", "showlabels": true},
+      "z":[[1, 4, 7], [2, 5, 8], [3, 6, 9]],
+      "line": {"color": "#0f0"},
+      "name": "none"
+  }, {
+      "type": "contour",
+      "contours": {"type": "constraint", "operation": "[]", "value": [3, 7], "showlabels": true},
+      "z": [[3, 2, 1], [6, 5, 4], [9, 8, 7]],
+      "line": {"color": "#f88"},
+      "name": "constraint"
+  }, {
+      "type": "contour",
+      "contours": {"coloring": "heatmap"},
+      "line": {"width": 3, "color": "#cf0", "dash": "dashdot"},
+      "z": [[1, 2], [3, 4]],
+      "showscale": false,
+      "showlegend": true,
+      "y": [2, 3],
+      "name": "heatmap"
+  }, {
+      "type": "histogram2dcontour",
+      "contours": {"coloring": "heatmap"},
+      "xbins": {"start": 0.5, "end": 2.5, "size": 1},
+      "ybins": {"start": 1.5, "end": 3.5, "size": 1},
+      "line": {"color": "#f00", "dash": "dot"},
+      "showscale": false,
+      "showlegend": true,
+      "colorscale": "Viridis",
+      "x": [1.1, 1.1, 1.1, 1.8, 1.8, 1.1, 1.8, 1.8, 1.8, 1.8],
+      "y": [2.2, 2.8, 2.8, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.8],
+      "name": "histogram"
+  }],
+  "layout":{
+    "autosize":false,
+    "height":400,
+    "width":500
+  }
+}

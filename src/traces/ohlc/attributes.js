@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,35 +12,16 @@
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var fxAttrs = require('../../components/fx/attributes');
+var delta = require('../../constants/delta.js');
 
-var INCREASING_COLOR = '#3D9970';
-var DECREASING_COLOR = '#FF4136';
+var INCREASING_COLOR = delta.INCREASING.COLOR;
+var DECREASING_COLOR = delta.DECREASING.COLOR;
 
 var lineAttrs = scatterAttrs.line;
 
 function directionAttrs(lineColorDefault) {
     return {
-        name: {
-            valType: 'string',
-            role: 'info',
-            editType: 'style',
-            description: [
-                'Sets the segment name.',
-                'The segment name appear as the legend item and on hover.'
-            ].join(' ')
-        },
-
-        showlegend: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: true,
-            editType: 'style',
-            description: [
-                'Determines whether or not an item corresponding to this',
-                'segment is shown in the legend.'
-            ].join(' ')
-        },
-
         line: {
             color: extendFlat({}, lineAttrs.color, {dflt: lineColorDefault}),
             width: lineAttrs.width,
@@ -64,28 +45,24 @@ module.exports = {
 
     open: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the open values.'
     },
 
     high: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the high values.'
     },
 
     low: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the low values.'
     },
 
     close: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the close values.'
     },
@@ -128,6 +105,14 @@ module.exports = {
             'this trace\'s sample points.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'Same as `text`.'
+    },
 
     tickwidth: {
         valType: 'number',
@@ -135,10 +120,23 @@ module.exports = {
         max: 0.5,
         dflt: 0.3,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the width of the open/close tick marks',
             'relative to the *x* minimal interval.'
         ].join(' ')
-    }
+    },
+
+    hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
+        split: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            editType: 'style',
+            description: [
+                'Show hover information (open, close, high, low) in',
+                'separate labels.'
+            ].join(' ')
+        }
+    }),
 };

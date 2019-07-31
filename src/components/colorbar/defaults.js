@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,16 +10,17 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Template = require('../../plot_api/plot_template');
+
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 
 var attributes = require('./attributes');
 
-
 module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
-    var colorbarOut = containerOut.colorbar = {},
-        colorbarIn = containerIn.colorbar || {};
+    var colorbarOut = Template.newContainer(containerOut, 'colorbar');
+    var colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
@@ -57,7 +58,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
-    coerce('title', layout._dfltTitle.colorbar);
-    Lib.coerceFont(coerce, 'titlefont', layout.font);
-    coerce('titleside');
+    coerce('title.text', layout._dfltTitle.colorbar);
+    Lib.coerceFont(coerce, 'title.font', layout.font);
+    coerce('title.side');
 };

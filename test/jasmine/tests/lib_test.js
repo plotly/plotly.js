@@ -1,14 +1,13 @@
 var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
 var overrideCursor = require('@src/lib/override_cursor');
-var config = require('@src/plot_api/plot_config');
+var config = require('@src/plot_api/plot_config').dfltConfig;
 
 var d3 = require('d3');
 var Plotly = require('@lib');
-var PlotlyInternal = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plots = PlotlyInternal.Plots;
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -16,15 +15,15 @@ describe('Test lib.js:', function() {
 
     describe('interp() should', function() {
         it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
-            var input = [1, 2, 3, 4, 5],
-                res = Lib.interp(input, 0.25),
-                res0 = 1.75;
+            var input = [1, 2, 3, 4, 5];
+            var res = Lib.interp(input, 0.25);
+            var res0 = 1.75;
             expect(res).toEqual(res0);
         });
         it('return 4.25 as Q3 of [1, 2, 3, 4, 5]:', function() {
-            var input = [1, 2, 3, 4, 5],
-                res = Lib.interp(input, 0.75),
-                res0 = 4.25;
+            var input = [1, 2, 3, 4, 5];
+            var res = Lib.interp(input, 0.75);
+            var res0 = 4.25;
             expect(res).toEqual(res0);
         });
         it('error if second input argument is a string:', function() {
@@ -34,16 +33,16 @@ describe('Test lib.js:', function() {
             }).toThrow('n should be a finite number');
         });
         it('error if second input argument is a date:', function() {
-            var in1 = [1, 2, 3, 4, 5],
-                in2 = new Date(2014, 11, 1);
+            var in1 = [1, 2, 3, 4, 5];
+            var in2 = new Date(2014, 11, 1);
             expect(function() {
                 Lib.interp(in1, in2);
             }).toThrow('n should be a finite number');
         });
         it('return the right boundary on input [-Inf, Inf]:', function() {
-            var input = [-Infinity, Infinity],
-                res = Lib.interp(input, 1),
-                res0 = Infinity;
+            var input = [-Infinity, Infinity];
+            var res = Lib.interp(input, 1);
+            var res0 = Infinity;
             expect(res).toEqual(res0);
         });
     });
@@ -51,15 +50,15 @@ describe('Test lib.js:', function() {
     describe('transposeRagged()', function() {
         it('should transpose and return a rectangular array', function() {
             var input = [
-                    [1],
-                    [2, 3, 4],
-                    [5, 6],
-                    [7]],
-                output = [
-                    [1, 2, 5, 7],
-                    [undefined, 3, 6, undefined],
-                    [undefined, 4, undefined, undefined]
-                ];
+                [1],
+                [2, 3, 4],
+                [5, 6],
+                [7]];
+            var output = [
+                [1, 2, 5, 7],
+                [undefined, 3, 6, undefined],
+                [undefined, 4, undefined, undefined]
+            ];
 
             expect(Lib.transposeRagged(input)).toEqual(output);
         });
@@ -94,8 +93,8 @@ describe('Test lib.js:', function() {
         function summation(a, b) { return a + b; }
 
         it('should work with 1D and 2D inputs and ignore non-numerics', function() {
-            var in1D = [1, 2, 3, 4, 'goose!', 5, 6],
-                in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
+            var in1D = [1, 2, 3, 4, 'goose!', 5, 6];
+            var in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
 
             expect(aggNums(Math.min, null, in1D)).toEqual(1);
             expect(aggNums(Math.min, null, in2D)).toEqual(1);
@@ -109,73 +108,115 @@ describe('Test lib.js:', function() {
     });
 
     describe('mean() should', function() {
-        it('toss out non-numerics (strings):', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.mean(input);
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
-        it('toss out non-numerics (NaN):', function() {
-            var input = [1, 2, NaN],
-                res = Lib.mean(input);
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
         it('evaluate numbers which are passed around as text strings:', function() {
-            var input = ['1', '2'],
-                res = Lib.mean(input);
+            var input = ['1', '2'];
+            var res = Lib.mean(input);
             expect(res).toEqual(1.5);
+        });
+    });
+
+    describe('midRange() should', function() {
+        it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
+            var input = [1, 5.5, 6, 15, 10, 13];
+            var res = Lib.midRange(input);
+            expect(res).toEqual(8);
+        });
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN];
+            var res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('should be able to deal with array of length 1', function() {
+            var input = [10];
+            var res = Lib.midRange(input);
+            expect(res).toEqual(10);
+        });
+        it('should return undefined for an empty array', function() {
+            var input = [];
+            var res = Lib.midRange(input);
+            expect(res).toBeUndefined();
         });
     });
 
     describe('variance() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
-            var input = [2, 2, 2, 2],
-                res = Lib.variance(input);
+            var input = [2, 2, 2, 2];
+            var res = Lib.variance(input);
             expect(res).toEqual(0);
         });
         it('return 2/3 on input [-1, 0, 1]:', function() {
-            var input = [-1, 0, 1],
-                res = Lib.variance(input);
+            var input = [-1, 0, 1];
+            var res = Lib.variance(input);
             expect(res).toEqual(2 / 3);
         });
         it('toss out non-numerics (strings):', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.variance(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
         it('toss out non-numerics (NaN):', function() {
-            var input = [1, 2, NaN],
-                res = Lib.variance(input);
+            var input = [1, 2, NaN];
+            var res = Lib.variance(input);
             expect(res).toEqual(0.25);
+        });
+    });
+
+    describe('median() should', function() {
+        it('return the middle value exactly for odd number of observations:', function() {
+            var input = [1, 8, 9, 2, 7, 6, 3];
+            var res = Lib.median(input);
+            expect(res).toEqual(6);
+        });
+
+        it('return the mean of the two middle values for even number of observations', function() {
+            var input = [4, 3, 2, 1, 5, 6, 8, 9];
+            var res = Lib.median(input);
+            expect(res).toEqual(4.5);
         });
     });
 
     describe('stdev() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
-            var input = [2, 2, 2, 2],
-                res = Lib.stdev(input);
+            var input = [2, 2, 2, 2];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0);
         });
         it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
-            var input = [-1, 0, 1],
-                res = Lib.stdev(input);
+            var input = [-1, 0, 1];
+            var res = Lib.stdev(input);
             expect(res).toEqual(Math.sqrt(2 / 3));
         });
         it('toss out non-numerics (strings):', function() {
-            var input = [1, 2, 'apple', 'orange'],
-                res = Lib.stdev(input);
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
         it('toss out non-numerics (NaN):', function() {
-            var input = [1, 2, NaN],
-                res = Lib.stdev(input);
+            var input = [1, 2, NaN];
+            var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
     });
 
     describe('smooth()', function() {
         it('should not alter the input for FWHM < 1.5', function() {
-            var input = [1, 2, 1, 2, 1],
-                output = Lib.smooth(input.slice(), 1.49);
+            var input = [1, 2, 1, 2, 1];
+            var output = Lib.smooth(input.slice(), 1.49);
 
             expect(output).toEqual(input);
 
@@ -185,12 +226,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should preserve the length and integral even with multiple bounces', function() {
-            var input = [1, 2, 4, 8, 16, 8, 10, 12],
-                output2 = Lib.smooth(input.slice(), 2),
-                output30 = Lib.smooth(input.slice(), 30),
-                sumIn = 0,
-                sum2 = 0,
-                sum30 = 0;
+            var input = [1, 2, 4, 8, 16, 8, 10, 12];
+            var output2 = Lib.smooth(input.slice(), 2);
+            var output30 = Lib.smooth(input.slice(), 30);
+            var sumIn = 0;
+            var sum2 = 0;
+            var sum30 = 0;
 
             for(var i = 0; i < input.length; i++) {
                 sumIn += input[i];
@@ -205,15 +246,15 @@ describe('Test lib.js:', function() {
         });
 
         it('should use a hann window and bounce', function() {
-            var input = [0, 0, 0, 7, 0, 0, 0],
-                out4 = Lib.smooth(input, 4),
-                out7 = Lib.smooth(input, 7),
-                expected4 = [
-                    0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
-                    1.493718433538229, 0.875, 0.25628156646177086
-                ],
-                expected7 = [1, 1, 1, 1, 1, 1, 1],
-                i;
+            var input = [0, 0, 0, 7, 0, 0, 0];
+            var out4 = Lib.smooth(input, 4);
+            var out7 = Lib.smooth(input, 7);
+            var expected4 = [
+                0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
+                1.493718433538229, 0.875, 0.25628156646177086
+            ];
+            var expected7 = [1, 1, 1, 1, 1, 1, 1];
+            var i;
 
             for(i = 0; i < input.length; i++) {
                 expect(out4[i]).toBeCloseTo(expected4[i], 6);
@@ -226,9 +267,9 @@ describe('Test lib.js:', function() {
         var np = Lib.nestedProperty;
 
         it('should access simple objects', function() {
-            var obj = {a: 'b', c: 'd'},
-                propA = np(obj, 'a'),
-                propB = np(obj, 'b');
+            var obj = {a: 'b', c: 'd'};
+            var propA = np(obj, 'a');
+            var propB = np(obj, 'b');
 
             expect(propA.get()).toBe('b');
             // making and reading nestedProperties shouldn't change anything
@@ -246,9 +287,9 @@ describe('Test lib.js:', function() {
         });
 
         it('should access arrays', function() {
-            var arr = [1, 2, 3],
-                prop1 = np(arr, 1),
-                prop5 = np(arr, '5');
+            var arr = [1, 2, 3];
+            var prop1 = np(arr, 1);
+            var prop5 = np(arr, '5');
 
             expect(prop1.get()).toBe(2);
             expect(arr).toEqual([1, 2, 3]);
@@ -280,8 +321,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]},
-                prop = np(obj, 'arr[-1].a');
+            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var prop = np(obj, 'arr[-1].a');
 
             expect(prop.get()).toEqual([1, 2, undefined]);
             expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
@@ -314,9 +355,9 @@ describe('Test lib.js:', function() {
         });
 
         it('should remove a property only with undefined or null', function() {
-            var obj = {a: 'b', c: 'd'},
-                propA = np(obj, 'a'),
-                propC = np(obj, 'c');
+            var obj = {a: 'b', c: 'd'};
+            var propA = np(obj, 'a');
+            var propC = np(obj, 'c');
 
             propA.set(null);
             propC.set(undefined);
@@ -329,20 +370,20 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
         });
 
-        it('should not remove data arrays or empty objects inside container arrays', function() {
+        it('should not remove arrays or empty objects inside container arrays', function() {
             var obj = {
-                    annotations: [{a: [1, 2, 3]}],
-                    c: [1, 2, 3],
-                    domain: [1, 2],
-                    range: [2, 3],
-                    shapes: ['elephant']
-                },
-                propA = np(obj, 'annotations[-1].a'),
-                propC = np(obj, 'c'),
-                propD0 = np(obj, 'domain[0]'),
-                propD1 = np(obj, 'domain[1]'),
-                propR = np(obj, 'range'),
-                propS = np(obj, 'shapes[0]');
+                annotations: [{a: [1, 2, 3]}],
+                c: [1, 2, 3],
+                domain: [1, 2],
+                range: [2, 3],
+                shapes: ['elephant']
+            };
+            var propA = np(obj, 'annotations[-1].a');
+            var propC = np(obj, 'c');
+            var propD0 = np(obj, 'domain[0]');
+            var propD1 = np(obj, 'domain[1]');
+            var propR = np(obj, 'range');
+            var propS = np(obj, 'shapes[0]');
 
             propA.set([[]]);
             propC.set([]);
@@ -352,15 +393,21 @@ describe('Test lib.js:', function() {
             propS.set(null);
 
             // 'a' and 'c' are both potentially data arrays so we need to keep them
-            expect(obj).toEqual({annotations: [{a: []}], c: []});
+            expect(obj).toEqual({
+                annotations: [{a: []}],
+                c: [],
+                domain: [],
+                range: [],
+                shapes: []
+            });
         });
 
 
-        it('should allow empty object sub-containers only in arrays', function() {
-            var obj = {},
-                prop = np(obj, 'a[1].b.c'),
-                // we never set a value into a[0] so it doesn't even get {}
-                expectedArr = [undefined, {b: {c: 'pizza'}}];
+        it('should allow empty object sub-containers', function() {
+            var obj = {};
+            var prop = np(obj, 'a[1].b.c');
+            // we never set a value into a[0] so it doesn't even get {}
+            var expectedArr = [undefined, {b: {c: 'pizza'}}];
 
             expect(prop.get()).toBe(undefined);
             expect(obj).toEqual({});
@@ -371,15 +418,15 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({a: [undefined, {}]});
+            expect(obj).toEqual({a: [undefined, {b: {}}]});
         });
 
         it('does not prune inside `args` arrays', function() {
-            var obj = {},
-                args = np(obj, 'args');
+            var obj = {};
+            var args = np(obj, 'args');
 
             args.set([]);
-            expect(obj.args).toBeUndefined();
+            expect(obj.args).toEqual([]);
 
             args.set([null]);
             expect(obj.args).toEqual([null]);
@@ -436,7 +483,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('objectFromPath', function() {
-
         it('should return an object', function() {
             var obj = Lib.objectFromPath('test', 'object');
 
@@ -631,20 +677,20 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerce', function() {
-        var coerce = Lib.coerce,
-            out;
+        var coerce = Lib.coerce;
+        var out;
 
         // TODO: I tested font and string because I changed them, but all the other types need tests still
 
         it('should set a value and return the value it sets', function() {
-            var aVal = 'aaaaah!',
-                cVal = {1: 2, 3: 4},
-                attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}},
-                obj = {b: {c: cVal}},
-                outObj = {},
+            var aVal = 'aaaaah!';
+            var cVal = {1: 2, 3: 4};
+            var attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}};
+            var obj = {b: {c: cVal}};
+            var outObj = {};
 
-                aOut = coerce(obj, outObj, attrs, 'a'),
-                cOut = coerce(obj, outObj, attrs, 'b.c');
+            var aOut = coerce(obj, outObj, attrs, 'a');
+            var cOut = coerce(obj, outObj, attrs, 'b.c');
 
             expect(aOut).toBe(aVal);
             expect(aOut).toBe(outObj.a);
@@ -652,12 +698,30 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
+        describe('data_array valType', function() {
+            var attrs = {
+                d: {valType: 'data_array'}
+            };
+
+            it('should pass ref to out object (plain array case)', function() {
+                var arr = [1, 2, 3];
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+
+            it('should pass ref to out object (typed array case)', function() {
+                var arr = new Float32Array([1, 2, 3]);
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+        });
+
         describe('string valType', function() {
-            var dflt = 'Jabberwock',
-                stringAttrs = {
-                    s: {valType: 'string', dflt: dflt},
-                    noBlank: {valType: 'string', dflt: dflt, noBlank: true}
-                };
+            var dflt = 'Jabberwock';
+            var stringAttrs = {
+                s: {valType: 'string', dflt: dflt},
+                noBlank: {valType: 'string', dflt: dflt, noBlank: true}
+            };
 
             it('should insert the default if input is missing, or blank with noBlank', function() {
                 out = coerce(undefined, {}, stringAttrs, 's');
@@ -695,14 +759,18 @@ describe('Test lib.js:', function() {
             var coerce2 = Lib.coerce2;
 
             it('should set a value and return the value it sets when user input is valid', function() {
-                var colVal = 'red',
-                    sizeVal = 0, // 0 is valid but falsey
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = 'red';
+                var sizeVal = 0; // 0 is valid but falsey
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe(colVal);
                 expect(colOut).toBe(outObj.testMarker.testColor);
@@ -711,14 +779,18 @@ describe('Test lib.js:', function() {
             });
 
             it('should set and return the default if the user input is not valid', function() {
-                var colVal = 'r',
-                    sizeVal = 'aaaaah!',
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = 'r';
+                var sizeVal = 'aaaaah!';
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe('rgba(0, 0, 0, 0)');
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
@@ -727,14 +799,18 @@ describe('Test lib.js:', function() {
             });
 
             it('should return false if there is no user input', function() {
-                var colVal = null,
-                    sizeVal, // undefined
-                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}}},
-                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                    outObj = {},
-                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+                var colVal = null;
+                var sizeVal; // undefined
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe(false);
                 expect(sizeOut).toBe(false);
@@ -797,6 +873,114 @@ describe('Test lib.js:', function() {
                 expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
                     .toEqual([0, 0.5]);
             });
+
+            it('supports bounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: [
+                            {valType: 'integer', min: 0},
+                            {valType: 'integer', max: -1}
+                        ],
+                        dflt: [1, -2]
+                    },
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5]}, {}, attrs, 'x')).toEqual([5, -2]);
+                expect(coerce({x: [-5]}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5, -5]}, {}, attrs, 'x')).toEqual([5, -5]);
+                expect(coerce({x: [3, -3, 3]}, {}, attrs, 'x')).toEqual([3, -3]);
+            });
+
+            it('supports unbounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [3]}, {}, attrs, 'x')).toEqual([3]);
+                expect(coerce({x: [-3]}, {}, attrs, 'x')).toEqual([1]);
+                expect(coerce({x: [-1, 4, 'hi', 5]}, {}, attrs, 'x'))
+                    .toEqual([1, 4, 1, 5]);
+            });
+
+            it('supports 2D fixed-size arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        dimensions: 2,
+                        items: [
+                            [{valType: 'integer', min: 0, max: 2}, {valType: 'integer', min: 3, max: 5}],
+                            [{valType: 'integer', min: 6, max: 8}, {valType: 'integer', min: 9, max: 11}]
+                        ],
+                        dflt: [[1, 4], [7, 10]]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: [[0, 3], [8, 11]]}, {}, attrs, 'x'))
+                    .toEqual([[0, 3], [8, 11]]);
+                expect(coerce({x: [[10, 5, 10], [6], [1, 2, 3]]}, {}, attrs, 'x'))
+                    .toEqual([[1, 5], [6, 10]]);
+            });
+
+            it('supports unbounded 2D freeLength arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: 2,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
+                    .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
+            });
+
+            it('supports dimensions=\'1-2\' with 1D items array', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true, // in this case only the outer length of 2D is free
+                        dimensions: '1-2',
+                        items: [
+                            {valType: 'integer', min: 0, max: 5, dflt: 1},
+                            {valType: 'integer', min: 10, max: 15, dflt: 11}
+                        ]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, 11]);
+                expect(coerce({x: [4, 4, 4]}, {}, attrs, 'x')).toEqual([4, 11]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[1, 11]]);
+                expect(coerce({x: [[12, 12, 12]]}, {}, attrs, 'x')).toEqual([[1, 12]]);
+                expect(coerce({x: [[], 4, true]}, {}, attrs, 'x')).toEqual([[1, 11], [1, 11], [1, 11]]);
+            });
+
+            it('supports dimensions=\'1-2\' with single item', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: '1-2',
+                        items: {valType: 'integer', min: 0, max: 5, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [-3, 3, 6, 'a']}, {}, attrs, 'x')).toEqual([1, 3, 1, 1]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[]]);
+                expect(coerce({x: [[-1, 0, 10]]}, {}, attrs, 'x')).toEqual([[1, 0, 1]]);
+                expect(coerce({x: [[], 4, [3], [-1, 10]]}, {}, attrs, 'x')).toEqual([[], [], [3], [1, 1]]);
+            });
         });
 
         describe('subplotid valtype', function() {
@@ -841,9 +1025,9 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plots.fontAttrs({}),
-            extendFlat = Lib.extendFlat,
-            coerceFont = Lib.coerceFont;
+        var fontAttrs = Plots.fontAttrs({});
+        var extendFlat = Lib.extendFlat;
+        var coerceFont = Lib.coerceFont;
 
         var defaultFont = {
             family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
@@ -889,12 +1073,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should pass through individual valid pieces', function() {
-            var goodFamily = 'A fish', // for now any non-blank string is OK
-                badFamily = 42,
-                goodSize = 123.456,
-                badSize = 'ginormous',
-                goodColor = 'red',
-                badColor = 'a dark and stormy night';
+            var goodFamily = 'A fish'; // for now any non-blank string is OK
+            var badFamily = 42;
+            var goodSize = 123.456;
+            var badSize = 'ginormous';
+            var goodColor = 'red';
+            var badColor = 'a dark and stormy night';
 
             containerIn = {
                 fontWithDefault: {family: goodFamily, size: badSize, color: badColor}
@@ -926,7 +1110,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('validate', function() {
-
         function assert(shouldPass, shouldFail, valObject) {
             shouldPass.forEach(function(v) {
                 var res = Lib.validate(v, valObject);
@@ -940,8 +1123,8 @@ describe('Test lib.js:', function() {
         }
 
         it('should work for valType \'data_array\' where', function() {
-            var shouldPass = [[20], []],
-                shouldFail = ['a', {}, 20, undefined, null];
+            var shouldPass = [[20], []];
+            var shouldFail = ['a', {}, 20, undefined, null];
 
             assert(shouldPass, shouldFail, {
                 valType: 'data_array'
@@ -982,8 +1165,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'boolean\' where', function() {
-            var shouldPass = [true, false],
-                shouldFail = ['a', 1, {}, [], null, undefined, ''];
+            var shouldPass = [true, false];
+            var shouldFail = ['a', 1, {}, [], null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'boolean',
@@ -997,8 +1180,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'number\' where', function() {
-            var shouldPass = [20, '20', 1e6],
-                shouldFail = ['a', [], {}, null, undefined, ''];
+            var shouldPass = [20, '20', 1e6];
+            var shouldFail = ['a', [], {}, null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'number'
@@ -1065,8 +1248,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'color\' where', function() {
-            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'],
-                shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
+            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'];
+            var shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
 
             assert(shouldPass, shouldFail, {
                 valType: 'color'
@@ -1074,8 +1257,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'colorlist\' where', function() {
-            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']],
-                shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
+            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']];
+            var shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
 
             assert(shouldPass, shouldFail, {
                 valType: 'colorlist'
@@ -1083,14 +1266,14 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'colorscale\' where', function() {
-            var good = [ [0, 'red'], [1, 'blue'] ],
-                bad = [ [0.1, 'red'], [1, 'blue'] ],
-                bad2 = [ [0], [1] ],
-                bad3 = [ ['red'], ['blue']],
-                bad4 = ['red', 'blue'];
+            var good = [ [0, 'red'], [1, 'blue'] ];
+            var bad = [ [0.1, 'red'], [1, 'blue'] ];
+            var bad2 = [ [0], [1] ];
+            var bad3 = [ ['red'], ['blue']];
+            var bad4 = ['red', 'blue'];
 
-            var shouldPass = ['Viridis', 'Greens', good],
-                shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
+            var shouldPass = ['Viridis', 'Greens', good];
+            var shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
 
             assert(shouldPass, shouldFail, {
                 valType: 'colorscale'
@@ -1098,8 +1281,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'angle\' where', function() {
-            var shouldPass = ['auto', '120', 270],
-                shouldFail = [{}, [], 'red', null, undefined, ''];
+            var shouldPass = ['auto', '120', 270];
+            var shouldFail = [{}, [], 'red', null, undefined, ''];
 
             assert(shouldPass, shouldFail, {
                 valType: 'angle',
@@ -1108,8 +1291,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'subplotid\' where', function() {
-            var shouldPass = ['sp', 'sp4', 'sp10'],
-                shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
+            var shouldPass = ['sp', 'sp4', 'sp10'];
+            var shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
 
             assert(shouldPass, shouldFail, {
                 valType: 'subplotid',
@@ -1118,8 +1301,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'flaglist\' where', function() {
-            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'],
-                shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
+            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'];
+            var shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
 
             assert(shouldPass, shouldFail, {
                 valType: 'flaglist',
@@ -1129,8 +1312,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'any\' where', function() {
-            var shouldPass = ['', '120', null, false, {}, []],
-                shouldFail = [undefined];
+            var shouldPass = ['', '120', null, false, {}, []];
+            var shouldFail = [undefined];
 
             assert(shouldPass, shouldFail, {
                 valType: 'any'
@@ -1138,12 +1321,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'info_array\' where', function() {
-            var shouldPass = [[1, 2], [-20, '20']],
-                shouldFail = [
-                    {}, [], [10], [null, 10], ['aads', null],
-                    'red', null, undefined, '',
-                    [1, 10, null]
-                ];
+            var shouldPass = [[1, 2], [-20, '20']];
+            var shouldFail = [
+                {}, [], [10], [null, 10], ['aads', null],
+                'red', null, undefined, '',
+                [1, 10, null]
+            ];
 
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
@@ -1180,7 +1363,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('setCursor', function() {
-
         beforeEach(function() {
             this.el3 = d3.select(createGraphDiv());
         });
@@ -1229,7 +1411,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('overrideCursor', function() {
-
         beforeEach(function() {
             this.el3 = d3.select(createGraphDiv());
         });
@@ -1279,7 +1460,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('pushUnique', function() {
-
         beforeEach(function() {
             this.obj = { a: 'A' };
             this.array = ['a', 'b', 'c', this.obj];
@@ -1315,14 +1495,13 @@ describe('Test lib.js:', function() {
 
             Lib.pushUnique(this.array, this.obj);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
-
         });
 
         it('should recognize matching RegExps', function() {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
-            var r1 = /a/,
-                r2 = /a/;
+            var r1 = /a/;
+            var r2 = /a/;
             Lib.pushUnique(this.array, r1);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, r1]);
 
@@ -1332,7 +1511,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('filterUnique', function() {
-
         it('should return array containing unique values', function() {
             expect(
                 Lib.filterUnique(['a', 'a', 'b', 'b'])
@@ -1359,11 +1537,9 @@ describe('Test lib.js:', function() {
             )
             .toEqual([null, undefined]);
         });
-
     });
 
     describe('numSeparate', function() {
-
         it('should work on numbers and strings', function() {
             expect(Lib.numSeparate(12345.67, '.,')).toBe('12,345.67');
             expect(Lib.numSeparate('12345.67', '.,')).toBe('12,345.67');
@@ -1399,12 +1575,17 @@ describe('Test lib.js:', function() {
 
     describe('cleanNumber', function() {
         it('should return finite numbers untouched', function() {
-            [
-                0, 1, 2, 1234.567,
-                -1, -100, -999.999,
-                Number.MAX_VALUE, Number.MIN_VALUE, Number.EPSILON,
-                -Number.MAX_VALUE, -Number.MIN_VALUE, -Number.EPSILON
-            ].forEach(function(v) {
+            var vals = [
+                0, 1, 2, 1234.567, -1, -100, -999.999,
+                Number.MAX_VALUE, Number.MIN_VALUE,
+                -Number.MAX_VALUE, -Number.MIN_VALUE
+            ];
+
+            if(!Lib.isIE()) {
+                vals.push(Number.EPSILON, -Number.EPSILON);
+            }
+
+            vals.forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
             });
         });
@@ -1495,6 +1676,7 @@ describe('Test lib.js:', function() {
 
         function consoleFn(name, hasApply, messages) {
             var out = function() {
+                if(hasApply) expect(this).toBe(window.console);
                 var args = [];
                 for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
                 messages.push([name, args]);
@@ -1505,12 +1687,13 @@ describe('Test lib.js:', function() {
             return out;
         }
 
-        function mockConsole(hasApply, hasTrace) {
+        function mockConsole(hasApply, hasTrace, hasError) {
             var out = {
                 MESSAGES: []
             };
             out.log = consoleFn('log', hasApply, out.MESSAGES);
-            out.error = consoleFn('error', hasApply, out.MESSAGES);
+
+            if(hasError) out.error = consoleFn('error', hasApply, out.MESSAGES);
 
             if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
 
@@ -1528,7 +1711,7 @@ describe('Test lib.js:', function() {
         });
 
         it('emits one console message if apply is available', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1543,7 +1726,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on console.log if no trace', function() {
-            var c = window.console = mockConsole(true, false);
+            var c = window.console = mockConsole(true, false, true);
             config.logging = 2;
 
             Lib.log('Hi');
@@ -1556,7 +1739,7 @@ describe('Test lib.js:', function() {
         });
 
         it('falls back on separate calls if no apply', function() {
-            var c = window.console = mockConsole(false, false);
+            var c = window.console = mockConsole(false, false, true);
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1585,7 +1768,7 @@ describe('Test lib.js:', function() {
         });
 
         it('omits .log at log level 1', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 1;
 
             Lib.log(1);
@@ -1599,7 +1782,7 @@ describe('Test lib.js:', function() {
         });
 
         it('logs nothing at log level 0', function() {
-            var c = window.console = mockConsole(true, true);
+            var c = window.console = mockConsole(true, true, true);
             config.logging = 0;
 
             Lib.log(1);
@@ -1608,9 +1791,70 @@ describe('Test lib.js:', function() {
 
             expect(c.MESSAGES).toEqual([]);
         });
+
+        it('falls back on simple log if there is no console.error', function() {
+            // TODO
+
+            var c = window.console = mockConsole(true, true, false);
+            config.logging = 2;
+
+            Lib.error('who are you', 'who who... are you', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['ERROR:']],
+                ['log', ['who are you']],
+                ['log', ['who who... are you']],
+                ['log', [{a: 1, b: 2}]]
+            ]);
+        });
     });
 
     describe('keyedContainer', function() {
+        describe('with no existing container', function() {
+            it('creates a named container only when setting a value', function() {
+                var container = {};
+                var kCont = Lib.keyedContainer(container, 'styles');
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(container).toEqual({});
+
+                kCont.set('name1', null);
+                expect(container).toEqual({});
+
+                kCont.set('name1', 'value1');
+                expect(container).toEqual({
+                    styles: [{name: 'name1', value: 'value1'}]
+                });
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+        });
+
+        describe('with no path', function() {
+            it('adds elements just like when there is a path', function() {
+                var arr = [];
+                var kCont = Lib.keyedContainer(arr);
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', null);
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', 'value1');
+                expect(arr).toEqual([{name: 'name1', value: 'value1'}]);
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+
+            it('does not barf if the array is missing', function() {
+                var kCont = Lib.keyedContainer();
+                kCont.set('name1', null);
+                kCont.set('name1', 'value1');
+                expect(kCont.get('name1')).toBeUndefined();
+            });
+        });
+
         describe('with a filled container', function() {
             var container, carr;
 
@@ -1776,7 +2020,6 @@ describe('Test lib.js:', function() {
                     'styles[1].bar': 'value3',
                     'styles[2]': null
                 });
-
             });
         });
 
@@ -1825,7 +2068,7 @@ describe('Test lib.js:', function() {
 
                 expect(container).toEqual({styles: [
                     {foo: 'name4', bar: {value: 'value1'}},
-                    {foo: 'name2'},
+                    {foo: 'name2', bar: {}},
                     {foo: 'name3', bar: {value: 'value3'}}
                 ]});
 
@@ -1846,7 +2089,7 @@ describe('Test lib.js:', function() {
 
                 carr.remove('name');
 
-                expect(container.styles).toEqual([{foo: 'name', extra: 'data'}]);
+                expect(container.styles).toEqual([{foo: 'name', bar: {}, extra: 'data'}]);
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[0].bar.value': null,
@@ -1881,7 +2124,7 @@ describe('Test lib.js:', function() {
 
                 expect(container.styles).toEqual([
                     {foo: 'name1', bar: {extra: 'data'}},
-                    {foo: 'name2'},
+                    {foo: 'name2', bar: {}},
                     {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
                 ]);
 
@@ -1904,7 +2147,7 @@ describe('Test lib.js:', function() {
                 carr.remove('name1');
 
                 expect(container.styles).toEqual([
-                    {foo: 'name1'},
+                    {foo: 'name1', bar: {}},
                     {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
                 ]);
 
@@ -1938,6 +2181,69 @@ describe('Test lib.js:', function() {
 
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
+        });
+    });
+
+    describe('hovertemplateString', function() {
+        var locale = false;
+        it('evaluates attributes', function() {
+            expect(Lib.hovertemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates attributes with a dot in their name', function() {
+            expect(Lib.hovertemplateString('%{marker.size}', {}, locale, {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, locale, {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with template string', function() {
+            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, {group: 1})).toEqual('foo 1 %{trace}');
+        });
+
+        it('uses the value from the first object with the specified key', function() {
+            var obj1 = {a: 'first'};
+            var obj2 = {a: 'second', foo: {bar: 'bar'}};
+
+            // Simple key
+            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj1, obj2)).toEqual('foo first');
+            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj2, obj1)).toEqual('foo second');
+
+            // Nested Keys
+            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, locale, obj1, obj2)).toEqual('foo bar');
+
+            // Nested keys with 0
+            expect(Lib.hovertemplateString('y: %{y}', {}, locale, {y: 0}, {y: 1})).toEqual('y: 0');
+        });
+
+        it('formats value using d3 mini-language', function() {
+            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, locale, {a: 0.123})).toEqual('a: 12%');
+            expect(Lib.hovertemplateString('a: %{a:0.2%}', {}, locale, {a: 0.123})).toEqual('a: 12.30%');
+            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, locale, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.hovertemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.hovertemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(10);
         });
     });
 
@@ -1982,6 +2288,156 @@ describe('Test lib.js:', function() {
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
             });
+        });
+    });
+
+    describe('sort', function() {
+        var callCount;
+        beforeEach(function() {
+            callCount = 0;
+        });
+
+        function sortCounter(a, b) {
+            callCount++;
+            return a - b;
+        }
+
+        function sortCounterReversed(a, b) {
+            callCount++;
+            return b - a;
+        }
+
+        function ascending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = i;
+            }
+            assertAscending(out);
+            return out;
+        }
+
+        function descending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = n - 1 - i;
+            }
+            assertDescending(out);
+            return out;
+        }
+
+        function rand(n) {
+            Lib.seedPseudoRandom();
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = Lib.pseudoRandom();
+            }
+            return out;
+        }
+
+        function assertAscending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    // we already know this expect will fail,
+                    // just want to format the message nicely and then
+                    // quit so we don't get a million messages
+                    expect(array[i]).not.toBeLessThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function assertDescending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    expect(array[i]).not.toBeGreaterThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function _sort(array, sortFn) {
+            var arrayOut = Lib.sort(array, sortFn);
+            expect(arrayOut).toBe(array);
+            return array;
+        }
+
+        it('sorts ascending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts descending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts ascending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts descending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts random arrays ascending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounter);
+            assertAscending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounter);
+            // in general this will be ~N*log_2(N)
+            expect(callCount).toBeGreaterThan(1e6);
+            // This number (2) is only repeatable because we used Lib.pseudoRandom
+            // should always be at least 2 and less than N - 1, and if
+            // the input array is really not sorted it will be close to 2. It will
+            // only be large if the array is sorted until near the end.
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('sorts random arrays descending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounterReversed);
+            assertDescending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(1e6);
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('supports short arrays', function() {
+            expect(_sort([], sortCounter)).toEqual([]);
+            expect(_sort([1], sortCounter)).toEqual([1]);
+            expect(callCount).toBe(0);
+
+            expect(_sort([1, 2], sortCounter)).toEqual([1, 2]);
+            expect(_sort([2, 3], sortCounterReversed)).toEqual([3, 2]);
+            expect(callCount).toBe(2);
+        });
+
+        function dupes() {
+            return [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 9];
+        }
+
+        it('still short-circuits in order with duplicates', function() {
+            expect(_sort(dupes(), sortCounter))
+                .toEqual(dupes());
+
+            expect(callCount).toEqual(18);
+        });
+
+        it('still short-circuits reversed with duplicates', function() {
+            expect(_sort(dupes(), sortCounterReversed))
+                .toEqual(dupes().reverse());
+
+            expect(callCount).toEqual(18);
         });
     });
 
@@ -2087,6 +2543,88 @@ describe('Test lib.js:', function() {
             expect(toContainer).toEqual(expected);
         });
     });
+
+    describe('concat', function() {
+        var concat = Lib.concat;
+
+        beforeEach(function() {
+            spyOn(Array.prototype, 'concat').and.callThrough();
+        });
+
+        it('works with multiple Arrays', function() {
+            var res = concat([1], [[2], 3], [{a: 4}, 5, 6]);
+            expect(Array.prototype.concat.calls.count()).toBe(1);
+
+            // note: can't `concat` in the `expect` if we want to count native
+            // `Array.concat calls`, because `toEqual` calls `Array.concat`
+            // profusely itself.
+            expect(res).toEqual([1, [2], 3, {a: 4}, 5, 6]);
+        });
+
+        it('works with some empty arrays', function() {
+            var a1 = [1];
+            var res = concat(a1, [], [2, 3]);
+            expect(Array.prototype.concat.calls.count()).toBe(1);
+            expect(res).toEqual([1, 2, 3]);
+            expect(a1).toEqual([1]); // did not mutate a1
+
+            Array.prototype.concat.calls.reset();
+            var a1b = concat(a1, []);
+            var a1c = concat([], a1b);
+            var a1d = concat([], a1c, []);
+            expect(Array.prototype.concat.calls.count()).toBe(0);
+
+            expect(a1d).toEqual([1]);
+            // does not mutate a1, but *will* return it unchanged if it's the
+            // only one with data
+            expect(a1d).toBe(a1);
+
+            expect(concat([], [0], [1, 0], [2, 0, 0])).toEqual([0, 1, 0, 2, 0, 0]);
+
+            // a single typedArray will keep its identity (and type)
+            // even if other empty arrays don't match type.
+            var f1 = new Float32Array([1, 2]);
+            Array.prototype.concat.calls.reset();
+            res = concat([], f1, new Float64Array([]));
+            expect(Array.prototype.concat.calls.count()).toBe(0);
+            expect(res).toBe(f1);
+            expect(f1).toEqual(new Float32Array([1, 2]));
+        });
+
+        it('works with all empty arrays', function() {
+            [[], [[]], [[], []], [[], [], [], []]].forEach(function(empties) {
+                Array.prototype.concat.calls.reset();
+                var res = concat.apply(null, empties);
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual([]);
+            });
+        });
+
+        it('converts mismatched types to Array', function() {
+            [
+                [[1, 2], new Float64Array([3, 4])],
+                [new Float64Array([1, 2]), [3, 4]],
+                [new Float64Array([1, 2]), new Float32Array([3, 4])]
+            ].forEach(function(mismatch) {
+                Array.prototype.concat.calls.reset();
+                var res = concat.apply(null, mismatch);
+                // no concat - all entries moved over individually
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual([1, 2, 3, 4]);
+            });
+        });
+
+        it('concatenates matching TypedArrays preserving type', function() {
+            [Float32Array, Float64Array, Int16Array, Int32Array].forEach(function(Type, i) {
+                var v = i * 10;
+                Array.prototype.concat.calls.reset();
+                var res = concat([], new Type([v]), new Type([v + 1, v]), new Type([v + 2, v, v]));
+                // no concat - uses `TypedArray.set`
+                expect(Array.prototype.concat.calls.count()).toBe(0);
+                expect(res).toEqual(new Type([v, v + 1, v, v + 2, v, v]));
+            });
+        });
+    });
 });
 
 describe('Queue', function() {
@@ -2139,12 +2677,12 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
             expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
 
-            return Plotly.relayout(gd, 'title', 'A title');
+            return Plotly.relayout(gd, 'title.text', 'A title');
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[1].undo.args[0][1]['title.text']).toEqual(null);
+            expect(gd.undoQueue.queue[1].redo.args[0][1]['title.text']).toEqual('A title');
 
             return Plotly.restyle(gd, 'mode', 'markers');
         })
@@ -2155,8 +2693,8 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
             expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['title.text']).toEqual(null);
+            expect(gd.undoQueue.queue[0].redo.args[0][1]['title.text']).toEqual('A title');
 
             return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
         })
@@ -2177,9 +2715,8 @@ describe('Queue', function() {
             return Plotly.relayout(gd, 'updatemenus[0]', null);
         })
         .then(function() {
-            // buttons have been stripped out because it's an empty container array...
             expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': {} });
+                .toEqual({ 'updatemenus[0]': { buttons: [] } });
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'updatemenus[0]': null });
 

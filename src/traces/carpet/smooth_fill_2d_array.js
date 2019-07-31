@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54,7 +54,6 @@ module.exports = function smoothFill2dArray(data, a, b) {
             sum += val;
         }
         return sum / Math.max(1, cnt);
-
     }
 
     // This loop iterates over all cells. Any cells that are null will be noted and those

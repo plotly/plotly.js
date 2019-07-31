@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ module.exports = {
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,
-    ease: 'cubic-in-out',
+    ease: 'linear',
     cn: {
         sankey: 'sankey',
         sankeyLinks: 'sankey-links',

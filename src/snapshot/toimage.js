@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 var EventEmitter = require('events').EventEmitter;
 
-var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 var helpers = require('./helpers');
@@ -18,14 +18,12 @@ var clonePlot = require('./cloneplot');
 var toSVG = require('./tosvg');
 var svgToImg = require('./svgtoimg');
 
-
 /**
  * @param {object} gd figure Object
  * @param {object} opts option object
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
 function toImage(gd, opts) {
-
     // first clone the GD so we can operate in a clean environment
     var ev = new EventEmitter();
 
@@ -58,13 +56,12 @@ function toImage(gd, opts) {
             ev.clean = function() {
                 if(clonedGd) document.body.removeChild(clonedGd);
             };
-
         }, delay);
     }
 
     var redrawFunc = helpers.getRedrawFunc(clonedGd);
 
-    Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
+    Registry.call('plot', clonedGd, clone.data, clone.layout, clone.config)
         .then(redrawFunc)
         .then(wait)
         .catch(function(err) {

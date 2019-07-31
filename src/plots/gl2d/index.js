@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52,15 +52,15 @@ exports.baseLayoutAttrOverrides = overrideAll({
     // dragmode: fxAttrs.dragmode
 }, 'plot', 'nested');
 
-exports.plot = function plotGl2d(gd) {
+exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
-        var subplotId = subplotIds[i],
-            subplotObj = fullLayout._plots[subplotId],
-            fullSubplotData = getSubplotData(fullData, 'gl2d', subplotId);
+        var subplotId = subplotIds[i];
+        var subplotObj = fullLayout._plots[subplotId];
+        var fullSubplotData = getSubplotData(fullData, 'gl2d', subplotId);
 
         // ref. to corresp. Scene instance
         var scene = subplotObj._scene2d;
@@ -89,8 +89,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldSceneKeys = oldFullLayout._subplots.gl2d || [];
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
-        var id = oldSceneKeys[i],
-            oldSubplot = oldFullLayout._plots[id];
+        var id = oldSceneKeys[i];
+        var oldSubplot = oldFullLayout._plots[id];
 
         // old subplot wasn't gl2d; nothing to do
         if(!oldSubplot._scene2d) continue;
@@ -118,8 +118,8 @@ exports.toSVG = function(gd) {
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {
-        var subplot = fullLayout._plots[subplotIds[i]],
-            scene = subplot._scene2d;
+        var subplot = fullLayout._plots[subplotIds[i]];
+        var scene = subplot._scene2d;
 
         var imageData = scene.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
@@ -138,7 +138,8 @@ exports.toSVG = function(gd) {
     }
 };
 
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots.gl2d;
 
     for(var i = 0; i < subplotIds.length; i++) {

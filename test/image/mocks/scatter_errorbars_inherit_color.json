@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "x": [0, 1, 2, 3, 4],
+      "y": [0, 100, 500, 600, 0],
+      "type": "scatter",
+      "mode": "markers+lines",
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [0, 1, 2, 3, 4],
+      "y": [100, 200, 600, 700, 100],
+      "type": "scatter",
+      "mode": "markers+lines",
+      "marker": {
+        "line": {
+          "width": 2,
+          "color": "gray"
+        }
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [0, 1, 2, 3, 4],
+      "y": [200, 300, 700, 800, 200],
+      "type": "scatter",
+      "mode": "markers+lines",
+      "marker": {
+        "color": "red"
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [0, 1, 2, 3, 4],
+      "y": [300, 400, 800, 900, 300],
+      "type": "scatter",
+      "mode": "markers+lines",
+      "line": {
+        "color": "green"
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    },
+    {
+      "x": [0, 1, 2, 3, 4],
+      "y": [400, 500, 900, 1000, 400],
+      "type": "scatter",
+      "mode": "markers+lines",
+      "line": {
+        "color": "blue"
+      },
+      "marker": {
+        "color": "black"
+      },
+      "error_y": {
+        "type": "sqrt"
+      }
+    }
+  ],
+  "layout": {
+      "width": 600,
+      "heigh": 600,
+      "title": {
+          "text": "Scatter error bars inherit color from line or marker"
+      }
+  }
+}

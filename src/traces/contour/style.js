@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,12 +21,12 @@ module.exports = function style(gd) {
     var contours = d3.select(gd).selectAll('g.contour');
 
     contours.style('opacity', function(d) {
-        return d.trace.opacity;
+        return d[0].trace.opacity;
     });
 
     contours.each(function(d) {
         var c = d3.select(this);
-        var trace = d.trace;
+        var trace = d[0].trace;
         var contours = trace.contours;
         var line = trace.line;
         var cs = contours.size || 1;
@@ -59,8 +59,7 @@ module.exports = function style(gd) {
         if(isConstraintType) {
             c.selectAll('g.contourfill path')
                 .style('fill', trace.fillcolor);
-        }
-        else if(colorFills) {
+        } else if(colorFills) {
             var firstFill;
 
             c.selectAll('g.contourfill path')

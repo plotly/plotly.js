@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,7 +44,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
         if(!len) {
@@ -55,12 +54,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('text');
         var isConstraint = (coerce('contours.type') === 'constraint');
 
-        // Unimplemented:
-        // coerce('connectgaps', hasColumns(traceOut));
-
-        // trace-level showlegend has already been set, but is only allowed if this is a constraint
-        if(!isConstraint) delete traceOut.showlegend;
-
         if(isConstraint) {
             handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, {hasHover: false});
         } else {
@@ -69,5 +62,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     } else {
         traceOut._defaultColor = defaultColor;
+        traceOut._length = null;
     }
 };

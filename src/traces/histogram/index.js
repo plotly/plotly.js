@@ -1,18 +1,17 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
- * and bar's setPositions for stacking and grouping
+ * and bar's crossTraceCalc (formerly known as setPositions) for stacking and grouping
  */
 
 /**
@@ -22,34 +21,34 @@
  * to allow quadrature combination of errors in summed histograms...
  */
 
+module.exports = {
+    attributes: require('./attributes'),
+    layoutAttributes: require('../bar/layout_attributes'),
+    supplyDefaults: require('./defaults'),
+    crossTraceDefaults: require('./cross_trace_defaults'),
+    supplyLayoutDefaults: require('../bar/layout_defaults'),
+    calc: require('./calc').calc,
+    crossTraceCalc: require('../bar/cross_trace_calc').crossTraceCalc,
+    plot: require('../bar/plot').plot,
+    layerName: 'barlayer',
+    style: require('../bar/style').style,
+    styleOnSelect: require('../bar/style').styleOnSelect,
+    colorbar: require('../scatter/marker_colorbar'),
+    hoverPoints: require('./hover'),
+    selectPoints: require('../bar/select'),
+    eventData: require('./event_data'),
 
-var Histogram = {};
-
-Histogram.attributes = require('./attributes');
-Histogram.layoutAttributes = require('../bar/layout_attributes');
-Histogram.supplyDefaults = require('./defaults');
-Histogram.supplyLayoutDefaults = require('../bar/layout_defaults');
-Histogram.calc = require('./calc');
-Histogram.setPositions = require('../bar/set_positions');
-Histogram.plot = require('../bar/plot');
-Histogram.style = require('../bar/style');
-Histogram.colorbar = require('../scatter/colorbar');
-Histogram.hoverPoints = require('./hover');
-Histogram.selectPoints = require('../bar/select');
-Histogram.eventData = require('./event_data');
-
-Histogram.moduleType = 'trace';
-Histogram.name = 'histogram';
-Histogram.basePlotModule = require('../../plots/cartesian');
-Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
-Histogram.meta = {
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'for vertically spanning histograms and',
-        'in `y` for horizontally spanning histograms.',
-        'Binning options are set `xbins` and `ybins` respectively',
-        'if no aggregation data is provided.'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'histogram',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['bar-like', 'cartesian', 'svg', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'],
+    meta: {
+        description: [
+            'The sample data from which statistics are computed is set in `x`',
+            'for vertically spanning histograms and',
+            'in `y` for horizontally spanning histograms.',
+            'Binning options are set `xbins` and `ybins` respectively',
+            'if no aggregation data is provided.'
+        ].join(' ')
+    }
 };
-
-module.exports = Histogram;

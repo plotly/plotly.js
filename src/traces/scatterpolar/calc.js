@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -29,10 +29,6 @@ module.exports = function calc(gd, trace) {
     var len = trace._length;
     var cd = new Array(len);
 
-    function c2rad(v) {
-        return angularAxis.c2rad(v, trace.thetaunit);
-    }
-
     for(var i = 0; i < len; i++) {
         var r = rArray[i];
         var theta = thetaArray[i];
@@ -41,22 +37,15 @@ module.exports = function calc(gd, trace) {
         if(isNumeric(r) && isNumeric(theta)) {
             cdi.r = r;
             cdi.theta = theta;
-            cdi.rad = c2rad(theta);
         } else {
             cdi.r = BADNUM;
         }
     }
 
     var ppad = calcMarkerSize(trace, len);
-    Axes.expand(radialAxis, rArray, {ppad: ppad});
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
 
-    if(angularAxis.type !== 'linear') {
-        angularAxis.autorange = true;
-        Axes.expand(angularAxis, thetaArray);
-        delete angularAxis.autorange;
-    }
-
-    calcColorscale(trace);
+    calcColorscale(gd, trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
 

@@ -1,17 +1,16 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-
 
 module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var markerColor = (traceIn.marker || {}).color;
@@ -20,9 +19,8 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
 
     if(hasColorscale(traceIn, 'line')) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
-    }
-    else {
-        var lineColorDflt = (Array.isArray(markerColor) ? false : markerColor) || defaultColor;
+    } else {
+        var lineColorDflt = (isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
     }
 

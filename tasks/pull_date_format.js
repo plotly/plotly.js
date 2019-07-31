@@ -22,8 +22,7 @@ if(!argLocale) {
             pullOneLocale(itemLocale);
         });
     });
-}
-else {
+} else {
     pullOneLocale(argLocale);
 }
 
@@ -68,8 +67,7 @@ function pullOneLocale(locale) {
             var outObj;
             try {
                 outObj = eval('a=' + objText);
-            }
-            catch(e) {
+            } catch(e) {
                 throw new Error(locale + '--' + objText);
             }
 
@@ -148,7 +146,6 @@ function shortenArrays(s) {
     var maxLen = 91; // max line length plus one for the initial \n.
 
     return s.replace(/(\n.+\[)\n([^\]]+)\n(\s*)\]/g, function(wholeMatch, prefix, arrayStr, bracketSpaces) {
-
         var parts = arrayStr.trim().split(/,\n\s*/);
 
         var singleLine = prefix + parts.join(', ') + ']';

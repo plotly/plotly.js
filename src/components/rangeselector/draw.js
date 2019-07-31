@@ -1,23 +1,22 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var axisIds = require('../../plots/cartesian/axis_ids');
-var anchorUtils = require('../legend/anchor_utils');
 
 var alignmentConstants = require('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
@@ -26,7 +25,6 @@ var FROM_BR = alignmentConstants.FROM_BR;
 
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
-
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -45,12 +43,12 @@ module.exports = function draw(gd) {
     });
 
     selectors.each(function(d) {
-        var selector = d3.select(this),
-            axisLayout = d,
-            selectorLayout = axisLayout.rangeselector;
+        var selector = d3.select(this);
+        var axisLayout = d;
+        var selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
-            .data(selectorLayout.buttons);
+            .data(Lib.filterVisible(selectorLayout.buttons));
 
         buttons.enter().append('g')
             .classed('button', true);
@@ -69,7 +67,7 @@ module.exports = function draw(gd) {
             button.on('click', function() {
                 if(gd._dragged) return;
 
-                Plotly.relayout(gd, update);
+                Registry.call('_guiRelayout', gd, update);
             });
 
             button.on('mouseover', function() {
@@ -85,7 +83,6 @@ module.exports = function draw(gd) {
 
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
 };
 
 function makeSelectorData(gd) {
@@ -110,8 +107,7 @@ function selectorKeyFunc(d) {
 function isActive(axisLayout, opts, update) {
     if(opts.step === 'all') {
         return axisLayout.autorange === true;
-    }
-    else {
+    } else {
         var keys = Object.keys(update);
 
         return (
@@ -122,13 +118,9 @@ function isActive(axisLayout, opts, update) {
 }
 
 function drawButtonRect(button, selectorLayout, d) {
-    var rect = button.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed('selector-rect', true);
-
-    rect.attr('shape-rendering', 'crispEdges');
+    var rect = Lib.ensureSingle(button, 'rect', 'selector-rect', function(s) {
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     rect.attr({
         'rx': constants.rx,
@@ -151,22 +143,22 @@ function drawButtonText(button, selectorLayout, d, gd) {
         svgTextUtils.convertToTspans(s, gd);
     }
 
-    var text = button.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed('selector-text', true)
-        .classed('user-select-none', true);
-
-    text.attr('text-anchor', 'middle');
+    var text = Lib.ensureSingle(button, 'text', 'selector-text', function(s) {
+        s.classed('user-select-none', true)
+            .attr('text-anchor', 'middle');
+    });
 
     text.call(Drawing.font, selectorLayout.font)
-        .text(getLabel(d))
+        .text(getLabel(d, gd._fullLayout._meta))
         .call(textLayout);
 }
 
-function getLabel(opts) {
-    if(opts.label) return opts.label;
+function getLabel(opts, _meta) {
+    if(opts.label) {
+        return _meta ?
+            Lib.templateString(opts.label, _meta) :
+            opts.label;
+    }
 
     if(opts.step === 'all') return 'all';
 
@@ -226,21 +218,21 @@ function reposition(gd, buttons, opts, axName, selector) {
     var ly = graphSize.t + graphSize.h * (1 - opts.y);
 
     var xanchor = 'left';
-    if(anchorUtils.isRightAnchor(opts)) {
+    if(Lib.isRightAnchor(opts)) {
         lx -= width;
         xanchor = 'right';
     }
-    if(anchorUtils.isCenterAnchor(opts)) {
+    if(Lib.isCenterAnchor(opts)) {
         lx -= width / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
-    if(anchorUtils.isBottomAnchor(opts)) {
+    if(Lib.isBottomAnchor(opts)) {
         ly -= height;
         yanchor = 'bottom';
     }
-    if(anchorUtils.isMiddleAnchor(opts)) {
+    if(Lib.isMiddleAnchor(opts)) {
         ly -= height / 2;
         yanchor = 'middle';
     }

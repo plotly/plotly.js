@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,7 +32,8 @@ function baseFilter(item) {
 }
 
 function calcDataFilter(item) {
-    return item[0].trace.visible === true;
+    var trace = item[0].trace;
+    return trace.visible === true && trace._length !== 0;
 }
 
 function isCalcData(cont) {

@@ -1,0 +1,146 @@
+{
+    "data": [
+        {
+            "name": "2018",
+            "type": "waterfall",
+            "orientation": "h",
+            "opacity": 0.5,
+            "measure": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
+            "y": [
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax (15%)",
+                "Profit after tax"
+            ],
+            "x": [
+                375,
+                128,
+                78,
+                27,
+                null,
+                -327,
+                -12,
+                -78,
+                -12,
+                null,
+                32,
+                89,
+                null,
+                -45,
+                null
+            ],
+            "base": 0,
+            "textinfo": "label+text+delta",
+            "cliponaxis": false,
+            "textposition": "outside"
+        },
+        {
+            "name": "2019",
+            "type": "waterfall",
+            "orientation": "h",
+            "measure": [
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "relative",
+                "total",
+                "relative",
+                "total"
+            ],
+            "y": [
+                "Sales",
+                "Consulting",
+                "Maintenance",
+                "Other revenue",
+                "Net revenue",
+                "Purchases",
+                "Material expenses",
+                "Personnel expenses",
+                "Other expenses",
+                "Operating profit",
+                "Investment income",
+                "Financial income",
+                "Profit before tax",
+                "Income tax (15%)",
+                "Profit after tax"
+            ],
+            "x": [
+                307,
+                102,
+                187,
+                172,
+                null,
+                -302,
+                -121,
+                -187,
+                -121,
+                null,
+                123,
+                198,
+                null,
+                -53.7,
+                null
+            ],
+            "base": 255,
+            "textinfo": "text+initial+final",
+            "cliponaxis": false,
+            "textposition": "outside"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart"
+        },
+        "yaxis": {
+            "type": "category",
+            "tickprefix": " \" ",
+            "ticksuffix": " \" ",
+            "autorange": "reversed"
+        },
+        "xaxis": {
+            "type": "linear",
+            "tickprefix": "$",
+            "ticksuffix": " m"
+        },
+        "margin": { "l": 150, "r": 50 },
+        "height": 1200,
+        "width": 900,
+        "hovermode": "closest",
+        "showlegend": true
+    }
+}

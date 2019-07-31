@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -33,25 +33,25 @@ var toLogRange = require('../../lib/to_log_range');
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
     ax = ax || {};
 
-    var toLog = (newType === 'log') && (ax.type === 'linear'),
-        fromLog = (newType === 'linear') && (ax.type === 'log');
+    var toLog = (newType === 'log') && (ax.type === 'linear');
+    var fromLog = (newType === 'linear') && (ax.type === 'log');
 
     if(!(toLog || fromLog)) return;
 
-    var images = gd._fullLayout.images,
-        axLetter = ax._id.charAt(0),
-        image,
-        attrPrefix;
+    var images = gd._fullLayout.images;
+    var axLetter = ax._id.charAt(0);
+    var image;
+    var attrPrefix;
 
     for(var i = 0; i < images.length; i++) {
         image = images[i];
         attrPrefix = 'images[' + i + '].';
 
         if(image[axLetter + 'ref'] === ax._id) {
-            var currentPos = image[axLetter],
-                currentSize = image['size' + axLetter],
-                newPos = null,
-                newSize = null;
+            var currentPos = image[axLetter];
+            var currentSize = image['size' + axLetter];
+            var newPos = null;
+            var newSize = null;
 
             if(toLog) {
                 newPos = toLogRange(currentPos, ax.range);
@@ -61,8 +61,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
                 // is like sinh, and this one looks like arcsinh)
                 var dx = currentSize / Math.pow(10, newPos) / 2;
                 newSize = 2 * Math.log(dx + Math.sqrt(1 + dx * dx)) / Math.LN10;
-            }
-            else {
+            } else {
                 newPos = Math.pow(10, currentPos);
                 newSize = newPos * (Math.pow(10, currentSize / 2) - Math.pow(10, -currentSize / 2));
             }
@@ -71,8 +70,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
             if(!isNumeric(newPos)) {
                 newPos = null;
                 newSize = null;
-            }
-            else if(!isNumeric(newSize)) newSize = null;
+            } else if(!isNumeric(newSize)) newSize = null;
 
             doExtra(attrPrefix + axLetter, newPos);
             doExtra(attrPrefix + 'size' + axLetter, newSize);

@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "type": "scatterternary",
+      "mode": "markers",
+      "a": [75],
+      "b": [25],
+      "c": [0],
+      "text": ["point 1"],
+      "marker": {
+        "symbol": 100,
+        "color": "#DB7365",
+        "size": 14,
+        "line": {
+          "width": 2
+        }
+      }
+    }
+  ],
+  "layout": {
+    "ternary": {
+      "sum": 100,
+      "aaxis": {
+        "title": {
+          "text": "$A^2$"
+        },
+        "showline": true,
+        "showgrid": true
+      },
+      "baxis": {
+        "title": {
+          "text": "$B^2$"
+        },
+        "showline": true,
+        "showgrid": true
+      },
+      "caxis": {
+        "title": {
+          "text": "$C^2$"
+        },
+        "showline": true,
+        "showgrid": true
+      }
+    },
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "Simple Ternary Plot with Markers",
+        "x": 0.5,
+        "y": 1.3,
+        "font": {
+          "size": 15
+        }
+      }
+    ]
+  }
+}

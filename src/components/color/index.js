@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47,17 +47,17 @@ color.combine = function(front, back) {
     var fc = tinycolor(front).toRgb();
     if(fc.a === 1) return tinycolor(front).toRgbString();
 
-    var bc = tinycolor(back || background).toRgb(),
-        bcflat = bc.a === 1 ? bc : {
-            r: 255 * (1 - bc.a) + bc.r * bc.a,
-            g: 255 * (1 - bc.a) + bc.g * bc.a,
-            b: 255 * (1 - bc.a) + bc.b * bc.a
-        },
-        fcflat = {
-            r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
-            g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
-            b: bcflat.b * (1 - fc.a) + fc.b * fc.a
-        };
+    var bc = tinycolor(back || background).toRgb();
+    var bcflat = bc.a === 1 ? bc : {
+        r: 255 * (1 - bc.a) + bc.r * bc.a,
+        g: 255 * (1 - bc.a) + bc.g * bc.a,
+        b: 255 * (1 - bc.a) + bc.b * bc.a
+    };
+    var fcflat = {
+        r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
+        g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
+        b: bcflat.b * (1 - fc.a) + fc.b * fc.a
+    };
     return tinycolor(fcflat).toRgbString();
 };
 
@@ -99,37 +99,33 @@ color.fill = function(s, c) {
 color.clean = function(container) {
     if(!container || typeof container !== 'object') return;
 
-    var keys = Object.keys(container),
-        i,
-        j,
-        key,
-        val;
+    var keys = Object.keys(container);
+    var i, j, key, val;
 
     for(i = 0; i < keys.length; i++) {
         key = keys[i];
         val = container[key];
 
-        // only sanitize keys that end in "color" or "colorscale"
         if(key.substr(key.length - 5) === 'color') {
+            // only sanitize keys that end in "color" or "colorscale"
+
             if(Array.isArray(val)) {
                 for(j = 0; j < val.length; j++) val[j] = cleanOne(val[j]);
-            }
-            else container[key] = cleanOne(val);
-        }
-        else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
+            } else container[key] = cleanOne(val);
+        } else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
             // colorscales have the format [[0, color1], [frac, color2], ... [1, colorN]]
+
             for(j = 0; j < val.length; j++) {
                 if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
             }
-        }
-        // recurse into arrays of objects, and plain objects
-        else if(Array.isArray(val)) {
+        } else if(Array.isArray(val)) {
+            // recurse into arrays of objects, and plain objects
+
             var el0 = val[0];
             if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
                 for(j = 0; j < val.length; j++) color.clean(val[j]);
             }
-        }
-        else if(val && typeof val === 'object') color.clean(val);
+        } else if(val && typeof val === 'object') color.clean(val);
     }
 };
 
@@ -142,22 +138,29 @@ function cleanOne(val) {
     var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
     if(!match) return val;
 
-    var parts = match[1].trim().split(/\s*[\s,]\s*/),
-        rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
+    var parts = match[1].trim().split(/\s*[\s,]\s*/);
+    var rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
     if(!rgba && parts.length !== 3) return val;
 
     for(var i = 0; i < parts.length; i++) {
         if(!parts[i].length) return val;
         parts[i] = Number(parts[i]);
 
-        // all parts must be non-negative numbers
-        if(!(parts[i] >= 0)) return val;
-        // alpha>1 gets clipped to 1
-        if(i === 3) {
-            if(parts[i] > 1) parts[i] = 1;
+        if(!(parts[i] >= 0)) {
+            // all parts must be non-negative numbers
+
+            return val;
         }
-        // r, g, b must be < 1 (ie 1 itself is not allowed)
-        else if(parts[i] >= 1) return val;
+
+        if(i === 3) {
+            // alpha>1 gets clipped to 1
+
+            if(parts[i] > 1) parts[i] = 1;
+        } else if(parts[i] >= 1) {
+            // r, g, b must be < 1 (ie 1 itself is not allowed)
+
+            return val;
+        }
     }
 
     var rgbStr = Math.round(parts[0] * 255) + ', ' +

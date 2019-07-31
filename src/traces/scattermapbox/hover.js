@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
-var fillHoverText = require('../scatter/fill_hover_text');
+var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -35,7 +35,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         var lonlat = d.lonlat;
         if(lonlat[0] === BADNUM) return Infinity;
 
-        var lon = Lib.wrap180(lonlat[0]);
+        var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];
         var pt = subplot.project([lon, lat]);
         var dx = pt.x - xa.c2p([xval2, lat]);
@@ -52,7 +52,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var di = cd[pointData.index];
     var lonlat = di.lonlat;
-    var lonlatShifted = [Lib.wrap180(lonlat[0]) + lonShift, lonlat[1]];
+    var lonlatShifted = [Lib.modHalf(lonlat[0], 360) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
     var xc = xa.c2p(lonlatShifted);
@@ -66,11 +66,16 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     pointData.color = getTraceColor(trace, di);
     pointData.extraText = getExtraText(trace, di, cd[0].t.labels);
+    pointData.hovertemplate = trace.hovertemplate;
 
     return [pointData];
 };
 
 function getExtraText(trace, di, labels) {
+    if(trace.hovertemplate) {
+        return;
+    }
+
     var hoverinfo = di.hi || trace.hoverinfo;
     var parts = hoverinfo.split('+');
     var isAll = parts.indexOf('all') !== -1;
@@ -94,7 +99,7 @@ function getExtraText(trace, di, labels) {
     }
 
     if(isAll || parts.indexOf('text') !== -1) {
-        fillHoverText(di, trace, text);
+        fillText(di, trace, text);
     }
 
     return text.join('<br>');

@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            "y": [0, 1, 0, 1, 0, 1, 0, 1, 0],
+            "z": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            "type": "scatter3d",
+            "mode":"lines+markers+text",
+            "text": ["middle center", "bottom", "right", "bottom right", "bottom left", "left", "top right", "top", "top left"],
+            "textposition":      ["", "bottom", "right", "bottom right", "bottom left", "left", "top right", "top", "top left"]
+        }
+    ],
+    "layout": {
+        "title":"Texts in scatter3d could be aligned differently using arrays",
+        "width": 800,
+        "height": 600,
+        "scene":{
+            "camera":{
+                "eye":{ "x":-1.25,"y":1.25,"z":1.25 },
+                "center":{ "x":0,"y":0,"z":0 },
+                "up":{ "x":0,"y":0,"z":1 }
+            }
+        }
+    }
+}

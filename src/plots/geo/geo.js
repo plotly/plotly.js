@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -20,7 +20,8 @@ var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../cartesian/select');
+var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
@@ -41,6 +42,7 @@ function Geo(opts) {
     this.topojson = null;
 
     this.projection = null;
+    this.scope = null;
     this.viewInitial = null;
     this.fitScale = null;
     this.bounds = null;
@@ -70,6 +72,24 @@ module.exports = function createGeo(opts) {
 proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this;
     var geoLayout = fullLayout[this.id];
+
+    var needsTopojson = false;
+    for(var k in constants.layerNameToAdjective) {
+        if(k !== 'frame' && geoLayout['show' + k]) {
+            needsTopojson = true;
+            break;
+        }
+    }
+    for(var i = 0; i < geoCalcData.length; i++) {
+        if(geoCalcData[0][0].trace.locationmode) {
+            needsTopojson = true;
+            break;
+        }
+    }
+    if(!needsTopojson) {
+        return _this.update(geoCalcData, fullLayout);
+    }
+
     var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
@@ -132,9 +152,10 @@ proto.update = function(geoCalcData, fullLayout) {
         }
     }
 
-    if(!this.viewInitial) {
+    if(!this.viewInitial || this.scope !== geoLayout.scope) {
         this.saveViewInitial(geoLayout);
     }
+    this.scope = geoLayout.scope;
 
     this.updateBaseLayers(fullLayout, geoLayout);
     this.updateDims(fullLayout, geoLayout);
@@ -208,7 +229,7 @@ proto.updateProjection = function(fullLayout, geoLayout) {
         this.viewInitial = null;
 
         Lib.warn(msg);
-        gd._promises.push(Plotly.relayout(gd, updateObj));
+        gd._promises.push(Registry.call('relayout', gd, updateObj));
         return msg;
     }
 
@@ -313,7 +334,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isLineLayer(d) || isFillLayer(d)) {
             path.datum(topojsonFeature(topojson, topojson.objects[d]));
         } else if(isAxisLayer(d)) {
-            path.datum(makeGraticule(d, geoLayout))
+            path.datum(makeGraticule(d, geoLayout, fullLayout))
                 .call(Color.stroke, geoLayout[d].gridcolor)
                 .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
         }
@@ -354,6 +375,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
     var gd = _this.graphDiv;
     var bgRect = _this.bgRect;
     var dragMode = fullLayout.dragmode;
+    var clickMode = fullLayout.clickmode;
 
     if(_this.isStatic) return;
 
@@ -365,7 +387,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        Plotly.relayout(gd, updateObj);
+        Registry.call('_guiRelayout', gd, updateObj);
         gd.emit('plotly_doubleclick', null);
     }
 
@@ -376,48 +398,53 @@ proto.updateFx = function(fullLayout, geoLayout) {
         ]);
     }
 
+    var fillRangeItems;
+
+    if(dragMode === 'select') {
+        fillRangeItems = function(eventData, poly) {
+            var ranges = eventData.range = {};
+            ranges[_this.id] = [
+                invert([poly.xmin, poly.ymin]),
+                invert([poly.xmax, poly.ymax])
+            ];
+        };
+    } else if(dragMode === 'lasso') {
+        fillRangeItems = function(eventData, poly, pts) {
+            var dataPts = eventData.lassoPoints = {};
+            dataPts[_this.id] = pts.filtered.map(invert);
+        };
+    }
+
+    // Note: dragOptions is needed to be declared for all dragmodes because
+    // it's the object that holds persistent selection state.
+    var dragOptions = {
+        element: _this.bgRect.node(),
+        gd: gd,
+        plotinfo: {
+            id: _this.id,
+            xaxis: _this.xaxis,
+            yaxis: _this.yaxis,
+            fillRangeItems: fillRangeItems
+        },
+        xaxes: [_this.xaxis],
+        yaxes: [_this.yaxis],
+        subplot: _this.id,
+        clickFn: function(numClicks) {
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
+        }
+    };
+
     if(dragMode === 'pan') {
         bgRect.node().onmousedown = null;
         bgRect.call(createGeoZoom(_this, geoLayout));
         bgRect.on('dblclick.zoom', zoomReset);
-    }
-    else if(dragMode === 'select' || dragMode === 'lasso') {
-        bgRect.on('.zoom', null);
-
-        var fillRangeItems;
-
-        if(dragMode === 'select') {
-            fillRangeItems = function(eventData, poly) {
-                var ranges = eventData.range = {};
-                ranges[_this.id] = [
-                    invert([poly.xmin, poly.ymin]),
-                    invert([poly.xmax, poly.ymax])
-                ];
-            };
-        } else if(dragMode === 'lasso') {
-            fillRangeItems = function(eventData, poly, pts) {
-                var dataPts = eventData.lassoPoints = {};
-                dataPts[_this.id] = pts.filtered.map(invert);
-            };
+        if(!gd._context._scrollZoom.geo) {
+            bgRect.on('wheel.zoom', null);
         }
-
-        var dragOptions = {
-            element: _this.bgRect.node(),
-            gd: gd,
-            plotinfo: {
-                xaxis: _this.xaxis,
-                yaxis: _this.yaxis,
-                fillRangeItems: fillRangeItems
-            },
-            xaxes: [_this.xaxis],
-            yaxes: [_this.yaxis],
-            subplot: _this.id,
-            clickFn: function(numClicks) {
-                if(numClicks === 2) {
-                    fullLayout._zoomlayer.selectAll('.select-outline').remove();
-                }
-            }
-        };
+    } else if(dragMode === 'select' || dragMode === 'lasso') {
+        bgRect.on('.zoom', null);
 
         dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, dragOptions, dragMode);
@@ -440,21 +467,33 @@ proto.updateFx = function(fullLayout, geoLayout) {
     });
 
     bgRect.on('mouseout', function() {
+        if(gd._dragging) return;
         dragElement.unhover(gd, d3.event);
     });
 
     bgRect.on('click', function() {
-        // TODO: like pie and mapbox, this doesn't support right-click
-        // actually this one is worse, as right-click starts a pan, or leaves
-        // select in a weird state.
-        // Also, only tangentially related, we should cancel hover during pan
-        Fx.click(gd, d3.event);
+        // For select and lasso the dragElement is handling clicks
+        if(dragMode !== 'select' && dragMode !== 'lasso') {
+            if(clickMode.indexOf('select') > -1) {
+                selectOnClick(d3.event, gd, [_this.xaxis], [_this.yaxis],
+                  _this.id, dragOptions);
+            }
+
+            if(clickMode.indexOf('event') > -1) {
+                // TODO: like pie and mapbox, this doesn't support right-click
+                // actually this one is worse, as right-click starts a pan, or leaves
+                // select in a weird state.
+                // Also, only tangentially related, we should cancel hover during pan
+                Fx.click(gd, d3.event);
+            }
+        }
     });
 };
 
 proto.makeFramework = function() {
     var _this = this;
-    var fullLayout = _this.graphDiv._fullLayout;
+    var gd = _this.graphDiv;
+    var fullLayout = gd._fullLayout;
     var clipId = 'clip' + fullLayout._uid + _this.id;
 
     _this.clipDef = fullLayout._clips.append('clipPath')
@@ -464,7 +503,7 @@ proto.makeFramework = function() {
 
     _this.framework = d3.select(_this.container).append('g')
         .attr('class', 'geo ' + _this.id)
-        .call(Drawing.setClipUrl, clipId);
+        .call(Drawing.setClipUrl, clipId, gd);
 
     // sane lonlat to px
     _this.project = function(v) {
@@ -640,20 +679,58 @@ function getProjection(geoLayout) {
     return projection;
 }
 
-function makeGraticule(axisName, geoLayout) {
-    var axisLayout = geoLayout[axisName];
-    var dtick = axisLayout.dtick;
-    var scopeDefaults = constants.scopeDefaults[geoLayout.scope];
-    var lonaxisRange = scopeDefaults.lonaxisRange;
-    var lataxisRange = scopeDefaults.lataxisRange;
-    var step = axisName === 'lonaxis' ? [dtick] : [0, dtick];
+function makeGraticule(axisName, geoLayout, fullLayout) {
+    // equivalent to the d3 "ε"
+    var epsilon = 1e-6;
+    // same as the geoGraticule default
+    var precision = 2.5;
 
-    return d3.geo.graticule()
-        .extent([
-            [lonaxisRange[0], lataxisRange[0]],
-            [lonaxisRange[1], lataxisRange[1]]
-        ])
-        .step(step);
+    var axLayout = geoLayout[axisName];
+    var scopeDefaults = constants.scopeDefaults[geoLayout.scope];
+    var rng;
+    var oppRng;
+    var coordFn;
+
+    if(axisName === 'lonaxis') {
+        rng = scopeDefaults.lonaxisRange;
+        oppRng = scopeDefaults.lataxisRange;
+        coordFn = function(v, l) { return [v, l]; };
+    } else if(axisName === 'lataxis') {
+        rng = scopeDefaults.lataxisRange;
+        oppRng = scopeDefaults.lonaxisRange;
+        coordFn = function(v, l) { return [l, v]; };
+    }
+
+    var dummyAx = {
+        type: 'linear',
+        range: [rng[0], rng[1] - epsilon],
+        tick0: axLayout.tick0,
+        dtick: axLayout.dtick
+    };
+
+    Axes.setConvert(dummyAx, fullLayout);
+    var vals = Axes.calcTicks(dummyAx);
+
+    // remove duplicate on antimeridian
+    if(!geoLayout.isScoped && axisName === 'lonaxis') {
+        vals.pop();
+    }
+
+    var len = vals.length;
+    var coords = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        var v = vals[i].x;
+        var line = coords[i] = [];
+        for(var l = oppRng[0]; l < oppRng[1] + precision; l += precision) {
+            line.push(coordFn(v, l));
+        }
+    }
+
+    return {
+        type: 'MultiLineString',
+        coordinates: coords
+    };
 }
 
 // Returns polygon GeoJSON corresponding to lon/lat range box

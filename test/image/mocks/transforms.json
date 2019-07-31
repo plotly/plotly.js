@@ -1,0 +1,71 @@
+{
+    "data": [{
+        "mode": "lines+markers",
+        "x": [1, -1, -2, 0, 1, 3, 3],
+        "y": [2, 1, 0, 1, 3, 4, 3],
+        "transforms": [{
+            "type": "groupby",
+            "groups": ["a", "a", "b", "a", "b", "b", "a"],
+            "styles": [
+                {"target": "a", "value": {"marker": {"color": "orange"}}},
+                {"target": "b", "value": {"marker": {"color": "blue"}}}
+            ]
+        }, {
+            "type": "filter",
+            "target": "x",
+            "operation": ">=",
+            "value": 0,
+            "preservegaps": true
+        }],
+        "name": "Groupby+filter"
+    },
+    {
+        "x": [1, 2, 3, 4, -3],
+        "y": [1.1, 2.2, 3.3, 4.4, 5.5],
+        "marker": {
+            "size": [0.3, 0.2, 0.1, 0.4, 0.5],
+            "sizeref": 0.01,
+            "color": [2, 4, 6, 10, 8],
+            "opacity": [0.9, 0.6, 0.2, 0.8, 1.0],
+            "line": {
+                "color": [2.2, 3.3, 4.4, 5.5, 1.1]
+            }
+        },
+        "transforms": [{
+            "type": "aggregate",
+            "groups": ["a", "b", "a", "a", "a"],
+            "aggregations": [
+                {"target": "x", "func": "sum"},
+                {"target": "y", "func": "avg"},
+                {"target": "marker.size", "func": "min"},
+                {"target": "marker.color", "func": "max"},
+                {"target": "marker.line.color", "func": "last"},
+                {"target": "marker.line.width", "func": "count"}
+            ]
+        }],
+        "name": "Aggregate"
+    },
+    {
+        "x": [1, 2, 3, 4, 5, 6],
+        "y": [1, 4, 2, 6, 5, 3],
+        "transforms": [{
+            "type": "sort",
+            "target": [1, 6, 2, 5, 3, 4]
+        }],
+        "name": "Sort"
+    },
+    {
+        "x":[4, 5, 6, 4, 5, 6],
+        "y": [1, 1, 1, 2, 2, 2],
+        "marker": {"color": [1, 2, 3, -1, -2, -3], "size": 20},
+        "mode": "lines+markers",
+        "transforms": [
+            {"type": "groupby", "groups": [1, 1, 1, 2, 2, 2]}
+        ]
+    }],
+    "layout": {
+        "width": 600,
+        "height": 400,
+        "title": "Transforms"
+    }
+}

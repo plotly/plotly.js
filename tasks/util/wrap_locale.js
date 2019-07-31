@@ -18,7 +18,7 @@ var moduleMarker = 'module.exports = ';
  *
  * Logs basename of bundle when completed.
  */
-module.exports = function wrap_locale(pathToInput, pathToOutput) {
+module.exports = function wrapLocale(pathToInput, pathToOutput) {
     fs.readFile(pathToInput, 'utf8', function(err, data) {
         var moduleStart = data.indexOf(moduleMarker) + moduleMarker.length;
         var moduleEnd = data.indexOf(';', moduleStart);

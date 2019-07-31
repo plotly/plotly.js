@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,6 +20,7 @@ var splitData = require('./data_split_helpers');
 var Color = require('../../components/color');
 
 module.exports = function plot(gd, wrappedTraceHolders) {
+    var dynamic = !gd._context.staticPlot;
 
     var table = gd._fullLayout._paper.selectAll('.' + c.cn.table)
         .data(wrappedTraceHolders.map(function(wrappedTraceHolder) {
@@ -51,20 +52,30 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var tableControlView = table.selectAll('.' + c.cn.tableControlView)
         .data(gup.repeat, gup.keyFun);
 
-    tableControlView.enter()
+    var cvEnter = tableControlView.enter()
         .append('g')
         .classed(c.cn.tableControlView, true)
-        .style('box-sizing', 'content-box')
-        .on('mousemove', function(d) {tableControlView.filter(function(dd) {return d === dd;}).call(renderScrollbarKit, gd);})
-        .on('mousewheel', function(d) {
-            if(d.scrollbarState.wheeling) return;
-            d.scrollbarState.wheeling = true;
-            d3.event.stopPropagation();
-            d3.event.preventDefault();
-            makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
-            d.scrollbarState.wheeling = false;
-        })
-        .call(renderScrollbarKit, gd, true);
+        .style('box-sizing', 'content-box');
+    if(dynamic) {
+        cvEnter
+            .on('mousemove', function(d) {
+                tableControlView
+                    .filter(function(dd) {return d === dd;})
+                    .call(renderScrollbarKit, gd);
+            })
+            .on('mousewheel', function(d) {
+                if(d.scrollbarState.wheeling) return;
+                d.scrollbarState.wheeling = true;
+                var newY = d.scrollY + d3.event.deltaY;
+                var noChange = makeDragRow(gd, tableControlView, null, newY)(d);
+                if(!noChange) {
+                    d3.event.stopPropagation();
+                    d3.event.preventDefault();
+                }
+                d.scrollbarState.wheeling = false;
+            })
+            .call(renderScrollbarKit, gd, true);
+    }
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
@@ -83,8 +94,9 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('width', function(d) {return d.width;})
         .attr('height', function(d) {return d.height;});
 
-    tableControlView
-        .each(function(d) {Drawing.setClipUrl(d3.select(this), scrollAreaBottomClipKey(gd, d));});
+    tableControlView.each(function(d) {
+        Drawing.setClipUrl(d3.select(this), scrollAreaBottomClipKey(gd, d), gd);
+    });
 
     var yColumn = tableControlView.selectAll('.' + c.cn.yColumn)
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -95,9 +107,10 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     yColumn.exit().remove();
 
-    yColumn
-        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
-        .call(d3.behavior.drag()
+    yColumn.attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+
+    if(dynamic) {
+        yColumn.call(d3.behavior.drag()
             .origin(function(d) {
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
@@ -136,8 +149,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                 columnMoved(gd, p, p.columns.map(function(dd) {return dd.xIndex;}));
             })
         );
+    }
 
-    yColumn.each(function(d) {Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d));});
+    yColumn.each(function(d) {
+        Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d), gd);
+    });
 
     var columnBlock = yColumn.selectAll('.' + c.cn.columnBlock)
         .data(splitData.splitToPanels, gup.keyFun);
@@ -155,8 +171,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var headerColumnBlock = columnBlock.filter(headerBlock);
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
-    cellsColumnBlock
-        .call(d3.behavior.drag()
+    if(dynamic) {
+        cellsColumnBlock.call(d3.behavior.drag()
             .origin(function(d) {
                 d3.event.stopPropagation();
                 return d;
@@ -166,6 +182,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                 // fixme emit plotly notification
             })
         );
+    }
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
@@ -221,11 +238,17 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('fill', 'none');
 
     columnBoundaryRect
-        .attr('width', function(d) {return d.columnWidth;})
-        .attr('height', function(d) {return d.calcdata.height + c.uplift;});
+        .attr('width', function(d) { return d.columnWidth + 2 * roundHalfWidth(d); })
+        .attr('height', function(d) {return d.calcdata.height + 2 * roundHalfWidth(d) + c.uplift;})
+        .attr('x', function(d) { return -roundHalfWidth(d); })
+        .attr('y', function(d) { return -roundHalfWidth(d); });
 
     updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
+
+function roundHalfWidth(d) {
+    return Math.ceil(d.calcdata.maxLineWidth / 2);
+}
 
 function scrollAreaBottomClipKey(gd, d) {
     return 'clip' + gd._fullLayout._uid + '_scrollAreaBottomClip_' + d.key;
@@ -241,7 +264,6 @@ function flatData(selection) {
 }
 
 function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
-
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
         return firstRowAnchor(blocks, blocks.length - 1) + (blocks.length ? rowsHeight(blocks[blocks.length - 1], Infinity) : 1);
@@ -357,6 +379,15 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         .attr('y2', function(d) {
             return d.scrollbarState.scrollableAreaHeight;
         });
+
+    // Remove scroll glyph and capture zone on static plots
+    // as they don't render properly when converted to PDF
+    // in the Chrome PDF viewer
+    // https://github.com/plotly/streambed/issues/11618
+    if(gd._context.staticPlot) {
+        scrollbarGlyph.remove();
+        scrollbarCaptureZone.remove();
+    }
 }
 
 function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock) {
@@ -386,7 +417,6 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 }
 
 function renderColumnCells(columnBlock) {
-
     var columnCells = columnBlock.selectAll('.' + c.cn.columnCells)
         .data(gup.repeat, gup.keyFun);
 
@@ -401,7 +431,6 @@ function renderColumnCells(columnBlock) {
 }
 
 function renderColumnCell(columnCells) {
-
     var columnCell = columnCells.selectAll('.' + c.cn.columnCell)
         .data(splitData.splitToCells, function(d) {return d.keyWithinBlock;});
 
@@ -416,7 +445,6 @@ function renderColumnCell(columnCells) {
 }
 
 function renderCellRect(columnCell) {
-
     var cellRect = columnCell.selectAll('.' + c.cn.cellRect)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -428,7 +456,6 @@ function renderCellRect(columnCell) {
 }
 
 function renderCellText(cellTextHolder) {
-
     var cellText = cellTextHolder.selectAll('.' + c.cn.cellText)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -442,7 +469,6 @@ function renderCellText(cellTextHolder) {
 }
 
 function renderCellTextHolder(columnCell) {
-
     var cellTextHolder = columnCell.selectAll('.' + c.cn.cellTextHolder)
         .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
@@ -492,7 +518,6 @@ function sizeAndStyleRect(cellRect) {
 function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
     cellText
         .text(function(d) {
-
             var col = d.column.specIndex;
             var row = d.rowNumber;
 
@@ -535,7 +560,6 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             return d.needsConvertToTspans ? 0 : '0.75em';
         })
         .each(function(d) {
-
             var element = this;
             var selection = d3.select(element);
 
@@ -573,6 +597,9 @@ function columnMoved(gd, calcdata, indices) {
 
     calcdata.columnorder = indices;
 
+    // TODO: there's no data here, but also this reordering is not reflected
+    // in gd.data or even gd._fullData.
+    // For now I will not attempt to persist this in _preGUI
     gd.emit('plotly_restyle');
 }
 
@@ -610,12 +637,10 @@ function headerHeight(d) {
 }
 
 function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
-
     var pages = [];
     var pTop = 0;
 
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-
         var block = blocks[blockIndex];
         var blockRows = block.rows;
         var rowsHeight = 0;
@@ -690,13 +715,20 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 
 function makeDragRow(gd, allTableControlView, optionalMultiplier, optionalPosition) {
     return function dragRow(eventD) {
-        // may come from whicever DOM event target: drag, wheel, bar... eventD corresponds to event target
+        // may come from whichever DOM event target: drag, wheel, bar... eventD corresponds to event target
         var d = eventD.calcdata ? eventD.calcdata : eventD;
         var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;});
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
+
+        var initialScrollY = d.scrollY;
+
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.' + c.cn.yColumn).selectAll('.' + c.cn.columnBlock).filter(cellsBlock);
         updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
+
+        // return false if we've "used" the scroll, ie it did something,
+        // so the event shouldn't bubble (if appropriate)
+        return d.scrollY === initialScrollY;
     };
 }
 
@@ -714,7 +746,7 @@ function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages,
     }
 }
 
-function wrapTextMaker(columnBlock, element, tableControlView) {
+function wrapTextMaker(columnBlock, element, tableControlView, gd) {
     return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
@@ -752,7 +784,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        populateCellText(cellTextHolder.select('.' + c.cn.cellText), tableControlView, columnBlock);
+        populateCellText(cellTextHolder.select('.' + c.cn.cellText), tableControlView, columnBlock, gd);
         d3.select(element.parentNode.parentNode).call(setCellHeightAndPositionY);
     };
 }
@@ -772,7 +804,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
-
             // current row height increased
             l.rows[rowIndex].rowHeight = finalHeight;
 

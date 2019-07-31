@@ -5,9 +5,12 @@ var ScatterTernary = require('@src/traces/scatterternary');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
+
+var mouseEvent = require('../assets/mouse_event');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -19,8 +22,8 @@ describe('scatterternary defaults', function() {
 
     var traceIn, traceOut;
 
-    var defaultColor = '#444',
-        layout = {};
+    var defaultColor = '#444';
+    var layout = {};
 
     beforeEach(function() {
         traceOut = {};
@@ -144,6 +147,21 @@ describe('scatterternary defaults', function() {
         expect(traceOut.b).toEqual([1]);
         expect(traceOut.c).toEqual([1, 2, 3]);
         expect(traceOut._length).toBe(1);
+    });
+
+    it('is set visible: false if a, b, or c is empty', function() {
+        var trace0 = {
+            a: [1, 2],
+            b: [2, 1],
+            c: [2, 2]
+        };
+
+        ['a', 'b', 'c'].forEach(function(letter) {
+            traceIn = Lib.extendDeep({}, trace0);
+            traceIn[letter] = [];
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false, letter);
+        });
     });
 
     it('should include \'name\' in \'hoverinfo\' default if multi trace graph', function() {
@@ -278,7 +296,6 @@ describe('scatterternary calc', function() {
             return obj[k];
         });
     }
-
 });
 
 describe('scatterternary plot and hover', function() {
@@ -319,9 +336,17 @@ describe('scatterternary hover', function() {
 
     var gd;
 
+    function check(pos, content) {
+        mouseEvent('mousemove', pos[0], pos[1]);
+
+        assertHoverLabelContent({
+            nums: content[0],
+            name: content[1]
+        });
+    }
+
     beforeAll(function(done) {
         gd = createGraphDiv();
-
         var data = [{
             type: 'scatterternary',
             a: [0.1, 0.2, 0.3],
@@ -329,7 +354,6 @@ describe('scatterternary hover', function() {
             c: [0.1, 0.4, 0.5],
             text: ['A', 'B', 'C']
         }];
-
         Plotly.plot(gd, data).then(done);
     });
 
@@ -383,9 +407,47 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].yLabelVal).toBeUndefined();
             expect(scatterPointData[0].text).toEqual('orange');
         })
+        .catch(failTest)
         .then(done);
     });
 
+    it('should pass along hovertemplate on hover', function(done) {
+        var xval = 0.42;
+        var yval = 0.37;
+        var hovermode = 'closest';
+        var scatterPointData;
+        Plotly.restyle(gd, {
+            hovertemplate: 'tpl'
+        })
+        .then(function() {
+            scatterPointData = _hover(gd, xval, yval, hovermode);
+            expect(scatterPointData[0].hovertemplate).toEqual('tpl');
+            expect(scatterPointData[0].aLabel).toBe('0.3333333');
+            expect(scatterPointData[0].bLabel).toBe('0.1111111');
+            expect(scatterPointData[0].cLabel).toBe('0.5555556');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should always display hoverlabel when hovertemplate is defined', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            return Plotly.restyle(gd, {
+                hovertemplate: '%{a}, %{b}, %{c}',
+                name: '',
+                text: null,
+                hovertext: null
+            });
+        })
+        .then(function() {
+            check([380, 210], ['0.5, 0.25, 0.25']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scatterternary *cliponaxis*', function() {
@@ -488,7 +550,7 @@ describe('Test scatterternary *cliponaxis*', function() {
                 [true, 1]
            );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

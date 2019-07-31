@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,11 +20,11 @@ var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 var axisConstraints = require('../cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
+var doAutoRange = require('../cartesian/autorange').doAutoRange;
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -38,12 +38,13 @@ function Scene2D(options, fullLayout) {
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
-    this.scrollZoom = this.graphDiv._context.scrollZoom;
+    this.scrollZoom = this.graphDiv._context._scrollZoom.cartesian;
 
     this.fullData = null;
     this.updateRefs(fullLayout);
 
     this.makeFramework();
+    if(this.stopped) return;
 
     // update options
     this.glplotOptions = createOptions(this);
@@ -77,8 +78,6 @@ function Scene2D(options, fullLayout) {
     // when we get a mouseout we set it to false before handling
     this.isMouseOver = true;
 
-    this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
-
     // flag to stop render loop
     this.stopped = false;
 
@@ -92,7 +91,6 @@ module.exports = Scene2D;
 var proto = Scene2D.prototype;
 
 proto.makeFramework = function() {
-
     // create canvas and gl context
     if(this.staticPlot) {
         if(!STATIC_CONTEXT) {
@@ -112,8 +110,7 @@ proto.makeFramework = function() {
 
         this.canvas = STATIC_CANVAS;
         this.gl = STATIC_CONTEXT;
-    }
-    else {
+    } else {
         var liveCanvas = this.container.querySelector('.gl-canvas-focus');
 
         var gl = getContext({
@@ -122,7 +119,11 @@ proto.makeFramework = function() {
             premultipliedAlpha: true
         });
 
-        if(!gl) showNoWebGlMsg(this);
+        if(!gl) {
+            showNoWebGlMsg(this);
+            this.stopped = true;
+            return;
+        }
 
         this.canvas = liveCanvas;
         this.gl = gl;
@@ -190,9 +191,9 @@ proto.toImage = function(format) {
 
 
     // grab context and yank out pixels
-    var gl = this.glplot.gl,
-        w = gl.drawingBufferWidth,
-        h = gl.drawingBufferHeight;
+    var gl = this.glplot.gl;
+    var w = gl.drawingBufferWidth;
+    var h = gl.drawingBufferHeight;
 
     // force redraw
     gl.clearColor(1, 1, 1, 0);
@@ -246,22 +247,19 @@ proto.toImage = function(format) {
 proto.updateSize = function(canvas) {
     if(!canvas) canvas = this.canvas;
 
-    var pixelRatio = this.pixelRatio,
-        fullLayout = this.fullLayout;
+    var pixelRatio = this.pixelRatio;
+    var fullLayout = this.fullLayout;
 
-    var width = fullLayout.width,
-        height = fullLayout.height,
-        pixelWidth = Math.ceil(pixelRatio * width) |0,
-        pixelHeight = Math.ceil(pixelRatio * height) |0;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var pixelWidth = Math.ceil(pixelRatio * width) |0;
+    var pixelHeight = Math.ceil(pixelRatio * height) |0;
 
     // check for resize
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;
     }
-
-    // make sure plots render right thing
-    if(this.redraw) this.redraw();
 
     return canvas;
 };
@@ -278,7 +276,7 @@ proto.computeTickMarks = function() {
     for(var j = 0; j < 2; ++j) {
         for(var i = 0; i < nextTicks[j].length; ++i) {
             // coercing tick value (may not be a string) to a string
-            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '');
+            nextTicks[j][i].text = nextTicks[j][i].text + '';
         }
     }
 
@@ -287,8 +285,8 @@ proto.computeTickMarks = function() {
 
 function compareTicks(a, b) {
     for(var i = 0; i < 2; ++i) {
-        var aticks = a[i],
-            bticks = b[i];
+        var aticks = a[i];
+        var bticks = b[i];
 
         if(aticks.length !== bticks.length) return true;
 
@@ -312,27 +310,31 @@ proto.updateRefs = function(newFullLayout) {
 };
 
 proto.relayoutCallback = function() {
-    var graphDiv = this.graphDiv,
-        xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        layout = graphDiv.layout;
+    var graphDiv = this.graphDiv;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var layout = graphDiv.layout;
 
-    // update user layout
-    layout.xaxis.autorange = xaxis.autorange;
-    layout.xaxis.range = xaxis.range.slice(0);
-    layout.yaxis.autorange = yaxis.autorange;
-    layout.yaxis.range = yaxis.range.slice(0);
+    // make a meaningful value to be passed on to possible 'plotly_relayout' subscriber(s)
+    var update = {};
+    var xrange = update[xaxis._name + '.range'] = xaxis.range.slice();
+    var yrange = update[yaxis._name + '.range'] = yaxis.range.slice();
+    update[xaxis._name + '.autorange'] = xaxis.autorange;
+    update[yaxis._name + '.autorange'] = yaxis.autorange;
 
-    // make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
-    // scene.camera has no many useful projection or scale information
-    // helps determine which one is the latest input (if async)
-    var update = {
-        lastInputTime: this.camera.lastInputTime
-    };
+    Registry.call('_storeDirectGUIEdit', graphDiv.layout, graphDiv._fullLayout._preGUI, update);
 
-    update[xaxis._name] = xaxis.range.slice(0);
-    update[yaxis._name] = yaxis.range.slice(0);
+    // update the input layout
+    var xaIn = layout[xaxis._name];
+    xaIn.range = xrange;
+    xaIn.autorange = xaxis.autorange;
 
+    var yaIn = layout[yaxis._name];
+    yaIn.range = yrange;
+    yaIn.autorange = yaxis.autorange;
+
+    // lastInputTime helps determine which one is the latest input (if async)
+    update.lastInputTime = this.camera.lastInputTime;
     graphDiv.emit('plotly_relayout', update);
 };
 
@@ -353,8 +355,8 @@ proto.cameraChanged = function() {
 };
 
 proto.handleAnnotations = function() {
-    var gd = this.graphDiv,
-        annotations = this.fullLayout.annotations;
+    var gd = this.graphDiv;
+    var annotations = this.fullLayout.annotations;
 
     for(var i = 0; i < annotations.length; i++) {
         var ann = annotations[i];
@@ -394,11 +396,13 @@ proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot;
 
     this.updateRefs(fullLayout);
+    this.xaxis.clearCalc();
+    this.yaxis.clearCalc();
     this.updateTraces(fullData, calcData);
     this.updateFx(fullLayout.dragmode);
 
-    var width = fullLayout.width,
-        height = fullLayout.height;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
 
     this.updateSize(this.canvas);
 
@@ -415,9 +419,9 @@ proto.plot = function(fullData, calcData, fullLayout) {
     cleanAxisConstraints(mockGraphDiv, this.xaxis);
     cleanAxisConstraints(mockGraphDiv, this.yaxis);
 
-    var size = fullLayout._size,
-        domainX = this.xaxis.domain,
-        domainY = this.yaxis.domain;
+    var size = fullLayout._size;
+    var domainX = this.xaxis.domain;
+    var domainY = this.yaxis.domain;
 
     options.viewBox = [
         size.l + domainX[0] * size.w,
@@ -432,32 +436,13 @@ proto.plot = function(fullData, calcData, fullLayout) {
     this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
     this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
-    var bounds = this.bounds;
-    bounds[0] = bounds[1] = Infinity;
-    bounds[2] = bounds[3] = -Infinity;
-
-    var traceIds = Object.keys(this.traces);
     var ax, i;
 
-    for(i = 0; i < traceIds.length; ++i) {
-        var traceObj = this.traces[traceIds[i]];
-
-        for(var k = 0; k < 2; ++k) {
-            bounds[k] = Math.min(bounds[k], traceObj.bounds[k]);
-            bounds[k + 2] = Math.max(bounds[k + 2], traceObj.bounds[k + 2]);
-        }
-    }
-
     for(i = 0; i < 2; ++i) {
-        if(bounds[i] > bounds[i + 2]) {
-            bounds[i] = -1;
-            bounds[i + 2] = 1;
-        }
-
         ax = this[AXES[i]];
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
-        Axes.doAutoRange(ax);
+        doAutoRange(this.graphDiv, ax);
         ax.setScale();
     }
 
@@ -475,21 +460,21 @@ proto.plot = function(fullData, calcData, fullLayout) {
 };
 
 proto.calcDataBox = function() {
-    var xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        xrange = xaxis.range,
-        yrange = yaxis.range,
-        xr2l = xaxis.r2l,
-        yr2l = yaxis.r2l;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var xrange = xaxis.range;
+    var yrange = yaxis.range;
+    var xr2l = xaxis.r2l;
+    var yr2l = yaxis.r2l;
 
     return [xr2l(xrange[0]), yr2l(yrange[0]), xr2l(xrange[1]), yr2l(yrange[1])];
 };
 
 proto.setRanges = function(dataBox) {
-    var xaxis = this.xaxis,
-        yaxis = this.yaxis,
-        xl2r = xaxis.l2r,
-        yl2r = yaxis.l2r;
+    var xaxis = this.xaxis;
+    var yaxis = this.yaxis;
+    var xl2r = xaxis.l2r;
+    var yl2r = yaxis.l2r;
 
     xaxis.range = [xl2r(dataBox[0]), xl2r(dataBox[2])];
     yaxis.range = [yl2r(dataBox[1]), yl2r(dataBox[3])];
@@ -502,16 +487,16 @@ proto.updateTraces = function(fullData, calcData) {
     this.fullData = fullData;
 
     // remove empty traces
-    trace_id_loop:
+    traceIdLoop:
     for(i = 0; i < traceIds.length; i++) {
-        var oldUid = traceIds[i],
-            oldTrace = this.traces[oldUid];
+        var oldUid = traceIds[i];
+        var oldTrace = this.traces[oldUid];
 
         for(j = 0; j < fullData.length; j++) {
             fullTrace = fullData[j];
 
             if(fullTrace.uid === oldUid && fullTrace.type === oldTrace.type) {
-                continue trace_id_loop;
+                continue traceIdLoop;
             }
         }
 
@@ -522,8 +507,8 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-        var calcTrace = calcData[i],
-            traceObj = this.traces[fullTrace.uid];
+        var calcTrace = calcData[i];
+        var traceObj = this.traces[fullTrace.uid];
 
         if(traceObj) traceObj.update(fullTrace, calcTrace);
         else {
@@ -551,11 +536,9 @@ proto.updateFx = function(dragmode) {
     // set proper cursor
     if(dragmode === 'pan') {
         this.mouseContainer.style.cursor = 'move';
-    }
-    else if(dragmode === 'zoom') {
+    } else if(dragmode === 'zoom') {
         this.mouseContainer.style.cursor = 'crosshair';
-    }
-    else {
+    } else {
         this.mouseContainer.style.cursor = null;
     }
 };
@@ -592,11 +575,11 @@ proto.draw = function() {
 
     requestAnimationFrame(this.redraw);
 
-    var glplot = this.glplot,
-        camera = this.camera,
-        mouseListener = camera.mouseListener,
-        mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0,
-        fullLayout = this.fullLayout;
+    var glplot = this.glplot;
+    var camera = this.camera;
+    var mouseListener = camera.mouseListener;
+    var mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0;
+    var fullLayout = this.fullLayout;
 
     this.lastButtonState = mouseListener.buttons;
 
@@ -626,13 +609,12 @@ proto.draw = function() {
         }
 
         glplot.setDirty();
-    }
-    else if(!camera.panning && this.isMouseOver) {
+    } else if(!camera.panning && this.isMouseOver) {
         this.selectBox.enabled = false;
 
-        var size = fullLayout._size,
-            domainX = this.xaxis.domain,
-            domainY = this.yaxis.domain;
+        var size = fullLayout._size;
+        var domainX = this.xaxis.domain;
+        var domainY = this.yaxis.domain;
 
         result = glplot.pick(
             (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
@@ -646,7 +628,6 @@ proto.draw = function() {
         }
 
         if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
-
             if(nextSelection && (
                 !this.lastPickResult ||
                 this.lastPickResult.traceUid !== nextSelection.trace.uid ||
@@ -701,7 +682,9 @@ proto.draw = function() {
                     borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
                     fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
                     fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
-                    fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
+                    fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
+                    nameLength: Fx.castHoverOption(trace, ptNumber, 'namelength'),
+                    textAlign: Fx.castHoverOption(trace, ptNumber, 'align')
                 }, {
                     container: this.svgContainer,
                     gd: this.graphDiv

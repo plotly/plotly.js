@@ -1,15 +1,14 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 /*
@@ -59,8 +58,6 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
             // table should have been updated and check is already attached,
             // so there's nothing to be done:
             return ret;
-
-
         }
     }
 
@@ -264,17 +261,15 @@ function bindingValueHasChanged(gd, binding, cache) {
 exports.executeAPICommand = function(gd, method, args) {
     if(method === 'skip') return Promise.resolve();
 
-    var apiMethod = Plotly[method];
-
+    var _method = Registry.apiMethodRegistry[method];
     var allArgs = [gd];
-
     if(!Array.isArray(args)) args = [];
 
     for(var i = 0; i < args.length; i++) {
         allArgs.push(args[i]);
     }
 
-    return apiMethod.apply(null, allArgs).catch(function(err) {
+    return _method.apply(null, allArgs).catch(function(err) {
         Lib.warn('API call to Plotly.' + method + ' rejected.', err);
         return Promise.reject(err);
     });
@@ -365,9 +360,13 @@ function computeDataBindings(gd, args) {
         traces = null;
     }
 
-    crawl(aobj, function(path, attrName, attr) {
+    crawl(aobj, function(path, attrName, _attr) {
         var thisTraces;
-        if(Array.isArray(attr)) {
+        var attr;
+
+        if(Array.isArray(_attr)) {
+            attr = _attr.slice();
+
             var nAttr = Math.min(attr.length, gd.data.length);
             if(traces) {
                 nAttr = Math.min(nAttr, traces.length);
@@ -377,7 +376,8 @@ function computeDataBindings(gd, args) {
                 thisTraces[j] = traces ? traces[j] : j;
             }
         } else {
-            thisTraces = traces ? traces.slice(0) : null;
+            attr = _attr;
+            thisTraces = traces ? traces.slice() : null;
         }
 
         // Convert [7] to just 7 when traces is null:

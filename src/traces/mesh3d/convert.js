@@ -1,22 +1,22 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var createMesh = require('gl-mesh3d');
-var tinycolor = require('tinycolor2');
 var triangulate = require('delaunay-triangulate');
 var alphaShape = require('alpha-shape');
 var convexHull = require('convex-hull');
 
+var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
-
+var extractOpts = require('../../components/colorscale').extractOpts;
+var zip3 = require('../../plots/gl3d/zip3');
 
 function Mesh3DTrace(scene, mesh, uid) {
     this.scene = scene;
@@ -40,7 +40,7 @@ proto.handlePick = function(selection) {
             this.data.z[selectIndex]
         ];
 
-        var text = this.data.text;
+        var text = this.data.hovertext || this.data.text;
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
             selection.textLabel = text[selectIndex];
         } else if(text) {
@@ -51,63 +51,92 @@ proto.handlePick = function(selection) {
     }
 };
 
-function parseColorScale(colorscale) {
-    return colorscale.map(function(elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
-        return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, 1]
-        };
-    });
-}
-
 function parseColorArray(colors) {
-    return colors.map(str2RgbaArray);
+    var b = [];
+    var len = colors.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = str2RgbaArray(colors[i]);
+    }
+    return b;
 }
 
-function zip3(x, y, z) {
-    var result = new Array(x.length);
-    for(var i = 0; i < x.length; ++i) {
-        result[i] = [x[i], y[i], z[i]];
+// Unpack position data
+function toDataCoords(axis, coord, scale, calendar) {
+    var b = [];
+    var len = coord.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = axis.d2l(coord[i], 0, calendar) * scale;
     }
-    return result;
+    return b;
+}
+
+// Round indices if passed as floats
+function toRoundIndex(a) {
+    var b = [];
+    var len = a.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = Math.round(a[i]);
+    }
+    return b;
+}
+
+function delaunayCells(delaunayaxis, positions) {
+    var d = ['x', 'y', 'z'].indexOf(delaunayaxis);
+    var b = [];
+    var len = positions.length;
+    for(var i = 0; i < len; i++) {
+        b[i] = [positions[i][(d + 1) % 3], positions[i][(d + 2) % 3]];
+    }
+    return triangulate(b);
+}
+
+// Validate indices
+function hasValidIndices(list, numVertices) {
+    var len = list.length;
+    for(var i = 0; i < len; i++) {
+        if(list[i] <= -0.5 || list[i] >= numVertices - 0.5) { // Note: the indices would be rounded -0.49 is valid.
+            return false;
+        }
+    }
+    return true;
 }
 
 proto.update = function(data) {
-    var scene = this.scene,
-        layout = scene.fullSceneLayout;
+    var scene = this.scene;
+    var layout = scene.fullSceneLayout;
 
     this.data = data;
 
-    // Unpack position data
-    function toDataCoords(axis, coord, scale, calendar) {
-        return coord.map(function(x) {
-            return axis.d2l(x, 0, calendar) * scale;
-        });
-    }
+    var numVertices = data.x.length;
 
     var positions = zip3(
         toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
         toDataCoords(layout.yaxis, data.y, scene.dataScale[1], data.ycalendar),
-        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar));
+        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar)
+    );
 
     var cells;
     if(data.i && data.j && data.k) {
-        cells = zip3(data.i, data.j, data.k);
-    }
-    else if(data.alphahull === 0) {
+        if(
+            data.i.length !== data.j.length ||
+            data.j.length !== data.k.length ||
+            !hasValidIndices(data.i, numVertices) ||
+            !hasValidIndices(data.j, numVertices) ||
+            !hasValidIndices(data.k, numVertices)
+        ) {
+            return;
+        }
+        cells = zip3(
+            toRoundIndex(data.i),
+            toRoundIndex(data.j),
+            toRoundIndex(data.k)
+        );
+    } else if(data.alphahull === 0) {
         cells = convexHull(positions);
-    }
-    else if(data.alphahull > 0) {
+    } else if(data.alphahull > 0) {
         cells = alphaShape(data.alphahull, positions);
-    }
-    else {
-        var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
-        cells = triangulate(positions.map(function(c) {
-            return [c[(d + 1) % 3], c[(d + 2) % 3]];
-        }));
+    } else {
+        cells = delaunayCells(data.delaunayaxis, positions);
     }
 
     var config = {
@@ -129,20 +158,18 @@ proto.update = function(data) {
     };
 
     if(data.intensity) {
+        var cOpts = extractOpts(data);
         this.color = '#fff';
         config.vertexIntensity = data.intensity;
-        config.vertexIntensityBounds = [data.cmin, data.cmax];
-        config.colormap = parseColorScale(data.colorscale);
-    }
-    else if(data.vertexcolor) {
+        config.vertexIntensityBounds = [cOpts.min, cOpts.max];
+        config.colormap = parseColorScale(data);
+    } else if(data.vertexcolor) {
         this.color = data.vertexcolor[0];
         config.vertexColors = parseColorArray(data.vertexcolor);
-    }
-    else if(data.facecolor) {
+    } else if(data.facecolor) {
         this.color = data.facecolor[0];
         config.cellColors = parseColorArray(data.facecolor);
-    }
-    else {
+    } else {
         this.color = data.color;
         config.meshColor = str2RgbaArray(data.color);
     }

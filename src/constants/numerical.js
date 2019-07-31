@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48,6 +48,12 @@ module.exports = {
      * Are two values nearly equal? Compare to 1PPM
      */
     ALMOST_EQUAL: 1 - 1e-6,
+
+    /*
+     * If we're asked to clip a non-positive log value, how far off-screen
+     * do we put it?
+     */
+    LOG_CLIP: 10,
 
     /*
      * not a number, but for displaying numbers: the "minus sign" symbol is

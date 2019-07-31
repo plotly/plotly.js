@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,11 +8,12 @@
 
 'use strict';
 
+var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -69,7 +70,7 @@ module.exports = overrideAll({
 
     connectgaps: scatterAttrs.connectgaps,
 
-    marker: {
+    marker: extendFlat({
         symbol: {
             valType: 'string',
             dflt: 'circle',
@@ -86,25 +87,29 @@ module.exports = overrideAll({
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,
         sizemin: markerAttrs.sizemin,
-        sizemode: markerAttrs.sizemode,
-        color: markerAttrs.color,
-        colorscale: markerAttrs.colorscale,
-        cauto: markerAttrs.cauto,
-        cmax: markerAttrs.cmax,
-        cmin: markerAttrs.cmin,
-        autocolorscale: markerAttrs.autocolorscale,
-        reversescale: markerAttrs.reversescale,
-        showscale: markerAttrs.showscale,
-        colorbar: colorbarAttrs,
-
-        // line
+        sizemode: markerAttrs.sizemode
     },
+        colorScaleAttrs('marker')
+        // line
+    ),
 
     fill: scatterGeoAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
 
     textfont: mapboxAttrs.layers.symbol.textfont,
     textposition: mapboxAttrs.layers.symbol.textposition,
+
+    below: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Determines if this scattermapbox trace\'s layers are to be inserted',
+            'before the layer with the specified ID.',
+            'By default, scattermapbox layers are inserted',
+            'above all the base layers.',
+            'To place the scattermapbox layers above every other layer, set `below` to *\'\'*.'
+        ].join(' ')
+    },
 
     selected: {
         marker: scatterAttrs.selected.marker
@@ -115,5 +120,6 @@ module.exports = overrideAll({
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
-    })
+    }),
+    hovertemplate: hovertemplateAttrs(),
 }, 'calc', 'nested');

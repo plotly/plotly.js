@@ -5,6 +5,10 @@
  * like the `delay` module.
  *
  * Promise.resolve().then(delay(50)).then(...);
+ *
+ *   or:
+ *
+ * delay(50)().then(...);
  */
 module.exports = function delay(duration) {
     return function(value) {

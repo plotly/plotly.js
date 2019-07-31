@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,69 +8,97 @@
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/color_attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-var colorscales = require('../../components/colorscale/scales');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
 
-var extend = require('../../lib/extend');
-var extendDeepAll = extend.extendDeepAll;
-var extendFlat = extend.extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 module.exports = {
-    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'plot'}),
+
+    labelangle: {
+        valType: 'angle',
+        dflt: 0,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Sets the angle of the labels with respect to the horizontal.',
+            'For example, a `tickangle` of -90 draws the labels vertically.',
+            'Tilted labels with *labelangle* may be positioned better',
+            'inside margins when `labelposition` is set to *bottom*.'
+        ].join(' ')
+    },
+
+    labelside: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['top', 'bottom'],
+        dflt: 'top',
+        editType: 'plot',
+        description: [
+            'Specifies the location of the `label`.',
+            '*top* positions labels above, next to the title',
+            '*bottom* positions labels below the graph',
+            'Tilted labels with *labelangle* may be positioned better',
+            'inside margins when `labelposition` is set to *bottom*.'
+        ].join(' ')
+    },
 
     labelfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` labels.'
     }),
     tickfont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` tick values.'
     }),
     rangefont: fontAttrs({
-        editType: 'calc',
+        editType: 'plot',
         description: 'Sets the font for the `dimension` range values.'
     }),
 
-    dimensions: {
-        _isLinkedToArray: 'dimension',
+    dimensions: templatedArray('dimension', {
         label: {
             valType: 'string',
             role: 'info',
-            editType: 'calc',
+            editType: 'plot',
             description: 'The shown name of the dimension.'
         },
-        tickvals: extendFlat({}, axesAttrs.tickvals, {editType: 'calc'}),
-        ticktext: extendFlat({}, axesAttrs.ticktext, {editType: 'calc'}),
-        tickformat: {
-            valType: 'string',
-            dflt: '3s',
-            role: 'style',
-            editType: 'calc',
+        // TODO: better way to determine ordinal vs continuous axes,
+        // so users can use tickvals/ticktext with a continuous axis.
+        tickvals: extendFlat({}, axesAttrs.tickvals, {
+            editType: 'plot',
             description: [
-                'Sets the tick label formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+                'Sets the values at which ticks on this axis appear.'
             ].join(' ')
-        },
+        }),
+        ticktext: extendFlat({}, axesAttrs.ticktext, {
+            editType: 'plot',
+            description: [
+                'Sets the text displayed at the ticks position via `tickvals`.'
+            ].join(' ')
+        }),
+        tickformat: extendFlat({}, axesAttrs.tickformat, {
+            editType: 'plot'
+        }),
         visible: {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'calc',
+            editType: 'plot',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         },
         range: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'},
+                {valType: 'number', editType: 'plot'}
             ],
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'The domain range that represents the full, shown axis extent. Defaults to the `values` extent.',
                 'Must be an array of `[fromValue, toValue]` with finite numbers as elements.'
@@ -79,20 +107,29 @@ module.exports = {
         constraintrange: {
             valType: 'info_array',
             role: 'info',
+            freeLength: true,
+            dimensions: '1-2',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {valType: 'number', editType: 'plot'},
+                {valType: 'number', editType: 'plot'}
             ],
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'The domain range to which the filter on the dimension is constrained. Must be an array',
-                'of `[fromValue, toValue]` with finite numbers as elements.'
+                'of `[fromValue, toValue]` with `fromValue <= toValue`, or if `multiselect` is not',
+                'disabled, you may give an array of arrays, where each inner array is `[fromValue, toValue]`.'
             ].join(' ')
+        },
+        multiselect: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            editType: 'plot',
+            description: 'Do we allow multiple selection ranges or just a single range?'
         },
         values: {
             valType: 'data_array',
             role: 'info',
-            dflt: [],
             editType: 'calc',
             description: [
                 'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',
@@ -102,44 +139,15 @@ module.exports = {
         },
         editType: 'calc',
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
-    },
+    }),
 
-    line: extendFlat(
-        // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
-
-        // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
-        extendDeepAll(
-            colorAttributes('line', 'calc'),
-            {
-                colorscale: {dflt: colorscales.Viridis},
-                autocolorscale: {
-                    dflt: false,
-                    description: [
-                        'Has an effect only if line.color` is set to a numerical array.',
-                        'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
-                        'or the palette determined by `line.colorscale`.',
-                        'In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
-                        'palette will be chosen according to whether numbers in the `color` array are',
-                        'all positive, all negative or mixed.',
-                        'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
-                    ].join(' ')
-                }
-            }
-        ),
-
-        {
-            showscale: {
-                valType: 'boolean',
-                role: 'info',
-                dflt: false,
-                editType: 'calc',
-                description: [
-                    'Has an effect only if `line.color` is set to a numerical array.',
-                    'Determines whether or not a colorbar is displayed.'
-                ].join(' ')
-            },
-            colorbar: colorbarAttrs,
-            editType: 'calc'
-        }
+    line: extendFlat({editType: 'calc'},
+        colorScaleAttrs('line', {
+            // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
+            // autocolorscale therefore defaults to false too, to avoid being overridden by the blue-white-red autocolor palette
+            colorscaleDflt: 'Viridis',
+            autoColorDflt: false,
+            editTypeOverride: 'calc'
+        })
     )
 };

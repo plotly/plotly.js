@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -88,8 +88,7 @@ exports.clear = function(id) {
     if(id) {
         _clearTimeout(timerCache[id]);
         delete timerCache[id];
-    }
-    else {
+    } else {
         for(var idi in timerCache) exports.clear(idi);
     }
 };

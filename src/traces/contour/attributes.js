@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,8 +10,7 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -19,6 +18,8 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var filterOps = require('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
+
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var scatterLineAttrs = scatterAttrs.line;
 
@@ -31,10 +32,12 @@ module.exports = extendFlat({
     y0: heatmapAttrs.y0,
     dy: heatmapAttrs.dy,
     text: heatmapAttrs.text,
+    hovertext: heatmapAttrs.hovertext,
     transpose: heatmapAttrs.transpose,
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
     zhoverformat: heatmapAttrs.zhoverformat,
+    hovertemplate: heatmapAttrs.hovertemplate,
 
     connectgaps: heatmapAttrs.connectgaps,
 
@@ -180,7 +183,7 @@ module.exports = extendFlat({
             description: [
                 'Sets the contour label formatting rule using d3 formatting',
                 'mini-language which is very similar to Python, see:',
-                'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
+                FORMAT_LINK
             ].join(' ')
         },
         operation: {
@@ -249,10 +252,9 @@ module.exports = extendFlat({
         editType: 'plot'
     }
 },
-    colorscaleAttrs, {
-        autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}),
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'calc'}),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'calc'})
-    },
-    { colorbar: colorbarAttrs }
+    colorScaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false,
+        editTypeOverride: 'calc'
+    })
 );

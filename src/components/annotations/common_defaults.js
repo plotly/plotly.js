@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52,7 +52,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
         coerce('startstandoff');
-
     }
 
     var hoverText = coerce('hovertext');

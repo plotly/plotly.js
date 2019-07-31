@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -25,10 +25,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
 
     if(hasHoveronViolins || hasHoveronKDE) {
         var closeBoxData = boxHoverPoints.hoverOnBoxes(pointData, xval, yval, hovermode);
-
-        if(hasHoveronViolins) {
-            closeData = closeData.concat(closeBoxData);
-        }
 
         if(hasHoveronKDE && closeBoxData.length > 0) {
             var xa = pointData.xa;
@@ -71,6 +67,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 closeBoxData[0].spikeDistance = undefined;
                 closeBoxData[0][spikePosAttr] = undefined;
 
+                // no hovertemplate support yet
+                kdePointData.hovertemplate = false;
+
                 closeData.push(kdePointData);
 
                 violinLineAttrs = {stroke: pointData.color};
@@ -78,6 +77,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 violinLineAttrs[pLetter + '2'] = Lib.constrain(paOffset + pOnPath[1], paOffset, paOffset + paLength);
                 violinLineAttrs[vLetter + '1'] = violinLineAttrs[vLetter + '2'] = vAxis._offset + vValPx;
             }
+        }
+
+        if(hasHoveronViolins) {
+            closeData = closeData.concat(closeBoxData);
         }
     }
 

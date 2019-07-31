@@ -1,0 +1,141 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [
+        "textposition:outside"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "Text"
+      ],
+      "textposition": [
+        "outside"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "bar",
+      "x": [
+        "textpostion:auto"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "auto"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "bar",
+      "x": [
+        "textpostion:inside"
+      ],
+      "y": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "inside"
+      ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textposition:outside"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "Text"
+      ],
+      "textposition": [
+        "outside"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textpostion:auto"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "auto"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "y": [
+        "textpostion:inside"
+      ],
+      "x": [
+        0
+      ],
+      "text": [
+        "should not see"
+      ],
+      "textposition": [
+        "inside"
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "margin": { "l": 150, "b": 25, "t": 25, "r": 25 },
+    "width": 600,
+    "height": 300,
+    "xaxis": {
+      "domain": [
+        0,
+        1
+      ]
+    },
+    "yaxis": {
+      "domain": [
+        0,
+        0.45
+      ]
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [
+        0,
+        1
+      ]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [
+        0.55,
+        1
+      ]
+    }
+  }
+}

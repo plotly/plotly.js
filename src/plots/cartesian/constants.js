@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,7 +7,7 @@
 */
 
 'use strict';
-var counterRegex = require('../../lib').counterRegex;
+var counterRegex = require('../../lib/regex').counter;
 
 
 module.exports = {
@@ -61,14 +61,23 @@ module.exports = {
     DFLTRANGEY: [-1, 4],
 
     // Layers to keep trace types in the right order
+    // N.B. each  'unique' plot method must have its own layer
     traceLayerClasses: [
-        'imagelayer',
-        'maplayer',
-        'barlayer',
+        'heatmaplayer',
+        'contourcarpetlayer', 'contourlayer',
+        'funnellayer', 'waterfalllayer', 'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
-        'scatterlayer'
+        'ohlclayer',
+        'scattercarpetlayer', 'scatterlayer'
+    ],
+
+    clipOnAxisFalseQuery: [
+        '.scatterlayer',
+        '.barlayer',
+        '.funnellayer',
+        '.waterfalllayer'
     ],
 
     layerValue2layerClass: {

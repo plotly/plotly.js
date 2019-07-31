@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -26,9 +26,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.visible === false) return;
 
     coerce('bandwidth');
-    coerce('scalegroup', traceOut.name);
-    coerce('scalemode');
     coerce('side');
+
+    var width = coerce('width');
+    if(!width) {
+        coerce('scalegroup', traceOut.name);
+        coerce('scalemode');
+    }
 
     var span = coerce('span');
     var spanmodeDflt;
@@ -46,10 +50,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var boxLineColor = coerce2('box.line.color', lineColor);
     var boxLineWidth = coerce2('box.line.width', lineWidth);
     var boxVisible = coerce('box.visible', Boolean(boxWidth || boxFillColor || boxLineColor || boxLineWidth));
-    if(!boxVisible) delete traceOut.box;
+    if(!boxVisible) traceOut.box = {visible: false};
 
     var meanLineColor = coerce2('meanline.color', lineColor);
     var meanLineWidth = coerce2('meanline.width', lineWidth);
     var meanLineVisible = coerce('meanline.visible', Boolean(meanLineColor || meanLineWidth));
-    if(!meanLineVisible) delete traceOut.meanline;
+    if(!meanLineVisible) traceOut.meanline = {visible: false};
 };

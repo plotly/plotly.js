@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -35,7 +35,7 @@ module.exports = {
             'If *sqrt*, the bar lengths correspond to the sqaure of the',
             'underlying data.',
 
-            'If *array*, the bar lengths are set with data set `array`.'
+            'If *data*, the bar lengths are set with data set `array`.'
         ].join(' ')
     },
     symmetric: {

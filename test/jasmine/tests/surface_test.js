@@ -1,4 +1,8 @@
 var Surface = require('@src/traces/surface');
+var Plotly = require('@lib/index');
+var failTest = require('../assets/fail_test');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var Lib = require('@src/lib');
 
@@ -9,8 +13,8 @@ describe('Test surface', function() {
     describe('supplyDefaults', function() {
         var supplyDefaults = Surface.supplyDefaults;
 
-        var defaultColor = '#444',
-            layout = {_dfltTitle: {colorbar: 'cb'}};
+        var defaultColor = '#444';
+        var layout = {_dfltTitle: {colorbar: 'cb'}};
 
         var traceIn, traceOut;
 
@@ -123,16 +127,14 @@ describe('Test surface', function() {
         it('should coerce \'c\' attributes with \'c\' values regardless of `\'z\' if \'c\' is present', function() {
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]],
-                zauto: false,
                 zmin: 0,
                 zmax: 10,
-                cauto: true,
                 cmin: -10,
                 cmax: 20
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.cauto).toEqual(true);
+            expect(traceOut.cauto).toEqual(false);
             expect(traceOut.cmin).toEqual(-10);
             expect(traceOut.cmax).toEqual(20);
         });
@@ -177,6 +179,117 @@ describe('Test surface', function() {
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
             expect(traceOut.zcalendar).toBe('mayan');
+        });
+    });
+
+    describe('Test dimension and expected visibility tests', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        function assertVisibility(exp, msg) {
+            expect(gd._fullData[0]).not.toBe(undefined, 'no visibility!');
+            expect(gd._fullData[0].visible).toBe(exp, msg);
+        }
+
+        it('@gl surface should be invisible when the z array is empty', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'z': []
+            }])
+            .then(function() {
+                assertVisibility(false, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the x array is defined but is empty', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [],
+                'y': [0, 1],
+                'z': []
+            }])
+            .then(function() {
+                assertVisibility(false, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the y array is defined but is empty', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [0, 1],
+                'y': [],
+                'z': []
+            }])
+            .then(function() {
+                assertVisibility(false, 'not to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the x array is defined and has at least one item', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [0],
+                'y': [0, 1],
+                'z': [[1], [2]]
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the y array is defined and has at least one item', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [0, 1],
+                'y': [0],
+                'z': [[1, 2]]
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be visible when the x and y are not provided; but z array is provided', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'z': [[1, 2], [3, 4]]
+            }])
+            .then(function() {
+                assertVisibility(true, 'to be visible');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl surface should be invisible when the x and y are provided; but z array is not provided', function(done) {
+            Plotly.plot(gd, [{
+                'type': 'surface',
+                'x': [0, 1],
+                'y': [0, 1]
+            }])
+            .then(function() {
+                assertVisibility(false, 'to be invisible');
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

@@ -1,0 +1,191 @@
+{
+  "data": [{
+      "domain": {
+        "x": [0, 0.33],
+        "y": [0, 0.33]
+      },
+      "title": {"text": "Accounts"},
+      "type": "indicator",
+      "mode": "number+delta",
+      "delta": {
+        "increasing": {
+          "color": "green",
+          "symbol": "+"
+        },
+        "valueformat": ".1%",
+        "reference": 400,
+        "relative": true
+      },
+      "gauge": {
+        "bgcolor": "rgba(255, 255, 255, 0.25)"
+      },
+      "value": 450
+    }, {
+        "domain": {
+          "x": [0, 0.33],
+          "y": [0.33, 0.66]
+        },
+        "title": {"text": "Accounts"},
+        "type": "indicator",
+        "mode": "delta",
+        "delta": {
+          "reference": 400,
+          "relative": true
+        },
+        "gauge": {
+          "bgcolor": "rgba(255, 255, 255, 0.25)"
+        },
+        "value": 350
+    }, {
+        "domain": {
+          "x": [0, 0.33],
+          "y": [0.66, 1.0]
+        },
+        "title": {"text": "Accounts"},
+        "type": "indicator",
+        "mode": "number",
+        "delta": {
+          "reference": 400,
+          "relative": true
+        },
+        "gauge": {
+          "bgcolor": "rgba(255, 255, 255, 0.25)"
+        },
+        "value": 430
+    }, {
+      "domain": {
+        "x": [0.33, 0.66],
+        "y": [0, 0.66]
+      },
+      "title": {"text": "Accounts"},
+      "type": "indicator",
+      "mode": "number+delta",
+      "delta": {
+        "reference": 400,
+        "relative": true,
+        "position": "top"
+      },
+      "gauge": {
+        "bgcolor": "rgba(255, 255, 255, 0.25)"
+      },
+      "value": 450
+    }, {
+      "domain": {
+        "x": [0.33, 0.66],
+        "y": [0.66, 1.0]
+      },
+      "title": {"text": "Accounts"},
+      "type": "indicator",
+      "mode": "number+delta",
+      "delta": {
+        "reference": 400,
+        "relative": true
+      },
+      "gauge": {
+        "bgcolor": "rgba(255, 255, 255, 0.25)"
+      },
+      "value": 350
+    }, {
+      "domain": {
+        "x": [0.66, 1],
+        "y": [0, 1]
+      },
+      "title": {"text": "Accounts<br><span style='font-size:0.8em;color:gray'>Subtitle</span><br><span style='font-size:0.8em;color:gray'>Subsubtitle</span>"},
+      "type": "indicator",
+      "mode": "number+delta",
+      "delta": {
+        "reference": 400,
+        "relative": true
+      },
+      "gauge": {
+        "bgcolor": "rgba(255, 255, 255, 0.25)"
+      },
+      "value": 450
+    }
+  ],
+  "layout": {
+    "width": 750,
+    "height": 500,
+    "paper_bgcolor": "black",
+    "font": {
+      "color": "white",
+      "family": "Dosis"
+    },
+    "margin": {
+      "t": 25,
+      "r": 25,
+      "l": 25,
+      "b": 25
+    },
+    "shapes": [{
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.33,
+      "y0": 0.66,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.33,
+      "y0": 0.33,
+      "y1": 0.66,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0,
+      "x1": 0.33,
+      "y0": 0,
+      "y1": 0.33,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.33,
+      "x1": 0.66,
+      "y0": 0.66,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.33,
+      "x1": 0.66,
+      "y0": 0,
+      "y1": 0.66,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }, {
+      "type": "rect",
+      "x0": 0.66,
+      "x1": 1.0,
+      "y0": 0,
+      "y1": 1,
+      "line": {
+        "color": "rgba(255, 255, 255, 0.35)",
+        "width": 1
+      },
+      "fill": "rgba(0,0,0,0)"
+    }]
+  },
+  "config": {
+    "responsive": true
+  }
+}

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58,8 +58,7 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
     if(leftDigit > rightDigit && rightDigit < Math.abs(edge1 - edge0) / 4000) {
         digit = leftDigit;
         disambiguateEdges = false;
-    }
-    else {
+    } else {
         digit = Math.min(leftDigit, rightDigit);
         disambiguateEdges = true;
     }
@@ -161,7 +160,6 @@ function didDigitChange(digit, v1, v2, isDate, pa, calendar) {
         var dateParts2 = dateParts(v2, pa, calendar);
         var parti = (digit === oneYear) ? 0 : 1;
         return dateParts1[parti] !== dateParts2[parti];
-
     }
     return Math.floor(v2 / digit) - Math.floor(v1 / digit) > 0.1;
 }

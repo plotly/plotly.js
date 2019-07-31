@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,6 +7,8 @@
 */
 
 'use strict';
+
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function(a) {
     return minMax(a, 0);
@@ -16,7 +18,7 @@ function minMax(a, depth) {
     // Limit to ten dimensional datasets. This seems *exceedingly* unlikely to
     // ever cause problems or even be a concern. It's include strictly so that
     // circular arrays could never cause this to loop.
-    if(!Array.isArray(a) || depth >= 10) {
+    if(!isArrayOrTypedArray(a) || depth >= 10) {
         return null;
     }
 
@@ -26,7 +28,7 @@ function minMax(a, depth) {
     for(var i = 0; i < n; i++) {
         var datum = a[i];
 
-        if(Array.isArray(datum)) {
+        if(isArrayOrTypedArray(datum)) {
             var result = minMax(datum, depth + 1);
 
             if(result) {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,9 @@ var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+
+var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+var DATE_FORMAT_LINK = require('../../constants/docs').TIME_FORMAT_LINK;
 
 module.exports = {
     color: {
@@ -34,26 +37,39 @@ module.exports = {
         editType: 'calc'
     },
     title: {
-        valType: 'string',
-        role: 'info',
+        text: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets the title of this axis.',
+                'Note that before the existence of `title.text`, the title\'s',
+                'contents used to be defined as the `title` attribute itself.',
+                'This behavior has been deprecated.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'calc',
+            description: [
+                'Sets this axis\' title font.',
+                'Note that the title\'s font used to be set',
+                'by the now deprecated `titlefont` attribute.'
+            ].join(' ')
+        }),
+        offset: {
+            valType: 'number',
+            role: 'info',
+            dflt: 10,
+            editType: 'calc',
+            description: [
+                'An additional amount by which to offset the title from the tick',
+                'labels, given in pixels.',
+                'Note that this used to be set',
+                'by the now deprecated `titleoffset` attribute.'
+            ].join(' '),
+        },
         editType: 'calc',
-        description: 'Sets the title of this axis.'
-    },
-    titlefont: fontAttrs({
-        editType: 'calc',
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
-    }),
-    titleoffset: {
-        valType: 'number',
-        role: 'info',
-        dflt: 10,
-        editType: 'calc',
-        description: [
-            'An additional amount by which to offset the title from the tick',
-            'labels, given in pixels'
-        ].join(' '),
     },
     type: {
         valType: 'enumerated',
@@ -284,9 +300,9 @@ module.exports = {
         description: [
             'Sets the tick label formatting rule using d3 formatting mini-languages',
             'which are very similar to those in Python. For numbers, see:',
-            'https://github.com/d3/d3-format/blob/master/README.md#locale_format',
+            FORMAT_LINK,
             'And for dates see:',
-            'https://github.com/d3/d3-time-format/blob/master/README.md#locale_format',
+            DATE_FORMAT_LINK,
             'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
             'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
@@ -494,5 +510,30 @@ module.exports = {
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Deprecated in favor of `title.text`.',
+                'Note that value of `title` is no longer a simple',
+                '*string* but a set of sub-attributes.'
+            ].join(' ')
+        },
+        titlefont: fontAttrs({
+            editType: 'calc',
+            description: 'Deprecated in favor of `title.font`.'
+        }),
+        titleoffset: {
+            valType: 'number',
+            role: 'info',
+            dflt: 10,
+            editType: 'calc',
+            description: 'Deprecated in favor of `title.offset`.'
+        }
+    },
+
     editType: 'calc'
 };

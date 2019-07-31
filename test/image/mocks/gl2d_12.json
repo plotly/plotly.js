@@ -734,7 +734,7 @@
                 "size": 0,
                 "color": ""
             },
-            "exponentformat": "e",
+            "exponentformat": "power",
             "showexponent": "all",
             "gridcolor": "#ddd",
             "gridwidth": 1,

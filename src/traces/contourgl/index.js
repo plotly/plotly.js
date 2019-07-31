@@ -1,33 +1,30 @@
 /**
-* Copyright 2012-2018, Plotly, Inc.
+* Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var ContourGl = {};
+module.exports = {
+    attributes: overrideAll(require('../contour/attributes'), 'calc', 'nested'),
+    supplyDefaults: require('../contour/defaults'),
+    colorbar: require('../contour/colorbar'),
 
-ContourGl.attributes = overrideAll(require('../contour/attributes'), 'calc', 'nested');
-ContourGl.supplyDefaults = require('../contour/defaults');
-ContourGl.colorbar = require('../contour/colorbar');
+    calc: require('../contour/calc'),
+    plot: require('./convert'),
 
-ContourGl.calc = require('../contour/calc');
-ContourGl.plot = require('./convert');
-
-ContourGl.moduleType = 'trace';
-ContourGl.name = 'contourgl';
-ContourGl.basePlotModule = require('../../plots/gl2d');
-ContourGl.categories = ['gl', 'gl2d', '2dMap'];
-ContourGl.meta = {
-    description: [
-        'WebGL contour (beta)'
-    ].join(' ')
+    moduleType: 'trace',
+    name: 'contourgl',
+    basePlotModule: require('../../plots/gl2d'),
+    categories: ['gl', 'gl2d', '2dMap'],
+    meta: {
+        description: [
+            'WebGL contour (beta)'
+        ].join(' ')
+    }
 };
-
-module.exports = ContourGl;
