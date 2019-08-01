@@ -24,6 +24,7 @@ mock2.data[0].surfaceaxis = 2;
 mock2.layout.showlegend = true;
 
 var mock3 = require('@mocks/gl3d_autocolorscale');
+var mock4 = require('@mocks/gl3d_transparent_same-depth.json');
 
 describe('Test gl3d trace click/hover:', function() {
     var gd, ptData;
@@ -39,13 +40,16 @@ describe('Test gl3d trace click/hover:', function() {
         destroyGraphDiv();
     });
 
-    function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
+    function assertHoverText(xLabel, yLabel, zLabel, textLabel, traceName) {
         var content = [];
         if(xLabel) content.push(xLabel);
         if(yLabel) content.push(yLabel);
         if(zLabel) content.push(zLabel);
         if(textLabel) content.push(textLabel);
-        assertHoverLabelContent({nums: content.join('\n')});
+        assertHoverLabelContent({
+            name: traceName,
+            nums: content.join('\n')
+        });
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber, extra) {
@@ -535,6 +539,31 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, '4-5-3.5');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should pick latest & closest points on hover if two points overlap', function(done) {
+        var _mock = Lib.extendDeep({}, mock4);
+
+        function _hover() {
+            mouseEvent('mouseover', 0, 0);
+            mouseEvent('mouseover', 200, 200);
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverText('x: 1', 'y: 1', 'z: 1', 'third above', 'trace 1');
         })
         .catch(failTest)
         .then(done);
