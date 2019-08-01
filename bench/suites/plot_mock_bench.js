@@ -15,7 +15,6 @@ var benchmarkOpts = {
 };
 
 suite('Benchmark: plotting image mocks', function() {
-
     benchmark('17.json', function(deferred) {
         var mock = require('@mocks/17.json');
 
@@ -31,5 +30,4 @@ suite('Benchmark: plotting image mocks', function() {
             deferred.resolve();
         });
     }, benchmarkOpts);
-
 }, suiteOpts);

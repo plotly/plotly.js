@@ -1,7 +1,6 @@
 var Lib = require('@src/lib');
 
 suite('Benchmark: lib functions', function() {
-
     benchmark('Lib.cleanNumber', function() {
         [
             0, 1, 2, 1234.567,

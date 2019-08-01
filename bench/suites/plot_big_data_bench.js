@@ -32,5 +32,4 @@ suite('Benchmark: plotting large data', function() {
             deferred.resolve();
         });
     }, benchmarkOpts);
-
 }, suiteOpts);
