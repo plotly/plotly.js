@@ -77,7 +77,6 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
             fillPathinfo = convertToConstraints(pathinfo, operation);
-            closeBoundaries(fillPathinfo, operation, perimeter, trace);
         }
 
         // Map the paths in a/b coordinates to pixel coordinates:
@@ -328,10 +327,18 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
 }
 
 function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath) {
-    var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
+    var hasFills = coloring === 'fill';
 
-    var fillitems = fillgroup.selectAll('path')
-        .data(coloring === 'fill' ? pathinfo : []);
+    // fills prefixBoundary in pathinfo items
+    //
+    // N.B. cheater_contour mock fails if we call closeBoundaries
+    //      on contourcarpet traces that with `levels` contours
+    if(hasFills && trace.contours.type === 'constraint') {
+        closeBoundaries(pathinfo, trace.contours);
+    }
+
+    var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
+    var fillitems = fillgroup.selectAll('path').data(hasFills ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {
@@ -340,11 +347,8 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
-
-        if(pi.prefixBoundary) {
-            fullpath = boundaryPath + fullpath;
-        }
+        var fullpath = (pi.prefixBoundary ? boundaryPath : '') +
+            joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
 
         if(!fullpath) {
             d3.select(this).remove();
