@@ -12,4 +12,8 @@ suite('Benchmark: lib functions', function() {
         ]
         .forEach(Lib.cleanNumber);
     });
+
+    benchmark('Lib.hovertemplateString', function() {
+        Lib.hovertemplateString('%{x}', {xLabel: '234.0'}, false);
+    });
 });
