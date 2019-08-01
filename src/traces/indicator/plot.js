@@ -572,7 +572,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     function drawBignumber() {
         var bignumberAx = mockAxis(gd, {tickformat: trace.number.valueformat}, trace._range);
         bignumberAx.setScale();
-        Axes.calcTicks(bignumberAx);
+        Axes.prepTicks(bignumberAx);
 
         var fmt = function(v) { return Axes.tickText(bignumberAx, v).text;};
         var bignumberSuffix = trace.number.suffix;
@@ -617,7 +617,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     function drawDelta() {
         var deltaAx = mockAxis(gd, {tickformat: trace.delta.valueformat}, trace._range);
         deltaAx.setScale();
-        Axes.calcTicks(deltaAx);
+        Axes.prepTicks(deltaAx);
 
         var deltaFmt = function(v) { return Axes.tickText(deltaAx, v).text;};
         var deltaValue = function(d) {
