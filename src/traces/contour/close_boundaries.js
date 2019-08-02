@@ -58,14 +58,16 @@ module.exports = function(pathinfo, contours) {
                     }
                     break;
                 case '<':
-                    if(contoursValue < boundaryMin) {
+                    if(contoursValue < boundaryMin ||
+                        (!pi0.edgepaths.length && pi0.starts.length && contoursValue === boundaryMin)) {
                         pi0.prefixBoundary = true;
                     }
                     break;
                 case '[]':
                     v1 = Math.min(contoursValue[0], contoursValue[1]);
                     v2 = Math.max(contoursValue[0], contoursValue[1]);
-                    if(v2 < boundaryMin || v1 > boundaryMax) {
+                    if(v2 < boundaryMin || v1 > boundaryMax ||
+                        (!pi0.edgepaths.length && pi0.starts.length && v2 === boundaryMin)) {
                         pi0.prefixBoundary = true;
                     }
                     break;

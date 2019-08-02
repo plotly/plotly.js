@@ -41,6 +41,9 @@ module.exports = function(pathinfo, operation) {
             for(i = 0; i < pi0.paths.length; i++) {
                 pi0.paths[i] = op0(pi0.paths[i]);
             }
+            for(i = 0; i < pi0.starts.length; i++) {
+                pi0.starts[i] = op0(pi0.starts[i]);
+            }
 
             return pathinfo;
         case '][':
@@ -65,9 +68,11 @@ module.exports = function(pathinfo, operation) {
             for(i = 0; i < pi0.edgepaths.length; i++) {
                 pi0.edgepaths[i] = op0(pi0.edgepaths[i]);
             }
-
             for(i = 0; i < pi0.paths.length; i++) {
                 pi0.paths[i] = op0(pi0.paths[i]);
+            }
+            for(i = 0; i < pi0.starts.length; i++) {
+                pi0.starts[i] = op0(pi0.starts[i]);
             }
 
             while(pi1.edgepaths.length) {
@@ -76,6 +81,10 @@ module.exports = function(pathinfo, operation) {
             while(pi1.paths.length) {
                 pi0.paths.push(op1(pi1.paths.shift()));
             }
+            while(pi1.starts.length) {
+                pi0.starts.push(op1(pi1.starts.shift()));
+            }
+
             return [pi0];
     }
 };
@@ -83,6 +92,7 @@ module.exports = function(pathinfo, operation) {
 function copyPathinfo(pi) {
     return Lib.extendFlat({}, pi, {
         edgepaths: Lib.extendDeep([], pi.edgepaths),
-        paths: Lib.extendDeep([], pi.paths)
+        paths: Lib.extendDeep([], pi.paths),
+        starts: Lib.extendDeep([], pi.starts)
     });
 }
