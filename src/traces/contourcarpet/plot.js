@@ -330,10 +330,7 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
     var hasFills = coloring === 'fill';
 
     // fills prefixBoundary in pathinfo items
-    //
-    // N.B. cheater_contour mock fails if we call closeBoundaries
-    //      on contourcarpet traces that with `levels` contours
-    if(hasFills && trace.contours.type === 'constraint') {
+    if(hasFills) {
         closeBoundaries(pathinfo, trace.contours);
     }
 

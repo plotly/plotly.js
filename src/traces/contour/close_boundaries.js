@@ -23,7 +23,8 @@ module.exports = function(pathinfo, contours) {
 
             for(i = 0; i < pathinfo.length; i++) {
                 var pi = pathinfo[i];
-                pi.prefixBoundary = !pi.edgepaths.length && edgeVal2 > pi.level;
+                pi.prefixBoundary = !pi.edgepaths.length &&
+                    (edgeVal2 > pi.level || pi.starts.length && edgeVal2 === pi.level);
             }
             break;
         case 'constraint':
