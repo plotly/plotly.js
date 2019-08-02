@@ -11,7 +11,7 @@
 var plotAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var pieAtts = require('../pie/attributes');
+var pieAttrs = require('../pie/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -98,14 +98,14 @@ module.exports = {
         // },
 
         line: {
-            color: extendFlat({}, pieAtts.marker.line.color, {
+            color: extendFlat({}, pieAttrs.marker.line.color, {
                 dflt: null,
                 description: [
                     'Sets the color of the line enclosing each sector.',
                     'Defaults to the `paper_bgcolor` value.'
                 ].join(' ')
             }),
-            width: extendFlat({}, pieAtts.marker.line.width, {dflt: 1}),
+            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
             editType: 'calc'
         },
         editType: 'calc'
@@ -124,21 +124,21 @@ module.exports = {
         editType: 'plot'
     },
 
-    text: pieAtts.text,
-    textinfo: extendFlat({}, pieAtts.textinfo, {
+    text: pieAttrs.text,
+    textinfo: extendFlat({}, pieAttrs.textinfo, {
         editType: 'plot',
         flags: ['label', 'text', 'value']
     }),
-    textfont: pieAtts.textfont,
+    textfont: pieAttrs.textfont,
 
-    hovertext: pieAtts.hovertext,
+    hovertext: pieAttrs.hovertext,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'name']
     }),
     hovertemplate: hovertemplateAttrs(),
 
-    insidetextfont: pieAtts.insidetextfont,
-    outsidetextfont: pieAtts.outsidetextfont,
+    insidetextfont: pieAttrs.insidetextfont,
+    outsidetextfont: pieAttrs.outsidetextfont,
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };
