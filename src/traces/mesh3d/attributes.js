@@ -10,7 +10,7 @@
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var surfaceAtts = require('../surface/attributes');
+var surfaceAttrs = require('../surface/attributes');
 var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -185,7 +185,7 @@ colorScaleAttrs('', {
     showScaleDflt: true,
     editTypeOverride: 'calc'
 }), {
-    opacity: surfaceAtts.opacity,
+    opacity: surfaceAttrs.opacity,
 
     // Flat shaded mode
     flatshading: {
@@ -200,20 +200,20 @@ colorScaleAttrs('', {
     },
 
     contour: {
-        show: extendFlat({}, surfaceAtts.contours.x.show, {
+        show: extendFlat({}, surfaceAttrs.contours.x.show, {
             description: [
                 'Sets whether or not dynamic contours are shown on hover'
             ].join(' ')
         }),
-        color: surfaceAtts.contours.x.color,
-        width: surfaceAtts.contours.x.width,
+        color: surfaceAttrs.contours.x.color,
+        width: surfaceAttrs.contours.x.width,
         editType: 'calc'
     },
 
     lightposition: {
-        x: extendFlat({}, surfaceAtts.lightposition.x, {dflt: 1e5}),
-        y: extendFlat({}, surfaceAtts.lightposition.y, {dflt: 1e5}),
-        z: extendFlat({}, surfaceAtts.lightposition.z, {dflt: 0}),
+        x: extendFlat({}, surfaceAttrs.lightposition.x, {dflt: 1e5}),
+        y: extendFlat({}, surfaceAttrs.lightposition.y, {dflt: 1e5}),
+        z: extendFlat({}, surfaceAttrs.lightposition.z, {dflt: 0}),
         editType: 'calc'
     },
     lighting: extendFlat({
@@ -236,7 +236,7 @@ colorScaleAttrs('', {
             description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         },
         editType: 'calc'
-    }, surfaceAtts.lighting),
+    }, surfaceAttrs.lighting),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 });
