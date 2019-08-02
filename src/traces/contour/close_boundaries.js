@@ -31,6 +31,9 @@ module.exports = function(pathinfo, contours) {
             // after convertToConstraints, pathinfo has length=0
             pi0.prefixBoundary = false;
 
+            // joinAllPaths does enough already when edgepaths are present
+            if(pi0.edgepaths.length) return;
+
             var na = pi0.x.length;
             var nb = pi0.y.length;
             var boundaryMax = -Infinity;
@@ -60,7 +63,7 @@ module.exports = function(pathinfo, contours) {
                     break;
                 case '<':
                     if(contoursValue < boundaryMin ||
-                        (!pi0.edgepaths.length && pi0.starts.length && contoursValue === boundaryMin)) {
+                        (pi0.starts.length && contoursValue === boundaryMin)) {
                         pi0.prefixBoundary = true;
                     }
                     break;
@@ -68,7 +71,7 @@ module.exports = function(pathinfo, contours) {
                     v1 = Math.min(contoursValue[0], contoursValue[1]);
                     v2 = Math.max(contoursValue[0], contoursValue[1]);
                     if(v2 < boundaryMin || v1 > boundaryMax ||
-                        (!pi0.edgepaths.length && pi0.starts.length && v2 === boundaryMin)) {
+                        (pi0.starts.length && v2 === boundaryMin)) {
                         pi0.prefixBoundary = true;
                     }
                     break;
