@@ -15,14 +15,12 @@ var supportsPassive = require('has-passive-events');
 var removeElement = require('../../lib').removeElement;
 var constants = require('../../plots/cartesian/constants');
 
-var dragElement = module.exports = {};
+var unhoverAll = require('./unhover');
+var unhover = unhoverAll.wrapped;
+var unhoverRaw = unhoverAll.raw;
 
-dragElement.align = require('./align');
-dragElement.getCursor = require('./cursor');
-
-var unhover = require('./unhover');
-dragElement.unhover = unhover.wrapped;
-dragElement.unhoverRaw = unhover.raw;
+var align = require('./align');
+var getCursor = require('./cursor');
 
 /**
  * Abstracts click & drag interactions
@@ -78,7 +76,7 @@ dragElement.unhoverRaw = unhover.raw;
  *          By default, clamping is done using `minDrag` to x and y displacements
  *          independently.
  */
-dragElement.init = function init(options) {
+function init(options) {
     var gd = options.gd;
     var numClicks = 1;
     var doubleClickDelay = gd._context.doubleClickDelay;
@@ -180,7 +178,7 @@ dragElement.init = function init(options) {
 
         if(dx || dy) {
             gd._dragged = true;
-            dragElement.unhover(gd);
+            unhover(gd);
         }
 
         if(gd._dragged && options.moveFn && !rightClick) {
@@ -260,7 +258,7 @@ dragElement.init = function init(options) {
         gd._dragged = false;
         return;
     }
-};
+}
 
 function coverSlip() {
     var cover = document.createElement('div');
@@ -280,11 +278,18 @@ function coverSlip() {
     return cover;
 }
 
-dragElement.coverSlip = coverSlip;
-
 function pointerOffset(e) {
     return mouseOffset(
         e.changedTouches ? e.changedTouches[0] : e,
         document.body
     );
 }
+
+module.exports = {
+    init: init,
+    align: align,
+    getCursor: getCursor,
+    coverSlip: coverSlip,
+    unhover: unhover,
+    unhoverRaw: unhoverRaw
+};

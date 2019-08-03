@@ -14,9 +14,12 @@ var getGraphDiv = require('../../lib/dom').getGraphDiv;
 
 var hoverConstants = require('../fx/constants');
 
-var unhover = module.exports = {};
+module.exports = {
+    wrapped: wrapped,
+    raw: raw
+};
 
-unhover.wrapped = function(gd, evt, subplot) {
+function wrapped(gd, evt, subplot) {
     gd = getGraphDiv(gd);
 
     // Important, clear any queued hovers
@@ -24,12 +27,12 @@ unhover.wrapped = function(gd, evt, subplot) {
         throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
     }
 
-    unhover.raw(gd, evt, subplot);
-};
+    raw(gd, evt, subplot);
+}
 
 
 // remove hover effects on mouse out, and emit unhover event
-unhover.raw = function raw(gd, evt) {
+function raw(gd, evt) {
     var fullLayout = gd._fullLayout;
     var oldhoverdata = gd._hoverdata;
 
@@ -50,4 +53,4 @@ unhover.raw = function raw(gd, evt) {
             points: oldhoverdata
         });
     }
-};
+}
