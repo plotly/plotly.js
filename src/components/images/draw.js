@@ -84,6 +84,11 @@ module.exports = function draw(gd) {
             var img = new Image();
             this.img = img;
 
+            if (d.source && d.source.slice(0, 5) === 'data:') {
+                img.src = d.source;
+                thisImage.attr('xlink:href', d.source);
+                resolve();
+            } else {
             // If not set, a `tainted canvas` error is thrown
             img.setAttribute('crossOrigin', 'anonymous');
             img.onerror = errorHandler;
@@ -109,6 +114,7 @@ module.exports = function draw(gd) {
             thisImage.on('error', errorHandler);
 
             img.src = d.source;
+            }
 
             function errorHandler() {
                 thisImage.remove();
