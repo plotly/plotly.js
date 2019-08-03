@@ -84,7 +84,7 @@ module.exports = function draw(gd) {
             var img = new Image();
             this.img = img;
 
-            if (d.source && d.source.slice(0, 5) === 'data:') {
+            if(d.source && d.source.slice(0, 5) === '') {
                 img.src = d.source;
                 thisImage.attr('xlink:href', d.source);
                 resolve();
