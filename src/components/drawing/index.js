@@ -27,14 +27,18 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
+var symbolList = [];
+var symbolNames = [];
+var symbolFuncs = [];
+
 module.exports = {
     // data:
     tester: undefined,
     testref: undefined,
 
-    symbolList: [],
-    symbolNames: [],
-    symbolFuncs: [],
+    symbolList: symbolList,
+    symbolNames: symbolNames,
+    symbolFuncs: symbolFuncs,
     symbolNoDot: {},
     symbolNoFill: {},
     symbolNeedLines: {},
@@ -263,23 +267,23 @@ var SYMBOLDEFS = require('./symbol_defs');
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
     var symDef = SYMBOLDEFS[k];
-    module.exports.symbolList.push(symDef.n, k, symDef.n + 100, k + '-open');
-    module.exports.symbolNames[symDef.n] = k;
-    module.exports.symbolFuncs[symDef.n] = symDef.f;
+    symbolList.push(symDef.n, k, symDef.n + 100, k + '-open');
+    symbolNames[symDef.n] = k;
+    symbolFuncs[symDef.n] = symDef.f;
     if(symDef.needLine) {
         module.exports.symbolNeedLines[symDef.n] = true;
     }
     if(symDef.noDot) {
         module.exports.symbolNoDot[symDef.n] = true;
     } else {
-        module.exports.symbolList.push(symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot');
+        symbolList.push(symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot');
     }
     if(symDef.noFill) {
         module.exports.symbolNoFill[symDef.n] = true;
     }
 });
 
-var MAXSYMBOL = module.exports.symbolNames.length;
+var MAXSYMBOL = symbolNames.length;
 // add a dot in the middle of the symbol
 var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
 
@@ -294,7 +298,7 @@ function symbolNumber(v) {
             vbase += 200;
             v = v.replace('-dot', '');
         }
-        v = module.exports.symbolNames.indexOf(v);
+        v = symbolNames.indexOf(v);
         if(v >= 0) { v += vbase; }
     }
     if((v % 100 >= MAXSYMBOL) || v >= 400) { return 0; }
@@ -303,7 +307,7 @@ function symbolNumber(v) {
 
 function makePointPath(symbolNumber, r) {
     var base = symbolNumber % 100;
-    return module.exports.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+    return symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
