@@ -263,8 +263,7 @@ var SYMBOLDEFS = require('./symbol_defs');
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
     var symDef = SYMBOLDEFS[k];
-    module.exports.symbolList = module.exports.symbolList.concat(
-        [symDef.n, k, symDef.n + 100, k + '-open']);
+    module.exports.symbolList.push(symDef.n, k, symDef.n + 100, k + '-open');
     module.exports.symbolNames[symDef.n] = k;
     module.exports.symbolFuncs[symDef.n] = symDef.f;
     if(symDef.needLine) {
@@ -273,8 +272,7 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     if(symDef.noDot) {
         module.exports.symbolNoDot[symDef.n] = true;
     } else {
-        module.exports.symbolList = module.exports.symbolList.concat(
-            [symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot']);
+        module.exports.symbolList.push(symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot');
     }
     if(symDef.noFill) {
         module.exports.symbolNoFill[symDef.n] = true;
