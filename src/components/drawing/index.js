@@ -29,8 +29,8 @@ var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
 module.exports = {
     // data:
-    tester: this.tester,
-    testref: this.testref,
+    tester: undefined,
+    testref: undefined,
 
     symbolList: [],
     symbolNames: [],
