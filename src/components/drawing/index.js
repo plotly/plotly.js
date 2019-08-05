@@ -27,6 +27,8 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
+var SYMBOLDEFS = require('./symbol_defs');
+
 var symbolList = [];
 var symbolNames = [];
 var symbolFuncs = [];
@@ -263,8 +265,6 @@ function fillGroupStyle(s) {
         }
     });
 }
-
-var SYMBOLDEFS = require('./symbol_defs');
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
     var symDef = SYMBOLDEFS[k];
