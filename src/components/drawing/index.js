@@ -38,14 +38,12 @@ module.exports = {
     // data:
     tester: undefined,
     testref: undefined,
-
     symbolList: symbolList,
     symbolNames: symbolNames,
     symbolFuncs: symbolFuncs,
     symbolNoDot: symbolNoDot,
     symbolNoFill: symbolNoFill,
     symbolNeedLines: symbolNeedLines,
-    savedBBoxes: {},
 
     // methods:
     font: font,
@@ -928,8 +926,26 @@ function makeTester() {
  * @return {object}: a plain object containing the width, height, left, right,
  *   top, and bottom of `node`
  */
-var savedBBoxesCount = 0;
-var maxSavedBBoxes = 10000;
+var MAX_SAVED_BBOXES = 10000;
+
+function emptyBBoxes() {
+    module.exports.savedBBoxes = {};
+    module.exports.savedBBoxesCount = 0;
+}
+
+emptyBBoxes();
+
+function saveBBox(hash, bb) {
+    // make sure we don't have too many saved boxes,
+    // or a long session could overload on memory
+    // by saving boxes for long-gone elements
+    if(module.exports.savedBBoxesCount >= MAX_SAVED_BBOXES) {
+        emptyBBoxes();
+    }
+
+    module.exports.savedBBoxes[hash] = bb;
+    module.exports.savedBBoxesCount++;
+}
 
 function bBox(node, inTester, hash) {
     /*
@@ -1022,17 +1038,10 @@ function bBox(node, inTester, hash) {
         bottom: testRect.bottom - refRect.top
     };
 
-    // make sure we don't have too many saved boxes,
-    // or a long session could overload on memory
-    // by saving boxes for long-gone elements
-    if(savedBBoxesCount >= maxSavedBBoxes) {
-        module.exports.savedBBoxes = {};
-        savedBBoxesCount = 0;
-    }
-
     // cache this bbox
-    if(hash) module.exports.savedBBoxes[hash] = bb;
-    savedBBoxesCount++;
+    if(hash) {
+        saveBBox(hash, bb);
+    }
 
     return Lib.extendFlat({}, bb);
 }
