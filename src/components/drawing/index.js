@@ -30,6 +30,9 @@ var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 var symbolList = [];
 var symbolNames = [];
 var symbolFuncs = [];
+var symbolNoDot = {};
+var symbolNoFill = {};
+var symbolNeedLines = {};
 
 module.exports = {
     // data:
@@ -39,9 +42,9 @@ module.exports = {
     symbolList: symbolList,
     symbolNames: symbolNames,
     symbolFuncs: symbolFuncs,
-    symbolNoDot: {},
-    symbolNoFill: {},
-    symbolNeedLines: {},
+    symbolNoDot: symbolNoDot,
+    symbolNoFill: symbolNoFill,
+    symbolNeedLines: symbolNeedLines,
     savedBBoxes: {},
 
     // methods:
@@ -271,15 +274,15 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     symbolNames[symDef.n] = k;
     symbolFuncs[symDef.n] = symDef.f;
     if(symDef.needLine) {
-        module.exports.symbolNeedLines[symDef.n] = true;
+        symbolNeedLines[symDef.n] = true;
     }
     if(symDef.noDot) {
-        module.exports.symbolNoDot[symDef.n] = true;
+        symbolNoDot[symDef.n] = true;
     } else {
         symbolList.push(symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot');
     }
     if(symDef.noFill) {
-        module.exports.symbolNoFill[symDef.n] = true;
+        symbolNoFill[symDef.n] = true;
     }
 });
 
