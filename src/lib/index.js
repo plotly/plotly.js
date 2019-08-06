@@ -1067,7 +1067,7 @@ function templateFormatString(string, labels, d3locale) {
 
         if(format) {
             var fmt;
-            if(d3locale) {
+            if(d3locale && d3locale.numberFormat) {
                 fmt = d3locale.numberFormat;
             } else {
                 fmt = d3.format;
