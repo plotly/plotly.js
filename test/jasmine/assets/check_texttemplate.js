@@ -31,14 +31,14 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
     mock[0].customdata = customdata;
     tests.push(['%{customdata}', customdata]);
 
-    tests.forEach(function(test) {
-        it(isGL ? '@gl' : '' + 'should support texttemplate', function(done) {
-            var gd = createGraphDiv();
-            var mockCopy = Lib.extendDeep(mock, {});
-            mockCopy[0].texttemplate = test[0];
-            Plotly.newPlot(gd, mockCopy)
-                .then(function() {
-                    if(isGL) {
+    if(isGL) {
+        tests.forEach(function(test) {
+            it('@gl should support texttemplate', function(done) {
+                var gd = createGraphDiv();
+                var mockCopy = Lib.extendDeep(mock, {});
+                mockCopy[0].texttemplate = test[0];
+                Plotly.newPlot(gd, mockCopy)
+                    .then(function() {
                         var glText;
                         if(isPolar) {
                             glText = gd._fullLayout.polar._subplot._scene.glText;
@@ -54,20 +54,36 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
                             var text = glText[0].text.slice(from, to);
                             expect(text).toEqual(test[1][i]);
                         }
-                    } else {
+                    })
+                    .catch(failTest)
+                    .finally(function() {
+                        Plotly.purge(gd);
+                        destroyGraphDiv();
+                    })
+                    .then(done);
+            });
+        });
+    } else {
+        tests.forEach(function(test) {
+            it('should support texttemplate', function(done) {
+                var gd = createGraphDiv();
+                var mockCopy = Lib.extendDeep(mock, {});
+                mockCopy[0].texttemplate = test[0];
+                Plotly.newPlot(gd, mockCopy)
+                    .then(function() {
                         var pts = Plotly.d3.selectAll(selector);
                         expect(pts.size()).toBe(test[1].length);
                         pts.each(function() {
                             expect(test[1]).toContain(Plotly.d3.select(this).text());
                         });
-                    }
-                })
-                .catch(failTest)
-                .finally(function() {
-                    Plotly.purge(gd);
-                    destroyGraphDiv();
-                })
-                .then(done);
+                    })
+                    .catch(failTest)
+                    .finally(function() {
+                        Plotly.purge(gd);
+                        destroyGraphDiv();
+                    })
+                    .then(done);
+            });
         });
-    });
+    }
 };
