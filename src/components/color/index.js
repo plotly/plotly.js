@@ -11,39 +11,54 @@
 
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
-
-var color = module.exports = {};
-
 var colorAttrs = require('./attributes');
-color.defaults = colorAttrs.defaults;
-var defaultLine = color.defaultLine = colorAttrs.defaultLine;
-color.lightLine = colorAttrs.lightLine;
-var background = color.background = colorAttrs.background;
+
+var defaults = colorAttrs.defaults;
+var lightLine = colorAttrs.lightLine;
+var defaultLine = colorAttrs.defaultLine;
+var background = colorAttrs.background;
+
+module.exports = {
+    defaults: defaults,
+    lightLine: lightLine,
+    defaultLine: defaultLine,
+    background: background,
+
+    tinyRGB: tinyRGB,
+    rgb: rgb,
+    opacity: opacity,
+    addOpacity: addOpacity,
+    combine: combine,
+    contrast: contrast,
+    stroke: stroke,
+    fill: fill,
+    clean: clean
+};
 
 /*
  * tinyRGB: turn a tinycolor into an rgb string, but
  * unlike the built-in tinycolor.toRgbString this never includes alpha
  */
-color.tinyRGB = function(tc) {
+function tinyRGB(tc) {
     var c = tc.toRgb();
     return 'rgb(' + Math.round(c.r) + ', ' +
         Math.round(c.g) + ', ' + Math.round(c.b) + ')';
-};
+}
 
-color.rgb = function(cstr) { return color.tinyRGB(tinycolor(cstr)); };
+function rgb(cstr) { return tinyRGB(tinycolor(cstr)); }
 
-color.opacity = function(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; };
+function opacity(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; }
 
-color.addOpacity = function(cstr, op) {
+function addOpacity(cstr, op) {
     var c = tinycolor(cstr).toRgb();
     return 'rgba(' + Math.round(c.r) + ', ' +
         Math.round(c.g) + ', ' + Math.round(c.b) + ', ' + op + ')';
-};
+}
 
 // combine two colors into one apparent color
 // if back has transparency or is missing,
-// color.background is assumed behind it
-color.combine = function(front, back) {
+// background is assumed behind it
+function combine(front, back) {
     var fc = tinycolor(front).toRgb();
     if(fc.a === 1) return tinycolor(front).toRgbString();
 
@@ -59,7 +74,7 @@ color.combine = function(front, back) {
         b: bcflat.b * (1 - fc.a) + fc.b * fc.a
     };
     return tinycolor(fcflat).toRgbString();
-};
+}
 
 /*
  * Create a color that contrasts with cstr.
@@ -69,34 +84,34 @@ color.combine = function(front, back) {
  * If lightAmount / darkAmount are used, we adjust by these percentages,
  * otherwise we go all the way to white or black.
  */
-color.contrast = function(cstr, lightAmount, darkAmount) {
+function contrast(cstr, lightAmount, darkAmount) {
     var tc = tinycolor(cstr);
 
-    if(tc.getAlpha() !== 1) tc = tinycolor(color.combine(cstr, background));
+    if(tc.getAlpha() !== 1) tc = tinycolor(combine(cstr, background));
 
     var newColor = tc.isDark() ?
         (lightAmount ? tc.lighten(lightAmount) : background) :
         (darkAmount ? tc.darken(darkAmount) : defaultLine);
 
     return newColor.toString();
-};
+}
 
-color.stroke = function(s, c) {
+function stroke(s, c) {
     var tc = tinycolor(c);
-    s.style({'stroke': color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
-};
+    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
+}
 
-color.fill = function(s, c) {
+function fill(s, c) {
     var tc = tinycolor(c);
     s.style({
-        'fill': color.tinyRGB(tc),
+        'fill': tinyRGB(tc),
         'fill-opacity': tc.getAlpha()
     });
-};
+}
 
 // search container for colors with the deprecated rgb(fractions) format
 // and convert them to rgb(0-255 values)
-color.clean = function(container) {
+function clean(container) {
     if(!container || typeof container !== 'object') return;
 
     var keys = Object.keys(container);
@@ -123,11 +138,11 @@ color.clean = function(container) {
 
             var el0 = val[0];
             if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
-                for(j = 0; j < val.length; j++) color.clean(val[j]);
+                for(j = 0; j < val.length; j++) clean(val[j]);
             }
-        } else if(val && typeof val === 'object') color.clean(val);
+        } else if(val && typeof val === 'object') clean(val);
     }
-};
+}
 
 function cleanOne(val) {
     if(isNumeric(val) || typeof val !== 'string') return val;
