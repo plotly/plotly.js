@@ -22,6 +22,8 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var DASH_PATTERNS = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+
 var calculateError = require('./calc_errors');
 
 function LineWithMarkers(scene, uid) {
@@ -237,6 +239,27 @@ function convertPlotlyOptions(scene, data) {
     else if(data.text !== undefined) {
         text = new Array(len);
         for(i = 0; i < len; i++) text[i] = data.text;
+    }
+
+    // check texttemplate
+    if(data.texttemplate) {
+        if(Array.isArray(data.texttemplate)) {
+            text = new Array(data.texttemplate.length);
+            for(i = 0; i < data.texttemplate.length; i++) {
+                var pt = {};
+                pt.text = text[i];
+                appendArrayPointValue(pt, data, i);
+                text[i] = Lib.texttemplateString(data.texttemplate[i], pt, function() {}, pt);
+            }
+        } else {
+            text = new Array(len);
+            for(i = 0; i < len; i++) {
+                var pt1 = {};
+                pt1.text = text[i];
+                appendArrayPointValue(pt1, data, i);
+                text[i] = Lib.texttemplateString(data.texttemplate, pt1, function() {}, pt1);
+            }
+        }
     }
 
     // Build object parameters
