@@ -10,6 +10,81 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.1] -- 2019-07-31
+
+### Fixed
+- Fix `parcoords` bug when dimension values are all zeroes (bug introduced in 1.49.0) [#4080]
+- Fix `parcoords` select line rendering when constraint range falls below range [#4083]
+- Fix `parcoords` select line rendering when selecting outside displayed axis range [#4087]
+- Fix `parcoords` select by click when preceded by click away from axis [#4089]
+- Fix `mapbox.style` values in attribution declaration [#4079]
+- Remove unused variable from `scatter3d` shader [#4090]
+
+
+## [1.49.0] -- 2019-07-24
+
+### Added
+- Add `indicator` traces [#3978, #4007, #4014, #4037, #4029]
+- Add `choroplethmapbox` traces [#3988]
+- Add `densitymapbox` traces [#3993]
+- Add new mapbox `style` values: `open-street-map`, `carto-positron`, `carto-darkmatter`,
+  `stamen-terrain`, `stamen-toner`, `stamen-watercolor` and `white-bg`
+  that do not require a Mapbox access token [#3987, #4068]
+- Add support for `sourcetype` value `raster` and `image` and `type` `raster`
+  for mapbox layout layers [#4006]
+- Add `below` attribute to `scattermapbox` traces [#4058]
+- Add support for `below: 'traces'` in mapbox layout layers [#4058]
+- Add `sourceattribution` attribute to mapbox layout layers [#4069]
+- Add `labelangle` and `labelside` attributes to `parcoords` traces [#3966]
+- Add `doubleClickDelay` config option [#3991]
+- Add `showEditInChartStudio` config option [#4061]
+
+### Changed
+- Bump `mapbox-gl` to `v1.1.1` [#3987, #4035]
+- Include source attribution on mapbox subplots and image exports [#4069]
+- Improve mapbox error messages and attribute descriptions [#4035]
+- Do not try to resize hidden graph divs under `responsive:true` [#3972]
+- Improve robustness of `sankey` traces with circular links [#3932]
+- Use `URL.createObjectURL` during `Plotly.toImage` and
+  `Plotly.downloadImage` improving performance [#4008]
+- Make `parcoords` pick layer 100% invisible [#3946]
+- (dev-only) drop "pull-font-svg" pre-process step [#4062]
+
+### Fixed
+- Fix rendering of geo traces with `locationmode` and no base layers
+  (bug introduced in 1.48.0) [#3994]
+- Fix lakes and rivers geometry on scoped geo subplots
+  (bug introduced in 1.48.0) [#4048]
+- Fix `heatmap` rendering for traces with extra categorical coordinates
+  (bug introduced in 1.48.0) [#4038]
+- Do not show zero-height bar rendering when their `marker.line.width` is zero
+  (bug introduced in 1.48.3) [#4056]
+- Do not show prefix and suffix on log axis minor ticks showing digits [#4064]
+- Fix inconsistent `parcoords` behavior when data is outside range [#3794]
+- Fix `parcoods` default tick formatting [#3966, #4011, #4013]
+- Fix pseudo-html and MathJax rendering for `parcoords` traces [#3966]
+- Fix `marker.line.color` default for `choropleth` traces [#3988]
+- Fix `scatter3d` and `scattergl` handling of `rgb` colors
+  with extra alpha values [#3904, #4009]
+- Fix zoomed-in box/violin hover labels edge cases [#3965]
+- Fix `hoverinfo` & `hovertemplate` initial, delta and final flags
+  for `waterfall` traces [#3963]
+- Fix `hovertemplate` default number formatting for
+  `choropleth`, `scattergeo`, `scatterpolar(gl)`, `barpolar`
+  and `scatterternary` traces [#3968]
+- Remove `sliders` / `updatemenus` command observer mutation [#4023]
+- Fix plot-schema `anim` listing for traces that do not (yet) animate [#4024]
+- Fix `rangeslider` style during selections [#4022]
+- Fix per-value `categoryorder` for `box` and `violin` traces [#3983]
+- Fix handling of non-numeric `marker.line.width` array items [#4056, #4063]
+- Fix `downloadImage` for images of more than 2MB in size in Chrome [#4008]
+- Fix `plotly_clickannotation` triggering when `editable:true` [#3979]
+- Remove unused `font-atlas-sdf` dependency [#3952]
+- Fix `tickformat` attribute description links to d3 formatting language [#4044]
+- Fix typo in `error_(x|y).type` description [#4030]
+- Fix typo in `colorscale` description [#4060]
+
+
 ## [1.48.3] -- 2019-06-13
 
 ### Fixed

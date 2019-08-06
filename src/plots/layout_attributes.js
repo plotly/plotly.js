@@ -432,7 +432,6 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-
     _deprecated: {
         title: {
             valType: 'string',

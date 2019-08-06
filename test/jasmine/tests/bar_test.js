@@ -8,7 +8,7 @@ var Drawing = require('@src/components/drawing');
 var Axes = require('@src/plots/cartesian/axes');
 
 var click = require('../assets/click');
-var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -407,6 +407,20 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
         assertPointField(cd, 'y', [[1, 2, 10, 30]]);
+    });
+
+    it('should guard against negative marker.line.width values', function() {
+        var gd = mockBarPlot([{
+            marker: {
+                line: {
+                    width: [2, 1, 0, -1, false, true, null, [], -Infinity, Infinity, NaN, {}, '12+1', '1e1']
+                }
+            },
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
     });
 });
 

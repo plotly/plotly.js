@@ -172,6 +172,18 @@ var configAttributes = {
             'to their autorange values.'
         ].join(' ')
     },
+    doubleClickDelay: {
+        valType: 'number',
+        dflt: 300,
+        min: 0,
+        description: [
+            'Sets the delay for registering a double-click in ms.',
+            'This is the time interval (in ms) between first mousedown and',
+            '2nd mouseup to constitute a double-click.',
+            'This setting propagates to all on-subplot double clicks',
+            '(except for geo and mapbox) and on-legend double clicks.'
+        ].join(' ')
+    },
 
     showAxisDragHandles: {
         valType: 'boolean',

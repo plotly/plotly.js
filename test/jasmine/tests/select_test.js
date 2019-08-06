@@ -4,7 +4,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
-var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

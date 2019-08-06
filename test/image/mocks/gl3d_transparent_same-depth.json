@@ -1,0 +1,107 @@
+{
+    "data": [
+        {
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "text": [
+                "first below",
+                "second below",
+                "third below",
+                "fourth below",
+                "first above",
+                "second above",
+                "third above",
+                "fourth above"
+            ],
+            "type": "scatter3d",
+            "opacity": 0.5,
+            "marker": {
+                "opacity": 0.5,
+                "size": 50
+            }
+        },
+        {
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "text": [
+                "first below",
+                "second below",
+                "third below",
+                "fourth below",
+                "first above",
+                "second above",
+                "third above",
+                "fourth above"
+            ],
+            "type": "scatter3d",
+            "opacity": 0.5,
+            "marker": {
+                "opacity": 0.5,
+                "size": 50
+            }
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "title": {
+            "text": "hover should generally pick latest<br>points on the same position<br>and display above not below"
+        }
+    }
+}
