@@ -35,6 +35,48 @@ module.exports = {
     clean: clean
 };
 
+function cleanOne(val) {
+    if(isNumeric(val) || typeof val !== 'string') return val;
+
+    var valTrim = val.trim();
+    if(valTrim.substr(0, 3) !== 'rgb') return val;
+
+    var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
+    if(!match) return val;
+
+    var parts = match[1].trim().split(/\s*[\s,]\s*/);
+    var rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
+    if(!rgba && parts.length !== 3) return val;
+
+    for(var i = 0; i < parts.length; i++) {
+        if(!parts[i].length) return val;
+        parts[i] = Number(parts[i]);
+
+        if(!(parts[i] >= 0)) {
+            // all parts must be non-negative numbers
+
+            return val;
+        }
+
+        if(i === 3) {
+            // alpha>1 gets clipped to 1
+
+            if(parts[i] > 1) parts[i] = 1;
+        } else if(parts[i] >= 1) {
+            // r, g, b must be < 1 (ie 1 itself is not allowed)
+
+            return val;
+        }
+    }
+
+    var rgbStr = Math.round(parts[0] * 255) + ', ' +
+        Math.round(parts[1] * 255) + ', ' +
+        Math.round(parts[2] * 255);
+
+    if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
+    return 'rgb(' + rgbStr + ')';
+}
+
 /*
  * tinyRGB: turn a tinycolor into an rgb string, but
  * unlike the built-in tinycolor.toRgbString this never includes alpha
@@ -142,46 +184,4 @@ function clean(container) {
             }
         } else if(val && typeof val === 'object') clean(val);
     }
-}
-
-function cleanOne(val) {
-    if(isNumeric(val) || typeof val !== 'string') return val;
-
-    var valTrim = val.trim();
-    if(valTrim.substr(0, 3) !== 'rgb') return val;
-
-    var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
-    if(!match) return val;
-
-    var parts = match[1].trim().split(/\s*[\s,]\s*/);
-    var rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
-    if(!rgba && parts.length !== 3) return val;
-
-    for(var i = 0; i < parts.length; i++) {
-        if(!parts[i].length) return val;
-        parts[i] = Number(parts[i]);
-
-        if(!(parts[i] >= 0)) {
-            // all parts must be non-negative numbers
-
-            return val;
-        }
-
-        if(i === 3) {
-            // alpha>1 gets clipped to 1
-
-            if(parts[i] > 1) parts[i] = 1;
-        } else if(parts[i] >= 1) {
-            // r, g, b must be < 1 (ie 1 itself is not allowed)
-
-            return val;
-        }
-    }
-
-    var rgbStr = Math.round(parts[0] * 255) + ', ' +
-        Math.round(parts[1] * 255) + ', ' +
-        Math.round(parts[2] * 255);
-
-    if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
-    return 'rgb(' + rgbStr + ')';
 }
