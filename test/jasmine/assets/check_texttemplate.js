@@ -11,6 +11,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 module.exports = function checkTextTemplate(mock, selector, tests) {
     var isGL = Registry.traceIs(mock[0].type, 'gl');
+    var isPolar = Registry.traceIs(mock[0].type, 'polar');
 
     it('should not coerce textinfo when texttemplate', function() {
         var gd = {};
@@ -38,7 +39,12 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
             Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     if(isGL) {
-                        var glText = gd._fullLayout._plots.xy._scene.glText;
+                        var glText;
+                        if(isPolar) {
+                            glText = gd._fullLayout.polar._subplot._scene.glText;
+                        } else {
+                            glText = gd._fullLayout._plots.xy._scene.glText;
+                        }
                         expect(glText.length).toEqual(1);
                         expect(glText[0].textOffsets.length).toEqual(test[1].length);
                         for(var i = 0; i < glText[0].textOffsets.length - 1; i++) {
@@ -57,7 +63,10 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
                     }
                 })
                 .catch(failTest)
-                .finally(destroyGraphDiv)
+                .finally(function() {
+                    Plotly.purge(gd);
+                    destroyGraphDiv();
+                })
                 .then(done);
         });
     });

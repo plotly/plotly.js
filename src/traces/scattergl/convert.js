@@ -124,7 +124,7 @@ function convertTextStyle(trace) {
                 optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, function() {}, pt));
             }
         } else {
-            for(i = 0; i < trace.x.length; i++) {
+            for(i = 0; i < count; i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
                 optsOut.text.push(Lib.texttemplateString(texttemplate, pt, function() {}, pt));
