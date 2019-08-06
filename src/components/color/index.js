@@ -45,8 +45,8 @@ function cleanOne(val) {
     if(!match) return val;
 
     var parts = match[1].trim().split(/\s*[\s,]\s*/);
-    var rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
-    if(!rgba && parts.length !== 3) return val;
+    var hasAlpha = valTrim.charAt(3) === 'a' && parts.length === 4;
+    if(!hasAlpha && parts.length !== 3) return val;
 
     for(var i = 0; i < parts.length; i++) {
         if(!parts[i].length) return val;
@@ -69,11 +69,13 @@ function cleanOne(val) {
         }
     }
 
-    var rgbStr = Math.round(parts[0] * 255) + ', ' +
+    var rgbStr = (
+        Math.round(parts[0] * 255) + ', ' +
         Math.round(parts[1] * 255) + ', ' +
-        Math.round(parts[2] * 255);
+        Math.round(parts[2] * 255)
+    );
 
-    if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
+    if(hasAlpha) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
     return 'rgb(' + rgbStr + ')';
 }
 
