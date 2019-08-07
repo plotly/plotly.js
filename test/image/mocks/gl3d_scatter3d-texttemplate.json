@@ -1,0 +1,16 @@
+{
+  "data": [{
+      "type": "scatter3d",
+      "x": [0, 1, 2],
+      "y": [0, 2, 1],
+      "z": [-5, -2, 4],
+      "text": ["A", "B", "C"],
+      "texttemplate": "%{text}: (%{x}, %{y}, %{z})",
+      "mode": "markers+text"
+    }],
+  "layout": {
+      "width": 400,
+      "height": 400,
+      "margin": {"t": 20, "l": 0, "r": 0, "b": 0}
+  }
+}
