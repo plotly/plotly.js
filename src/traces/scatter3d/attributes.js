@@ -86,7 +86,7 @@ var attrs = module.exports = overrideAll({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
-    texttemplate: texttemplateAttrs({arrayOk: true}, {
+    texttemplate: texttemplateAttrs({}, {
 
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {

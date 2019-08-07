@@ -168,7 +168,7 @@ module.exports = {
         ].join(' ')
     },
 
-    texttemplate: texttemplateAttrs({arrayOk: true}, {
+    texttemplate: texttemplateAttrs({}, {
 
     }),
     hovertext: {

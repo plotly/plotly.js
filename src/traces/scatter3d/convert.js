@@ -243,13 +243,14 @@ function convertPlotlyOptions(scene, data) {
 
     // check texttemplate
     if(data.texttemplate) {
+        var d3locale = scene.fullLayout._d3locale;
         if(Array.isArray(data.texttemplate)) {
             text = new Array(data.texttemplate.length);
             for(i = 0; i < data.texttemplate.length; i++) {
                 var pt = {};
                 pt.text = text[i];
                 appendArrayPointValue(pt, data, i);
-                text[i] = Lib.texttemplateString(data.texttemplate[i], pt, function() {}, pt);
+                text[i] = Lib.texttemplateString(data.texttemplate[i], pt, d3locale, pt);
             }
         } else {
             text = new Array(len);
@@ -257,7 +258,7 @@ function convertPlotlyOptions(scene, data) {
                 var pt1 = {};
                 pt1.text = text[i];
                 appendArrayPointValue(pt1, data, i);
-                text[i] = Lib.texttemplateString(data.texttemplate, pt1, function() {}, pt1);
+                text[i] = Lib.texttemplateString(data.texttemplate, pt1, d3locale, pt1);
             }
         }
     }

@@ -49,7 +49,7 @@ function convertStyle(gd, trace) {
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = convertTextStyle(trace);
+        opts.text = convertTextStyle(trace, gd);
         opts.textSel = convertTextSelection(trace, trace.selected);
         opts.textUnsel = convertTextSelection(trace, trace.unselected);
     }
@@ -102,7 +102,7 @@ function convertStyle(gd, trace) {
     return opts;
 }
 
-function convertTextStyle(trace) {
+function convertTextStyle(trace, gd) {
     var count = trace._length;
     var textfontIn = trace.textfont;
     var textpositionIn = trace.textposition;
@@ -115,19 +115,20 @@ function convertTextStyle(trace) {
 
     var texttemplate = trace.texttemplate;
     if(texttemplate) {
+        var d3locale = gd._fullLayout._d3locale;
         optsOut.text = [];
         var pt;
         if(Array.isArray(texttemplate)) {
             for(i = 0; i < texttemplate.length; i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, function() {}, pt));
+                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, d3locale, pt));
             }
         } else {
             for(i = 0; i < count; i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, function() {}, pt));
+                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, d3locale, pt));
             }
         }
     } else {
