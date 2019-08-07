@@ -139,7 +139,7 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
-        return convert(calcTrace);
+        return convert(calcTrace, {_fullLayout: {_d3locale: false}});
     }
 
     function assertVisibility(opts, expectations) {
@@ -476,6 +476,44 @@ describe('scattermapbox convert', function() {
         });
 
         expect(actualText).toEqual(['A', 'B', 'C', 'F', undefined]);
+    });
+
+    it('should generate correct output for texttemplate without text', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'lines+text',
+            connectgaps: true,
+            textposition: 'outside',
+            texttemplate: ['A', 'B', 'C', 'D', 'E', 'F']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
+    });
+
+    it('should generate correct output for texttemplate', function() {
+        var mock = {
+            'type': 'scattermapbox',
+            'mode': 'markers+text',
+            'lon': [-73.57, -79.24, -123.06],
+            'lat': [45.5, 43.4, 49.13],
+            'text': ['Montreal', 'Toronto', 'Vancouver'],
+            'texttemplate': '%{text} (%{lonlat[0]}, %{lonlat[1]}): %{customdata:.2s}',
+            'textposition': 'top center',
+            'customdata': [1780000, 2930000, 675218]
+        };
+        var opts = _convert(mock);
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual([
+            'Montreal (-73.57, 45.5): 1.8M',
+            'Toronto (-79.24, 43.4): 2.9M',
+            'Vancouver (-123.06, 49.13): 680k'
+        ]);
     });
 
     it('should generate correct output for lines traces with trailing gaps', function() {

@@ -9,6 +9,7 @@
 'use strict';
 
 var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var texttemplateAttrs = require('../../plots/texttemplate_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
@@ -48,6 +49,9 @@ module.exports = overrideAll({
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
+    }),
+    texttemplate: texttemplateAttrs({editType: 'calc'}, {
+        keys: ['lat', 'lon', 'text']
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
