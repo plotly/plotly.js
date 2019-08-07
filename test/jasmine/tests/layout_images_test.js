@@ -306,17 +306,17 @@ describe('Layout images', function() {
                 return element;
             });
 
-            Plotly.relayout(gd, 'images[0].source', dataUriImage).then(function() {
-                setTimeout(function() {
-                    expect(newCanvasElement).toBeUndefined();
-                    Plotly.relayout(gd, 'images[0].source', pythonLogo).then(function() {
-                        expect(newCanvasElement).eventually.toBeDefined();
-                        expect(newCanvasElement.toDataURL).toHaveBeenCalledTimes(1);
-                    });
-
-                    done();
-                }, 500);
-            });
+            Plotly.relayout(gd, 'images[0].source', dataUriImage)
+            .then(function() {
+                expect(newCanvasElement).toBeUndefined();
+            })
+            .then(function() { return Plotly.relayout(gd, 'images[0].source', jsLogo); })
+            .then(function() {
+                expect(newCanvasElement).toBeDefined();
+                expect(newCanvasElement.toDataURL).toHaveBeenCalledTimes(1);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should update the image if changed', function(done) {
