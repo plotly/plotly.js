@@ -61,10 +61,8 @@ module.exports = function draw(gd) {
         }
     }
 
-    var firstRender = false;
     var legend = Lib.ensureSingle(fullLayout._infolayer, 'g', 'legend', function(s) {
         s.attr('pointer-events', 'all');
-        firstRender = true;
     });
 
     var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function(s) {
@@ -125,11 +123,6 @@ module.exports = function draw(gd) {
 
     Lib.syncOrAsync([Plots.previousPromises,
         function() {
-            if(firstRender) {
-                computeLegendDimensions(gd, groups, traces);
-                expandMargin(gd);
-            }
-
             // Position and size the legend
             var lxMin = 0;
             var lxMax = fullLayout.width;
