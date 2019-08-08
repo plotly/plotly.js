@@ -92,7 +92,7 @@ var rangeAttr = {
     ].join(' ')
 };
 
-var stepsAttrs = templatedArray('steps', extendDeep({}, gaugeBarAttrs, {
+var stepsAttrs = templatedArray('step', extendDeep({}, gaugeBarAttrs, {
     range: rangeAttr
 }));
 
