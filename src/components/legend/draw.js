@@ -90,23 +90,16 @@ module.exports = function draw(gd) {
     .call(style, gd)
     .each(function() { d3.select(this).call(setupTraceToggle, gd); });
 
-    Lib.syncOrAsync([Plots.previousPromises,
+    Lib.syncOrAsync([
+        Plots.previousPromises,
+        function() { return computeLegendDimensions(gd, groups, traces); },
+        function() { return expandMargin(gd); },
         function() {
             // Position and size the legend
             var lxMin = 0;
             var lxMax = fullLayout.width;
             var lyMin = 0;
             var lyMax = fullLayout.height;
-
-            computeLegendDimensions(gd, groups, traces);
-
-            if(opts._height > lyMax) {
-                // If the legend doesn't fit in the plot area,
-                // do not expand the vertical margins.
-                expandHorizontalMargin(gd);
-            } else {
-                expandMargin(gd);
-            }
 
             // Scroll section must be executed after repositionLegend.
             // It requires the legend width, height, x and y to position the scrollbox
@@ -687,27 +680,5 @@ function expandMargin(gd) {
         r: opts._width * (FROM_BR[xanchor]),
         b: opts._height * (FROM_BR[yanchor]),
         t: opts._height * (FROM_TL[yanchor])
-    });
-}
-
-function expandHorizontalMargin(gd) {
-    var fullLayout = gd._fullLayout;
-    var opts = fullLayout.legend;
-
-    var xanchor = 'left';
-    if(Lib.isRightAnchor(opts)) {
-        xanchor = 'right';
-    } else if(Lib.isCenterAnchor(opts)) {
-        xanchor = 'center';
-    }
-
-    // lastly check if the margin auto-expand has changed
-    Plots.autoMargin(gd, 'legend', {
-        x: opts.x,
-        y: 0.5,
-        l: opts._width * (FROM_TL[xanchor]),
-        r: opts._width * (FROM_BR[xanchor]),
-        b: 0,
-        t: 0
     });
 }
