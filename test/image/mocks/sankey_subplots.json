@@ -36,6 +36,10 @@
                 "value": [120, 50],
                 "label": ["stram4", "stream5"]
             }
+        },
+        {
+            "visible": false,
+            "type": "sankey"
         }
     ],
     "layout": {
