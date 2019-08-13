@@ -128,7 +128,11 @@ describe('end-to-end scattergl tests', function() {
                     'textposition': 'top center'
                 };
                 mock[attr] = ['1', '2', '3'];
-                Plotly.plot(gd, [mock]);
+                Plotly.plot(gd, [mock])
+                .then(function() {
+                    expect(mock[attr].length).toBe(3);
+                })
+                .catch(failTest);
             }).not.toThrow();
             done();
         });
