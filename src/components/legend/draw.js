@@ -95,30 +95,16 @@ module.exports = function draw(gd) {
         function() { return computeLegendDimensions(gd, groups, traces); },
         function() { return expandMargin(gd); },
         function() {
-            // Position and size the legend
-            var lxMin = 0;
-            var lxMax = fullLayout.width;
-            var lyMin = 0;
-            var lyMax = fullLayout.height;
-
-            // Scroll section must be executed after repositionLegend.
-            // It requires the legend width, height, x and y to position the scrollbox
-            // and these values are mutated in repositionLegend.
             var gs = fullLayout._size;
-            var lx = gs.l + gs.w * opts.x;
-            var ly = gs.t + gs.h * (1 - opts.y);
+            var bw = opts.borderwidth;
 
+            var lx = gs.l + gs.w * opts.x;
             if(Lib.isRightAnchor(opts)) {
                 lx -= opts._width;
             } else if(Lib.isCenterAnchor(opts)) {
                 lx -= opts._width / 2;
             }
 
-            if(Lib.isBottomAnchor(opts)) {
-                ly -= opts._height;
-            } else if(Lib.isMiddleAnchor(opts)) {
-                ly -= opts._height / 2;
-            }
 
             // Make sure the legend left and right sides are visible
             var legendWidth = opts._width;
@@ -128,9 +114,16 @@ module.exports = function draw(gd) {
                 lx = gs.l;
                 legendWidth = legendWidthMax;
             } else {
-                if(lx + legendWidth > lxMax) lx = lxMax - legendWidth;
-                if(lx < lxMin) lx = lxMin;
-                legendWidth = Math.min(lxMax - lx, opts._width);
+                if(lx + legendWidth > fullLayout.width) lx = fullLayout.width - legendWidth;
+                if(lx < 0) lx = 0;
+                legendWidth = Math.min(fullLayout.width - lx, opts._width);
+            }
+
+            var ly = gs.t + gs.h * (1 - opts.y);
+            if(Lib.isBottomAnchor(opts)) {
+                ly -= opts._height;
+            } else if(Lib.isMiddleAnchor(opts)) {
+                ly -= opts._height / 2;
             }
 
             // Make sure the legend top and bottom are visible
@@ -143,9 +136,9 @@ module.exports = function draw(gd) {
                 ly = gs.t;
                 legendHeight = legendHeightMax;
             } else {
-                if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
-                if(ly < lyMin) ly = lyMin;
-                legendHeight = Math.min(lyMax - ly, opts._height);
+                if(ly + legendHeight > fullLayout.height) ly = fullLayout.height - legendHeight;
+                if(ly < 0) ly = 0;
+                legendHeight = Math.min(fullLayout.height - ly, opts._height);
             }
 
             // Set size and position of all the elements that make up a legend:
@@ -159,19 +152,19 @@ module.exports = function draw(gd) {
             if(opts._height <= legendHeight || gd._context.staticPlot) {
                 // if scrollbar should not be shown.
                 bg.attr({
-                    width: legendWidth - opts.borderwidth,
-                    height: legendHeight - opts.borderwidth,
-                    x: opts.borderwidth / 2,
-                    y: opts.borderwidth / 2
+                    width: legendWidth - bw,
+                    height: legendHeight - bw,
+                    x: bw / 2,
+                    y: bw / 2
                 });
 
                 Drawing.setTranslate(scrollBox, 0, 0);
 
                 clipPath.select('rect').attr({
-                    width: legendWidth - 2 * opts.borderwidth,
-                    height: legendHeight - 2 * opts.borderwidth,
-                    x: opts.borderwidth,
-                    y: opts.borderwidth
+                    width: legendWidth - 2 * bw,
+                    height: legendHeight - 2 * bw,
+                    x: bw,
+                    y: bw
                 });
 
                 Drawing.setClipUrl(scrollBox, clipId, gd);
@@ -193,22 +186,22 @@ module.exports = function draw(gd) {
                 // by the scrollbar width and margin
                 bg.attr({
                     width: legendWidth -
-                        2 * opts.borderwidth +
+                        2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: legendHeight - opts.borderwidth,
-                    x: opts.borderwidth / 2,
-                    y: opts.borderwidth / 2
+                    height: legendHeight - bw,
+                    x: bw / 2,
+                    y: bw / 2
                 });
 
                 clipPath.select('rect').attr({
                     width: legendWidth -
-                        2 * opts.borderwidth +
+                        2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: legendHeight - 2 * opts.borderwidth,
-                    x: opts.borderwidth,
-                    y: opts.borderwidth + scrollBoxY
+                    height: legendHeight - 2 * bw,
+                    x: bw,
+                    y: bw + scrollBoxY
                 });
 
                 Drawing.setClipUrl(scrollBox, clipId, gd);
@@ -246,7 +239,6 @@ module.exports = function draw(gd) {
                 scrollBar.call(drag);
             }
 
-
             function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
                 opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
                 Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
@@ -271,7 +263,6 @@ module.exports = function draw(gd) {
                     gd: gd,
                     prepFn: function() {
                         var transform = Drawing.getTranslate(legend);
-
                         x0 = transform.x;
                         y0 = transform.y;
                     },
@@ -634,7 +625,6 @@ function computeLegendDimensions(gd, groups, traces) {
         opts._height += endPad;
     }
 
-    // make sure we're only getting full pixels
     opts._width = Math.ceil(opts._width);
     opts._height = Math.ceil(opts._height);
 
@@ -672,7 +662,6 @@ function expandMargin(gd) {
         yanchor = 'middle';
     }
 
-    // lastly check if the margin auto-expand has changed
     Plots.autoMargin(gd, 'legend', {
         x: opts.x,
         y: opts.y,
