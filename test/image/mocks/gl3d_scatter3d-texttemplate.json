@@ -7,8 +7,16 @@
       "text": ["A", "B", "C"],
       "texttemplate": "%{text}: (%{x}, %{y}, %{z})",
       "mode": "markers+text"
-    }],
+    }, {
+        "type": "scatter3d",
+        "x": [2, 1, 0],
+        "y": [0, 4, 1],
+        "z": [-5, -2, 4],
+        "texttemplate": ["1", "2"],
+        "mode": "markers+text"
+      }],
   "layout": {
+      "showlegend": true,
       "width": 400,
       "height": 400,
       "margin": {"t": 20, "l": 0, "r": 0, "b": 0}
