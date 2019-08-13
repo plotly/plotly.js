@@ -788,7 +788,7 @@ describe('legend restyle update', function() {
                 expect(node.attr('height')).toEqual('19');
 
                 var w = +node.attr('width');
-                expect(Math.abs(w - 160)).toBeLessThan(10);
+                expect(w).toBeWithin(113, 10);
             });
         }
 
