@@ -15,7 +15,7 @@
         "mode": "markers+text",
         "x": [3, 2, 1, 0],
         "y": [0, 1, 4, 9],
-        "text": ["1", "2", "3"],
+        "texttemplate": ["1", "2", "3"],
         "textposition": "top center",
         "xaxis": "x2",
         "yaxis": "y2"
