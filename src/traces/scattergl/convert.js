@@ -132,8 +132,20 @@ function convertTextStyle(trace, gd) {
             }
         }
     } else {
-        optsOut.text = trace.text;
+        if(trace.text.length < count) {
+            // if text array is shorter, we'll need to append to it, so let's slice to prevent mutating
+            optsOut.text = trace.text.slice();
+        } else {
+            optsOut.text = trace.text;
+        }
     }
+    // pad text array with empty strings
+    if(Array.isArray(optsOut.text)) {
+        for(i = optsOut.text.length; i < count; i++) {
+            optsOut.text[i] = '';
+        }
+    }
+
     optsOut.opacity = trace.opacity;
     optsOut.font = {};
     optsOut.align = [];

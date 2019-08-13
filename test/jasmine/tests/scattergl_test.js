@@ -117,6 +117,20 @@ describe('end-to-end scattergl tests', function() {
         }).catch(failTest).then(done);
     });
 
+    it('@gl should handle a plot with less text labels than data points', function(done) {
+        expect(function() {
+            Plotly.plot(gd, [{
+                'type': 'scattergl',
+                'mode': 'markers+text',
+                'x': [3, 2, 1, 0],
+                'y': [0, 1, 4, 9],
+                'text': ['1', '2', '3'],
+                'textposition': 'top center'
+            }]);
+        }).not.toThrow();
+        done();
+    });
+
     it('@gl should be able to toggle visibility', function(done) {
         var mock = require('@mocks/gl2d_10.json');
         var _mock = Lib.extendDeep({}, mock);

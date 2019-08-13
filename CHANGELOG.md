@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.2] -- 2019-08-13
+
+### Fixed
+- Fix gl3d hover behavior when multiple points share identical position [#4096]
+- Fix `mapbox-gl@1.1.1` dependency version listing in `package.json` [#4094]
+- Fix decimal and thousands separator declaration for Italian (`it`) locale [#4122]
+- Fix `indicator` `steps` attribute declaration [#4115]
+- Performance fix - use `Axes.prepTicks` (not `Axes.calcTicks`) for `indicator`
+  number and delta formatting [#4099]
+
+
 ## [1.49.1] -- 2019-07-31
 
 ### Fixed
