@@ -119,7 +119,7 @@ function convertTextStyle(trace, gd) {
         optsOut.text = [];
         var pt;
         if(Array.isArray(texttemplate)) {
-            for(i = 0; i < texttemplate.length; i++) {
+            for(i = 0; i < Math.min(texttemplate.length, count); i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
                 optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, d3locale, pt));

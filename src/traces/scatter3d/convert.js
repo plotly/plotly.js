@@ -246,7 +246,7 @@ function convertPlotlyOptions(scene, data) {
         var d3locale = scene.fullLayout._d3locale;
         if(Array.isArray(data.texttemplate)) {
             text = new Array(data.texttemplate.length);
-            for(i = 0; i < data.texttemplate.length; i++) {
+            for(i = 0; i < Math.min(len, data.texttemplate.length); i++) {
                 var pt = {};
                 pt.text = text[i];
                 appendArrayPointValue(pt, data, i);
