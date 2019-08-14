@@ -107,14 +107,19 @@ describe('end-to-end scattergl tests', function() {
 
     it('@gl should handle a plot with less text labels than data points', function(done) {
         expect(function() {
-            Plotly.plot(gd, [{
+            var mock = {
                 'type': 'scattergl',
                 'mode': 'markers+text',
                 'x': [3, 2, 1, 0],
                 'y': [0, 1, 4, 9],
-                'text': ['1', '2', '3'],
                 'textposition': 'top center'
-            }]);
+            };
+            mock.text = ['1', '2', '3'];
+            Plotly.plot(gd, [mock])
+            .then(function() {
+                expect(mock.text.length).toBe(3);
+            })
+            .catch(failTest);
         }).not.toThrow();
         done();
     });
