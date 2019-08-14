@@ -22,14 +22,25 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
         expect(gd._fullData[0].textinfo).toBe(undefined);
     });
 
-    // Generate customdata
+
     var N = tests[0][1].length;
+    var i;
+
+    // Generate customdata
     var customdata = [];
-    for(var i = 0; i < N; i++) {
+    for(i = 0; i < N; i++) {
         customdata.push(Lib.randstr({}));
     }
     mock[0].customdata = customdata;
     tests.push(['%{customdata}', customdata]);
+
+    // Generate meta
+    mock[0].meta = {'colname': 'A'};
+    var metaSolution = [];
+    for(i = 0; i < N; i++) {
+        metaSolution.push(mock[0].meta.colname);
+    }
+    tests.push(['%{meta.colname}', metaSolution]);
 
     if(isGL) {
         tests.forEach(function(test) {
