@@ -122,13 +122,13 @@ function convertTextStyle(trace, gd) {
             for(i = 0; i < Math.min(texttemplate.length, count); i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, d3locale, pt));
+                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, d3locale, pt, trace._meta || {}));
             }
         } else {
             for(i = 0; i < count; i++) {
                 pt = {};
                 appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, d3locale, pt));
+                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, d3locale, pt, trace._meta || {}));
             }
         }
     } else {
