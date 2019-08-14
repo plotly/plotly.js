@@ -115,21 +115,15 @@ function convertTextStyle(trace, gd) {
 
     var texttemplate = trace.texttemplate;
     if(texttemplate) {
-        var d3locale = gd._fullLayout._d3locale;
         optsOut.text = [];
-        var pt;
-        if(Array.isArray(texttemplate)) {
-            for(i = 0; i < Math.min(texttemplate.length, count); i++) {
-                pt = {};
-                appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate[i], pt, d3locale, pt, trace._meta || {}));
-            }
-        } else {
-            for(i = 0; i < count; i++) {
-                pt = {};
-                appendArrayPointValue(pt, trace, i);
-                optsOut.text.push(Lib.texttemplateString(texttemplate, pt, d3locale, pt, trace._meta || {}));
-            }
+        var isArray = Array.isArray(texttemplate);
+        var N = isArray ? Math.min(texttemplate.length, count) : count;
+        var txt = isArray ? function(i) {return texttemplate[i];} : function() { return texttemplate;};
+        var d3locale = gd._fullLayout._d3locale;
+        for(i = 0; i < N; i++) {
+            var pt = {};
+            appendArrayPointValue(pt, trace, i);
+            optsOut.text.push(Lib.texttemplateString(txt(i), pt, d3locale, pt, trace._meta || {}));
         }
     } else {
         if(Array.isArray(trace.text) && trace.text.length < count) {

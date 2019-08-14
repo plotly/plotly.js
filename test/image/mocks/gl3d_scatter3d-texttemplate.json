@@ -12,7 +12,8 @@
         "x": [2, 1, 0],
         "y": [0, 4, 1],
         "z": [-5, -2, 4],
-        "texttemplate": ["1", "2"],
+        "texttemplate": ["1", "2 with %{meta.text}"],
+        "meta": {"text": "meta"},
         "mode": "markers+text"
       }],
   "layout": {

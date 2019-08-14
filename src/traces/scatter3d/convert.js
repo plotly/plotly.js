@@ -242,24 +242,18 @@ function convertPlotlyOptions(scene, data) {
     }
 
     // check texttemplate
-    if(data.texttemplate) {
+    var texttemplate = data.texttemplate;
+    if(texttemplate) {
+        var isArray = Array.isArray(texttemplate);
+        var N = isArray ? Math.min(texttemplate.length, len) : len;
+        var txt = isArray ? function(i) {return texttemplate[i];} : function() { return texttemplate;};
         var d3locale = scene.fullLayout._d3locale;
-        if(Array.isArray(data.texttemplate)) {
-            text = new Array(data.texttemplate.length);
-            for(i = 0; i < Math.min(len, data.texttemplate.length); i++) {
-                var pt = {};
-                pt.text = text[i];
-                appendArrayPointValue(pt, data, i);
-                text[i] = Lib.texttemplateString(data.texttemplate[i], pt, d3locale, pt);
-            }
-        } else {
-            text = new Array(len);
-            for(i = 0; i < len; i++) {
-                var pt1 = {};
-                pt1.text = text[i];
-                appendArrayPointValue(pt1, data, i);
-                text[i] = Lib.texttemplateString(data.texttemplate, pt1, d3locale, pt1);
-            }
+        text = new Array(N);
+        for(i = 0; i < N; i++) {
+            var pt = {};
+            pt.text = text[i];
+            appendArrayPointValue(pt, data, i);
+            text[i] = Lib.texttemplateString(txt(i), pt, d3locale, pt, data._meta || {});
         }
     }
 
