@@ -112,7 +112,8 @@ function convertTextStyle(trace) {
     var i;
 
     optsOut.text = trace.text;
-    if(Array.isArray(optsOut.text)) {
+    if(Array.isArray(optsOut.text) && optsOut.text.length < count) {
+        optsOut.text = trace.text.slice();
         for(i = optsOut.text.length; i < count; i++) {
             optsOut.text[i] = '';
         }
