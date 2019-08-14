@@ -132,7 +132,7 @@ function convertTextStyle(trace, gd) {
             }
         }
     } else {
-        if(trace.text.length < count) {
+        if(Array.isArray(trace.text) && trace.text.length < count) {
             // if text array is shorter, we'll need to append to it, so let's slice to prevent mutating
             optsOut.text = trace.text.slice();
         } else {
