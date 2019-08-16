@@ -101,35 +101,8 @@ module.exports = function draw(gd) {
             var lx = gs.l + gs.w * opts.x - FROM_TL[getXanchor(opts)] * opts._width;
             var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[getYanchor(opts)] * opts._effHeight;
 
-
-            // Make sure the legend left and right sides are visible
-            var legendWidth = opts._width;
-            var legendWidthMax = gs.w;
-
-            if(legendWidth > legendWidthMax) {
-                lx = gs.l;
-                legendWidth = legendWidthMax;
-            } else {
-                if(lx + legendWidth > fullLayout.width) lx = fullLayout.width - legendWidth;
-                if(lx < 0) lx = 0;
-                legendWidth = Math.min(fullLayout.width - lx, opts._width);
-            }
-
-
-            // Make sure the legend top and bottom are visible
-            // (legends with a scroll bar are not allowed to stretch beyond the extended
-            // margins)
-            var legendHeight = opts._height;
-            var legendHeightMax = gs.h;
-
-            if(legendHeight > legendHeightMax) {
-                ly = gs.t;
-                legendHeight = legendHeightMax;
-            } else {
-                if(ly + legendHeight > fullLayout.height) ly = fullLayout.height - legendHeight;
-                if(ly < 0) ly = 0;
-                legendHeight = Math.min(fullLayout.height - ly, opts._height);
-            }
+            lx = Lib.constrain(lx, 0, fullLayout.width - opts._width);
+            ly = Lib.constrain(ly, 0, fullLayout.height - opts._effHeight);
 
             // Set size and position of all the elements that make up a legend:
             // legend, background and border, scroll box and scroll bar
@@ -139,11 +112,11 @@ module.exports = function draw(gd) {
             scrollBar.on('.drag', null);
             legend.on('wheel', null);
 
-            if(opts._height <= legendHeight || gd._context.staticPlot) {
+            if(opts._height <= opts._maxHeight || gd._context.staticPlot) {
                 // if scrollbar should not be shown.
                 bg.attr({
-                    width: legendWidth - bw,
-                    height: legendHeight - bw,
+                    width: opts._width - bw,
+                    height: opts._effHeight - bw,
                     x: bw / 2,
                     y: bw / 2
                 });
@@ -151,8 +124,8 @@ module.exports = function draw(gd) {
                 Drawing.setTranslate(scrollBox, 0, 0);
 
                 clipPath.select('rect').attr({
-                    width: legendWidth - 2 * bw,
-                    height: legendHeight - 2 * bw,
+                    width: opts._width - 2 * bw,
+                    height: opts._effHeight - 2 * bw,
                     x: bw,
                     y: bw
                 });
@@ -163,11 +136,11 @@ module.exports = function draw(gd) {
                 delete opts._scrollY;
             } else {
                 var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
-                    legendHeight * legendHeight / opts._height);
-                var scrollBarYMax = legendHeight -
+                    opts._effHeight * opts._effHeight / opts._height);
+                var scrollBarYMax = opts._effHeight -
                     scrollBarHeight -
                     2 * constants.scrollBarMargin;
-                var scrollBoxYMax = opts._height - legendHeight;
+                var scrollBoxYMax = opts._height - opts._effHeight;
                 var scrollRatio = scrollBarYMax / scrollBoxYMax;
 
                 var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
@@ -175,21 +148,21 @@ module.exports = function draw(gd) {
                 // increase the background and clip-path width
                 // by the scrollbar width and margin
                 bg.attr({
-                    width: legendWidth -
+                    width: opts._width -
                         2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: legendHeight - bw,
+                    height: opts._effHeight - bw,
                     x: bw / 2,
                     y: bw / 2
                 });
 
                 clipPath.select('rect').attr({
-                    width: legendWidth -
+                    width: opts._width -
                         2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: legendHeight - 2 * bw,
+                    height: opts._effHeight - 2 * bw,
                     x: bw,
                     y: bw + scrollBoxY
                 });
@@ -235,7 +208,7 @@ module.exports = function draw(gd) {
 
                 Drawing.setRect(
                     scrollBar,
-                    legendWidth,
+                    opts._width,
                     constants.scrollBarMargin + scrollBoxY * scrollRatio,
                     constants.scrollBarWidth,
                     scrollBarHeight
@@ -474,9 +447,20 @@ function computeTextDimensions(g, gd) {
     legendItem.width = width;
 }
 
+/*
+ * Computes in fullLayout.legend:
+ *
+ *  - _height: legend height including items past scrollbox height
+ *  - _maxHeight: maximum legend height before scrollbox is required
+ *  - _effHeight: legend height w/ or w/o scrollbox
+ *
+ *  - _width: legend width
+ *  - _maxWidth (for orientation:h only): maximum width before starting new row
+ */
 function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout;
     var opts = fullLayout.legend;
+    var gs = fullLayout._size;
     var isVertical = helpers.isVertical(opts);
     var isGrouped = helpers.isGrouped(opts);
 
@@ -486,7 +470,16 @@ function computeLegendDimensions(gd, groups, traces) {
     var itemGap = constants.itemGap;
     var endPad = 2 * (bw + itemGap);
 
-    opts._maxWidth = fullLayout._size.w;
+    var yanchor = getYanchor(opts);
+    var isBelowPlotArea = opts.y < 0 || (opts.y === 0 && yanchor === 'top');
+    var isAbovePlotArea = opts.y > 1 || (opts.y === 1 && yanchor === 'bottom');
+
+    // - if below/above plot area, give it the maximum potential margin-push value
+    // - otherwise, extend the height of the plot area
+    opts._maxHeight = Math.max(
+        (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
+        30
+    );
 
     var toggleRectWidth = 0;
     opts._width = 0;
@@ -511,6 +504,20 @@ function computeLegendDimensions(gd, groups, traces) {
             opts._height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
     } else {
+        var xanchor = getXanchor(opts);
+        var isLeftOfPlotArea = opts.x < 0 || (opts.x === 0 && xanchor === 'right');
+        var isRightOfPlotArea = opts.x > 1 || (opts.x === 1 && xanchor === 'left');
+        var isBeyondPlotAreaX = isAbovePlotArea || isBelowPlotArea;
+        var hw = fullLayout.width / 2;
+
+        // - if placed within x-margins, extend the width of the plot area
+        // - else if below/above plot area and anchored in the margin, extend to opposite margin,
+        // - otherwise give it the maximum potential margin-push value
+        opts._maxWidth = Math.max(
+            isLeftOfPlotArea ? ((isBeyondPlotAreaX && xanchor === 'left') ? gs.l + gs.w : hw) :
+            isRightOfPlotArea ? ((isBeyondPlotAreaX && yanchor === 'right') ? gs.r + gs.w : hw) :
+            gs.w,
+        2 * textGap);
         var maxItemWidth = 0;
         var combinedItemWidth = 0;
         traces.each(function(d) {
@@ -604,6 +611,8 @@ function computeLegendDimensions(gd, groups, traces) {
     opts._width = Math.ceil(opts._width);
     opts._height = Math.ceil(opts._height);
 
+    opts._effHeight = Math.min(opts._height, opts._maxHeight);
+
     var edits = gd._context.edits;
     var isEditable = edits.legendText || edits.legendPosition;
     traces.each(function(d) {
@@ -627,8 +636,8 @@ function expandMargin(gd) {
         y: opts.y,
         l: opts._width * (FROM_TL[xanchor]),
         r: opts._width * (FROM_BR[xanchor]),
-        b: opts._height * (FROM_BR[yanchor]),
-        t: opts._height * (FROM_TL[yanchor])
+        b: opts._effHeight * (FROM_BR[yanchor]),
+        t: opts._effHeight * (FROM_TL[yanchor])
     });
 }
 
