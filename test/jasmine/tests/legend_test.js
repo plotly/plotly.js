@@ -719,15 +719,15 @@ describe('legend relayout update', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             Plotly.newPlot(gd, mockCopy)
             .then(function() {
-                expect(gd._fullLayout._size.b).toBe(130);
+                expect(gd._fullLayout._size.b).toBe(113);
                 return Plotly.relayout(gd, 'legend.tracegroupgap', 70);
             })
             .then(function() {
-                expect(gd._fullLayout._size.b).toBe(185);
+                expect(gd._fullLayout._size.b).toBe(167);
                 return Plotly.relayout(gd, 'legend.tracegroupgap', 10);
             })
             .then(function() {
-                expect(gd._fullLayout._size.b).toBe(130);
+                expect(gd._fullLayout._size.b).toBe(113);
             })
             .catch(failTest)
             .then(done);
