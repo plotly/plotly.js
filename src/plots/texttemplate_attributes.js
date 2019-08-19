@@ -9,6 +9,7 @@
 'use strict';
 
 var FORMAT_LINK = require('../constants/docs').FORMAT_LINK;
+var DATE_FORMAT_LINK = require('../constants/docs').DATE_FORMAT_LINK;
 
 module.exports = function(opts, extra) {
     opts = opts || {};
@@ -42,6 +43,9 @@ module.exports = function(opts, extra) {
             'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
             FORMAT_LINK,
             'for details on the formatting syntax.',
+            'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
+            DATE_FORMAT_LINK,
+            'for details on the date formatting syntax.',
             'Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
             descPart
         ].join(' ')

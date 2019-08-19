@@ -2225,10 +2225,15 @@ describe('Test lib.js:', function() {
             expect(Lib.hovertemplateString('y: %{y}', {}, locale, {y: 0}, {y: 1})).toEqual('y: 0');
         });
 
-        it('formats value using d3 mini-language', function() {
+        it('formats numbers using d3-format mini-language when `:`', function() {
             expect(Lib.hovertemplateString('a: %{a:.0%}', {}, locale, {a: 0.123})).toEqual('a: 12%');
             expect(Lib.hovertemplateString('a: %{a:0.2%}', {}, locale, {a: 0.123})).toEqual('a: 12.30%');
             expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, locale, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('formats date using d3-time-format mini-language `|`', function() {
+            expect(Lib.hovertemplateString('a: %{a|%A}', {}, locale, {a: '2019-05-22'})).toEqual('a: Wednesday');
+            expect(Lib.hovertemplateString('%{x|%b %-d, %Y}', {}, locale, {x: '2019-01-01'})).toEqual('Jan 1, 2019');
         });
 
         it('looks for default label if no format is provided', function() {
