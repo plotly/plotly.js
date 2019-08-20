@@ -599,9 +599,11 @@ exports.drawData = function(gd) {
     // styling separate from drawing
     Plots.style(gd);
 
-    // show annotations and shapes
+    // draw components that can be drawn on axes,
+    // and that do not push the margins
     Registry.getComponentMethod('shapes', 'draw')(gd);
     Registry.getComponentMethod('annotations', 'draw')(gd);
+    Registry.getComponentMethod('images', 'draw')(gd);
 
     // Mark the first render as complete
     fullLayout._replotting = false;
@@ -717,9 +719,6 @@ exports.doAutoRangeAndConstraints = function(gd) {
 // correctly sized and the whole plot re-margined. fullLayout._replotting must
 // be set to false before these will work properly.
 exports.finalDraw = function(gd) {
-    Registry.getComponentMethod('shapes', 'draw')(gd);
-    Registry.getComponentMethod('images', 'draw')(gd);
-    Registry.getComponentMethod('annotations', 'draw')(gd);
     // TODO: rangesliders really belong in marginPushers but they need to be
     // drawn after data - can we at least get the margin pushing part separated
     // out and done earlier?
