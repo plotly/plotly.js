@@ -10,6 +10,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.3] -- 2019-08-20
+
+### Fixed
+- Fix graphs with `visible: false` `sankey` traces [#4123]
+- Fix `scattergl` with `mode: 'text'` and `text` arrays longer
+  than the coordinates arrays [#4125, #4126]
+- Fix `rangeslider` positioning when left margin is pushed
+  by other component [#4127]
+
+
 ## [1.49.2] -- 2019-08-13
 
 ### Fixed
