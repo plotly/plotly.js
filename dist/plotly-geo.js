@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.49.2
+* plotly.js (geo) v1.49.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29931,19 +29931,18 @@ module.exports = function(gd) {
 
         // update range slider dimensions
 
-        var margin = fullLayout.margin;
-        var graphSize = fullLayout._size;
+        var gs = fullLayout._size;
         var domain = axisOpts.domain;
         var tickHeight = opts._tickHeight;
 
         var oppBottom = opts._oppBottom;
 
-        opts._width = graphSize.w * (domain[1] - domain[0]);
+        opts._width = gs.w * (domain[1] - domain[0]);
 
-        var x = Math.round(margin.l + (graphSize.w * domain[0]));
+        var x = Math.round(gs.l + (gs.w * domain[0]));
 
         var y = Math.round(
-            graphSize.t + graphSize.h * (1 - oppBottom) +
+            gs.t + gs.h * (1 - oppBottom) +
             tickHeight +
             opts._offsetShift + constants.extraPad
         );
@@ -34771,7 +34770,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.49.2';
+exports.version = '1.49.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
