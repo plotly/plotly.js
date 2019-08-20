@@ -1068,16 +1068,12 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                if(d3locale) {
-                    fmt = d3locale.numberFormat;
-                } else {
-                    fmt = d3.format;
-                }
+                fmt = d3locale ? d3locale.numberFormat : d3.format;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
             if(format[0] === '|') {
-                fmt = d3.time.format.utc;
+                fmt = d3locale ? d3locale.timeFormat.utc : d3.time.format.utc;
                 var ms = lib.dateTime2ms(value);
                 value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
             }
