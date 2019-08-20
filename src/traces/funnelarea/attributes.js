@@ -55,7 +55,7 @@ module.exports = {
     }),
 
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['label', 'color', 'value', 'percent', 'text']
+        keys: ['label', 'color', 'value', 'text', 'percentInitial', 'percentTotal', 'percentPrevious']
     }),
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
@@ -63,7 +63,7 @@ module.exports = {
     }),
 
     hovertemplate: hovertemplateAttrs({}, {
-        keys: ['label', 'color', 'value', 'percent', 'text']
+        keys: ['label', 'color', 'value', 'text', 'percentInitial', 'percentTotal', 'percentPrevious']
     }),
 
     textposition: extendFlat({}, pieAttrs.textposition, {
