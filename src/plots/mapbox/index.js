@@ -270,7 +270,10 @@ function findAccessToken(gd, mapboxIds) {
 }
 
 function isMapboxStyle(s) {
-    return typeof s === 'string' && constants.styleValuesMapbox.indexOf(s) !== -1;
+    return typeof s === 'string' && (
+        constants.styleValuesMapbox.indexOf(s) !== -1 ||
+        s.indexOf('mapbox://') === 0
+    );
 }
 
 exports.updateFx = function(gd) {

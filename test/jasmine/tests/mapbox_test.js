@@ -399,6 +399,27 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
+        var cnt = 0;
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: {
+                accesstoken: MAPBOX_ACCESS_TOKEN,
+                style: 'mapbox://styles/etpinard/cip93fm98000sbmnuednknloo'
+            }
+        }).catch(function() {
+            cnt++;
+        }).then(function() {
+            expect(cnt).toEqual(0);
+            expect(gd._fullLayout.mapbox.accesstoken).toBe(MAPBOX_ACCESS_TOKEN);
+            done();
+        });
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should log when an access token is set while using a custom non-mapbox style', function(done) {
         spyOn(Lib, 'log');
         var cnt = 0;
