@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.4] -- 2019-08-22
+
+### Fixed
+- Fix access token validation logic for custom mapbox style URLs
+  (regression introduced in 1.49.0) [#4144]
+- Fix rendering of cartesian ticks under `mirror: 'all'` [#4140]
+
+
 ## [1.49.3] -- 2019-08-20
 
 ### Fixed
