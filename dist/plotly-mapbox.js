@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.49.3
+* plotly.js (mapbox) v1.49.4
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36847,7 +36847,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.49.3';
+exports.version = '1.49.4';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -54498,7 +54498,9 @@ axes.drawOne = function(gd, ax, opts) {
             transFn: transFn
         });
 
-        tickSubplots = Object.keys(ax._linepositions || {});
+        if(ax.mirror === 'allticks') {
+            tickSubplots = Object.keys(ax._linepositions || {});
+        }
     }
 
     for(i = 0; i < tickSubplots.length; i++) {
@@ -63857,7 +63859,10 @@ function findAccessToken(gd, mapboxIds) {
 }
 
 function isMapboxStyle(s) {
-    return typeof s === 'string' && constants.styleValuesMapbox.indexOf(s) !== -1;
+    return typeof s === 'string' && (
+        constants.styleValuesMapbox.indexOf(s) !== -1 ||
+        s.indexOf('mapbox://') === 0
+    );
 }
 
 exports.updateFx = function(gd) {
