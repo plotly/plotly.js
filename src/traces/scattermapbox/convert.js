@@ -20,7 +20,7 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
-module.exports = function convert(calcTrace, gd) {
+module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
     var isVisible = (trace.visible === true && trace._length !== 0);

@@ -50,7 +50,7 @@ module.exports = overrideAll({
             'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
-    texttemplate: texttemplateAttrs({editType: 'calc'}, {
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
         keys: ['lat', 'lon', 'text']
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {

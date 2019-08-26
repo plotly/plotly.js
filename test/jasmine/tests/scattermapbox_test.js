@@ -139,7 +139,7 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
-        return convert(calcTrace, {_fullLayout: {_d3locale: false}});
+        return convert({_fullLayout: {_d3locale: false}}, calcTrace);
     }
 
     function assertVisibility(opts, expectations) {
@@ -500,7 +500,7 @@ describe('scattermapbox convert', function() {
             'lon': [-73.57, -79.24, -123.06],
             'lat': [45.5, 43.4, 49.13],
             'text': ['Montreal', 'Toronto', 'Vancouver'],
-            'texttemplate': '%{text} (%{lonlat[0]}, %{lonlat[1]}): %{customdata:.2s}',
+            'texttemplate': '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
             'textposition': 'top center',
             'customdata': [1780000, 2930000, 675218]
         };
