@@ -1965,6 +1965,7 @@ axes.drawOne = function(gd, ax, opts) {
                 push[s] += offset;
             }
 
+            // TODO won't work for multi-line titles !!
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 push[s] += ax.title.font.size;
             }

@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "x": ["a", "b", "c", "d", "long category", "another even longer", "the longest one yet!!!!!!"],
+      "y": [0, 10, 20, 30, 40, 50, 60]
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "title": {
+        "text": "Bottom X Axis<br><i>2nd line</i>",
+        "font": {"size": 14}
+      },
+      "rangeslider": { "visible": true },
+      "automargin": true
+    },
+    "yaxis": {
+      "automargin": true
+    },
+    "width": 400,
+    "height": 400,
+    "margin": {"l": 0, "t": 0, "b": 0, "r": 0}
+  }
+}
