@@ -619,7 +619,6 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
     return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
 }
 
-// TODO: calcTextinfo should build a texttemplate pass it to calcTexttemplate()
 function calcTextinfo(calcTrace, index, xa, ya) {
     var trace = calcTrace[0].trace;
     var isHorizontal = (trace.orientation === 'h');

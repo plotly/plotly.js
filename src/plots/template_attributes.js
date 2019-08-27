@@ -39,8 +39,7 @@ function describeVariables(extra) {
     return descPart;
 }
 
-module.exports = {};
-module.exports.hovertemplateAttrs = function(opts, extra) {
+exports.hovertemplateAttrs = function(opts, extra) {
     opts = opts || {};
     extra = extra || {};
 
@@ -70,7 +69,7 @@ module.exports.hovertemplateAttrs = function(opts, extra) {
     return hovertemplate;
 };
 
-module.exports.texttemplateAttrs = function(opts, extra) {
+exports.texttemplateAttrs = function(opts, extra) {
     opts = opts || {};
     extra = extra || {};
 
