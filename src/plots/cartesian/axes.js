@@ -1799,6 +1799,8 @@ axes.drawOne = function(gd, ax, opts) {
         var pad = {x: 2, y: 10}[axLetter];
         var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
 
+        // TODO missing 'ax.ticklen` part when tickson:'labels'
+
         seq.push(function() {
             labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
             labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
