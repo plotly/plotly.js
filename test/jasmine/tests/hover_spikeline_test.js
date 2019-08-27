@@ -156,6 +156,120 @@ describe('spikeline hover', function() {
         .then(done);
     });
 
+    it('draws lines up to x-axis position', function(done) {
+        Plotly.plot(gd, [
+            { y: [1, 2, 1] },
+            { y: [2, 1, 2], yaxis: 'y2' }
+        ], {
+            // here the x-axis is drawn at the middle of the graph
+            xaxis: { showspike: true, spikemode: 'toaxis' },
+            yaxis: { domain: [0.5, 1] },
+            yaxis2: { anchor: 'x', domain: [0, 0.5] },
+            width: 400,
+            height: 400
+        })
+        .then(function() {
+            _hover({xval: 1, yval: 2});
+            // from "y" of x-axis up to "y" of pt
+            _assert([[189, 210.5, 189, 109.25]], []);
+        })
+        .then(function() { return Plotly.relayout(gd, 'xaxis.spikemode', 'across'); })
+        .then(function() {
+            _hover({xval: 1, yval: 2});
+            // from "y" of xy subplot top, down to "y" xy2 subplot bottom
+            _assert([[189, 100, 189, 320]], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('draws lines up to y-axis position - anchor free case', function(done) {
+        Plotly.plot(gd, [
+            { y: [1, 2, 1] },
+            { y: [2, 1, 2], xaxis: 'x2' }
+        ], {
+            yaxis: { domain: [0.5, 1] },
+            xaxis2: {
+                anchor: 'free', position: 0, overlaying: 'x',
+                showspikes: true, spikemode: 'across'
+            },
+            width: 400,
+            height: 400,
+            showlegend: false
+        })
+        .then(function() {
+            _hover({xval: 0, yval: 2}, 'x2y');
+            // from "y" of pt, down to "y" of x2 axis
+            _assert([[95.75, 100, 95.75, 320]], []);
+        })
+        .then(function() { return Plotly.relayout(gd, 'xaxis2.position', 0.6); })
+        .then(function() {
+            _hover({xval: 0, yval: 2}, 'x2y');
+            // from "y" of pt, down to "y" of x axis (which is further down)
+            _assert([[95.75, 100, 95.75, 210]], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('draws lines up to y-axis position', function(done) {
+        Plotly.plot(gd, [
+            { y: [1, 2, 1] },
+            { y: [2, 1, 2], xaxis: 'x2' }
+        ], {
+            // here the y-axis is drawn at the middle of the graph,
+            // with xy subplot to the right and xy2 to the left
+            yaxis: { showspike: true, spikemode: 'toaxis' },
+            xaxis: { domain: [0.5, 1] },
+            xaxis2: { anchor: 'y', domain: [0, 0.5] },
+            width: 400,
+            height: 400,
+            showlegend: false
+        })
+        .then(function() {
+            _hover({xval: 1, yval: 2});
+            // from "x" of y-axis to "x" of pt
+            _assert([[199.5, 114.75, 260, 114.75]], []);
+        })
+        .then(function() { return Plotly.relayout(gd, 'yaxis.spikemode', 'across'); })
+        .then(function() {
+            _hover({xval: 1, yval: 2});
+            // from "x" at xy2 subplot left, to "x" at xy subplot right
+            _assert([[80, 114.75, 320, 114.75]], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('draws lines up to y-axis position - anchor free case', function(done) {
+        Plotly.plot(gd, [
+            { y: [1, 2, 1] },
+            { y: [2, 1, 2], yaxis: 'y2' }
+        ], {
+            xaxis: { domain: [0.5, 1] },
+            yaxis2: {
+                anchor: 'free', position: 0, overlaying: 'y',
+                showspikes: true, spikemode: 'across'
+            },
+            width: 400,
+            height: 400,
+            showlegend: false
+        })
+        .then(function() {
+            _hover({xval: 0, yval: 2}, 'xy2');
+            // from "x" of y2 axis to "x" of pt
+            _assert([[80, 114.75, 320, 114.75]], []);
+        })
+        .then(function() { return Plotly.relayout(gd, 'yaxis2.position', 0.6); })
+        .then(function() {
+            _hover({xval: 0, yval: 2}, 'xy2');
+            // from "x" of y axis (which is further left) to "x" of pt
+            _assert([[200, 114.75, 320, 114.75]], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('draws lines and markers on enabled axes in the spikesnap "cursor" mode', function(done) {
         var _mock = makeMock('toaxis', 'x');
 
