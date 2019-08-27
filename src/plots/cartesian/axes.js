@@ -1932,29 +1932,29 @@ axes.drawOne = function(gd, ax, opts) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
             var bbox = ax._boundingBox;
-            var titleOffset = getTitleOffset(gd, ax);
+            var pos = axes.getPxPosition(gd, ax);
             var anchorAxDomainIndex;
             var offset;
 
             switch(axLetter + s) {
                 case 'xb':
                     anchorAxDomainIndex = 0;
-                    offset = bbox.top - titleOffset;
+                    offset = bbox.top - pos;
                     push[s] = bbox.height;
                     break;
                 case 'xt':
                     anchorAxDomainIndex = 1;
-                    offset = titleOffset - bbox.bottom;
+                    offset = pos - bbox.bottom;
                     push[s] = bbox.height;
                     break;
                 case 'yl':
                     anchorAxDomainIndex = 0;
-                    offset = titleOffset - bbox.right;
+                    offset = pos - bbox.right;
                     push[s] = bbox.width;
                     break;
                 case 'yr':
                     anchorAxDomainIndex = 1;
-                    offset = bbox.left - titleOffset;
+                    offset = bbox.left - pos;
                     push[s] = bbox.width;
                     break;
             }
@@ -2658,14 +2658,28 @@ function drawDividers(gd, ax, opts) {
         .attr('d', opts.path);
 }
 
-function getTitleOffset(gd, ax) {
+/**
+ * Get axis position in px, that is the distance for the graph's
+ * top (left) edge for x (y) axes.
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} side
+ *  if anchored:
+ *  - {object} _anchorAxis
+ *  Otherwise:
+ *  - {number} position
+ * @return {number}
+ */
+axes.getPxPosition = function(gd, ax) {
     var gs = gd._fullLayout._size;
     var axLetter = ax._id.charAt(0);
     var side = ax.side;
     var anchorAxis;
 
     if(ax.anchor !== 'free') {
-        anchorAxis = axisIds.getFromId(gd, ax.anchor);
+        anchorAxis = ax._anchorAxis;
     } else if(axLetter === 'x') {
         anchorAxis = {
             _offset: gs.t + (1 - (ax.position || 0)) * gs.h,
@@ -2683,7 +2697,7 @@ function getTitleOffset(gd, ax) {
     } else if(side === 'bottom' || side === 'right') {
         return anchorAxis._offset + anchorAxis._length;
     }
-}
+};
 
 function drawTitle(gd, ax) {
     var fullLayout = gd._fullLayout;
@@ -2699,8 +2713,7 @@ function drawTitle(gd, ax) {
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
     }
 
-    var titleOffset = getTitleOffset(gd, ax);
-
+    var pos = axes.getPxPosition(gd, ax);
     var transform, x, y;
 
     if(axLetter === 'x') {
@@ -2711,7 +2724,7 @@ function drawTitle(gd, ax) {
         } else {
             y = titleStandoff + fontSize * (ax.showticklabels ? 1.5 : 0.5);
         }
-        y += titleOffset;
+        y += pos;
     } else {
         y = ax._offset + ax._length / 2;
 
@@ -2720,7 +2733,7 @@ function drawTitle(gd, ax) {
         } else {
             x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
         }
-        x += titleOffset;
+        x += pos;
 
         transform = {rotate: '-90', offset: 0};
     }
