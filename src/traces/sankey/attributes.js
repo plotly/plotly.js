@@ -13,7 +13,7 @@ var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 

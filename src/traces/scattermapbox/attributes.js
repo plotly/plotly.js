@@ -8,8 +8,8 @@
 
 'use strict';
 
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');

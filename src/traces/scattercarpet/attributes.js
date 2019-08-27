@@ -10,8 +10,8 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;

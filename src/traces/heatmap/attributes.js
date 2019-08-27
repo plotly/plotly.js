@@ -9,7 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 

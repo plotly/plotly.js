@@ -12,8 +12,8 @@ var plotAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 

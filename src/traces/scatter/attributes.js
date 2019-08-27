@@ -8,8 +8,8 @@
 
 'use strict';
 
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;

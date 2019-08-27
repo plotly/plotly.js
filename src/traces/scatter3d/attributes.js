@@ -10,8 +10,8 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 

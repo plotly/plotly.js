@@ -10,7 +10,7 @@
 
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
-var texttemplateAttrs = require('../../plots/texttemplate_attributes');
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 module.exports = {
     mode: scatterPolarAttrs.mode,
