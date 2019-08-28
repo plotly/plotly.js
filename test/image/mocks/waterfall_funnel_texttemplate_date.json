@@ -1,0 +1,73 @@
+{
+    "data": [{
+        "type": "waterfall",
+        "x": [
+            "2010-01-01",
+            "2010-07-01",
+            "2011-01-01",
+            "2012-01-01"
+        ],
+        "y": [1, -2, 3, 0],
+        "textinfo": "label",
+        "textposition": "inside"
+    }, {
+        "type": "waterfall",
+        "x": [
+            "2010-01-01",
+            "2010-07-01",
+            "2011-01-01",
+            "2012-01-01"
+        ],
+        "y": [1, -2, 3, 0],
+        "texttemplate": "%{label}",
+        "textposition": "inside",
+        "xaxis": "x1",
+        "yaxis": "y1"
+    }, {
+        "type": "funnel",
+        "orientation": "v",
+        "x": [
+            "2010-01-01",
+            "2010-07-01",
+            "2011-01-01",
+            "2012-01-01"
+        ],
+        "y": [10, 7, 3, 0],
+        "textinfo": "label",
+        "textposition": "inside",
+        "xaxis": "x2",
+        "yaxis": "y2"
+    }, {
+        "type": "funnel",
+        "orientation": "v",
+        "x": [
+            "2010-01-01",
+            "2010-07-01",
+            "2011-01-01",
+            "2012-01-01"
+        ],
+        "y": [10, 7, 3, 0],
+        "texttemplate": "%{label}",
+        "textposition": "inside",
+        "xaxis": "x2",
+        "yaxis": "y2"
+    }],
+    "layout": {
+        "title": {
+          "text": "textinfo: 'label' versus texttemplate: '%{label}'"
+        },
+        "xaxis": {
+          "type": "date"
+        },
+        "margin": {"t": 40, "b": 20, "l": 20, "r": 20},
+        "width": 800,
+        "height": 400,
+        "grid": {
+          "rows": 1,
+          "columns": 2,
+          "pattern": "independent",
+          "xgap": 5,
+          "ygap": 5
+        }
+    }
+}

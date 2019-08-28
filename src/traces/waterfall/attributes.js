@@ -99,8 +99,9 @@ module.exports = {
             'are computed separately (per trace).'
         ].join(' ')
     },
+    // TODO: incorporate `label` and `value` in the eventData
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['label', 'text', 'initial', 'delta', 'final']
+        keys: constants.eventDataKeys.concat(['label'])
     }),
     text: barAttrs.text,
     textposition: barAttrs.textposition,

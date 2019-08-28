@@ -106,7 +106,7 @@ module.exports = {
 
     text: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets text elements associated with each sector.',
             'If trace `textinfo` contains a *text* flag, these elements will be seen',

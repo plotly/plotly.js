@@ -27,7 +27,7 @@ module.exports = {
 
     hovertext: barAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys.concat(['label', 'value', 'text'])
+        keys: constants.eventDataKeys
     }),
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
@@ -47,8 +47,9 @@ module.exports = {
             'are computed separately (per trace).'
         ].join(' ')
     },
+    // TODO: incorporate `label` and `value` in the eventData
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value', 'text'])
+        keys: constants.eventDataKeys.concat(['label', 'value'])
     }),
 
     text: barAttrs.text,
