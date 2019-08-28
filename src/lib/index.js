@@ -1031,6 +1031,7 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 function templateFormatString(string, labels, d3locale) {
     var opts = this;
     var args = arguments;
+    if(!labels) labels = {};
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
     var getterCache = {};
@@ -1039,6 +1040,7 @@ function templateFormatString(string, labels, d3locale) {
         var obj, value, i;
         for(i = 3; i < args.length; i++) {
             obj = args[i];
+            if(!obj) continue;
             if(obj.hasOwnProperty(key)) {
                 value = obj[key];
                 break;

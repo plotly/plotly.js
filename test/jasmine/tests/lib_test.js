@@ -2250,12 +2250,22 @@ describe('Test lib.js:', function() {
             }
             expect(Lib.warn.calls.count()).toBe(10);
         });
+
+        it('does not error out when arguments are undefined', function() {
+            expect(function() {
+                Lib.hovertemplateString('y: %{y}', undefined, locale, undefined);
+            }).not.toThrow();
+        });
     });
 
     describe('texttemplateString', function() {
+        var locale = false;
         it('evaluates attributes', function() {
-            var locale = false;
             expect(Lib.texttemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function() {
