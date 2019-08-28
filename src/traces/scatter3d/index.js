@@ -29,7 +29,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'scatter3d',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', 'symbols', 'showLegend'],
+    categories: ['gl3d', 'symbols', 'showLegend', 'scatter-like'],
     meta: {
         hrName: 'scatter_3d',
         description: [

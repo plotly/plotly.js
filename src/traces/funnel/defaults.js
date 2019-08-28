@@ -32,7 +32,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('width');
 
     var text = coerce('text');
-    coerce('texttemplate');
 
     coerce('hovertext');
     coerce('hovertemplate');

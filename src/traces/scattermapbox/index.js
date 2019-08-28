@@ -28,7 +28,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'scattermapbox',
     basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl', 'symbols', 'showLegend', 'scatterlike'],
+    categories: ['mapbox', 'gl', 'symbols', 'showLegend', 'scatter-like'],
     meta: {
         hrName: 'scatter_mapbox',
         description: [

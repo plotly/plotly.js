@@ -34,7 +34,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('thetaunit');
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
-    coerce('texttemplate');
     coerce('hovertext');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
@@ -48,6 +47,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasText(traceOut)) {
+        coerce('texttemplate');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
