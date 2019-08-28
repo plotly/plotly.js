@@ -21,6 +21,7 @@ var tickText = require('../../plots/cartesian/axes').tickText;
 
 var style = require('./style');
 var helpers = require('./helpers');
+var constants = require('./constants');
 var attributes = require('./attributes');
 
 var attributeText = attributes.text;
@@ -28,8 +29,7 @@ var attributeTextPosition = attributes.textposition;
 
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
-// padding in pixels around text
-var TEXTPAD = 3;
+var TEXTPAD = constants.TEXTPAD;
 
 function dirSign(a, b) {
     return (a < b) ? 1 : -1;
