@@ -14,6 +14,8 @@ var Lib = require('../../lib');
 // need weird range loops and flipped contours instead of the usual format. This function
 // does some weird manipulation of the extracted pathinfo data such that it magically
 // draws contours correctly *as* constraints.
+//
+// ** I do not know which "weird range loops" the comment above is referring to.
 module.exports = function(pathinfo, operation) {
     var i, pi0, pi1;
 
@@ -29,18 +31,20 @@ module.exports = function(pathinfo, operation) {
                 Lib.warn('Contour data invalid for the specified inequality operation.');
             }
 
-            // In this case there should be exactly two contour levels in pathinfo. We
-            // simply concatenate the info into one pathinfo and flip all of the data
-            // in one. This will draw the contour as closed.
+            // In this case there should be exactly one contour levels in pathinfo.
+            // We flip all of the data. This will draw the contour as closed.
             pi0 = pathinfo[0];
 
             for(i = 0; i < pi0.edgepaths.length; i++) {
                 pi0.edgepaths[i] = op0(pi0.edgepaths[i]);
             }
-
             for(i = 0; i < pi0.paths.length; i++) {
                 pi0.paths[i] = op0(pi0.paths[i]);
             }
+            for(i = 0; i < pi0.starts.length; i++) {
+                pi0.starts[i] = op0(pi0.starts[i]);
+            }
+
             return pathinfo;
         case '][':
             var tmp = op0;
@@ -54,18 +58,21 @@ module.exports = function(pathinfo, operation) {
                 Lib.warn('Contour data invalid for the specified inequality range operation.');
             }
 
-            // In this case there should be exactly two contour levels in pathinfo. We
-            // simply concatenate the info into one pathinfo and flip all of the data
-            // in one. This will draw the contour as closed.
+            // In this case there should be exactly two contour levels in pathinfo.
+            // - We concatenate the info into one pathinfo.
+            // - We must also flip all of the data in the `[]` case.
+            // This will draw the contours as closed.
             pi0 = copyPathinfo(pathinfo[0]);
             pi1 = copyPathinfo(pathinfo[1]);
 
             for(i = 0; i < pi0.edgepaths.length; i++) {
                 pi0.edgepaths[i] = op0(pi0.edgepaths[i]);
             }
-
             for(i = 0; i < pi0.paths.length; i++) {
                 pi0.paths[i] = op0(pi0.paths[i]);
+            }
+            for(i = 0; i < pi0.starts.length; i++) {
+                pi0.starts[i] = op0(pi0.starts[i]);
             }
 
             while(pi1.edgepaths.length) {
@@ -74,6 +81,10 @@ module.exports = function(pathinfo, operation) {
             while(pi1.paths.length) {
                 pi0.paths.push(op1(pi1.paths.shift()));
             }
+            while(pi1.starts.length) {
+                pi0.starts.push(op1(pi1.starts.shift()));
+            }
+
             return [pi0];
     }
 };
@@ -81,6 +92,7 @@ module.exports = function(pathinfo, operation) {
 function copyPathinfo(pi) {
     return Lib.extendFlat({}, pi, {
         edgepaths: Lib.extendDeep([], pi.edgepaths),
-        paths: Lib.extendDeep([], pi.paths)
+        paths: Lib.extendDeep([], pi.paths),
+        starts: Lib.extendDeep([], pi.starts)
     });
 }

@@ -1,0 +1,71 @@
+{
+  "data": [
+    {
+      "connectgaps": true,
+      "x": [0, 5],
+      "y": [0, 4],
+      "z": [[4, 3], [2, 1]],
+      "type": "contour",
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 0.99
+      }
+    },
+    {
+      "mode": "text",
+      "x": [0, 0, 5, 5],
+      "y": [0, 4, 0, 4],
+      "text": [4, 3, 2, 1]
+    },
+    {
+      "connectgaps": true,
+      "x": [0, 5],
+      "y": [0, 4],
+      "z": [[4, 3], [2, 1]],
+      "type": "contour",
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 1
+      },
+      "xaxis": "x2"
+    },
+    {
+      "mode": "text",
+      "x": [0, 0, 5, 5],
+      "y": [0, 4, 0, 4],
+      "text": [4, 3, 2, 1],
+      "xaxis": "x2"
+    },
+    {
+      "connectgaps": true,
+      "x": [0, 5],
+      "y": [0, 4],
+      "z": [[4, 3], [2, 1]],
+      "type": "contour",
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 1.01
+      },
+      "xaxis": "x3"
+    },
+    {
+      "mode": "text",
+      "x": [0, 0, 5, 5],
+      "y": [0, 4, 0, 4],
+      "text": [4, 3, 2, 1],
+      "xaxis": "x3"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 1, "columns": 3},
+    "width": 600,
+    "height": 400,
+    "showlegend": false,
+    "xaxis": {"side": "top", "title": {"text": "<0.99<br>no edge path"}},
+    "xaxis2": {"matches": "x", "side": "top", "title": {"text": "<1<br>rounded off edge path"}},
+    "xaxis3": {"matches": "x", "side": "top", "title": {"text": "<1.01<br>one edge path"}}
+  }
+}

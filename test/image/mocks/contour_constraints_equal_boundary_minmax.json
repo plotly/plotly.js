@@ -1,0 +1,175 @@
+{
+  "data": [
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 0, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "[]",
+        "value": [0, 0.9999],
+        "showlabels": true
+      }
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 0, 2, 2, 2, 2]
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 0, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "[]",
+        "value": [0, 1],
+        "showlabels": true
+      },
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 0, 2, 2, 2, 2],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 5, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "[]",
+        "value": [0, 0.9999],
+        "showlabels": true
+      },
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 5, 2, 2, 2, 2],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 5, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "[]",
+        "value": [0, 1],
+        "showlabels": true
+      },
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 5, 2, 2, 2, 2],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 0, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "][",
+        "value": [1, 2],
+        "showlabels": true
+      },
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 0, 2, 2, 2, 2],
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 0, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "][",
+        "value": [0.999, 2.001],
+        "showlabels": true
+      },
+      "xaxis": "x6",
+      "yaxis": "y6"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 0, 2, 2, 2, 2],
+      "xaxis": "x6",
+      "yaxis": "y6"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 5, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "][",
+        "value": [1, 2],
+        "showlabels": true
+      },
+      "xaxis": "x7",
+      "yaxis": "y7"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 5, 2, 2, 2, 2],
+      "xaxis": "x7",
+      "yaxis": "y7"
+    },
+    {
+      "type": "contour",
+      "z": [[1, 1, 1], [1, 5, 2], [2, 2, 2]],
+      "contours": {
+        "type": "constraint",
+        "operation": "][",
+        "value": [0.999, 2.001],
+        "showlabels": true
+      },
+      "xaxis": "x8",
+      "yaxis": "y8"
+    },
+    {
+      "mode": "text",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "text": [1, 1, 1, 1, 5, 2, 2, 2, 2],
+      "xaxis": "x8",
+      "yaxis": "y8"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 4, "columns": 2, "pattern": "independent"},
+    "width": 600,
+    "height": 800,
+    "showlegend": false,
+    "title": {"text": "Constraints that (almost) equal boundary min/max"},
+    "yaxis": {"title": {"text": "[0, 0.9999]"}},
+    "yaxis2": {"title": {"text": "[0, 1]"}, "side": "right"},
+    "yaxis3": {"title": {"text": "[0, 0.9999]"}},
+    "yaxis4": {"title": {"text": "[0, 1]"}, "side": "right"},
+    "yaxis5": {"title": {"text": "]1, 2["}},
+    "yaxis6": {"title": {"text": "[0.999, 2.001]"}, "side": "right"},
+    "yaxis7": {"title": {"text": "]1, 2["}},
+    "yaxis8": {"title": {"text": "[0.999, 2.001]"}, "side": "right"}
+  }
+}

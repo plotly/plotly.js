@@ -63,8 +63,8 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
 
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
+            // N.B. this also mutates pathinfo
             fillPathinfo = convertToConstraints(pathinfo, contours._operation);
-            closeBoundaries(fillPathinfo, contours._operation, perimeter, trace);
         }
 
         // draw everything
@@ -88,10 +88,17 @@ function makeBackground(plotgroup, perimeter, contours) {
 }
 
 function makeFills(plotgroup, pathinfo, perimeter, contours) {
+    var hasFills = contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=');
+    var boundaryPath = 'M' + perimeter.join('L') + 'Z';
+
+    // fills prefixBoundary in pathinfo items
+    if(hasFills) {
+        closeBoundaries(pathinfo, contours);
+    }
+
     var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
 
-    var fillitems = fillgroup.selectAll('path')
-        .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=') ? pathinfo : []);
+    var fillitems = fillgroup.selectAll('path').data(hasFills ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {
@@ -100,30 +107,21 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(pi, perimeter);
+        var fullpath = (pi.prefixBoundary ? boundaryPath : '') +
+            joinAllPaths(pi, perimeter);
 
-        if(!fullpath) d3.select(this).remove();
-        else d3.select(this).attr('d', fullpath).style('stroke', 'none');
+        if(!fullpath) {
+            d3.select(this).remove();
+        } else {
+            d3.select(this)
+                .attr('d', fullpath)
+                .style('stroke', 'none');
+        }
     });
 }
 
-function initFullPath(pi, perimeter) {
-    var prefixBoundary = pi.prefixBoundary;
-    if(prefixBoundary === undefined) {
-        var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]);
-        prefixBoundary = (!pi.edgepaths.length && edgeVal2 > pi.level);
-    }
-
-    if(prefixBoundary) {
-        // TODO: why does ^^ not work for constraints?
-        // pi.prefixBoundary gets set by closeBoundaries
-        return 'M' + perimeter.join('L') + 'Z';
-    }
-    return '';
-}
-
 function joinAllPaths(pi, perimeter) {
-    var fullpath = initFullPath(pi, perimeter);
+    var fullpath = '';
     var i = 0;
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
     var newloop = true;
@@ -612,17 +610,18 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
 };
 
 function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
+    var trace = cd0.trace;
     var clips = gd._fullLayout._clips;
-    var clipId = 'clip' + cd0.trace.uid;
+    var clipId = 'clip' + trace.uid;
 
     var clipPath = clips.selectAll('#' + clipId)
-        .data(cd0.trace.connectgaps ? [] : [0]);
+        .data(trace.connectgaps ? [] : [0]);
     clipPath.enter().append('clipPath')
         .classed('contourclip', true)
         .attr('id', clipId);
     clipPath.exit().remove();
 
-    if(cd0.trace.connectgaps === false) {
+    if(trace.connectgaps === false) {
         var clipPathInfo = {
             // fraction of the way from missing to present point
             // to draw the boundary.
@@ -644,10 +643,13 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
 
         makeCrossings([clipPathInfo]);
         findAllPaths([clipPathInfo]);
-        var fullpath = joinAllPaths(clipPathInfo, perimeter);
+        closeBoundaries([clipPathInfo], {type: 'levels'});
 
         var path = Lib.ensureSingle(clipPath, 'path', '');
-        path.attr('d', fullpath);
+        path.attr('d',
+            (clipPathInfo.prefixBoundary ? 'M' + perimeter.join('L') + 'Z' : '') +
+            joinAllPaths(clipPathInfo, perimeter)
+        );
     } else clipId = null;
 
     Drawing.setClipUrl(plotGroup, clipId, gd);
