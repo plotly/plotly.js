@@ -556,7 +556,7 @@ describe('Test scatterternary *cliponaxis*', function() {
     });
 });
 
-describe('Test scattergeo texttemplate:', function() {
+describe('Test scatterternary texttemplate:', function() {
     checkTextTemplate([{
         'type': 'scatterternary',
         'a': [3, 2, 5],
