@@ -8,7 +8,8 @@
 
 'use strict';
 
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
@@ -63,6 +64,9 @@ module.exports = overrideAll({
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
+    }),
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['lat', 'lon', 'location', 'text']
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [

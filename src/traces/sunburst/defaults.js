@@ -40,7 +40,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('leaf.opacity');
 
     var text = coerce('text');
-    coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
+    coerce('texttemplate');
+    if(!traceOut.texttemplate) coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');

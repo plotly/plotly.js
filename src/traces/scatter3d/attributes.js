@@ -10,7 +10,8 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
@@ -84,6 +85,9 @@ var attrs = module.exports = overrideAll({
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
+    }),
+    texttemplate: texttemplateAttrs({}, {
+
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [

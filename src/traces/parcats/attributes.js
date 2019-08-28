@@ -12,7 +12,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var plotAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var domainAttrs = require('../../plots/domain').attributes;
 
 var line = extendFlat(

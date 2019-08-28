@@ -9,7 +9,7 @@
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var meshAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 

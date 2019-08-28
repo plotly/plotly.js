@@ -17,6 +17,7 @@ var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 var checkEventData = require('../assets/check_event_data');
+var checkTextTemplate = require('../assets/check_texttemplate');
 var constants = require('@src/traces/scatter/constants');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -1238,6 +1239,16 @@ describe('end-to-end scatter tests', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'scatter',
+        mode: 'markers+lines+text',
+        y: [1, 5, 3, 2],
+        textposition: 'top'
+    }], '.textpoint', [
+      ['%{y}', ['1', '5', '3', '2']],
+      [['%{y}', '%{x}-%{y}'], ['1', '1-5', '', '']]
+    ]);
 });
 
 describe('stacked area', function() {

@@ -8,7 +8,7 @@
 
 'use strict';
 
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var plotAttrs = require('../../plots/attributes');

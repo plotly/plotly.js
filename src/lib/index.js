@@ -964,7 +964,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-lib.TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)(:[^}]*)?}/g;
+lib.TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)([:|\|][^}]*)?}/g;
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
 /**
@@ -993,9 +993,25 @@ lib.templateString = function(string, obj) {
     });
 };
 
-var TEMPLATE_STRING_FORMAT_SEPARATOR = /^:/;
-var numberOfHoverTemplateWarnings = 0;
-var maximumNumberOfHoverTemplateWarnings = 10;
+var hovertemplateWarnings = {
+    max: 10,
+    count: 0,
+    name: 'hovertemplate'
+};
+lib.hovertemplateString = function() {
+    return templateFormatString.apply(hovertemplateWarnings, arguments);
+};
+
+var texttemplateWarnings = {
+    max: 10,
+    count: 0,
+    name: 'texttemplate'
+};
+lib.texttemplateString = function() {
+    return templateFormatString.apply(texttemplateWarnings, arguments);
+};
+
+var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
  * or fallback to associated labels.
@@ -1005,15 +1021,17 @@ var maximumNumberOfHoverTemplateWarnings = 10;
  *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
  *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
- * @param {obj}     d3 locale
  * @param {string}  input string containing %{...:...} template strings
  * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
+ * @param {obj}     d3 locale
  * @param {obj}     data objects containing substitution values
  *
  * @return {string} templated string
  */
-lib.hovertemplateString = function(string, labels, d3locale) {
+function templateFormatString(string, labels, d3locale) {
+    var opts = this;
     var args = arguments;
+    if(!labels) labels = {};
     // Not all that useful, but cache nestedProperty instantiation
     // just in case it speeds things up *slightly*:
     var getterCache = {};
@@ -1022,6 +1040,7 @@ lib.hovertemplateString = function(string, labels, d3locale) {
         var obj, value, i;
         for(i = 3; i < args.length; i++) {
             obj = args[i];
+            if(!obj) continue;
             if(obj.hasOwnProperty(key)) {
                 value = obj[key];
                 break;
@@ -1034,32 +1053,38 @@ lib.hovertemplateString = function(string, labels, d3locale) {
             if(value !== undefined) break;
         }
 
-        if(value === undefined) {
-            if(numberOfHoverTemplateWarnings < maximumNumberOfHoverTemplateWarnings) {
-                lib.warn('Variable \'' + key + '\' in hovertemplate could not be found!');
+        if(value === undefined && opts) {
+            if(opts.count < opts.max) {
+                lib.warn('Variable \'' + key + '\' in ' + opts.name + ' could not be found!');
                 value = match;
             }
 
-            if(numberOfHoverTemplateWarnings === maximumNumberOfHoverTemplateWarnings) {
-                lib.warn('Too many hovertemplate warnings - additional warnings will be suppressed');
+            if(opts.count === opts.max) {
+                lib.warn('Too many ' + opts.name + ' warnings - additional warnings will be suppressed');
             }
-            numberOfHoverTemplateWarnings++;
+            opts.count++;
+
+            return match;
         }
 
         if(format) {
             var fmt;
-            if(d3locale) {
-                fmt = d3locale.numberFormat;
-            } else {
-                fmt = d3.format;
+            if(format[0] === ':') {
+                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
-            value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+
+            if(format[0] === '|') {
+                fmt = d3locale ? d3locale.timeFormat.utc : d3.time.format.utc;
+                var ms = lib.dateTime2ms(value);
+                value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
+            }
         } else {
             if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
         }
         return value;
     });
-};
+}
 
 /*
  * alphanumeric string sort, tailored for subplot IDs like scene2, scene10, x10y13 etc

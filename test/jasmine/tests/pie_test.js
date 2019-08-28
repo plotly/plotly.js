@@ -14,6 +14,7 @@ var rgb = require('../../../src/components/color').rgb;
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 var SLICES_SELECTOR = '.slice path';
 var SLICES_TEXT_SELECTOR = '.pielayer text.slicetext';
@@ -862,6 +863,19 @@ describe('Pie traces', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'pie',
+        values: [1, 5, 3, 2],
+        labels: ['A', 'B', 'C', 'D'],
+        text: ['textA', 'textB', 'textC', 'textD'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'g.slicetext', [
+        ['%{label} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
+        [['%{label} - %{value}', '%{text}', '%{value}', '%{percent}'], ['A - 1', 'textB', '3', '18.2%']],
+        ['%{text}-%{color}', ['textA-#d62728', 'textB-#1f77b4', 'textC-#ff7f0e', 'textD-#2ca02c']]
+    ]);
 });
 
 describe('pie hovering', function() {

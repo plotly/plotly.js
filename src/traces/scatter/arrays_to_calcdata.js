@@ -18,6 +18,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
     Lib.mergeArray(trace.text, cd, 'tx');
+    Lib.mergeArray(trace.texttemplate, cd, 'txt');
     Lib.mergeArray(trace.hovertext, cd, 'htx');
     Lib.mergeArray(trace.customdata, cd, 'data');
     Lib.mergeArray(trace.textposition, cd, 'tp');

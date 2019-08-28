@@ -47,11 +47,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // TODO: hole needs to be coerced to the same value within a scaleegroup
 
     var textData = coerce('text');
-    var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    var textTemplate = coerce('texttemplate');
+    var textInfo;
+    if(!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+
     coerce('hovertext');
     coerce('hovertemplate');
 
-    if(textInfo && textInfo !== 'none') {
+    if(textTemplate || (textInfo && textInfo !== 'none')) {
         var textposition = coerce('textposition');
         handleText(traceIn, traceOut, layout, coerce, textposition, {
             moduleHasSelected: false,

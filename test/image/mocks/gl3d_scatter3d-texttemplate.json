@@ -1,0 +1,25 @@
+{
+  "data": [{
+      "type": "scatter3d",
+      "x": [0, 1, 2],
+      "y": [0, 2, 1],
+      "z": [-5, -2, 4],
+      "text": ["A", "B", "C"],
+      "texttemplate": "%{text}: (%{x}, %{y}, %{z})",
+      "mode": "markers+text"
+    }, {
+        "type": "scatter3d",
+        "x": [2, 1, 0],
+        "y": [0, 4, 1],
+        "z": [-5, -2, 4],
+        "texttemplate": ["1", "2 with %{meta.text}"],
+        "meta": {"text": "meta"},
+        "mode": "markers+text"
+      }],
+  "layout": {
+      "showlegend": true,
+      "width": 400,
+      "height": 400,
+      "margin": {"t": 20, "l": 0, "r": 0, "b": 0}
+  }
+}

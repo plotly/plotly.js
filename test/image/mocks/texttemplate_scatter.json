@@ -1,0 +1,140 @@
+{
+  "data": [{
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "lon": [
+        -73.57,
+        -79.24,
+        -123.06
+      ],
+      "lat": [
+        45.5,
+        43.4,
+        49.13
+      ],
+      "text": [
+        "Montreal",
+        "Toronto",
+        "Vancouver"
+      ],
+      "texttemplate": "%{text}: (%{lon:.0f}, %{lat:0.f}): %{customdata:.2s}",
+      "textposition": "top center",
+      "customdata": [1780000, 2930000, 675218],
+      "geo": "geo"
+    }, {
+      "type": "carpet",
+      "carpet": "carpet1",
+      "a": [0.1, 0.2, 0.3],
+      "b": [1, 2, 3],
+      "y": [
+        [1, 2.2, 3],
+        [1.5, 2.7, 3.5],
+        [1.7, 2.9, 3.7]
+      ],
+      "cheaterslope": 1,
+
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "scattercarpet",
+      "carpet": "carpet1",
+      "name": "b = 1.5",
+      "mode": "markers+text",
+      "a": [0.1, 0.15, 0.25, 0.3],
+      "b": [1.5, 1.5, 1.5, 1.5],
+
+      "text": ["a", "b", "c", "d"],
+      "texttemplate": "%{text}: (%{a}, %{b})",
+      "textposition": "top center",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }, {
+      "type": "scatterpolar",
+      "mode": "markers+text",
+      "text": ["A", "B", "C", "D"],
+      "texttemplate": "%{text}: (%{r:0.2f},%{theta:0.2f})",
+      "textposition": "top center",
+      "r": [1, 0.5, 1, 1.5],
+      "theta": [0, 90, 180, 270],
+      "showgrid": false
+  }, {
+      "type": "scatterternary",
+      "a": [
+          3,
+          2,
+          5
+      ],
+      "b": [
+          2,
+          5,
+          2
+      ],
+      "c": [
+          5,
+          2,
+          2
+      ],
+      "mode": "markers+text",
+      "text": ["A", "B", "C"],
+      "texttemplate": "%{text}<br>(%{a:.2f}, %{b:.2f}, %{c:.2f})",
+      "textposition": "bottom center"
+  }
+  ],
+  "layout": {
+    "showlegend": false,
+    "width": 800,
+    "height": 800,
+    "margin": {
+      "t": 50,
+      "b": 50,
+      "l": 50,
+      "r": 50
+    },
+    "geo": {
+      "scope": "north america",
+      "domain": {
+        "row": 1,
+        "column": 0
+      },
+      "lonaxis": {
+        "range": [
+          -130,
+          -55
+        ]
+      },
+      "lataxis": {
+        "range": [
+          40,
+          70
+        ]
+      },
+      "center": {
+        "lat": 57
+      }
+    },
+    "polar": {
+      "radialaxis": {
+        "showline": false,
+        "linewidth": 0,
+        "tickwidth": 2,
+        "gridcolor": "white",
+        "gridwidth": 0
+      }
+    },
+    "ternary": {
+        "sum": 10,
+        "domain": {
+            "row": 1,
+            "column": 1
+        }
+    },
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "pattern": "independent",
+      "xgap": 5,
+      "ygap": 5
+    }
+  }
+}

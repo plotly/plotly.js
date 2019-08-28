@@ -28,6 +28,8 @@ var TEXTOFFSETSIGN = {
     start: 1, left: 1, end: -1, right: -1, middle: 0, center: 0, bottom: 1, top: -1
 };
 
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+
 function convertStyle(gd, trace) {
     var i;
 
@@ -47,7 +49,7 @@ function convertStyle(gd, trace) {
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = convertTextStyle(trace);
+        opts.text = convertTextStyle(trace, gd);
         opts.textSel = convertTextSelection(trace, trace.selected);
         opts.textUnsel = convertTextSelection(trace, trace.unselected);
     }
@@ -100,7 +102,7 @@ function convertStyle(gd, trace) {
     return opts;
 }
 
-function convertTextStyle(trace) {
+function convertTextStyle(trace, gd) {
     var count = trace._length;
     var textfontIn = trace.textfont;
     var textpositionIn = trace.textposition;
@@ -111,13 +113,33 @@ function convertTextStyle(trace) {
     var optsOut = {};
     var i;
 
-    optsOut.text = trace.text;
-    if(Array.isArray(optsOut.text) && optsOut.text.length < count) {
-        optsOut.text = trace.text.slice();
+    var texttemplate = trace.texttemplate;
+    if(texttemplate) {
+        optsOut.text = [];
+        var isArray = Array.isArray(texttemplate);
+        var N = isArray ? Math.min(texttemplate.length, count) : count;
+        var txt = isArray ? function(i) {return texttemplate[i];} : function() { return texttemplate;};
+        var d3locale = gd._fullLayout._d3locale;
+        for(i = 0; i < N; i++) {
+            var pt = {};
+            appendArrayPointValue(pt, trace, i);
+            optsOut.text.push(Lib.texttemplateString(txt(i), pt, d3locale, pt, trace._meta || {}));
+        }
+    } else {
+        if(Array.isArray(trace.text) && trace.text.length < count) {
+            // if text array is shorter, we'll need to append to it, so let's slice to prevent mutating
+            optsOut.text = trace.text.slice();
+        } else {
+            optsOut.text = trace.text;
+        }
+    }
+    // pad text array with empty strings
+    if(Array.isArray(optsOut.text)) {
         for(i = optsOut.text.length; i < count; i++) {
             optsOut.text[i] = '';
         }
     }
+
     optsOut.opacity = trace.opacity;
     optsOut.font = {};
     optsOut.align = [];

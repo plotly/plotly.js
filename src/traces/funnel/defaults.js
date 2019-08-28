@@ -46,7 +46,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         moduleHasInsideanchor: true
     });
 
-    if(traceOut.textposition !== 'none') {
+    if(traceOut.textposition !== 'none' && !traceOut.texttemplate) {
         coerce('textinfo', Array.isArray(text) ? 'text+value' : 'value');
     }
 

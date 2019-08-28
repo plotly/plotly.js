@@ -271,7 +271,7 @@ module.exports = function style(s, gd) {
             .append('g').classed('pointtext', true)
                 .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
-        txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
+        txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd, true);
     }
 
     function styleWaterfalls(d) {

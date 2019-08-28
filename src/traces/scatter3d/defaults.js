@@ -45,6 +45,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasText(traceOut)) {
+        coerce('texttemplate');
         handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 

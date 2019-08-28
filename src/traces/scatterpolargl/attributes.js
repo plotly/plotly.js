@@ -10,6 +10,7 @@
 
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 module.exports = {
     mode: scatterPolarAttrs.mode,
@@ -22,6 +23,9 @@ module.exports = {
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['r', 'theta', 'text']
+    }),
     hovertext: scatterPolarAttrs.hovertext,
     hovertemplate: scatterPolarAttrs.hovertemplate,
 

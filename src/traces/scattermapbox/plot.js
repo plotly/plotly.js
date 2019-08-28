@@ -67,7 +67,7 @@ proto.addLayer = function(k, opts, below) {
 proto.update = function update(calcTrace) {
     var subplot = this.subplot;
     var map = subplot.map;
-    var optsAll = convert(calcTrace);
+    var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
     var i, k, opts;
 
@@ -113,7 +113,7 @@ proto.dispose = function dispose() {
 module.exports = function createScatterMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var scatterMapbox = new ScatterMapbox(subplot, trace.uid);
-    var optsAll = convert(calcTrace);
+    var optsAll = convert(subplot.gd, calcTrace);
     var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
 
     for(var i = 0; i < ORDER.length; i++) {

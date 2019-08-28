@@ -20,7 +20,7 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
-module.exports = function convert(calcTrace) {
+module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
     var isVisible = (trace.visible === true && trace._length !== 0);
@@ -87,7 +87,7 @@ module.exports = function convert(calcTrace) {
     }
 
     if(hasSymbols || hasText) {
-        symbol.geojson = makeSymbolGeoJSON(calcTrace);
+        symbol.geojson = makeSymbolGeoJSON(calcTrace, gd);
 
         Lib.extendFlat(symbol.layout, {
             visibility: 'visible',
@@ -229,7 +229,7 @@ function makeCircleOpts(calcTrace) {
     };
 }
 
-function makeSymbolGeoJSON(calcTrace) {
+function makeSymbolGeoJSON(calcTrace, gd) {
     var trace = calcTrace[0].trace;
 
     var marker = trace.marker || {};
@@ -251,6 +251,16 @@ function makeSymbolGeoJSON(calcTrace) {
 
         if(isBADNUM(calcPt.lonlat)) continue;
 
+        var txt = trace.texttemplate;
+        if(txt) {
+            var txti = Array.isArray(txt) ? (txt[i] || '') : txt;
+            calcPt.text = calcPt.tx;
+            calcPt.lon = calcPt.lonlat[0];
+            calcPt.lat = calcPt.lonlat[1];
+            calcPt.customdata = calcPt.data;
+            calcPt.txt = Lib.texttemplateString(txti, {}, gd._fullLayout._d3locale, calcPt, trace._meta || {});
+        }
+
         features.push({
             type: 'Feature',
             geometry: {
@@ -259,7 +269,7 @@ function makeSymbolGeoJSON(calcTrace) {
             },
             properties: {
                 symbol: fillSymbol(calcPt.mx),
-                text: fillText(calcPt.tx)
+                text: txt ? calcPt.txt : fillText(calcPt.tx)
             }
         });
     }

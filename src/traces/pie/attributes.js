@@ -12,7 +12,8 @@ var plotAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -105,7 +106,7 @@ module.exports = {
 
     text: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets text elements associated with each sector.',
             'If trace `textinfo` contains a *text* flag, these elements will be seen',
@@ -161,6 +162,9 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
     hovertemplate: hovertemplateAttrs({}, {
+        keys: ['label', 'color', 'value', 'percent', 'text']
+    }),
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
         keys: ['label', 'color', 'value', 'percent', 'text']
     }),
     textposition: {

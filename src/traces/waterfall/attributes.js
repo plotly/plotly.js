@@ -11,7 +11,8 @@
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var plotAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
@@ -98,7 +99,10 @@ module.exports = {
             'are computed separately (per trace).'
         ].join(' ')
     },
-
+    // TODO: incorporate `label` and `value` in the eventData
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: constants.eventDataKeys.concat(['label'])
+    }),
     text: barAttrs.text,
     textposition: barAttrs.textposition,
     insidetextanchor: barAttrs.insidetextanchor,

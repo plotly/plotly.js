@@ -155,6 +155,8 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
         if(moduleHasConstrain) coerce('constraintext');
         if(moduleHasCliponaxis) coerce('cliponaxis');
         if(moduleHasTextangle) coerce('textangle');
+
+        coerce('texttemplate');
     }
 
     if(hasInside) {

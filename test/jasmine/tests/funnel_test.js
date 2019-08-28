@@ -16,6 +16,7 @@ var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -1234,6 +1235,17 @@ describe('A funnel plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'funnel',
+        orientation: 'v',
+        x: ['A', 'B', 'C'],
+        y: [3, 2, 1],
+        textinfo: 'value+percent initial+percent previous+percent total',
+    }], 'text.bartext', [
+      ['txt: %{value}', ['txt: 3', 'txt: 2', 'txt: 1']],
+      ['%{value}-%{percentInitial}-%{percentPrevious}-%{percentTotal:0.3f}', ['3-100%-100%-0.500', '2-67%-67%-0.333', '1-33%-50%-0.167']]
+    ]);
 });
 
 describe('funnel hover', function() {

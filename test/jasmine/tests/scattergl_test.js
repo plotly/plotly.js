@@ -8,6 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('end-to-end scattergl tests', function() {
     var gd;
@@ -36,6 +37,17 @@ describe('end-to-end scattergl tests', function() {
             expect(scene.glText.length).toEqual(1);
         }).catch(failTest).then(done);
     });
+
+    checkTextTemplate([{
+        type: 'scattergl',
+        mode: 'text+lines',
+        x: [1, 2, 3, 4],
+        y: [2, 3, 4, 5],
+        text: ['A', 'B', 'C', 'D'],
+    }], '@gl', [
+        ['%{text}: %{x}, %{y}', ['A: 1, 2', 'B: 2, 3', 'C: 3, 4', 'D: 4, 5']],
+        [['%{x}', '%{x}', '%{text}', '%{y}'], ['1', '2', 'C', '5']]
+    ]);
 
     it('@gl should update a plot with text labels', function(done) {
         Plotly.react(gd, [{
@@ -105,23 +117,25 @@ describe('end-to-end scattergl tests', function() {
         }).catch(failTest).then(done);
     });
 
-    it('@gl should handle a plot with less text labels than data points', function(done) {
-        expect(function() {
-            var mock = {
-                'type': 'scattergl',
-                'mode': 'markers+text',
-                'x': [3, 2, 1, 0],
-                'y': [0, 1, 4, 9],
-                'textposition': 'top center'
-            };
-            mock.text = ['1', '2', '3'];
-            Plotly.plot(gd, [mock])
-            .then(function() {
-                expect(mock.text.length).toBe(3);
-            })
-            .catch(failTest);
-        }).not.toThrow();
-        done();
+    ['text', 'texttemplate'].forEach(function(attr) {
+        it('@gl should handle a plot with less ' + attr + ' labels than data points', function(done) {
+            expect(function() {
+                var mock = {
+                    'type': 'scattergl',
+                    'mode': 'markers+text',
+                    'x': [3, 2, 1, 0],
+                    'y': [0, 1, 4, 9],
+                    'textposition': 'top center'
+                };
+                mock[attr] = ['1', '2', '3'];
+                Plotly.plot(gd, [mock])
+                .then(function() {
+                    expect(mock[attr].length).toBe(3);
+                })
+                .catch(failTest);
+            }).not.toThrow();
+            done();
+        });
     });
 
     it('@gl should be able to toggle visibility', function(done) {

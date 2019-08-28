@@ -28,6 +28,7 @@ var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
 var drawing = module.exports = {};
+var appendArrayPointValue = require('../fx/helpers').appendArrayPointValue;
 
 // -----------------------------------------------------
 // styling functions for plot elements
@@ -679,7 +680,7 @@ function extracTextFontSize(d, trace) {
 }
 
 // draw text at points
-drawing.textPointStyle = function(s, trace, gd) {
+drawing.textPointStyle = function(s, trace, gd, inLegend) {
     if(!s.size()) return;
 
     var selectedTextColorFn;
@@ -689,13 +690,22 @@ drawing.textPointStyle = function(s, trace, gd) {
         selectedTextColorFn = fns.selectedTextColorFn;
     }
 
+    var template = trace.texttemplate;
+    // If styling text in legends, do not use texttemplate
+    if(inLegend) template = false;
     s.each(function(d) {
         var p = d3.select(this);
-        var text = Lib.extractOption(d, trace, 'tx', 'text');
+        var text = Lib.extractOption(d, trace, template ? 'txt' : 'tx', template ? 'texttemplate' : 'text');
 
         if(!text && text !== 0) {
             p.remove();
             return;
+        }
+
+        if(template) {
+            var pt = {};
+            appendArrayPointValue(pt, trace, d.i);
+            text = Lib.texttemplateString(text, {}, gd._fullLayout._d3locale, pt, d, trace._meta || {});
         }
 
         var pos = d.tp || trace.textposition;

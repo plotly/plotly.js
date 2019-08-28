@@ -8,7 +8,7 @@
 
 'use strict';
 
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');

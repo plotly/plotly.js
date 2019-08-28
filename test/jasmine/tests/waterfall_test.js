@@ -16,6 +16,7 @@ var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -1208,6 +1209,18 @@ describe('A waterfall plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'waterfall',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{value}', ['1', '6', '9', '11']],
+      ['%{initial} %{delta} %{final}', ['0 1 1', '1 5 6', '6 3 9', '9 2 11']],
+      [['%{y}', '%{value}', '%{text}', '%{label}'], ['1', '6', 'C', '3']]
+    ]);
 });
 
 describe('waterfall visibility toggling:', function() {

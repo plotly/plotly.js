@@ -10,7 +10,7 @@
 
 var choroplethAttrs = require('../choropleth/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 

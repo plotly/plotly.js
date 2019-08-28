@@ -62,7 +62,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 
     if(traceOut.textposition !== 'none') {
-        coerce('textinfo');
+        coerce('texttemplate');
+        if(!traceOut.texttemplate) coerce('textinfo');
     }
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);

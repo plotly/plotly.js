@@ -13,6 +13,7 @@ var failTest = require('../assets/fail_test');
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -714,6 +715,24 @@ describe('scattercarpet hover labels', function() {
     });
 });
 
+describe('scattercarpet texttemplates', function() {
+    checkTextTemplate([{
+        'type': 'scattercarpet',
+        'carpet': 'carpet1',
+        'mode': 'markers+text',
+        'a': [0.1, 0.15, 0.25],
+        'b': [1.5, 1.5, 1.5],
+        'text': ['A', 'B', 'C']
+    }, {
+        'type': 'carpet',
+        'carpet': 'carpet1',
+        'a': [0.1, 0.2, 0.3],
+        'b': [1, 2, 3],
+        'y': [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
+    }], 'g.textpoint', [
+        ['%{text}: %{a:0.1f}, %{b:0.1f}', ['A: 0.1, 1.5', 'B: 0.1, 1.5', 'C: 0.3, 1.5']]
+    ]);
+});
 describe('contourcarpet plotting & editing', function() {
     var gd;
 
