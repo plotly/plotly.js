@@ -74,49 +74,54 @@ module.exports = function draw(gd) {
     function setImage(d) {
         var thisImage = d3.select(this);
 
-        if(this.img && this.img.src === d.source) {
+        if(this._imgSrc === d.source) {
             return;
         }
 
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
-        var imagePromise = new Promise(function(resolve) {
-            var img = new Image();
-            this.img = img;
+        if(d.source && d.source.slice(0, 5) === 'data:') {
+            thisImage.attr('xlink:href', d.source);
+            this._imgSrc = d.source;
+        } else {
+            var imagePromise = new Promise(function(resolve) {
+                var img = new Image();
+                this.img = img;
 
-            // If not set, a `tainted canvas` error is thrown
-            img.setAttribute('crossOrigin', 'anonymous');
-            img.onerror = errorHandler;
-            img.onload = function() {
-                var canvas = document.createElement('canvas');
-                canvas.width = this.width;
-                canvas.height = this.height;
+                // If not set, a `tainted canvas` error is thrown
+                img.setAttribute('crossOrigin', 'anonymous');
+                img.onerror = errorHandler;
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    canvas.width = this.width;
+                    canvas.height = this.height;
 
-                var ctx = canvas.getContext('2d');
-                ctx.drawImage(this, 0, 0);
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(this, 0, 0);
 
-                var dataURL = canvas.toDataURL('image/png');
+                    var dataURL = canvas.toDataURL('image/png');
 
-                thisImage.attr('xlink:href', dataURL);
+                    thisImage.attr('xlink:href', dataURL);
 
-                // resolve promise in onload handler instead of on 'load' to support IE11
-                // see https://github.com/plotly/plotly.js/issues/1685
-                // for more details
-                resolve();
-            };
+                    // resolve promise in onload handler instead of on 'load' to support IE11
+                    // see https://github.com/plotly/plotly.js/issues/1685
+                    // for more details
+                    resolve();
+                };
 
+                thisImage.on('error', errorHandler);
 
-            thisImage.on('error', errorHandler);
+                img.src = d.source;
+                this._imgSrc = d.source;
 
-            img.src = d.source;
+                function errorHandler() {
+                    thisImage.remove();
+                    resolve();
+                }
+            }.bind(this));
 
-            function errorHandler() {
-                thisImage.remove();
-                resolve();
-            }
-        }.bind(this));
-
-        gd._promises.push(imagePromise);
+            gd._promises.push(imagePromise);
+        }
     }
 
     function applyAttributes(d) {

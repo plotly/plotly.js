@@ -12,6 +12,10 @@ var mouseEvent = require('../assets/mouse_event');
 var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
+// Single red pixel png generated with http://png-pixel.com/
+var dataUriImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfF' +
+    'cSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+
 describe('Layout images', function() {
     describe('supplyLayoutDefaults', function() {
         var layoutIn,
@@ -289,6 +293,31 @@ describe('Layout images', function() {
         });
 
         afterEach(destroyGraphDiv);
+
+        it('should only create canvas if url image', function(done) {
+            var originalCreateElement = document.createElement;
+            var newCanvasElement;
+            spyOn(document, 'createElement').and.callFake(function(elementType) {
+                var element = originalCreateElement.call(document, elementType);
+                if(elementType === 'canvas') {
+                    newCanvasElement = element;
+                    spyOn(newCanvasElement, 'toDataURL');
+                }
+                return element;
+            });
+
+            Plotly.relayout(gd, 'images[0].source', dataUriImage)
+            .then(function() {
+                expect(newCanvasElement).toBeUndefined();
+            })
+            .then(function() { return Plotly.relayout(gd, 'images[0].source', jsLogo); })
+            .then(function() {
+                expect(newCanvasElement).toBeDefined();
+                expect(newCanvasElement.toDataURL).toHaveBeenCalledTimes(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
         it('should update the image if changed', function(done) {
             var img = Plotly.d3.select('image');
