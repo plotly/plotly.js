@@ -245,8 +245,8 @@ describe('Test sunburst calc:', function() {
         expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
-        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children.');
-        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children.');
+        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
     });
 
     it('should warn labels/parents lead to ambiguous hierarchy', function() {
@@ -345,7 +345,7 @@ describe('Test sunburst hover:', function() {
         pos: 2,
         exp: {
             label: {
-                nums: 'Seth',
+                nums: 'Seth\n33.3% of Eve',
             },
             ptData: {
                 curveNumber: 0,
@@ -360,7 +360,7 @@ describe('Test sunburst hover:', function() {
         pos: 3,
         exp: {
             label: {
-                nums: 'Cain\nA',
+                nums: 'Cain\n16.7% of Eve\nA',
             },
             ptData: {
                 curveNumber: 0,
@@ -378,7 +378,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel\n6',
+                nums: 'Abel\nEve/\n16.7% of Eve\n6',
                 name: 'trace 0'
             },
             ptData: {
@@ -397,7 +397,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel',
+                nums: 'Abel\nEve/\n16.7% of Eve',
                 name: 't...'
             },
             ptData: {
@@ -1179,7 +1179,7 @@ describe('Test sunburst interactions edge cases', function() {
         })
         .then(hover(gd, 4))
         .then(function() {
-            assertHoverLabelContent({ nums: 'D\n4\n0' });
+            assertHoverLabelContent({ nums: 'D\n4\n26.7% of C\n14.3% of A\n0' });
         })
         .then(done);
     });

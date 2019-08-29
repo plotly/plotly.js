@@ -13,19 +13,23 @@ var d3Hierarchy = require('d3-hierarchy');
 
 var Registry = require('../../registry');
 var Fx = require('../../components/fx');
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var Events = require('../../lib/events');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var transformInsideText = require('../pie/plot').transformInsideText;
-var formatPieValue = require('../pie/helpers').formatPieValue;
 var styleOne = require('./style').styleOne;
 
 var constants = require('./constants');
 var helpers = require('./helpers');
 
-module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
+var pieHelpers = require('../pie/helpers');
+var formatValue = pieHelpers.formatPieValue;
+var formatPercent = pieHelpers.formatPiePercent;
+
+exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._sunburstlayer;
     var join, onComplete;
@@ -33,7 +37,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
-    var hasTransition = transitionOpts && transitionOpts.duration > 0;
+    var hasTransition = helpers.hasTransition(transitionOpts);
 
     join = layer.selectAll('g.trace.sunburst')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
@@ -80,9 +84,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
 
 function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
-    // We could optimize hasTransition per trace,
-    // as sunburst has no cross-trace logic!
-    var hasTransition = transitionOpts && transitionOpts.duration > 0;
+    var hasTransition = helpers.hasTransition(transitionOpts);
 
     var gTrace = d3.select(element);
     var slices = gTrace.selectAll('g.slice');
@@ -90,8 +92,8 @@ function plotOne(gd, cd, element, transitionOpts) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
-    var entry = findEntryWithLevel(hierarchy, trace.level);
-    var maxDepth = trace.maxdepth >= 0 ? trace.maxdepth : Infinity;
+    var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var maxDepth = helpers.getMaxDepth(trace);
 
     var gs = fullLayout._size;
     var domain = trace.domain;
@@ -130,12 +132,12 @@ function plotOne(gd, cd, element, transitionOpts) {
     // N.B. slice data isn't the calcdata,
     // grab corresponding calcdata item in sliceData[i].data.data
     var sliceData = partition(entry).descendants();
+
     var maxHeight = entry.height + 1;
     var yOffset = 0;
     var cutoff = maxDepth;
-
     // N.B. handle multiple-root special case
-    if(cd0.hasMultipleRoots && helpers.isHierachyRoot(entry)) {
+    if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
         sliceData = sliceData.slice(1);
         maxHeight -= 1;
         yOffset = 1;
@@ -197,7 +199,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     if(hasTransition) {
         updateSlices = updateSlices.transition().each('end', function() {
             // N.B. gd._transitioning is (still) *true* by the time
-            // transition updates get hare
+            // transition updates get here
             var sliceTop = d3.select(this);
             helpers.setSliceCursor(sliceTop, gd, {isTransitioning: false});
         });
@@ -229,7 +231,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         sliceTop
-            .call(attachFxHandlers, gd, cd)
+            .call(exports.attachFxHandlers, entry, gd, cd, styleOne, constants)
             .call(helpers.setSliceCursor, gd, {isTransitioning: gd._transitioning});
 
         slicePath.call(styleOne, pt, trace);
@@ -241,17 +243,15 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.attr('data-notex', 1);
         });
 
-        sliceText.text(formatSliceLabel(pt, trace, fullLayout))
+        sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
-            .call(Drawing.font, helpers.isHierachyRoot(pt) ?
-              helpers.determineOutsideTextFont(trace, pt, fullLayout.font) :
-              helpers.determineInsideTextFont(trace, pt, fullLayout.font))
+            .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))
             .call(svgTextUtils.convertToTspans, gd);
 
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
-        pt.transform = transformInsideText(textBB, pt, cd0);
+        pt.transform = transformInsideText(textBB, pt, cd0, styleOne);
         pt.translateX = transTextX(pt);
         pt.translateY = transTextY(pt);
 
@@ -471,35 +471,42 @@ function partition(entry) {
         .size([2 * Math.PI, entry.height + 1])(entry);
 }
 
-function findEntryWithLevel(hierarchy, level) {
-    var out;
-    if(level) {
-        hierarchy.eachAfter(function(pt) {
-            if(helpers.getPtId(pt) === level) {
-                return out = pt.copy();
-            }
-        });
-    }
-    return out || hierarchy;
-}
+function makeEventData(pt, trace) {
+    var cdi = pt.data.data;
 
-function findEntryWithChild(hierarchy, childId) {
-    var out;
-    hierarchy.eachAfter(function(pt) {
-        var children = pt.children || [];
-        for(var i = 0; i < children.length; i++) {
-            var child = children[i];
-            if(helpers.getPtId(child) === childId) {
-                return out = pt.copy();
-            }
-        }
+    var out = {
+        curveNumber: trace.index,
+        pointNumber: cdi.i,
+        data: trace._input,
+        fullData: trace,
+
+        // TODO more things like 'children', 'siblings', 'hierarchy?
+    };
+
+    [ // TODO: read these from (sunburst | treemap) trace constants
+        'parentLabel',
+        'visibleLabel',
+        'rootLabel',
+        'percentParent',
+        'percentVisible',
+        'percentRoot',
+        'currentPath'
+    ].forEach(function(key) {
+        if(key in pt) out[key] = pt[key];
     });
-    return out || hierarchy;
+
+    appendArrayPointValue(out, trace, cdi.i);
+
+    return out;
 }
 
-function attachFxHandlers(sliceTop, gd, cd) {
+exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants) {
     var cd0 = cd[0];
     var trace = cd0.trace;
+    var hierarchy = cd0.hierarchy;
+
+    var isSunburst = trace.type === 'sunburst';
+    var isTreemap = trace.type === 'treemap';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -510,7 +517,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
     // in the same slice that you moused up in
     if(!('_hasHoverEvent' in trace)) trace._hasHoverEvent = false;
 
-    sliceTop.on('mouseover', function(pt) {
+    var onMouseOver = function(pt) {
         var fullLayoutNow = gd._fullLayout;
 
         if(gd._dragging || fullLayoutNow.hovermode === false) return;
@@ -528,13 +535,22 @@ function attachFxHandlers(sliceTop, gd, cd) {
         var separators = fullLayoutNow.separators;
 
         if(hovertemplate || (hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip')) {
-            var rInscribed = pt.rInscribed;
-            var hoverCenterX = cd0.cx + pt.pxmid[0] * (1 - rInscribed);
-            var hoverCenterY = cd0.cy + pt.pxmid[1] * (1 - rInscribed);
+            var hoverCenterX;
+            var hoverCenterY;
+            if(isSunburst) {
+                hoverCenterX = cd0.cx + pt.pxmid[0] * (1 - pt.rInscribed);
+                hoverCenterY = cd0.cy + pt.pxmid[1] * (1 - pt.rInscribed);
+            }
+            if(isTreemap) {
+                hoverCenterX = pt._hoverX;
+                hoverCenterY = pt._hoverY;
+            }
+
             var hoverPt = {};
             var parts = [];
             var thisText = [];
             var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
+            var getVal = function(d) { return d.hasOwnProperty('v') ? d.v : d.value; };
 
             if(hoverinfo) {
                 parts = hoverinfo === 'all' ?
@@ -542,27 +558,70 @@ function attachFxHandlers(sliceTop, gd, cd) {
                     hoverinfo.split('+');
             }
 
-            hoverPt.label = cdi.label;
+            hoverPt.label = helpers.getLabelStr(cdi.label);
             if(hasFlag('label') && hoverPt.label) thisText.push(hoverPt.label);
 
             if(cdi.hasOwnProperty('v')) {
                 hoverPt.value = cdi.v;
-                hoverPt.valueLabel = formatPieValue(hoverPt.value, separators);
+                hoverPt.valueLabel = formatValue(hoverPt.value, separators);
                 if(hasFlag('value')) thisText.push(hoverPt.valueLabel);
+            }
+
+            hoverPt.currentPath = pt.currentPath = helpers.getPath((pt.parent || pt).data);
+            if(hasFlag('current path')) {
+                thisText.push(hoverPt.currentPath);
+            }
+
+            var tx;
+            var prevTx;
+            var insertPercent = function() {
+                if(tx !== prevTx) { // no need to add redundant info
+                    thisText.push(tx);
+                    prevTx = tx;
+                }
+            };
+
+            var val = getVal(cdi);
+
+            var ref2 = pt.parent;
+            if(ref2 && getVal(ref2)) {
+                hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
+                hoverPt.parentLabel = pt.parentLabel = helpers.getLabelString(ref2.data.data.label);
+                if(hasFlag('percent parent')) {
+                    tx = formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parentLabel;
+                    insertPercent();
+                }
+            }
+
+            var ref1 = entry;
+            if(ref1 && getVal(ref1)) {
+                hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
+                hoverPt.visibleLabel = pt.visibleLabel = helpers.getLabelString(ref1.data.data.label);
+                if(hasFlag('percent visible')) {
+                    tx = formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visibleLabel;
+                    insertPercent();
+                }
+            }
+
+            var ref0 = hierarchy;
+            if(ref0 && getVal(ref0)) {
+                hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
+                hoverPt.rootLabel = pt.rootLabel = helpers.getLabelString(ref0.data.data.label);
+                if(hasFlag('percent root')) {
+                    tx = formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.rootLabel;
+                    insertPercent();
+                }
             }
 
             hoverPt.text = _cast('hovertext') || _cast('text');
             if(hasFlag('text')) {
-                var tx = hoverPt.text;
+                tx = hoverPt.text;
                 if(Lib.isValidTextValue(tx)) thisText.push(tx);
             }
 
-            Fx.loneHover({
+            var hoverItems = {
                 trace: traceNow,
-                x0: hoverCenterX - rInscribed * pt.rpx1,
-                x1: hoverCenterX + rInscribed * pt.rpx1,
                 y: hoverCenterY,
-                idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
                 text: thisText.join('<br>'),
                 name: (hovertemplate || hasFlag('name')) ? traceNow.name : undefined,
                 color: _cast('hoverlabel.bgcolor') || cdi.color,
@@ -574,8 +633,20 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
-                eventData: [helpers.makeEventData(pt, traceNow)]
-            }, {
+                eventData: [makeEventData(pt, traceNow)]
+            };
+
+            if(isSunburst) {
+                hoverItems.x0 = hoverCenterX - pt.rInscribed * pt.rpx1;
+                hoverItems.x1 = hoverCenterX + pt.rInscribed * pt.rpx1;
+                hoverItems.idealAlign = pt.pxmid[0] < 0 ? 'left' : 'right';
+            }
+            if(isTreemap) {
+                hoverItems.x = hoverCenterX;
+                hoverItems.idealAlign = hoverCenterX < 0 ? 'left' : 'right';
+            }
+
+            Fx.loneHover(hoverItems, {
                 container: fullLayoutNow._hoverlayer.node(),
                 outerContainer: fullLayoutNow._paper.node(),
                 gd: gd
@@ -584,14 +655,19 @@ function attachFxHandlers(sliceTop, gd, cd) {
             trace._hasHoverLabel = true;
         }
 
+        if(isTreemap) {
+            var slice = sliceTop.select('path.surface');
+            styleOne(slice, pt, traceNow, true);
+        }
+
         trace._hasHoverEvent = true;
         gd.emit('plotly_hover', {
-            points: [helpers.makeEventData(pt, traceNow)],
+            points: [makeEventData(pt, traceNow)],
             event: d3.event
         });
-    });
+    };
 
-    sliceTop.on('mouseout', function(evt) {
+    var onMouseOut = function(evt) {
         var fullLayoutNow = gd._fullLayout;
         var traceNow = gd._fullData[trace.index];
         var pt = d3.select(this).datum();
@@ -599,7 +675,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
         if(trace._hasHoverEvent) {
             evt.originalEvent = d3.event;
             gd.emit('plotly_unhover', {
-                points: [helpers.makeEventData(pt, traceNow)],
+                points: [makeEventData(pt, traceNow)],
                 event: d3.event
             });
             trace._hasHoverEvent = false;
@@ -609,9 +685,14 @@ function attachFxHandlers(sliceTop, gd, cd) {
             Fx.loneUnhover(fullLayoutNow._hoverlayer.node());
             trace._hasHoverLabel = false;
         }
-    });
 
-    sliceTop.on('click', function(pt) {
+        if(isTreemap) {
+            var slice = sliceTop.select('path.surface');
+            styleOne(slice, pt, traceNow, false);
+        }
+    };
+
+    var onClick = function(pt) {
         // TODO: this does not support right-click. If we want to support it, we
         // would likely need to change pie to use dragElement instead of straight
         // mapbox event binding. Or perhaps better, make a simple wrapper with the
@@ -620,16 +701,22 @@ function attachFxHandlers(sliceTop, gd, cd) {
         var fullLayoutNow = gd._fullLayout;
         var traceNow = gd._fullData[trace.index];
 
-        var clickVal = Events.triggerHandler(gd, 'plotly_sunburstclick', {
-            points: [helpers.makeEventData(pt, traceNow)],
+        var clickVal = Events.triggerHandler(gd, 'plotly_' + trace.type + 'click', {
+            points: [makeEventData(pt, traceNow)],
             event: d3.event
         });
 
-        // 'regular' click event when sunburstclick is disabled or when
-        // clikcin on leaves or the hierarchy root
-        if(clickVal === false || helpers.isLeaf(pt) || helpers.isHierachyRoot(pt)) {
+        // 'regular' click event when sunburst/treemap click is disabled or when
+        // clicking on leaves or the hierarchy root
+        if(
+            clickVal === false ||
+            isSunburst && (
+                helpers.isHierarchyRoot(pt) ||
+                helpers.isLeaf(pt)
+            )
+        ) {
             if(fullLayoutNow.hovermode) {
-                gd._hoverdata = [helpers.makeEventData(pt, traceNow)];
+                gd._hoverdata = [makeEventData(pt, traceNow)];
                 Fx.click(gd, d3.event);
             }
             return;
@@ -644,13 +731,28 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
         // store 'old' level in guiEdit stash, so that subsequent Plotly.react
         // calls with the same uirevision can start from the same entry
-        Registry.call('_storeDirectGUIEdit', traceNow, fullLayoutNow._tracePreGUI[traceNow.uid], {level: traceNow.level});
+        Registry.call('_storeDirectGUIEdit', traceNow, fullLayoutNow._tracePreGUI[traceNow.uid], {
+            level: traceNow.level
+        });
 
-        var hierarchy = cd0.hierarchy;
         var id = helpers.getPtId(pt);
-        var nextEntry = helpers.isEntry(pt) ?
-            findEntryWithChild(hierarchy, id) :
-            findEntryWithLevel(hierarchy, id);
+        var isEntry = helpers.isEntry(pt);
+
+        var passPathOr = function(v) {
+            var q = pt.data.data._pathTo;
+            return (q === undefined) ? v : q;
+        };
+
+        if(isTreemap) {
+            traceNow._clickedInfo = {
+                id: passPathOr(id),
+                zoomOut: passPathOr(isEntry)
+            };
+        }
+
+        var nextEntry = isEntry ?
+            helpers.findEntryWithChild(hierarchy, id) :
+            helpers.findEntryWithLevel(hierarchy, id);
 
         var frame = {
             data: [{level: helpers.getPtId(nextEntry)}],
@@ -672,10 +774,27 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
         Fx.loneUnhover(fullLayoutNow._hoverlayer.node());
         Registry.call('animate', gd, frame, animOpts);
-    });
-}
+        /*
+        .then(function() {
+            // TODO: fixup hover position
+            onMouseOver(pt);
+        });
+        */
+    };
 
-function formatSliceLabel(pt, trace, fullLayout) {
+    sliceTop.on('mouseover', onMouseOver);
+    sliceTop.on('mouseout', onMouseOut);
+    sliceTop.on('click', onClick);
+};
+
+exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
+    var cd0 = cd[0];
+    var cdi = pt.data.data;
+
+    if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
+        return helpers.getLabelStr(cdi.label);
+    }
+
     var texttemplate = trace.texttemplate;
     var textinfo = trace.textinfo;
 
@@ -683,23 +802,59 @@ function formatSliceLabel(pt, trace, fullLayout) {
         return '';
     }
 
-    var cdi = pt.data.data;
     var separators = fullLayout.separators;
     if(!texttemplate) {
         var parts = textinfo.split('+');
         var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
         var thisText = [];
+        var tx;
 
         if(hasFlag('label') && cdi.label) {
             thisText.push(cdi.label);
         }
 
         if(cdi.hasOwnProperty('v') && hasFlag('value')) {
-            thisText.push(formatPieValue(cdi.v, separators));
+            thisText.push(formatValue(cdi.v, separators));
+        }
+
+        var nPercent = 0;
+        if(hasFlag('percent parent')) nPercent++;
+        if(hasFlag('percent visible')) nPercent++;
+        if(hasFlag('percent root')) nPercent++;
+        var hasMultiplePercents = nPercent > 1;
+
+        if(nPercent) {
+            var percent;
+            var addPercent = function(key) {
+                tx = Lib.formatPercent(percent, 0); // use funnel(area) version
+                if(tx === '0%') tx = formatPercent(percent, separators); // use pie version
+
+                if(hasMultiplePercents) tx += ' of ' + key + ' ';
+                thisText.push(tx);
+            };
+
+            var ref;
+            var calcPercent = function(key) {
+                percent = cdi.hasOwnProperty('v') ? cdi.v / ref.v : cdi.value / ref.value;
+                addPercent(key);
+            };
+
+            if(hasFlag('percent parent') && pt.parent) {
+                ref = pt.parent.data.data;
+                calcPercent('parent');
+            }
+            if(hasFlag('percent visible') && pt.parent) {
+                ref = entry.data.data;
+                calcPercent('visible');
+            }
+            if(hasFlag('percent root') && pt.parent) {
+                ref = cd0;
+                calcPercent('root');
+            }
         }
 
         if(hasFlag('text')) {
-            var tx = Lib.castOption(trace, cdi.i, 'text');
+            tx = Lib.castOption(trace, cdi.i, 'text');
             if(Lib.isValidTextValue(tx)) thisText.push(tx);
         }
 
@@ -712,7 +867,7 @@ function formatSliceLabel(pt, trace, fullLayout) {
     if(cdi.label) obj.label = cdi.label;
     if(cdi.hasOwnProperty('v')) {
         obj.value = cdi.v;
-        obj.valueLabel = formatPieValue(cdi.v, separators);
+        obj.valueLabel = formatValue(cdi.v, separators);
     }
     if(cdi.hasOwnProperty('color')) {
         obj.color = cdi.color;
@@ -721,7 +876,7 @@ function formatSliceLabel(pt, trace, fullLayout) {
     if(Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
     obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
     return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
-}
+};
 
 function getInscribedRadiusFraction(pt) {
     if(pt.rpx0 === 0 && Lib.isFullCircle([pt.x0, pt.x1])) {

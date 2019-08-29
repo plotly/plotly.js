@@ -11,24 +11,11 @@
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
-var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+var getTransform = require('../bar/plot').getTransform;
 
-exports.makeEventData = function(pt, trace) {
-    var cdi = pt.data.data;
-
-    var out = {
-        curveNumber: trace.index,
-        pointNumber: cdi.i,
-        data: trace._input,
-        fullData: trace,
-
-        // TODO more things like 'children', 'siblings', 'hierarchy?
-    };
-
-    appendArrayPointValue(out, trace, cdi.i);
-
-    return out;
-};
+function has(v) {
+    return v || v === 0;
+}
 
 exports.findEntryWithLevel = function(hierarchy, level) {
     var out;
@@ -56,54 +43,60 @@ exports.findEntryWithChild = function(hierarchy, childId) {
     return out || hierarchy;
 };
 
-exports.isHierachyRoot = function(pt) {
-    var cdi = pt.data.data;
-    return cdi.pid === '';
+exports.findChildPt = function(hierarchy, childId) {
+    var out = {};
+    hierarchy.eachAfter(function(pt) {
+        var children = pt.children || [];
+        for(var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if(exports.getPtId(child) === childId) {
+                out = {
+                    x0: child.x0,
+                    x1: child.x1,
+                    y0: child.y0,
+                    y1: child.y1,
+                };
+            }
+        }
+    });
+    return out;
 };
 
 exports.isEntry = function(pt) {
-    return !pt.parent;
+    return !has(pt.parent);
 };
 
 exports.isLeaf = function(pt) {
-    return !pt.children;
+    return !has(pt.children);
 };
 
 exports.getPtId = function(pt) {
-    var cdi = pt.data.data;
-    return cdi.id;
+    return pt.data.data.id;
+};
+
+exports.isHierarchyRoot = function(pt) {
+    return pt.data.data.pid === '';
 };
 
 exports.setSliceCursor = function(sliceTop, gd, opts) {
     var pt = sliceTop.datum();
     var isTransitioning = (opts || {}).isTransitioning;
-    setCursor(sliceTop, (isTransitioning || exports.isLeaf(pt) || exports.isHierachyRoot(pt)) ? null : 'pointer');
+    setCursor(sliceTop, (
+        isTransitioning ||
+        exports.isLeaf(pt) ||
+        exports.isHierarchyRoot(pt)
+    ) ? null : 'pointer');
 };
 
-exports.determineOutsideTextFont = function(trace, pt, layoutFont) {
-    var cdi = pt.data.data;
-    var ptNumber = cdi.i;
-
-    var color = Lib.castOption(trace, ptNumber, 'outsidetextfont.color') ||
-        Lib.castOption(trace, ptNumber, 'textfont.color') ||
-        layoutFont.color;
-
-    var family = Lib.castOption(trace, ptNumber, 'outsidetextfont.family') ||
-        Lib.castOption(trace, ptNumber, 'textfont.family') ||
-        layoutFont.family;
-
-    var size = Lib.castOption(trace, ptNumber, 'outsidetextfont.size') ||
-        Lib.castOption(trace, ptNumber, 'textfont.size') ||
-        layoutFont.size;
-
+function determineOutsideTextFont(trace, pt, layoutFont) {
     return {
-        color: color,
-        family: family,
-        size: size
+        color: exports.getOutsideTextFontKey('color', trace, pt, layoutFont),
+        family: exports.getOutsideTextFontKey('family', trace, pt, layoutFont),
+        size: exports.getOutsideTextFontKey('size', trace, pt, layoutFont)
     };
-};
+}
 
-exports.determineInsideTextFont = function(trace, pt, layoutFont) {
+function determineInsideTextFont(trace, pt, layoutFont, cont) {
     var cdi = pt.data.data;
     var ptNumber = cdi.i;
 
@@ -116,17 +109,78 @@ exports.determineInsideTextFont = function(trace, pt, layoutFont) {
         customColor = Lib.castOption(trace._input, ptNumber, 'textfont.color');
     }
 
-    var family = Lib.castOption(trace, ptNumber, 'insidetextfont.family') ||
-        Lib.castOption(trace, ptNumber, 'textfont.family') ||
-        layoutFont.family;
-
-    var size = Lib.castOption(trace, ptNumber, 'insidetextfont.size') ||
-        Lib.castOption(trace, ptNumber, 'textfont.size') ||
-        layoutFont.size;
-
     return {
         color: customColor || Color.contrast(cdi.color),
-        family: family,
-        size: size
+        family: exports.getInsideTextFontKey('family', cont || trace, pt, layoutFont),
+        size: exports.getInsideTextFontKey('size', cont || trace, pt, layoutFont)
     };
+}
+
+exports.getInsideTextFontKey = function(keyStr, trace, pt, layoutFont) {
+    var ptNumber = pt.data.data.i;
+
+    return (
+        Lib.castOption(trace, ptNumber, 'insidetextfont.' + keyStr) ||
+        Lib.castOption(trace, ptNumber, 'textfont.' + keyStr) ||
+        layoutFont.size
+    );
+};
+
+exports.getOutsideTextFontKey = function(keyStr, trace, pt, layoutFont) {
+    var ptNumber = pt.data.data.i;
+
+    return (
+        Lib.castOption(trace, ptNumber, 'outsidetextfont.' + keyStr) ||
+        Lib.castOption(trace, ptNumber, 'textfont.' + keyStr) ||
+        layoutFont.size
+    );
+};
+
+exports.isOutsideText = function(trace, pt) {
+    return !trace._hasColorscale && exports.isHierarchyRoot(pt);
+};
+
+exports.determineTextFont = function(trace, pt, layoutFont, cont) {
+    return exports.isOutsideText(trace, pt) ?
+        determineOutsideTextFont(trace, pt, layoutFont) :
+        determineInsideTextFont(trace, pt, layoutFont, cont);
+};
+
+exports.hasTransition = function(transitionOpts) {
+    // We could optimize hasTransition per trace,
+    // as sunburst & treemap have no cross-trace logic!
+    return !!(transitionOpts && transitionOpts.duration > 0);
+};
+
+exports.strTransform = function(d) {
+    return getTransform({
+        textX: d.transform.textX,
+        textY: d.transform.textY,
+        targetX: d.transform.targetX,
+        targetY: d.transform.targetY,
+        scale: d.transform.scale,
+        rotate: d.transform.rotate
+    });
+};
+
+exports.getMaxDepth = function(trace) {
+    return trace.maxdepth >= 0 ? trace.maxdepth : Infinity;
+};
+
+exports.isHeader = function(pt, trace) { // it is only used in treemap.
+    return !(exports.isLeaf(pt) || pt.depth === trace._maxDepth - 1);
+};
+
+exports.getLabelStr = function(label) {
+    return has(label) ? label.split('<br>').join(' ') : '';
+};
+
+exports.getLabelString = function(label) { // used in hover to reference to the "root"
+    var str = exports.getLabelStr(label);
+    return str ? str : '"root"';
+};
+
+exports.getPath = function(d) {
+    var labelStr = exports.getLabelStr(d.data.label) + '/';
+    return has(d.parent) ? exports.getPath(d.parent) + labelStr : labelStr;
 };
