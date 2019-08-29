@@ -8,22 +8,14 @@
 
 'use strict';
 
-var Registry = require('../../registry');
-var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
+var plots = require('../../plots/plots');
 
 exports.name = 'funnelarea';
 
-exports.plot = function(gd) {
-    var Funnelarea = Registry.getModule('funnelarea');
-    var cdFunnelarea = getModuleCalcData(gd.calcdata, Funnelarea)[0];
-    Funnelarea.plot(gd, cdFunnelarea);
+exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
+    plots.plotBasePlot(exports.name, gd, traces, transitionOpts, makeOnCompleteCallback);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadFunnelarea = (oldFullLayout._has && oldFullLayout._has('funnelarea'));
-    var hasFunnelarea = (newFullLayout._has && newFullLayout._has('funnelarea'));
-
-    if(hadFunnelarea && !hasFunnelarea) {
-        oldFullLayout._funnelarealayer.selectAll('g.trace').remove();
-    }
+    plots.cleanBasePlot(exports.name, newFullData, newFullLayout, oldFullData, oldFullLayout);
 };
