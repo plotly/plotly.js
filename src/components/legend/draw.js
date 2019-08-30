@@ -102,8 +102,18 @@ module.exports = function draw(gd) {
             var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[getYanchor(opts)] * opts._effHeight;
 
             if(fullLayout.margin.autoexpand) {
+                var lx0 = lx;
+                var ly0 = ly;
+
                 lx = Lib.constrain(lx, 0, fullLayout.width - opts._width);
                 ly = Lib.constrain(ly, 0, fullLayout.height - opts._effHeight);
+
+                if(lx !== lx0) {
+                    Lib.log('Constrain legend.x to make legend fit inside graph');
+                }
+                if(ly !== ly0) {
+                    Lib.log('Constrain legend.y to make legend fit inside graph');
+                }
             }
 
             // Set size and position of all the elements that make up a legend:
