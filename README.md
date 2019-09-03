@@ -55,6 +55,8 @@ and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = 
 
 and use the `Plotly` object in the window scope.
 
+Fastly supports Plotly.js with free CDN service. Read more at https://www.fastly.com/open-source
+
 ### Download the latest release
 
 [Latest Release on GitHub](https://github.com/plotly/plotly.js/releases/)
