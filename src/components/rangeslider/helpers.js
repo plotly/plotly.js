@@ -44,15 +44,6 @@ exports.makeData = function(fullLayout) {
 exports.autoMarginOpts = function(gd, ax) {
     var opts = ax[name];
 
-    var oppBottom = Infinity;
-    var counterAxes = ax._counterAxes;
-    for(var j = 0; j < counterAxes.length; j++) {
-        var counterId = counterAxes[j];
-        var oppAxis = axisIDs.getFromId(gd, counterId);
-        oppBottom = Math.min(oppBottom, oppAxis.domain[0]);
-    }
-    opts._oppBottom = oppBottom;
-
     var tickHeight = (ax.side === 'bottom' && ax._boundingBox.height) || 0;
     opts._tickHeight = tickHeight;
 

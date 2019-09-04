@@ -1653,7 +1653,6 @@ axes.drawOne = function(gd, ax, opts) {
     var mainMirrorPosition = ax._mainMirrorPosition;
     var mainPlotinfo = fullLayout._plots[mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
-    var subplotsWithAx = ax._subplotsWith;
 
     var vals = ax._vals = axes.calcTicks(ax);
 
@@ -1691,7 +1690,9 @@ axes.drawOne = function(gd, ax, opts) {
     var dividerVals = getDividerVals(ax, vals);
 
     if(!fullLayout._hasOnlyLargeSploms) {
-        // keep track of which subplots (by main conteraxis) we've already
+        var subplotsWithAx = ax._subplotsWith;
+
+        // keep track of which subplots (by main counter axis) we've already
         // drawn grids for, so we don't overdraw overlaying subplots
         var finishedGrids = {};
 
@@ -1829,10 +1830,6 @@ axes.drawOne = function(gd, ax, opts) {
         });
     }
 
-    function extendRange(range, newRange) {
-        range[0] = Math.min(range[0], newRange[0]);
-        range[1] = Math.max(range[1], newRange[1]);
-    }
 
     function calcBoundingBox() {
         if(ax.showticklabels) {
@@ -1886,32 +1883,6 @@ axes.drawOne = function(gd, ax, opts) {
                     height: ax._length,
                     width: 0
                 };
-            }
-        }
-
-        /*
-         * for spikelines: what's the full domain of positions in the
-         * opposite direction that are associated with this axis?
-         * This means any axes that we make a subplot with, plus the
-         * position of the axis itself if it's free.
-         */
-        if(subplotsWithAx) {
-            var fullRange = ax._counterSpan = [Infinity, -Infinity];
-
-            for(var i = 0; i < subplotsWithAx.length; i++) {
-                var plotinfo = fullLayout._plots[subplotsWithAx[i]];
-                var counterAxis = plotinfo[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
-
-                extendRange(fullRange, [
-                    counterAxis._offset,
-                    counterAxis._offset + counterAxis._length
-                ]);
-            }
-
-            if(ax.anchor === 'free') {
-                extendRange(fullRange, (axLetter === 'x') ?
-                    [ax._boundingBox.bottom, ax._boundingBox.top] :
-                    [ax._boundingBox.right, ax._boundingBox.left]);
             }
         }
     }

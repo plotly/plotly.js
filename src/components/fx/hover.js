@@ -1443,8 +1443,14 @@ function createSpikelines(gd, closestPoints, opts) {
                 xEndSpike = hLinePointX;
             }
             if(yMode.indexOf('across') !== -1) {
-                xBase = ya._counterSpan[0];
-                xEndSpike = ya._counterSpan[1];
+                var xAcross0 = ya._counterDomainMin;
+                var xAcross1 = ya._counterDomainMax;
+                if(ya.anchor === 'free') {
+                    xAcross0 = Math.min(xAcross0, ya.position);
+                    xAcross1 = Math.max(xAcross1, ya.position);
+                }
+                xBase = gs.l + xAcross0 * gs.w;
+                xEndSpike = gs.l + xAcross1 * gs.w;
             }
 
             // Foreground horizontal line (to y-axis)
@@ -1516,8 +1522,14 @@ function createSpikelines(gd, closestPoints, opts) {
                 yEndSpike = vLinePointY;
             }
             if(xMode.indexOf('across') !== -1) {
-                yBase = xa._counterSpan[0];
-                yEndSpike = xa._counterSpan[1];
+                var yAcross0 = xa._counterDomainMin;
+                var yAcross1 = xa._counterDomainMax;
+                if(xa.anchor === 'free') {
+                    yAcross0 = Math.min(yAcross0, xa.position);
+                    yAcross1 = Math.max(yAcross1, xa.position);
+                }
+                yBase = gs.t + (1 - yAcross1) * gs.h;
+                yEndSpike = gs.t + (1 - yAcross0) * gs.h;
             }
 
             // Foreground vertical line (to x-axis)
