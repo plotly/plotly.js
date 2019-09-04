@@ -43,17 +43,14 @@ exports.makeData = function(fullLayout) {
 
 exports.autoMarginOpts = function(gd, ax) {
     var opts = ax[name];
-
-    var tickHeight = (ax.side === 'bottom' && ax._boundingBox.height) || 0;
-    opts._tickHeight = tickHeight;
-
+    var bottomDepth = ax.side === 'bottom' ? ax._depth : 0;
     return {
         x: 0,
-        y: oppBottom,
+        y: ax._counterDomainMin,
         l: 0,
         r: 0,
         t: 0,
-        b: opts._height + gd._fullLayout.margin.b + tickHeight,
+        b: opts._height + gd._fullLayout.margin.b + bottomDepth,
         pad: constants.extraPad + opts._offsetShift * 2
     };
 };
