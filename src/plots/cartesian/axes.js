@@ -1828,13 +1828,11 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(ax.type === 'multicategory') {
         var pad = {x: 2, y: 10}[axLetter];
-        var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
-        var bboxKey = {x: 'height', y: 'width'}[axLetter];
-
-        // TODO missing 'ax.ticklen` part when tickson:'labels'
+        var sgn = {l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)];
 
         seq.push(function() {
-            ax._depth = getLabelLevelBbox()[bboxKey] + pad +
+            var bboxKey = {x: 'height', y: 'width'}[axLetter];
+            var standoff = getLabelLevelBbox()[bboxKey] + pad +
                 (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
 
             return axes.drawLabels(gd, ax, {
@@ -1844,12 +1842,12 @@ axes.drawOne = function(gd, ax, opts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + ax._depth * sgn)
+                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * sgn)
             });
         });
 
         seq.push(function() {
-            ax._depth += getLabelLevelBbox('tick2')[bboxKey];
+            ax._depth = sgn * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
