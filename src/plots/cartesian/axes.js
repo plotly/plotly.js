@@ -34,6 +34,7 @@ var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 
 var axes = module.exports = {};
 
@@ -1863,11 +1864,13 @@ axes.drawOne = function(gd, ax, opts) {
 
     seq.push(function() {
         var s = ax.side.charAt(0);
+        var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
         var pos = axes.getPxPosition(gd, ax);
         var outsideTickLen = ax.ticks === 'outside' ? ax.ticklen : 0;
         var llbbox;
 
         var push;
+        var mirrorPush;
         var rangeSliderPush;
 
         if(ax.automargin || hasRangeSlider) {
@@ -1935,6 +1938,19 @@ axes.drawOne = function(gd, ax, opts) {
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 push[s] += ax.title.font.size;
             }
+
+            if(ax.mirror) {
+                mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+                mirrorPush[sMirror] = ax.linewidth;
+                if(ax.mirror && ax.mirror !== true) mirrorPush[sMirror] += outsideTickLen;
+
+                if(ax.mirror === true || ax.mirror === 'ticks') {
+                    mirrorPush[counterLetter] = ax._anchorAxis.domain[domainIndices[1]];
+                } else if(ax.mirror === 'all' || ax.mirror === 'allticks') {
+                    mirrorPush[counterLetter] = [ax._counterDomainMin, ax._counterDomainMax][domainIndices[1]];
+                }
+            }
         }
 
         if(hasRangeSlider) {
@@ -1942,6 +1958,7 @@ axes.drawOne = function(gd, ax, opts) {
         }
 
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
+        Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
     });
 
@@ -2843,6 +2860,9 @@ axes.allowAutoMargin = function(gd) {
         var ax = axList[i];
         if(ax.automargin) {
             Plots.allowAutoMargin(gd, axAutoMarginID(ax));
+            if(ax.mirror) {
+                Plots.allowAutoMargin(gd, axMirrorAutoMarginID(ax));
+            }
         }
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(ax)) {
             Plots.allowAutoMargin(gd, rangeSliderAutoMarginID(ax));
@@ -2851,6 +2871,7 @@ axes.allowAutoMargin = function(gd) {
 };
 
 function axAutoMarginID(ax) { return ax._id + '.automargin'; }
+function axMirrorAutoMarginID(ax) { return axAutoMarginID(ax) + '.mirror'; }
 function rangeSliderAutoMarginID(ax) { return ax._id + '.rangeslider'; }
 
 // swap all the presentation attributes of the axes showing these traces
