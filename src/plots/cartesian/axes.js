@@ -1934,9 +1934,11 @@ axes.drawOne = function(gd, ax, opts) {
                 ax.position :
                 ax._anchorAxis.domain[domainIndices[0]];
 
-            // TODO won't work for multi-line titles !!
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                push[s] += ax.title.font.size;
+                var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+                push[s] += extraLines ?
+                    ax.title.font.size * (extraLines + 1) * LINE_SPACING :
+                    ax.title.font.size;
             }
 
             if(ax.mirror) {

@@ -266,6 +266,7 @@ var SPLIT_TAGS = /(<[^<>]*>)/;
 var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
 
 var BR_TAG = /<br(\s+.*)?>/i;
+exports.BR_TAG_ALL = /<br(\s+.*)?>/gi;
 
 /*
  * style and href: pull them out of either single or double quotes. Also
