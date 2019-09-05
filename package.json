@@ -119,7 +119,7 @@
   },
   "devDependencies": {
     "brfs": "^2.0.2",
-    "browserify": "^16.3.0",
+    "browserify": "^16.5.0",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.3.0",
     "chttps": "^1.0.6",
