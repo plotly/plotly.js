@@ -126,7 +126,7 @@
     "deep-equal": "^1.0.1",
     "derequire": "^2.0.6",
     "ecstatic": "^3.3.2",
-    "eslint": "^6.1.0",
+    "eslint": "^6.3.0",
     "falafel": "^2.1.0",
     "fs-extra": "^2.0.0",
     "fuse.js": "^3.4.5",
