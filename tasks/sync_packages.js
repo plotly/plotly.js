@@ -41,6 +41,26 @@ constants.partialBundlePaths
     }])
     .forEach(syncPartialBundlePkg);
 
+// sync "minified partial bundle" packages
+constants.partialBundlePaths
+    .map(function(d) {
+        return {
+            name: 'plotly.js-' + d.name + '-dist-min',
+            index: d.index,
+            main: 'plotly-' + d.name + '.min.js',
+            dist: d.distMin,
+            desc: 'Ready-to-use minified plotly.js ' + d.name + ' distributed bundle.',
+        };
+    })
+    .concat([{
+        name: 'plotly.js-dist-min',
+        index: path.join(constants.pathToLib, 'index.js'),
+        main: 'plotly.min.js',
+        dist: constants.pathToPlotlyDistMin,
+        desc: 'Ready-to-use minified plotly.js distributed bundle.',
+    }])
+    .forEach(syncPartialBundlePkg);
+
 // sync "locales" package
 syncLocalesPkg({
     name: 'plotly.js-locales',
