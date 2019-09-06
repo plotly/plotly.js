@@ -870,6 +870,25 @@ describe('Test axes', function() {
             _assertMatchingAxes(['xaxis3', 'yaxis3'], true, [-1, 6]);
             _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
         });
+
+        it('should adapt default axis ranges to *rangemode*', function() {
+            layoutIn = {
+                xaxis: {rangemode: 'tozero'},
+                yaxis: {rangemode: 'nonnegative'},
+                xaxis2: {rangemode: 'nonnegative'},
+                yaxis2: {rangemode: 'tozero'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.xaxis.push('x2');
+            layoutOut._subplots.yaxis.push('y2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.range).withContext('xaxis range').toEqual([0, 6]);
+            expect(layoutOut.xaxis2.range).withContext('xaxis2 range').toEqual([0, 6]);
+            expect(layoutOut.yaxis.range).withContext('yaxis range').toEqual([0, 4]);
+            expect(layoutOut.yaxis2.range).withContext('yaxis2 range').toEqual([0, 4]);
+        });
     });
 
     describe('constraints relayout', function() {
