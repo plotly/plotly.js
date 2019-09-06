@@ -217,7 +217,7 @@ function makeBundleInfo(pathObj) {
         'Install [`' + pkgName + '-min`](https://www.npmjs.com/package/' + pkgName + '-min) with',
         '```',
         'npm install ' + pkgName + '-min',
-        '```',        
+        '```',
         '',
         '#### Other plotly.js entry points',
         '',
