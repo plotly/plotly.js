@@ -1617,6 +1617,56 @@ describe('annotation effects', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should remove annotations if offscreen during axis drag', function(done) {
+        gd = createGraphDiv();
+
+        function _assert(msg, exp) {
+            return function() {
+                expect(gd._dragging).toBe(exp.dragging, 'is during drag| ' + msg);
+                expect(Boolean(textDrag())).toBe(exp.onScreen, 'is annotation on screen| ' + msg);
+            };
+        }
+
+        Plotly.plot(gd, [{
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            y: [0, 4, 5, 1, 2, 2, 3, 4, 2],
+        }], {
+            dragmode: 'pan',
+            width: 500, height: 500,
+            annotations: [{
+                x: 2, y: 5,
+                xref: 'x', yref: 'y',
+                text: 'Annotation Text',
+                arrowhead: 7,
+                ax: 0, ay: -40
+            }]
+        })
+        .then(_assert('base', {
+            dragging: undefined,
+            onScreen: true
+        }))
+        .then(function() {
+            var fns = drag.makeFns({pos0: [250, 250], posN: [500, 250]});
+            return fns.start()
+                .then(_assert('during drag offscreen', {
+                    dragging: true,
+                    onScreen: false
+                }))
+                .then(fns.end);
+        })
+        .then(function() {
+            var fns = drag.makeFns({pos0: [250, 250], posN: [0, 250]});
+            return fns.start()
+                .then(_assert('during drag back onscreen', {
+                    dragging: true,
+                    onScreen: true
+                }))
+                .then(fns.end);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('animating annotations', function() {
