@@ -27,8 +27,8 @@
       },
       "text": [
         "A",
-        "B",
-        "C"
+        "B \n b",
+        "C <br> c"
       ],
       "textposition": "top left",
       "textfont": {
