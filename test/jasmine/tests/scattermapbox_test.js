@@ -493,6 +493,32 @@ describe('scattermapbox convert', function() {
         expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
     });
 
+    it('should convert \\n to \'\' and <br> to \\n', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'text',
+            text: ['one\nline', 'two<br>lines', 'three<BR>lines<br />yep']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['oneline', 'two\nlines', 'three\nlines\nyep', undefined, undefined]);
+    });
+
+    it('should convert \\n to \'\' and <br> to \\n - texttemplate case', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'text',
+            texttemplate: ['%{lon}\none\nline', '%{lat}<br>two<br>lines', '%{lon}\n%{lat}<br>more<br>lines']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['10oneline', '20\ntwo\nlines', '3010\nmore\nlines', '', '']);
+    });
+
     it('should generate correct output for texttemplate', function() {
         var mock = {
             'type': 'scattermapbox',
