@@ -13,6 +13,7 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var Colorscale = require('../../components/colorscale');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
@@ -236,7 +237,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
         // invalidate the getTextLocation cache in case paths changed
         Lib.clearLocationCache();
 
-        var contourFormat = exports.labelFormatter(contours, cd0.t.cb, gd._fullLayout);
+        var contourFormat = exports.labelFormatter(gd, cd0);
 
         var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
@@ -388,13 +389,18 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, gd, uid) {
     return lineClip;
 };
 
-exports.labelFormatter = function(contours, colorbar, fullLayout) {
+exports.labelFormatter = function(gd, cd0) {
+    var fullLayout = gd._fullLayout;
+    var trace = cd0.trace;
+    var contours = trace.contours;
+
     if(contours.labelformat) {
         return fullLayout._d3locale.numberFormat(contours.labelformat);
     } else {
         var formatAxis;
-        if(colorbar) {
-            formatAxis = colorbar.axis;
+        var cOpts = Colorscale.extractOpts(trace);
+        if(cOpts && cOpts.colorbar && cOpts.colorbar._axis) {
+            formatAxis = cOpts.colorbar._axis;
         } else {
             formatAxis = {
                 type: 'linear',

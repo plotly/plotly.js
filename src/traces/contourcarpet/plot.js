@@ -182,7 +182,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
         // invalidate the getTextLocation cache in case paths changed
         Lib.clearLocationCache();
 
-        var contourFormat = contourPlot.labelFormatter(contours, cd0.t.cb, gd._fullLayout);
+        var contourFormat = contourPlot.labelFormatter(gd, cd0);
 
         var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
