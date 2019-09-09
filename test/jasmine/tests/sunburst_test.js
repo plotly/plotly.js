@@ -1251,4 +1251,14 @@ describe('Test sunburst texttemplate:', function() {
       [['txt: %{label}', '%{text}', 'value: %{value}'], ['txt: Eve', '2', 'value: 13', '', '']],
       ['%{color}', ['rgba(0,0,0,0)', '#1f77b4', '#ff7f0e', '#1f77b4', '#1f77b4']]
     ]);
+
+    // Check for empty string
+    checkTextTemplate([{
+        'type': 'sunburst',
+        'labels': ['Alpha', 'Bravo'],
+        'parents': ['', 'Alpha'],
+        'text': ['description', '']
+    }], 'g.slicetext', [
+      ['%{label} %{text}', ['Alpha description', 'Bravo ']]
+    ]);
 });
