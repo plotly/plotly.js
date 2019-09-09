@@ -20,6 +20,9 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
+var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;
+var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
+
 module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
@@ -234,14 +237,13 @@ function makeSymbolGeoJSON(calcTrace, gd) {
 
     var marker = trace.marker || {};
     var symbol = marker.symbol;
-    var text = trace.text;
 
     var fillSymbol = (symbol !== 'circle') ?
         getFillFunc(symbol) :
         blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-        getFillFunc(text) :
+        getFillFunc(trace.text) :
         blankFillFunc;
 
     var features = [];
@@ -261,6 +263,9 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             calcPt.txt = Lib.texttemplateString(txti, {}, gd._fullLayout._d3locale, calcPt, trace._meta || {});
         }
 
+        var text = txt ? calcPt.txt : fillText(calcPt.tx);
+        if(text) text = text.replace(NEWLINES, '').replace(BR_TAG_ALL, '\n');
+
         features.push({
             type: 'Feature',
             geometry: {
@@ -269,7 +274,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             },
             properties: {
                 symbol: fillSymbol(calcPt.mx),
-                text: txt ? calcPt.txt : fillText(calcPt.tx)
+                text: text
             }
         });
     }
