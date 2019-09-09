@@ -108,17 +108,14 @@ module.exports = function(gd) {
 
         var gs = fullLayout._size;
         var domain = axisOpts.domain;
-        var tickHeight = opts._tickHeight;
-
-        var oppBottom = opts._oppBottom;
 
         opts._width = gs.w * (domain[1] - domain[0]);
 
         var x = Math.round(gs.l + (gs.w * domain[0]));
 
         var y = Math.round(
-            gs.t + gs.h * (1 - oppBottom) +
-            tickHeight +
+            gs.t + gs.h * (1 - axisOpts._counterDomainMin) +
+            (axisOpts.side === 'bottom' ? axisOpts._depth : 0) +
             opts._offsetShift + constants.extraPad
         );
 

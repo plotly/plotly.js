@@ -392,9 +392,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             options['_' + axLetter + 'shift'] = textShift;
         }
 
-        // We have everything we need for calcAutorange at this point,
-        // we can safely exit - unless we're currently dragging the plot
-        if(!gd._dragging && annotationIsOffscreen) {
+        if(annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }

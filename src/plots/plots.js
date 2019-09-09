@@ -920,6 +920,26 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         ax._counterAxes.sort(axisIDs.idSort);
         ax._subplotsWith.sort(Lib.subplotSort);
         ax._mainSubplot = findMainSubplot(ax, newFullLayout);
+
+        // find "full" domain span of counter axes,
+        // this loop can be costly, so only compute it when required
+        if(ax._counterAxes.length && (
+            (ax.spikemode && ax.spikemode.indexOf('across') !== -1) ||
+            (ax.automargin && ax.mirror) ||
+            Registry.getComponentMethod('rangeslider', 'isVisible')(ax)
+        )) {
+            var min = 1;
+            var max = 0;
+            for(j = 0; j < ax._counterAxes.length; j++) {
+                var ax2 = axisIDs.getFromId(mockGd, ax._counterAxes[j]);
+                min = Math.min(min, ax2.domain[0]);
+                max = Math.max(max, ax2.domain[1]);
+            }
+            if(min < max) {
+                ax._counterDomainMin = min;
+                ax._counterDomainMax = max;
+            }
+        }
     }
 };
 
@@ -1645,7 +1665,6 @@ plots.purge = function(gd) {
         fullLayout._glcontainer.remove();
         fullLayout._glcanvas = null;
     }
-    if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
@@ -2413,26 +2432,25 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                 var xr0 = xa.range.slice();
                 var yr0 = ya.range.slice();
 
-                var xr1;
+                var xr1 = null;
+                var yr1 = null;
+                var editX = null;
+                var editY = null;
+
                 if(Array.isArray(newLayout[xa._name + '.range'])) {
                     xr1 = newLayout[xa._name + '.range'].slice();
                 } else if(Array.isArray((newLayout[xa._name] || {}).range)) {
                     xr1 = newLayout[xa._name].range.slice();
                 }
-
-                var yr1;
                 if(Array.isArray(newLayout[ya._name + '.range'])) {
                     yr1 = newLayout[ya._name + '.range'].slice();
                 } else if(Array.isArray((newLayout[ya._name] || {}).range)) {
                     yr1 = newLayout[ya._name].range.slice();
                 }
 
-                var editX;
                 if(xr0 && xr1 && (xr0[0] !== xr1[0] || xr0[1] !== xr1[1])) {
                     editX = {xr0: xr0, xr1: xr1};
                 }
-
-                var editY;
                 if(yr0 && yr1 && (yr0[0] !== yr1[0] || yr0[1] !== yr1[1])) {
                     editY = {yr0: yr0, yr1: yr1};
                 }
@@ -2524,12 +2542,12 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
             xa.setScale();
             ya.setScale();
 
-            var editX;
+            var editX = null;
+            var editY = null;
+
             if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1]) {
                 editX = {xr0: xr0, xr1: xr1};
             }
-
-            var editY;
             if(yr0[0] !== yr1[0] || yr0[1] !== yr1[1]) {
                 editY = {yr0: yr0, yr1: yr1};
             }

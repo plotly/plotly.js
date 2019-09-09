@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -35,6 +34,7 @@ var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 
 var axes = module.exports = {};
 
@@ -1636,6 +1636,24 @@ axes.draw = function(gd, arg, opts) {
  * @param {object} ax (full) axis object
  * @param {object} opts
  * - @param {boolean} skipTitle (set to true to skip axis title draw call)
+ *
+ * Depends on:
+ * - ax._mainSubplot (from linkSubplots)
+ * - ax._mainAxis
+ * - ax._anchorAxis
+ * - ax._subplotsWith
+ * - ax._counterDomainMin, ax._counterDomainMax (optionally, from linkSubplots)
+ * - ax._mainLinePosition (from lsInner)
+ * - ax._mainMirrorPosition
+ * - ax._linepositions
+ *
+ * Fills in:
+ * - ax._vals:
+ * - ax._gridVals:
+ * - ax._selections:
+ * - ax._tickAngles:
+ * - ax._depth (when required only):
+ * - and calls ax.setScale
  */
 axes.drawOne = function(gd, ax, opts) {
     opts = opts || {};
@@ -1648,12 +1666,10 @@ axes.drawOne = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
-    var mainSubplot = ax._mainSubplot;
     var mainLinePosition = ax._mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
-    var mainPlotinfo = fullLayout._plots[mainSubplot];
+    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
-    var subplotsWithAx = ax._subplotsWith;
 
     var vals = ax._vals = axes.calcTicks(ax);
 
@@ -1664,13 +1680,27 @@ axes.drawOne = function(gd, ax, opts) {
         vals[i].axInfo = axInfo;
     }
 
-    if(!ax.visible) return;
-
     // stash selections to avoid DOM queries e.g.
     // - stash tickLabels selection, so that drawTitle can use it to scoot title
     ax._selections = {};
     // stash tick angle (including the computed 'auto' values) per tick-label class
     ax._tickAngles = {};
+    // measure [in px] between axis position and outward-most part of bounding box
+    // (touching either the tick label or ticks)
+    // depth can be expansive to compute, so we only do so when required
+    ax._depth = null;
+
+    // calcLabelLevelBbox can be expensive,
+    // so make sure to not call it twice during the same Axes.drawOne call
+    // by stashing label-level bounding boxes per tick-label class
+    var llbboxes = {};
+    function getLabelLevelBbox(suffix) {
+        var cls = axId + (suffix || 'tick');
+        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
+        return llbboxes[cls];
+    }
+
+    if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
     var tickVals;
@@ -1691,7 +1721,9 @@ axes.drawOne = function(gd, ax, opts) {
     var dividerVals = getDividerVals(ax, vals);
 
     if(!fullLayout._hasOnlyLargeSploms) {
-        // keep track of which subplots (by main conteraxis) we've already
+        var subplotsWithAx = ax._subplotsWith;
+
+        // keep track of which subplots (by main counter axis) we've already
         // drawn grids for, so we don't overdraw overlaying subplots
         var finishedGrids = {};
 
@@ -1795,13 +1827,13 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
-        var labelLength = 0;
         var pad = {x: 2, y: 10}[axLetter];
-        var sgn = tickSigns[2] * (ax.ticks === 'inside' ? -1 : 1);
+        var sgn = {l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)];
 
         seq.push(function() {
-            labelLength += getLabelLevelSpan(ax, axId + 'tick') + pad;
-            labelLength += ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0;
+            var bboxKey = {x: 'height', y: 'width'}[axLetter];
+            var standoff = getLabelLevelBbox()[bboxKey] + pad +
+                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
 
             return axes.drawLabels(gd, ax, {
                 vals: getSecondaryLabelVals(ax, vals),
@@ -1810,197 +1842,128 @@ axes.drawOne = function(gd, ax, opts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + labelLength * sgn)
+                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * sgn)
             });
         });
 
         seq.push(function() {
-            labelLength += getLabelLevelSpan(ax, axId + 'tick2');
-            ax._labelLength = labelLength;
+            ax._depth = sgn * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, sgn, labelLength),
+                path: axes.makeTickPath(ax, mainLinePosition, sgn, ax._depth),
                 transFn: transFn
             });
         });
     }
 
-    function extendRange(range, newRange) {
-        range[0] = Math.min(range[0], newRange[0]);
-        range[1] = Math.max(range[1], newRange[1]);
-    }
-
-    function calcBoundingBox() {
-        if(ax.showticklabels) {
-            var gdBB = gd.getBoundingClientRect();
-            var bBox = mainAxLayer.node().getBoundingClientRect();
-
-            /*
-             * the way we're going to use this, the positioning that matters
-             * is relative to the origin of gd. This is important particularly
-             * if gd is scrollable, and may have been scrolled between the time
-             * we calculate this and the time we use it
-             */
-
-            ax._boundingBox = {
-                width: bBox.width,
-                height: bBox.height,
-                left: bBox.left - gdBB.left,
-                right: bBox.right - gdBB.left,
-                top: bBox.top - gdBB.top,
-                bottom: bBox.bottom - gdBB.top
-            };
-        } else {
-            var gs = fullLayout._size;
-            var pos;
-
-            // set dummy bbox for ticklabel-less axes
-
-            if(axLetter === 'x') {
-                pos = ax.anchor === 'free' ?
-                    gs.t + gs.h * (1 - ax.position) :
-                    gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
-
-                ax._boundingBox = {
-                    top: pos,
-                    bottom: pos,
-                    left: ax._offset,
-                    right: ax._offset + ax._length,
-                    width: ax._length,
-                    height: 0
-                };
-            } else {
-                pos = ax.anchor === 'free' ?
-                    gs.l + gs.w * ax.position :
-                    gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
-
-                ax._boundingBox = {
-                    left: pos,
-                    right: pos,
-                    bottom: ax._offset + ax._length,
-                    top: ax._offset,
-                    height: ax._length,
-                    width: 0
-                };
-            }
-        }
-
-        /*
-         * for spikelines: what's the full domain of positions in the
-         * opposite direction that are associated with this axis?
-         * This means any axes that we make a subplot with, plus the
-         * position of the axis itself if it's free.
-         */
-        if(subplotsWithAx) {
-            var fullRange = ax._counterSpan = [Infinity, -Infinity];
-
-            for(var i = 0; i < subplotsWithAx.length; i++) {
-                var plotinfo = fullLayout._plots[subplotsWithAx[i]];
-                var counterAxis = plotinfo[(axLetter === 'x') ? 'yaxis' : 'xaxis'];
-
-                extendRange(fullRange, [
-                    counterAxis._offset,
-                    counterAxis._offset + counterAxis._length
-                ]);
-            }
-
-            if(ax.anchor === 'free') {
-                extendRange(fullRange, (axLetter === 'x') ?
-                    [ax._boundingBox.bottom, ax._boundingBox.top] :
-                    [ax._boundingBox.right, ax._boundingBox.left]);
-            }
-        }
-    }
-
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
-    function doAutoMargins() {
+    seq.push(function() {
         var s = ax.side.charAt(0);
+        var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
+        var pos = axes.getPxPosition(gd, ax);
+        var outsideTickLen = ax.ticks === 'outside' ? ax.ticklen : 0;
+        var llbbox;
+
         var push;
+        var mirrorPush;
         var rangeSliderPush;
 
-        if(hasRangeSlider) {
-            rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
+        if(ax.automargin || hasRangeSlider) {
+            if(ax.type === 'multicategory') {
+                llbbox = getLabelLevelBbox('tick2');
+            } else {
+                llbbox = getLabelLevelBbox();
+                if(axLetter === 'x' && s === 'b') {
+                    ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
+                }
+            }
         }
-        Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
 
-        if(ax.automargin && (!hasRangeSlider || s !== 'b')) {
+        if(ax.automargin) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+            var domainIndices = [0, 1];
 
-            var bbox = ax._boundingBox;
-            var titleOffset = getTitleOffset(gd, ax);
-            var anchorAxDomainIndex;
-            var offset;
+            if(axLetter === 'x') {
+                if(s === 'b') {
+                    push[s] = ax._depth;
+                } else {
+                    push[s] = ax._depth = Math.max(llbbox.width > 0 ? pos - llbbox.top : 0, outsideTickLen);
+                    domainIndices.reverse();
+                }
 
-            switch(axLetter + s) {
-                case 'xb':
-                    anchorAxDomainIndex = 0;
-                    offset = bbox.top - titleOffset;
-                    push[s] = bbox.height;
-                    break;
-                case 'xt':
-                    anchorAxDomainIndex = 1;
-                    offset = titleOffset - bbox.bottom;
-                    push[s] = bbox.height;
-                    break;
-                case 'yl':
-                    anchorAxDomainIndex = 0;
-                    offset = titleOffset - bbox.right;
-                    push[s] = bbox.width;
-                    break;
-                case 'yr':
-                    anchorAxDomainIndex = 1;
-                    offset = bbox.left - titleOffset;
-                    push[s] = bbox.width;
-                    break;
+                if(llbbox.width > 0) {
+                    var rExtra = llbbox.right - (ax._offset + ax._length);
+                    if(rExtra > 0) {
+                        push.x = 1;
+                        push.r = rExtra;
+                    }
+                    var lExtra = ax._offset - llbbox.left;
+                    if(lExtra > 0) {
+                        push.x = 0;
+                        push.l = lExtra;
+                    }
+                }
+            } else {
+                if(s === 'l') {
+                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                } else {
+                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    domainIndices.reverse();
+                }
+
+                if(llbbox.height > 0) {
+                    var bExtra = llbbox.bottom - (ax._offset + ax._length);
+                    if(bExtra > 0) {
+                        push.y = 0;
+                        push.b = bExtra;
+                    }
+                    var tExtra = ax._offset - llbbox.top;
+                    if(tExtra > 0) {
+                        push.y = 1;
+                        push.t = tExtra;
+                    }
+                }
             }
 
             push[counterLetter] = ax.anchor === 'free' ?
                 ax.position :
-                ax._anchorAxis.domain[anchorAxDomainIndex];
-
-            if(push[s] > 0) {
-                push[s] += offset;
-            }
+                ax._anchorAxis.domain[domainIndices[0]];
 
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                push[s] += ax.title.font.size;
+                var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+                push[s] += extraLines ?
+                    ax.title.font.size * (extraLines + 1) * LINE_SPACING :
+                    ax.title.font.size;
             }
 
-            if(axLetter === 'x' && bbox.width > 0) {
-                var rExtra = bbox.right - (ax._offset + ax._length);
-                if(rExtra > 0) {
-                    push.x = 1;
-                    push.r = rExtra;
-                }
-                var lExtra = ax._offset - bbox.left;
-                if(lExtra > 0) {
-                    push.x = 0;
-                    push.l = lExtra;
-                }
-            } else if(axLetter === 'y' && bbox.height > 0) {
-                var bExtra = bbox.bottom - (ax._offset + ax._length);
-                if(bExtra > 0) {
-                    push.y = 0;
-                    push.b = bExtra;
-                }
-                var tExtra = ax._offset - bbox.top;
-                if(tExtra > 0) {
-                    push.y = 1;
-                    push.t = tExtra;
+            if(ax.mirror) {
+                mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+                mirrorPush[sMirror] = ax.linewidth;
+                if(ax.mirror && ax.mirror !== true) mirrorPush[sMirror] += outsideTickLen;
+
+                if(ax.mirror === true || ax.mirror === 'ticks') {
+                    mirrorPush[counterLetter] = ax._anchorAxis.domain[domainIndices[1]];
+                } else if(ax.mirror === 'all' || ax.mirror === 'allticks') {
+                    mirrorPush[counterLetter] = [ax._counterDomainMin, ax._counterDomainMax][domainIndices[1]];
                 }
             }
         }
 
-        Plots.autoMargin(gd, axAutoMarginID(ax), push);
-    }
+        if(hasRangeSlider) {
+            rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
+        }
 
-    seq.push(calcBoundingBox, doAutoMargins);
+        Plots.autoMargin(gd, axAutoMarginID(ax), push);
+        Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
+        Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
+    });
 
     if(!opts.skipTitle &&
-        !(hasRangeSlider && ax._boundingBox && ax.side === 'bottom')
+        !(hasRangeSlider && ax.side === 'bottom')
     ) {
         seq.push(function() { return drawTitle(gd, ax); });
     }
@@ -2078,27 +2041,45 @@ function getDividerVals(ax, vals) {
     return out;
 }
 
-function getLabelLevelSpan(ax, cls) {
-    var axLetter = ax._id.charAt(0);
-    var angle = ax._tickAngles[cls] || 0;
-    var rad = Lib.deg2rad(angle);
-    var sinA = Math.sin(rad);
-    var cosA = Math.cos(rad);
-    var maxX = 0;
-    var maxY = 0;
+function calcLabelLevelBbox(ax, cls) {
+    var top, bottom;
+    var left, right;
 
-    // N.B. Drawing.bBox does not take into account rotate transforms
+    if(ax._selections[cls].size()) {
+        top = Infinity;
+        bottom = -Infinity;
+        left = Infinity;
+        right = -Infinity;
+        ax._selections[cls].each(function() {
+            var thisLabel = selectTickLabel(this);
+            // Use parent node <g.(x|y)tick>, to make Drawing.bBox
+            // retrieve a bbox computed with transform info
+            //
+            // To improve perf, it would be nice to use `thisLabel.node()`
+            // (like in fixLabelOverlaps) instead and use Axes.getPxPosition
+            // together with the makeLabelFns outputs and `tickangle`
+            // to compute one bbox per (tick value x tick style)
+            var bb = Drawing.bBox(thisLabel.node().parentNode);
+            top = Math.min(top, bb.top);
+            bottom = Math.max(bottom, bb.bottom);
+            left = Math.min(left, bb.left);
+            right = Math.max(right, bb.right);
+        });
+    } else {
+        top = 0;
+        bottom = 0;
+        left = 0;
+        right = 0;
+    }
 
-    ax._selections[cls].each(function() {
-        var thisLabel = selectTickLabel(this);
-        var bb = Drawing.bBox(thisLabel.node());
-        var w = bb.width;
-        var h = bb.height;
-        maxX = Math.max(maxX, cosA * w, sinA * h);
-        maxY = Math.max(maxY, sinA * w, cosA * h);
-    });
-
-    return {x: maxY, y: maxX}[axLetter];
+    return {
+        top: top,
+        bottom: bottom,
+        left: left,
+        right: right,
+        height: bottom - top,
+        width: right - left
+    };
 }
 
 /**
@@ -2151,7 +2132,7 @@ axes.makeTransFn = function(ax) {
  *  - {number} ticklen
  *  - {number} linewidth
  * @param {number} shift along direction of ticklen
- * @param {1 or -1} sng tick sign
+ * @param {1 or -1} sgn tick sign
  * @param {number (optional)} len tick length
  * @return {string}
  */
@@ -2655,14 +2636,28 @@ function drawDividers(gd, ax, opts) {
         .attr('d', opts.path);
 }
 
-function getTitleOffset(gd, ax) {
+/**
+ * Get axis position in px, that is the distance for the graph's
+ * top (left) edge for x (y) axes.
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} side
+ *  if anchored:
+ *  - {object} _anchorAxis
+ *  Otherwise:
+ *  - {number} position
+ * @return {number}
+ */
+axes.getPxPosition = function(gd, ax) {
     var gs = gd._fullLayout._size;
     var axLetter = ax._id.charAt(0);
     var side = ax.side;
     var anchorAxis;
 
     if(ax.anchor !== 'free') {
-        anchorAxis = axisIds.getFromId(gd, ax.anchor);
+        anchorAxis = ax._anchorAxis;
     } else if(axLetter === 'x') {
         anchorAxis = {
             _offset: gs.t + (1 - (ax.position || 0)) * gs.h,
@@ -2680,7 +2675,7 @@ function getTitleOffset(gd, ax) {
     } else if(side === 'bottom' || side === 'right') {
         return anchorAxis._offset + anchorAxis._length;
     }
-}
+};
 
 function drawTitle(gd, ax) {
     var fullLayout = gd._fullLayout;
@@ -2690,14 +2685,13 @@ function drawTitle(gd, ax) {
 
     var titleStandoff;
     if(ax.type === 'multicategory') {
-        titleStandoff = ax._labelLength;
+        titleStandoff = ax._depth;
     } else {
         var offsetBase = 1.5;
         titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
     }
 
-    var titleOffset = getTitleOffset(gd, ax);
-
+    var pos = axes.getPxPosition(gd, ax);
     var transform, x, y;
 
     if(axLetter === 'x') {
@@ -2708,7 +2702,7 @@ function drawTitle(gd, ax) {
         } else {
             y = titleStandoff + fontSize * (ax.showticklabels ? 1.5 : 0.5);
         }
-        y += titleOffset;
+        y += pos;
     } else {
         y = ax._offset + ax._length / 2;
 
@@ -2717,7 +2711,7 @@ function drawTitle(gd, ax) {
         } else {
             x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
         }
-        x += titleOffset;
+        x += pos;
 
         transform = {rotate: '-90', offset: 0};
     }
@@ -2866,6 +2860,9 @@ axes.allowAutoMargin = function(gd) {
         var ax = axList[i];
         if(ax.automargin) {
             Plots.allowAutoMargin(gd, axAutoMarginID(ax));
+            if(ax.mirror) {
+                Plots.allowAutoMargin(gd, axMirrorAutoMarginID(ax));
+            }
         }
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(ax)) {
             Plots.allowAutoMargin(gd, rangeSliderAutoMarginID(ax));
@@ -2874,6 +2871,7 @@ axes.allowAutoMargin = function(gd) {
 };
 
 function axAutoMarginID(ax) { return ax._id + '.automargin'; }
+function axMirrorAutoMarginID(ax) { return axAutoMarginID(ax) + '.mirror'; }
 function rangeSliderAutoMarginID(ax) { return ax._id + '.rangeslider'; }
 
 // swap all the presentation attributes of the axes showing these traces

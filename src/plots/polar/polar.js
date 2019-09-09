@@ -299,13 +299,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 };
 
 proto.mockAxis = function(fullLayout, polarLayout, axLayout, opts) {
-    var commonOpts = {
-        // to get _boundingBox computation right when showticklabels is false
-        anchor: 'free',
-        position: 0
-    };
-
-    var ax = Lib.extendFlat(commonOpts, axLayout, opts);
+    var ax = Lib.extendFlat({}, axLayout, opts);
     setConvertPolar(ax, polarLayout, fullLayout);
     return ax;
 };
