@@ -204,7 +204,10 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var sel = transition(Lib.ensureSingle(bar, 'path'), opts, makeOnCompleteCallback);
             sel
                 .style('vector-effect', 'non-scaling-stroke')
-                .attr('display', function() { return isBlank ? 'none' : null;})
+                .attr('display', function() {
+                    if(!isBlank) return null;
+                    if(isBlank && !hasTransition(opts)) return 'none';
+                })
                 .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
