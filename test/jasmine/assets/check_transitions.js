@@ -72,8 +72,9 @@ module.exports = function checkTransition(gd, mock, animateOpts, transitionOpts,
 
     // Run all tasks
     return promiseSerial(p.concat(checkTests))
-        .catch(function() {
+        .catch(function(err) {
             Date.now = now;
+            return Promise.reject(err);
         })
         .then(function() {
             Date.now = now;
@@ -92,25 +93,39 @@ function assert(test) {
     });
     switch(test[3]) {
         case 'd':
-            assertAttr(cur, test[4], round, msg);
+            assertEqual(cur, test[4], round, msg);
             break;
         case 'transform':
-            assertAttr(cur, test[4], round, msg);
+            assertCloseTo(cur, test[4], 3, extractNumbers, msg);
             break;
         default:
-            assertAttr(cur, test[4], Lib.identity, msg);
+            assertEqual(cur, test[4], Lib.identity, msg);
     }
     return Promise.resolve(true);
 }
 
-function assertAttr(A, B, cb, msg) {
+function assertEqual(A, B, cb, msg) {
     var a = cb(A);
     var b = cb(B);
     expect(a).withContext(msg + ' equal to ' + JSON.stringify(a)).toEqual(b);
 }
 
-function round(str) {
-    return str.map(function(cur) {
+function assertCloseTo(A, B, tolerance, cb, msg) {
+    var a = cb(A).flat();
+    var b = cb(B).flat();
+    expect(a).withContext(msg + ' equal to ' + JSON.stringify(A)).toBeWithinArray(b, tolerance);
+}
+
+function extractNumbers(array) {
+    return array.map(function(d) {
+        return d.match(reNumbers).map(function(n) {
+            return parseFloat(n);
+        });
+    });
+}
+
+function round(array) {
+    return array.map(function(cur) {
         return cur.replace(reNumbers, function(match) {
             return Math.round(match);
         });
