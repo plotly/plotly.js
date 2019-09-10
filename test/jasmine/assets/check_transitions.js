@@ -72,6 +72,9 @@ module.exports = function checkTransition(gd, mock, animateOpts, transitionOpts,
 
     // Run all tasks
     return promiseSerial(p.concat(checkTests))
+        .catch(function() {
+            Date.now = now;
+        })
         .then(function() {
             Date.now = now;
         });
@@ -83,9 +86,9 @@ module.exports = function checkTransition(gd, mock, animateOpts, transitionOpts,
 function assert(test) {
     var msg = 'at ' + test[0] + 'ms, selection ' + test[1] + ' has ' + test[3];
     var cur = [];
-    Plotly.d3.selectAll(test[1]).each(function(d, i) {
+    d3.selectAll(test[1]).each(function(d, i) {
         if(test[2] === 'style') cur[i] = this.style[test[3]];
-        if(test[2] === 'attr') cur[i] = Plotly.d3.select(this).attr(test[3]);
+        if(test[2] === 'attr') cur[i] = d3.select(this).attr(test[3]);
     });
     switch(test[3]) {
         case 'd':
@@ -103,7 +106,7 @@ function assert(test) {
 function assertAttr(A, B, cb, msg) {
     var a = cb(A);
     var b = cb(B);
-    expect(a).withContext(msg + ' equal to ' + JSON.stringify(b)).toEqual(b);
+    expect(a).withContext(msg + ' equal to ' + JSON.stringify(a)).toEqual(b);
 }
 
 function round(str) {

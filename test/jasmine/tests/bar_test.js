@@ -2587,7 +2587,7 @@ describe('bar tweening', function() {
           .then(done);
     });
 
-    it('for bar height and and text position', function(done) {
+    it('for vertical bar height and text position', function(done) {
         var tests = [
             [0, '.point path', 'attr', 'd', ['M18,270V42H162V270Z', 'M198,270V222.5H342V270Z', 'M378,270V194H522V270Z']],
             [0, 'text.bartext', 'attr', 'transform', ['translate(90 56)', 'translate(270 236.5)', 'translate(450 208)']],
@@ -2605,7 +2605,7 @@ describe('bar tweening', function() {
           .then(done);
     });
 
-    it('for bar width', function(done) {
+    it('for vertical bar width', function(done) {
         var tests = [
             [0, '.point path', 'attr', 'd', ['M54,270V13.5H486V270Z']],
             [250, '.point path', 'attr', 'd', ['M94.5,270V13.5H445.5V270Z']],
@@ -2619,6 +2619,48 @@ describe('bar tweening', function() {
                 y: [5]
             }]},
           animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for horizontal bar length and text position', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].orientation = 'h';
+        mockCopy.data[0].x = mock.data[0].y.slice();
+        mockCopy.data[0].y = mock.data[0].x.slice();
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,261V189H107V261Z', 'M0,171V99H513V171Z', 'M0,81V9H257V81Z']],
+            [0, 'text.bartext', 'attr', 'transform', ['translate(100 229)', 'translate(506 139)', 'translate(249 49)']],
+            [150, '.point path', 'attr', 'd', ['M0,261V189H171V261Z', 'M0,171V99H455V171Z', 'M0,81V9H276V81Z']],
+            [300, '.point path', 'attr', 'd', ['M0,261V189H235V261Z', 'M0,171V99H398V171Z', 'M0,81V9H295V81Z']],
+            [300, 'text.bartext', 'attr', 'transform', ['translate(228,229)', 'translate(391,139)', 'translate(287,49)']],
+            [450, '.point path', 'attr', 'd', ['M0,261V189H299V261Z', 'M0,171V99H340V171Z', 'M0,81V9H314V81Z']],
+            [600, '.point path', 'attr', 'd', ['M0,261V189H321V261Z', 'M0,171V99H321V171Z', 'M0,81V9H321V81Z']],
+            [600, 'text.bartext', 'attr', 'transform', ['translate(314 229)', 'translate(314 139)', 'translate(313 49)']]
+        ];
+        var animateOpts = {data: [{x: [15, 15, 15]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for bar line width and color', function(done) {
+        var tests = [
+            [0, '.point path', 'style', 'stroke', ['', '', '']],
+            [0, '.point path', 'style', 'stroke-width', ['0px', '0px', '0px']],
+            [150, '.point path', 'style', 'stroke', ['rgb(77, 0, 0)', 'rgb(0, 77, 0)', 'rgb(0, 0, 77)']],
+            [150, '.point path', 'style', 'stroke-width', ['6px', '6px', '6px']],
+            [300, '.point path', 'style', 'stroke', ['rgb(153, 0, 0)', 'rgb(0, 153, 0)', 'rgb(0, 0, 153)']],
+            [300, '.point path', 'style', 'stroke-width', ['12px', '12px', '12px']],
+            [450, '.point path', 'style', 'stroke', ['rgb(230, 0, 0)', 'rgb(0, 230, 0)', 'rgb(0, 0, 230)']],
+            [450, '.point path', 'style', 'stroke-width', ['18px', '18px', '18px']],
+            [600, '.point path', 'style', 'stroke', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']],
+            [600, '.point path', 'style', 'stroke-width', ['20px', '20px', '20px']]
+        ];
+        var animateOpts = {'data': [{'marker': {'line': {'width': 20, 'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
+
+        checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .catch(failTest)
           .then(done);
     });
