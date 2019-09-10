@@ -876,6 +876,17 @@ describe('Pie traces', function() {
         [['%{label} - %{value}', '%{text}', '%{value}', '%{percent}'], ['A - 1', 'textB', '3', '18.2%']],
         ['%{text}-%{color}', ['textA-#d62728', 'textB-#1f77b4', 'textC-#ff7f0e', 'textD-#2ca02c']]
     ]);
+
+    // Check texttemplate with aggregated values
+    checkTextTemplate([{
+        type: 'pie',
+        values: [1, 1, 1],
+        labels: ['A', 'A', 'B'],
+        text: ['textA1', 'textA2', 'textB'],
+        textposition: 'inside'
+    }], 'g.slicetext', [
+        ['%{text}', ['textA1', 'textB']]
+    ], true);
 });
 
 describe('pie hovering', function() {
