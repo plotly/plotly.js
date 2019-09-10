@@ -93,8 +93,12 @@ module.exports = function draw(gd) {
     Lib.syncOrAsync([
         Plots.previousPromises,
         function() { return computeLegendDimensions(gd, groups, traces); },
-        function() { return expandMargin(gd); },
         function() {
+            // IF expandMargin return a Promise (which is truthy),
+            // we're under a doAutoMargin redraw, so we don't have to
+            // draw the remaining pieces below
+            if(expandMargin(gd)) return;
+
             var gs = fullLayout._size;
             var bw = opts.borderwidth;
 
@@ -632,8 +636,7 @@ function expandMargin(gd) {
     var xanchor = getXanchor(opts);
     var yanchor = getYanchor(opts);
 
-
-    Plots.autoMargin(gd, 'legend', {
+    return Plots.autoMargin(gd, 'legend', {
         x: opts.x,
         y: opts.y,
         l: opts._width * (FROM_TL[xanchor]),

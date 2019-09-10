@@ -715,6 +715,34 @@ describe('legend relayout update', function() {
             .then(done);
         });
     });
+
+    it('should make legend fit in graph viewport', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/legend_negative_x.json'));
+
+        function _assert(msg, xy, wh) {
+            return function() {
+                var fullLayout = gd._fullLayout;
+                var legend3 = d3.select('g.legend');
+                var bg3 = legend3.select('rect.bg');
+                var translate = Drawing.getTranslate(legend3);
+                var x = translate.x;
+                var y = translate.y;
+                var w = +bg3.attr('width');
+                var h = +bg3.attr('height');
+                expect([x, y]).toBeWithinArray(xy, 25, msg + '| legend x,y');
+                expect([w, h]).toBeWithinArray(wh, 25, msg + '| legend w,h');
+                expect(x + w <= fullLayout.width).toBe(true, msg + '| fits in x');
+                expect(y + h <= fullLayout.height).toBe(true, msg + '| fits in y');
+            };
+        }
+
+        Plotly.plot(gd, fig)
+        .then(_assert('base', [5, 4.4], [512, 29]))
+        .then(function() { return Plotly.relayout(gd, 'legend.x', 0.8); })
+        .then(_assert('after relayout almost to right edge', [188, 4.4], [512, 29]))
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('legend orientation change:', function() {
