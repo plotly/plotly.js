@@ -591,9 +591,7 @@ describe('legend anchor utils:', function() {
 });
 
 describe('legend relayout update', function() {
-    'use strict';
     var gd;
-    var mock = require('@mocks/0.json');
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -601,7 +599,7 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, mock, {layout: {
+        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'), {layout: {
             legend: {x: 1.1, xanchor: 'left'},
             margin: {l: 50, r: 50, pad: 0},
             width: 500
@@ -633,7 +631,7 @@ describe('legend relayout update', function() {
     });
 
     it('should update border styling', function(done) {
-        var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'));
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
             var node = d3.select('g.legend').select('rect').node();
@@ -670,21 +668,13 @@ describe('legend relayout update', function() {
     });
 
     describe('should update legend valign', function() {
-        var mock = require('@mocks/legend_valign_top.json');
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-        afterEach(destroyGraphDiv);
-
         function markerOffsetY() {
             var translate = Drawing.getTranslate(d3.select('.legend .traces .layers'));
             return translate.y;
         }
 
         it('it should translate markers', function(done) {
-            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCopy = Lib.extendDeep({}, require('@mocks/legend_valign_top.json'));
 
             var top, middle, bottom;
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
@@ -707,16 +697,8 @@ describe('legend relayout update', function() {
     });
 
     describe('with legendgroup', function() {
-        var mock = require('@mocks/legendgroup_horizontal_wrapping.json');
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-        afterEach(destroyGraphDiv);
-
         it('changes the margin size to fit tracegroupgap', function(done) {
-            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCopy = Lib.extendDeep({}, require('@mocks/legendgroup_horizontal_wrapping.json'));
             Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 expect(gd._fullLayout._size.b).toBe(113);
