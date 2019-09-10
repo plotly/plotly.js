@@ -9,7 +9,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 'use strict';
 
-module.exports = function checkTextTemplate(mock, selector, tests) {
+module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
     var isGL = Registry.traceIs(mock[0].type, 'gl');
     var isPolar = Registry.traceIs(mock[0].type, 'polar');
     var isScatterLike = Registry.traceIs(mock[0].type, 'scatter-like');
@@ -46,30 +46,42 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
         });
     }
 
-    var N = tests[0][1].length;
-    var i;
+    // Extra tests
+    if(!skipExtra) {
+        var N = tests[0][1].length;
+        var i;
 
-    // Generate customdata
-    var customdata = [];
-    for(i = 0; i < N; i++) {
-        customdata.push(Lib.randstr({}));
+        // Generate customdata
+        var customdata = [];
+        for(i = 0; i < N; i++) {
+            customdata.push(Lib.randstr({}));
+        }
+        mock[0].customdata = customdata;
+        tests.push(['%{customdata}', customdata]);
+
+        // Generate meta
+        mock[0].meta = {'colname': 'A'};
+        var metaSolution = [];
+        for(i = 0; i < N; i++) {
+            metaSolution.push(mock[0].meta.colname);
+        }
+        tests.push(['%{meta.colname}', metaSolution]);
+
+        // Make sure that empty text shows up as an empty string
+        var emptyTextMock = Lib.extendDeep([], mock);
+        var emptyTextSolution = [];
+        emptyTextMock[0].text = [];
+        for(i = 0; i < N; i++) {
+            emptyTextMock[0].text[i] = '';
+            emptyTextSolution[i] = 'text:';
+        }
+        tests.push(['text:%{text}', emptyTextSolution, emptyTextMock]);
     }
-    mock[0].customdata = customdata;
-    tests.push(['%{customdata}', customdata]);
-
-    // Generate meta
-    mock[0].meta = {'colname': 'A'};
-    var metaSolution = [];
-    for(i = 0; i < N; i++) {
-        metaSolution.push(mock[0].meta.colname);
-    }
-    tests.push(['%{meta.colname}', metaSolution]);
-
     if(isGL) {
         tests.forEach(function(test) {
             it('@gl should support texttemplate', function(done) {
                 var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep([], mock);
+                var mockCopy = Lib.extendDeep([], test[2] || mock);
                 mockCopy[0].texttemplate = test[0];
                 Plotly.newPlot(gd, mockCopy)
                     .then(function() {
@@ -101,7 +113,7 @@ module.exports = function checkTextTemplate(mock, selector, tests) {
         tests.forEach(function(test) {
             it('should support texttemplate', function(done) {
                 var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep([], mock);
+                var mockCopy = Lib.extendDeep([], test[2] || mock);
                 mockCopy[0].texttemplate = test[0];
                 Plotly.newPlot(gd, mockCopy)
                     .then(function() {

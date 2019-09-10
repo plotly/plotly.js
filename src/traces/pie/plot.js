@@ -992,7 +992,7 @@ function formatSliceLabel(gd, pt, cd0) {
         } else {
             var obj = makeTemplateVariables(pt);
             var ptTx = helpers.getFirstFilled(trace.text, pt.pts);
-            if(isValidTextValue(ptTx)) obj.text = ptTx;
+            if(isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
             pt.text = Lib.texttemplateString(txt, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
         }
     }
