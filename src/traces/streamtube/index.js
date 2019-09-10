@@ -55,7 +55,7 @@ module.exports = {
             'To specify your own starting position, use attributes `starts.x`, `starts.y`',
             'and `starts.z`.',
 	    'The color is encoded by the norm of (u, v, w), and the local radius',
-	    'by the divergence of (u, v, w)'.
+	    'by the divergence of (u, v, w).'
         ].join(' ')
     }
 };
