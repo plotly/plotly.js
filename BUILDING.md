@@ -42,32 +42,57 @@ browserify index.js > bundle.js
 
 ## Angular CLI
 
-Currently Angular CLI uses Webpack under the hood to bundle and build your Angular application.
-Sadly it doesn't allow you to override its Webpack config in order to add the plugin mentioned in the [Webpack](#webpack) section.
-Without this plugin your build will fail when it tries to build glslify for WebGL plots.
+Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration. There is some work needed using a custom-webpack builder to get things going.
 
-Currently 2 solutions exists to circumvent this issue:
+1. Install [`@angular-builders/custom-webpack`](https://www.npmjs.com/package/@angular-builders/custom-webpack) and [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader)
+2. Create a new `extra-webpack.config.js` beside `angular.json`.
 
-1) If you need to use WebGL plots, you can create a Webpack config from your Angular CLI project with [ng eject](https://github.com/angular/angular-cli/wiki/eject). This will allow you to follow the instructions regarding Webpack.
-2) If you don't need to use WebGL plots, you can make a custom build containing only the required modules for your plots. The clean way to do it with Angular CLI is not the method described in the [Modules](https://github.com/plotly/plotly.js/blob/master/README.md#modules) section of the README but the following:
-
-```typescript
-// in the Component you want to create a graph
-import * as Plotly from 'plotly.js';
+> extra-webpack.config.json
+```javascript
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'ify-loader'
+            }
+        ]
+    },
+};
 ```
 
+3. Change the builder in `angular.json` to `"@angular-builders/custom-webpack:browser` and configure it correctly to use our new webpack config.
+
+> angular.json
 ```json
-// in src/tsconfig.app.json
-// List here the modules you want to import
-// this example is for scatter plots
 {
-    "compilerOptions": {
-        "paths": {
-            "plotly.js": [
-                "../node_modules/plotly.js/lib/core.js",
-                "../node_modules/plotly.js/lib/scatter.js"
-            ]
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "MY_PROJECT_NAME": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
         }
-    }
-}
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            ....
+            "customWebpackConfig": {
+              "path": "./extra-webpack.config.js",
+              "replaceDuplicatePlugins": true,
+              "mergeStrategies": {"module.rules":  "merge"}
+            }         
+          }
+        }
+...
 ```
+It's important to set `projects.x.architect.build.builder` and `projects.x.architect.build.options.customWebpackConfig`.
+If you have more projects in your `angular.json` make sure to adjust their settings accordingly.
