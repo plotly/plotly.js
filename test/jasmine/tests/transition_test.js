@@ -435,7 +435,7 @@ describe('Plotly.react transitions:', function() {
         addSpies();
 
         var trace = {
-            type: 'bar',
+            type: 'violin',
             y: [1],
             marker: {line: {width: 1}}
         };
@@ -444,8 +444,8 @@ describe('Plotly.react transitions:', function() {
         var layout = {transition: {duration: 10}};
 
         // sanity check that this test actually tests what was intended
-        var Bar = Registry.modules.bar._module;
-        if(Bar.animatable || Bar.attributes.marker.line.width.anim !== true) {
+        var Violin = Registry.modules.violin._module;
+        if(Violin.animatable || Violin.attributes.marker.line.width.anim !== true) {
             fail('Test no longer tests its indented code path:' +
                 ' This test is meant to test that Plotly.react with' +
                 ' *anim:true* attributes in *animatable:false* modules' +
