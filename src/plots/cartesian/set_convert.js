@@ -398,6 +398,10 @@ module.exports = function setConvert(ax, fullLayout) {
         // make sure we don't later mutate the defaults
         dflt = dflt.slice();
 
+        if(ax.rangemode === 'tozero' || ax.rangemode === 'nonnegative') {
+            dflt[0] = 0;
+        }
+
         if(!range || range.length !== 2) {
             Lib.nestedProperty(ax, rangeAttr).set(dflt);
             return;
