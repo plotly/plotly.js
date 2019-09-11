@@ -23,9 +23,10 @@ var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
-module.exports = function draw(gd) {
+function draw(gd) {
     var fullLayout = gd._fullLayout;
-    var sliderData = makeSliderData(fullLayout, gd);
+    var sliderData = makeSliderData(gd);
+    var gs = fullLayout._size;
 
     // draw a container for *all* sliders:
     var sliders = fullLayout._infolayer
@@ -41,11 +42,6 @@ module.exports = function draw(gd) {
             sliderOpts._commandObserver.remove();
             delete sliderOpts._commandObserver;
         }
-
-        // Most components don't need to explicitly remove autoMargin, because
-        // marginPushers does this - but slider updates don't go through
-        // a full replot so we need to explicitly remove it.
-        Plots.autoMargin(gd, autoMarginId(sliderOpts));
     }
 
     sliders.exit().each(function() {
@@ -67,14 +63,18 @@ module.exports = function draw(gd) {
         .each(clearSlider)
         .remove();
 
-    // Find the dimensions of the sliders:
-    for(var i = 0; i < sliderData.length; i++) {
-        var sliderOpts = sliderData[i];
-        findDimensions(gd, sliderOpts);
-    }
-
     sliderGroups.each(function(sliderOpts) {
         var gSlider = d3.select(this);
+        var dims = sliderOpts._dims;
+
+        dims.lx = Math.round(
+            gs.l + gs.w * sliderOpts.x -
+            dims.outerLength * FROM_TL[Lib.getXanchor(sliderOpts)]
+        );
+        dims.ly = Math.round(
+            gs.t + gs.h * (1 - sliderOpts.y) -
+            dims.height * FROM_TL[Lib.getYanchor(sliderOpts)]
+        );
 
         computeLabelSteps(sliderOpts);
 
@@ -95,14 +95,11 @@ module.exports = function draw(gd) {
 
         drawSlider(gd, d3.select(this), sliderOpts);
     });
-};
-
-function autoMarginId(sliderOpts) {
-    return constants.autoMarginIdRoot + sliderOpts._index;
 }
 
 // This really only just filters by visibility:
-function makeSliderData(fullLayout, gd) {
+function makeSliderData(gd) {
+    var fullLayout = gd._fullLayout;
     var contOpts = fullLayout[constants.name];
     var sliderData = [];
 
@@ -121,8 +118,11 @@ function keyFunction(opts) {
     return opts._index;
 }
 
-// Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
+    var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
+    var dims = sliderOpts._dims = {};
+
     var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
         .data(sliderOpts._visibleSteps);
 
@@ -144,27 +144,16 @@ function findDimensions(gd, sliderOpts) {
             maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
         }
     });
-
     sliderLabels.remove();
-
-    var dims = sliderOpts._dims = {};
 
     dims.inputAreaWidth = Math.max(
         constants.railWidth,
         constants.gripHeight
     );
 
-    // calculate some overall dimensions - some of these are needed for
-    // calculating the currentValue dimensions
-    var graphSize = gd._fullLayout._size;
-    dims.lx = graphSize.l + graphSize.w * sliderOpts.x;
-    dims.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
-
     if(sliderOpts.lenmode === 'fraction') {
-        // fraction:
-        dims.outerLength = Math.round(graphSize.w * sliderOpts.len);
+        dims.outerLength = Math.round(gs.w * sliderOpts.len);
     } else {
-        // pixels:
         dims.outerLength = sliderOpts.len;
     }
 
@@ -203,51 +192,10 @@ function findDimensions(gd, sliderOpts) {
         dummyGroup.remove();
     }
 
-    dims.height = dims.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + dims.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
-
-    var xanchor = 'left';
-    if(Lib.isRightAnchor(sliderOpts)) {
-        dims.lx -= dims.outerLength;
-        xanchor = 'right';
-    }
-    if(Lib.isCenterAnchor(sliderOpts)) {
-        dims.lx -= dims.outerLength / 2;
-        xanchor = 'center';
-    }
-
-    var yanchor = 'top';
-    if(Lib.isBottomAnchor(sliderOpts)) {
-        dims.ly -= dims.height;
-        yanchor = 'bottom';
-    }
-    if(Lib.isMiddleAnchor(sliderOpts)) {
-        dims.ly -= dims.height / 2;
-        yanchor = 'middle';
-    }
-
+    dims.height = Math.ceil(dims.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + dims.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b);
     dims.outerLength = Math.ceil(dims.outerLength);
-    dims.height = Math.ceil(dims.height);
-    dims.lx = Math.round(dims.lx);
-    dims.ly = Math.round(dims.ly);
 
-    var marginOpts = {
-        y: sliderOpts.y,
-        b: dims.height * FROM_BR[yanchor],
-        t: dims.height * FROM_TL[yanchor]
-    };
-
-    if(sliderOpts.lenmode === 'fraction') {
-        marginOpts.l = 0;
-        marginOpts.xl = sliderOpts.x - sliderOpts.len * FROM_TL[xanchor];
-        marginOpts.r = 0;
-        marginOpts.xr = sliderOpts.x + sliderOpts.len * FROM_BR[xanchor];
-    } else {
-        marginOpts.x = sliderOpts.x;
-        marginOpts.l = dims.outerLength * FROM_TL[xanchor];
-        marginOpts.r = dims.outerLength * FROM_BR[xanchor];
-    }
-
-    Plots.autoMargin(gd, autoMarginId(sliderOpts), marginOpts);
+    return dims;
 }
 
 function drawSlider(gd, sliderGroup, sliderOpts) {
@@ -628,3 +576,38 @@ function drawRail(sliderGroup, sliderOpts) {
         (dims.inputAreaWidth - constants.railWidth) * 0.5 + dims.currentValueTotalHeight
     );
 }
+
+function pushMargin(gd) {
+    var sliderData = makeSliderData(gd);
+
+    for(var i = 0; i < sliderData.length; i++) {
+        var sliderOpts = sliderData[i];
+        var xanchor = Lib.getXanchor(sliderOpts);
+        var yanchor = Lib.getYanchor(sliderOpts);
+        var dims = findDimensions(gd, sliderOpts);
+
+        var marginOpts = {
+            y: sliderOpts.y,
+            b: dims.height * FROM_BR[yanchor],
+            t: dims.height * FROM_TL[yanchor]
+        };
+
+        if(sliderOpts.lenmode === 'fraction') {
+            marginOpts.l = 0;
+            marginOpts.xl = sliderOpts.x - sliderOpts.len * FROM_TL[xanchor];
+            marginOpts.r = 0;
+            marginOpts.xr = sliderOpts.x + sliderOpts.len * FROM_BR[xanchor];
+        } else {
+            marginOpts.x = sliderOpts.x;
+            marginOpts.l = dims.outerLength * FROM_TL[xanchor];
+            marginOpts.r = dims.outerLength * FROM_BR[xanchor];
+        }
+
+        Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index, marginOpts);
+    }
+}
+
+module.exports = {
+    pushMargin: pushMargin,
+    draw: draw
+};
