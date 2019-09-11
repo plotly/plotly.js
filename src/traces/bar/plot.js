@@ -31,6 +31,13 @@ var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPo
 // padding in pixels around text
 var TEXTPAD = 3;
 
+function keyFunc(d) {return d.id;}
+function getKeyFunc(trace) {
+    if(trace.ids) {
+        return keyFunc;
+    }
+}
+
 function dirSign(a, b) {
     return (a < b) ? 1 : -1;
 }
@@ -103,7 +110,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
-        var bars = pointGroup.selectAll('g.point').data(Lib.identity);
+        var keyFunc = getKeyFunc(trace);
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
 
         bars.enter().append('g')
             .classed('point', true);
