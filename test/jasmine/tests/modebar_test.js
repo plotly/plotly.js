@@ -1342,6 +1342,56 @@ describe('ModeBar', function() {
                 .then(done);
             });
         });
+
+        describe('button toggleHover', function() {
+            it('ternary case', function(done) {
+                var gd = createGraphDiv();
+
+                function _run(msg) {
+                    expect(gd._fullLayout.hovermode).toBe('closest', msg + '| pre');
+                    selectButton(gd._fullLayout._modeBar, 'toggleHover').click();
+                    expect(gd._fullLayout.hovermode).toBe(false, msg + '| after first click');
+                    selectButton(gd._fullLayout._modeBar, 'toggleHover').click();
+                    expect(gd._fullLayout.hovermode).toBe('closest', msg + '| after 2nd click');
+                }
+
+                Plotly.plot(gd, [
+                    {type: 'scatterternary', a: [1], b: [2], c: [3]}
+                ])
+                .then(function() {
+                    _run('base');
+
+                    // mock for *cartesian* bundle
+                    delete gd._fullLayout._subplots.gl3d;
+
+                    _run('cartesian bundle');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        describe('button resetViews', function() {
+            it('ternary + geo case ', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, [
+                    {type: 'scatterternary', a: [1], b: [2], c: [3]},
+                    {type: 'scattergeo', lon: [10], lat: [20]}
+                ])
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'resetViews').click();
+
+                    // mock for custom geo + ternary bundle
+                    delete gd._fullLayout._subplots.gl3d;
+                    delete gd._fullLayout._subplots.mapbox;
+
+                    selectButton(gd._fullLayout._modeBar, 'resetViews').click();
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 
     describe('modebar styling', function() {
