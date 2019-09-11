@@ -26,8 +26,9 @@ var FROM_BR = alignmentConstants.FROM_BR;
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
 
-module.exports = function draw(gd) {
+function draw(gd) {
     var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
 
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')
         .data(makeSelectorData(gd), selectorKeyFunc);
@@ -42,58 +43,82 @@ module.exports = function draw(gd) {
         'pointer-events': 'all'
     });
 
-    selectors.each(function(d) {
+    selectors.each(function(ax) {
         var selector = d3.select(this);
-        var axisLayout = d;
-        var selectorLayout = axisLayout.rangeselector;
+        var opts = ax.rangeselector;
+        var dims = opts._dims;
+        var bw = opts.borderwidth;
+
+        var lx = Math.round(
+            gs.l + gs.w * opts.x -
+            dims.width * FROM_TL[Lib.getXanchor(opts)]
+        );
+        var ly = Math.round(
+            gs.t + gs.h * (1 - opts.y) -
+            dims.height * FROM_TL[Lib.getYanchor(opts)]
+        );
+
+        selector.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
         var buttons = selector.selectAll('g.button')
-            .data(Lib.filterVisible(selectorLayout.buttons));
+            .data(Lib.filterVisible(opts.buttons));
 
         buttons.enter().append('g')
             .classed('button', true);
 
         buttons.exit().remove();
 
-        buttons.each(function(d) {
+        var posX = 0;
+
+        buttons.each(function(d, i) {
             var button = d3.select(this);
-            var update = getUpdateObject(axisLayout, d);
+            var update = getUpdateObject(ax, d);
 
-            d._isActive = isActive(axisLayout, d, update);
+            d._isActive = isActive(ax, d, update);
 
-            button.call(drawButtonRect, selectorLayout, d);
-            button.call(drawButtonText, selectorLayout, d, gd);
+            button.call(drawButtonRect, opts, d);
+            button.call(drawButtonText, opts, d, gd);
+
+            button.attr('transform', 'translate(' + [bw + posX, bw] + ')');
+            posX += dims.widths[i] + 5;
+
+            Drawing.setRect(button.select('.selector-rect'), 0, 0,
+                dims.widths[i],
+                dims.height
+            );
+
+            svgTextUtils.positionText(button.select('.selector-text'),
+                dims.widths[i] / 2,
+                dims.height / 2 + dims.tyOffsets[i]
+            );
 
             button.on('click', function() {
                 if(gd._dragged) return;
-
                 Registry.call('_guiRelayout', gd, update);
             });
 
             button.on('mouseover', function() {
                 d._isHovered = true;
-                button.call(drawButtonRect, selectorLayout, d);
+                button.call(drawButtonRect, opts, d);
             });
 
             button.on('mouseout', function() {
                 d._isHovered = false;
-                button.call(drawButtonRect, selectorLayout, d);
+                button.call(drawButtonRect, opts, d);
             });
         });
-
-        reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-};
+}
 
 function makeSelectorData(gd) {
-    var axes = axisIds.list(gd, 'x', true);
+    var axList = axisIds.list(gd, 'x', true);
     var data = [];
 
-    for(var i = 0; i < axes.length; i++) {
-        var axis = axes[i];
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
 
-        if(axis.rangeselector && axis.rangeselector.visible) {
-            data.push(axis);
+        if(ax.rangeselector && ax.rangeselector.visible) {
+            data.push(ax);
         }
     }
 
@@ -117,7 +142,7 @@ function isActive(axisLayout, opts, update) {
     }
 }
 
-function drawButtonRect(button, selectorLayout, d) {
+function drawButtonRect(button, opts, d) {
     var rect = Lib.ensureSingle(button, 'rect', 'selector-rect', function(s) {
         s.attr('shape-rendering', 'crispEdges');
     });
@@ -127,129 +152,117 @@ function drawButtonRect(button, selectorLayout, d) {
         'ry': constants.ry
     });
 
-    rect.call(Color.stroke, selectorLayout.bordercolor)
-        .call(Color.fill, getFillColor(selectorLayout, d))
-        .style('stroke-width', selectorLayout.borderwidth + 'px');
+    rect.call(Color.stroke, opts.bordercolor)
+        .call(Color.fill, getFillColor(opts, d))
+        .style('stroke-width', opts.borderwidth + 'px');
 }
 
-function getFillColor(selectorLayout, d) {
+function getFillColor(opts, d) {
     return (d._isActive || d._isHovered) ?
-        selectorLayout.activecolor :
-        selectorLayout.bgcolor;
+        opts.activecolor :
+        opts.bgcolor;
 }
 
-function drawButtonText(button, selectorLayout, d, gd) {
+function drawButtonText(button, opts, d, gd) {
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd);
     }
+
+    // TODO add MathJax support
 
     var text = Lib.ensureSingle(button, 'text', 'selector-text', function(s) {
         s.classed('user-select-none', true)
             .attr('text-anchor', 'middle');
     });
 
-    text.call(Drawing.font, selectorLayout.font)
+    text.call(Drawing.font, opts.font)
         .text(getLabel(d, gd._fullLayout._meta))
         .call(textLayout);
 }
 
-function getLabel(opts, _meta) {
-    if(opts.label) {
+function getLabel(d, _meta) {
+    if(d.label) {
         return _meta ?
-            Lib.templateString(opts.label, _meta) :
-            opts.label;
+            Lib.templateString(d.label, _meta) :
+            d.label;
     }
 
-    if(opts.step === 'all') return 'all';
+    if(d.step === 'all') return 'all';
 
-    return opts.count + opts.step.charAt(0);
+    return d.count + d.step.charAt(0);
 }
 
-function reposition(gd, buttons, opts, axName, selector) {
-    var width = 0;
-    var height = 0;
+function findDimensions(gd, ax) {
+    var opts = ax.rangeselector;
+    var buttonData = Lib.filterVisible(opts.buttons);
+    var nButtons = buttonData.length;
 
-    var borderWidth = opts.borderwidth;
+    var dims = opts._dims = {
+        // width of each button
+        widths: new Array(nButtons),
+        // y offset for multi-line button text
+        tyOffsets: new Array(nButtons),
+        // height of range selector
+        height: 0,
+        // (total) width of range selector
+        width: 0
+    };
 
-    buttons.each(function() {
+    var fakeButtons = Drawing.tester.selectAll('g.button')
+        .data(Lib.filterVisible(opts.buttons));
+
+    fakeButtons.enter().append('g')
+        .classed('g.button', true);
+
+    fakeButtons.each(function(d, i) {
         var button = d3.select(this);
+        drawButtonText(button, opts, d, gd);
         var text = button.select('.selector-text');
 
-        var tHeight = opts.font.size * LINE_SPACING;
-        var hEff = Math.max(tHeight * svgTextUtils.lineCount(text), 16) + 3;
-
-        height = Math.max(height, hEff);
-    });
-
-    buttons.each(function() {
-        var button = d3.select(this);
-        var rect = button.select('.selector-rect');
-        var text = button.select('.selector-text');
-
-        var tWidth = text.node() && Drawing.bBox(text.node()).width;
-        var tHeight = opts.font.size * LINE_SPACING;
         var tLines = svgTextUtils.lineCount(text);
+        var tHeight = opts.font.size * LINE_SPACING;
+        var tWidth = text.node() && Drawing.bBox(text.node()).width;
 
-        var wEff = Math.max(tWidth + 10, constants.minButtonWidth);
+        var hEff = Math.ceil(Math.max(tHeight * tLines, 16) + 3);
+        var wEff = Math.ceil(Math.max(tWidth + 10, constants.minButtonWidth));
 
-        // TODO add MathJax support
+        dims.widths[i] = wEff;
+        dims.tyOffsets[i] = 3 - (tLines - 1) * tHeight / 2;
 
-        // TODO add buttongap attribute
-
-        button.attr('transform', 'translate(' +
-            (borderWidth + width) + ',' + borderWidth +
-        ')');
-
-        rect.attr({
-            x: 0,
-            y: 0,
-            width: wEff,
-            height: height
-        });
-
-        svgTextUtils.positionText(text, wEff / 2,
-            height / 2 - ((tLines - 1) * tHeight / 2) + 3);
-
-        width += wEff + 5;
+        dims.width += wEff + 5;
+        dims.height = Math.max(dims.height, hEff);
     });
 
-    var graphSize = gd._fullLayout._size;
-    var lx = graphSize.l + graphSize.w * opts.x;
-    var ly = graphSize.t + graphSize.h * (1 - opts.y);
+    fakeButtons.remove();
 
-    var xanchor = 'left';
-    if(Lib.isRightAnchor(opts)) {
-        lx -= width;
-        xanchor = 'right';
-    }
-    if(Lib.isCenterAnchor(opts)) {
-        lx -= width / 2;
-        xanchor = 'center';
-    }
+    dims.width = Math.ceil(dims.width);
+    dims.height = Math.ceil(dims.height);
 
-    var yanchor = 'top';
-    if(Lib.isBottomAnchor(opts)) {
-        ly -= height;
-        yanchor = 'bottom';
-    }
-    if(Lib.isMiddleAnchor(opts)) {
-        ly -= height / 2;
-        yanchor = 'middle';
-    }
-
-    width = Math.ceil(width);
-    height = Math.ceil(height);
-    lx = Math.round(lx);
-    ly = Math.round(ly);
-
-    Plots.autoMargin(gd, axName + '-range-selector', {
-        x: opts.x,
-        y: opts.y,
-        l: width * FROM_TL[xanchor],
-        r: width * FROM_BR[xanchor],
-        b: height * FROM_BR[yanchor],
-        t: height * FROM_TL[yanchor]
-    });
-
-    selector.attr('transform', 'translate(' + lx + ',' + ly + ')');
+    return dims;
 }
+
+function pushMargin(gd) {
+    var selectorData = makeSelectorData(gd);
+
+    for(var i = 0; i < selectorData.length; i++) {
+        var ax = selectorData[i];
+        var opts = ax.rangeselector;
+        var xanchor = Lib.getXanchor(opts);
+        var yanchor = Lib.getYanchor(opts);
+        var dims = findDimensions(gd, ax);
+
+        Plots.autoMargin(gd, ax._id + '-range-selector', {
+            x: opts.x,
+            y: opts.y,
+            l: dims.width * FROM_TL[xanchor],
+            r: dims.width * FROM_BR[xanchor],
+            b: dims.height * FROM_BR[yanchor],
+            t: dims.height * FROM_TL[yanchor]
+        });
+    }
+}
+
+module.exports = {
+    pushMargin: pushMargin,
+    draw: draw
+};

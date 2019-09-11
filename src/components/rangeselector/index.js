@@ -21,5 +21,6 @@ module.exports = {
     layoutAttributes: require('./attributes'),
     handleDefaults: require('./defaults'),
 
-    draw: require('./draw')
+    pushMargin: require('./draw').pushMargin,
+    draw: require('./draw').draw
 };
