@@ -48,13 +48,7 @@ function draw(gd) {
 
     colorBars.each(function(opts) {
         var g = d3.select(this);
-
-        Lib.ensureSingle(g, 'rect', cn.cbbg);
-        Lib.ensureSingle(g, 'g', cn.cbfills);
-        Lib.ensureSingle(g, 'g', cn.cblines);
-        Lib.ensureSingle(g, 'g', cn.cbaxis, function(s) { s.classed(cn.crisp, true); });
-        Lib.ensureSingle(g, 'g', cn.cbtitleunshift, function(s) { s.append('g').classed(cn.cbtitle, true); });
-        Lib.ensureSingle(g, 'rect', cn.cboutline);
+        makeFramework(g);
 
         var done = drawColorBar(g, opts, gd);
         if(done && done.then) (gd._promises || []).push(done);
@@ -64,9 +58,7 @@ function draw(gd) {
         }
     });
 
-    colorBars.exit()
-        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
-        .remove();
+    colorBars.exit().remove();
 
     colorBars.order();
 }
@@ -171,6 +163,15 @@ function makeColorBarData(gd) {
     }
 
     return out;
+}
+
+function makeFramework(g) {
+    Lib.ensureSingle(g, 'rect', cn.cbbg);
+    Lib.ensureSingle(g, 'g', cn.cbfills);
+    Lib.ensureSingle(g, 'g', cn.cblines);
+    Lib.ensureSingle(g, 'g', cn.cbaxis, function(s) { s.classed(cn.crisp, true); });
+    Lib.ensureSingle(g, 'g', cn.cbtitleunshift, function(s) { s.append('g').classed(cn.cbtitle, true); });
+    Lib.ensureSingle(g, 'rect', cn.cboutline);
 }
 
 function drawColorBar(g, opts, gd) {
@@ -420,7 +421,6 @@ function drawColorBar(g, opts, gd) {
             // overlap, to prevent antialiasing gaps
             z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
 
-
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
             var fillEl = d3.select(this).attr({
@@ -478,10 +478,6 @@ function drawColorBar(g, opts, gd) {
         });
     }
 
-    // wait for the axis & title to finish rendering before
-    // continuing positioning
-    // TODO: why are we redrawing multiple times now with this?
-    // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
         var innerWidth = thickPx + opts.outlinewidth / 2 + Drawing.bBox(axLayer.node()).width;
         titleEl = titleCont.select('text');
@@ -501,8 +497,8 @@ function drawColorBar(g, opts, gd) {
             innerWidth = Math.max(innerWidth, titleWidth);
         }
 
-        var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
-        var outerheight = yBottomPx - yTopPx;
+        var outerwidth = opts._outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
+        var outerheight = opts._outerheight = yBottomPx - yTopPx;
 
         g.select('.' + cn.cbbg).attr({
             x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
@@ -529,36 +525,6 @@ function drawColorBar(g, opts, gd) {
         // fix positioning for xanchor!='left'
         var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) * outerwidth;
         g.attr('transform', 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
-
-        // auto margin adjustment
-        var marginOpts = {};
-        var tFrac = FROM_TL[opts.yanchor];
-        var bFrac = FROM_BR[opts.yanchor];
-        if(opts.lenmode === 'pixels') {
-            marginOpts.y = opts.y;
-            marginOpts.t = outerheight * tFrac;
-            marginOpts.b = outerheight * bFrac;
-        } else {
-            marginOpts.t = marginOpts.b = 0;
-            marginOpts.yt = opts.y + opts.len * tFrac;
-            marginOpts.yb = opts.y - opts.len * bFrac;
-        }
-
-        var lFrac = FROM_TL[opts.xanchor];
-        var rFrac = FROM_BR[opts.xanchor];
-        if(opts.thicknessmode === 'pixels') {
-            marginOpts.x = opts.x;
-            marginOpts.l = outerwidth * lFrac;
-            marginOpts.r = outerwidth * rFrac;
-        } else {
-            var extraThickness = outerwidth - thickPx;
-            marginOpts.l = extraThickness * lFrac;
-            marginOpts.r = extraThickness * rFrac;
-            marginOpts.xl = opts.x - opts.thickness * lFrac;
-            marginOpts.xr = opts.x + opts.thickness * rFrac;
-        }
-
-        Plots.autoMargin(gd, opts._id, marginOpts);
     }
 
     return Lib.syncOrAsync([
@@ -719,6 +685,71 @@ function mockColorBarAxis(gd, opts, zrange) {
     return cbAxisOut;
 }
 
+function pushMargin(gd) {
+    var fullLayout = gd._fullLayout;
+    var colorBarData = makeColorBarData(gd);
+    var gs = fullLayout._size;
+
+    var fakeColorBars = Drawing.tester.selectAll('g.' + cn.colorbar)
+        .data(colorBarData);
+
+    fakeColorBars.enter().append('g')
+        .classed(cn.colorbar, true);
+
+    fakeColorBars.each(function(opts) {
+        var g = d3.select(this);
+        makeFramework(g);
+
+        var done = drawColorBar(g, opts, gd);
+        if(done && done.then) (gd._promises || []).push(done);
+    });
+
+    return Lib.syncOrAsync([
+        Plots.previousPromises,
+        function() {
+            fakeColorBars.remove();
+
+            for(var i = 0; i < colorBarData.length; i++) {
+                var opts = colorBarData[i];
+                var outerwidth = opts._outerwidth;
+                var outerheight = opts._outerheight;
+                var tFrac = FROM_TL[opts.yanchor];
+                var bFrac = FROM_BR[opts.yanchor];
+
+                var marginOpts = {};
+
+                if(opts.lenmode === 'pixels') {
+                    marginOpts.y = opts.y;
+                    marginOpts.t = outerheight * tFrac;
+                    marginOpts.b = outerheight * bFrac;
+                } else {
+                    marginOpts.t = marginOpts.b = 0;
+                    marginOpts.yt = opts.y + opts.len * tFrac;
+                    marginOpts.yb = opts.y - opts.len * bFrac;
+                }
+
+                var lFrac = FROM_TL[opts.xanchor];
+                var rFrac = FROM_BR[opts.xanchor];
+                if(opts.thicknessmode === 'pixels') {
+                    marginOpts.x = opts.x;
+                    marginOpts.l = outerwidth * lFrac;
+                    marginOpts.r = outerwidth * rFrac;
+                } else {
+                    var thickPx = Math.round(opts.thickness * gs.w);
+                    var extraThickness = outerwidth - thickPx;
+                    marginOpts.l = extraThickness * lFrac;
+                    marginOpts.r = extraThickness * rFrac;
+                    marginOpts.xl = opts.x - opts.thickness * lFrac;
+                    marginOpts.xr = opts.x + opts.thickness * rFrac;
+                }
+
+                Plots.autoMargin(gd, opts._id, marginOpts);
+            }
+        }
+    ], gd);
+}
+
 module.exports = {
-    draw: draw
+    draw: draw,
+    pushMargin: pushMargin
 };

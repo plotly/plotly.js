@@ -12,9 +12,11 @@ module.exports = {
     moduleType: 'component',
     name: 'colorbar',
 
+    hasColorbar: require('./has_colorbar'),
+
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
 
-    draw: require('./draw').draw,
-    hasColorbar: require('./has_colorbar')
+    pushMargin: require('./draw').pushMargin,
+    draw: require('./draw').draw
 };
