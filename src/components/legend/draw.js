@@ -102,8 +102,8 @@ module.exports = function draw(gd) {
             var gs = fullLayout._size;
             var bw = opts.borderwidth;
 
-            var lx = gs.l + gs.w * opts.x - FROM_TL[getXanchor(opts)] * opts._width;
-            var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[getYanchor(opts)] * opts._effHeight;
+            var lx = gs.l + gs.w * opts.x - FROM_TL[Lib.getXanchor(opts)] * opts._width;
+            var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[Lib.getYanchor(opts)] * opts._effHeight;
 
             if(fullLayout.margin.autoexpand) {
                 var lx0 = lx;
@@ -486,7 +486,7 @@ function computeLegendDimensions(gd, groups, traces) {
     var itemGap = constants.itemGap;
     var endPad = 2 * (bw + itemGap);
 
-    var yanchor = getYanchor(opts);
+    var yanchor = Lib.getYanchor(opts);
     var isBelowPlotArea = opts.y < 0 || (opts.y === 0 && yanchor === 'top');
     var isAbovePlotArea = opts.y > 1 || (opts.y === 1 && yanchor === 'bottom');
 
@@ -520,7 +520,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts._height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
     } else {
-        var xanchor = getXanchor(opts);
+        var xanchor = Lib.getXanchor(opts);
         var isLeftOfPlotArea = opts.x < 0 || (opts.x === 0 && xanchor === 'right');
         var isRightOfPlotArea = opts.x > 1 || (opts.x === 1 && xanchor === 'left');
         var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
@@ -633,8 +633,8 @@ function computeLegendDimensions(gd, groups, traces) {
 function expandMargin(gd) {
     var fullLayout = gd._fullLayout;
     var opts = fullLayout.legend;
-    var xanchor = getXanchor(opts);
-    var yanchor = getYanchor(opts);
+    var xanchor = Lib.getXanchor(opts);
+    var yanchor = Lib.getYanchor(opts);
 
     return Plots.autoMargin(gd, 'legend', {
         x: opts.x,
@@ -644,16 +644,4 @@ function expandMargin(gd) {
         b: opts._effHeight * (FROM_BR[yanchor]),
         t: opts._effHeight * (FROM_TL[yanchor])
     });
-}
-
-function getXanchor(opts) {
-    return Lib.isRightAnchor(opts) ? 'right' :
-        Lib.isCenterAnchor(opts) ? 'center' :
-        'left';
-}
-
-function getYanchor(opts) {
-    return Lib.isBottomAnchor(opts) ? 'bottom' :
-        Lib.isMiddleAnchor(opts) ? 'middle' :
-        'top';
 }
