@@ -30,7 +30,7 @@ var getLegendData = require('./get_legend_data');
 var style = require('./style');
 var helpers = require('./helpers');
 
-module.exports = function draw(gd) {
+function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
 
@@ -39,13 +39,13 @@ module.exports = function draw(gd) {
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
     var opts = fullLayout.legend;
-    var legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts);
+    var legendData = getLegendData(gd);
     var hiddenSlices = fullLayout.hiddenlabels || [];
 
-    if(!fullLayout.showlegend || !legendData.length) {
+    if(!legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
         fullLayout._topdefs.select('#' + clipId).remove();
-        return Plots.autoMargin(gd, 'legend');
+        return;
     }
 
     var legend = Lib.ensureSingle(fullLayout._infolayer, 'g', 'legend', function(s) {
@@ -94,11 +94,7 @@ module.exports = function draw(gd) {
         Plots.previousPromises,
         function() { return computeLegendDimensions(gd, groups, traces); },
         function() {
-            // IF expandMargin return a Promise (which is truthy),
-            // we're under a doAutoMargin redraw, so we don't have to
-            // draw the remaining pieces below
-            if(expandMargin(gd)) return;
-
+            var edits = gd._context.edits;
             var gs = fullLayout._size;
             var bw = opts.borderwidth;
 
@@ -123,6 +119,15 @@ module.exports = function draw(gd) {
             // Set size and position of all the elements that make up a legend:
             // legend, background and border, scroll box and scroll bar
             Drawing.setTranslate(legend, lx, ly);
+
+            var isEditable = edits.legendText || edits.legendPosition;
+            traces.each(function(d) {
+                var h = d[0].height;
+                var w = isEditable ? constants.textGap :
+                    (opts.toggleRectWidth || (constants.textGap + d[0].width));
+                if(!helpers.isVertical(opts)) w += constants.itemGap / 2;
+                Drawing.setRect(d3.select(this).select('.legendtoggle'), 0, -h / 2, w, h);
+            });
 
             // to be safe, remove previous listeners
             scrollBar.on('.drag', null);
@@ -232,7 +237,7 @@ module.exports = function draw(gd) {
                 clipPath.select('rect').attr('y', bw + scrollBoxY);
             }
 
-            if(gd._context.edits.legendPosition) {
+            if(edits.legendPosition) {
                 var xf, yf, x0, y0;
 
                 legend.classed('cursor-move', true);
@@ -274,7 +279,7 @@ module.exports = function draw(gd) {
                 });
             }
         }], gd);
-};
+}
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
@@ -472,6 +477,8 @@ function computeTextDimensions(g, gd) {
  *
  *  - _width: legend width
  *  - _maxWidth (for orientation:h only): maximum width before starting new row
+ *
+ *  - toggleRectWidth: ...
  */
 function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout;
@@ -497,9 +504,9 @@ function computeLegendDimensions(gd, groups, traces) {
         30
     );
 
-    var toggleRectWidth = 0;
     opts._width = 0;
     opts._height = 0;
+    opts._toggleRectWidth = 0;
 
     if(isVertical) {
         traces.each(function(d) {
@@ -509,7 +516,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts._width = Math.max(opts._width, d[0].width);
         });
 
-        toggleRectWidth = textGap + opts._width;
+        opts._toggleRectWidth = textGap + opts._width;
         opts._width += itemGap + textGap + bw2;
         opts._height += endPad;
 
@@ -542,7 +549,7 @@ function computeLegendDimensions(gd, groups, traces) {
             combinedItemWidth += w;
         });
 
-        toggleRectWidth = null;
+        opts._toggleRectWidth = null;
         var maxRowWidth = 0;
 
         if(isGrouped) {
@@ -618,30 +625,46 @@ function computeLegendDimensions(gd, groups, traces) {
     opts._height = Math.ceil(opts._height);
 
     opts._effHeight = Math.min(opts._height, opts._maxHeight);
-
-    var edits = gd._context.edits;
-    var isEditable = edits.legendText || edits.legendPosition;
-    traces.each(function(d) {
-        var traceToggle = d3.select(this).select('.legendtoggle');
-        var h = d[0].height;
-        var w = isEditable ? textGap : (toggleRectWidth || (textGap + d[0].width));
-        if(!isVertical) w += itemGap / 2;
-        Drawing.setRect(traceToggle, 0, -h / 2, w, h);
-    });
 }
 
-function expandMargin(gd) {
+function pushMargin(gd) {
     var fullLayout = gd._fullLayout;
     var opts = fullLayout.legend;
-    var xanchor = Lib.getXanchor(opts);
-    var yanchor = Lib.getYanchor(opts);
 
-    return Plots.autoMargin(gd, 'legend', {
-        x: opts.x,
-        y: opts.y,
-        l: opts._width * (FROM_TL[xanchor]),
-        r: opts._width * (FROM_BR[xanchor]),
-        b: opts._effHeight * (FROM_BR[yanchor]),
-        t: opts._effHeight * (FROM_TL[yanchor])
-    });
+    var legendData = getLegendData(gd);
+    if(!legendData.length) return;
+
+    var fakeLegend = Lib.ensureSingle(Drawing.tester, 'g', 'legend');
+
+    var groups = fakeLegend.selectAll('g.groups').data(legendData);
+    groups.enter().append('g').attr('class', 'groups');
+
+    var traces = groups.selectAll('g.traces').data(Lib.identity);
+    traces.enter().append('g').attr('class', 'traces');
+    traces.each(function() { d3.select(this).call(drawTexts, gd); });
+
+    return Lib.syncOrAsync([
+        Plots.previousPromises,
+        function() {
+            computeLegendDimensions(gd, groups, traces);
+            fakeLegend.remove();
+
+            var xanchor = Lib.getXanchor(opts);
+            var yanchor = Lib.getYanchor(opts);
+
+            Plots.autoMargin(gd, 'legend', {
+                x: opts.x,
+                y: opts.y,
+                l: opts._width * (FROM_TL[xanchor]),
+                r: opts._width * (FROM_BR[xanchor]),
+                b: opts._effHeight * (FROM_BR[yanchor]),
+                t: opts._effHeight * (FROM_TL[yanchor])
+            });
+        }
+    ], gd);
 }
+
+module.exports = {
+    pushMargin: pushMargin,
+    draw: draw
+};

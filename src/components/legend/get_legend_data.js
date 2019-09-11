@@ -11,7 +11,13 @@
 var Registry = require('../../registry');
 var helpers = require('./helpers');
 
-module.exports = function getLegendData(calcdata, opts) {
+module.exports = function getLegendData(gd) {
+    var fullLayout = gd._fullLayout;
+    var opts = fullLayout.legend;
+    var calcdata = gd.calcdata;
+
+    if(!fullLayout.showlegend) return [];
+
     var lgroupToTraces = {};
     var lgroups = [];
     var hasOneNonBlankGroup = false;
