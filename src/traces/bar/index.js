@@ -28,6 +28,7 @@ module.exports = {
     name: 'bar',
     basePlotModule: require('../../plots/cartesian'),
     categories: ['bar-like', 'cartesian', 'svg', 'bar', 'oriented', 'errorBarsOK', 'showLegend', 'zoomScale'],
+    animatable: true,
     meta: {
         description: [
             'The data visualized by the span of the bars is set in `y`',

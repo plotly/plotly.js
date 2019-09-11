@@ -26,6 +26,7 @@ var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -2548,3 +2549,138 @@ function assertTraceField(calcData, prop, expectation) {
 
     expect(values).toBeCloseToArray(expectation, undefined, '(field ' + prop + ')');
 }
+
+describe('bar tweening', function() {
+    var gd;
+    var mock = {
+        'data': [{
+            'type': 'bar',
+            'x': ['A', 'B', 'C'],
+            'text': ['A', 'B', 'C'],
+            'textposition': 'inside',
+            'y': [24, 5, 8],
+            'error_y': {'array': [3, 2, 1]}
+        }]
+    };
+    var transitionOpts = false; // use default
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('for bar fill color', function(done) {
+        var tests = [
+            [0, '.point path', 'style', 'fill', ['rgb(31, 119, 180)', 'rgb(31, 119, 180)', 'rgb(31, 119, 180)']],
+            [100, '.point path', 'style', 'fill', ['rgb(76, 95, 144)', 'rgb(25, 146, 144)', 'rgb(25, 95, 195)']],
+            [300, '.point path', 'style', 'fill', ['rgb(165, 48, 72)', 'rgb(12, 201, 72)', 'rgb(12, 48, 225)']],
+            [500, '.point path', 'style', 'fill', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']]
+        ];
+        var animateOpts = {'data': [{'marker': {'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
+
+        checkTransition(gd, mock, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for vertical bar height and text position', function(done) {
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M18,270V42H162V270Z', 'M198,270V222.5H342V270Z', 'M378,270V194H522V270Z']],
+            [0, 'text.bartext', 'attr', 'transform', ['translate(90 56)', 'translate(270 236.5)', 'translate(450 208)']],
+            [100, '.point path', 'attr', 'd', ['M18,270V78.1H162V270Z', 'M198,270V186.4H342V270Z', 'M378,270V186.40000000000003H522V270Z']],
+            [300, '.point path', 'attr', 'd', ['M18,270V150.3H162V270Z', 'M198,270V114.2H342V270Z', 'M378,270V171.2H522V270Z']],
+            [300, 'text.bartext', 'attr', 'transform', ['translate(90,164.3)', 'translate(270,128.20000000000002)', 'translate(450,185.2)']],
+            [500, '.point path', 'attr', 'd', ['M18,270V222.5H162V270Z', 'M198,270V42H342V270Z', 'M378,270V156H522V270Z']],
+            [600, '.point path', 'attr', 'd', ['M18,270V222.5H162V270Z', 'M198,270V42H342V270Z', 'M378,270V156H522V270Z']],
+            [600, 'text.bartext', 'attr', 'transform', ['translate(90 236.5)', 'translate(270 56)', 'translate(450 170)']],
+        ];
+        var animateOpts = {data: [{y: [5, 24, 12]}]};
+
+        checkTransition(gd, mock, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for vertical bar width', function(done) {
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M54,270V13.5H486V270Z']],
+            [250, '.point path', 'attr', 'd', ['M94.5,270V13.5H445.5V270Z']],
+            [500, '.point path', 'attr', 'd', ['M135,270V13.5H405V270Z']]
+        ];
+        var animateOpts = {data: [{width: 0.5}]};
+
+        checkTransition(gd, {
+            data: [{
+                type: 'bar',
+                y: [5]
+            }]},
+          animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for horizontal bar length and text position', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].orientation = 'h';
+        mockCopy.data[0].x = mock.data[0].y.slice();
+        mockCopy.data[0].y = mock.data[0].x.slice();
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,261V189H107V261Z', 'M0,171V99H513V171Z', 'M0,81V9H257V81Z']],
+            [0, 'text.bartext', 'attr', 'transform', ['translate(100 229)', 'translate(506 139)', 'translate(249 49)']],
+            [150, '.point path', 'attr', 'd', ['M0,261V189H171V261Z', 'M0,171V99H455V171Z', 'M0,81V9H276V81Z']],
+            [300, '.point path', 'attr', 'd', ['M0,261V189H235V261Z', 'M0,171V99H398V171Z', 'M0,81V9H295V81Z']],
+            [300, 'text.bartext', 'attr', 'transform', ['translate(228,229)', 'translate(391,139)', 'translate(287,49)']],
+            [450, '.point path', 'attr', 'd', ['M0,261V189H299V261Z', 'M0,171V99H340V171Z', 'M0,81V9H314V81Z']],
+            [600, '.point path', 'attr', 'd', ['M0,261V189H321V261Z', 'M0,171V99H321V171Z', 'M0,81V9H321V81Z']],
+            [600, 'text.bartext', 'attr', 'transform', ['translate(314 229)', 'translate(314 139)', 'translate(313 49)']]
+        ];
+        var animateOpts = {data: [{x: [15, 15, 15]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for bar line width and color', function(done) {
+        var tests = [
+            [0, '.point path', 'style', 'stroke', ['', '', '']],
+            [0, '.point path', 'style', 'stroke-width', ['0px', '0px', '0px']],
+            [150, '.point path', 'style', 'stroke', ['rgb(77, 0, 0)', 'rgb(0, 77, 0)', 'rgb(0, 0, 77)']],
+            [150, '.point path', 'style', 'stroke-width', ['6px', '6px', '6px']],
+            [300, '.point path', 'style', 'stroke', ['rgb(153, 0, 0)', 'rgb(0, 153, 0)', 'rgb(0, 0, 153)']],
+            [300, '.point path', 'style', 'stroke-width', ['12px', '12px', '12px']],
+            [450, '.point path', 'style', 'stroke', ['rgb(230, 0, 0)', 'rgb(0, 230, 0)', 'rgb(0, 0, 230)']],
+            [450, '.point path', 'style', 'stroke-width', ['18px', '18px', '18px']],
+            [600, '.point path', 'style', 'stroke', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']],
+            [600, '.point path', 'style', 'stroke-width', ['20px', '20px', '20px']]
+        ];
+        var animateOpts = {'data': [{'marker': {'line': {'width': 20, 'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
+
+        checkTransition(gd, mock, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('for error bars', function(done) {
+        var tests = [
+          [0, 'path.yerror', 'attr', 'd', ['M266,13.5h8m-4,0V99m-4,0h8']],
+          [250, 'path.yerror', 'attr', 'd', ['M266,-18.56h8m-4,0V131.065m-4,0h8']],
+          [500, 'path.yerror', 'attr', 'd', ['M266,-50.62h8m-4,0V163.13m-4,0h8']]
+        ];
+        var animateOpts = {data: [{error_y: {value: 50}}]};
+
+        checkTransition(gd, {
+            data: [{
+                type: 'bar',
+                y: [2],
+                error_y: {value: 20}
+            }]},
+          animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+});
