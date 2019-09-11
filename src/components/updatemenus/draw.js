@@ -19,13 +19,16 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var FROM_TL = require('../../constants/alignment').FROM_TL;
+var FROM_BR = require('../../constants/alignment').FROM_BR;
 
 var constants = require('./constants');
 var ScrollBox = require('./scrollbox');
 
-module.exports = function draw(gd) {
+function draw(gd) {
     var fullLayout = gd._fullLayout;
     var menuData = Lib.filterVisible(fullLayout[constants.name]);
+    var gs = fullLayout._size;
 
     /* Update menu data is bound to the header-group.
      * The items in the header group are always present.
@@ -54,10 +57,6 @@ module.exports = function draw(gd) {
      *         ...
      */
 
-    function clearAutoMargin(menuOpts) {
-        Plots.autoMargin(gd, autoMarginId(menuOpts));
-    }
-
     // draw update menu container
     var menus = fullLayout._menulayer
         .selectAll('g.' + constants.containerClassName)
@@ -67,15 +66,7 @@ module.exports = function draw(gd) {
         .classed(constants.containerClassName, true)
         .style('cursor', 'pointer');
 
-    menus.exit().each(function() {
-        // Most components don't need to explicitly remove autoMargin, because
-        // marginPushers does this - but updatemenu updates don't go through
-        // a full replot so we need to explicitly remove it.
-        // This is for removing *all* updatemenus, removing individuals is
-        // handled below, in headerGroups.exit
-        d3.select(this).selectAll('g.' + constants.headerGroupClassName)
-            .each(clearAutoMargin);
-    }).remove();
+    menus.exit().remove();
 
     // return early if no update menus are visible
     if(menuData.length === 0) return;
@@ -92,31 +83,35 @@ module.exports = function draw(gd) {
         s.style('pointer-events', 'all');
     });
 
-    // find dimensions before plotting anything (this mutates menuOpts)
-    for(var i = 0; i < menuData.length; i++) {
-        var menuOpts = menuData[i];
-        findDimensions(gd, menuOpts);
-    }
-
     // setup scrollbox
     var scrollBoxId = 'updatemenus' + fullLayout._uid;
     var scrollBox = new ScrollBox(gd, gButton, scrollBoxId);
 
-    // remove exiting header, remove dropped buttons and reset margins
+    // remove exiting header and remove dropped buttons
     if(headerGroups.enter().size()) {
         // make sure gButton is on top of all headers
         gButton.node().parentNode.appendChild(gButton.node());
         gButton.call(removeAllButtons);
     }
 
-    headerGroups.exit().each(function(menuOpts) {
+    if(headerGroups.exit().size()) {
         gButton.call(removeAllButtons);
-        clearAutoMargin(menuOpts);
-    }).remove();
+    }
+    headerGroups.exit().remove();
 
     // draw headers!
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
+        var dims = menuOpts._dims;
+
+        dims.lx = Math.round(
+            gs.l + gs.w * menuOpts.x -
+            dims.paddedWidth * FROM_TL[Lib.getXanchor(menuOpts)]
+        );
+        dims.ly = Math.round(
+            gs.t + gs.h * (1 - menuOpts.y) -
+            dims.paddedHeight * FROM_TL[Lib.getYanchor(menuOpts)]
+        );
 
         var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
         Plots.manageCommandObserver(gd, menuOpts, menuOpts.buttons, function(data) {
@@ -134,7 +129,7 @@ module.exports = function draw(gd) {
             drawButtons(gd, gHeader, null, null, menuOpts);
         }
     });
-};
+}
 
 // Note that '_index' is set at the default step,
 // it corresponds to the menu index in the user layout update menu container.
@@ -469,7 +464,6 @@ function styleOnMouseOut(item, menuOpts) {
         .call(Color.fill, menuOpts.bgcolor);
 }
 
-// find item dimensions (this mutates menuOpts)
 function findDimensions(gd, menuOpts) {
     var dims = menuOpts._dims = {
         width1: 0,
@@ -478,10 +472,10 @@ function findDimensions(gd, menuOpts) {
         widths: [],
         totalWidth: 0,
         totalHeight: 0,
+        paddedWidth: 0,
+        paddedHeight: 0,
         openWidth: 0,
-        openHeight: 0,
-        lx: 0,
-        ly: 0
+        openHeight: 0
     };
 
     var fakeButtons = Drawing.tester.selectAll('g.' + constants.dropdownButtonClassName)
@@ -540,7 +534,6 @@ function findDimensions(gd, menuOpts) {
         dims.totalWidth -= constants.gapButton;
     }
 
-
     dims.headerWidth = dims.width1 + constants.arrowPadX;
     dims.headerHeight = dims.height1;
 
@@ -556,50 +549,13 @@ function findDimensions(gd, menuOpts) {
 
     fakeButtons.remove();
 
-    var paddedWidth = dims.totalWidth + menuOpts.pad.l + menuOpts.pad.r;
-    var paddedHeight = dims.totalHeight + menuOpts.pad.t + menuOpts.pad.b;
-
-    var graphSize = gd._fullLayout._size;
-    dims.lx = graphSize.l + graphSize.w * menuOpts.x;
-    dims.ly = graphSize.t + graphSize.h * (1 - menuOpts.y);
-
-    var xanchor = 'left';
-    if(Lib.isRightAnchor(menuOpts)) {
-        dims.lx -= paddedWidth;
-        xanchor = 'right';
-    }
-    if(Lib.isCenterAnchor(menuOpts)) {
-        dims.lx -= paddedWidth / 2;
-        xanchor = 'center';
-    }
-
-    var yanchor = 'top';
-    if(Lib.isBottomAnchor(menuOpts)) {
-        dims.ly -= paddedHeight;
-        yanchor = 'bottom';
-    }
-    if(Lib.isMiddleAnchor(menuOpts)) {
-        dims.ly -= paddedHeight / 2;
-        yanchor = 'middle';
-    }
+    dims.paddedWidth = dims.totalWidth + menuOpts.pad.l + menuOpts.pad.r;
+    dims.paddedHeight = dims.totalHeight + menuOpts.pad.t + menuOpts.pad.b;
 
     dims.totalWidth = Math.ceil(dims.totalWidth);
     dims.totalHeight = Math.ceil(dims.totalHeight);
-    dims.lx = Math.round(dims.lx);
-    dims.ly = Math.round(dims.ly);
 
-    Plots.autoMargin(gd, autoMarginId(menuOpts), {
-        x: menuOpts.x,
-        y: menuOpts.y,
-        l: paddedWidth * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: paddedWidth * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: paddedHeight * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: paddedHeight * ({bottom: 1, middle: 0.5}[yanchor] || 0)
-    });
-}
-
-function autoMarginId(menuOpts) {
-    return constants.autoMarginIdRoot + menuOpts._index;
+    return dims;
 }
 
 // set item positions (mutates posOpts)
@@ -644,3 +600,29 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .attr(constants.menuIndexAttrName, newMenuIndexAttr || '-1')
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
+
+function pushMargin(gd) {
+    var fullLayout = gd._fullLayout;
+    var menuData = Lib.filterVisible(fullLayout[constants.name]);
+
+    for(var i = 0; i < menuData.length; i++) {
+        var menuOpts = menuData[i];
+        var xanchor = Lib.getXanchor(menuOpts);
+        var yanchor = Lib.getYanchor(menuOpts);
+        var dims = findDimensions(gd, menuOpts);
+
+        Plots.autoMargin(gd, constants.autoMarginIdRoot + menuOpts._index, {
+            x: menuOpts.x,
+            y: menuOpts.y,
+            l: dims.paddedWidth * FROM_TL[xanchor],
+            r: dims.paddedWidth * FROM_BR[xanchor],
+            b: dims.paddedHeight * FROM_BR[yanchor],
+            t: dims.paddedHeight * FROM_TL[yanchor]
+        });
+    }
+}
+
+module.exports = {
+    pushMargin: pushMargin,
+    draw: draw
+};
