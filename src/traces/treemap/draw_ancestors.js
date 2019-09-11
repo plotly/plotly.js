@@ -116,7 +116,6 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         });
 
         var tx = helpers.getLabelStr(pt.data.data.label);
-        if(!pt.children) tx = ' '; // don't display last label on the menu - should use space instead of empty string
 
         sliceText.text(tx)
             .classed('slicetext', true)

@@ -567,9 +567,11 @@ exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants
                 if(hasFlag('value')) thisText.push(hoverPt.valueLabel);
             }
 
-            hoverPt.currentPath = pt.currentPath = helpers.getPath((pt.parent || pt).data);
-            if(hasFlag('current path')) {
-                thisText.push(hoverPt.currentPath);
+            if(pt.parent) {
+                hoverPt.currentPath = pt.currentPath = helpers.getPath(pt.parent.data);
+                if(hasFlag('current path')) {
+                    thisText.push(hoverPt.currentPath);
+                }
             }
 
             var tx;
