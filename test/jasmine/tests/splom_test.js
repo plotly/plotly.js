@@ -702,26 +702,26 @@ describe('Test splom interactions:', function() {
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assert([1198, 16678, 3358, 118]);
+            _assert([1198, 16558, 3358, 118]);
             return Plotly.restyle(gd, 'showupperhalf', false);
         })
         .then(function() {
-            _assert([1198, 8488, 1768, 4]);
+            _assert([1198, 8476, 1768, 4]);
             return Plotly.restyle(gd, 'diagonal.visible', false);
         })
         .then(function() {
-            _assert([1138, 7654, 1600]);
+            _assert([1138, 7534, 1600]);
             return Plotly.restyle(gd, {
                 showupperhalf: true,
                 showlowerhalf: false
             });
         })
         .then(function() {
-            _assert([8188, 112, 1588]);
+            _assert([7966, 112, 1588]);
             return Plotly.restyle(gd, 'diagonal.visible', true);
         })
         .then(function() {
-            _assert([58, 9022, 1756, 118]);
+            _assert([58, 8908, 1756, 118]);
             return Plotly.relayout(gd, {
                 'xaxis.gridcolor': null,
                 'xaxis.gridwidth': null,
@@ -732,7 +732,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             // one batch for all 'grid' lines
             // and another for all 'zeroline' lines
-            _assert([9082, 1876]);
+            _assert([8968, 1876]);
         })
         .catch(failTest)
         .then(done);
