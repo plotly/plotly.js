@@ -439,15 +439,21 @@ describe('Click-to-select', function() {
           })
           .then(function() {
               assertSelectedPoints(35);
-              drag(LASSO_PATH);
-          })
-          .then(function() {
-              assertSelectedPoints(35);
               _clickPt(mock14Pts[35], { shiftKey: true });
               return deselectPromise;
           })
           .then(function() {
               assertSelectionCleared();
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(7);
+              drag([[110, 100], [300, 300]]);
+          })
+          .then(delay(100))
+          .then(function() {
+              // persist after zoombox
+              assertSelectedPoints(7);
           })
           .catch(failTest)
           .then(done);
