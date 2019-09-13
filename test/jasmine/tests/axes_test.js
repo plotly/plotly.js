@@ -3530,6 +3530,17 @@ describe('Test axes', function() {
             })
             .then(function() {
                 assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {
+                    'xaxis.showline': false, 'xaxis.nticks': 1, 'xaxis.range': [0, 0.1],
+                    'yaxis.showline': false, 'yaxis.nticks': 2, 'yaxis.range': [0, 0.1]
+                });
+            })
+            .then(function() {
+                // no grid lines, but still should show zeroline in this case
+                // see https://github.com/plotly/plotly.js/issues/4027
+                expect(gd._fullLayout.xaxis._gridVals.length).toBe(0, '# of grid lines');
+                expect(gd._fullLayout.xaxis._gridVals.length).toBe(0, '# of grid lines');
+                assertZeroLines(['x', 'y']);
             })
             .catch(failTest)
             .then(done);
