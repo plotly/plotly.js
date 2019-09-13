@@ -42,29 +42,42 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
     var trace = cd0.trace;
+    var hierarchy = cd0.hierarchy;
 
-    var eachWidth = opts.width / entry.height;
+    var entryDepth = entry.data.depth;
 
-    var sliceData = partition(entry, [width, height], {
+    var eachWidth = opts.width / entryDepth;
+
+    var pathIds = helpers.listPath(entry.data, 'id');
+    pathIds.pop(); // remove last one which is the entry point.
+
+    var sliceData = partition(hierarchy.copy(), [width, height], {
         packing: 'dice',
         pad: {
             inner: 0,
             top: 0,
-            left: eachWidth,
+            left: 0,
             right: 0,
             bottom: 0
         }
     }).descendants();
 
-    // filter out slices that won't show up on graph
-    sliceData = sliceData.filter(function(pt) { return pt.height > 0; });
+    // edit slices that show up on graph
+    sliceData = sliceData.filter(function(pt) {
+        var level = pathIds.indexOf(pt.data.id);
+        if(level === -1) return false;
 
-    slices = slices.data(sliceData, function(pt) {
-        if(isNaN(pt.x0)) pt.x0 = 0;
-        if(isNaN(pt.x1)) pt.x1 = width;
+        pt.x0 = eachWidth * level;
+        pt.x1 = width;
+        pt.y0 = 0;
+        pt.y1 = height;
 
-        return helpers.getPtId(pt);
+        pt._redirect = entry.data.id;
+
+        return true;
     });
+
+    slices = slices.data(sliceData, function(pt) { return helpers.getPtId(pt); });
 
     slices.enter().append('g')
         .classed('pathbar', true);
@@ -103,7 +116,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         }
 
         sliceTop
-            .call(attachFxHandlers, entry, gd, cd, styleOne, constants)
+            .call(attachFxHandlers, gd, cd, styleOne, constants)
             .call(helpers.setSliceCursor, gd, { isTransitioning: gd._transitioning });
 
         slicePath.call(styleOne, pt, trace);

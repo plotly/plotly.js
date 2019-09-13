@@ -231,7 +231,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         sliceTop
-            .call(exports.attachFxHandlers, entry, gd, cd, styleOne, constants)
+            .call(exports.attachFxHandlers, gd, cd, styleOne, constants)
             .call(helpers.setSliceCursor, gd, {isTransitioning: gd._transitioning});
 
         slicePath.call(styleOne, pt, trace);
@@ -500,7 +500,7 @@ function makeEventData(pt, trace) {
     return out;
 }
 
-exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants) {
+exports.attachFxHandlers = function(sliceTop, gd, cd, styleOne, constants) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
@@ -595,7 +595,7 @@ exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants
                 }
             }
 
-            var ref1 = entry;
+            var ref1 = hierarchy;
             if(ref1 && getVal(ref1)) {
                 hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
                 hoverPt.visibleLabel = pt.visibleLabel = helpers.getLabelString(ref1.data.data.label);
@@ -740,15 +740,17 @@ exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants
         var id = helpers.getPtId(pt);
         var isEntry = helpers.isEntry(pt);
 
-        var passPathOr = function(v) {
-            var q = pt.data.data._pathTo;
-            return (q === undefined) ? v : q;
-        };
-
         if(isTreemap) {
+            var zoomOut = true;
+            var redirectId = pt._redirect;
+            if(redirectId === undefined) {
+                redirectId = id;
+                if(!isEntry) zoomOut = false;
+            }
+
             traceNow._clickedInfo = {
-                id: passPathOr(id),
-                zoomOut: passPathOr(isEntry)
+                id: redirectId,
+                zoomOut: zoomOut
             };
         }
 

@@ -9,7 +9,6 @@
 'use strict';
 
 var d3 = require('d3');
-var d3Hierarchy = require('d3-hierarchy');
 
 var hasTransition = require('../sunburst/helpers').hasTransition;
 var helpers = require('../sunburst/helpers');
@@ -33,9 +32,12 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     join = layer.selectAll('g.trace.treemap')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
 
+    // using same 'stroke-linejoin' as pie traces
     join.enter().append('g')
         .classed('trace', true)
-        .classed('treemap', true);
+        .classed('treemap', true)
+        .attr('stroke-linejoin', 'round');
+
     join.order();
 
     if(hasTransition(transitionOpts)) {
@@ -88,7 +90,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     var getOrigin = function(pt, upDown, refRect, size) {
         var clicked = trace._clickedInfo;
-        if(!clicked || !pt.parent) { // don't animate the entry point
+        if(!clicked) {
             return pt;
         }
 
@@ -97,11 +99,12 @@ function plotOne(gd, cd, element, transitionOpts) {
         var x0, x1, y0, y1;
 
         if(upDown) {
-            x0 = x1 = width; // always slide pathbar to the right
+            x0 = width; // always slide pathbar to the right, unless it is the root node
+            x1 = width;
             y0 = 0;
             y1 = height;
         } else {
-            var ref = clicked.zoomOut ? refRect : (prevLookdown[clicked.id] || prevLookup[clicked.id]);
+            var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id] || prevLookup[clicked.id];
 
             var e = trace.tiling.pad;
             var isLeftOfRect = function(x) { return x - e <= ref.x0; };
@@ -128,13 +131,12 @@ function plotOne(gd, cd, element, transitionOpts) {
     var vpw = gs.w * (domain.x[1] - domain.x[0]);
     var vph = gs.h * (domain.y[1] - domain.y[0]);
 
-    var barEntry;
-    var mapEntry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
     var maxDepth = helpers.getMaxDepth(trace);
     // N.B. handle multiple-root special case
     var mvX = 0;
     var mvY = 0;
-    if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(mapEntry)) {
+    if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
         maxDepth++;
     }
     trace._maxDepth = maxDepth;
@@ -445,7 +447,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var selAncestors = gTrace.selectAll('g.pathbar');
     var selDescendants = gTrace.selectAll('g.slice');
 
-    if(!mapEntry) {
+    if(!entry) {
         return selDescendants.remove();
     }
 
@@ -473,7 +475,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     }
 
-    drawDescendants(gd, cd, mapEntry, selDescendants, {
+    drawDescendants(gd, cd, entry, selDescendants, {
         width: vpw,
         height: vph,
 
@@ -497,41 +499,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         hasTransition: hasTransition
     });
 
-    if(trace.pathbar.visible) {
-        var rawAncestors = mapEntry.data.ancestors();
-
-        var ancestors = [];
-        for(var q = 0; q < rawAncestors.length; q++) {
-            var raw = rawAncestors[q].data;
-
-            ancestors[q] = {
-                id: raw.id,
-                pid: raw.pid,
-                label: raw.label,
-                color: raw.color,
-                _pathTo: mapEntry.data.id,
-            };
-
-            if(raw.hasOwnProperty('v')) {
-                ancestors[q].v = raw.v;
-            } else {
-                ancestors[q].value = raw.value;
-            }
-        }
-
-        var root;
-        try {
-            root = d3Hierarchy.stratify()
-                .id(function(d) { return d.id; })
-                .parentId(function(d) { return d.pid; })(ancestors);
-        } catch(e) {
-            return Lib.warn('Failed to build hierarchy for pathbar. Error: ' + e.message);
-        }
-
-        // create new hierarchy
-        barEntry = d3Hierarchy.hierarchy(root);
-
-        drawAncestors(gd, cd, barEntry, selAncestors, {
+    if(trace.pathbar.visible && trace.pathbar.position !== 'inside') {
+        drawAncestors(gd, cd, entry, selAncestors, {
             barDifY: barDifY,
             width: barW,
             height: barH,

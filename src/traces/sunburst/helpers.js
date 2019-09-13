@@ -13,8 +13,8 @@ var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
 var getTransform = require('../bar/plot').getTransform;
 
-function has(v) {
-    return v || v === 0;
+function hasLabel(label) {
+    return label || label === 0;
 }
 
 exports.findEntryWithLevel = function(hierarchy, level) {
@@ -63,11 +63,11 @@ exports.findChildPt = function(hierarchy, childId) {
 };
 
 exports.isEntry = function(pt) {
-    return !has(pt.parent);
+    return !pt.parent;
 };
 
 exports.isLeaf = function(pt) {
-    return !has(pt.children);
+    return !pt.children;
 };
 
 exports.getPtId = function(pt) {
@@ -172,7 +172,7 @@ exports.isHeader = function(pt, trace) { // it is only used in treemap.
 };
 
 exports.getLabelStr = function(label) {
-    return has(label) ? label.split('<br>').join(' ') : '';
+    return hasLabel(label) ? label.split('<br>').join(' ') : '';
 };
 
 exports.getLabelString = function(label) { // used in hover to reference to the "root"
@@ -182,5 +182,10 @@ exports.getLabelString = function(label) { // used in hover to reference to the 
 
 exports.getPath = function(d) {
     var labelStr = exports.getLabelStr(d.data.label) + '/';
-    return has(d.parent) ? exports.getPath(d.parent) + labelStr : labelStr;
+    return d.parent ? exports.getPath(d.parent) + labelStr : labelStr;
+};
+
+exports.listPath = function(d, keyStr) {
+    var list = keyStr ? [d.data[keyStr]] : [d];
+    return d.parent ? exports.listPath(d.parent, keyStr).concat(list) : list;
 };
