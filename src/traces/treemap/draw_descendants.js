@@ -89,7 +89,11 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             // N.B. gd._transitioning is (still) *true* by the time
             // transition updates get here
             var sliceTop = d3.select(this);
-            helpers.setSliceCursor(sliceTop, gd, { isTransitioning: false });
+            helpers.setSliceCursor(sliceTop, gd, {
+                hideOnRoot: true,
+                hideOnLeaves: false,
+                isTransitioning: false
+            });
         });
     }
 

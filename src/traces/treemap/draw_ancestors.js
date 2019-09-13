@@ -91,7 +91,11 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             // N.B. gd._transitioning is (still) *true* by the time
             // transition updates get here
             var sliceTop = d3.select(this);
-            helpers.setSliceCursor(sliceTop, gd, { isTransitioning: false });
+            helpers.setSliceCursor(sliceTop, gd, {
+                hideOnRoot: false,
+                hideOnLeaves: false,
+                isTransitioning: false
+            });
         });
     }
 
@@ -120,7 +124,11 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
                 transitionTime: constants.CLICK_TRANSITION_TIME,
                 transitonEasing: constants.CLICK_TRANSITION_EASING
             })
-            .call(helpers.setSliceCursor, gd, { isTransitioning: gd._transitioning });
+            .call(helpers.setSliceCursor, gd, {
+                hideOnRoot: false,
+                hideOnLeaves: false,
+                isTransitioning: gd._transitioning
+            });
 
         slicePath.call(styleOne, pt, trace);
 

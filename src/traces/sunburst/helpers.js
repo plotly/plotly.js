@@ -79,13 +79,15 @@ exports.isHierarchyRoot = function(pt) {
 };
 
 exports.setSliceCursor = function(sliceTop, gd, opts) {
-    var pt = sliceTop.datum();
-    var isTransitioning = (opts || {}).isTransitioning;
-    setCursor(sliceTop, (
-        isTransitioning ||
-        exports.isLeaf(pt) ||
-        exports.isHierarchyRoot(pt)
-    ) ? null : 'pointer');
+    var hide = opts.isTransitioning;
+    if(!hide) {
+        var pt = sliceTop.datum();
+        hide = (
+            (opts.hideOnRoot && exports.isHierarchyRoot(pt)) ||
+            (opts.hideOnLeaves && exports.isLeaf(pt))
+        );
+    }
+    setCursor(sliceTop, hide ? null : 'pointer');
 };
 
 function determineOutsideTextFont(trace, pt, layoutFont) {
