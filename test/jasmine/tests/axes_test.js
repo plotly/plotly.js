@@ -447,9 +447,9 @@ describe('Test axes', function() {
 
         it('should use \'axis.color\' as default for \'axis.zerolinecolor\'', function() {
             layoutIn = {
-                xaxis: { showzeroline: true, color: 'red' },
+                xaxis: { zeroline: true, color: 'red' },
                 yaxis: { zerolinecolor: 'blue' },
-                yaxis2: { showzeroline: true }
+                yaxis2: { zeroline: true }
             };
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
@@ -3491,8 +3491,8 @@ describe('Test axes', function() {
 
         it('works with a single subplot', function(done) {
             Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}], {
-                xaxis: {range: [0, 4], showzeroline: true, showline: true},
-                yaxis: {range: [0, 4], showzeroline: true, showline: true},
+                xaxis: {range: [0, 4], zeroline: true, showline: true},
+                yaxis: {range: [0, 4], zeroline: true, showline: true},
                 width: 600,
                 height: 600
             })
@@ -3541,10 +3541,10 @@ describe('Test axes', function() {
                 {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2'},
                 {x: [1, 2, 3], y: [1, 2, 3], yaxis: 'y2'}
             ], {
-                xaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
-                yaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
-                xaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
-                yaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                xaxis: {range: [0, 4], zeroline: true, domain: [0, 0.4]},
+                yaxis: {range: [0, 4], zeroline: true, domain: [0, 0.4]},
+                xaxis2: {range: [0, 4], zeroline: true, domain: [0.6, 1]},
+                yaxis2: {range: [0, 4], zeroline: true, domain: [0.6, 1]},
                 width: 600,
                 height: 600
             })
@@ -3575,10 +3575,10 @@ describe('Test axes', function() {
                 {x: [1, 2, 3], y: [1, 2, 3]},
                 {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
             ], {
-                xaxis: {range: [0, 4], showzeroline: true},
-                yaxis: {range: [0, 4], showzeroline: true},
-                xaxis2: {range: [0, 4], showzeroline: true, side: 'top', overlaying: 'x'},
-                yaxis2: {range: [0, 4], showzeroline: true, side: 'right', overlaying: 'y'},
+                xaxis: {range: [0, 4], zeroline: true},
+                yaxis: {range: [0, 4], zeroline: true},
+                xaxis2: {range: [0, 4], zeroline: true, side: 'top', overlaying: 'x'},
+                yaxis2: {range: [0, 4], zeroline: true, side: 'right', overlaying: 'y'},
                 width: 600,
                 height: 600
             })
