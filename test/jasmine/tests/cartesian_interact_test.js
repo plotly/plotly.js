@@ -65,7 +65,6 @@ describe('zoom box element', function() {
     });
 });
 
-
 describe('main plot pan', function() {
     var gd, modeBar, relayoutCallback;
 
@@ -893,7 +892,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         cnt++;
                         // called twice as many times on drag:
                         // - once per axis during mousemouve
-                        // - once per raxis on mouseup
+                        // - once per axis on mouseup
                         if(opts.dragged) cnt++;
                     }
                 });
@@ -1726,7 +1725,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             Plotly.plot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
             .then(function() {
-                // inspired by https://github.com/plotly/plotly.js/issues/2687<Paste>
+                // inspired by https://github.com/plotly/plotly.js/issues/2687
                 gd.on('plotly_relayout', function(d) {
                     relayoutTracker.unshift(d);
                     setTimeout(function() {
