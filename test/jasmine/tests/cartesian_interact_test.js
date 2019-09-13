@@ -65,7 +65,6 @@ describe('zoom box element', function() {
     });
 });
 
-
 describe('main plot pan', function() {
     var gd, modeBar, relayoutCallback;
 
@@ -893,7 +892,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         cnt++;
                         // called twice as many times on drag:
                         // - once per axis during mousemouve
-                        // - once per raxis on mouseup
+                        // - once per axis on mouseup
                         if(opts.dragged) cnt++;
                     }
                 });
@@ -1726,7 +1725,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             Plotly.plot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
             .then(function() {
-                // inspired by https://github.com/plotly/plotly.js/issues/2687<Paste>
+                // inspired by https://github.com/plotly/plotly.js/issues/2687
                 gd.on('plotly_relayout', function(d) {
                     relayoutTracker.unshift(d);
                     setTimeout(function() {
@@ -1914,6 +1913,66 @@ describe('axis zoom/pan and main plot zoom', function() {
             .catch(failTest)
             .then(done);
         });
+    });
+
+    it('zoomboxes during small drag motions', function(done) {
+        var MINDRAG = constants.MINDRAG;
+        var eventData = {};
+
+        function _run(msg, dpos, exp) {
+            return function() {
+                var node = getDragger('xy', 'nsew');
+                var fns = drag.makeFns({node: node, pos0: [200, 200], dpos: dpos});
+
+                return fns.start().then(function() {
+                    var zl = d3.select(gd).select('g.zoomlayer');
+                    var d = zl.select('.zoombox-corners').attr('d');
+                    if(exp === 'nozoom') {
+                        expect(d).toBe('M0,0Z', 'blank path | ' + msg);
+                    } else {
+                        var actual = (d.match(/Z/g) || []).length;
+                        if(exp === 'x-zoom' || exp === 'y-zoom') {
+                            expect(actual).toBe(2, 'two corners | ' + msg);
+                        } else if(exp === 'xy-zoom') {
+                            expect(actual).toBe(4, 'four corners | ' + msg);
+                        } else {
+                            fail('wrong expectation str.');
+                        }
+                    }
+                })
+                .then(fns.end)
+                .then(function() {
+                    var keys = Object.keys(eventData);
+                    if(exp === 'nozoom') {
+                        expect(keys.length).toBe(0, 'no event data | ' + msg);
+                    } else if(exp === 'x-zoom') {
+                        expect(keys).withContext('relayout xaxis rng | ' + msg)
+                            .toEqual(['xaxis.range[0]', 'xaxis.range[1]']);
+                    } else if(exp === 'y-zoom') {
+                        expect(keys).withContext('relayout yaxis rng | ' + msg)
+                            .toEqual(['yaxis.range[0]', 'yaxis.range[1]']);
+                    } else if(exp === 'xy-zoom') {
+                        expect(keys.length).toBe(4, 'x and y relayout | ' + msg);
+                    } else {
+                        fail('wrong expectation str.');
+                    }
+                    eventData = {};
+                });
+            };
+        }
+
+        Plotly.plot(gd, [{y: [1, 2, 1]}], {width: 400, height: 400})
+        .then(function() {
+            gd.on('plotly_relayout', function(d) { eventData = d; });
+        })
+        .then(_run('dx < MINDRAG', [MINDRAG - 2, 0], 'nozoom'))
+        .then(_run('dx > MINDRAG', [MINDRAG + 2, 0], 'x-zoom'))
+        .then(_run('dy < MINDRAG', [0, MINDRAG - 2], 'nozoom'))
+        .then(_run('dy > MINDRAG', [0, MINDRAG + 2], 'y-zoom'))
+        .then(_run('(dx,dy) < MINDRAG', [MINDRAG - 2, MINDRAG - 2], 'nozoom'))
+        .then(_run('(dx,dy) > MINDRAG', [MINDRAG + 2, MINDRAG + 2], 'xy-zoom'))
+        .catch(failTest)
+        .then(done);
     });
 });
 
