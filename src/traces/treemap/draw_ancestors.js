@@ -17,8 +17,7 @@ var partition = require('./partition');
 var styleOne = require('./style').styleOne;
 var constants = require('./constants');
 var helpers = require('../sunburst/helpers');
-var sunburstPlot = require('../sunburst/plot');
-var attachFxHandlers = sunburstPlot.attachFxHandlers;
+var attachFxHandlers = require('../sunburst/fx');
 
 var upDown = true; // for Ancestors
 
