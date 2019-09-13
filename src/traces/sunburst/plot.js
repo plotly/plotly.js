@@ -228,7 +228,10 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         sliceTop
-            .call(attachFxHandlers, entry, gd, cd, styleOne, constants)
+            .call(attachFxHandlers, entry, gd, cd, {
+                transitionTime: constants.CLICK_TRANSITION_TIME,
+                transitonEasing: constants.CLICK_TRANSITION_EASING
+            })
             .call(helpers.setSliceCursor, gd, {isTransitioning: gd._transitioning});
 
         slicePath.call(styleOne, pt, trace);

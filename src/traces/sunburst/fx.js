@@ -21,7 +21,7 @@ var pieHelpers = require('../pie/helpers');
 var formatValue = pieHelpers.formatPieValue;
 var formatPercent = pieHelpers.formatPiePercent;
 
-module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, styleOne, constants) {
+module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
@@ -180,7 +180,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, styleOne, co
 
         if(isTreemap) {
             var slice = sliceTop.select('path.surface');
-            styleOne(slice, pt, traceNow, true);
+            opts.styleOne(slice, pt, traceNow, true);
         }
 
         trace._hasHoverEvent = true;
@@ -211,7 +211,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, styleOne, co
 
         if(isTreemap) {
             var slice = sliceTop.select('path.surface');
-            styleOne(slice, pt, traceNow, false);
+            opts.styleOne(slice, pt, traceNow, false);
         }
     };
 
@@ -287,11 +287,11 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, styleOne, co
         var animOpts = {
             frame: {
                 redraw: false,
-                duration: constants.CLICK_TRANSITION_TIME
+                duration: opts.transitionTime
             },
             transition: {
-                duration: constants.CLICK_TRANSITION_TIME,
-                easing: constants.CLICK_TRANSITION_EASING
+                duration: opts.transitionTime,
+                easing: opts.transitionEasing
             },
             mode: 'immediate',
             fromcurrent: true
