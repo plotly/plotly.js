@@ -272,27 +272,4 @@ module.exports = {
     },
 
     domain: domainAttrs({name: 'treemap', trace: true, editType: 'calc'}),
-
-    _hovered: {
-        marker: {
-            line: {
-                color: extendFlat({}, pieAttrs.marker.line.color, {
-                    description: [
-                        'Sets the color of the line',
-                        'enclosing each sector when it is hovered'
-                    ].join(' ')
-                }),
-                width: extendFlat({}, pieAttrs.marker.line.width, {
-                    description: [
-                        'Sets the width (in px) of the line',
-                        'enclosing each sector when it is hovered.'
-                    ].join(' ')
-                }),
-                editType: 'style'
-            },
-
-            editType: 'style'
-        },
-        editType: 'style'
-    }
 };

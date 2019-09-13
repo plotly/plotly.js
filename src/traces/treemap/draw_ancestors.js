@@ -116,7 +116,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         }
 
         sliceTop
-            .call(attachFxHandlers, gd, cd, styleOne, constants)
+            .call(attachFxHandlers, entry, gd, cd, styleOne, constants)
             .call(helpers.setSliceCursor, gd, { isTransitioning: gd._transitioning });
 
         slicePath.call(styleOne, pt, trace);

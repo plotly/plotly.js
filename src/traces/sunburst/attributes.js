@@ -159,10 +159,7 @@ module.exports = {
             'current path',
             'percent root',
             'percent visible',
-            'percent parent',
-            'root label',
-            'visible label',
-            'parent label'
+            'percent parent'
         ],
         extras: ['none'],
         editType: 'plot',
@@ -186,22 +183,9 @@ module.exports = {
             'current path',
             'percent root',
             'percent visible',
-            'percent parent',
-            'root label',
-            'visible label',
-            'parent label'
+            'percent parent'
         ],
-        dflt: [
-            'label',
-            'text',
-            'value',
-            'percent root',
-            'percent visible',
-            'percent parent',
-            'root label',
-            'visible label',
-            'parent label'
-        ].join('+')
+        dflt: 'label+text+value+name'
     }),
     hovertemplate: hovertemplateAttrs({}, {
         keys: constants.eventDataKeys

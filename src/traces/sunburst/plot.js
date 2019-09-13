@@ -231,7 +231,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         sliceTop
-            .call(exports.attachFxHandlers, gd, cd, styleOne, constants)
+            .call(exports.attachFxHandlers, entry, gd, cd, styleOne, constants)
             .call(helpers.setSliceCursor, gd, {isTransitioning: gd._transitioning});
 
         slicePath.call(styleOne, pt, trace);
@@ -251,7 +251,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
-        pt.transform = transformInsideText(textBB, pt, cd0, styleOne);
+        pt.transform = transformInsideText(textBB, pt, cd0);
         pt.translateX = transTextX(pt);
         pt.translateY = transTextY(pt);
 
@@ -500,7 +500,7 @@ function makeEventData(pt, trace) {
     return out;
 }
 
-exports.attachFxHandlers = function(sliceTop, gd, cd, styleOne, constants) {
+exports.attachFxHandlers = function(sliceTop, entry, gd, cd, styleOne, constants) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
@@ -595,7 +595,7 @@ exports.attachFxHandlers = function(sliceTop, gd, cd, styleOne, constants) {
                 }
             }
 
-            var ref1 = hierarchy;
+            var ref1 = entry;
             if(ref1 && getVal(ref1)) {
                 hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
                 hoverPt.visibleLabel = pt.visibleLabel = helpers.getLabelString(ref1.data.data.label);
