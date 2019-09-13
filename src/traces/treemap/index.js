@@ -30,9 +30,9 @@ module.exports = {
 
     meta: {
         description: [
-            'Visualize hierarchal data spanning outward radially from root to leaves.',
-            'The treemap sectors are determined by the entries in *labels* or *ids*',
-            'and in *parents*.'
+            'Visualize hierarchal data from leaves (and/or outer branches) towards root',
+            'with rectangles. The treemap sectors are determined by the entries in',
+            '*labels* or *ids* and in *parents*.'
         ].join(' ')
     }
 };

@@ -138,26 +138,19 @@ function plotOne(gd, cd, element, transitionOpts) {
     var mvX = 0;
     var mvY = 0;
     if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(mapEntry)) {
-        /* TODO: remove below!
-        mvX = (trace.marker.pad.right - trace.marker.pad.left) / 2;
-        mvY = (trace.marker.pad.bottom - trace.marker.pad.top) / 2;
-
-        vpw += trace.marker.pad.right + trace.marker.pad.left;
-        vph += trace.marker.pad.bottom + trace.marker.pad.top;
-        */
         maxDepth++;
     }
     trace._maxDepth = maxDepth;
 
     var barW = vpw;
-    var barH = trace.pathbar.height;
+    var barH = trace.pathbar.thickness;
     var barPad = trace.marker.line.width + 1; // TODO: may expose this constant in future
 
     var barTop;
     var barBottom;
     if(trace.pathbar.visible) {
-        barTop = trace.pathbar.position.indexOf('top') !== -1;
-        barBottom = trace.pathbar.position.indexOf('bottom') !== -1;
+        barTop = trace.pathbar.side.indexOf('top') !== -1;
+        barBottom = trace.pathbar.side.indexOf('bottom') !== -1;
 
         if(barTop) {
             mvY += (barH + barPad) / 2;
@@ -288,16 +281,16 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         if(opts.isHeader) {
-            x0 += trace.marker.pad.left - TEXTPAD;
-            x1 -= trace.marker.pad.right - TEXTPAD;
+            x0 += trace.marker.pad.l - TEXTPAD;
+            x1 -= trace.marker.pad.r - TEXTPAD;
 
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - trace.marker.pad.bottom;
+                limY = y1 - trace.marker.pad.b;
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + trace.marker.pad.top;
+                limY = y0 + trace.marker.pad.t;
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }
@@ -507,7 +500,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         hasTransition: hasTransition
     });
 
-    if(trace.pathbar.visible && trace.pathbar.position !== 'inside') {
+    if(trace.pathbar.visible) {
         var rawAncestors = mapEntry.data.ancestors();
 
         var ancestors = [];

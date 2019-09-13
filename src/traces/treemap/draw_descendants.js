@@ -47,21 +47,21 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var hasRight = trace.textposition.indexOf('right') !== -1;
     var hasBottom = trace.textposition.indexOf('bottom') !== -1;
 
-    var noRoomForHeader = (!hasBottom && !trace.marker.pad.top) || (hasBottom && !trace.marker.pad.bottom);
+    var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
 
     // N.B. slice data isn't the calcdata,
     // grab corresponding calcdata item in sliceData[i].data.data
     var allData = partition(entry, [width, height], {
         packing: trace.tiling.packing,
         squarifyratio: trace.tiling.squarifyratio,
-        mirrorX: trace.tiling.mirror.indexOf('x') > -1,
-        mirrorY: trace.tiling.mirror.indexOf('y') > -1,
+        flipX: trace.tiling.flip.indexOf('x') > -1,
+        flipY: trace.tiling.flip.indexOf('y') > -1,
         pad: {
             inner: trace.tiling.pad,
-            top: trace.marker.pad.top,
-            left: trace.marker.pad.left,
-            right: trace.marker.pad.right,
-            bottom: trace.marker.pad.bottom,
+            top: trace.marker.pad.t,
+            left: trace.marker.pad.l,
+            right: trace.marker.pad.r,
+            bottom: trace.marker.pad.b,
         }
     });
 
@@ -97,10 +97,10 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     updateSlices.each(function(pt) {
         var isHeader = helpers.isHeader(pt, trace);
 
-        pt._hoverX = viewX(pt.x1 - trace.marker.pad.right),
+        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
         pt._hoverY = hasBottom ?
-                viewY(pt.y1 - trace.marker.pad.bottom / 2) :
-                viewY(pt.y0 + trace.marker.pad.top / 2);
+                viewY(pt.y1 - trace.marker.pad.b / 2) :
+                viewY(pt.y0 + trace.marker.pad.t / 2);
 
         var sliceTop = d3.select(this);
 

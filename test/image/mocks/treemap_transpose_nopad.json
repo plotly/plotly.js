@@ -19,10 +19,10 @@
             "marker": {
                 "opacity": 0.5,
                 "pad": {
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0
+                    "t": 0,
+                    "l": 0,
+                    "r": 0,
+                    "b": 0
                 }
             },
             "labels": [
@@ -111,10 +111,10 @@
             "marker": {
                 "opacity": 0.5,
                 "pad": {
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0
+                    "t": 0,
+                    "l": 0,
+                    "r": 0,
+                    "b": 0
                 }
             },
             "labels": [
@@ -203,10 +203,10 @@
             "marker": {
                 "opacity": 0.5,
                 "pad": {
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0
+                    "t": 0,
+                    "l": 0,
+                    "r": 0,
+                    "b": 0
                 }
             },
             "labels": [
@@ -295,10 +295,10 @@
             "marker": {
                 "opacity": 0.5,
                 "pad": {
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0
+                    "t": 0,
+                    "l": 0,
+                    "r": 0,
+                    "b": 0
                 }
             },
             "labels": [

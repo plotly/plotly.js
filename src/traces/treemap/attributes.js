@@ -67,7 +67,7 @@ module.exports = {
             ].join(' ')
         },
 
-        mirror: {
+        flip: {
             valType: 'flaglist',
             role: 'info',
             flags: [
@@ -77,7 +77,7 @@ module.exports = {
             dflt: '',
             editType: 'plot',
             description: [
-                'Determines if the positions obtained from solver are mirrored on each axis.'
+                'Determines if the positions obtained from solver are flipped on each axis.'
             ].join(' ')
         },
 
@@ -97,41 +97,37 @@ module.exports = {
 
     marker: extendFlat({
         pad: {
-            top: {
+            t: {
                 valType: 'number',
                 role: 'style',
                 min: 0,
-                dflt: 'auto',
                 editType: 'plot',
                 description: [
                     'Sets the padding form the top (in px).'
                 ].join(' ')
             },
-            left: {
+            l: {
                 valType: 'number',
                 role: 'style',
                 min: 0,
-                dflt: 'auto',
                 editType: 'plot',
                 description: [
                     'Sets the padding form the left (in px).'
                 ].join(' ')
             },
-            right: {
+            r: {
                 valType: 'number',
                 role: 'style',
                 min: 0,
-                dflt: 'auto',
                 editType: 'plot',
                 description: [
                     'Sets the padding form the right (in px).'
                 ].join(' ')
             },
-            bottom: {
+            b: {
                 valType: 'number',
                 role: 'style',
                 min: 0,
-                dflt: 'auto',
                 editType: 'plot',
                 description: [
                     'Sets the padding form the bottom (in px).'
@@ -141,15 +137,7 @@ module.exports = {
             editType: 'calc'
         },
 
-        colors: {
-            valType: 'data_array',
-            editType: 'calc',
-            description: [
-                'Sets the color of each sector of this treemap chart.',
-                'If not specified, the default trace color set is used',
-                'to pick the sector colors.'
-            ].join(' ')
-        },
+        colors: sunburstAttrs.marker.colors,
 
         opacity: {
             valType: 'number',
@@ -164,17 +152,7 @@ module.exports = {
             ].join(' ')
         },
 
-        line: {
-            color: extendFlat({}, pieAttrs.marker.line.color, {
-                dflt: null,
-                description: [
-                    'Sets the color of the line enclosing each sector.',
-                    'Defaults to the `paper_bgcolor` value.'
-                ].join(' ')
-            }),
-            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
-            editType: 'calc'
-        },
+        line: sunburstAttrs.marker.line,
 
         editType: 'calc'
     },
@@ -210,7 +188,7 @@ module.exports = {
             ].join(' ')
         },
 
-        position: {
+        side: {
             valType: 'enumerated',
             values: [
                 'top',
@@ -234,24 +212,22 @@ module.exports = {
                 '/',
                 '\\'
             ],
-            dflt: 'auto',
             role: 'style',
             editType: 'plot',
             description: [
                 'Determines which divider is used between labels.',
-                'With *top* `pathbar.position` it is defaulted to */*; and',
-                'with *bottom* `pathbar.position` it is defaulted to *\\*.'
+                'With *top* `pathbar.side` it is defaulted to */*; and',
+                'with *bottom* `pathbar.side` it is defaulted to *\\*.'
             ].join(' ')
         },
 
-        height: {
+        thickness: {
             valType: 'number',
-            dflt: 'auto',
             min: 12,
             role: 'info',
             editType: 'plot',
             description: [
-                'Sets the height (in px). If not specified the `parbath.textfont.size` is used',
+                'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
                 'with 3 pixles extra padding on each side.'
             ].join(' ')
         },
@@ -301,14 +277,12 @@ module.exports = {
         marker: {
             line: {
                 color: extendFlat({}, pieAttrs.marker.line.color, {
-                    dflt: 'auto',
                     description: [
                         'Sets the color of the line',
                         'enclosing each sector when it is hovered'
                     ].join(' ')
                 }),
                 width: extendFlat({}, pieAttrs.marker.line.width, {
-                    dflt: 'auto',
                     description: [
                         'Sets the width (in px) of the line',
                         'enclosing each sector when it is hovered.'

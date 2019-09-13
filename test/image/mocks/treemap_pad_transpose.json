@@ -16,10 +16,10 @@
             "marker": {
                 "opacity": 0.9,
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -100,16 +100,16 @@
             },
             "tiling": {
                 "packing": "dice-slice",
-                "mirror": "y",
+                "flip": "y",
                 "pad": 0
             },
             "marker": {
                 "opacity": 0.9,
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -190,16 +190,16 @@
             },
             "tiling": {
                 "packing": "dice-slice",
-                "mirror": "x",
+                "flip": "x",
                 "pad": 0
             },
             "marker": {
                 "opacity": 0.9,
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -280,16 +280,16 @@
             },
             "tiling": {
                 "packing": "dice-slice",
-                "mirror": "x+y",
+                "flip": "x+y",
                 "pad": 0
             },
             "marker": {
                 "opacity": 0.9,
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [

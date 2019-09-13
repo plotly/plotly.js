@@ -11,10 +11,10 @@
             },
             "marker": {
                 "pad": {
-                  "top": 32,
-                  "left": 16,
-                  "right": 8,
-                  "bottom": 4
+                  "t": 32,
+                  "l": 16,
+                  "r": 8,
+                  "b": 4
                 }
             },
             "texttemplate": "%{label}<br>%{text}",

@@ -1,16 +1,16 @@
 {
 	"data": [
 		{
-            "type": "treemap",
-            "count": "leaves+branches",
-						"maxdepth": 3,
-            "textinfo": "label+percent parent",
-            "tiling": {
+      "type": "treemap",
+      "count": "leaves+branches",
+			"maxdepth": 3,
+      "textinfo": "label+percent parent",
+      "tiling": {
 				"packing": "slice-dice"
 			},
 			"pathbar": {
-				"position": "bottom"
-		    },
+				"side": "bottom"
+	    },
 			"marker": {
 				"opacity": 0.8,
 				"line": {

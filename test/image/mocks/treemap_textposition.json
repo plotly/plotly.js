@@ -6,7 +6,7 @@
             "name": "bottom left textposition",
             "textposition": "bottom left",
             "pathbar": {
-                "position": "bottom",
+                "side": "bottom",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -223,7 +223,7 @@
             "name": "bottom right textposition",
             "textposition": "bottom right",
             "pathbar": {
-                "position": "bottom",
+                "side": "bottom",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -760,7 +760,7 @@
             "name": "top center textposition",
             "textposition": "top center",
             "pathbar": {
-                "position": "bottom",
+                "side": "bottom",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"

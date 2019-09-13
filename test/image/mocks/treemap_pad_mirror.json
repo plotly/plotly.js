@@ -18,10 +18,10 @@
             },
             "marker": {
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -102,7 +102,7 @@
             },
             "tiling": {
                 "packing": "slice-dice",
-                "mirror": "y",
+                "flip": "y",
                 "pad": 0
             },
             "branch": {
@@ -110,10 +110,10 @@
             },
             "marker": {
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -194,7 +194,7 @@
             },
             "tiling": {
                 "packing": "slice-dice",
-                "mirror": "x",
+                "flip": "x",
                 "pad": 0
             },
             "branch": {
@@ -202,10 +202,10 @@
             },
             "marker": {
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [
@@ -286,7 +286,7 @@
             },
             "tiling": {
                 "packing": "slice-dice",
-                "mirror": "x+y",
+                "flip": "x+y",
                 "pad": 0
             },
             "branch": {
@@ -294,10 +294,10 @@
             },
             "marker": {
                 "pad": {
-                    "top": 16,
-                    "left": 8,
-                    "right": 4,
-                    "bottom": 2
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
                 }
             },
             "labels": [

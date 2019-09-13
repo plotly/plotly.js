@@ -74,9 +74,7 @@
                 "pad": 4
             },
             "pathbar": {
-                "visible": true,
-
-                "height": 32,
+                "thickness": 32,
                 "color": "black",
                 "textfont": {
                     "color": "white",
@@ -152,8 +150,7 @@
             },
             "textinfo": "label+text",
             "pathbar": {
-                "visible": true,
-                "position": "bottom",
+                "side": "bottom",
                 "color": "#7F7",
                 "textfont": {
                     "size": 20,

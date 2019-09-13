@@ -11,8 +11,8 @@
 var d3Hierarchy = require('d3-hierarchy');
 
 module.exports = function partition(entry, size, opts) {
-    var flipX = opts.mirrorX;
-    var flipY = opts.mirrorY;
+    var flipX = opts.flipX;
+    var flipY = opts.flipY;
     var swapXY = opts.packing === 'dice-slice';
 
     var top = opts.pad[flipY ? 'bottom' : 'top'];
@@ -54,25 +54,18 @@ module.exports = function partition(entry, size, opts) {
 };
 
 function getTilingMethod(key, squarifyratio) {
-    var method;
     switch(key) {
         case 'squarify':
-            method = d3Hierarchy.treemapSquarify.ratio(squarifyratio);
-            break;
+            return d3Hierarchy.treemapSquarify.ratio(squarifyratio);
         case 'binary':
-            method = d3Hierarchy.treemapBinary;
-            break;
+            return d3Hierarchy.treemapBinary;
         case 'dice':
-            method = d3Hierarchy.treemapDice;
-            break;
+            return d3Hierarchy.treemapDice;
         case 'slice':
-            method = d3Hierarchy.treemapSlice;
-            break;
+            return d3Hierarchy.treemapSlice;
         default: // i.e. 'slice-dice' | 'dice-slice'
-            method = d3Hierarchy.treemapSliceDice;
+            return d3Hierarchy.treemapSliceDice;
     }
-
-    return method;
 }
 
 function flipTree(node, size, opts) {

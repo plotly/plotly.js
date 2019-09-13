@@ -47,7 +47,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('tiling.squarifyratio');
     }
 
-    coerce('tiling.mirror');
+    coerce('tiling.flip');
     var tilingPad = coerce('tiling.pad');
 
     var text = coerce('text');
@@ -77,10 +77,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var headerSize = traceOut.textfont.size * 2;
 
-    coerce('marker.pad.top', bottomText ? headerSize / 4 : headerSize);
-    coerce('marker.pad.left', headerSize / 4);
-    coerce('marker.pad.right', headerSize / 4);
-    coerce('marker.pad.bottom', bottomText ? headerSize : headerSize / 4);
+    coerce('marker.pad.t', bottomText ? headerSize / 4 : headerSize);
+    coerce('marker.pad.l', headerSize / 4);
+    coerce('marker.pad.r', headerSize / 4);
+    coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
 
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
@@ -100,10 +100,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var hasPathbar = coerce('pathbar.visible');
     if(hasPathbar) {
         Lib.coerceFont(coerce, 'pathbar.textfont', layout.font);
-        coerce('pathbar.height', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 
-        var position = coerce('pathbar.position');
-        coerce('pathbar.divider', position === 'top' ? '/' : '\\');
+        // This works even for multi-line labels as treemap pathbar trim out line breaks
+        coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
+
+        var side = coerce('pathbar.side');
+        coerce('pathbar.divider', side === 'top' ? '/' : '\\');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
