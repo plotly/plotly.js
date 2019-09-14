@@ -68,8 +68,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         pt.x0 = eachWidth * level;
         pt.x1 = width;
-        pt.y0 = 0;
-        pt.y1 = height;
+        pt.y0 = barDifY + 0;
+        pt.y1 = barDifY + height;
 
         pt._redirect = entry.data.id;
 
@@ -153,8 +153,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         pt.transform = toMoveInsideSlice(
             pt.x0,
             Math.min(pt.x0 + eachWidth, pt.x1),
-            pt.y0 + barDifY,
-            pt.y1 + barDifY,
+            pt.y0,
+            pt.y1,
             pt.textBB,
             {
                 isMenu: true

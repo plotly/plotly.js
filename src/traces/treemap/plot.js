@@ -86,6 +86,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             prevLookdown[helpers.getPtId(pt)];
     };
 
+    var barDifY;
     var getOrigin = function(pt, upDown, refRect, size) {
         var clicked = trace._clickedInfo;
         if(!clicked) {
@@ -99,8 +100,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         if(upDown) {
             x0 = width; // always slide pathbar to the right, unless it is the root node
             x1 = width;
-            y0 = 0;
-            y1 = height;
+            y0 = barDifY + 0;
+            y1 = barDifY + height;
         } else {
             var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id] || prevLookup[clicked.id];
 
@@ -157,6 +158,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             vph -= (barH + barPad);
         }
     }
+    barDifY = barTop ? -(barH + barPad) : vph + barPad;
 
     var domainMidX = (domain.x[1] + domain.x[0]) / 2;
     var domainMidY = (domain.y[1] + domain.y[0]) / 2;
@@ -170,8 +172,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var viewMapX = function(x) { return cenX + x; };
     var viewMapY = function(y) { return cenY + y; };
 
-    var barDifY = barTop ? -(barH + barPad) : vph + barPad;
-    var barY0 = viewMapY(0) + barDifY;
+    var barY0 = viewMapY(0);
     var barX0 = viewMapX(0);
 
     var viewDirX = function(x) { return barX0 + x; };
