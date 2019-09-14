@@ -25,18 +25,15 @@ var upDown = false; // for Descendants
 module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var width = opts.width;
     var height = opts.height;
-
     var viewX = opts.viewX;
     var viewY = opts.viewY;
-
-    var refRect = opts.refRect;
     var pathSlice = opts.pathSlice;
     var toMoveInsideSlice = opts.toMoveInsideSlice;
-
     var hasTransition = opts.hasTransition;
     var handleSlicesExit = opts.handleSlicesExit;
-    var makeUpdateSliceIntepolator = opts.makeUpdateSliceIntepolator;
-    var makeUpdateTextInterpolar = opts.makeUpdateTextInterpolar;
+    var makeUpdateSliceInterpolator = opts.makeUpdateSliceInterpolator;
+    var makeUpdateTextInterpolator = opts.makeUpdateTextInterpolator;
+    var refRect = {};
 
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
@@ -113,7 +110,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
-                var interp = makeUpdateSliceIntepolator(pt2, upDown, getRefRect(), [width, height]);
+                var interp = makeUpdateSliceInterpolator(pt2, upDown, getRefRect(), [width, height]);
                 return function(t) { return pathSlice(interp(t)); };
             });
         } else {
@@ -171,7 +168,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {
-                var interp = makeUpdateTextInterpolar(pt2, upDown, getRefRect(), [width, height]);
+                var interp = makeUpdateTextInterpolator(pt2, upDown, getRefRect(), [width, height]);
                 return function(t) { return helpers.strTransform(interp(t)); };
             });
         } else {

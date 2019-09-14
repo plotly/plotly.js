@@ -224,7 +224,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
-                var interp = makeUpdateSliceIntepolator(pt2);
+                var interp = makeUpdateSliceInterpolator(pt2);
                 return function(t) { return pathSlice(interp(t)); };
             });
         } else {
@@ -275,7 +275,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {
-                var interp = makeUpdateTextInterpolar(pt2);
+                var interp = makeUpdateTextInterpolator(pt2);
                 return function(t) { return strTransform(interp(t), textBB); };
             });
         } else {
@@ -323,7 +323,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         return d3.interpolate(prev, next);
     }
 
-    function makeUpdateSliceIntepolator(pt) {
+    function makeUpdateSliceInterpolator(pt) {
         var prev0 = prevLookup[helpers.getPtId(pt)];
         var prev;
         var next = {x0: pt.x0, x1: pt.x1, rpx0: pt.rpx0, rpx1: pt.rpx1};
@@ -362,7 +362,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         return d3.interpolate(prev, next);
     }
 
-    function makeUpdateTextInterpolar(pt) {
+    function makeUpdateTextInterpolator(pt) {
         var prev0 = prevLookup[helpers.getPtId(pt)];
         var prev;
         var transform = pt.transform;

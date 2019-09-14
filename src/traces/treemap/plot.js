@@ -98,7 +98,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         var x0, x1, y0, y1;
 
         if(upDown) {
-            x0 = width; // always slide pathbar to the right, unless it is the root node
+            x0 = width; // always slide pathbar to the right
             x1 = width;
             y0 = barDifY + 0;
             y1 = barDifY + height;
@@ -353,7 +353,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         return d3.interpolate(prev, getOrigin(pt, upDown, refRect, size));
     };
 
-    var makeUpdateSliceIntepolator = function(pt, upDown, refRect, size) {
+    var makeUpdateSliceInterpolator = function(pt, upDown, refRect, size) {
         var prev0 = getPrev(pt, upDown);
         var prev = {};
         var origin = getOrigin(pt, upDown, refRect, size);
@@ -378,7 +378,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     };
 
-    var makeUpdateTextInterpolar = function(pt, upDown, refRect, size) {
+    var makeUpdateTextInterpolator = function(pt, upDown, refRect, size) {
         var prev0 = getPrev(pt, upDown);
         var prev = {};
         var origin = getOrigin(pt, upDown, refRect, size);
@@ -481,18 +481,11 @@ function plotOne(gd, cd, element, transitionOpts) {
         viewX: viewMapX,
         viewY: viewMapY,
 
-        refRect: {
-            x0: vpw / 2,
-            x1: vpw / 2,
-            y0: vph / 2,
-            y1: vph / 2
-        },
-
         pathSlice: pathDescendant,
         toMoveInsideSlice: toMoveInsideSlice,
 
-        makeUpdateSliceIntepolator: makeUpdateSliceIntepolator,
-        makeUpdateTextInterpolar: makeUpdateTextInterpolar,
+        makeUpdateSliceInterpolator: makeUpdateSliceInterpolator,
+        makeUpdateTextInterpolator: makeUpdateTextInterpolator,
 
         handleSlicesExit: handleSlicesExit,
         hasTransition: hasTransition
@@ -507,18 +500,11 @@ function plotOne(gd, cd, element, transitionOpts) {
             viewX: viewDirX,
             viewY: viewDirY,
 
-            refRect: {
-                x0: barW / 2,
-                x1: barW / 2,
-                y0: barH / 2,
-                y1: barH / 2
-            },
-
             pathSlice: pathAncestor,
             toMoveInsideSlice: toMoveInsideSlice,
 
-            makeUpdateSliceIntepolator: makeUpdateSliceIntepolator,
-            makeUpdateTextInterpolar: makeUpdateTextInterpolar,
+            makeUpdateSliceInterpolator: makeUpdateSliceInterpolator,
+            makeUpdateTextInterpolator: makeUpdateTextInterpolator,
 
             handleSlicesExit: handleSlicesExit,
             hasTransition: hasTransition
