@@ -539,7 +539,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                 ref = entry.data.data;
                 calcPercent('visible');
             }
-            if(hasFlag('percent root') && pt.parent) {
+            if(hasFlag('percent root') && (pt.parent || helpers.isLeaf(pt))) {
                 ref = cd0;
                 calcPercent('root');
             }

@@ -81,7 +81,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var prevLookup = {};
     var prevLookdown = {};
     var getPrev = function(pt, upDown) {
-        return (upDown) ?
+        return upDown ?
             prevLookup[helpers.getPtId(pt)] :
             prevLookdown[helpers.getPtId(pt)];
     };
@@ -498,7 +498,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         hasTransition: hasTransition
     });
 
-    if(trace.pathbar.visible && trace.pathbar.position !== 'inside') {
+    if(trace.pathbar.visible) {
         drawAncestors(gd, cd, entry, selAncestors, {
             barDifY: barDifY,
             width: barW,
