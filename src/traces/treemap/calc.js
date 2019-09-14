@@ -8,12 +8,12 @@
 
 'use strict';
 
-var sunburstCalc = require('../sunburst/calc');
+var calc = require('../sunburst/calc');
 
 exports.calc = function(gd, trace) {
-    return sunburstCalc.calc(gd, trace);
+    return calc.calc(gd, trace);
 };
 
 exports.crossTraceCalc = function(gd) {
-    return sunburstCalc._runCrossTraceCalc('treemap', gd);
+    return calc._runCrossTraceCalc('treemap', gd);
 };
