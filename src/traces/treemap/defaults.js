@@ -48,7 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('tiling.flip');
-    var tilingPad = coerce('tiling.pad');
+    coerce('tiling.pad');
 
     var text = coerce('text');
     coerce('texttemplate');
@@ -90,8 +90,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     traceOut._hovered = {
         marker: {
+            opacity: 1,
             line: {
-                width: Math.max(tilingPad, 2),
+                width: 2,
                 color: Color.contrast(layout.paper_bgcolor)
             }
         }

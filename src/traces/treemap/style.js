@@ -21,22 +21,24 @@ function style(gd) {
         gTrace.style('opacity', trace.opacity);
 
         gTrace.selectAll('path.surface').each(function(pt) {
-            d3.select(this).call(styleOne, pt, trace);
+            d3.select(this).call(styleOne, pt, trace, {
+                hovered: false
+            });
         });
     });
 }
 
-function styleOne(s, pt, trace, hovered) {
+function styleOne(s, pt, trace, opts) {
     var cdi = pt.data.data;
     var ptNumber = cdi.i;
     var lineColor;
     var lineWidth;
     var opacity;
 
-    if(hovered) {
+    if((opts || {}).hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
-        opacity = 1;
+        opacity = trace._hovered.marker.opacity;
     } else {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;

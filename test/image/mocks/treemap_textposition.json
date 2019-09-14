@@ -977,6 +977,7 @@
     "layout": {
         "width": 1200,
         "height": 1200,
+        "paper_bgcolor": "#210",
         "annotations": [
             {
                 "showarrow": false,

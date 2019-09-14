@@ -130,7 +130,9 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
                 isTransitioning: gd._transitioning
             });
 
-        slicePath.call(styleOne, pt, trace);
+        slicePath.call(styleOne, pt, trace, {
+            hovered: false
+        });
 
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {

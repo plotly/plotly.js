@@ -180,7 +180,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemap) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, true);
+            opts.styleOne(slice, pt, traceNow, {
+                hovered: true
+            });
         }
 
         trace._hasHoverEvent = true;
@@ -211,7 +213,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemap) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, false);
+            opts.styleOne(slice, pt, traceNow, {
+                hovered: false
+            });
         }
     };
 
