@@ -1,22 +1,39 @@
 {
 	"data": [
 		{
-      "type": "treemap",
-      "count": "leaves+branches",
+			"type": "treemap",
+			"count": "leaves+branches",
 			"maxdepth": 3,
-      "textinfo": "label+percent parent",
-      "tiling": {
+			"textinfo": "label+percent parent",
+			"tiling": {
 				"packing": "slice-dice"
 			},
 			"pathbar": {
 				"side": "bottom"
-	    },
+			},
 			"marker": {
-				"opacity": 0.8,
+				"opacity": 0.9,
 				"line": {
 					"color": "#777"
 				},
-				"colorscale": [[0, "#FFF"], [0.01, "#FF0"], [0.1, "#F00"], [1, "#000"]],
+				"colorscale": [
+					[
+						0,
+						"#FFF"
+					],
+					[
+						0.01,
+						"#FF0"
+					],
+					[
+						0.1,
+						"#F00"
+					],
+					[
+						1,
+						"#000"
+					]
+				],
 				"showscale": true
 			},
 			"level": "1. gl-mesh3d",

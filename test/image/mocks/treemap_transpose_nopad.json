@@ -16,8 +16,10 @@
                 "squarifyratio": 1,
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.5
+            },
             "marker": {
-                "opacity": 0.5,
                 "pad": {
                     "t": 0,
                     "l": 0,
@@ -108,8 +110,10 @@
                 "squarifyratio": 1.618034,
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.5
+            },
             "marker": {
-                "opacity": 0.5,
                 "pad": {
                     "t": 0,
                     "l": 0,
@@ -200,8 +204,10 @@
                 "squarifyratio": 1,
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.5
+            },
             "marker": {
-                "opacity": 0.5,
                 "pad": {
                     "t": 0,
                     "l": 0,
@@ -292,8 +298,10 @@
                 "squarifyratio": 1.618034,
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.5
+            },
             "marker": {
-                "opacity": 0.5,
                 "pad": {
                     "t": 0,
                     "l": 0,

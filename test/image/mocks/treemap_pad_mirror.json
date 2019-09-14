@@ -13,10 +13,8 @@
                 "packing": "slice-dice",
                 "pad": 0
             },
-            "branch": {
-                "opacity": 0.8
-            },
             "marker": {
+                "opacity": 0.8,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -105,10 +103,8 @@
                 "flip": "y",
                 "pad": 0
             },
-            "branch": {
-                "opacity": 0.8
-            },
             "marker": {
+                "opacity": 0.8,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -197,10 +193,8 @@
                 "flip": "x",
                 "pad": 0
             },
-            "branch": {
-                "opacity": 0.8
-            },
             "marker": {
+                "opacity": 0.8,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -289,10 +283,8 @@
                 "flip": "x+y",
                 "pad": 0
             },
-            "branch": {
-                "opacity": 0.8
-            },
             "marker": {
+                "opacity": 0.8,
                 "pad": {
                     "t": 16,
                     "l": 8,

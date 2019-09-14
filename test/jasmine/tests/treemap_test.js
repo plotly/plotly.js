@@ -785,13 +785,12 @@ describe('Test treemap restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *marker.opacity*', function(done) {
+    it('should be able to restyle *leaf.opacity*', function(done) {
         var mock = {
             data: [{
                 type: 'treemap',
                 labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B'],
-                pathbar: { visible: false }
+                parents: ['', 'Root', 'Root', 'B']
             }]
         };
 
@@ -820,9 +819,11 @@ describe('Test treemap restyle:', function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
         })
-        .then(_restyle({'marker.opacity': 0.5}))
-        .then(_assert('lower marker.opacity', ['0.245', '0.5', '0.35', '0.5']))
-        .then(_restyle({'marker.opacity': null}))
+        .then(_restyle({'leaf.opacity': 0.3}))
+        .then(_assert('lower leaf.opacity', ['0.49', '0.3', '0.7', '0.3']))
+        .then(_restyle({'leaf.opacity': 1}))
+        .then(_assert('raise leaf.opacity', ['0.49', '1', '0.7', '1']))
+        .then(_restyle({'leaf.opacity': null}))
         .then(_assert('back to dflt', ['0.49', '1', '0.7', '1']))
         .catch(failTest)
         .then(done);

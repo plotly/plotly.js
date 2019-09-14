@@ -13,8 +13,10 @@
                 "packing": "dice-slice",
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.7
+            },
             "marker": {
-                "opacity": 0.9,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -103,8 +105,10 @@
                 "flip": "y",
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.7
+            },
             "marker": {
-                "opacity": 0.9,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -193,8 +197,10 @@
                 "flip": "x",
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.7
+            },
             "marker": {
-                "opacity": 0.9,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -283,8 +289,10 @@
                 "flip": "x+y",
                 "pad": 0
             },
+            "leaf": {
+                "opacity": 0.7
+            },
             "marker": {
-                "opacity": 0.9,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -363,6 +371,12 @@
     "layout": {
         "width": 1200,
         "height": 800,
+        "paper_bgcolor": "darkblue",
+        "treemapcolorway": [
+            "#ff0",
+            "#f00",
+            "#0f0"
+        ],
         "shapes": [
             { "type": "circle", "layer": "below", "x0": 0.075, "x1": 0.925, "y0": 0.0, "y1": 0.8},
             { "type": "rect", "layer": "below", "x0": 0.02, "x1": 0.48, "y0": 0.02, "y1": 0.48 },

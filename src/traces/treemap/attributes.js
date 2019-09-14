@@ -145,10 +145,9 @@ module.exports = {
             role: 'style',
             min: 0,
             max: 1,
-            dflt: 1,
             description: [
-                'Sets the opacity for the sectors. With colorscale',
-                'it is defaulted to 1; otherwise it is defaulted to 0.5'
+                'Sets the opacity of the branches i.e. based on the hierarchy height.',
+                'With colorscale it is defaulted to 1; otherwise it is defaulted to 0.7'
             ].join(' ')
         },
 
@@ -162,16 +161,16 @@ module.exports = {
         })
     ),
 
-    branch: {
+    leaf: {
         opacity: {
             valType: 'number',
             editType: 'style',
             role: 'style',
             min: 0,
             max: 1,
+            dflt: 1,
             description: [
-                'Sets the opacity of the leaves i.e. based on the hierarchy height.',
-                'With colorscale it is defaulted to 1; otherwise it is defaulted to 0.7'
+                'Sets the opacity of the leaves.'
             ].join(' ')
         },
         editType: 'plot'

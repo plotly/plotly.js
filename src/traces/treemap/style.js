@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
+var helpers = require('../sunburst/helpers');
 
 function style(gd) {
     gd._fullLayout._treemaplayer.selectAll('.trace').each(function(cd) {
@@ -42,7 +43,7 @@ function styleOne(s, pt, trace, opts) {
     } else {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
-        opacity = trace.marker.opacity * Math.pow(trace.branch.opacity, pt.height);
+        opacity = helpers.isLeaf(pt) ? trace.leaf.opacity : Math.pow(trace.marker.opacity, pt.height);
     }
 
     s.style('stroke-width', lineWidth)
