@@ -11,7 +11,6 @@
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
-var getTransform = require('../bar/plot').getTransform;
 
 function hasLabel(label) {
     return label || label === 0;
@@ -152,17 +151,6 @@ exports.hasTransition = function(transitionOpts) {
     // We could optimize hasTransition per trace,
     // as sunburst & treemap have no cross-trace logic!
     return !!(transitionOpts && transitionOpts.duration > 0);
-};
-
-exports.strTransform = function(d) {
-    return getTransform({
-        textX: d.transform.textX,
-        textY: d.transform.textY,
-        targetX: d.transform.targetX,
-        targetY: d.transform.targetY,
-        scale: d.transform.scale,
-        rotate: d.transform.rotate
-    });
 };
 
 exports.getMaxDepth = function(trace) {

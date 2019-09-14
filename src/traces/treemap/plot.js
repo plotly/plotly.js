@@ -431,6 +431,17 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
     };
 
+    var strTransform = function(d) {
+        return Lib.getTextTransform({
+            textX: d.transform.textX,
+            textY: d.transform.textY,
+            targetX: d.transform.targetX,
+            targetY: d.transform.targetY,
+            scale: d.transform.scale,
+            rotate: d.transform.rotate
+        });
+    };
+
     var gTrace = d3.select(element);
     var selAncestors = gTrace.selectAll('g.pathbar');
     var selDescendants = gTrace.selectAll('g.slice');
@@ -477,7 +488,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         makeUpdateTextInterpolator: makeUpdateTextInterpolator,
 
         handleSlicesExit: handleSlicesExit,
-        hasTransition: hasTransition
+        hasTransition: hasTransition,
+        strTransform: strTransform
     });
 
     if(trace.pathbar.visible) {
@@ -496,7 +508,8 @@ function plotOne(gd, cd, element, transitionOpts) {
             makeUpdateTextInterpolator: makeUpdateTextInterpolator,
 
             handleSlicesExit: handleSlicesExit,
-            hasTransition: hasTransition
+            hasTransition: hasTransition,
+            strTransform: strTransform
         });
     }
 }

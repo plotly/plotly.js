@@ -29,6 +29,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var viewY = opts.viewY;
     var pathSlice = opts.pathSlice;
     var toMoveInsideSlice = opts.toMoveInsideSlice;
+    var strTransform = opts.strTransform;
     var hasTransition = opts.hasTransition;
     var handleSlicesExit = opts.handleSlicesExit;
     var makeUpdateSliceInterpolator = opts.makeUpdateSliceInterpolator;
@@ -170,10 +171,10 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {
                 var interp = makeUpdateTextInterpolator(pt2, upDown, refRect, [width, height]);
-                return function(t) { return helpers.strTransform(interp(t)); };
+                return function(t) { return strTransform(interp(t)); };
             });
         } else {
-            sliceText.attr('transform', helpers.strTransform(pt));
+            sliceText.attr('transform', strTransform(pt));
         }
     });
 };
