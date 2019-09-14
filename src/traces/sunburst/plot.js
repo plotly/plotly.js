@@ -233,8 +233,9 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         sliceTop
             .call(attachFxHandlers, entry, gd, cd, {
+                eventDataKeys: constants.eventDataKeys,
                 transitionTime: constants.CLICK_TRANSITION_TIME,
-                transitonEasing: constants.CLICK_TRANSITION_EASING
+                transitionEasing: constants.CLICK_TRANSITION_EASING
             })
             .call(helpers.setSliceCursor, gd, {
                 hideOnRoot: true,

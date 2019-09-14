@@ -118,8 +118,9 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         sliceTop
             .call(attachFxHandlers, entry, gd, cd, {
                 styleOne: styleOne,
+                eventDataKeys: constants.eventDataKeys,
                 transitionTime: constants.CLICK_TRANSITION_TIME,
-                transitonEasing: constants.CLICK_TRANSITION_EASING
+                transitionEasing: constants.CLICK_TRANSITION_EASING
             })
             .call(helpers.setSliceCursor, gd, {
                 hideOnRoot: false,

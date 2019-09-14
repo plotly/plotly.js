@@ -333,18 +333,7 @@ function plotOne(gd, cd, element, transitionOpts) {
                 parentPrev = getPrev(Q, upDown);
             } else i = maxDepth;
         }
-        var result = parentPrev || {};
-
-        if(upDown && !isNaN(result.x1)) {
-            // always slide pathbar from the right
-            var difX = result.x1 - result.x0;
-            if(result.transform) {
-                result.transform.scale = 0;
-                result.transform.targetX += difX;
-            }
-            result.x0 += difX;
-        }
-        return result;
+        return parentPrev || {};
     };
 
     var makeExitSliceInterpolator = function(pt, upDown, refRect, size) {

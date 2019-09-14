@@ -156,7 +156,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
-                eventData: [makeEventData(pt, traceNow)]
+                eventData: [makeEventData(pt, traceNow, opts.eventDataKeys)]
             };
 
             if(isSunburst) {
@@ -187,7 +187,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         trace._hasHoverEvent = true;
         gd.emit('plotly_hover', {
-            points: [makeEventData(pt, traceNow)],
+            points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
             event: d3.event
         });
     };
@@ -200,7 +200,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         if(trace._hasHoverEvent) {
             evt.originalEvent = d3.event;
             gd.emit('plotly_unhover', {
-                points: [makeEventData(pt, traceNow)],
+                points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
                 event: d3.event
             });
             trace._hasHoverEvent = false;
@@ -229,7 +229,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var traceNow = gd._fullData[trace.index];
 
         var clickVal = Events.triggerHandler(gd, 'plotly_' + trace.type + 'click', {
-            points: [makeEventData(pt, traceNow)],
+            points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
             event: d3.event
         });
 
@@ -243,7 +243,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             )
         ) {
             if(fullLayoutNow.hovermode) {
-                gd._hoverdata = [makeEventData(pt, traceNow)];
+                gd._hoverdata = [makeEventData(pt, traceNow, opts.eventDataKeys)];
                 Fx.click(gd, d3.event);
             }
             return;
@@ -316,7 +316,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     sliceTop.on('click', onClick);
 };
 
-function makeEventData(pt, trace) {
+function makeEventData(pt, trace, keys) {
     var cdi = pt.data.data;
 
     var out = {
@@ -328,17 +328,10 @@ function makeEventData(pt, trace) {
         // TODO more things like 'children', 'siblings', 'hierarchy?
     };
 
-    [ // TODO: read these from (sunburst | treemap) trace constants
-        'parentLabel',
-        'visibleLabel',
-        'rootLabel',
-        'percentParent',
-        'percentVisible',
-        'percentRoot',
-        'currentPath'
-    ].forEach(function(key) {
+    for(var i = 0; i < keys.length; i++) {
+        var key = keys[i];
         if(key in pt) out[key] = pt[key];
-    });
+    }
 
     appendArrayPointValue(out, trace, cdi.i);
 
