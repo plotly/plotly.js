@@ -105,16 +105,23 @@ function plotOne(gd, cd, element, transitionOpts) {
         } else {
             var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id] || prevLookup[clicked.id];
 
-            var e = trace.tiling.pad;
-            var isLeftOfRect = function(x) { return x - e <= ref.x0; };
-            var isRightOfRect = function(x) { return x + e >= ref.x1; };
-            var isBottomOfRect = function(y) { return y - e <= ref.y0; };
-            var isTopOfRect = function(y) { return y + e >= ref.y1; };
+            if(Object.keys(ref).length === 0 && // case of an empty object - happens when maxdepth is set
+                !helpers.isHierarchyRoot(pt)
+            ) {
+                x0 = x1 = (pt.x0 + pt.x1) / 2;
+                y0 = y1 = (pt.y0 + pt.y1) / 2;
+            } else {
+                var e = trace.tiling.pad;
+                var isLeftOfRect = function(x) { return x - e <= ref.x0; };
+                var isRightOfRect = function(x) { return x + e >= ref.x1; };
+                var isBottomOfRect = function(y) { return y - e <= ref.y0; };
+                var isTopOfRect = function(y) { return y + e >= ref.y1; };
 
-            x0 = isLeftOfRect(pt.x0 - e) ? 0 : isRightOfRect(pt.x0 - e) ? width : pt.x0;
-            x1 = isLeftOfRect(pt.x1 + e) ? 0 : isRightOfRect(pt.x1 + e) ? width : pt.x1;
-            y0 = isBottomOfRect(pt.y0 - e) ? 0 : isTopOfRect(pt.y0 - e) ? height : pt.y0;
-            y1 = isBottomOfRect(pt.y1 + e) ? 0 : isTopOfRect(pt.y1 + e) ? height : pt.y1;
+                x0 = isLeftOfRect(pt.x0 - e) ? 0 : isRightOfRect(pt.x0 - e) ? width : pt.x0;
+                x1 = isLeftOfRect(pt.x1 + e) ? 0 : isRightOfRect(pt.x1 + e) ? width : pt.x1;
+                y0 = isBottomOfRect(pt.y0 - e) ? 0 : isTopOfRect(pt.y0 - e) ? height : pt.y0;
+                y1 = isBottomOfRect(pt.y1 + e) ? 0 : isTopOfRect(pt.y1 + e) ? height : pt.y1;
+            }
         }
 
         return {
