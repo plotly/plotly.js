@@ -70,6 +70,18 @@ describe('Test treemap defaults:', function() {
         expect(fullData[2].visible).toBe(false, 'no labels');
     });
 
+    it('should only coerce *count* when the *values* array is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], values: []},
+            {labels: [1], parents: [''], values: [1]}
+        ]);
+
+        expect(fullData[0].count).toBe('leaves');
+        expect(fullData[1].count).toBe('leaves', 'has empty values');
+        expect(fullData[2].count).toBe(undefined, 'has values');
+    });
+
     it('should not coerce *branchvalues* when *values* is not set', function() {
         _supply([
             {labels: [1], parents: [''], values: [1]},
@@ -102,6 +114,68 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
+    it('should default *marker.opacity* depending on having or not having *colorscale*', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
+        ]);
+
+        expect(fullData[0].marker.opacity).toBe(0.7, 'without colorscale');
+        expect(fullData[1].marker.opacity).toBe(1, 'with colorscale');
+    });
+
+    it('should always default *leaf.opacity* to 1', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
+        ]);
+
+        expect(fullData[0].leaf.opacity).toBe(1, 'without colorscale');
+        expect(fullData[1].leaf.opacity).toBe(1, 'with colorscale');
+    });
+
+    it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], textfont: {size: 24}},
+            {labels: [1], parents: [''], textposition: 'bottom left'},
+            {labels: [1], parents: [''], textposition: 'bottom center'},
+            {labels: [1], parents: [''], textposition: 'bottom right'},
+            {labels: [1], parents: [''], textposition: 'middle left'},
+            {labels: [1], parents: [''], textposition: 'middle center'},
+            {labels: [1], parents: [''], textposition: 'middle right'},
+            {labels: [1], parents: [''], textposition: 'top left'},
+            {labels: [1], parents: [''], textposition: 'tpo center'},
+            {labels: [1], parents: [''], textposition: 'top right'}
+        ]);
+
+        expect(fullData[0].textfont.size).toBe(12);
+        expect(fullData[0].marker.pad.t).toBe(24, 'twice of default textfont.size');
+        expect(fullData[0].marker.pad.l).toBe(6, 'half of default textfont.size');
+        expect(fullData[0].marker.pad.r).toBe(6, 'half of default textfont.size');
+        expect(fullData[0].marker.pad.b).toBe(6, 'half of default textfont.size');
+
+        expect(fullData[1].textfont.size).toBe(24);
+        expect(fullData[1].marker.pad.t).toBe(48, 'twice of increased textfont.size');
+        expect(fullData[1].marker.pad.l).toBe(12, 'half of increased textfont.size');
+        expect(fullData[1].marker.pad.r).toBe(12, 'half of increased textfont.size');
+        expect(fullData[1].marker.pad.b).toBe(12, 'half of increased textfont.size');
+
+        var i;
+        for(i = 0 + 2; i < 3 + 2; i++) {
+            expect(fullData[i].marker.pad.t).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.l).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.r).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.b).toBe(24, 'twice of default textfont.size', 'with textposition:' + fullData[i].textposition);
+        }
+        for(i = 0 + 5; i < 6 + 5; i++) {
+            expect(fullData[i].marker.pad.t).toBe(24, 'twice of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.l).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.r).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+            expect(fullData[i].marker.pad.b).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+        }
+    });
+
     it('should not include "text" flag in *textinfo* when *text* is set', function() {
         _supply([
             {labels: [1], parents: [''], text: ['A']},
@@ -129,6 +203,80 @@ describe('Test treemap defaults:', function() {
         });
         expect(gd._fullLayout.treemapcolorway)
             .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
+    });
+
+    it('should only coerce *squarifyratio* when *tiling.packing* is *squarify*', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], tiling: {packing: 'binary'}},
+            {labels: [1], parents: [''], tiling: {packing: 'slice'}},
+            {labels: [1], parents: [''], tiling: {packing: 'dice'}},
+            {labels: [1], parents: [''], tiling: {packing: 'slice-dice'}},
+            {labels: [1], parents: [''], tiling: {packing: 'dice-slice'}}
+        ]);
+
+        expect(fullData[0].tiling.squarifyratio).toBe(1);
+        expect(fullData[1].tiling.squarifyratio).toBe(undefined, 'no squarify');
+        expect(fullData[2].tiling.squarifyratio).toBe(undefined, 'no squarify');
+        expect(fullData[3].tiling.squarifyratio).toBe(undefined, 'no squarify');
+        expect(fullData[4].tiling.squarifyratio).toBe(undefined, 'no squarify');
+        expect(fullData[5].tiling.squarifyratio).toBe(undefined, 'no squarify');
+    });
+
+    it('should not coerce *pathbar* attributes when *pathbar.visible* is false', function() {
+        _supply([
+            {labels: [1], parents: [''], pathbar: {visible: false}}
+        ]);
+
+        expect(fullData[0].pathbar.visible).toBe(false);
+        expect(fullData[0].pathbar.textfont).toBe(undefined);
+        expect(fullData[0].pathbar.thickness).toBe(undefined);
+        expect(fullData[0].pathbar.side).toBe(undefined);
+        expect(fullData[0].pathbar.divider).toBe(undefined);
+    });
+
+    it('should set *pathbar.visible* to true by default', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ]);
+
+        expect(fullData[0].pathbar.visible).toBe(true);
+    });
+
+    it('should set *pathbar.visible* to true by default', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ]);
+
+        expect(fullData[0].pathbar.textfont.family).toBe('"Open Sans", verdana, arial, sans-serif');
+        expect(fullData[0].pathbar.textfont.color).toBe('#444');
+        expect(fullData[0].pathbar.textfont.size).toBe(12);
+        expect(fullData[0].pathbar.thickness).toBe(18);
+        expect(fullData[0].pathbar.side).toBe('top');
+        expect(fullData[0].pathbar.divider).toBe('/');
+    });
+
+    it('should default *pathbar* sizes and styles to layout', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ], {
+            font: {family: 'Times New Romans', color: '#ABC', size: 24}
+        });
+
+        expect(fullData[0].pathbar.textfont.family).toBe('Times New Romans');
+        expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
+        expect(fullData[0].pathbar.textfont.size).toBe(24);
+        expect(fullData[0].pathbar.thickness).toBe(30);
+    });
+
+    it('should default *pathbar.divider* in respect to *path.side*', function() {
+        _supply([
+            {labels: [1], parents: [''], pathbar: {side: 'top'}},
+            {labels: [1], parents: [''], pathbar: {side: 'bottom'}}
+        ]);
+
+        expect(fullData[0].pathbar.divider).toBe('/', 'when path.barside is top');
+        expect(fullData[1].pathbar.divider).toBe('\\', 'when path.barside is bottom');
     });
 });
 

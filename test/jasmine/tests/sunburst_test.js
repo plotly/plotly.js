@@ -71,6 +71,18 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[2].visible).toBe(false, 'no labels');
     });
 
+    it('should only coerce *count* when the *values* array is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], values: []},
+            {labels: [1], parents: [''], values: [1]}
+        ]);
+
+        expect(fullData[0].count).toBe('leaves');
+        expect(fullData[1].count).toBe('leaves', 'has empty values');
+        expect(fullData[2].count).toBe(undefined, 'has values');
+    });
+
     it('should not coerce *branchvalues* when *values* is not set', function() {
         _supply([
             {labels: [1], parents: [''], values: [1]},
@@ -101,6 +113,16 @@ describe('Test sunburst defaults:', function() {
 
         expect(fullData[0].marker.line.color).toBe(undefined, 'not coerced');
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
+    });
+
+    it('should default *leaf.opacity* depending on having or not having *colorscale*', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
+        ]);
+
+        expect(fullData[0].leaf.opacity).toBe(0.7, 'without colorscale');
+        expect(fullData[1].leaf.opacity).toBe(1, 'with colorscale');
     });
 
     it('should include "text" flag in *textinfo* when *text* is set', function() {
