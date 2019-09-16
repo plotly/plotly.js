@@ -253,7 +253,7 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.textfont.size).toBe(12);
         expect(fullData[0].pathbar.thickness).toBe(18);
         expect(fullData[0].pathbar.side).toBe('top');
-        expect(fullData[0].pathbar.divider).toBe('/');
+        expect(fullData[0].pathbar.divider).toBe('>');
     });
 
     it('should default *pathbar* sizes and styles to layout', function() {
@@ -267,16 +267,6 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
         expect(fullData[0].pathbar.textfont.size).toBe(24);
         expect(fullData[0].pathbar.thickness).toBe(30);
-    });
-
-    it('should default *pathbar.divider* in respect to *path.side*', function() {
-        _supply([
-            {labels: [1], parents: [''], pathbar: {side: 'top'}},
-            {labels: [1], parents: [''], pathbar: {side: 'bottom'}}
-        ]);
-
-        expect(fullData[0].pathbar.divider).toBe('/', 'when path.barside is top');
-        expect(fullData[1].pathbar.divider).toBe('\\', 'when path.barside is bottom');
     });
 });
 

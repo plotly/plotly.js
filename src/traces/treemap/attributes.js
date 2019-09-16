@@ -211,12 +211,11 @@ module.exports = {
                 '/',
                 '\\'
             ],
+            dflt: '>',
             role: 'style',
             editType: 'plot',
             description: [
-                'Determines which divider is used between labels.',
-                'With *top* `pathbar.side` it is defaulted to */*; and',
-                'with *bottom* `pathbar.side` it is defaulted to *\\*.'
+                'Determines which divider is used between labels.'
             ].join(' ')
         },
 

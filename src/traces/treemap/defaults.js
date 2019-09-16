@@ -105,8 +105,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         // This works even for multi-line labels as treemap pathbar trim out line breaks
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 
-        var side = coerce('pathbar.side');
-        coerce('pathbar.divider', side === 'top' ? '/' : '\\');
+        coerce('pathbar.side');
+        coerce('pathbar.divider');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
