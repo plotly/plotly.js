@@ -103,14 +103,14 @@ function plotOne(gd, cd, element, transitionOpts) {
             y0 = barDifY + 0;
             y1 = barDifY + height;
         } else {
-            var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id] || prevLookup[clicked.id];
+            var ref = clicked.zoomOut ? refRect : (
+                upDown ? prevLookup[clicked.id] : prevLookdown[clicked.id]
+            );
 
             if(Object.keys(ref).length === 0 && // case of an empty object - happens when maxdepth is set
                 !helpers.isHierarchyRoot(pt)
             ) {
-                var q = pt.parent || pt;
-                x0 = x1 = (q.x0 + q.x1) / 2;
-                y0 = y1 = (q.y0 + q.y1) / 2;
+                x0 = x1 = y0 = y1 = NaN;
             } else {
                 var e = trace.tiling.pad;
                 var isLeftOfRect = function(x) { return x - e <= ref.x0; };
@@ -190,6 +190,10 @@ function plotOne(gd, cd, element, transitionOpts) {
         return x + ',' + y;
     }
 
+    function noNaN(path) {
+        return path.indexOf('NaN') > -1 ? '' : path;
+    }
+
     var xStart = viewDirX(0);
     var limitX0 = function(p) {
         p.x = Math.max(xStart, p.x);
@@ -239,7 +243,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         limitX0(pD);
         limitX0(pM);
 
-        return (
+        return noNaN(
            'M' + pos(pA.x, pA.y) +
            'L' + pos(pB.x, pB.y) +
            'L' + pos(pC.x, pC.y) +
@@ -256,7 +260,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         var _y0 = viewMapY(d.y0);
         var _y1 = viewMapY(d.y1);
 
-        return (
+        return noNaN(
            'M' + pos(_x0, _y0) +
            'L' + pos(_x1, _y0) +
            'L' + pos(_x1, _y1) +
