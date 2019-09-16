@@ -260,11 +260,24 @@ function plotOne(gd, cd, element, transitionOpts) {
         var _y0 = viewMapY(d.y0);
         var _y1 = viewMapY(d.y1);
 
+        var FILLET = 0; // TODO: may expose this constant
+
+        var r = (
+            _x1 - _x0 > 2 * FILLET &&
+            _y1 - _y0 > 2 * FILLET
+        ) ? FILLET : 0;
+
+        var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
+
         return noNaN(
-           'M' + pos(_x0, _y0) +
-           'L' + pos(_x1, _y0) +
-           'L' + pos(_x1, _y1) +
-           'L' + pos(_x0, _y1) + 'Z'
+           'M' + pos(_x0, _y0 + r) +
+           arc(r, -r) +
+           'L' + pos(_x1 - r, _y0) +
+           arc(r, r) +
+           'L' + pos(_x1, _y1 - r) +
+           arc(-r, r) +
+           'L' + pos(_x0 + r, _y1) +
+           arc(-r, -r) + 'Z'
         );
     };
 
