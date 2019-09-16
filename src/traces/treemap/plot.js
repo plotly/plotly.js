@@ -103,9 +103,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             y0 = barDifY + 0;
             y1 = barDifY + height;
         } else {
-            var ref = clicked.zoomOut ? refRect : (
-                upDown ? prevLookup[clicked.id] : prevLookdown[clicked.id]
-            );
+            var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id];
 
             if(Object.keys(ref).length === 0 && // case of an empty object - happens when maxdepth is set
                 !helpers.isHierarchyRoot(pt)
