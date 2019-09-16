@@ -108,8 +108,9 @@ function plotOne(gd, cd, element, transitionOpts) {
             if(Object.keys(ref).length === 0 && // case of an empty object - happens when maxdepth is set
                 !helpers.isHierarchyRoot(pt)
             ) {
-                x0 = x1 = (pt.x0 + pt.x1) / 2;
-                y0 = y1 = (pt.y0 + pt.y1) / 2;
+                var q = pt.parent || pt;
+                x0 = x1 = (q.x0 + q.x1) / 2;
+                y0 = y1 = (q.y0 + q.y1) / 2;
             } else {
                 var e = trace.tiling.pad;
                 var isLeftOfRect = function(x) { return x - e <= ref.x0; };
