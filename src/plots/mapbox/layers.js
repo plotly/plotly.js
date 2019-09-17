@@ -150,12 +150,21 @@ proto.dispose = function() {
 };
 
 function isVisible(opts) {
+    if(!opts.visible) return false;
+
     var source = opts.source;
 
-    return opts.visible && (
-        Lib.isPlainObject(source) ||
-        ((typeof source === 'string' || Array.isArray(source)) && source.length > 0)
-    );
+    if(Array.isArray(source) && source.length > 0) {
+        for(var i = 0; i < source.length; i++) {
+            if(typeof source[i] !== 'string' || source[i].length === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    return Lib.isPlainObject(source) ||
+        (typeof source === 'string' && source.length > 0);
 }
 
 function convertOpts(opts) {

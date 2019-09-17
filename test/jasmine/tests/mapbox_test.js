@@ -998,6 +998,24 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should validate layout layer input', function(done) {
+        Plotly.newPlot(gd, [{type: 'scattermapbox'}], {
+            mapbox: {
+                layers: [{
+                    sourcetype: 'raster',
+                    source: ['']
+                }]
+            }
+        })
+        .then(function() {
+            var mapInfo = getMapInfo(gd);
+            expect(mapInfo.layoutLayers.length).toBe(0, 'no on-map layer');
+            expect(mapInfo.layoutSources.length).toBe(0, 'no map source');
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
