@@ -976,6 +976,28 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should not attempt to remove non-existing layer sources', function(done) {
+        function _assert(msg, exp) {
+            return function() {
+                var layerList = gd._fullLayout.mapbox._subplot.layerList;
+                expect(layerList.length).toBe(exp, msg);
+            };
+        }
+
+        Plotly.react(gd, [{type: 'scattermapbox'}], {
+            mapbox: { layers: [{}] }
+        })
+        .then(_assert('1 visible:false layer', 1))
+        .then(function() {
+            return Plotly.react(gd, [{type: 'scattermapbox'}], {
+                mapbox: { layers: [] }
+            });
+        })
+        .then(_assert('no layers', 0))
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
