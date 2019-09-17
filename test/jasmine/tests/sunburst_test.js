@@ -967,10 +967,13 @@ describe('Test sunburst tweening:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function _run(gd, v) {
+    function _reset() {
         pathTweenFnLookup = {};
         textTweenFnLookup = {};
+    }
 
+    function _run(gd, v) {
+        _reset();
         click(gd, v)();
 
         // 1 second more than the click transition duration
@@ -1002,7 +1005,7 @@ describe('Test sunburst tweening:', function() {
         expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
     }
 
-    it('should tween sector exit/update (case: branch, no maxdepth)', function(done) {
+    it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1040,7 +1043,7 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
 
-    it('should tween sector enter/update (case: entry, no maxdepth)', function(done) {
+    it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1079,7 +1082,7 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
 
-    it('should tween sector enter/update/exit (case: entry, maxdepth=2)', function(done) {
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1116,6 +1119,70 @@ describe('Test sunburst tweening:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
+        var mock = {
+            data: [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b', 'bb'],
+                parents: ['', 'Root', 'Root', 'B', 'b'],
+                maxdepth: 2,
+                level: 'B'
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 1))
+        .then(function() {
+            _assert('exit b radially outward and to parent sector angle', 'd', 'b',
+                'M350,133.75L350,100A135,1350,1,0485,235.00000000000003' +
+                'L451.25,235.00000000000003A101.25,101.250,1,1350,133.75Z'
+            );
+            _assert('enter new entry radially outward', 'd', 'Root',
+                'M350,235A0,00,1,0350,235A0,00,1,0350,235Z' +
+                'M383.75,235A33.75,33.750,1,1316.25,235A33.75,33.750,1,1383.75,235Z'
+            );
+            _assert('enter A counterclockwise', 'd', 'A',
+                'M417.5,235L485,235A135,1350,0,0350,100L350,167.5A67.5,67.50,0,1417.5,235Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M350,201.25L350,133.75A101.25,101.250,1,0451.25,235.00000000000003' +
+                'L383.75,235A33.75,33.750,1,1350,201.25Z'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    /*
+    it('should tween in sectors from new traces', function(done) {
+        Plotly.plot(gd, [{type: 'sunburst'}])
+        .then(_reset)
+        .then(function() {
+            return Plotly.animate(gd, [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B']
+            }]);
+        })
+        .then(function() {
+            _assert('enter entry from theta=0', 'd', 'Root',
+                ''
+            );
+            // _assert('enter A from theta=0', 'd', 'A',
+            //     ''
+            // );
+            // _assert('enter B from theta=0', 'd', 'B',
+            //     ''
+            // );
+            // _assert('enter b from theta=0', 'd', 'b',
+            //     ''
+            // );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+    */
 });
 
 describe('Test sunburst interactions edge cases', function() {
