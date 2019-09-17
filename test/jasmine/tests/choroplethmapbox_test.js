@@ -589,6 +589,44 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         nums: '10.000',
         name: 'PROP::New York',
         evtPts: [{location: 'NY', z: 10, pointNumber: 0, curveNumber: 0, properties: {name: 'New York'}}]
+    }, {
+        desc: 'with "typeof number" locations[i] and feature id (in *name* label case)',
+        patch: function() {
+            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            fig.data.shift();
+            fig.data[0].locations = [100];
+            fig.data[0].geojson.id = 100;
+            return fig;
+        },
+        nums: '10',
+        name: '100',
+        evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
+    }, {
+        desc: 'with "typeof number" locations[i] and feature id (in *nums* label case)',
+        patch: function() {
+            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            fig.data.shift();
+            fig.data[0].locations = [100];
+            fig.data[0].geojson.id = 100;
+            fig.data[0].hoverinfo = 'location+name';
+            return fig;
+        },
+        nums: '100',
+        name: 'trace 0',
+        evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
+    }, {
+        desc: 'with "typeof number" locations[i] and feature id (hovertemplate case)',
+        patch: function() {
+            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            fig.data.shift();
+            fig.data[0].locations = [100];
+            fig.data[0].geojson.id = 100;
+            fig.data[0].hovertemplate = '### %{location}<extra>%{location} ###</extra>';
+            return fig;
+        },
+        nums: '### 100',
+        name: '100 ###',
+        evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
     }];
 
     specs.forEach(function(s) {
