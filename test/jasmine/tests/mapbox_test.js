@@ -942,6 +942,40 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should not wedge graph after reacting to invalid layer', function(done) {
+        Plotly.react(gd, [{type: 'scattermapbox'}], {
+            mapbox: {
+                layers: [{ source: 'invalid' }]
+            }
+        })
+        .then(function() {
+            fail('The above Plotly.react promise should be rejected');
+        })
+        .catch(function() {
+            expect(gd._promises.length).toBe(1, 'has 1 rejected promise in queue');
+        })
+        .then(function() {
+            return Plotly.react(gd, [{type: 'scattermapbox'}], {
+                mapbox: {
+                    layers: [{
+                        sourcetype: 'vector',
+                        sourcelayer: 'contour',
+                        source: 'mapbox://mapbox.mapbox-terrain-v2'
+                    }]
+                }
+            });
+        })
+        .then(function() {
+            expect(gd._promises.length).toBe(0, 'rejected promise has been cleared');
+
+            var mapInfo = getMapInfo(gd);
+            expect(mapInfo.layoutLayers.length).toBe(1, 'one layer');
+            expect(mapInfo.layoutSources.length).toBe(1, 'one layer source');
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
