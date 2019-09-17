@@ -145,8 +145,8 @@ proto.removeLayer = function() {
 
 proto.dispose = function() {
     var map = this.subplot.map;
-    map.removeLayer(this.idLayer);
-    map.removeSource(this.idSource);
+    if(map.getLayer(this.idLayer)) map.removeLayer(this.idLayer);
+    if(map.getSource(this.idSource)) map.removeSource(this.idSource);
 };
 
 function isVisible(opts) {
