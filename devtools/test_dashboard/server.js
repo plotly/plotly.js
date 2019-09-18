@@ -23,7 +23,7 @@ var server = http.createServer(ecstatic({
 // Make watchified bundle for plotly.js
 var bundlePlotly = makeWatchifiedBundle(function() {
     // open up browser window on first bundle callback
-    open('http://localhost:' + PORT + '/devtools/test_dashboard');
+    open('http://localhost:' + PORT + '/devtools/test_dashboard/index.html');
 });
 
 // Bundle devtools code
