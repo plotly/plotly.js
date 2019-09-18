@@ -1564,6 +1564,190 @@ axes.makeClipPaths = function(gd) {
     });
 };
 
+axes.pushMargin = function(gd) {
+    var axList = axes.list(gd, '', true);
+
+    return Lib.syncOrAsync(axList.map(function(ax) {
+        return function() { return pushMarginOne(gd, ax); };
+    }));
+};
+
+/**
+ * Compute push margin value for one axis
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *
+ * When required to compute margin push values, it fills in:
+ * - ax._selections
+ * - ax._tickAngles
+ * - ax._depth
+ */
+function pushMarginOne(gd, ax) {
+    var fullLayout = gd._fullLayout;
+    var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
+    var seq = [];
+
+    if(hasRangeSlider || ax.automargin) {
+        var axId = ax._id;
+        var axLetter = axId.charAt(0);
+        var counterLetter = axes.counterLetter(axId);
+
+        ax.setScale();
+
+        var dummyLayer = Lib.ensureSingle(Drawing.tester, 'g', 'dummy-' + axId);
+        var transFn = axes.makeTransFn(ax);
+        var vals = axes.calcTicks(ax);
+        var mainLinePosition = axes.getAxisLinePosition(gd, ax);
+
+        // stash selections to avoid DOM queries
+        ax._selections = {};
+        // stash tick angle (including the computed 'auto' values) per tick-label class
+        ax._tickAngles = {};
+        // measure [in px] between axis position and outward-most part of bounding box
+        ax._depth = null;
+
+        seq.push(function() {
+            return axes.drawLabels(gd, ax, {
+                vals: vals,
+                layer: dummyLayer,
+                transFn: transFn,
+                labelFns: axes.makeLabelFns(ax, mainLinePosition)
+            });
+        });
+
+        var sgn = {l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)];
+
+        if(ax.type === 'multicategory') {
+            seq.push(function() {
+                var standoff = getMultiCategoryStandoff(ax);
+                return axes.drawLabels(gd, ax, {
+                    vals: getSecondaryLabelVals(ax, vals),
+                    layer: dummyLayer,
+                    cls: axId + 'tick2',
+                    secondary: true,
+                    transFn: transFn,
+                    labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * sgn)
+                });
+            });
+        }
+
+        seq.push(function() {
+            var s = ax.side.charAt(0);
+            var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
+            var pos = axes.getPxPosition(gd, ax);
+            var outsideTickLen = ax.ticks === 'outside' ? ax.ticklen : 0;
+            var llbbox;
+
+            var push;
+            var mirrorPush;
+            var rangeSliderPush;
+
+            if(ax.type === 'multicategory') {
+                llbbox = calcLabelLevelBbox(ax, axId + 'tick2');
+                ax._depth = sgn * (llbbox[ax.side] - mainLinePosition);
+            } else {
+                llbbox = calcLabelLevelBbox(ax, axId + 'tick');
+                if(axLetter === 'x' && s === 'b') {
+                    ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
+                }
+            }
+
+            if(ax.automargin) {
+                push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+                var domainIndices = [0, 1];
+
+                if(axLetter === 'x') {
+                    if(s === 'b') {
+                        push[s] = ax._depth;
+                    } else {
+                        push[s] = ax._depth = Math.max(
+                            llbbox.width > 0 ? pos - llbbox.top : 0,
+                            outsideTickLen
+                        );
+                        domainIndices.reverse();
+                    }
+
+                    if(llbbox.width > 0) {
+                        var rExtra = llbbox.right - (ax._offset + ax._length);
+                        if(rExtra > 0) {
+                            push.x = 1;
+                            push.r = rExtra;
+                        }
+                        var lExtra = ax._offset - llbbox.left;
+                        if(lExtra > 0) {
+                            push.x = 0;
+                            push.l = lExtra;
+                        }
+                    }
+                } else {
+                    if(s === 'l') {
+                        push[s] = ax._depth = Math.max(
+                            llbbox.height > 0 ? pos - llbbox.left : 0,
+                            outsideTickLen
+                    );
+                    } else {
+                        push[s] = ax._depth = Math.max(
+                            llbbox.height > 0 ? llbbox.right - pos : 0,
+                            outsideTickLen
+                        );
+                        domainIndices.reverse();
+                    }
+
+                    if(llbbox.height > 0) {
+                        var bExtra = llbbox.bottom - (ax._offset + ax._length);
+                        if(bExtra > 0) {
+                            push.y = 0;
+                            push.b = bExtra;
+                        }
+                        var tExtra = ax._offset - llbbox.top;
+                        if(tExtra > 0) {
+                            push.y = 1;
+                            push.t = tExtra;
+                        }
+                    }
+                }
+
+                push[counterLetter] = ax.anchor === 'free' ?
+                    ax.position :
+                    ax._anchorAxis.domain[domainIndices[0]];
+
+                if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+                    var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+                    push[s] += extraLines ?
+                        ax.title.font.size * (extraLines + 1) * LINE_SPACING :
+                        ax.title.font.size;
+                }
+
+                if(ax.mirror) {
+                    mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+                    mirrorPush[sMirror] = ax.linewidth;
+                    if(ax.mirror && ax.mirror !== true) mirrorPush[sMirror] += outsideTickLen;
+
+                    if(ax.mirror === true || ax.mirror === 'ticks') {
+                        mirrorPush[counterLetter] = ax._anchorAxis.domain[domainIndices[1]];
+                    } else if(ax.mirror === 'all' || ax.mirror === 'allticks') {
+                        mirrorPush[counterLetter] = [ax._counterDomainMin, ax._counterDomainMax][domainIndices[1]];
+                    }
+                }
+            }
+
+            if(hasRangeSlider) {
+                rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
+            }
+
+            Plots.autoMargin(gd, axId + '.automargin', push);
+            Plots.autoMargin(gd, axId + '.automargin.mirro', mirrorPush);
+            Plots.autoMargin(gd, axId + '.rangeslider', rangeSliderPush);
+
+            dummyLayer.remove();
+        });
+    }
+
+    return Lib.syncOrAsync(seq);
+}
+
 /**
  * Main multi-axis drawing routine!
  *
@@ -1668,6 +1852,7 @@ axes.drawOne = function(gd, ax, opts) {
     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var subplotsWithAx = ax._subplotsWith;
+    var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
     var vals = ax._vals = axes.calcTicks(ax);
 
@@ -1687,16 +1872,6 @@ axes.drawOne = function(gd, ax, opts) {
     // (touching either the tick label or ticks)
     // depth can be expansive to compute, so we only do so when required
     ax._depth = null;
-
-    // calcLabelLevelBbox can be expensive,
-    // so make sure to not call it twice during the same Axes.drawOne call
-    // by stashing label-level bounding boxes per tick-label class
-    var llbboxes = {};
-    function getLabelLevelBbox(suffix) {
-        var cls = axId + (suffix || 'tick');
-        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
-        return llbboxes[cls];
-    }
 
     if(!ax.visible) return;
 
@@ -1814,14 +1989,10 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
-        var pad = {x: 2, y: 10}[axLetter];
         var sgn = {l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)];
 
         seq.push(function() {
-            var bboxKey = {x: 'height', y: 'width'}[axLetter];
-            var standoff = getLabelLevelBbox()[bboxKey] + pad +
-                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
-
+            var standoff = getMultiCategoryStandoff(ax);
             return axes.drawLabels(gd, ax, {
                 vals: getSecondaryLabelVals(ax, vals),
                 layer: mainAxLayer,
@@ -1834,7 +2005,7 @@ axes.drawOne = function(gd, ax, opts) {
         });
 
         seq.push(function() {
-            ax._depth = sgn * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+            ax._depth = sgn * (calcLabelLevelBbox(ax, axId + 'tick2')[ax.side] - mainLinePosition);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
@@ -1843,115 +2014,18 @@ axes.drawOne = function(gd, ax, opts) {
                 transFn: transFn
             });
         });
+    } else if(hasRangeSlider && ax.side === 'bottom') {
+        // TODO do we really need to recompute _depth here??
+        //      could we instead reuse the stashed version from pushMargin ??
+        seq.push(function() {
+            var llbbox = calcLabelLevelBbox(ax, axId + 'tick');
+            var pos = axes.getPxPosition(gd, ax);
+            var outsideTickLen = ax.ticks === 'outside' ? ax.ticklen : 0;
+            ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
+        });
     }
 
-    var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
-
-    seq.push(function() {
-        var s = ax.side.charAt(0);
-        var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
-        var pos = axes.getPxPosition(gd, ax);
-        var outsideTickLen = ax.ticks === 'outside' ? ax.ticklen : 0;
-        var llbbox;
-
-        var push;
-        var mirrorPush;
-        var rangeSliderPush;
-
-        if(ax.automargin || hasRangeSlider) {
-            if(ax.type === 'multicategory') {
-                llbbox = getLabelLevelBbox('tick2');
-            } else {
-                llbbox = getLabelLevelBbox();
-                if(axLetter === 'x' && s === 'b') {
-                    ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
-                }
-            }
-        }
-
-        if(ax.automargin) {
-            push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
-            var domainIndices = [0, 1];
-
-            if(axLetter === 'x') {
-                if(s === 'b') {
-                    push[s] = ax._depth;
-                } else {
-                    push[s] = ax._depth = Math.max(llbbox.width > 0 ? pos - llbbox.top : 0, outsideTickLen);
-                    domainIndices.reverse();
-                }
-
-                if(llbbox.width > 0) {
-                    var rExtra = llbbox.right - (ax._offset + ax._length);
-                    if(rExtra > 0) {
-                        push.x = 1;
-                        push.r = rExtra;
-                    }
-                    var lExtra = ax._offset - llbbox.left;
-                    if(lExtra > 0) {
-                        push.x = 0;
-                        push.l = lExtra;
-                    }
-                }
-            } else {
-                if(s === 'l') {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
-                } else {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
-                    domainIndices.reverse();
-                }
-
-                if(llbbox.height > 0) {
-                    var bExtra = llbbox.bottom - (ax._offset + ax._length);
-                    if(bExtra > 0) {
-                        push.y = 0;
-                        push.b = bExtra;
-                    }
-                    var tExtra = ax._offset - llbbox.top;
-                    if(tExtra > 0) {
-                        push.y = 1;
-                        push.t = tExtra;
-                    }
-                }
-            }
-
-            push[counterLetter] = ax.anchor === 'free' ?
-                ax.position :
-                ax._anchorAxis.domain[domainIndices[0]];
-
-            if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
-                push[s] += extraLines ?
-                    ax.title.font.size * (extraLines + 1) * LINE_SPACING :
-                    ax.title.font.size;
-            }
-
-            if(ax.mirror) {
-                mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
-
-                mirrorPush[sMirror] = ax.linewidth;
-                if(ax.mirror && ax.mirror !== true) mirrorPush[sMirror] += outsideTickLen;
-
-                if(ax.mirror === true || ax.mirror === 'ticks') {
-                    mirrorPush[counterLetter] = ax._anchorAxis.domain[domainIndices[1]];
-                } else if(ax.mirror === 'all' || ax.mirror === 'allticks') {
-                    mirrorPush[counterLetter] = [ax._counterDomainMin, ax._counterDomainMax][domainIndices[1]];
-                }
-            }
-        }
-
-        if(hasRangeSlider) {
-            rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
-        }
-
-        Plots.autoMargin(gd, axAutoMarginID(ax), push);
-        Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
-        Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
-    });
-
-    if(!opts.skipTitle &&
-        !(hasRangeSlider && ax.side === 'bottom')
-    ) {
+    if(!opts.skipTitle && !(hasRangeSlider && ax.side === 'bottom')) {
         seq.push(function() { return drawTitle(gd, ax); });
     }
 
@@ -2225,6 +2299,26 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
     return out;
 };
+
+/**
+ * Compute multicategory multi-level standoff
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {object} _selections
+ *  - {object} _tickAngles
+ *  - {number} tickfont.size
+ * @return {number}
+ */
+function getMultiCategoryStandoff(ax) {
+    var axId = ax._id;
+    var axLetter = axId.charAt(0);
+    var pad = {x: 2, y: 10}[axLetter];
+    var bboxKey = {x: 'height', y: 'width'}[axLetter];
+    var cls = axId + 'tick';
+    return calcLabelLevelBbox(ax, cls)[bboxKey] + pad +
+        (ax._tickAngles[cls] ? ax.tickfont.size * LINE_SPACING : 0);
+}
 
 function tickDataFn(d) {
     return [d.text, d.x, d.axInfo, d.font, d.fontSize, d.fontColor].join('_');
