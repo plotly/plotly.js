@@ -55,7 +55,6 @@ function lsInner(gd) {
     var gs = fullLayout._size;
     var pad = gs.p;
     var axList = Axes.list(gd, '', true);
-    var i, subplot, plotinfo, ax, xa, ya;
 
     fullLayout._paperdiv.style({
         width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
@@ -74,43 +73,7 @@ function lsInner(gd) {
     if(!fullLayout._has('cartesian')) {
         return Plots.previousPromises(gd);
     }
-
-    function getLinePosition(ax, counterAx, side) {
-        var lwHalf = ax._lw / 2;
-
-        if(ax._id.charAt(0) === 'x') {
-            if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
-            else if(side === 'top') return counterAx._offset - pad - lwHalf;
-            return counterAx._offset + counterAx._length + pad + lwHalf;
-        }
-
-        if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
-        else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
-        return counterAx._offset - pad - lwHalf;
-    }
-
-    // some preparation of axis position info
-    for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
-
-        var counterAx = ax._anchorAxis;
-
-        // clear axis line positions, to be set in the subplot loop below
-        ax._linepositions = {};
-
-        // stash crispRounded linewidth so we don't need to pass gd all over the place
-        ax._lw = Drawing.crispRound(gd, ax.linewidth, 1);
-
-        // figure out the main axis line and main mirror line position.
-        // it's easier to follow the logic if we handle these separately from
-        // ax._linepositions, which are only used by mirror=allticks
-        // for non-main-subplot ticks, and mirror=all(ticks)? for zero line
-        // hiding logic
-        ax._mainLinePosition = getLinePosition(ax, counterAx, ax.side);
-        ax._mainMirrorPosition = (ax.mirror && counterAx) ?
-            getLinePosition(ax, counterAx,
-                alignmentConstants.OPPOSITE_SIDE[ax.side]) : null;
-    }
+    var i, subplot, plotinfo, xa, ya;
 
     // figure out which backgrounds we need to draw,
     // and in which layers to put them
@@ -253,9 +216,10 @@ function lsInner(gd) {
 
     function mainPath(ax, pathFn, pathFnFree) {
         if(!ax.showline || subplot !== ax._mainSubplot) return '';
-        if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
-        var out = pathFn(ax._mainLinePosition);
-        if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
+        var mainLinePosition = Axes.getAxisLinePosition(gd, ax);
+        if(!ax._anchorAxis) return pathFnFree(mainLinePosition);
+        var out = pathFn(mainLinePosition);
+        if(ax.mirror) out += pathFn(Axes.getAxisMirrorLinePosition(gd, ax));
         return out;
     }
 
@@ -280,30 +244,25 @@ function lsInner(gd) {
          */
         var xPath = 'M0,0';
         if(shouldShowLinesOrTicks(xa, subplot)) {
-            leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
+            leftYLineWidth = findCounterAxisLineWidth(gd, xa, 'left', ya, axList);
             xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
-            rightYLineWidth = findCounterAxisLineWidth(xa, 'right', ya, axList);
+            rightYLineWidth = findCounterAxisLineWidth(gd, xa, 'right', ya, axList);
             xLinesXRight = xa._offset + xa._length + (rightYLineWidth ? (pad + rightYLineWidth) : 0);
-            xLinesYBottom = getLinePosition(xa, ya, 'bottom');
-            xLinesYTop = getLinePosition(xa, ya, 'top');
+            xLinesYBottom = Axes.getAxisLinePosition(gd, xa, ya, 'bottom');
+            xLinesYTop = Axes.getAxisLinePosition(gd, xa, ya, 'top');
 
             // save axis line positions for extra ticks to reference
             // each subplot that gets ticks from "allticks" gets an entry:
             //    [left or bottom, right or top]
             extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
-            if(extraSubplot && (xa.mirror === 'allticks' || xa.mirror === 'all')) {
-                xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
-            }
-
             xPath = mainPath(xa, xLinePath, xLinePathFree);
             if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
                 xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
             }
 
             plotinfo.xlines
-                .style('stroke-width', xa._lw + 'px')
-                .call(Color.stroke, xa.showline ?
-                    xa.linecolor : 'rgba(0,0,0,0)');
+                .style('stroke-width', crispRoundLineWidth(gd, xa) + 'px')
+                .call(Color.stroke, xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
         }
         plotinfo.xlines.attr('d', xPath);
 
@@ -320,27 +279,22 @@ function lsInner(gd) {
          */
         var yPath = 'M0,0';
         if(shouldShowLinesOrTicks(ya, subplot)) {
-            connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
+            connectYBottom = findCounterAxisLineWidth(gd, ya, 'bottom', xa, axList);
             yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
-            connectYTop = findCounterAxisLineWidth(ya, 'top', xa, axList);
+            connectYTop = findCounterAxisLineWidth(gd, ya, 'top', xa, axList);
             yLinesYTop = ya._offset - (connectYTop ? pad : 0);
-            yLinesXLeft = getLinePosition(ya, xa, 'left');
-            yLinesXRight = getLinePosition(ya, xa, 'right');
+            yLinesXLeft = Axes.getAxisLinePosition(gd, ya, xa, 'left');
+            yLinesXRight = Axes.getAxisLinePosition(gd, ya, xa, 'right');
 
             extraSubplot = (!ya._anchorAxis || subplot !== ya._mainSubplot);
-            if(extraSubplot && (ya.mirror === 'allticks' || ya.mirror === 'all')) {
-                ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
-            }
-
             yPath = mainPath(ya, yLinePath, yLinePathFree);
             if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
                 yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
             }
 
             plotinfo.ylines
-                .style('stroke-width', ya._lw + 'px')
-                .call(Color.stroke, ya.showline ?
-                    ya.linecolor : 'rgba(0,0,0,0)');
+                .style('stroke-width', crispRoundLineWidth(gd, ya) + 'px')
+                .call(Color.stroke, ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
         }
         plotinfo.ylines.attr('d', yPath);
     }
@@ -360,9 +314,9 @@ function shouldShowLinesOrTicks(ax, subplot) {
  * It's assumed that counterAx is known to overlay the subplot we're working on
  * but it may not be its main axis.
  */
-function shouldShowLineThisSide(ax, side, counterAx) {
+function shouldShowLineThisSide(gd, ax, side, counterAx) {
     // does counterAx get a line at all?
-    if(!counterAx.showline || !counterAx._lw) return false;
+    if(!counterAx.showline || !crispRoundLineWidth(gd, ax)) return false;
 
     // are we drawing *all* lines for counterAx?
     if(counterAx.mirror === 'all' || counterAx.mirror === 'allticks') return true;
@@ -388,17 +342,21 @@ function shouldShowLineThisSide(ax, side, counterAx) {
  * then at all other potential counteraxes on or overlaying this subplot.
  * Take the line width from the first one that has a line.
  */
-function findCounterAxisLineWidth(ax, side, counterAx, axList) {
-    if(shouldShowLineThisSide(ax, side, counterAx)) {
-        return counterAx._lw;
+function findCounterAxisLineWidth(gd, ax, side, counterAx, axList) {
+    if(shouldShowLineThisSide(gd, ax, side, counterAx)) {
+        return crispRoundLineWidth(gd, counterAx);
     }
     for(var i = 0; i < axList.length; i++) {
         var axi = axList[i];
-        if(axi._mainAxis === counterAx._mainAxis && shouldShowLineThisSide(ax, side, axi)) {
-            return axi._lw;
+        if(axi._mainAxis === counterAx._mainAxis && shouldShowLineThisSide(gd, ax, side, axi)) {
+            return crispRoundLineWidth(gd, axi);
         }
     }
     return 0;
+}
+
+function crispRoundLineWidth(gd, ax) {
+    return Drawing.crispRound(gd, ax.linewidth, 1);
 }
 
 exports.drawMainTitle = function(gd) {

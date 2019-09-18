@@ -12,6 +12,7 @@
 var d3 = require('d3');
 
 var Fx = require('../../components/fx');
+var Axes = require('../../plots/cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var setCursor = require('../../lib/setcursor');
 
@@ -107,7 +108,7 @@ exports.initInteractions = function initInteractions(gd) {
             // these drag each axis separately
             if(subplot === xa._mainSubplot) {
                 // the y position of the main x axis line
-                var y0 = xa._mainLinePosition;
+                var y0 = Axes.getAxisLinePosition(gd, xa);
                 if(xa.side === 'top') y0 -= DRAGGERSIZE;
                 makeDragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
                     xa._length * 0.8, DRAGGERSIZE, '', 'ew');
@@ -119,7 +120,7 @@ exports.initInteractions = function initInteractions(gd) {
             // y axis draggers
             if(subplot === ya._mainSubplot) {
                 // the x position of the main y axis line
-                var x0 = ya._mainLinePosition;
+                var x0 = Axes.getAxisLinePosition(gd, ya);
                 if(ya.side !== 'right') x0 -= DRAGGERSIZE;
                 makeDragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
                     DRAGGERSIZE, ya._length * 0.8, 'ns', '');

@@ -1643,9 +1643,6 @@ axes.draw = function(gd, arg, opts) {
  * - ax._anchorAxis
  * - ax._subplotsWith
  * - ax._counterDomainMin, ax._counterDomainMax (optionally, from linkSubplots)
- * - ax._mainLinePosition (from lsInner)
- * - ax._mainMirrorPosition
- * - ax._linepositions
  *
  * Fills in:
  * - ax._vals:
@@ -1666,10 +1663,11 @@ axes.drawOne = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
-    var mainLinePosition = ax._mainLinePosition;
-    var mainMirrorPosition = ax._mainMirrorPosition;
+    var mainLinePosition = axes.getAxisLinePosition(gd, ax);
+    var mainMirrorPosition = axes.getAxisMirrorLinePosition(gd, ax);
     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
+    var subplotsWithAx = ax._subplotsWith;
 
     var vals = ax._vals = axes.calcTicks(ax);
 
@@ -1721,8 +1719,6 @@ axes.drawOne = function(gd, ax, opts) {
     var dividerVals = getDividerVals(ax, vals);
 
     if(!fullLayout._hasOnlyLargeSploms) {
-        var subplotsWithAx = ax._subplotsWith;
-
         // keep track of which subplots (by main counter axis) we've already
         // drawn grids for, so we don't overdraw overlaying subplots
         var finishedGrids = {};
@@ -1757,7 +1753,6 @@ axes.drawOne = function(gd, ax, opts) {
     }
 
     var tickSigns = axes.getTickSigns(ax);
-    var tickSubplots = [];
 
     if(ax.ticks) {
         var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
@@ -1790,26 +1785,18 @@ axes.drawOne = function(gd, ax, opts) {
             path: tickPath,
             transFn: transFn
         });
-
-        if(ax.mirror === 'allticks') {
-            tickSubplots = Object.keys(ax._linepositions || {});
-        }
     }
 
-    for(i = 0; i < tickSubplots.length; i++) {
-        sp = tickSubplots[i];
-        plotinfo = fullLayout._plots[sp];
-        // [bottom or left, top or right], free and main are handled above
-        var linepositions = ax._linepositions[sp] || [];
-        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
-            axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
-
-        axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: plotinfo[axLetter + 'axislayer'],
-            path: spTickPath,
-            transFn: transFn
-        });
+    for(i = 0; i < subplotsWithAx.length; i++) {
+        var lp = getAxisSubplotLinePositions(gd, ax, subplotsWithAx[i]);
+        if(lp) {
+            axes.drawTicks(gd, ax, {
+                vals: tickVals,
+                layer: plotinfo[axLetter + 'axislayer'],
+                path: axes.makeTickPath(ax, lp[0], tickSigns[0]) + axes.makeTickPath(ax, lp[1], tickSigns[1]),
+                transFn: transFn
+            });
+        }
     }
 
     var seq = [];
@@ -2333,12 +2320,10 @@ axes.drawGrid = function(gd, ax, opts) {
         .classed(cls, 1)
         .classed('crisp', opts.crisp !== false);
 
-    ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
-
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.gridwidth, 1) + 'px');
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -2352,7 +2337,7 @@ axes.drawGrid = function(gd, ax, opts) {
  *  - {boolean} zeroline
  *  - {number} zerolinewidth
  *  - {string} zerolinecolor
- *  - {number (optional)} _gridWidthCrispRound
+ *  - {number} gridwidth
  * @param {object} opts
  * - {d3 selection} layer
  * - {object} counterAxis (full axis object corresponding to counter axis)
@@ -2384,10 +2369,12 @@ axes.drawZeroLine = function(gd, ax, opts) {
             });
         });
 
+    var gw = Drawing.crispRound(gd, ax.gridwidth, 1);
+
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, gw || 1) + 'px');
 };
 
 /**
@@ -2637,6 +2624,56 @@ function drawDividers(gd, ax, opts) {
 }
 
 /**
+ * TODO
+ *
+ * @param {}
+ */
+axes.getAxisLinePosition = function(gd, ax, counterAx, side) {
+    counterAx = counterAx || ax._anchorAxis;
+    side = side || ax.side;
+
+    var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
+    var lwHalf = Drawing.crispRound(gd, ax.linewidth, 1) / 2;
+
+    if(ax._id.charAt(0) === 'x') {
+        if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
+        else if(side === 'top') return counterAx._offset - gs.p - lwHalf;
+        return counterAx._offset + counterAx._length + gs.p + lwHalf;
+    }
+
+    if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
+    else if(side === 'right') return counterAx._offset + counterAx._length + gs.p + lwHalf;
+    return counterAx._offset - gs.p - lwHalf;
+};
+
+/**
+ * TODO
+ *
+ */
+axes.getAxisMirrorLinePosition = function(gd, ax) {
+    return (ax.mirror && ax._anchorAxis) ?
+        axes.getAxisLinePosition(gd, ax, ax._anchorAxis, OPPOSITE_SIDE[ax.side]) :
+        null;
+};
+
+/**
+ * TODO
+ *
+ */
+function getAxisSubplotLinePositions(gd, ax, sp) {
+    if((!ax._anchorAxis || sp !== ax._mainSubplot) &&
+        (ax.mirror === 'allticks' || ax.mirror === 'all')) {
+        var axLetter = ax._id.charAt(0);
+        return [
+            axes.getAxisLinePosition(gd, ax, ax._anchorAxis, {x: 'bottom', y: 'left'}[axLetter]),
+            axes.getAxisLinePosition(gd, ax, ax._anchorAxis, {x: 'top', y: 'right'}[axLetter])
+        ];
+    }
+    return false;
+}
+
+/**
  * Get axis position in px, that is the distance for the graph's
  * top (left) edge for x (y) axes.
  *
@@ -2787,14 +2824,14 @@ function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
             return typeof pos2 === 'number' && Math.abs(pos2 - zeroPosition) < tolerance;
         }
 
-        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
-            return true;
-        }
-        var linePositions = ax2._linepositions || {};
-        for(var k in linePositions) {
-            if(closeEnough(linePositions[k][0]) || closeEnough(linePositions[k][1])) {
-                return true;
-            }
+        if(closeEnough(axes.getAxisLinePosition(gd, ax)) ||
+            closeEnough(axes.getAxisMirrorLinePosition(gd, ax))) return true;
+
+        var subplotsWithAx = ax._subplotsWith;
+
+        for(var i = 0; i < subplotsWithAx.length; i++) {
+            var lp = getAxisSubplotLinePositions(gd, ax, subplotsWithAx[i]);
+            if(lp && (closeEnough(lp[0]) || closeEnough(lp[1]))) return true;
         }
     }
 
