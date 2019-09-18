@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.49.5] -- 2019-09-18
+
+### Fixed
+- Clear rejected promises from queue when calling `Plotly.react` [#4197]
+- Do not attempt to remove non-existing mapbox layout source and layers [#4197]
+- Invalid mapbox layout layers with blank-string tile entries [#4197]
+- Fix hover labels for `choroplethmapbox` with number `locations` items [#4197]
+
+
 ## [1.49.4] -- 2019-08-22
 
 ### Fixed

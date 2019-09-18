@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.49.4
+* plotly.js (basic) v1.49.5
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33991,7 +33991,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.49.4';
+exports.version = '1.49.5';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -44433,6 +44433,7 @@ function react(gd, data, layout, config) {
     function addFrames() { return exports.addFrames(gd, frames); }
 
     gd = Lib.getGraphDiv(gd);
+    helpers.clearPromiseQueue(gd);
 
     var oldFullData = gd._fullData;
     var oldFullLayout = gd._fullLayout;
