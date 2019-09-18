@@ -145,17 +145,26 @@ proto.removeLayer = function() {
 
 proto.dispose = function() {
     var map = this.subplot.map;
-    map.removeLayer(this.idLayer);
-    map.removeSource(this.idSource);
+    if(map.getLayer(this.idLayer)) map.removeLayer(this.idLayer);
+    if(map.getSource(this.idSource)) map.removeSource(this.idSource);
 };
 
 function isVisible(opts) {
+    if(!opts.visible) return false;
+
     var source = opts.source;
 
-    return opts.visible && (
-        Lib.isPlainObject(source) ||
-        ((typeof source === 'string' || Array.isArray(source)) && source.length > 0)
-    );
+    if(Array.isArray(source) && source.length > 0) {
+        for(var i = 0; i < source.length; i++) {
+            if(typeof source[i] !== 'string' || source[i].length === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    return Lib.isPlainObject(source) ||
+        (typeof source === 'string' && source.length > 0);
 }
 
 function convertOpts(opts) {

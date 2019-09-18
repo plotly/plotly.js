@@ -58,6 +58,7 @@ function makeHoverInfo(pointData, trace, pt) {
     if(trace.hovertemplate) return;
 
     var hoverinfo = pt.hi || trace.hoverinfo;
+    var loc = String(pt.loc);
 
     var parts = (hoverinfo === 'all') ?
         attributes.hoverinfo.flags :
@@ -72,10 +73,10 @@ function makeHoverInfo(pointData, trace, pt) {
     var text = [];
 
     if(hasIdAsNameLabel) {
-        pointData.nameOverride = pt.loc;
+        pointData.nameOverride = loc;
     } else {
         if(hasName) pointData.nameOverride = trace.name;
-        if(hasLocation) text.push(pt.loc);
+        if(hasLocation) text.push(loc);
     }
 
     if(hasZ) {
