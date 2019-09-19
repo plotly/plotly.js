@@ -263,23 +263,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         });
 
         var id = helpers.getPtId(pt);
-        var isEntry = helpers.isEntry(pt);
-
-        if(isTreemap) {
-            var zoomOut = true;
-            var redirectId = pt._redirect;
-            if(redirectId === undefined) {
-                redirectId = id;
-                if(!isEntry) zoomOut = false;
-            }
-
-            traceNow._clickedInfo = {
-                id: redirectId,
-                zoomOut: zoomOut
-            };
-        }
-
-        var nextEntry = isEntry ?
+        var nextEntry = helpers.isEntry(pt) ?
             helpers.findEntryWithChild(hierarchy, id) :
             helpers.findEntryWithLevel(hierarchy, id);
 

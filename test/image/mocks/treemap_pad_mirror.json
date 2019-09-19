@@ -7,7 +7,7 @@
                 "size": 10
             },
             "pathbar": {
-                "visible": false
+                "visible": true
             },
             "tiling": {
                 "packing": "slice-dice",
@@ -84,8 +84,8 @@
                     0.48
                 ],
                 "y": [
-                    0.02,
-                    0.48
+                    0,
+                    0.45
                 ]
             }
         },
@@ -96,7 +96,7 @@
                 "size": 10
             },
             "pathbar": {
-                "visible": false
+                "visible": true
             },
             "tiling": {
                 "packing": "slice-dice",
@@ -174,8 +174,8 @@
                     0.48
                 ],
                 "y": [
-                    0.52,
-                    0.98
+                    0.5,
+                    0.95
                 ]
             }
         },
@@ -186,7 +186,7 @@
                 "size": 10
             },
             "pathbar": {
-                "visible": false
+                "visible": true
             },
             "tiling": {
                 "packing": "slice-dice",
@@ -264,8 +264,8 @@
                     0.98
                 ],
                 "y": [
-                    0.02,
-                    0.48
+                    0,
+                    0.45
                 ]
             }
         },
@@ -276,7 +276,7 @@
                 "size": 10
             },
             "pathbar": {
-                "visible": false
+                "visible": true
             },
             "tiling": {
                 "packing": "slice-dice",
@@ -354,8 +354,8 @@
                     0.98
                 ],
                 "y": [
-                    0.52,
-                    0.98
+                    0.5,
+                    0.95
                 ]
             }
         }
@@ -377,32 +377,32 @@
                 "layer": "below",
                 "x0": 0.02,
                 "x1": 0.48,
-                "y0": 0.02,
-                "y1": 0.48
+                "y0": 0,
+                "y1": 0.45
             },
             {
                 "type": "rect",
                 "layer": "below",
                 "x0": 0.02,
                 "x1": 0.48,
-                "y0": 0.52,
-                "y1": 0.98
+                "y0": 0.5,
+                "y1": 0.95
             },
             {
                 "type": "rect",
                 "layer": "below",
                 "x0": 0.52,
                 "x1": 0.98,
-                "y0": 0.02,
-                "y1": 0.48
+                "y0": 0,
+                "y1": 0.45
             },
             {
                 "type": "rect",
                 "layer": "below",
                 "x0": 0.52,
                 "x1": 0.98,
-                "y0": 0.52,
-                "y1": 0.98
+                "y0": 0.5,
+                "y1": 0.95
             }
         ],
         "annotations": [

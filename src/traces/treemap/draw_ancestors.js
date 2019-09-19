@@ -69,8 +69,6 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         pt.y0 = barDifY + 0;
         pt.y1 = barDifY + height;
 
-        pt._redirect = entry.data.id;
-
         return true;
     });
 

@@ -977,56 +977,6 @@
     "layout": {
         "width": 1200,
         "height": 1200,
-        "paper_bgcolor": "#210",
-        "annotations": [
-            {
-                "showarrow": false,
-                "text": "<b>bottom left</b> textposition",
-                "x": 0.15,
-                "xanchor": "center",
-                "y": 0,
-                "yanchor": "top"
-            },
-            {
-                "showarrow": false,
-                "text": "<b>bottom center</b> textposition",
-                "x": 0.5,
-                "xanchor": "center",
-                "y": 0,
-                "yanchor": "top"
-            },
-            {
-                "showarrow": false,
-                "text": "<b>bottom right</b> textposition",
-                "x": 0.85,
-                "xanchor": "center",
-                "y": 0,
-                "yanchor": "top"
-            },
-            {
-                "showarrow": false,
-                "text": "<b>top left</b> textposition",
-                "x": 0.15,
-                "xanchor": "center",
-                "y": 1,
-                "yanchor": "bottom"
-            },
-            {
-                "showarrow": false,
-                "text": "<b>top center</b> textposition",
-                "x": 0.5,
-                "xanchor": "center",
-                "y": 1,
-                "yanchor": "bottom"
-            },
-            {
-                "showarrow": false,
-                "text": "<b>top right</b> textposition",
-                "x": 0.85,
-                "xanchor": "center",
-                "y": 1,
-                "yanchor": "bottom"
-            }
-        ]
+        "paper_bgcolor": "#210"
     }
 }

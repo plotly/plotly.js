@@ -34,6 +34,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var handleSlicesExit = opts.handleSlicesExit;
     var makeUpdateSliceInterpolator = opts.makeUpdateSliceInterpolator;
     var makeUpdateTextInterpolator = opts.makeUpdateTextInterpolator;
+    var prevEntry = opts.prevEntry;
     var refRect = {};
 
     var fullLayout = gd._fullLayout;
@@ -62,17 +63,17 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         }
     });
 
-    var getRefRect = function() {
-        if(!trace._clickedInfo) return refRect;
-        return helpers.findChildPt(allData, trace._clickedInfo.id);
-    };
-
     var sliceData = allData.descendants();
 
-    // filter out slices that won't show up on graph
-    sliceData = sliceData.filter(function(pt) { return pt.depth < trace._maxDepth; });
+    slices = slices.data(sliceData, function(pt) {
+        // hide slices that won't show up on graph
+        if(pt.depth >= trace._maxDepth) {
+            pt.x0 = pt.x1 = (pt.x0 + pt.x1) / 2;
+            pt.y0 = pt.y1 = (pt.y0 + pt.y1) / 2;
+        }
 
-    slices = slices.data(sliceData, function(pt) { return helpers.getPtId(pt); });
+        return helpers.getPtId(pt);
+    });
 
     slices.enter().append('g')
         .classed('slice', true);
@@ -80,6 +81,31 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     handleSlicesExit(slices, upDown, refRect, [width, height], pathSlice);
 
     slices.order();
+
+    // next coords of previous entry
+    var nextOfPrevEntry = null;
+    if(hasTransition && prevEntry) {
+        var prevEntryId = helpers.getPtId(prevEntry);
+        slices.each(function(pt) {
+            if(nextOfPrevEntry === null && (helpers.getPtId(pt) === prevEntryId)) {
+                nextOfPrevEntry = {
+                    x0: pt.x0,
+                    x1: pt.x1,
+                    y0: pt.y0,
+                    y1: pt.y1
+                };
+            }
+        });
+    }
+
+    var getRefRect = function() {
+        return nextOfPrevEntry || {
+            x0: 0,
+            x1: width,
+            y0: 0,
+            y1: height
+        };
+    };
 
     var updateSlices = slices;
     if(hasTransition) {
@@ -177,4 +203,6 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             sliceText.attr('transform', strTransform(pt));
         }
     });
+
+    return nextOfPrevEntry;
 };

@@ -42,25 +42,6 @@ exports.findEntryWithChild = function(hierarchy, childId) {
     return out || hierarchy;
 };
 
-exports.findChildPt = function(hierarchy, childId) {
-    var out = {};
-    hierarchy.eachAfter(function(pt) {
-        var children = pt.children || [];
-        for(var i = 0; i < children.length; i++) {
-            var child = children[i];
-            if(exports.getPtId(child) === childId) {
-                out = {
-                    x0: child.x0,
-                    x1: child.x1,
-                    y0: child.y0,
-                    y1: child.y1,
-                };
-            }
-        }
-    });
-    return out;
-};
-
 exports.isEntry = function(pt) {
     return !pt.parent;
 };

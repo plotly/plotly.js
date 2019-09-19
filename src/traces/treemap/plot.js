@@ -77,103 +77,78 @@ function plotOne(gd, cd, element, transitionOpts) {
     var hierarchy = cd0.hierarchy;
     var hasTransition = helpers.hasTransition(transitionOpts);
 
+    var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var maxDepth = helpers.getMaxDepth(trace);
+    var hasVisibleDepth = function(pt) {
+        return pt.data.depth - entry.data.depth < maxDepth;
+    };
+
+    var gs = fullLayout._size;
+    var domain = trace.domain;
+
+    var vpw = gs.w * (domain.x[1] - domain.x[0]);
+    var vph = gs.h * (domain.y[1] - domain.y[0]);
+    var barW = vpw;
+    var barH = trace.pathbar.thickness;
+    var barPad = trace.marker.line.width + 1; // TODO: may expose this constant in future
+    var barDifY = !trace.pathbar.visible ? 0 :
+        trace.pathbar.side.indexOf('bottom') > -1 ? vph + barPad : -(barH + barPad);
+
+    var pathbarOrigin = {
+        x0: barW, // slide to the right
+        x1: barW,
+        y0: barDifY,
+        y1: barDifY + barH
+    };
+
+    var findClosestEdge = function(pt, ref, size) {
+        var e = trace.tiling.pad;
+        var isLeftOfRect = function(x) { return x - e <= ref.x0; };
+        var isRightOfRect = function(x) { return x + e >= ref.x1; };
+        var isBottomOfRect = function(y) { return y - e <= ref.y0; };
+        var isTopOfRect = function(y) { return y + e >= ref.y1; };
+
+        return {
+            x0: isLeftOfRect(pt.x0 - e) ? 0 : isRightOfRect(pt.x0 - e) ? size[0] : pt.x0,
+            x1: isLeftOfRect(pt.x1 + e) ? 0 : isRightOfRect(pt.x1 + e) ? size[0] : pt.x1,
+            y0: isBottomOfRect(pt.y0 - e) ? 0 : isTopOfRect(pt.y0 - e) ? size[1] : pt.y0,
+            y1: isBottomOfRect(pt.y1 + e) ? 0 : isTopOfRect(pt.y1 + e) ? size[1] : pt.y1
+        };
+    };
+
     // stash of 'previous' position data used by tweening functions
+    var prevEntry = null;
     var prevLookup = {};
     var prevLookdown = {};
+    var nextOfPrevEntry = null;
     var getPrev = function(pt, upDown) {
         return upDown ?
             prevLookup[helpers.getPtId(pt)] :
             prevLookdown[helpers.getPtId(pt)];
     };
 
-    var barDifY;
     var getOrigin = function(pt, upDown, refRect, size) {
-        var clicked = trace._clickedInfo;
-        if(!clicked) {
-            return pt;
-        }
-
-        var width = size[0];
-        var height = size[1];
-        var x0, x1, y0, y1;
-
         if(upDown) {
-            x0 = width; // always slide pathbar to the right
-            x1 = width;
-            y0 = barDifY + 0;
-            y1 = barDifY + height;
+            return prevLookup[helpers.getPtId(hierarchy)] || pathbarOrigin;
         } else {
-            var ref = clicked.zoomOut ? refRect : prevLookdown[clicked.id];
+            var ref = prevLookdown[trace.level] || refRect;
 
-            if(Object.keys(ref).length === 0 && // case of an empty object - happens when maxdepth is set
-                !helpers.isHierarchyRoot(pt)
-            ) {
-                x0 = x1 = y0 = y1 = NaN;
-            } else {
-                var e = trace.tiling.pad;
-                var isLeftOfRect = function(x) { return x - e <= ref.x0; };
-                var isRightOfRect = function(x) { return x + e >= ref.x1; };
-                var isBottomOfRect = function(y) { return y - e <= ref.y0; };
-                var isTopOfRect = function(y) { return y + e >= ref.y1; };
-
-                x0 = isLeftOfRect(pt.x0 - e) ? 0 : isRightOfRect(pt.x0 - e) ? width : pt.x0;
-                x1 = isLeftOfRect(pt.x1 + e) ? 0 : isRightOfRect(pt.x1 + e) ? width : pt.x1;
-                y0 = isBottomOfRect(pt.y0 - e) ? 0 : isTopOfRect(pt.y0 - e) ? height : pt.y0;
-                y1 = isBottomOfRect(pt.y1 + e) ? 0 : isTopOfRect(pt.y1 + e) ? height : pt.y1;
+            if(hasVisibleDepth(pt)) { // case of an empty object - happens when maxdepth is set
+                return findClosestEdge(pt, ref, size);
             }
         }
-
-        return {
-            x0: x0,
-            x1: x1,
-            y0: y0,
-            y1: y1
-        };
+        return {};
     };
 
-    var gs = fullLayout._size;
-    var domain = trace.domain;
-    var vpw = gs.w * (domain.x[1] - domain.x[0]);
-    var vph = gs.h * (domain.y[1] - domain.y[0]);
-
-    var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
-    var maxDepth = helpers.getMaxDepth(trace);
+    var pad = trace.marker.pad;
     // N.B. handle multiple-root special case
-    var mvX = 0;
-    var mvY = 0;
     if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
-        maxDepth++;
+        maxDepth++; // increase maxDepth by one
     }
     trace._maxDepth = maxDepth;
 
-    var barW = vpw;
-    var barH = trace.pathbar.thickness;
-    var barPad = trace.marker.line.width + 1; // TODO: may expose this constant in future
-
-    var barTop;
-    var barBottom;
-    if(trace.pathbar.visible) {
-        barTop = trace.pathbar.side.indexOf('top') !== -1;
-        barBottom = trace.pathbar.side.indexOf('bottom') !== -1;
-
-        if(barTop) {
-            mvY += (barH + barPad) / 2;
-            vph -= (barH + barPad);
-        } else if(barBottom) {
-            mvY -= (barH + barPad) / 2;
-            vph -= (barH + barPad);
-        }
-    }
-    barDifY = barTop ? -(barH + barPad) : vph + barPad;
-
-    var domainMidX = (domain.x[1] + domain.x[0]) / 2;
-    var domainMidY = (domain.y[1] + domain.y[0]) / 2;
-
-    var cx = cd0.cx = mvX + gs.l + gs.w * domainMidX;
-    var cy = cd0.cy = mvY + gs.t + gs.h * (1 - domainMidY);
-
-    var cenX = cx - vpw / 2;
-    var cenY = cy - vph / 2;
+    var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
+    var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);
 
     var viewMapX = function(x) { return cenX + x; };
     var viewMapY = function(y) { return cenY + y; };
@@ -181,8 +156,8 @@ function plotOne(gd, cd, element, transitionOpts) {
     var barY0 = viewMapY(0);
     var barX0 = viewMapX(0);
 
-    var viewDirX = function(x) { return barX0 + x; };
-    var viewDirY = function(y) { return barY0 + y; };
+    var viewBarX = function(x) { return barX0 + x; };
+    var viewBarY = function(y) { return barY0 + y; };
 
     function pos(x, y) {
         return x + ',' + y;
@@ -192,7 +167,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         return path.indexOf('NaN') > -1 ? '' : path;
     }
 
-    var xStart = viewDirX(0);
+    var xStart = viewBarX(0);
     var limitX0 = function(p) {
         p.x = Math.max(xStart, p.x);
     };
@@ -202,10 +177,10 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     // pathbar(directory) path generation fn
     var pathAncestor = function(d) {
-        var _x0 = viewDirX(Math.max(Math.min(d.x0, d.x0), 0));
-        var _x1 = viewDirX(Math.min(Math.max(d.x1, d.x1), barW));
-        var _y0 = viewDirY(d.y0);
-        var _y1 = viewDirY(d.y1);
+        var _x0 = viewBarX(Math.max(Math.min(d.x0, d.x0), 0));
+        var _x1 = viewBarX(Math.min(Math.max(d.x1, d.x1), barW));
+        var _y0 = viewBarY(d.y0);
+        var _y1 = viewBarY(d.y1);
 
         var halfH = barH / 2;
 
@@ -258,11 +233,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         var _y0 = viewMapY(d.y0);
         var _y1 = viewMapY(d.y1);
 
+        var dx = _x1 - _x0;
+        var dy = _y1 - _y0;
+        if(!dx || !dy) return '';
+
         var FILLET = 0; // TODO: may expose this constant
 
         var r = (
-            _x1 - _x0 > 2 * FILLET &&
-            _y1 - _y0 > 2 * FILLET
+            dx > 2 * FILLET &&
+            dy > 2 * FILLET
         ) ? FILLET : 0;
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
@@ -302,16 +281,16 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         if(opts.isHeader) {
-            x0 += trace.marker.pad.l - TEXTPAD;
-            x1 -= trace.marker.pad.r - TEXTPAD;
+            x0 += pad.l - TEXTPAD;
+            x1 -= pad.r - TEXTPAD;
 
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - trace.marker.pad.b;
+                limY = y1 - pad.b;
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + trace.marker.pad.t;
+                limY = y0 + pad.t;
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }
@@ -334,6 +313,10 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         transform.targetX = viewMapX(transform.targetX);
         transform.targetY = viewMapY(transform.targetY);
+
+        if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
+            return {};
+        }
 
         return {
             scale: transform.scale,
@@ -361,24 +344,58 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     var makeExitSliceInterpolator = function(pt, upDown, refRect, size) {
         var prev = getPrev(pt, upDown);
+        var next;
 
-        return d3.interpolate(prev, getOrigin(pt, upDown, refRect, size));
+        if(upDown) {
+            next = pathbarOrigin;
+        } else {
+            var entryPrev = getPrev(entry, upDown);
+            if(entryPrev) {
+                // 'entryPrev' is here has the previous coordinates of the entry
+                // node, which corresponds to the last "clicked" node when zooming in
+                next = findClosestEdge(pt, entryPrev, size);
+            } else {
+                // this happens when maxdepth is set, when leaves must
+                // be removed and the entry is new (i.e. does not have a 'prev' object)
+                next = {};
+            }
+        }
+
+        return d3.interpolate(prev, next);
     };
 
     var makeUpdateSliceInterpolator = function(pt, upDown, refRect, size) {
         var prev0 = getPrev(pt, upDown);
-        var prev = {};
-        var origin = getOrigin(pt, upDown, refRect, size);
-
-        Lib.extendFlat(prev, origin);
+        var prev;
 
         if(prev0) {
             // if pt already on graph, this is easy
             prev = prev0;
         } else {
             // for new pts:
-            if(pt.parent) {
-                Lib.extendFlat(prev, interpFromParent(pt, upDown));
+            if(upDown) {
+                prev = pathbarOrigin;
+                if(helpers.isEntry(pt)) prev.x0 = 0;
+            } else {
+                if(prevEntry) {
+                    // if trace was visible before
+                    if(pt.parent) {
+                        var ref = nextOfPrevEntry || refRect;
+
+                        if(ref && !upDown) {
+                            prev = findClosestEdge(pt, ref, size);
+                        } else {
+                            // if new leaf (when maxdepth is set),
+                            // grow it from its parent node
+                            prev = {};
+                            Lib.extendFlat(prev, interpFromParent(pt, upDown));
+                        }
+                    } else {
+                        prev = pt;
+                    }
+                } else {
+                    prev = {};
+                }
             }
         }
 
@@ -413,8 +430,12 @@ function plotOne(gd, cd, element, transitionOpts) {
             prev = prev0;
         } else {
             // for new pts:
-            if(pt.parent) {
-                Lib.extendFlat(prev, interpFromParent(pt, upDown));
+            if(upDown) {
+                prev = pt;
+            } else {
+                if(pt.parent) {
+                    Lib.extendFlat(prev, interpFromParent(pt, upDown));
+                }
             }
         }
 
@@ -470,7 +491,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var selDescendants = gTrace.selectAll('g.slice');
 
     if(!entry) {
-        return selDescendants.remove();
+        return selDescendants.remove() && selAncestors.remove();
     }
 
     if(hasTransition) {
@@ -494,10 +515,14 @@ function plotOne(gd, cd, element, transitionOpts) {
                 y1: pt.y1,
                 transform: pt.transform
             };
+
+            if(!prevEntry && helpers.isEntry(pt)) {
+                prevEntry = pt;
+            }
         });
     }
 
-    drawDescendants(gd, cd, entry, selDescendants, {
+    nextOfPrevEntry = drawDescendants(gd, cd, entry, selDescendants, {
         width: vpw,
         height: vph,
 
@@ -507,6 +532,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         pathSlice: pathDescendant,
         toMoveInsideSlice: toMoveInsideSlice,
 
+        prevEntry: prevEntry,
         makeUpdateSliceInterpolator: makeUpdateSliceInterpolator,
         makeUpdateTextInterpolator: makeUpdateTextInterpolator,
 
@@ -521,8 +547,8 @@ function plotOne(gd, cd, element, transitionOpts) {
             width: barW,
             height: barH,
 
-            viewX: viewDirX,
-            viewY: viewDirY,
+            viewX: viewBarX,
+            viewY: viewBarY,
 
             pathSlice: pathAncestor,
             toMoveInsideSlice: toMoveInsideSlice,
