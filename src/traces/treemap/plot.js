@@ -437,12 +437,8 @@ function plotOne(gd, cd, element, transitionOpts) {
             prev = prev0;
         } else {
             // for new pts:
-            if(upDown) {
-                prev = pt;
-            } else {
-                if(pt.parent) {
-                    Lib.extendFlat(prev, interpFromParent(pt, upDown));
-                }
+            if(pt.parent) {
+                Lib.extendFlat(prev, interpFromParent(pt, upDown));
             }
         }
 
