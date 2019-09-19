@@ -124,16 +124,6 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.opacity).toBe(1, 'with colorscale');
     });
 
-    it('should always default *leaf.opacity* to 1', function() {
-        _supply([
-            {labels: [1], parents: ['']},
-            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
-        ]);
-
-        expect(fullData[0].leaf.opacity).toBe(1, 'without colorscale');
-        expect(fullData[1].leaf.opacity).toBe(1, 'with colorscale');
-    });
-
     it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {
         _supply([
             {labels: [1], parents: ['']},
@@ -923,50 +913,6 @@ describe('Test treemap restyle:', function() {
         .then(_assert('with non-root level', 67))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 97))
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('should be able to restyle *leaf.opacity*', function(done) {
-        var mock = {
-            data: [{
-                type: 'treemap',
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B']
-            }]
-        };
-
-        function _assert(msg, exp) {
-            return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
-
-                var opacities = [];
-                layer.selectAll('path.surface').each(function() {
-                    opacities.push(this.style.opacity);
-                });
-
-                expect(opacities).toEqual(exp, msg);
-
-                // editType:style
-                if(msg !== 'base') {
-                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
-                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
-                }
-            };
-        }
-
-        Plotly.plot(gd, mock)
-        .then(_assert('base', ['0.49', '1', '0.7', '1']))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
-        })
-        .then(_restyle({'leaf.opacity': 0.3}))
-        .then(_assert('lower leaf.opacity', ['0.49', '0.3', '0.7', '0.3']))
-        .then(_restyle({'leaf.opacity': 1}))
-        .then(_assert('raise leaf.opacity', ['0.49', '1', '0.7', '1']))
-        .then(_restyle({'leaf.opacity': null}))
-        .then(_assert('back to dflt', ['0.49', '1', '0.7', '1']))
         .catch(failTest)
         .then(done);
     });

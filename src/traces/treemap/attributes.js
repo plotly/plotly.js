@@ -161,21 +161,6 @@ module.exports = {
         })
     ),
 
-    leaf: {
-        opacity: {
-            valType: 'number',
-            editType: 'style',
-            role: 'style',
-            min: 0,
-            max: 1,
-            dflt: 1,
-            description: [
-                'Sets the opacity of the leaves.'
-            ].join(' ')
-        },
-        editType: 'plot'
-    },
-
     pathbar: {
         visible: {
             valType: 'boolean',

@@ -72,9 +72,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true
@@ -162,9 +159,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true
@@ -252,9 +246,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true
@@ -342,9 +333,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true
@@ -432,9 +420,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true
@@ -522,9 +507,6 @@
                 "Uniform",
                 "Uniform"
             ],
-            "leaf": {
-                "opacity": 0.85
-            },
             "marker": {
                 "colorscale": "Blackbody",
                 "reversescale": true

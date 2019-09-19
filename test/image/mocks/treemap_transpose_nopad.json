@@ -16,9 +16,6 @@
                 "squarifyratio": 1,
                 "pad": 0
             },
-            "leaf": {
-                "opacity": 0.5
-            },
             "marker": {
                 "pad": {
                     "t": 0,
@@ -109,9 +106,6 @@
                 "packing": "squarify",
                 "squarifyratio": 1.618034,
                 "pad": 0
-            },
-            "leaf": {
-                "opacity": 0.5
             },
             "marker": {
                 "pad": {
@@ -204,9 +198,6 @@
                 "squarifyratio": 1,
                 "pad": 0
             },
-            "leaf": {
-                "opacity": 0.5
-            },
             "marker": {
                 "pad": {
                     "t": 0,
@@ -297,9 +288,6 @@
                 "packing": "squarify",
                 "squarifyratio": 1.618034,
                 "pad": 0
-            },
-            "leaf": {
-                "opacity": 0.5
             },
             "marker": {
                 "pad": {

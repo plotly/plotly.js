@@ -13,9 +13,6 @@
                 "packing": "dice-slice",
                 "pad": 0
             },
-            "leaf": {
-                "opacity": 0.7
-            },
             "marker": {
                 "pad": {
                     "t": 16,
@@ -104,9 +101,6 @@
                 "packing": "dice-slice",
                 "flip": "y",
                 "pad": 0
-            },
-            "leaf": {
-                "opacity": 0.7
             },
             "marker": {
                 "pad": {
@@ -197,9 +191,6 @@
                 "flip": "x",
                 "pad": 0
             },
-            "leaf": {
-                "opacity": 0.7
-            },
             "marker": {
                 "pad": {
                     "t": 16,
@@ -288,9 +279,6 @@
                 "packing": "dice-slice",
                 "flip": "x+y",
                 "pad": 0
-            },
-            "leaf": {
-                "opacity": 0.7
             },
             "marker": {
                 "pad": {
