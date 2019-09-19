@@ -124,8 +124,8 @@ function makeGridData(gd) {
         var sp = fullLayout._plots[k];
         var xa = sp.xaxis;
         var ya = sp.yaxis;
-        var xVals = xa._vals;
-        var yVals = ya._vals;
+        var xVals = xa._gridVals;
+        var yVals = ya._gridVals;
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
         var yOffset = gs.b + ya.domain[0] * gs.h;
