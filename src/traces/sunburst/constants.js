@@ -12,12 +12,12 @@ module.exports = {
     CLICK_TRANSITION_TIME: 750,
     CLICK_TRANSITION_EASING: 'linear',
     eventDataKeys: [
-        'parentLabel',
-        'visibleLabel',
-        'rootLabel',
-        'percentParent',
-        'percentVisible',
+        'currentPath',
         'percentRoot',
-        'currentPath'
+        'percentVisible',
+        'percentParent',
+        'root',
+        'visible',
+        'parent'
     ]
 };

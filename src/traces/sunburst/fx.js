@@ -88,11 +88,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 if(hasFlag('value')) thisText.push(hoverPt.valueLabel);
             }
 
-            if(pt.parent) {
-                hoverPt.currentPath = pt.currentPath = helpers.getPath(pt.parent.data);
-                if(hasFlag('current path')) {
-                    thisText.push(hoverPt.currentPath);
-                }
+            hoverPt.currentPath = pt.currentPath = helpers.getPath(pt.data);
+            if(hasFlag('current path')) {
+                thisText.push(hoverPt.currentPath);
             }
 
             var tx;
@@ -109,9 +107,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var ref2 = pt.parent;
             if(ref2 && getVal(ref2)) {
                 hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
-                hoverPt.parentLabel = pt.parentLabel = helpers.getLabelString(ref2.data.data.label);
+                hoverPt.parent = pt.parent = helpers.getLabelString(ref2.data.data.label);
                 if(hasFlag('percent parent')) {
-                    tx = formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parentLabel;
+                    tx = formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
                 }
             }
@@ -119,9 +117,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var ref1 = entry;
             if(ref1 && getVal(ref1)) {
                 hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
-                hoverPt.visibleLabel = pt.visibleLabel = helpers.getLabelString(ref1.data.data.label);
+                hoverPt.visible = pt.visible = helpers.getLabelString(ref1.data.data.label);
                 if(hasFlag('percent visible')) {
-                    tx = formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visibleLabel;
+                    tx = formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visible;
                     insertPercent();
                 }
             }
@@ -129,9 +127,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var ref0 = hierarchy;
             if(ref0 && getVal(ref0)) {
                 hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
-                hoverPt.rootLabel = pt.rootLabel = helpers.getLabelString(ref0.data.data.label);
+                hoverPt.root = pt.root = helpers.getLabelString(ref0.data.data.label);
                 if(hasFlag('percent root')) {
-                    tx = formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.rootLabel;
+                    tx = formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
                     insertPercent();
                 }
             }

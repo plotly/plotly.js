@@ -3,8 +3,8 @@
     {
       "type": "treemap",
       "maxdepth": 3,
-      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
-      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
+      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
       "text": [
         "A L P H A",
         "B R A V O",
@@ -135,8 +135,8 @@
     {
       "type": "treemap",
       "level": "Victor",
-      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
-      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
+      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
       "text": [
         "A L P H A",
         "B R A V O",
@@ -273,8 +273,8 @@
     {
       "type": "sunburst",
       "maxdepth": 3,
-      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
-      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
+      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
       "text": [
         "A L P H A",
         "B R A V O",
@@ -405,8 +405,8 @@
     {
       "type": "sunburst",
       "level": "Victor",
-      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
-      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parentLabel} <=> %{percentParent}<br>%{visibleLabel} <=> %{percentVisible}<br>%{rootLabel} <=> %{percentRoot}",
+      "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+      "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
       "text": [
         "A L P H A",
         "B R A V O",

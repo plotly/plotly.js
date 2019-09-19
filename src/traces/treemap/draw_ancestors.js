@@ -46,7 +46,6 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var eachWidth = opts.width / entryDepth;
 
     var pathIds = helpers.listPath(entry.data, 'id');
-    pathIds.pop(); // remove last one which is the entry point.
 
     var sliceData = partition(hierarchy.copy(), [width, height], {
         packing: 'dice',

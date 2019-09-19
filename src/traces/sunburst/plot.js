@@ -483,6 +483,9 @@ function partition(entry) {
 exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var cd0 = cd[0];
     var cdi = pt.data.data;
+    var hierarchy = cd0.hierarchy;
+    var ref;
+    var calcPercent = function() { return cdi.hasOwnProperty('v') ? cdi.v / ref.data.data.v : cdi.value / ref.data.data.value; };
 
     if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
         return helpers.getLabelStr(cdi.label);
@@ -510,6 +513,10 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
             thisText.push(formatValue(cdi.v, separators));
         }
 
+        if(hasFlag('current path')) {
+            thisText.push(helpers.getPath(pt.data));
+        }
+
         var nPercent = 0;
         if(hasFlag('percent parent')) nPercent++;
         if(hasFlag('percent visible')) nPercent++;
@@ -526,23 +533,22 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                 thisText.push(tx);
             };
 
-            var ref;
-            var calcPercent = function(key) {
-                percent = cdi.hasOwnProperty('v') ? cdi.v / ref.v : cdi.value / ref.value;
+            var makePercent = function(key) {
+                percent = calcPercent();
                 addPercent(key);
             };
 
             if(hasFlag('percent parent') && pt.parent) {
-                ref = pt.parent.data.data;
-                calcPercent('parent');
+                ref = pt.parent;
+                makePercent('parent');
             }
             if(hasFlag('percent visible') && pt.parent) {
-                ref = entry.data.data;
-                calcPercent('visible');
+                ref = entry;
+                makePercent('visible');
             }
             if(hasFlag('percent root') && (pt.parent || helpers.isLeaf(pt))) {
-                ref = cd0;
-                calcPercent('root');
+                ref = hierarchy;
+                makePercent('root');
             }
         }
 
@@ -562,6 +568,23 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
         obj.value = cdi.v;
         obj.valueLabel = formatValue(cdi.v, separators);
     }
+
+    obj.currentPath = helpers.getPath(pt.data);
+
+    if(pt.parent) {
+        ref = pt.parent;
+        obj.percentParent = calcPercent();
+        obj.parent = ref.data.data.label;
+    }
+
+    ref = entry;
+    obj.percentVisible = calcPercent();
+    obj.visible = ref.data.data.label;
+
+    ref = hierarchy;
+    obj.percentRoot = calcPercent();
+    obj.root = ref.data.data.label;
+
     if(cdi.hasOwnProperty('color')) {
         obj.color = cdi.color;
     }

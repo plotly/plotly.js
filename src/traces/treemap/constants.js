@@ -16,8 +16,8 @@ module.exports = {
         'percentRoot',
         'percentVisible',
         'percentParent',
-        'rootLabel',
-        'visibleLabel',
-        'parentLabel'
+        'root',
+        'visible',
+        'parent'
     ]
 };
