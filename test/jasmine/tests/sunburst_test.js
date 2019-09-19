@@ -243,12 +243,16 @@ describe('Test sunburst calc:', function() {
         var parents = ['', 'Root', 'Root', 'B'];
 
         _calc([
-            {labels: labels, parents: parents},
+            {labels: labels, parents: parents, count: 'leaves+branches'},
+            {labels: labels, parents: parents, count: 'branches'},
+            {labels: labels, parents: parents}, // N.B. counts 'leaves' in this case
             {labels: labels, parents: parents, values: [0, 1, 2, 3]},
             {labels: labels, parents: parents, values: [30, 20, 10, 5], branchvalues: 'total'}
         ]);
 
         expect(extractPt('value')).toEqual([
+            [4, 2, 1, 1],
+            [2, 1, 0, 0],
             [2, 1, 1, 1],
             [6, 5, 1, 3],
             [30, 20, 10, 5]
