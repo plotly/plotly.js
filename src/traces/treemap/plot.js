@@ -169,12 +169,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     }
 
     var xStart = viewBarX(0);
-    var limitX0 = function(p) {
-        p.x = Math.max(xStart, p.x);
-    };
+    var limitX0 = function(p) { p.x = Math.max(xStart, p.x); };
 
     var edgeshape = trace.pathbar.edgeshape;
-    var hasExtraPoint = (edgeshape !== '|');
 
     // pathbar(directory) path generation fn
     var pathAncestor = function(d) {
@@ -185,17 +182,13 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         var halfH = barH / 2;
 
-        var pM = {};
-        var midLeft;
-        if(hasExtraPoint) {
-            midLeft = true;
-            pM.x = _x0;
+        var pL = {};
+        var pR = {};
 
-            pM.y = (
-                edgeshape === '>' ||
-                edgeshape === '<'
-            ) ? _y0 + halfH : _y0;
-        }
+        pL.x = _x0;
+        pR.x = _x1;
+
+        pL.y = pR.y = (_y0 + _y1) / 2;
 
         var pA = {x: _x0, y: _y0};
         var pB = {x: _x1, y: _y0};
@@ -204,25 +197,39 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         if(edgeshape === '>') {
             pA.x -= halfH;
+            pB.x -= halfH;
+            pC.x -= halfH;
             pD.x -= halfH;
         } else if(edgeshape === '/') {
+            pC.x -= halfH;
             pD.x -= halfH;
+            pL.x -= halfH / 2;
+            pR.x -= halfH / 2;
         } else if(edgeshape === '\\') {
-            pM.x -= halfH;
+            pA.x -= halfH;
+            pB.x -= halfH;
+            pL.x -= halfH / 2;
+            pR.x -= halfH / 2;
         } else if(edgeshape === '<') {
-            pM.x -= halfH;
+            pL.x -= halfH;
+            pR.x -= halfH;
         }
 
         limitX0(pA);
         limitX0(pD);
-        limitX0(pM);
+        limitX0(pL);
+
+        limitX0(pB);
+        limitX0(pC);
+        limitX0(pR);
 
         return noNaN(
            'M' + pos(pA.x, pA.y) +
            'L' + pos(pB.x, pB.y) +
+           'L' + pos(pR.x, pR.y) +
            'L' + pos(pC.x, pC.y) +
            'L' + pos(pD.x, pD.y) +
-           (midLeft ? 'L' + pos(pM.x, pM.y) : '') +
+           'L' + pos(pL.x, pL.y) +
            'Z'
         );
     };
@@ -376,7 +383,6 @@ function plotOne(gd, cd, element, transitionOpts) {
             // for new pts:
             if(upDown) {
                 prev = pathbarOrigin;
-                if(helpers.isEntry(pt)) prev.x0 = 0;
             } else {
                 if(prevEntry) {
                     // if trace was visible before

@@ -64,9 +64,11 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         if(level === -1) return false;
 
         pt.x0 = eachWidth * level;
-        pt.x1 = width;
-        pt.y0 = barDifY + 0;
+        pt.x1 = eachWidth * (level + 1);
+        pt.y0 = barDifY;
         pt.y1 = barDifY + height;
+
+        pt._onPathbar = true;
 
         return true;
     });

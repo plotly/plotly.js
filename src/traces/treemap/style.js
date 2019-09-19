@@ -42,7 +42,9 @@ function styleOne(s, pt, trace, opts) {
     } else {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
-        opacity = Math.pow(trace.marker.opacity, pt.height);
+        opacity = pt._onPathbar ?
+            Math.pow(trace.marker.opacity, pt.depth) :
+            Math.pow(trace.marker.opacity, pt.height);
     }
 
     s.style('stroke-width', lineWidth)
