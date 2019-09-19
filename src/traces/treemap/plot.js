@@ -173,8 +173,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         p.x = Math.max(xStart, p.x);
     };
 
-    var divider = trace.pathbar.divider;
-    var hasExtraPoint = (divider !== '|');
+    var edgeshape = trace.pathbar.edgeshape;
+    var hasExtraPoint = (edgeshape !== '|');
 
     // pathbar(directory) path generation fn
     var pathAncestor = function(d) {
@@ -192,8 +192,8 @@ function plotOne(gd, cd, element, transitionOpts) {
             pM.x = _x0;
 
             pM.y = (
-                divider === '>' ||
-                divider === '<'
+                edgeshape === '>' ||
+                edgeshape === '<'
             ) ? _y0 + halfH : _y0;
         }
 
@@ -202,14 +202,14 @@ function plotOne(gd, cd, element, transitionOpts) {
         var pC = {x: _x1, y: _y1};
         var pD = {x: _x0, y: _y1};
 
-        if(divider === '>') {
+        if(edgeshape === '>') {
             pA.x -= halfH;
             pD.x -= halfH;
-        } else if(divider === '/') {
+        } else if(edgeshape === '/') {
             pD.x -= halfH;
-        } else if(divider === '\\') {
+        } else if(edgeshape === '\\') {
             pM.x -= halfH;
-        } else if(divider === '<') {
+        } else if(edgeshape === '<') {
             pM.x -= halfH;
         }
 

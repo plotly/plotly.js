@@ -222,7 +222,7 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.textfont).toBe(undefined);
         expect(fullData[0].pathbar.thickness).toBe(undefined);
         expect(fullData[0].pathbar.side).toBe(undefined);
-        expect(fullData[0].pathbar.divider).toBe(undefined);
+        expect(fullData[0].pathbar.edgeshape).toBe(undefined);
     });
 
     it('should set *pathbar.visible* to true by default', function() {
@@ -243,7 +243,7 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.textfont.size).toBe(12);
         expect(fullData[0].pathbar.thickness).toBe(18);
         expect(fullData[0].pathbar.side).toBe('top');
-        expect(fullData[0].pathbar.divider).toBe('>');
+        expect(fullData[0].pathbar.edgeshape).toBe('>');
     });
 
     it('should default *pathbar* sizes and styles to layout', function() {

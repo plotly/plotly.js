@@ -105,7 +105,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 
         coerce('pathbar.side');
-        coerce('pathbar.divider');
+        coerce('pathbar.edgeshape');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);

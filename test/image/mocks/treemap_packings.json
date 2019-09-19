@@ -8,7 +8,7 @@
                 "packing": "binary"
             },
             "pathbar": {
-                "divider": "/",
+                "edgeshape": "/",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -95,7 +95,7 @@
                 "packing": "dice-slice"
             },
             "pathbar": {
-                "divider": "|",
+                "edgeshape": "|",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -182,7 +182,7 @@
                 "packing": "squarify"
             },
             "pathbar": {
-                "divider": "<",
+                "edgeshape": "<",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -269,7 +269,7 @@
                 "packing": "slice"
             },
             "pathbar": {
-                "divider": ">",
+                "edgeshape": ">",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -356,7 +356,7 @@
                 "packing": "slice-dice"
             },
             "pathbar": {
-                "divider": "|",
+                "edgeshape": "|",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -443,7 +443,7 @@
                 "packing": "dice"
             },
             "pathbar": {
-                "divider": "\\",
+                "edgeshape": "\\",
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -529,7 +529,7 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "<b>binary</b> treemap<br>with / divider",
+                "text": "<b>binary</b> treemap<br>with / edgeshape",
                 "x": 0.15,
                 "xanchor": "center",
                 "y": 0,
@@ -537,7 +537,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>dice-slice</b> treemap<br>with | divider",
+                "text": "<b>dice-slice</b> treemap<br>with | edgeshape",
                 "x": 0.5,
                 "xanchor": "center",
                 "y": 0,
@@ -545,7 +545,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>squarify</b> treemap<br>with < divider",
+                "text": "<b>squarify</b> treemap<br>with < edgeshape",
                 "x": 0.85,
                 "xanchor": "center",
                 "y": 0,
@@ -553,7 +553,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>slice</b> treemap<br>with > divider",
+                "text": "<b>slice</b> treemap<br>with > edgeshape",
                 "x": 0.15,
                 "xanchor": "center",
                 "y": 1,
@@ -561,7 +561,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>slice-dice</b> treemap<br>with | divider",
+                "text": "<b>slice-dice</b> treemap<br>with | edgeshape",
                 "x": 0.5,
                 "xanchor": "center",
                 "y": 1,
@@ -569,7 +569,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>dice</b> treemap<br>with \\ divider",
+                "text": "<b>dice</b> treemap<br>with \\ edgeshape",
                 "x": 0.85,
                 "xanchor": "center",
                 "y": 1,

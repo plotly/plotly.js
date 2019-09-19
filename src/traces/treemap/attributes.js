@@ -189,7 +189,7 @@ module.exports = {
             ].join(' ')
         },
 
-        divider: {
+        edgeshape: {
             valType: 'enumerated',
             values: [
                 '>',
@@ -202,7 +202,7 @@ module.exports = {
             role: 'style',
             editType: 'plot',
             description: [
-                'Determines which divider is used between labels.'
+                'Determines which shape is used for edges between `barpath` labels.'
             ].join(' ')
         },
 
