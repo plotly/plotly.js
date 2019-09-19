@@ -168,7 +168,9 @@ module.exports = {
             role: 'info',
             editType: 'plot',
             description: [
-                'Determines if the path bar is drawn.'
+                'Determines if the path bar is drawn',
+                'i.e. outside the trace `domain` and',
+                'with one pixel gap.'
             ].join(' ')
         },
 

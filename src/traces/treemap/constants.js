@@ -19,5 +19,6 @@ module.exports = {
         'root',
         'visible',
         'parent'
-    ]
+    ],
+    gapWithPathbar: 1 // i.e. one pixel
 };

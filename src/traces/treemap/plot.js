@@ -17,6 +17,7 @@ var Lib = require('../../lib');
 var TEXTPAD = require('../bar/constants').TEXTPAD;
 var toMoveInsideBar = require('../bar/plot').toMoveInsideBar;
 
+var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
 var drawAncestors = require('./draw_ancestors');
 
@@ -90,7 +91,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var vph = gs.h * (domain.y[1] - domain.y[0]);
     var barW = vpw;
     var barH = trace.pathbar.thickness;
-    var barPad = trace.marker.line.width + 1; // TODO: may expose this constant in future
+    var barPad = trace.marker.line.width + constants.gapWithPathbar;
     var barDifY = !trace.pathbar.visible ? 0 :
         trace.pathbar.side.indexOf('bottom') > -1 ? vph + barPad : -(barH + barPad);
 
