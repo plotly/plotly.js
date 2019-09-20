@@ -3,6 +3,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "binary treemap",
             "tiling": {
                 "packing": "binary"
@@ -90,6 +91,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "dice-slice treemap",
             "tiling": {
                 "packing": "dice-slice"
@@ -177,6 +179,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "squarify treemap",
             "tiling": {
                 "packing": "squarify"
@@ -264,6 +267,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "slice treemap",
             "tiling": {
                 "packing": "slice"
@@ -351,6 +355,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "slice-dice treemap",
             "tiling": {
                 "packing": "slice-dice"
@@ -438,6 +443,7 @@
         {
             "type": "treemap",
             "textinfo": "label",
+            "hoverinfo": "all",
             "name": "dice treemap",
             "tiling": {
                 "packing": "dice"

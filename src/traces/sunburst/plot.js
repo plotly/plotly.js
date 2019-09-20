@@ -485,7 +485,11 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var cdi = pt.data.data;
     var hierarchy = cd0.hierarchy;
     var ref;
-    var calcPercent = function() { return cdi.hasOwnProperty('v') ? cdi.v / ref.data.data.v : cdi.value / ref.data.data.value; };
+    var calcPercent = function() {
+        return cdi.hasOwnProperty('v') ?
+            cdi.v / ref.data.data.v :
+            cdi.value / ref.data.data.value;
+    };
 
     if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
         return helpers.getLabelStr(cdi.label);

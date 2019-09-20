@@ -151,13 +151,12 @@ exports.getLabelString = function(label) { // used in hover to reference to the 
     return str ? str : '"root"';
 };
 
-exports.getPath = function(d) {
-    if(!d.parent) return '';
-    return exports.getLabelStr(d.parent.data.label) + '/';
-};
-
 exports.listPath = function(d, keyStr) {
     if(!d.parent) return [];
     var list = keyStr ? [d.parent.data[keyStr]] : [d];
     return exports.listPath(d.parent, keyStr).concat(list);
+};
+
+exports.getPath = function(d) {
+    return exports.listPath(d, 'label').join('/') + '/';
 };
