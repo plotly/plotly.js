@@ -2710,7 +2710,7 @@ describe('bar tweening', function() {
             [250, '.point path', 'datum', 'id', ['A', 'B', 'C']],
             [250, '.point path', 'style', 'fill', ['rgb(128, 0, 128)', 'rgb(128, 64, 0)', 'rgb(0, 64, 128)']],
             [250, '.point path', 'attr', 'd', ['M198,270V118H342V270Z', 'M108,270V132H252V270Z', 'M288,270V208H432V270Z']],
-            [250, 'text.bartext', 'attr', 'transform', ['translate(269.7890625 134)','translate(179.5859375 148.25)','translate(359.578125 224.25)']],
+            [250, 'text.bartext', 'attr', 'transform', ['translate(269.7890625 134)', 'translate(179.5859375 148.25)', 'translate(359.578125 224.25)']],
             [250, 'path.yerror', 'attr', 'd', ['M266,99h8m-4,0V137m-4,0h8', 'M176,109h8m-4,0V156m-4,0h8', 'M356,194h8m-4,0V223m-4,0h8']],
 
             [500, '.point path', 'datum', 'id', ['A', 'B', 'C']],
