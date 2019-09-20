@@ -404,7 +404,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel\nEve/\n16.7% of Eve\n6',
+                nums: 'Abel\nEve/\n17% of Eve\n6',
                 name: 'trace 0'
             },
             ptData: {
@@ -423,7 +423,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel\nEve/\n16.7% of Eve',
+                nums: 'Abel\nEve/\n17% of Eve',
                 name: 't...'
             },
             ptData: {

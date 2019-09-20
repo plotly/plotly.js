@@ -22,10 +22,6 @@ var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
 
-var pieHelpers = require('../pie/helpers');
-var formatValue = pieHelpers.formatPieValue;
-var formatPercent = pieHelpers.formatPiePercent;
-
 exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._sunburstlayer;
@@ -514,7 +510,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
         }
 
         if(cdi.hasOwnProperty('v') && hasFlag('value')) {
-            thisText.push(formatValue(cdi.v, separators));
+            thisText.push(helpers.formatValue(cdi.v, separators));
         }
 
         if(hasFlag('current path')) {
@@ -530,8 +526,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
         if(nPercent) {
             var percent;
             var addPercent = function(key) {
-                tx = Lib.formatPercent(percent, 0); // use funnel(area) version
-                if(tx === '0%') tx = formatPercent(percent, separators); // use pie version
+                tx = helpers.formatPercent(percent, separators);
 
                 if(hasMultiplePercents) tx += ' of ' + key + ' ';
                 thisText.push(tx);
@@ -570,7 +565,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     if(cdi.label) obj.label = cdi.label;
     if(cdi.hasOwnProperty('v')) {
         obj.value = cdi.v;
-        obj.valueLabel = formatValue(cdi.v, separators);
+        obj.valueLabel = helpers.formatValue(cdi.v, separators);
     }
 
     obj.currentPath = helpers.getPath(pt.data);
@@ -578,15 +573,24 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     if(pt.parent) {
         ref = pt.parent;
         obj.percentParent = calcPercent();
+        obj.percentParentLabel = helpers.formatPercent(
+            obj.percentParent, separators
+        );
         obj.parent = ref.data.data.label;
     }
 
     ref = entry;
     obj.percentVisible = calcPercent();
+    obj.percentVisibleLabel = helpers.formatPercent(
+        obj.percentVisible, separators
+    );
     obj.visible = ref.data.data.label;
 
     ref = hierarchy;
     obj.percentRoot = calcPercent();
+    obj.percentRootLabel = helpers.formatPercent(
+        obj.percentRoot, separators
+    );
     obj.root = ref.data.data.label;
 
     if(cdi.hasOwnProperty('color')) {

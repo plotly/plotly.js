@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
+var pieHelpers = require('../pie/helpers');
 
 function hasLabel(label) {
     return label || label === 0;
@@ -159,4 +160,13 @@ exports.listPath = function(d, keyStr) {
 
 exports.getPath = function(d) {
     return exports.listPath(d, 'label').join('/') + '/';
+};
+
+exports.formatValue = pieHelpers.formatPieValue;
+
+// TODO: should combine the two in a separate PR - Also please note Lib.formatPercent should support separators.
+exports.formatPercent = function(v, separators) {
+    var tx = Lib.formatPercent(v, 0); // use funnel(area) version
+    if(tx === '0%') tx = pieHelpers.formatPiePercent(v, separators); // use pie version
+    return tx;
 };

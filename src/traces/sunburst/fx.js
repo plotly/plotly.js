@@ -19,7 +19,6 @@ var helpers = require('./helpers');
 var pieHelpers = require('../pie/helpers');
 
 var formatValue = pieHelpers.formatPieValue;
-var formatPercent = pieHelpers.formatPiePercent;
 
 module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var cd0 = cd[0];
@@ -109,7 +108,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
                 hoverPt.parent = pt.parent = helpers.getLabelString(ref2.data.data.label);
                 if(hasFlag('percent parent')) {
-                    tx = formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
+                    tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
                 }
             }
@@ -119,7 +118,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
                 hoverPt.visible = pt.visible = helpers.getLabelString(ref1.data.data.label);
                 if(hasFlag('percent visible')) {
-                    tx = formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visible;
+                    tx = helpers.formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visible;
                     insertPercent();
                 }
             }
@@ -129,7 +128,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
                 hoverPt.root = pt.root = helpers.getLabelString(ref0.data.data.label);
                 if(hasFlag('percent root')) {
-                    tx = formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
+                    tx = helpers.formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
                     insertPercent();
                 }
             }
