@@ -4,6 +4,7 @@
 			"type": "treemap",
 			"maxdepth": 3,
 			"textinfo": "label+percent parent",
+			"hoverinfo": "all",
 			"marker": {
 				"line": {
 					"color": "#777"

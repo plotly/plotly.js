@@ -45,6 +45,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var traceNow = gd._fullData[trace.index];
         var cdi = pt.data.data;
         var ptNumber = cdi.i;
+        var isRoot = helpers.isHierarchyRoot(pt);
 
         var _cast = function(astr) {
             return Lib.castOption(traceNow, ptNumber, astr);
@@ -88,7 +89,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             }
 
             hoverPt.currentPath = pt.currentPath = helpers.getPath(pt.data);
-            if(hasFlag('current path')) {
+            if(hasFlag('current path') && !isRoot) {
                 thisText.push(hoverPt.currentPath);
             }
 
@@ -97,7 +98,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var insertPercent = function() {
                 if(tx !== prevTx) { // no need to add redundant info
                     thisText.push(tx);
-                    prevTx = tx;
+                    prevTx = '' + tx; // i.e. deep copy
                 }
             };
 
@@ -117,7 +118,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             if(ref1 && getVal(ref1)) {
                 hoverPt.percentEntry = pt.percentEntry = val / getVal(ref1);
                 hoverPt.entry = pt.entry = helpers.getLabelString(ref1.data.data.label);
-                if(hasFlag('percent entry')) {
+                if(hasFlag('percent entry') && !isRoot && !pt._onPathbar) {
                     tx = helpers.formatPercent(hoverPt.percentEntry, separators) + ' of ' + hoverPt.entry;
                     insertPercent();
                 }
@@ -127,7 +128,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             if(ref0 && getVal(ref0)) {
                 hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
                 hoverPt.root = pt.root = helpers.getLabelString(ref0.data.data.label);
-                if(hasFlag('percent root')) {
+                if(hasFlag('percent root') && !isRoot) {
                     tx = helpers.formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
                     insertPercent();
                 }
