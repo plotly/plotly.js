@@ -13,15 +13,16 @@ var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
 var pieHelpers = require('../pie/helpers');
 
-function hasLabel(label) {
-    return label || label === 0;
+function labelStr(label) {
+    return (label || label === 0) ? label + '' : '';
 }
 
 exports.findEntryWithLevel = function(hierarchy, level) {
     var out;
-    if(level) {
+    var key = labelStr(level);
+    if(key) {
         hierarchy.eachAfter(function(pt) {
-            if(exports.getPtId(pt) === level) {
+            if(exports.getPtId(pt) === key) {
                 return out = pt.copy();
             }
         });
@@ -31,11 +32,12 @@ exports.findEntryWithLevel = function(hierarchy, level) {
 
 exports.findEntryWithChild = function(hierarchy, childId) {
     var out;
+    var key = labelStr(childId);
     hierarchy.eachAfter(function(pt) {
         var children = pt.children || [];
         for(var i = 0; i < children.length; i++) {
             var child = children[i];
-            if(exports.getPtId(child) === childId) {
+            if(exports.getPtId(child) === key) {
                 return out = pt.copy();
             }
         }
@@ -144,7 +146,7 @@ exports.isHeader = function(pt, trace) { // it is only used in treemap.
 };
 
 exports.getLabelStr = function(label) {
-    return hasLabel(label) ? label.split('<br>').join(' ') : '';
+    return labelStr(label).split('<br>').join(' ');
 };
 
 exports.getLabelString = function(label) { // used in hover to reference to the "root"
