@@ -59,7 +59,7 @@ function styleOne(s, pt, trace, opts) {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
 
-        opacity = pt._onPathbar ?
+        opacity = pt.onPathbar ?
             sumUpTo(pt.depth) :
             depthFn(pt.height);
     }

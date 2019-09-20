@@ -119,20 +119,20 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     // stash of 'previous' position data used by tweening functions
     var prevEntry = null;
-    var prevLookup = {};
-    var prevLookdown = {};
+    var prevLookupPathbar = {};
+    var prevLookupSlices = {};
     var nextOfPrevEntry = null;
-    var getPrev = function(pt, upDown) {
-        return upDown ?
-            prevLookup[helpers.getPtId(pt)] :
-            prevLookdown[helpers.getPtId(pt)];
+    var getPrev = function(pt, onPathbar) {
+        return onPathbar ?
+            prevLookupPathbar[helpers.getPtId(pt)] :
+            prevLookupSlices[helpers.getPtId(pt)];
     };
 
-    var getOrigin = function(pt, upDown, refRect, size) {
-        if(upDown) {
-            return prevLookup[helpers.getPtId(hierarchy)] || pathbarOrigin;
+    var getOrigin = function(pt, onPathbar, refRect, size) {
+        if(onPathbar) {
+            return prevLookupPathbar[helpers.getPtId(hierarchy)] || pathbarOrigin;
         } else {
-            var ref = prevLookdown[trace.level] || refRect;
+            var ref = prevLookupSlices[trace.level] || refRect;
 
             if(hasVisibleDepth(pt)) { // case of an empty object - happens when maxdepth is set
                 return findClosestEdge(pt, ref, size);
@@ -277,13 +277,13 @@ function plotOne(gd, cd, element, transitionOpts) {
             hasBottom ? 'end' : 'middle';
 
         var hasRight = hasFlag('right');
-        var hasLeft = hasFlag('left') || opts.isMenu;
+        var hasLeft = hasFlag('left') || opts.onPathbar;
 
         var offsetDir =
             hasLeft ? 'left' :
             hasRight ? 'right' : 'center';
 
-        if(opts.isMenu || !opts.isHeader) {
+        if(opts.onPathbar || !opts.isHeader) {
             x0 += hasLeft ? TEXTPAD : 0;
             x1 -= hasRight ? TEXTPAD : 0;
         }
@@ -336,7 +336,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         };
     };
 
-    var interpFromParent = function(pt, upDown) {
+    var interpFromParent = function(pt, onPathbar) {
         var parentPrev;
         var i = 0;
         var Q = pt;
@@ -344,20 +344,20 @@ function plotOne(gd, cd, element, transitionOpts) {
             i++;
             Q = Q.parent;
             if(Q) {
-                parentPrev = getPrev(Q, upDown);
+                parentPrev = getPrev(Q, onPathbar);
             } else i = maxDepth;
         }
         return parentPrev || {};
     };
 
-    var makeExitSliceInterpolator = function(pt, upDown, refRect, size) {
-        var prev = getPrev(pt, upDown);
+    var makeExitSliceInterpolator = function(pt, onPathbar, refRect, size) {
+        var prev = getPrev(pt, onPathbar);
         var next;
 
-        if(upDown) {
+        if(onPathbar) {
             next = pathbarOrigin;
         } else {
-            var entryPrev = getPrev(entry, upDown);
+            var entryPrev = getPrev(entry, onPathbar);
             if(entryPrev) {
                 // 'entryPrev' is here has the previous coordinates of the entry
                 // node, which corresponds to the last "clicked" node when zooming in
@@ -372,8 +372,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         return d3.interpolate(prev, next);
     };
 
-    var makeUpdateSliceInterpolator = function(pt, upDown, refRect, size) {
-        var prev0 = getPrev(pt, upDown);
+    var makeUpdateSliceInterpolator = function(pt, onPathbar, refRect, size) {
+        var prev0 = getPrev(pt, onPathbar);
         var prev;
 
         if(prev0) {
@@ -381,7 +381,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             prev = prev0;
         } else {
             // for new pts:
-            if(upDown) {
+            if(onPathbar) {
                 prev = pathbarOrigin;
             } else {
                 if(prevEntry) {
@@ -389,13 +389,13 @@ function plotOne(gd, cd, element, transitionOpts) {
                     if(pt.parent) {
                         var ref = nextOfPrevEntry || refRect;
 
-                        if(ref && !upDown) {
+                        if(ref && !onPathbar) {
                             prev = findClosestEdge(pt, ref, size);
                         } else {
                             // if new leaf (when maxdepth is set),
                             // grow it from its parent node
                             prev = {};
-                            Lib.extendFlat(prev, interpFromParent(pt, upDown));
+                            Lib.extendFlat(prev, interpFromParent(pt, onPathbar));
                         }
                     } else {
                         prev = pt;
@@ -414,10 +414,10 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     };
 
-    var makeUpdateTextInterpolator = function(pt, upDown, refRect, size) {
-        var prev0 = getPrev(pt, upDown);
+    var makeUpdateTextInterpolator = function(pt, onPathbar, refRect, size) {
+        var prev0 = getPrev(pt, onPathbar);
         var prev = {};
-        var origin = getOrigin(pt, upDown, refRect, size);
+        var origin = getOrigin(pt, onPathbar, refRect, size);
 
         Lib.extendFlat(prev, {
             transform: toMoveInsideSlice(
@@ -438,7 +438,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         } else {
             // for new pts:
             if(pt.parent) {
-                Lib.extendFlat(prev, interpFromParent(pt, upDown));
+                Lib.extendFlat(prev, interpFromParent(pt, onPathbar));
             }
         }
 
@@ -454,7 +454,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     };
 
-    var handleSlicesExit = function(slices, upDown, refRect, size, pathSlice) {
+    var handleSlicesExit = function(slices, onPathbar, refRect, size, pathSlice) {
         var width = size[0];
         var height = size[1];
 
@@ -465,7 +465,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
                     var slicePath = sliceTop.select('path.surface');
                     slicePath.transition().attrTween('d', function(pt2) {
-                        var interp = makeExitSliceInterpolator(pt2, upDown, refRect, [width, height]);
+                        var interp = makeExitSliceInterpolator(pt2, onPathbar, refRect, [width, height]);
                         return function(t) { return pathSlice(interp(t)); };
                     });
 
@@ -501,7 +501,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         // Important: do this before binding new sliceData!
 
         selAncestors.each(function(pt) {
-            prevLookup[helpers.getPtId(pt)] = {
+            prevLookupPathbar[helpers.getPtId(pt)] = {
                 x0: pt.x0,
                 x1: pt.x1,
                 y0: pt.y0,
@@ -511,7 +511,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
 
         selDescendants.each(function(pt) {
-            prevLookdown[helpers.getPtId(pt)] = {
+            prevLookupSlices[helpers.getPtId(pt)] = {
                 x0: pt.x0,
                 x1: pt.x1,
                 y0: pt.y0,

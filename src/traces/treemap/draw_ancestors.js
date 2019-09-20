@@ -19,7 +19,7 @@ var constants = require('./constants');
 var helpers = require('../sunburst/helpers');
 var attachFxHandlers = require('../sunburst/fx');
 
-var upDown = true; // for Ancestors
+var onPathbar = true; // for Ancestors
 
 module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var barDifY = opts.barDifY;
@@ -68,7 +68,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         pt.y0 = barDifY;
         pt.y1 = barDifY + height;
 
-        pt._onPathbar = true;
+        pt.onPathbar = true;
 
         return true;
     });
@@ -80,7 +80,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     slices.enter().append('g')
         .classed('pathbar', true);
 
-    handleSlicesExit(slices, upDown, refRect, [width, height], pathSlice);
+    handleSlicesExit(slices, onPathbar, refRect, [width, height], pathSlice);
 
     slices.order();
 
@@ -110,7 +110,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
-                var interp = makeUpdateSliceInterpolator(pt2, upDown, refRect, [width, height]);
+                var interp = makeUpdateSliceInterpolator(pt2, onPathbar, refRect, [width, height]);
                 return function(t) { return pathSlice(interp(t)); };
             });
         } else {
@@ -157,7 +157,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             pt.y1,
             pt.textBB,
             {
-                isMenu: true
+                onPathbar: true
             }
         );
 
@@ -171,7 +171,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {
-                var interp = makeUpdateTextInterpolator(pt2, upDown, refRect, [width, height]);
+                var interp = makeUpdateTextInterpolator(pt2, onPathbar, refRect, [width, height]);
                 return function(t) { return strTransform(interp(t)); };
             });
         } else {

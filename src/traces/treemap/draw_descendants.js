@@ -20,7 +20,7 @@ var helpers = require('../sunburst/helpers');
 var attachFxHandlers = require('../sunburst/fx');
 var formatSliceLabel = require('../sunburst/plot').formatSliceLabel;
 
-var upDown = false; // for Descendants
+var onPathbar = false; // for Descendants
 
 module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var width = opts.width;
@@ -78,7 +78,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     slices.enter().append('g')
         .classed('slice', true);
 
-    handleSlicesExit(slices, upDown, refRect, [width, height], pathSlice);
+    handleSlicesExit(slices, onPathbar, refRect, [width, height], pathSlice);
 
     slices.order();
 
@@ -137,7 +137,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
-                var interp = makeUpdateSliceInterpolator(pt2, upDown, getRefRect(), [width, height]);
+                var interp = makeUpdateSliceInterpolator(pt2, onPathbar, getRefRect(), [width, height]);
                 return function(t) { return pathSlice(interp(t)); };
             });
         } else {
@@ -196,7 +196,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {
-                var interp = makeUpdateTextInterpolator(pt2, upDown, getRefRect(), [width, height]);
+                var interp = makeUpdateTextInterpolator(pt2, onPathbar, getRefRect(), [width, height]);
                 return function(t) { return strTransform(interp(t)); };
             });
         } else {

@@ -118,7 +118,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             if(ref1 && getVal(ref1)) {
                 hoverPt.percentEntry = pt.percentEntry = val / getVal(ref1);
                 hoverPt.entry = pt.entry = helpers.getLabelString(ref1.data.data.label);
-                if(hasFlag('percent entry') && !isRoot && !pt._onPathbar) {
+                if(hasFlag('percent entry') && !isRoot && !pt.onPathbar) {
                     tx = helpers.formatPercent(hoverPt.percentEntry, separators) + ' of ' + hoverPt.entry;
                     insertPercent();
                 }
