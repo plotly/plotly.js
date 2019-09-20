@@ -89,7 +89,10 @@ function assert(test) {
     var cur = [];
     d3.selectAll(test[1]).each(function(d, i) {
         if(test[2] === 'style') cur[i] = this.style[test[3]];
-        if(test[2] === 'attr') cur[i] = d3.select(this).attr(test[3]);
+        else if(test[2] === 'attr') cur[i] = d3.select(this).attr(test[3]);
+        else if(test[2] === 'datum') {
+            cur[i] = d3.select(this).datum()[test[3]];
+        }
     });
     switch(test[3]) {
         case 'd':
