@@ -35,6 +35,22 @@ function styleOne(s, pt, trace, opts) {
     var lineWidth;
     var opacity;
 
+    var depthFn = function(n) {
+        return Math.pow(trace.marker.opacity, n);
+    };
+
+    var add = function(a, b) {
+        return (1 - a) * (1 - b);
+    };
+
+    var sumUpTo = function(n) {
+        var sum = 0;
+        for(var i = 0; i < n; i++) {
+            sum += add(sum, depthFn(i));
+        }
+        return 1 - sum;
+    };
+
     if((opts || {}).hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
@@ -42,9 +58,10 @@ function styleOne(s, pt, trace, opts) {
     } else {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
+
         opacity = pt._onPathbar ?
-            Math.pow(trace.marker.opacity, pt.depth) :
-            Math.pow(trace.marker.opacity, pt.height);
+            sumUpTo(pt.depth) :
+            depthFn(pt.height);
     }
 
     s.style('stroke-width', lineWidth)
