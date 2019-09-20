@@ -40,7 +40,7 @@
       "pathbar": {
         "visible": false
       },
-      "textinfo": "label+percent visible",
+      "textinfo": "label+percent entry",
       "labels": [
         "Cain",
         "Seth",
@@ -81,7 +81,7 @@
       },
       {
         "showarrow": false,
-        "text": "percent visible",
+        "text": "percent entry",
         "x": 0.75,
         "xanchor": "center",
         "y": 1,

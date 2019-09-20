@@ -158,7 +158,7 @@ module.exports = {
             'value',
             'current path',
             'percent root',
-            'percent visible',
+            'percent entry',
             'percent parent'
         ],
         extras: ['none'],
@@ -182,7 +182,7 @@ module.exports = {
             'name',
             'current path',
             'percent root',
-            'percent visible',
+            'percent entry',
             'percent parent'
         ],
         dflt: 'label+text+value+name'

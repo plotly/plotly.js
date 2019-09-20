@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom left textposition",
             "textposition": "bottom left",
             "pathbar": {
@@ -110,7 +110,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom center textposition",
             "textposition": "bottom center",
             "pathbar": {
@@ -219,7 +219,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom right textposition",
             "textposition": "bottom right",
             "pathbar": {
@@ -329,7 +329,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle left textposition",
             "textposition": "middle left",
             "pathbar": {
@@ -435,7 +435,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle center textposition",
             "textposition": "middle center",
             "pathbar": {
@@ -541,7 +541,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle right textposition",
             "textposition": "middle right",
             "pathbar": {
@@ -647,7 +647,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top left textposition",
             "textposition": "top left",
             "pathbar": {
@@ -756,7 +756,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top center textposition",
             "textposition": "top center",
             "pathbar": {
@@ -866,7 +866,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+text+percent parent+percent visible+percent root",
+            "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top right textposition",
             "textposition": "top right",
             "pathbar": {

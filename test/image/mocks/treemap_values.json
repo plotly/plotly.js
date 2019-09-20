@@ -6,7 +6,7 @@
       "labels": ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
       "parents": ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
       "values":  [10, 14, 12, 10, 2, 6, 6, 1, 4],
-      "textinfo": "label+value+percent parent+percent visible",
+      "textinfo": "label+value+percent parent+percent entry",
       "domain": {"x": [0, 0.48]},
       "outsidetextfont": {"size": 20, "color": "#377eb8"},
       "marker": {"line": {"width": 2}},
@@ -20,7 +20,7 @@
       "parents": ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
       "domain": {"x": [0.52, 1]},
       "values": [65, 14, 12, 10, 2, 6, 6, 1, 4],
-      "textinfo": "label+value+percent parent+percent visible",
+      "textinfo": "label+value+percent parent+percent entry",
       "outsidetextfont": {"size": 20, "color": "#377eb8"},
       "marker": {"line": {"width": 2}},
       "pathbar": {"visible": false}

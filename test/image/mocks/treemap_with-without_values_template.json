@@ -2,8 +2,8 @@
     "data": [
         {
             "type": "treemap",
-            "texttemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
-            "hovertemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+            "texttemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
+            "hovertemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
             "name": "without values",
             "level": "Oscar",
             "labels": [
@@ -100,8 +100,8 @@
         },
         {
             "type": "treemap",
-            "texttemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
-            "hovertemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{visible} <=> %{percentVisible}<br>%{root} <=> %{percentRoot}",
+            "texttemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
+            "hovertemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
             "name": "with values",
             "level": "Oscar",
             "labels": [

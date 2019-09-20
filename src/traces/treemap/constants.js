@@ -12,13 +12,21 @@ module.exports = {
     CLICK_TRANSITION_TIME: 750,
     CLICK_TRANSITION_EASING: 'poly',
     eventDataKeys: [
-        'currentPath',
-        'percentRoot',
-        'percentVisible',
-        'percentParent',
+        // string
         'root',
-        'visible',
-        'parent'
+        'entry',
+        // 'parent', // no need to add parent here which is added somewhere else!
+        'currentPath',
+
+        // percentages i.e. ratios
+        'percentRoot',
+        'percentEntry',
+        'percentParent',
+
+        // sums
+        'sumRoot',
+        'sumEntry',
+        'sumParent'
     ],
     gapWithPathbar: 1 // i.e. one pixel
 };

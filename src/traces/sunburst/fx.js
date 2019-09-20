@@ -115,10 +115,10 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
             var ref1 = entry;
             if(ref1 && getVal(ref1)) {
-                hoverPt.percentVisible = pt.percentVisible = val / getVal(ref1);
-                hoverPt.visible = pt.visible = helpers.getLabelString(ref1.data.data.label);
-                if(hasFlag('percent visible')) {
-                    tx = helpers.formatPercent(hoverPt.percentVisible, separators) + ' of ' + hoverPt.visible;
+                hoverPt.percentEntry = pt.percentEntry = val / getVal(ref1);
+                hoverPt.entry = pt.entry = helpers.getLabelString(ref1.data.data.label);
+                if(hasFlag('percent entry')) {
+                    tx = helpers.formatPercent(hoverPt.percentEntry, separators) + ' of ' + hoverPt.entry;
                     insertPercent();
                 }
             }

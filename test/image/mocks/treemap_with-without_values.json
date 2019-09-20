@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "treemap",
-            "textinfo": "label+value+percent parent+percent visible+percent root",
+            "textinfo": "label+value+percent parent+percent entry+percent root",
             "hoverinfo": "all",
             "name": "without values",
             "level": "Oscar",
@@ -72,7 +72,7 @@
         },
         {
             "type": "treemap",
-            "textinfo": "label+value+percent parent+percent visible+percent root",
+            "textinfo": "label+value+percent parent+percent entry+percent root",
             "hoverinfo": "all",
             "name": "with values",
             "level": "Oscar",

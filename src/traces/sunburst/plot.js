@@ -519,7 +519,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
 
         var nPercent = 0;
         if(hasFlag('percent parent')) nPercent++;
-        if(hasFlag('percent visible')) nPercent++;
+        if(hasFlag('percent entry')) nPercent++;
         if(hasFlag('percent root')) nPercent++;
         var hasMultiplePercents = nPercent > 1;
 
@@ -541,9 +541,9 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                 ref = pt.parent;
                 makePercent('parent');
             }
-            if(hasFlag('percent visible') && pt.parent) {
+            if(hasFlag('percent entry') && pt.parent) {
                 ref = entry;
-                makePercent('visible');
+                makePercent('entry');
             }
             if(hasFlag('percent root') && (pt.parent || helpers.isLeaf(pt))) {
                 ref = hierarchy;
@@ -580,11 +580,11 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     }
 
     ref = entry;
-    obj.percentVisible = calcPercent();
-    obj.percentVisibleLabel = helpers.formatPercent(
-        obj.percentVisible, separators
+    obj.percentEntry = calcPercent();
+    obj.percentEntryLabel = helpers.formatPercent(
+        obj.percentEntry, separators
     );
-    obj.visible = ref.data.data.label;
+    obj.entry = ref.data.data.label;
 
     ref = hierarchy;
     obj.percentRoot = calcPercent();
