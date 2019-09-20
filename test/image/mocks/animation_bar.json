@@ -3,6 +3,7 @@
     "type": "bar",
     "x": ["A", "B", "C"],
     "y": [24, 5, 8],
+    "ids": ["A", "B", "C"],
     "error_y": {"array": [3, 2, 1]}
     }],
   "layout": {
@@ -17,6 +18,7 @@
       {"data": [{"width": 0.25}]},
       {"data": [{"marker": {"line": {"width": 10}}}]},
       {"data": [{"marker": {"line": {"color": ["orange", "yellow", "blue"]}}}]},
+      {"data": [{"ids": ["B", "C", "A"]}]},
       {"layout": {"yaxis": {"range": [0, 20]}}}
     ]
 }

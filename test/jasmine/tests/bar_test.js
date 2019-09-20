@@ -2683,4 +2683,45 @@ describe('bar tweening', function() {
           .catch(failTest)
           .then(done);
     });
+
+    it('for bar positions during object-constancy transitions', function(done) {
+        var _mock = {
+            data: [{
+                type: 'bar',
+                ids: ['A', 'B', 'C'],
+                x: ['A', 'B', 'C'],
+                text: ['A', 'B', 'C'],
+                textposition: 'inside',
+                y: [24, 5, 8],
+                error_y: {'array': [3, 2, 1]},
+                marker: {color: ['red', 'green', 'blue']}
+            }]
+        };
+
+        var nextFrame = { data: [{ ids: ['B', 'C', 'A'] }] };
+
+        var tests = [
+            [0, '.point path', 'datum', 'id', ['A', 'B', 'C']],
+            [0, '.point path', 'style', 'fill', ['rgb(255, 0, 0)', 'rgb(0, 128, 0)', 'rgb(0, 0, 255)']],
+            [0, '.point path', 'attr', 'd', ['M18,270V42H162V270Z', 'M198,270V222.5H342V270Z', 'M378,270V194H522V270Z']],
+            [0, 'text.bartext', 'attr', 'transform', ['translate(90 56)', 'translate(270 236.5)', 'translate(450 208)']],
+            [0, 'path.yerror', 'attr', 'd', ['M86,14h8m-4,0V71m-4,0h8', 'M266,204h8m-4,0V242m-4,0h8', 'M446,185h8m-4,0V204m-4,0h8']],
+
+            [250, '.point path', 'datum', 'id', ['A', 'B', 'C']],
+            [250, '.point path', 'style', 'fill', ['rgb(128, 0, 128)', 'rgb(128, 64, 0)', 'rgb(0, 64, 128)']],
+            [250, '.point path', 'attr', 'd', ['M198,270V118H342V270Z', 'M108,270V132H252V270Z', 'M288,270V208H432V270Z']],
+            [250, 'text.bartext', 'attr', 'transform', ['translate(269.7890625 134)', 'translate(179.5859375 148.25)', 'translate(359.578125 224.25)']],
+            [250, 'path.yerror', 'attr', 'd', ['M266,99h8m-4,0V137m-4,0h8', 'M176,109h8m-4,0V156m-4,0h8', 'M356,194h8m-4,0V223m-4,0h8']],
+
+            [500, '.point path', 'datum', 'id', ['A', 'B', 'C']],
+            [500, '.point path', 'style', 'fill', ['rgb(0, 0, 255)', 'rgb(255, 0, 0)', 'rgb(0, 128, 0)']],
+            [500, '.point path', 'attr', 'd', ['M378,270V194H522V270Z', 'M18,270V42H162V270Z', 'M198,270V223H342V270Z']],
+            [500, 'text.bartext', 'attr', 'transform', ['translate(450 208)', 'translate(90 56)', 'translate(270 236.5)']],
+            [500, 'path.yerror', 'attr', 'd', ['M446,185h8m-4,0V204m-4,0h8', 'M86,14h8m-4,0V71m-4,0h8', 'M266,204h8m-4,0V242m-4,0h8']]
+        ];
+
+        checkTransition(gd, _mock, nextFrame, transitionOpts, tests)
+            .catch(failTest)
+            .then(done);
+    });
 });
