@@ -73,6 +73,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         return true;
     });
 
+    sliceData.reverse();
+
     slices = slices.data(sliceData, function(pt) { return helpers.getPtId(pt); });
 
     slices.enter().append('g')
@@ -97,8 +99,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     }
 
     updateSlices.each(function(pt) {
-        pt._hoverX = viewX(pt.x0) + eachWidth / 2;
-        pt._hoverY = viewY(pt.y0) + height / 2;
+        pt._hoverX = viewX(pt.x1 - height / 2);
+        pt._hoverY = viewY(pt.y1 - height / 2);
 
         var sliceTop = d3.select(this);
 
@@ -150,7 +152,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         pt.textBB = Drawing.bBox(sliceText.node());
         pt.transform = toMoveInsideSlice(
             pt.x0,
-            Math.min(pt.x0 + eachWidth, pt.x1),
+            pt.x1,
             pt.y0,
             pt.y1,
             pt.textBB,
