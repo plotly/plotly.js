@@ -84,8 +84,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+    } else {
+        coerce('marker.opacitybase');
+        coerce('marker.opacitystep');
+        coerce('pathbar.opacity');
     }
-    coerce('marker.opacity', withColorscale ? 1 : 0.7);
 
     traceOut._hovered = {
         marker: {

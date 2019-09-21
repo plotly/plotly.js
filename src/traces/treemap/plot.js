@@ -141,10 +141,14 @@ function plotOne(gd, cd, element, transitionOpts) {
         return {};
     };
 
-    var pad = trace.marker.pad;
+    trace._entryDepth = entry.data.depth;
+    if(helpers.isHierarchyRoot(entry)) {
+        trace._entryDepth++;
+    }
+
     // N.B. handle multiple-root special case
     if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
-        maxDepth++; // increase maxDepth by one
+        maxDepth++;
     }
     trace._maxDepth = maxDepth;
 
@@ -288,6 +292,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             x1 -= hasRight ? TEXTPAD : 0;
         }
 
+        var pad = trace.marker.pad;
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;

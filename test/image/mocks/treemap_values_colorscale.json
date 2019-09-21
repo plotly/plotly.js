@@ -138,7 +138,6 @@
                 "four"
             ],
             "marker": {
-                "opacity": 0.5,
                 "cmin": 0,
                 "cmax": 25,
                 "colorscale": "Blackbody",
@@ -173,7 +172,7 @@
             },
             {
                 "showarrow": false,
-                "text": "branchvalues: <b>total</b><br>used as input to marker.color<br>with 0.5 opacity",
+                "text": "branchvalues: <b>total</b><br>used as input to marker.color",
                 "x": 0.75,
                 "xanchor": "center",
                 "y": 1.1,

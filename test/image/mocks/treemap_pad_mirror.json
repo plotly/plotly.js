@@ -14,7 +14,8 @@
                 "pad": 0
             },
             "marker": {
-                "opacity": 0.8,
+                "opacitybase": 0.3,
+                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -104,7 +105,8 @@
                 "pad": 0
             },
             "marker": {
-                "opacity": 0.8,
+                "opacitybase": 0.3,
+                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -194,7 +196,8 @@
                 "pad": 0
             },
             "marker": {
-                "opacity": 0.8,
+                "opacitybase": 0.3,
+                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -284,7 +287,8 @@
                 "pad": 0
             },
             "marker": {
-                "opacity": 0.8,
+                "opacitybase": 0.3,
+                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,

@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
+var helpers = require('../sunburst/helpers');
 
 function style(gd) {
     gd._fullLayout._treemaplayer.selectAll('.trace').each(function(cd) {
@@ -29,29 +30,22 @@ function style(gd) {
 }
 
 function styleOne(s, pt, trace, opts) {
+    var hovered = (opts || {}).hovered;
     var cdi = pt.data.data;
     var ptNumber = cdi.i;
     var lineColor;
     var lineWidth;
     var opacity;
 
-    var depthFn = function(n) {
-        return Math.pow(trace.marker.opacity, n);
+    var depthFade = function(n) {
+        var base = trace.marker.opacitybase;
+        var step = trace.marker.opacitystep;
+
+        return n === 0 ? base :
+            Math.min(1, n * step);
     };
 
-    var add = function(a, b) {
-        return (1 - a) * (1 - b);
-    };
-
-    var sumUpTo = function(n) {
-        var sum = 0;
-        for(var i = 0; i < n; i++) {
-            sum += add(sum, depthFn(i));
-        }
-        return 1 - sum;
-    };
-
-    if((opts || {}).hovered) {
+    if(hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
         opacity = trace._hovered.marker.opacity;
@@ -59,9 +53,10 @@ function styleOne(s, pt, trace, opts) {
         lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
         lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
 
-        opacity = pt.onPathbar ?
-            sumUpTo(pt.depth) :
-            depthFn(pt.height);
+        opacity =
+            trace._hasColorscale || helpers.isLeaf(pt) ? 1 :
+            pt.onPathbar ? trace.pathbar.opacity :
+                depthFade(pt.data.depth - trace._entryDepth);
     }
 
     s.style('stroke-width', lineWidth)

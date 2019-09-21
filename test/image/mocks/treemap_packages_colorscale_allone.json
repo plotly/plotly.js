@@ -13,7 +13,6 @@
 				"side": "bottom"
 			},
 			"marker": {
-				"opacity": 0.9,
 				"line": {
 					"color": "#777"
 				},

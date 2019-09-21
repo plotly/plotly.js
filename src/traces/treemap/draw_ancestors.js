@@ -41,9 +41,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
 
-    var entryDepth = entry.data.depth;
-
-    var eachWidth = opts.width / entryDepth;
+    var eachWidth = width / trace._entryDepth;
 
     var pathIds = helpers.listPath(entry.data, 'id');
 

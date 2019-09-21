@@ -114,14 +114,18 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should default *marker.opacity* depending on having or not having *colorscale*', function() {
+    it('should not coerce *marker.opacitybase*, *marker.opacitybase* and *pathbar.opacity* when having *colorscale*', function() {
         _supply([
             {labels: [1], parents: ['']},
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
         ]);
 
-        expect(fullData[0].marker.opacity).toBe(0.7, 'without colorscale');
-        expect(fullData[1].marker.opacity).toBe(1, 'with colorscale');
+        expect(fullData[0].marker.opacitybase).toBe(0.5);
+        expect(fullData[0].marker.opacitystep).toBe(0.5);
+        expect(fullData[0].pathbar.opacity).toBe(0.5);
+        expect(fullData[1].marker.opacitybase).toBe(undefined, 'not coerced');
+        expect(fullData[1].marker.opacitystep).toBe(undefined, 'not coerced');
+        expect(fullData[1].pathbar.opacity).toBe(undefined, 'not coerced');
     });
 
     it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {

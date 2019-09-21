@@ -139,15 +139,29 @@ module.exports = {
 
         colors: sunburstAttrs.marker.colors,
 
-        opacity: {
+        opacitybase: {
             valType: 'number',
             editType: 'style',
             role: 'style',
             min: 0,
             max: 1,
+            dflt: 0.5,
             description: [
-                'Sets the opacity of the branches i.e. based on the hierarchy height.',
-                'With colorscale it is defaulted to 1; otherwise it is defaulted to 0.7'
+                'Sets the base opacity of the headers based on the depth from the entry.',
+                'This options is not available when having a `colorscale`.'
+            ].join(' ')
+        },
+
+        opacitystep: {
+            valType: 'number',
+            editType: 'style',
+            role: 'style',
+            min: 0,
+            max: 1,
+            dflt: 0.5,
+            description: [
+                'Sets the increment for opacity of the headers based on the depth from the entry.',
+                'This options is not available when having a `colorscale`.'
             ].join(' ')
         },
 
@@ -214,6 +228,18 @@ module.exports = {
             description: [
                 'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
                 'with 3 pixles extra padding on each side.'
+            ].join(' ')
+        },
+
+        opacity: {
+            valType: 'number',
+            editType: 'style',
+            role: 'style',
+            min: 0,
+            dflt: 0.5,
+            description: [
+                'Sets the opacity of the pathbar',
+                'This options is not available when having a `colorscale`.'
             ].join(' ')
         },
 
