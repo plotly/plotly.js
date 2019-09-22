@@ -1332,16 +1332,90 @@ describe('Test sunburst interactions edge cases', function() {
     });
 });
 
-describe('Test sunburst texttemplate:', function() {
+describe('Test sunburst texttemplate without `values` should work:', function() {
     checkTextTemplate([{
         type: 'sunburst',
-        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Esther'],
-        values: [11, 12, 13, 14, 15],
-        text: ['1', '2', '3', '4', '5'],
-        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth' ]
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
     }], 'g.slicetext', [
-      ['txt: %{label}', ['txt: Eve', 'txt: Cain', 'txt: Seth', 'txt: Enos', 'txt: Esther']],
-      [['txt: %{label}', '%{text}', 'value: %{value}'], ['txt: Eve', '2', 'value: 13', '', '']],
-      ['%{color}', ['rgba(0,0,0,0)', '#1f77b4', '#ff7f0e', '#1f77b4', '#1f77b4']]
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentParent} of %{parent}', [
+            '%{percentParent} of %{parent}', // TODO: what should be printed for the parent of root?
+            '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan'
+        ]],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: %{value}', // N.B. there is no `values` array
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '100% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate with `values` should work:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentParent} of %{parent}', [
+            '%{percentParent} of %{parent}', // TODO: what should be printed for the parent of root?
+            '83% of Seth', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '17% of Seth', '17% of Awan'
+        ]],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '9% of Eve',
+                '15% of Eve',
+                '3% of Eve',
+                '6% of Eve',
+                '17% of Awan',
+                'color: #9467bd'
+            ]
+        ]
     ]);
 });

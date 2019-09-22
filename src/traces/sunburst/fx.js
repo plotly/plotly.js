@@ -285,12 +285,6 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         Fx.loneUnhover(fullLayoutNow._hoverlayer.node());
         Registry.call('animate', gd, frame, animOpts);
-        /*
-        .then(function() {
-            // TODO: fixup hover position
-            onMouseOver(pt);
-        });
-        */
     };
 
     sliceTop.on('mouseover', onMouseOver);
