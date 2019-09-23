@@ -86,14 +86,15 @@ module.exports = function calc(gd, trace) {
 
     // Build color generation function
     function getMarkerColorInfo(index) {
-        var value;
+        var value, rawColor;
         if(Lib.isArrayOrTypedArray(line.color)) {
             value = line.color[index % line.color.length];
+            rawColor = value;
         } else {
             value = line.color;
         }
 
-        return {color: markerColorscale(value), rawColor: value};
+        return {color: markerColorscale(value), rawColor: rawColor};
     }
 
     // Number of values and counts
