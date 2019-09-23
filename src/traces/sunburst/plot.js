@@ -487,10 +487,31 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var cd0 = cd[0];
     var cdi = pt.data.data;
     var hierarchy = cd0.hierarchy;
+    var isRoot = helpers.isHierarchyRoot(pt);
+    var isEntry = helpers.isEntry(pt);
+    var parent = isEntry ? pt._parent : pt.parent;
+
     var ref;
+    var getLabel = function(d) {
+        if(d.hasOwnProperty('hierarchy')) return d.hierarchy.label;
+        if(!(d.data && d.data.data)) return '';
+        var id = helpers.getPtId(d);
+        for(var q = 0; q < cd.length; q++) {
+            if(cd[q].label === id) {
+                return id;
+            }
+        }
+        return '';
+    };
+
+    var getVal = function(d) {
+        if(d.hasOwnProperty('hierarchy')) return d.hierarchy.value;
+        return d.hasOwnProperty('v') ? d.v : d.value;
+    };
 
     var calcPercent = function() {
-        return (trace.branchvalues ? cdi.v : cdi.value) / (ref.value || ref.v);
+        var result = (trace.branchvalues ? cdi.v : cdi.value) / getVal(ref);
+        return isFinite(result) ? result : 1;
     };
 
     if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
@@ -510,8 +531,6 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
         var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
         var thisText = [];
         var tx;
-        var parent = helpers.isEntry(pt) ? pt._parent : pt.parent;
-        var isRoot = helpers.isHierarchyRoot(pt);
 
         if(hasFlag('label') && cdi.label) {
             thisText.push(cdi.label);
@@ -580,28 +599,26 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
 
     obj.currentPath = helpers.getPath(pt.data);
 
-    if(pt.parent) {
-        ref = pt.parent;
-        obj.percentParent = calcPercent();
-        obj.percentParentLabel = helpers.formatPercent(
-            obj.percentParent, separators
-        );
-        obj.parent = ref.data.data.label;
-    }
+    ref = parent;
+    obj.percentParent = calcPercent();
+    obj.percentParentLabel = helpers.formatPercent(
+        obj.percentParent, separators
+    );
+    obj.parent = helpers.getLabelString(getLabel(ref));
 
     ref = entry;
     obj.percentEntry = calcPercent();
     obj.percentEntryLabel = helpers.formatPercent(
         obj.percentEntry, separators
     );
-    obj.entry = ref.data.data.label;
+    obj.entry = helpers.getLabelString(getLabel(ref));
 
     ref = hierarchy;
     obj.percentRoot = calcPercent();
     obj.percentRootLabel = helpers.formatPercent(
         obj.percentRoot, separators
     );
-    obj.root = ref.data.data.label;
+    obj.root = helpers.getLabelString(getLabel(ref));
 
     if(cdi.hasOwnProperty('color')) {
         obj.color = cdi.color;

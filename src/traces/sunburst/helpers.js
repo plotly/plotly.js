@@ -14,7 +14,7 @@ var setCursor = require('../../lib/setcursor');
 var pieHelpers = require('../pie/helpers');
 
 function labelStr(label) {
-    return (label || label === 0) ? label + '' : '';
+    return (label || label === 0) ? String(label) : '';
 }
 
 exports.findEntryWithLevel = function(hierarchy, level) {
@@ -151,7 +151,7 @@ exports.getLabelStr = function(label) {
 
 exports.getLabelString = function(label) { // used in hover to reference to the "root"
     var str = exports.getLabelStr(label);
-    return str ? str : '"root"';
+    return str === '' ? '"root"' : str;
 };
 
 exports.listPath = function(d, keyStr) {

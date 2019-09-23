@@ -13,19 +13,14 @@ module.exports = {
     CLICK_TRANSITION_EASING: 'linear',
     eventDataKeys: [
         // string
+        'currentPath',
         'root',
         'entry',
-        // 'parent', // no need to add parent here which is added somewhere else!
-        'currentPath',
+        // no need to add 'parent' here
 
         // percentages i.e. ratios
         'percentRoot',
         'percentEntry',
-        'percentParent',
-
-        // sums
-        'sumRoot',
-        'sumEntry',
-        'sumParent'
+        'percentParent'
     ]
 };

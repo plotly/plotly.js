@@ -47,6 +47,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var ptNumber = cdi.i;
         var isRoot = helpers.isHierarchyRoot(pt);
         var isEntry = helpers.isEntry(pt);
+        var parent = isEntry ? pt._parent : pt.parent;
+        var parentLabel = !parent ? '' : (parent.data && parent.data.data) ? parent.data.data.label : parent.label;
 
         var _cast = function(astr) {
             return Lib.castOption(traceNow, ptNumber, astr);
@@ -72,7 +74,10 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var parts = [];
             var thisText = [];
             var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
-            var getVal = function(d) { return d.hasOwnProperty('v') ? d.v : d.value; };
+            var getVal = function(d) {
+                if(d.hasOwnProperty('hierarchy')) return d.hierarchy.value;
+                return d.hasOwnProperty('v') ? d.v : d.value;
+            };
 
             if(hoverinfo) {
                 parts = hoverinfo === 'all' ?
@@ -105,10 +110,10 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
             var val = getVal(cdi);
 
-            var ref2 = isEntry ? pt._parent : pt.parent;
-            if(ref2 && getVal(ref2)) {
+            var ref2 = parent;
+            if(ref2) {
                 hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
-                hoverPt.parent = pt.parentString = helpers.getLabelString(isEntry ? ref2.label : ref2.data.data.label);
+                hoverPt.parent = pt.parent = helpers.getLabelString(parentLabel);
                 if(hasFlag('percent parent')) {
                     tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
@@ -116,7 +121,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             }
 
             var ref1 = entry;
-            if(ref1 && getVal(ref1)) {
+            if(ref1) {
                 hoverPt.percentEntry = pt.percentEntry = val / getVal(ref1);
                 hoverPt.entry = pt.entry = helpers.getLabelString(ref1.data.data.label);
                 if(hasFlag('percent entry') && !isRoot && !pt.onPathbar) {
@@ -126,7 +131,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             }
 
             var ref0 = hierarchy;
-            if(ref0 && getVal(ref0)) {
+            if(ref0) {
                 hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
                 hoverPt.root = pt.root = helpers.getLabelString(ref0.data.data.label);
                 if(hasFlag('percent root') && !isRoot) {
@@ -310,7 +315,7 @@ function makeEventData(pt, trace, keys) {
         if(key in pt) out[key] = pt[key];
     }
     // handle special case of parent
-    if('parentString' in pt) out.parent = pt.parentString;
+    if('parent' in pt) out.parent = pt.parent;
 
     appendArrayPointValue(out, trace, cdi.i);
 
