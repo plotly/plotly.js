@@ -400,7 +400,10 @@ function mouseoverPath(d) {
 
             // Emit hover event
             var points = buildPointsArrayForPath(d);
-            d.parcatsViewModel.graphDiv.emit('plotly_hover', {points: points, event: d3.event});
+            var constraints = buildConstraintsForPath(d);
+            d.parcatsViewModel.graphDiv.emit('plotly_hover', {
+                points: points, event: d3.event, constraints: constraints
+            });
 
             // Handle hover label
             if(d.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
@@ -503,7 +506,10 @@ function mouseoutPath(d) {
         // Emit unhover event
         if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
             var points = buildPointsArrayForPath(d);
-            d.parcatsViewModel.graphDiv.emit('plotly_unhover', {points: points, event: d3.event});
+            var constraints = buildConstraintsForPath(d);
+            d.parcatsViewModel.graphDiv.emit('plotly_unhover', {
+                points: points, event: d3.event, constraints: constraints
+            });
         }
     }
 }
@@ -529,6 +535,30 @@ function buildPointsArrayForPath(d) {
 }
 
 /**
+ * Build constraints object for a path
+ *
+ * For use in click/hover events
+ * @param {PathViewModel} d
+ */
+function buildConstraintsForPath(d) {
+    var constraints = {};
+    var dimensions = d.parcatsViewModel.model.dimensions;
+
+    // dimensions
+    for(var i = 0; i < dimensions.length; i++) {
+        var dimension = dimensions[i];
+        var category = dimension.categories[d.model.categoryInds[i]];
+        constraints[dimension.containerInd] = category.categoryValue;
+    }
+
+    // color
+    if(d.model.rawColor !== undefined) {
+        constraints.color = d.model.rawColor;
+    }
+    return constraints;
+}
+
+/**
  * Handle path click
  * @param {PathViewModel} d
  */
@@ -536,7 +566,10 @@ function clickPath(d) {
     if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
         // hoverinfo it's skip, so interaction events aren't disabled
         var points = buildPointsArrayForPath(d);
-        d.parcatsViewModel.graphDiv.emit('plotly_click', {points: points, event: d3.event});
+        var constraints = buildConstraintsForPath(d);
+        d.parcatsViewModel.graphDiv.emit('plotly_click', {
+            points: points, event: d3.event, constraints: constraints
+        });
     }
 }
 
@@ -672,6 +705,7 @@ function styleForColorHovermode(bandElement) {
 function emitPointsEventCategoryHovermode(bandElement, eventName, event) {
     // Get all bands in the current category
     var bandViewModel = d3.select(bandElement).datum();
+    var categoryModel = bandViewModel.categoryViewModel.model;
     var gd = bandViewModel.parcatsViewModel.graphDiv;
     var bandSel = d3.select(bandElement.parentNode).selectAll('rect.bandrect');
 
@@ -684,7 +718,11 @@ function emitPointsEventCategoryHovermode(bandElement, eventName, event) {
         });
     });
 
-    gd.emit(eventName, {points: points, event: event});
+    var constraints = {};
+    constraints[categoryModel.dimensionInd] = categoryModel.categoryValue;
+    gd.emit(eventName, {
+        points: points, event: event, constraints: constraints
+    });
 }
 
 /**
@@ -697,6 +735,7 @@ function emitPointsEventCategoryHovermode(bandElement, eventName, event) {
  */
 function emitPointsEventColorHovermode(bandElement, eventName, event) {
     var bandViewModel = d3.select(bandElement).datum();
+    var categoryModel = bandViewModel.categoryViewModel.model;
     var gd = bandViewModel.parcatsViewModel.graphDiv;
     var paths = selectPathsThroughCategoryBandColor(bandViewModel);
 
@@ -706,7 +745,15 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
         Array.prototype.push.apply(points, buildPointsArrayForPath(pathViewModel));
     });
 
-    gd.emit(eventName, {points: points, event: event});
+    var constraints = {};
+    constraints[categoryModel.dimensionInd] = categoryModel.categoryValue;
+    // color
+    if(bandViewModel.rawColor !== undefined) {
+        constraints.color = bandViewModel.rawColor;
+    }
+    gd.emit(eventName, {
+        points: points, event: event, constraints: constraints
+    });
 }
 
 /**
