@@ -63,6 +63,9 @@ exports.layoutStyles = function(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
+    // TODO move logic below in Cartesian.style method,
+    //   loop over basePlotModules here
+
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
     // for shared features like selections.
@@ -665,6 +668,8 @@ exports.doAutoRangeAndConstraints = function(gd) {
         }
     }
 };
+
+// TODO figure out how to split finalDraw / drawMarginPushers
 
 exports.finalDraw = function(gd) {
     // TODO: rangesliders really belong in marginPushers but they need to be

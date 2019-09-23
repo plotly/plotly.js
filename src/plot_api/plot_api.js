@@ -247,6 +247,7 @@ function plot(gd, data, layout, config) {
             }
         }
 
+        // TODO move to layoutStyles
         if(fullLayout.modebar.orientation === 'h') {
             fullLayout._modebardiv
               .style('height', null)
@@ -275,6 +276,8 @@ function plot(gd, data, layout, config) {
 
     // in case the margins changed, draw margin pushers again
     function pushMarginAgain() {
+        // TODO maybe need to loop more than that ...
+        // TODO maybe need to loop with positionAndAutorange
 
         if(Plots.didMarginChange(oldMargins, fullLayout._size)) {
             oldMargins = Lib.extendFlat({}, fullLayout._size);
@@ -300,6 +303,8 @@ function plot(gd, data, layout, config) {
 
         subroutines.doAutoRangeAndConstraints(gd);
 
+        // TODO maybe move to subroutines.doAutoRangeAndConstraints?
+        //
         // this one is different from shapes/annotations calcAutorange
         // the others incorporate those components into ax._extremes,
         // this one actually sets the ranges in rangesliders.
@@ -1836,13 +1841,21 @@ function relayout(gd, astr, val) {
     } else if(Object.keys(aobj).length) {
         axRangeSupplyDefaultsByPass(gd, flags, specs) || Plots.supplyDefaults(gd);
 
+        // TODO will need additional margin-push logic
         if(flags.legend) seq.push(subroutines.doLegend);
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
+        // TODO will need additional margin-push logic
         if(flags.axrange) addAxRangeSequence(seq, specs.rangesAltered);
+        // TODO will need additional margin-push logic
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
+        // TODO will need additional margin-push logic
         if(flags.colorbars) seq.push(subroutines.doColorBars);
+
+        // TODO
+        // maybe add something like
+        // seq.push(subroutines.drawMarginPushersIfNeeded)
 
         seq.push(emitAfterPlot);
     }
