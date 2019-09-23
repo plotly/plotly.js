@@ -1777,14 +1777,6 @@ plots.sanitizeMargins = function(fullLayout) {
     }
 };
 
-plots.clearAutoMarginIds = function(gd) {
-    gd._fullLayout._pushmarginIds = {};
-};
-
-plots.allowAutoMargin = function(gd, id) {
-    gd._fullLayout._pushmarginIds[id] = 1;
-};
-
 function initMargins(fullLayout) {
     var margin = fullLayout.margin;
 
@@ -1800,7 +1792,6 @@ function initMargins(fullLayout) {
         gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
     }
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
-    if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
 /**
@@ -1820,14 +1811,11 @@ function initMargins(fullLayout) {
  */
 plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
-
     var pushMargin = fullLayout._pushmargin;
-    var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
         if(!o) {
             delete pushMargin[id];
-            delete pushMarginIds[id];
         } else {
             var pad = o.pad;
             if(pad === undefined) {
@@ -1859,11 +1847,6 @@ plots.autoMargin = function(gd, id, o) {
                 b: {val: yb, size: o.b + pad},
                 t: {val: yt, size: o.t + pad}
             };
-            pushMarginIds[id] = 1;
-        }
-
-        if(!fullLayout._replotting) {
-            return plots.doAutoMargin(gd);
         }
     }
 };
@@ -1875,7 +1858,6 @@ plots.doAutoMargin = function(gd) {
 
     var gs = fullLayout._size;
     var margin = fullLayout.margin;
-    var oldMargins = Lib.extendFlat({}, gs);
 
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
@@ -1887,13 +1869,8 @@ plots.doAutoMargin = function(gd) {
     var width = fullLayout.width;
     var height = fullLayout.height;
     var pushMargin = fullLayout._pushmargin;
-    var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-        for(var k in pushMargin) {
-            if(!pushMarginIds[k]) delete pushMargin[k];
-        }
-
         // fill in the requested margins
         pushMargin.base = {
             l: {val: 0, size: ml},
@@ -1952,16 +1929,6 @@ plots.doAutoMargin = function(gd) {
     gs.p = Math.round(margin.pad);
     gs.w = Math.round(width) - gs.l - gs.r;
     gs.h = Math.round(height) - gs.t - gs.b;
-
-    // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting && plots.didMarginChange(oldMargins, gs)) {
-        if('_redrawFromAutoMarginCount' in fullLayout) {
-            fullLayout._redrawFromAutoMarginCount++;
-        } else {
-            fullLayout._redrawFromAutoMarginCount = 1;
-        }
-        return Registry.call('plot', gd);
-    }
 };
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];

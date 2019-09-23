@@ -89,12 +89,6 @@ function plot(gd, data, layout, config) {
             'but this container doesn\'t yet have a plot.', gd);
     }
 
-    function addFrames() {
-        if(frames) {
-            return exports.addFrames(gd, frames);
-        }
-    }
-
     // transfer configuration options to gd until we move over to
     // a more OO like model
     setPlotContext(gd, config);
@@ -147,10 +141,6 @@ function plot(gd, data, layout, config) {
         return plotLegacyPolar(gd, data, layout);
     }
 
-    // so we don't try to re-call Plotly.plot from inside
-    // legend and colorbar, if margins changed
-    fullLayout._replotting = true;
-
     // make or remake the framework if we need to
     if(graphWasEmpty) makePlotFramework(gd);
 
@@ -162,11 +152,6 @@ function plot(gd, data, layout, config) {
 
     // clear gradient defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
-
-    // save initial show spikes once per graph
-    if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
-
-    // prepare the data and find the autorange
 
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
@@ -182,8 +167,9 @@ function plot(gd, data, layout, config) {
     if(gd._context.responsive) {
         if(!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() { if(!Lib.isHidden(gd)) Plots.resize(gd); };
-
+            gd._responsiveChartHandler = function() {
+                if(!Lib.isHidden(gd)) Plots.resize(gd);
+            };
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);
         }
@@ -195,7 +181,11 @@ function plot(gd, data, layout, config) {
      * start async-friendly code - now we're actually drawing things
      */
 
-    var oldMargins = Lib.extendFlat({}, fullLayout._size);
+    function addFrames() {
+        if(frames) {
+            return exports.addFrames(gd, frames);
+        }
+    }
 
     // draw framework first so that margin-pushing
     // components can position themselves correctly
@@ -210,19 +200,11 @@ function plot(gd, data, layout, config) {
         }
 
         if(!fullLayout._glcanvas && fullLayout._has('gl')) {
-            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
-                key: 'contextLayer',
-                context: true,
-                pick: false
-            }, {
-                key: 'focusLayer',
-                context: false,
-                pick: false
-            }, {
-                key: 'pickLayer',
-                context: false,
-                pick: true
-            }], function(d) { return d.key; });
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([
+                { key: 'contextLayer', context: true, pick: false },
+                { key: 'focusLayer', context: false, pick: false },
+                { key: 'pickLayer', context: false, pick: true }
+            ], function(d) { return d.key; });
 
             fullLayout._glcanvas.enter().append('canvas')
                 .attr('class', function(d) {
@@ -278,37 +260,31 @@ function plot(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
-    // draw anything that can affect margins.
-    function marginPushers() {
-        // First reset the list of things that are allowed to change the margins
-        // So any deleted traces or components will be wiped out of the
-        // automargin calculation.
-        // This means *every* margin pusher must be listed here, even if it
-        // doesn't actually try to push the margins until later.
-        Plots.clearAutoMarginIds(gd);
+    var oldMargins = Lib.extendFlat({}, fullLayout._size);
 
-        subroutines.drawMarginPushers(gd);
-        Axes.allowAutoMargin(gd);
+    function pushMargin() {
+        Registry.getComponentMethod('rangeselector', 'pushMargin')(gd);
+        Registry.getComponentMethod('sliders', 'pushMargin')(gd);
+        Registry.getComponentMethod('updatemenus', 'pushMargin')(gd);
+        Registry.getComponentMethod('legend', 'pushMargin')(gd);
+        Registry.getComponentMethod('colorbar', 'pushMargin')(gd);
+        if(hasCartesian) Axes.pushMargin(gd);
 
-        Plots.doAutoMargin(gd);
-        return Plots.previousPromises(gd);
+        return Lib.syncOrAsync([Plots.previousPromises, Plots.doAutoMargin], gd);
     }
 
     // in case the margins changed, draw margin pushers again
-    function marginPushersAgain() {
-        if(!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
+    function pushMarginAgain() {
 
-        return Lib.syncOrAsync([
-            marginPushers,
-            subroutines.layoutStyles
-        ], gd);
+        if(Plots.didMarginChange(oldMargins, fullLayout._size)) {
+            oldMargins = Lib.extendFlat({}, fullLayout._size);
+            return pushMargin();
+        }
     }
 
     function positionAndAutorange() {
-        if(!recalc) {
-            doAutoRangeAndConstraints();
-            return;
-        }
+        if(!hasCartesian) return;
+        if(!recalc) return doAutoRangeAndConstraints();
 
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
@@ -324,48 +300,49 @@ function plot(gd, data, layout, config) {
 
         subroutines.doAutoRangeAndConstraints(gd);
 
-        // store initial ranges *after* enforcing constraints, otherwise
-        // we will never look like we're at the initial ranges
-        if(graphWasEmpty) Axes.saveRangeInitial(gd);
-
         // this one is different from shapes/annotations calcAutorange
         // the others incorporate those components into ax._extremes,
         // this one actually sets the ranges in rangesliders.
         Registry.getComponentMethod('rangeslider', 'calcAutorange')(gd);
     }
 
-    // draw ticks, titles, and calculate axis scaling (._b, ._m)
+    function saveInitial() {
+        if(graphWasEmpty && hasCartesian) {
+            // store initial ranges *after* enforcing constraints, otherwise
+            // we will never look like we're at the initial ranges
+            Axes.saveRangeInitial(gd);
+            // save initial show spikes once per graph
+            Axes.saveShowSpikeInitial(gd);
+        }
+    }
+
     function drawAxes() {
-        return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
+        if(hasCartesian) {
+            return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
+        }
     }
 
     var seq = [
         Plots.previousPromises,
         addFrames,
         drawFramework,
-        marginPushers,
-        marginPushersAgain
-    ];
-
-    if(hasCartesian) seq.push(positionAndAutorange);
-
-    seq.push(subroutines.layoutStyles);
-    if(hasCartesian) seq.push(drawAxes);
-
-    seq.push(
+        positionAndAutorange,
+        pushMargin,
+        pushMarginAgain,
+        pushMarginAgain,
+        positionAndAutorange,
+        saveInitial,
+        subroutines.layoutStyles,
         subroutines.drawData,
+        subroutines.drawMarginPushers,
+        drawAxes,
         subroutines.finalDraw,
         initInteractions,
         Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
-        // TODO: doAutoMargin is only needed here for axis automargin, which
-        // happens outside of marginPushers where all the other automargins are
-        // calculated. Would be much better to separate margin calculations from
-        // component drawing - see https://github.com/plotly/plotly.js/issues/2704
-        Plots.doAutoMargin,
         Plots.previousPromises
-    );
+    ];
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -379,13 +356,7 @@ function plot(gd, data, layout, config) {
 }
 
 function emitAfterPlot(gd) {
-    var fullLayout = gd._fullLayout;
-
-    if(fullLayout._redrawFromAutoMarginCount) {
-        fullLayout._redrawFromAutoMarginCount--;
-    } else {
-        gd.emit('plotly_afterplot');
-    }
+    gd.emit('plotly_afterplot');
 }
 
 function setPlotConfig(obj) {

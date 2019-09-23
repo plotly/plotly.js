@@ -31,10 +31,6 @@ var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
 
-exports.layoutStyles = function(gd) {
-    return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
-};
-
 function overlappingDomain(xDomain, yDomain, domains) {
     for(var i = 0; i < domains.length; i++) {
         var existingX = domains[i][0];
@@ -50,7 +46,7 @@ function overlappingDomain(xDomain, yDomain, domains) {
     return false;
 }
 
-function lsInner(gd) {
+exports.layoutStyles = function(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var pad = gs.p;
@@ -302,7 +298,7 @@ function lsInner(gd) {
     Axes.makeClipPaths(gd);
 
     return Plots.previousPromises(gd);
-}
+};
 
 function shouldShowLinesOrTicks(ax, subplot) {
     return (ax.ticks || ax.showline) &&
@@ -563,9 +559,6 @@ exports.drawData = function(gd) {
     Registry.getComponentMethod('annotations', 'draw')(gd);
     Registry.getComponentMethod('images', 'draw')(gd);
 
-    // Mark the first render as complete
-    fullLayout._replotting = false;
-
     return Plots.previousPromises(gd);
 };
 
@@ -673,9 +666,6 @@ exports.doAutoRangeAndConstraints = function(gd) {
     }
 };
 
-// An initial paint must be completed before these components can be
-// correctly sized and the whole plot re-margined. fullLayout._replotting must
-// be set to false before these will work properly.
 exports.finalDraw = function(gd) {
     // TODO: rangesliders really belong in marginPushers but they need to be
     // drawn after data - can we at least get the margin pushing part separated

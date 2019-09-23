@@ -539,9 +539,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        // prevent axis drawing from monkeying with margins until we're done
-        gd._fullLayout._replotting = true;
-
         if(xActive === 'ew' || yActive === 'ns') {
             if(xActive) {
                 dragAxList(xaxes, dx);
@@ -778,7 +775,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         Lib.syncOrAsync([
             Plots.previousPromises,
             function() {
-                gd._fullLayout._replotting = false;
                 Registry.call('_guiRelayout', gd, updates);
             }
         ], gd);

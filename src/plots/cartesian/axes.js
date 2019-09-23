@@ -2975,35 +2975,6 @@ function selectTickLabel(gTick) {
     return mj.empty() ? s.select('text') : mj;
 }
 
-/**
- * Find all margin pushers for 2D axes and reserve them for later use
- * Both label and rangeslider automargin calculations happen later so
- * we need to explicitly allow their ids in order to not delete them.
- *
- * TODO: can we pull the actual automargin calls forward to avoid this hack?
- * We're probably also doing multiple redraws in this case, would be faster
- * if we can just do the whole calculation ahead of time and draw once.
- */
-axes.allowAutoMargin = function(gd) {
-    var axList = axes.list(gd, '', true);
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
-        if(ax.automargin) {
-            Plots.allowAutoMargin(gd, axAutoMarginID(ax));
-            if(ax.mirror) {
-                Plots.allowAutoMargin(gd, axMirrorAutoMarginID(ax));
-            }
-        }
-        if(Registry.getComponentMethod('rangeslider', 'isVisible')(ax)) {
-            Plots.allowAutoMargin(gd, rangeSliderAutoMarginID(ax));
-        }
-    }
-};
-
-function axAutoMarginID(ax) { return ax._id + '.automargin'; }
-function axMirrorAutoMarginID(ax) { return axAutoMarginID(ax) + '.mirror'; }
-function rangeSliderAutoMarginID(ax) { return ax._id + '.rangeslider'; }
-
 // swap all the presentation attributes of the axes showing these traces
 axes.swap = function(gd, traces) {
     var axGroups = makeAxisGroups(gd, traces);
