@@ -43,9 +43,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
                 Math.max(xl, xr), Math.max(yl, yr)
             );
         }
-    } else if(stash.ids) {
+    } else {
         ids = stash.ids;
-    } else return [pointData];
+    }
 
     // pick the id closest to the point
     // note that point possibly may not be found
