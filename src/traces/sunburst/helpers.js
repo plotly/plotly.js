@@ -155,9 +155,10 @@ exports.getLabelString = function(label) { // used in hover to reference to the 
 };
 
 exports.listPath = function(d, keyStr) {
-    if(!d.parent) return [];
-    var list = keyStr ? [d.parent.data[keyStr]] : [d];
-    return exports.listPath(d.parent, keyStr).concat(list);
+    var parent = d.parent;
+    if(!parent) return [];
+    var list = keyStr ? [parent.data[keyStr]] : [parent];
+    return exports.listPath(parent, keyStr).concat(list);
 };
 
 exports.getPath = function(d) {

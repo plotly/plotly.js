@@ -86,6 +86,13 @@ function plotOne(gd, cd, element, transitionOpts) {
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var ancestorNodes = helpers.listPath(entry.data);
+    var numAncestors = ancestorNodes.length;
+    entry._parent = (numAncestors ?
+        ancestorNodes[numAncestors - 1] :
+        hierarchy // parent of root is itself
+    ).data;
+
     var maxDepth = helpers.getMaxDepth(trace);
 
     var gs = fullLayout._size;
@@ -482,9 +489,11 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var hierarchy = cd0.hierarchy;
     var ref;
     var calcPercent = function() {
+        var refData = ref.data ? ref.data.data : ref;
+
         return cdi.hasOwnProperty('v') ?
-            cdi.v / ref.data.data.v :
-            cdi.value / ref.data.data.value;
+            cdi.v / refData.v :
+            cdi.value / refData.value;
     };
 
     if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
@@ -504,6 +513,8 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
         var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
         var thisText = [];
         var tx;
+        var parent = helpers.isEntry(pt) ? pt._parent : pt.parent;
+        var isRoot = helpers.isHierarchyRoot(pt);
 
         if(hasFlag('label') && cdi.label) {
             thisText.push(cdi.label);
@@ -513,41 +524,43 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
             thisText.push(helpers.formatValue(cdi.v, separators));
         }
 
-        if(hasFlag('current path')) {
-            thisText.push(helpers.getPath(pt.data));
-        }
-
-        var nPercent = 0;
-        if(hasFlag('percent parent')) nPercent++;
-        if(hasFlag('percent entry')) nPercent++;
-        if(hasFlag('percent root')) nPercent++;
-        var hasMultiplePercents = nPercent > 1;
-
-        if(nPercent) {
-            var percent;
-            var addPercent = function(key) {
-                tx = helpers.formatPercent(percent, separators);
-
-                if(hasMultiplePercents) tx += ' of ' + key + ' ';
-                thisText.push(tx);
-            };
-
-            var makePercent = function(key) {
-                percent = calcPercent();
-                addPercent(key);
-            };
-
-            if(hasFlag('percent parent') && pt.parent) {
-                ref = pt.parent;
-                makePercent('parent');
+        if(!isRoot) {
+            if(hasFlag('current path')) {
+                thisText.push(helpers.getPath(pt.data));
             }
-            if(hasFlag('percent entry') && pt.parent) {
-                ref = entry;
-                makePercent('entry');
-            }
-            if(hasFlag('percent root') && (pt.parent || helpers.isLeaf(pt))) {
-                ref = hierarchy;
-                makePercent('root');
+
+            var nPercent = 0;
+            if(hasFlag('percent parent')) nPercent++;
+            if(hasFlag('percent entry')) nPercent++;
+            if(hasFlag('percent root')) nPercent++;
+            var hasMultiplePercents = nPercent > 1;
+
+            if(nPercent) {
+                var percent;
+                var addPercent = function(key) {
+                    tx = helpers.formatPercent(percent, separators);
+
+                    if(hasMultiplePercents) tx += ' of ' + key + ' ';
+                    thisText.push(tx);
+                };
+
+                var makePercent = function(key) {
+                    percent = calcPercent();
+                    addPercent(key);
+                };
+
+                if(hasFlag('percent parent') && parent) {
+                    ref = parent;
+                    makePercent('parent');
+                }
+                if(hasFlag('percent entry') && parent) {
+                    ref = entry;
+                    makePercent('entry');
+                }
+                if(hasFlag('percent root') && (parent || helpers.isLeaf(pt))) {
+                    ref = hierarchy;
+                    makePercent('root');
+                }
             }
         }
 

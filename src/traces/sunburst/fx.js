@@ -46,6 +46,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var cdi = pt.data.data;
         var ptNumber = cdi.i;
         var isRoot = helpers.isHierarchyRoot(pt);
+        var isEntry = helpers.isEntry(pt);
 
         var _cast = function(astr) {
             return Lib.castOption(traceNow, ptNumber, astr);
@@ -94,20 +95,20 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             }
 
             var tx;
-            var prevTx;
+            var allPercents = [];
             var insertPercent = function() {
-                if(tx !== prevTx) { // no need to add redundant info
+                if(allPercents.indexOf(tx) === -1) { // no need to add redundant info
                     thisText.push(tx);
-                    prevTx = '' + tx; // i.e. deep copy
+                    allPercents.push(tx);
                 }
             };
 
             var val = getVal(cdi);
 
-            var ref2 = pt.parent;
+            var ref2 = isEntry ? pt._parent : pt.parent;
             if(ref2 && getVal(ref2)) {
                 hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
-                hoverPt.parent = pt.parent = helpers.getLabelString(ref2.data.data.label);
+                hoverPt.parent = pt.parentString = helpers.getLabelString(isEntry ? ref2.label : ref2.data.data.label);
                 if(hasFlag('percent parent')) {
                     tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
@@ -308,6 +309,8 @@ function makeEventData(pt, trace, keys) {
         var key = keys[i];
         if(key in pt) out[key] = pt[key];
     }
+    // handle special case of parent
+    if('parentString' in pt) out.parent = pt.parentString;
 
     appendArrayPointValue(out, trace, cdi.i);
 

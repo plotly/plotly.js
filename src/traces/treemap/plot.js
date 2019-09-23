@@ -79,6 +79,13 @@ function plotOne(gd, cd, element, transitionOpts) {
     var hasTransition = helpers.hasTransition(transitionOpts);
 
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var ancestorNodes = helpers.listPath(entry.data);
+    var numAncestors = ancestorNodes.length;
+    entry._parent = (numAncestors ?
+        ancestorNodes[numAncestors - 1] :
+        hierarchy // parent of root is itself
+    ).data;
+
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
         return pt.data.depth - entry.data.depth < maxDepth;
