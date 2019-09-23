@@ -113,7 +113,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var ref2 = parent;
             if(ref2) {
                 hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
-                hoverPt.parent = pt.parent = helpers.getLabelString(parentLabel);
+                hoverPt.parent = pt.parentString = helpers.getLabelString(parentLabel);
                 if(hasFlag('percent parent')) {
                     tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
@@ -315,7 +315,7 @@ function makeEventData(pt, trace, keys) {
         if(key in pt) out[key] = pt[key];
     }
     // handle special case of parent
-    if('parent' in pt) out.parent = pt.parent;
+    if('parentString' in pt) out.parent = pt.parentString;
 
     appendArrayPointValue(out, trace, cdi.i);
 
