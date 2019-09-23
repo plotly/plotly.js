@@ -1190,6 +1190,10 @@ describe('Click events', function() {
                     {curveNumber: 0, pointNumber: 4},
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
+
+                // Check constraints
+                var constraints = clickData.constraints;
+                expect(constraints).toEqual({1: 'C'});
             })
             .catch(failTest)
             .then(done);
@@ -1261,6 +1265,10 @@ describe('Click events', function() {
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
+
+                // Check constraints
+                var constraints = clickData.constraints;
+                expect(constraints).toEqual({0: 1, 1: 'C', 2: 11});
             })
             .catch(failTest)
             .then(done);
@@ -1347,6 +1355,10 @@ describe('Click events with hoveron color', function() {
                 // Check points
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
+
+                // Check constraints
+                var constraints = clickData.constraints;
+                expect(constraints).toEqual({1: 'C', color: 1});
             })
             .catch(failTest)
             .then(done);
@@ -1387,6 +1399,10 @@ describe('Click events with hoveron color', function() {
                 // Check points
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
+
+                // Check constraints
+                var constraints = clickData.constraints;
+                expect(constraints).toEqual({0: 1, 1: 'C', 2: 11, color: 1});
             })
             .catch(failTest)
             .then(done);
