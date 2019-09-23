@@ -1847,6 +1847,7 @@ plots.autoMargin = function(gd, id, o) {
                 b: {val: yb, size: o.b + pad},
                 t: {val: yt, size: o.t + pad}
             };
+            // console.log(id, pushMargin[id])
         }
     }
 };
@@ -1941,6 +1942,7 @@ plots.didMarginChange = function(margin0, margin1) {
         // use 1px tolerance in case we old/new differ only
         // by rounding errors, which can lead to infinite loops
         if(!isNumeric(m0) || Math.abs(m1 - m0) > 1) {
+            // console.log('margin changed', margin0, '-->', margin1)
             return true;
         }
     }
