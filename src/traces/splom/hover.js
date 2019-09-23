@@ -51,9 +51,7 @@ function hoverPoints(pointData, xval, yval) {
 
     if(id === undefined) return [pointData];
 
-    calcHover(pointData, x, y, trace);
-
-    return [pointData];
+    return [calcHover(pointData, x, y, trace)];
 }
 
 module.exports = {
