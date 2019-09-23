@@ -74,7 +74,7 @@
             "type": "treemap",
             "textinfo": "label+value+percent parent+percent entry+percent root+text+current path",
             "hoverinfo": "all",
-            "name": "with values",
+            "name": "with total values",
             "level": "Oscar",
             "labels": [
                 "Alpha",
@@ -221,7 +221,7 @@
             "type": "treemap",
             "textinfo": "label+value+percent parent+percent entry+percent root+text+current path",
             "hoverinfo": "all",
-            "name": "with values",
+            "name": "with remainder values",
             "level": "Oscar",
             "labels": [
                 "Alpha",

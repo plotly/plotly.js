@@ -488,12 +488,9 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var cdi = pt.data.data;
     var hierarchy = cd0.hierarchy;
     var ref;
-    var calcPercent = function() {
-        var refData = ref.data ? ref.data.data : ref;
 
-        return cdi.hasOwnProperty('v') ?
-            cdi.v / refData.v :
-            cdi.value / refData.value;
+    var calcPercent = function() {
+        return (trace.branchvalues ? cdi.v : cdi.value) / (ref.value || ref.v);
     };
 
     if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
@@ -549,15 +546,15 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                     addPercent(key);
                 };
 
-                if(hasFlag('percent parent') && parent) {
+                if(hasFlag('percent parent')) {
                     ref = parent;
                     makePercent('parent');
                 }
-                if(hasFlag('percent entry') && parent) {
+                if(hasFlag('percent entry')) {
                     ref = entry;
                     makePercent('entry');
                 }
-                if(hasFlag('percent root') && (parent || helpers.isLeaf(pt))) {
+                if(hasFlag('percent root')) {
                     ref = hierarchy;
                     makePercent('root');
                 }
