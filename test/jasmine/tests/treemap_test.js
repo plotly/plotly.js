@@ -14,6 +14,7 @@ var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -921,6 +922,99 @@ describe('Test treemap restyle:', function() {
         .then(done);
     });
 
+    it('should be able to restyle *marker.opacitybase* and *marker.opacitystep*', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap', pathbar: { visible: false },
+                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
+                parents: ['', 'Root', 'Root', 'B', 'b', 'b2']
+            }]
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3.select(gd).select('.treemaplayer');
+
+                var opacities = [];
+                layer.selectAll('path.surface').each(function() {
+                    opacities.push(this.style.opacity);
+                });
+
+                expect(opacities).toEqual(exp, msg);
+
+                // editType:style
+                if(msg !== 'base') {
+                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
+                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
+                }
+            };
+        }
+
+        Plotly.plot(gd, mock)
+        .then(_assert('base', ['0', '1', '0.5', '0.5', '1', '1']))
+        .then(function() {
+            spyOn(Plots, 'doCalcdata').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
+        })
+        .then(_restyle({'marker.opacitybase': 0.2}))
+        .then(_assert('lower marker.opacitybase', ['0', '1', '0.2', '0.5', '1', '1']))
+        .then(_restyle({'marker.opacitystep': 0.1}))
+        .then(_assert('lower marker.opacitystep', ['0', '1', '0.2', '0.1', '0.2', '1']))
+        .then(_restyle({'marker.opacitybase': 0.8}))
+        .then(_assert('raise marker.opacitybase', ['0', '1', '0.8', '0.1', '0.2', '1']))
+        .then(_restyle({'marker.opacitybase': null}))
+        .then(_assert('back to dflt', ['0', '1', '0.5', '0.1', '0.2', '1']))
+        .then(_restyle({'marker.opacitystep': null}))
+        .then(_assert('back to dflt', ['0', '1', '0.5', '0.5', '1', '1']))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to restyle *pathbar.opacity*', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap',
+                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
+                parents: ['', 'Root', 'Root', 'B', 'b', 'b2'],
+                level: 'b'
+            }]
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3.select(gd).select('.treemaplayer');
+
+                var opacities = [];
+                layer.selectAll('path.surface').each(function() {
+                    opacities.push(this.style.opacity);
+                });
+
+                expect(opacities).toEqual(exp, msg);
+
+                // editType:style
+                if(msg !== 'base') {
+                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
+                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
+                }
+            };
+        }
+
+        Plotly.plot(gd, mock)
+        .then(_assert('base', ['0.5', '0.5', '1', '0.5', '0.5']))
+        .then(function() {
+            spyOn(Plots, 'doCalcdata').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
+        })
+        .then(_restyle({'pathbar.opacity': 0.2}))
+        .then(_assert('lower pathbar.opacity', ['0.5', '0.5', '1', '0.2', '0.2']))
+        .then(_restyle({'pathbar.opacity': 0.8}))
+        .then(_assert('raise pathbar.opacity', ['0.5', '0.5', '1', '0.8', '0.8']))
+        .then(_restyle({'pathbar.opacity': null}))
+        .then(_assert('back to dflt', ['0.5', '0.5', '1', '0.5', '0.5']))
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should be able to restyle *textinfo*', function(done) {
         var mock = {
             data: [{
@@ -976,6 +1070,204 @@ describe('Test treemap restyle:', function() {
         .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test treemap tweening:', function() {
+    var gd;
+    var pathTweenFnLookup;
+    var textTweenFnLookup;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        // hacky way to track tween functions
+        spyOn(d3.transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
+            var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
+            var pt = this[0][0].__data__;
+            var id = pt.data.data.id;
+
+            // we should never tween the same node twice on a given sector click
+            lookup[id] = lookup[id] ? null : fn(pt);
+        });
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _reset() {
+        pathTweenFnLookup = {};
+        textTweenFnLookup = {};
+    }
+
+    function _run(gd, v) {
+        _reset();
+        click(gd, v)();
+
+        // 1 second more than the click transition duration
+        return delay(constants.CLICK_TRANSITION_TIME + 1);
+    }
+
+    function trim(s) {
+        return s.replace(/\s/g, '');
+    }
+
+    function _assert(msg, attrName, id, exp) {
+        var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
+        var fn = lookup[id];
+        // normalize time in [0, 1] where we'll assert the tweening fn output,
+        // asserting at the mid point *should be* representative enough
+        var t = 0.5;
+        var actual = trim(fn(t));
+
+        // do not assert textBB translate piece,
+        // which isn't tweened and has OS-dependent results
+        if(attrName === 'transform') {
+            actual = actual.split('translate').slice(0, 2).join('translate');
+        }
+
+        // we could maybe to bring in:
+        // https://github.com/hughsk/svg-path-parser
+        // to make these assertions more readable
+
+        expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
+    }
+
+    it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap', pathbar: { visible: false },
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B']
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 3))
+        .then(function() {
+            _assert('exit entry', 'd', 'Root',
+                'M80,100L620,100L620,370L80,370Z'
+            );
+            _assert('update A to new position', 'd', 'A',
+                'M83,112L214.25,112L214.25,367L83,367Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M215.75,112L617,112L617,367L215.75,367Z'
+            );
+            _assert('update b to new position', 'd', 'b',
+                'M221.75,136L611,136L611,361L221.75,361Z'
+            );
+            _assert('move B text to new position', 'transform', 'B',
+                'translate(221.75126)'
+            );
+            _assert('move b text to new position', 'transform', 'b',
+                'translate(224.75150)'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap', pathbar: { visible: false },
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B'],
+                level: 'B'
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 1))
+        .then(function() {
+            _assert('enter new entry', 'd', 'Root',
+                'M80,100L620,100L620,370L80,370Z'
+            );
+            _assert('update A to new position', 'd', 'A',
+                'M83,112L214.25,112L214.25,367L83,367Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M215.75,112L617,112L617,367L215.75,367Z'
+            );
+            _assert('update b to new position', 'd', 'b',
+                'M221.75,136L611,136L611,361L221.75,361Z'
+            );
+            _assert('move B text to new position', 'transform', 'B',
+                'translate(221.75126)'
+            );
+            _assert('move b text to new position', 'transform', 'b',
+                'translate(224.75150)'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap', pathbar: { visible: false },
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B'],
+                maxdepth: 2
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 3))
+        .then(function() {
+            _assert('exit entry', 'd', 'Root',
+                'M80,100L620,100L620,370L80,370Z'
+            );
+            _assert('update A to new position', 'd', 'A',
+                'M83,112L214.25,112L214.25,367L83,367Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M215.75,112L617,112L617,367L215.75,367Z'
+            );
+            _assert('enter b for parent position', 'd', 'b',
+                'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
+            );
+            _assert('move B text to new position', 'transform', 'B',
+                'translate(220.25126)'
+            );
+            _assert('enter b text to new position', 'transform', 'b',
+                'translate(287.375195.5)scale(0.5)'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap', pathbar: { visible: false },
+                labels: ['Root', 'A', 'B', 'b', 'bb'],
+                parents: ['', 'Root', 'Root', 'B', 'b'],
+                maxdepth: 2,
+                level: 'B'
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 1))
+        .then(function() {
+            _assert('exit b', 'd', 'b',
+                'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
+            );
+            _assert('enter new entry', 'd', 'Root',
+                'M80,100L620,100L620,370L80,370Z'
+            );
+            _assert('enter A counterclockwise', 'd', 'A',
+                'M83,112L214.25,112L214.25,367L83,367Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M215.75,112L617,112L617,367L215.75,367Z'
+            );
+        })
         .catch(failTest)
         .then(done);
     });
@@ -1073,6 +1365,7 @@ describe('Test treemap interactions edge cases', function() {
         var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
         mock.data[1].type = 'treemap';
+        mock.data[1].name = 'treemap';
 
         function _assert(msg, exp) {
             var gd3 = d3.select(gd);
@@ -1107,6 +1400,9 @@ describe('Test treemap interactions edge cases', function() {
 
     it('should be able to transition treemap traces via `Plotly.react`', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        mock.data[1].type = 'treemap';
+        mock.data[1].name = 'treemap';
+
         mock.layout.transition = {duration: 200};
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
@@ -1123,4 +1419,76 @@ describe('Test treemap interactions edge cases', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test treemap texttemplate without `values` should work:', function() {
+    checkTextTemplate([{
+        type: 'treemap', pathbar: { visible: false },
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
+        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
+        ['%{percentRoot} of %{root}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
+        ['%{percentParent} of %{parent}', ['Eve', '100% of Seth', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '50% of Seth', '100% of Awan']],
+        [
+            [
+                'color: %{color}',
+                'label: %{label}, text: %{text}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}'
+            ],
+            [
+                'Eve',
+                'label: Cain, text: fourteen',
+                'Seth',
+                'value: %{value}', // N.B. there is no `values` array
+                '17% of Eve',
+                '17% of Eve',
+                'Awan',
+                '17% of Eve',
+                '100% of Awan'
+            ]
+        ]
+    ], /* skipEtra */ true);
+});
+
+describe('Test treemap texttemplate with *total* `values` should work:', function() {
+    checkTextTemplate([{
+        type: 'treemap', pathbar: { visible: false },
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']]
+    ], /* skipEtra */ true);
+});
+
+describe('Test treemap texttemplate with *remainder* `values` should work:', function() {
+    checkTextTemplate([{
+        type: 'treemap', pathbar: { visible: false },
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']]
+    ], /* skipEtra */ true);
 });

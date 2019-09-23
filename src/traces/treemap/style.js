@@ -42,7 +42,7 @@ function styleOne(s, pt, trace, opts) {
         var step = trace.marker.opacitystep;
 
         return n === 0 ? base :
-            Math.min(1, n * step);
+            Math.max(0, Math.min(1, n * step));
     };
 
     if(hovered) {
