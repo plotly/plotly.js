@@ -84,9 +84,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     if(id === undefined) return [pointData];
 
-    calcHover(pointData, x, y, trace);
-
-    return [pointData];
+    return [calcHover(pointData, x, y, trace)];
 }
 
 function calcHover(pointData, x, y, trace) {
@@ -163,7 +161,7 @@ function calcHover(pointData, x, y, trace) {
     var fakeCd = {};
     fakeCd[pointData.index] = di;
 
-    Lib.extendFlat(pointData, {
+    var pointData2 = Lib.extendFlat({}, pointData, {
         color: getTraceColor(trace, di),
 
         x0: xp - rad,
@@ -181,14 +179,14 @@ function calcHover(pointData, x, y, trace) {
         hovertemplate: di.ht
     });
 
-    if(di.htx) pointData.text = di.htx;
-    else if(di.tx) pointData.text = di.tx;
-    else if(trace.text) pointData.text = trace.text;
+    if(di.htx) pointData2.text = di.htx;
+    else if(di.tx) pointData2.text = di.tx;
+    else if(trace.text) pointData2.text = trace.text;
 
-    Lib.fillText(di, trace, pointData);
-    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
+    Lib.fillText(di, trace, pointData2);
+    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData2);
 
-    return pointData;
+    return pointData2;
 }
 
 module.exports = {
