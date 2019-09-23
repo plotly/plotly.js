@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "x": [ 1, 2, 3, 4, 5 ],
+      "y": [ 1, 2, 4, 8, 16 ],
+      "name": "Kinda long data name"
+    }
+  ],
+  "layout": {
+    "margin": {"t": 0},
+    "showlegend": true,
+    "legend": {
+      "x": 1,
+      "y": 0.5,
+      "xanchor": "left"
+    },
+    "width": 381,
+    "height": 250
+  }
+}

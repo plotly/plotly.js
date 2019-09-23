@@ -121,10 +121,13 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: 1.02,
         role: 'style',
         editType: 'legend',
-        description: 'Sets the x position (in normalized coordinates) of the legend.'
+        description: [
+            'Sets the x position (in normalized coordinates) of the legend.',
+            'Defaults to *1.02* for vertical legends and',
+            'defaults to *0* for horizontal legends.'
+        ].join(' ')
     },
     xanchor: {
         valType: 'enumerated',
@@ -135,28 +138,37 @@ module.exports = {
         description: [
             'Sets the legend\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
-            'or *right* of the legend.'
+            'or *right* of the legend.',
+            'Value *auto* anchors legends to the right for `x` values greater than or equal to 2/3,',
+            'anchors legends to the left for `x` values less than or equal to 1/3 and',
+            'anchors legends with respect to their center otherwise.'
         ].join(' ')
     },
     y: {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: 1,
         role: 'style',
         editType: 'legend',
-        description: 'Sets the y position (in normalized coordinates) of the legend.'
+        description: [
+            'Sets the y position (in normalized coordinates) of the legend.',
+            'Defaults to *1* for vertical legends,',
+            'defaults to *-0.1* for horizontal legends on graphs w/o range sliders and',
+            'defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.'
+        ].join(' ')
     },
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'auto',
         role: 'info',
         editType: 'legend',
         description: [
             'Sets the legend\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
-            'or *bottom* of the legend.'
+            'or *bottom* of the legend.',
+            'Value *auto* anchors legends at their bottom for `y` values less than or equal to 1/3,',
+            'anchors legends to at their top for `y` values greater than or equal to 2/3 and',
+            'anchors legends with respect to their middle otherwise.'
         ].join(' ')
     },
     uirevision: {

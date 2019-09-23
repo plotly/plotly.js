@@ -225,7 +225,12 @@ module.exports = {
             valType: 'boolean',
             role: 'info',
             dflt: true,
-            editType: 'plot'
+            editType: 'plot',
+            description: [
+                'Turns on/off margin expansion computations.',
+                'Legends, colorbars, updatemenus, sliders, axis rangeselector and rangeslider',
+                'are allowed to push the margins by defaults.'
+            ].join(' ')
         },
         editType: 'plot'
     },
@@ -417,7 +422,7 @@ module.exports = {
         description: [
             'Assigns extra meta information that can be used in various `text` attributes.',
             'Attributes such as the graph, axis and colorbar `title.text`, annotation `text`',
-            '`trace.name` in legend items, `rangeselector`, `updatemenues` and `sliders` `label` text',
+            '`trace.name` in legend items, `rangeselector`, `updatemenus` and `sliders` `label` text',
             'all support `meta`. One can access `meta` fields using template strings:',
             '`%{meta[i]}` where `i` is the index of the `meta`',
             'item in question.',

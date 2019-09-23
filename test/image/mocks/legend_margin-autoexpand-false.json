@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "labels": [
+        "hello",
+        "this is a very long string and bad things are likely to happen",
+        "short string",
+        "moderately long string"
+      ],
+      "values": [4, 4, 4, 4],
+      "type": "pie"
+    }
+  ],
+  "layout": {
+    "width": 400,
+    "height": 400,
+    "margin": {"autoexpand": false}
+  }
+}

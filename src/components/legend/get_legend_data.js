@@ -17,13 +17,14 @@ module.exports = function getLegendData(calcdata, opts) {
     var hasOneNonBlankGroup = false;
     var slicesShown = {};
     var lgroupi = 0;
+    var maxNameLength = 0;
     var i, j;
 
     function addOneItem(legendGroup, legendItem) {
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
-            var uniqueGroup = '~~i' + lgroupi; // TODO: check this against fullData legendgroups?
-
+            // TODO: check this against fullData legendgroups?
+            var uniqueGroup = '~~i' + lgroupi;
             lgroups.push(uniqueGroup);
             lgroupToTraces[uniqueGroup] = [[legendItem]];
             lgroupi++;
@@ -31,7 +32,9 @@ module.exports = function getLegendData(calcdata, opts) {
             lgroups.push(legendGroup);
             hasOneNonBlankGroup = true;
             lgroupToTraces[legendGroup] = [[legendItem]];
-        } else lgroupToTraces[legendGroup].push([legendItem]);
+        } else {
+            lgroupToTraces[legendGroup].push([legendItem]);
+        }
     }
 
     // build an { legendgroup: [cd0, cd0], ... } object
@@ -59,9 +62,13 @@ module.exports = function getLegendData(calcdata, opts) {
                     });
 
                     slicesShown[lgroup][labelj] = true;
+                    maxNameLength = Math.max(maxNameLength, (labelj || '').length);
                 }
             }
-        } else addOneItem(lgroup, cd0);
+        } else {
+            addOneItem(lgroup, cd0);
+            maxNameLength = Math.max(maxNameLength, (trace.name || '').length);
+        }
     }
 
     // won't draw a legend in this case
@@ -90,7 +97,10 @@ module.exports = function getLegendData(calcdata, opts) {
         lgroupsLength = 1;
     }
 
-    // needed in repositionLegend
+    // number of legend groups - needed in legend/draw.js
     opts._lgroupsLength = lgroupsLength;
+    // maximum name/label length - needed in legend/draw.js
+    opts._maxNameLength = maxNameLength;
+
     return legendData;
 };

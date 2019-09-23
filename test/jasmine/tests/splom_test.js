@@ -945,6 +945,7 @@ describe('Test splom interactions:', function() {
 
     it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        fig.layout.showlegend = false;
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
