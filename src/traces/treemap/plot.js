@@ -71,6 +71,12 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     }
 };
 
+function getKey(pt) {
+    return helpers.isHierarchyRoot(pt) ?
+        '' : // don't use the dummyId
+        helpers.getPtId(pt);
+}
+
 function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
@@ -131,13 +137,13 @@ function plotOne(gd, cd, element, transitionOpts) {
     var nextOfPrevEntry = null;
     var getPrev = function(pt, onPathbar) {
         return onPathbar ?
-            prevLookupPathbar[helpers.getPtId(pt)] :
-            prevLookupSlices[helpers.getPtId(pt)];
+            prevLookupPathbar[getKey(pt)] :
+            prevLookupSlices[getKey(pt)];
     };
 
     var getOrigin = function(pt, onPathbar, refRect, size) {
         if(onPathbar) {
-            return prevLookupPathbar[helpers.getPtId(hierarchy)] || pathbarOrigin;
+            return prevLookupPathbar[getKey(hierarchy)] || pathbarOrigin;
         } else {
             var ref = prevLookupSlices[trace.level] || refRect;
 
@@ -148,13 +154,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         return {};
     };
 
+    var isRoot = helpers.isHierarchyRoot(entry);
+
     trace._entryDepth = entry.data.depth;
-    if(helpers.isHierarchyRoot(entry)) {
+    if(isRoot) {
         trace._entryDepth++;
     }
 
     // N.B. handle multiple-root special case
-    if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
+    if(cd0.hasMultipleRoots && isRoot) {
         maxDepth++;
     }
     trace._maxDepth = maxDepth;
@@ -506,30 +514,52 @@ function plotOne(gd, cd, element, transitionOpts) {
     var selDescendants = gTrace.selectAll('g.slice');
 
     if(!entry) {
-        return selDescendants.remove() && selAncestors.remove();
+        selAncestors.remove();
+        selDescendants.remove();
+        return;
     }
 
     if(hasTransition) {
         // Important: do this before binding new sliceData!
 
         selAncestors.each(function(pt) {
-            prevLookupPathbar[helpers.getPtId(pt)] = {
+            prevLookupPathbar[getKey(pt)] = {
                 x0: pt.x0,
                 x1: pt.x1,
                 y0: pt.y0,
-                y1: pt.y1,
-                transform: pt.transform
+                y1: pt.y1
             };
+
+            if(pt.transform) {
+                prevLookupPathbar[getKey(pt)].transform = {
+                    textX: pt.transform.textX,
+                    textY: pt.transform.textY,
+                    targetX: pt.transform.targetX,
+                    targetY: pt.transform.targetY,
+                    scale: pt.transform.scale,
+                    rotate: pt.transform.rotate
+                };
+            }
         });
 
         selDescendants.each(function(pt) {
-            prevLookupSlices[helpers.getPtId(pt)] = {
+            prevLookupSlices[getKey(pt)] = {
                 x0: pt.x0,
                 x1: pt.x1,
                 y0: pt.y0,
-                y1: pt.y1,
-                transform: pt.transform
+                y1: pt.y1
             };
+
+            if(pt.transform) {
+                prevLookupSlices[getKey(pt)].transform = {
+                    textX: pt.transform.textX,
+                    textY: pt.transform.textY,
+                    targetX: pt.transform.targetX,
+                    targetY: pt.transform.targetY,
+                    scale: pt.transform.scale,
+                    rotate: pt.transform.rotate
+                };
+            }
 
             if(!prevEntry && helpers.isEntry(pt)) {
                 prevEntry = pt;

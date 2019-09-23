@@ -166,7 +166,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(isHeader && noRoomForHeader) return;
 
-        var tx = formatSliceLabel(pt, entry, trace, cd, fullLayout);
+        var tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
 
         sliceText.text(tx)
             .classed('slicetext', true)

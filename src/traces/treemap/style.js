@@ -50,8 +50,13 @@ function styleOne(s, pt, trace, opts) {
         lineWidth = trace._hovered.marker.line.width;
         opacity = trace._hovered.marker.opacity;
     } else {
-        lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
-        lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
+        if(helpers.isHierarchyRoot(pt)) {
+            lineColor = 'rgba(0,0,0,0)';
+            lineWidth = 0;
+        } else {
+            lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
+            lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
+        }
 
         opacity =
             trace._hasColorscale || helpers.isLeaf(pt) ? 1 :
