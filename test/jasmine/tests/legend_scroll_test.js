@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/components/legend/constants');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
@@ -9,6 +10,7 @@ var destroyGraph = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var getBBox = require('../assets/get_bbox');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 var mock = require('../../image/mocks/legend_scroll.json');
 
 describe('The legend', function() {
@@ -167,6 +169,56 @@ describe('The legend', function() {
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
                 'translate(0, ' + -dataScroll + ')');
+        });
+
+        it('should handle touch events on scrollbox', function(done) {
+            var scrollBox = getScrollBox();
+            var x = 637;
+            var y0 = 140;
+            var y1 = 200;
+            var opts = {element: scrollBox};
+
+            spyOn(Drawing, 'setRect');
+
+            // N.B. sometimes the touch start/move/end don't trigger a drag for
+            // some obscure reason, for more details see
+            // https://github.com/plotly/plotly.js/pull/3873#issuecomment-519686050
+            for(var i = 0; i < 20; i++) {
+                touchEvent('touchstart', x, y0, opts);
+                touchEvent('touchmove', x, y0, opts);
+                touchEvent('touchmove', x, y1, opts);
+                touchEvent('touchend', x, y1, opts);
+            }
+
+            setTimeout(function() {
+                expect(Drawing.setRect).toHaveBeenCalled();
+                done();
+            }, 100);
+        });
+
+        it('should handle touch events on scrollbar', function(done) {
+            var scrollBox = getScrollBar();
+            var x = 691;
+            var y0 = 140;
+            var y1 = 200;
+            var opts = {element: scrollBox};
+
+            spyOn(Drawing, 'setRect');
+
+            // N.B. sometimes the touch start/move/end don't trigger a drag for
+            // some obscure reason, for more details see
+            // https://github.com/plotly/plotly.js/pull/3873#issuecomment-519686050
+            for(var i = 0; i < 20; i++) {
+                touchEvent('touchstart', x, y0, opts);
+                touchEvent('touchmove', x, y0, opts);
+                touchEvent('touchmove', x, y1, opts);
+                touchEvent('touchend', x, y1, opts);
+            }
+
+            setTimeout(function() {
+                expect(Drawing.setRect).toHaveBeenCalled();
+                done();
+            }, 100);
         });
 
         it('should not scroll on dragging the scrollbar with a right click', function() {
