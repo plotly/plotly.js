@@ -139,7 +139,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var tx = helpers.getLabelStr(pt.data.data.label) || ' ';
+        var tx = (helpers.getPtLabel(pt) || ' ').split('<br>').join(' ');
 
         sliceText.text(tx)
             .classed('slicetext', true)

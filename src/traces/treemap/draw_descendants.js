@@ -164,9 +164,14 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        if(isHeader && noRoomForHeader) return;
+        var tx;
+        if(isHeader) {
+            if(noRoomForHeader) return;
 
-        var tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
+            tx = helpers.getPtLabel(pt);
+        } else {
+            tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
+        }
 
         sliceText.text(tx)
             .classed('slicetext', true)

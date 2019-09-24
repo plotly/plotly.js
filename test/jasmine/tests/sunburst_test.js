@@ -507,7 +507,7 @@ describe('Test sunburst hover:', function() {
                 curveNumber: 0,
                 pointNumber: 0,
                 label: 'Eve',
-                parent: '"root"'
+                parent: ''
             }
         }
     }]
@@ -1430,7 +1430,7 @@ describe('Test sunburst texttemplate with *remainder* `values` should work:', fu
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
         ['%{percentRoot} of %{root}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
         ['%{percentEntry} of %{entry}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        ['%{percentParent} of %{parent}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
         [
             [
                 'label: %{label}',

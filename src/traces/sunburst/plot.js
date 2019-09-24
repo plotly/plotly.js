@@ -86,13 +86,6 @@ function plotOne(gd, cd, element, transitionOpts) {
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
-    var ancestorNodes = helpers.listPath(entry.data);
-    var numAncestors = ancestorNodes.length;
-    entry._parent = (numAncestors ?
-        ancestorNodes[numAncestors - 1] :
-        hierarchy // parent of root is itself
-    ).data;
-
     var maxDepth = helpers.getMaxDepth(trace);
 
     var gs = fullLayout._size;
@@ -484,46 +477,6 @@ function partition(entry) {
 }
 
 exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
-    var cd0 = cd[0];
-    var cdi = pt.data.data;
-    var hierarchy = cd0.hierarchy;
-    var isRoot = helpers.isHierarchyRoot(pt);
-    var isEntry = helpers.isEntry(pt);
-    var parent = isEntry ? pt._parent : pt.parent;
-
-    var ref;
-    var getLabel = function(d) {
-        var id = d.id;
-        if(d.data) {
-            id = d.data.id;
-            if(d.data.data) {
-                id = d.data.data.id;
-            }
-        }
-        if(!id) return '';
-
-        for(var q = 0; q < cd.length; q++) {
-            if(cd[q].label === id) {
-                return id;
-            }
-        }
-        return '';
-    };
-
-    var getVal = function(d) {
-        if(d.hasOwnProperty('hierarchy')) return d.hierarchy.value;
-        return d.hasOwnProperty('v') ? d.v : d.value;
-    };
-
-    var calcPercent = function() {
-        var result = (trace.branchvalues ? cdi.v : cdi.value) / getVal(ref);
-        return isFinite(result) ? result : 1;
-    };
-
-    if(trace.type === 'treemap' && helpers.isHeader(pt, trace)) {
-        return helpers.getLabelStr(cdi.label);
-    }
-
     var texttemplate = trace.texttemplate;
     var textinfo = trace.textinfo;
 
@@ -532,6 +485,29 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     }
 
     var separators = fullLayout.separators;
+    var cd0 = cd[0];
+    var cdi = pt.data.data;
+    var hierarchy = cd0.hierarchy;
+    var isRoot = helpers.isHierarchyRoot(pt);
+    var isEntry = helpers.isEntry(pt);
+
+    var rootLabel = hierarchy.data.data.pid;
+
+    var parent;
+    var parentLabel;
+    var parentValue;
+    if(isEntry) {
+        parent = pt.data.parent;
+        parentLabel = parent ? parent.data.label : helpers.getPtLabel(hierarchy);
+        parentValue = parent ? helpers.getVal(parent.data) : helpers.getVal(hierarchy);
+    } else {
+        parent = pt.parent;
+        parentLabel = helpers.getPtLabel(parent);
+        parentValue = helpers.getVal(parent);
+    }
+
+    var val = helpers.getVal(cdi);
+
     if(!texttemplate) {
         var parts = textinfo.split('+');
         var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
@@ -562,26 +538,21 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                 var addPercent = function(key) {
                     tx = helpers.formatPercent(percent, separators);
 
-                    if(hasMultiplePercents) tx += ' of ' + key + ' ';
+                    if(hasMultiplePercents) tx += ' of ' + key;
                     thisText.push(tx);
                 };
 
-                var makePercent = function(key) {
-                    percent = calcPercent();
-                    addPercent(key);
-                };
-
                 if(hasFlag('percent parent')) {
-                    ref = parent;
-                    makePercent('parent');
+                    percent = val / parentValue;
+                    addPercent('parent');
                 }
                 if(hasFlag('percent entry')) {
-                    ref = entry;
-                    makePercent('entry');
+                    percent = val / helpers.getVal(entry);
+                    addPercent('entry');
                 }
                 if(hasFlag('percent root')) {
-                    ref = hierarchy;
-                    makePercent('root');
+                    percent = val / helpers.getVal(hierarchy);
+                    addPercent('root');
                 }
             }
         }
@@ -605,26 +576,23 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
 
     obj.currentPath = helpers.getPath(pt.data);
 
-    ref = parent;
-    obj.percentParent = calcPercent();
+    obj.percentParent = val / parentValue;
     obj.percentParentLabel = helpers.formatPercent(
         obj.percentParent, separators
     );
-    obj.parent = helpers.getLabelString(getLabel(ref));
+    obj.parent = helpers.replaceVoid(parentLabel, rootLabel);
 
-    ref = entry;
-    obj.percentEntry = calcPercent();
+    obj.percentEntry = val / helpers.getVal(entry);
     obj.percentEntryLabel = helpers.formatPercent(
         obj.percentEntry, separators
     );
-    obj.entry = helpers.getLabelString(getLabel(ref));
+    obj.entry = helpers.replaceVoid(helpers.getPtLabel(entry), rootLabel);
 
-    ref = hierarchy;
-    obj.percentRoot = calcPercent();
+    obj.percentRoot = val / helpers.getVal(hierarchy);
     obj.percentRootLabel = helpers.formatPercent(
         obj.percentRoot, separators
     );
-    obj.root = helpers.getLabelString(getLabel(ref));
+    obj.root = helpers.replaceVoid(helpers.getPtLabel(hierarchy), rootLabel);
 
     if(cdi.hasOwnProperty('color')) {
         obj.color = cdi.color;

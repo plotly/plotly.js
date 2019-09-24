@@ -617,7 +617,7 @@ describe('Test treemap hover:', function() {
                 curveNumber: 0,
                 pointNumber: 0,
                 label: 'Eve',
-                parent: '"root"'
+                parent: ''
             }
         }
     }]

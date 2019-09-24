@@ -57,6 +57,18 @@ exports.getPtId = function(pt) {
     return pt.data.data.id;
 };
 
+exports.getPtLabel = function(pt) {
+    return pt.data.data.label;
+};
+
+exports.replaceVoid = function(label, rootLabel) {
+    return label === undefined ? rootLabel : label;
+};
+
+exports.getVal = function(d) {
+    return d.hasOwnProperty('v') ? d.v : d.value;
+};
+
 exports.isHierarchyRoot = function(pt) {
     return pt.data.data.pid === '';
 };
@@ -143,15 +155,6 @@ exports.getMaxDepth = function(trace) {
 
 exports.isHeader = function(pt, trace) { // it is only used in treemap.
     return !(exports.isLeaf(pt) || pt.depth === trace._maxDepth - 1);
-};
-
-exports.getLabelStr = function(label) {
-    return labelStr(label).split('<br>').join(' ');
-};
-
-exports.getLabelString = function(label) { // used in hover to reference to the "root"
-    var str = exports.getLabelStr(label);
-    return str === '' ? '"root"' : str;
 };
 
 exports.listPath = function(d, keyStr) {

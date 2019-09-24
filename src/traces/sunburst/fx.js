@@ -47,8 +47,23 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var ptNumber = cdi.i;
         var isRoot = helpers.isHierarchyRoot(pt);
         var isEntry = helpers.isEntry(pt);
-        var parent = isEntry ? pt._parent : pt.parent;
-        var parentLabel = !parent ? '' : (parent.data && parent.data.data) ? parent.data.data.label : parent.label;
+
+        var rootLabel = hierarchy.data.data.pid;
+
+        var parent;
+        var parentLabel;
+        var parentValue;
+        if(isEntry) {
+            parent = pt.data.parent;
+            parentLabel = parent ? parent.data.label : helpers.getPtLabel(hierarchy);
+            parentValue = parent ? helpers.getVal(parent.data) : helpers.getVal(hierarchy);
+        } else {
+            parent = pt.parent;
+            parentLabel = helpers.getPtLabel(parent);
+            parentValue = helpers.getVal(parent);
+        }
+
+        var val = helpers.getVal(cdi);
 
         var _cast = function(astr) {
             return Lib.castOption(traceNow, ptNumber, astr);
@@ -74,10 +89,6 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var parts = [];
             var thisText = [];
             var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
-            var getVal = function(d) {
-                var result = d.hasOwnProperty('v') ? d.v : d.value;
-                return result !== undefined ? result : hierarchy.value;
-            };
 
             if(hoverinfo) {
                 parts = hoverinfo === 'all' ?
@@ -85,7 +96,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                     hoverinfo.split('+');
             }
 
-            hoverPt.label = helpers.getLabelStr(cdi.label);
+            hoverPt.label = cdi.label;
             if(hasFlag('label') && hoverPt.label) thisText.push(hoverPt.label);
 
             if(cdi.hasOwnProperty('v')) {
@@ -108,12 +119,10 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 }
             };
 
-            var val = getVal(cdi);
-
             var ref2 = parent;
             if(ref2) {
-                hoverPt.percentParent = pt.percentParent = val / getVal(ref2);
-                hoverPt.parent = pt.parentString = helpers.getLabelString(parentLabel);
+                hoverPt.percentParent = pt.percentParent = val / parentValue;
+                hoverPt.parent = pt.parentString = helpers.replaceVoid(parentLabel, rootLabel);
                 if(hasFlag('percent parent')) {
                     tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
                     insertPercent();
@@ -122,8 +131,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
             var ref1 = entry;
             if(ref1) {
-                hoverPt.percentEntry = pt.percentEntry = val / getVal(ref1);
-                hoverPt.entry = pt.entry = helpers.getLabelString(ref1.data.data.label);
+                hoverPt.percentEntry = pt.percentEntry = val / helpers.getVal(ref1);
+                hoverPt.entry = pt.entry = helpers.replaceVoid(helpers.getPtLabel(ref1), rootLabel);
                 if(hasFlag('percent entry') && !isRoot && !pt.onPathbar) {
                     tx = helpers.formatPercent(hoverPt.percentEntry, separators) + ' of ' + hoverPt.entry;
                     insertPercent();
@@ -132,8 +141,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
             var ref0 = hierarchy;
             if(ref0) {
-                hoverPt.percentRoot = pt.percentRoot = val / getVal(ref0);
-                hoverPt.root = pt.root = helpers.getLabelString(ref0.data.data.label);
+                hoverPt.percentRoot = pt.percentRoot = val / helpers.getVal(ref0);
+                hoverPt.root = pt.root = helpers.replaceVoid(helpers.getPtLabel(ref0), rootLabel);
                 if(hasFlag('percent root') && !isRoot) {
                     tx = helpers.formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
                     insertPercent();
