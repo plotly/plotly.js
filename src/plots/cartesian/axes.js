@@ -1897,12 +1897,12 @@ axes.drawOne = function(gd, ax, opts) {
                 if(llbbox.width > 0) {
                     var rExtra = llbbox.right - (ax._offset + ax._length);
                     if(rExtra > 0) {
-                        push.x = 1;
+                        push.xr = 1;
                         push.r = rExtra;
                     }
                     var lExtra = ax._offset - llbbox.left;
                     if(lExtra > 0) {
-                        push.x = 0;
+                        push.xl = 0;
                         push.l = lExtra;
                     }
                 }
@@ -1917,12 +1917,12 @@ axes.drawOne = function(gd, ax, opts) {
                 if(llbbox.height > 0) {
                     var bExtra = llbbox.bottom - (ax._offset + ax._length);
                     if(bExtra > 0) {
-                        push.y = 0;
+                        push.yb = 0;
                         push.b = bExtra;
                     }
                     var tExtra = ax._offset - llbbox.top;
                     if(tExtra > 0) {
-                        push.y = 1;
+                        push.yt = 1;
                         push.t = tExtra;
                     }
                 }
