@@ -1344,7 +1344,7 @@ describe('Test sunburst texttemplate without `values` should work:', function() 
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of "root"', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of Eve', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1387,7 +1387,7 @@ describe('Test sunburst texttemplate with *total* `values` should work:', functi
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of "root"', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1430,7 +1430,7 @@ describe('Test sunburst texttemplate with *remainder* `values` should work:', fu
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
         ['%{percentRoot} of %{root}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
         ['%{percentEntry} of %{entry}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of "root"', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
         [
             [
                 'label: %{label}',

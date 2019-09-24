@@ -75,8 +75,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var thisText = [];
             var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
             var getVal = function(d) {
-                if(d.hasOwnProperty('hierarchy')) return d.hierarchy.value;
-                return d.hasOwnProperty('v') ? d.v : d.value;
+                var result = d.hasOwnProperty('v') ? d.v : d.value;
+                return result !== undefined ? result : hierarchy.value;
             };
 
             if(hoverinfo) {

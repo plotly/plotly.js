@@ -493,9 +493,15 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
 
     var ref;
     var getLabel = function(d) {
-        if(d.hasOwnProperty('hierarchy')) return d.hierarchy.label;
-        if(!(d.data && d.data.data)) return '';
-        var id = helpers.getPtId(d);
+        var id = d.id;
+        if(d.data) {
+            id = d.data.id;
+            if(d.data.data) {
+                id = d.data.data.id;
+            }
+        }
+        if(!id) return '';
+
         for(var q = 0; q < cd.length; q++) {
             if(cd[q].label === id) {
                 return id;
