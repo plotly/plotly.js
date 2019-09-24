@@ -1643,6 +1643,7 @@ axes.draw = function(gd, arg, opts) {
  * - ax._anchorAxis
  * - ax._subplotsWith
  * - ax._counterDomainMin, ax._counterDomainMax (optionally, from linkSubplots)
+ * - ax._tickAngles (on redraw only, old value relinked during supplyDefaults)
  * - ax._mainLinePosition (from lsInner)
  * - ax._mainMirrorPosition
  * - ax._linepositions
@@ -1684,6 +1685,8 @@ axes.drawOne = function(gd, ax, opts) {
     // - stash tickLabels selection, so that drawTitle can use it to scoot title
     ax._selections = {};
     // stash tick angle (including the computed 'auto' values) per tick-label class
+    // linkup 'previous' tick angles on redraws
+    if(ax._tickAngles) ax._prevTickAngles = ax._tickAngles;
     ax._tickAngles = {};
     // measure [in px] between axis position and outward-most part of bounding box
     // (touching either the tick label or ticks)
@@ -2400,6 +2403,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
  *  - {number} tickangle
  *  - {object (optional)} _selections
  *  - {object} (optional)} _tickAngles
+ *  - {object} (optional)} _prevTickAngles
  * @param {object} opts
  * - {array of object} vals (calcTicks output-like)
  * - {d3 selection} layer
@@ -2416,13 +2420,14 @@ axes.drawZeroLine = function(gd, ax, opts) {
 axes.drawLabels = function(gd, ax, opts) {
     opts = opts || {};
 
+    var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
-    var lastAngle = (ax._tickAngles || {})[cls];
+    var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(ax.showticklabels ? vals : [], tickDataFn);
@@ -2507,16 +2512,16 @@ axes.drawLabels = function(gd, ax, opts) {
     // do this without waiting, using the last calculated angle to
     // minimize flicker, then do it again when we know all labels are
     // there, putting back the prescribed angle to check for overlaps.
-    positionLabels(tickLabels, lastAngle || tickAngle);
+    positionLabels(tickLabels, (prevAngle + 1) ? prevAngle : tickAngle);
 
     function allLabelsReady() {
         return labelsReady.length && Promise.all(labelsReady);
     }
 
+    var autoangle = null;
+
     function fixLabelOverlaps() {
         positionLabels(tickLabels, tickAngle);
-
-        var autoangle = null;
 
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
@@ -2584,19 +2589,36 @@ axes.drawLabels = function(gd, ax, opts) {
                 positionLabels(tickLabels, autoangle);
             }
         }
-
-        if(ax._tickAngles) {
-            ax._tickAngles[cls] = autoangle === null ?
-                (isNumeric(tickAngle) ? tickAngle : 0) :
-                autoangle;
-        }
     }
 
     if(ax._selections) {
         ax._selections[cls] = tickLabels;
     }
 
-    var done = Lib.syncOrAsync([allLabelsReady, fixLabelOverlaps]);
+    var seq = [allLabelsReady];
+
+    // N.B. during auto-margin redraw, if the axis fixed its label overlaps
+    // by rotating 90 degrees, do not attempt to re-fix its label overlaps
+    // as this can lead to infinite redraw loops!
+    if(fullLayout._redrawFromAutoMarginCount && prevAngle === 90) {
+        autoangle = 90;
+        seq.push(function() {
+            positionLabels(tickLabels, prevAngle);
+        });
+    } else {
+        seq.push(fixLabelOverlaps);
+    }
+
+    // save current tick angle for future redraws
+    if(ax._tickAngles) {
+        seq.push(function() {
+            ax._tickAngles[cls] = autoangle === null ?
+                (isNumeric(tickAngle) ? tickAngle : 0) :
+                autoangle;
+        });
+    }
+
+    var done = Lib.syncOrAsync(seq);
     if(done && done.then) gd._promises.push(done);
     return done;
 };
