@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [ "Montreal", "Tofu Bowl", "Tropical Beaches" ],
+      "y": [ 3, 1, 2 ]
+    }
+  ],
+  "layout": {
+    "margin": {
+      "l": 20,
+      "r": 0,
+      "b": 30,
+      "t": 15
+    },
+    "xaxis": {
+      "automargin": true
+    },
+    "width": 150
+  }
+}
