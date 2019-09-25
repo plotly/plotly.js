@@ -60,7 +60,7 @@ exports.getVal = function(d) {
 };
 
 exports.isHierarchyRoot = function(pt) {
-    return pt.data.data.pid === '';
+    return getParentId(pt) === '';
 };
 
 exports.setSliceCursor = function(sliceTop, gd, opts) {
@@ -148,13 +148,12 @@ exports.isHeader = function(pt, trace) { // it is only used in treemap.
 };
 
 function getParentId(pt) {
-    var parent = pt.data.parent;
-    return parent ? parent.data.id : undefined;
+    return pt.data.data.pid;
 }
 
 exports.getParent = function(hierarchy, pt) {
     var parentId = getParentId(pt);
-    return parentId === undefined ?
+    return parentId === '' ?
         undefined :
         exports.findEntryWithLevel(hierarchy, parentId);
 };
