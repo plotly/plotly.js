@@ -175,10 +175,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         return x + ',' + y;
     }
 
-    function noNaN(path) {
-        return path.indexOf('NaN') > -1 ? '' : path;
-    }
-
     var xStart = viewBarX(0);
     var limitX0 = function(p) { p.x = Math.max(xStart, p.x); };
 
@@ -234,7 +230,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         limitX0(pC);
         limitX0(pR);
 
-        return noNaN(
+        return (
            'M' + pos(pA.x, pA.y) +
            'L' + pos(pB.x, pB.y) +
            'L' + pos(pR.x, pR.y) +
@@ -265,7 +261,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
 
-        return noNaN(
+        return (
            'M' + pos(_x0, _y0 + r) +
            arc(r, -r) +
            'L' + pos(_x1 - r, _y0) +
