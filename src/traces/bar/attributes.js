@@ -13,7 +13,7 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
-var constants = require('./constants.js');
+var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 

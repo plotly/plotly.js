@@ -15,7 +15,6 @@ var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var barPlot = require('../bar/plot');
-var getTransform = barPlot.getTransform;
 var toMoveInsideBar = barPlot.toMoveInsideBar;
 
 var pieHelpers = require('../pie/helpers');
@@ -115,7 +114,7 @@ module.exports = function plot(gd, cdModule) {
                     x0 = Math.max(pt.TL[0], pt.BL[0]);
                     x1 = Math.min(pt.TR[0], pt.BR[0]);
 
-                    transform = getTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
+                    transform = Lib.getTextTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
                         isHorizontal: true,
                         constrained: true,
                         angle: 0,

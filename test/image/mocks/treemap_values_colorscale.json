@@ -1,0 +1,184 @@
+{
+    "data": [
+        {
+            "type": "treemap",
+            "name": "with branchvalues:remainder",
+            "labels": [
+                "Eve",
+                "Cain",
+                "Seth",
+                "Enos",
+                "Noam",
+                "Abel",
+                "Awan",
+                "Enoch",
+                "Azura"
+            ],
+            "parents": [
+                "",
+                "Eve",
+                "Eve",
+                "Seth",
+                "Seth",
+                "Eve",
+                "Eve",
+                "Awan",
+                "Eve"
+            ],
+            "values": [
+                10,
+                14,
+                12,
+                10,
+                2,
+                6,
+                6,
+                1,
+                4
+            ],
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ]
+            },
+            "marker": {
+                "colorscale": "Portland",
+                "colors": [
+                    10,
+                    14,
+                    12,
+                    10,
+                    2,
+                    6,
+                    6,
+                    1,
+                    4
+                ],
+                "showscale": true,
+                "colorbar": {
+                    "title": "trace A",
+                    "x": 0,
+                    "xanchor": "right"
+                }
+            },
+            "hovered": {
+                "marker": {
+                    "line": {
+                        "color": "white"
+                    }
+                }
+            },
+            "textinfo": "label+value",
+            "tiling": {
+                "pad": 4
+            },
+            "pathbar": {
+                "thickness": 32,
+                "color": "black",
+                "textfont": {
+                    "color": "white",
+                    "size": 28,
+                    "family": "Times New Roman"
+                }
+            }
+        },
+        {
+            "type": "treemap",
+            "name": "with branchvalues:total",
+            "branchvalues": "total",
+            "labels": [
+                "Eve",
+                "Cain",
+                "Seth",
+                "Enos",
+                "Noam",
+                "Abel",
+                "Awan",
+                "Enoch",
+                "Azura"
+            ],
+            "parents": [
+                "",
+                "Eve",
+                "Eve",
+                "Seth",
+                "Seth",
+                "Eve",
+                "Eve",
+                "Awan",
+                "Eve"
+            ],
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ]
+            },
+            "values": [
+                65,
+                14,
+                12,
+                10,
+                2,
+                6,
+                6,
+                1,
+                4
+            ],
+            "text": [
+                "sixty five",
+                "fourteen",
+                "twelve",
+                "ten",
+                "two",
+                "six",
+                "six",
+                "one",
+                "four"
+            ],
+            "marker": {
+                "cmin": 0,
+                "cmax": 25,
+                "colorscale": "Blackbody",
+                "reversescale": true,
+                "showscale": true,
+                "colorbar": {
+                    "title": "trace B"
+                }
+            },
+            "textinfo": "label+text",
+            "pathbar": {
+                "side": "bottom",
+                "color": "#7F7",
+                "textfont": {
+                    "size": 20,
+                    "family": "Times New Roman"
+                }
+            }
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 500,
+        "annotations": [
+            {
+                "showarrow": false,
+                "text": "branchvalues: <b>remainder</b>",
+                "x": 0.25,
+                "xanchor": "center",
+                "y": 1.1,
+                "yanchor": "bottom"
+            },
+            {
+                "showarrow": false,
+                "text": "branchvalues: <b>total</b><br>used as input to marker.color",
+                "x": 0.75,
+                "xanchor": "center",
+                "y": 1.1,
+                "yanchor": "bottom"
+            }
+        ],
+        "paper_bgcolor": "#d3d3d3"
+    }
+}

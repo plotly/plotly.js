@@ -1,0 +1,430 @@
+{
+    "data": [
+        {
+            "type": "treemap",
+            "textinfo": "label+value+percent parent+percent entry+percent root+text+current path",
+            "hoverinfo": "all",
+            "name": "without values",
+            "level": "Oscar",
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ],
+            "domain": {
+                "x": [
+                    0.01,
+                    0.33
+                ]
+            }
+        },
+        {
+            "type": "treemap",
+            "textinfo": "label+value+percent parent+percent entry+percent root+text+current path",
+            "hoverinfo": "all",
+            "name": "with total values",
+            "level": "Oscar",
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "branchvalues": "total",
+            "values": [
+                40,
+                2,
+                38,
+                1.5,
+                2.5,
+                34,
+                1,
+                2,
+                3,
+                28,
+                1.25,
+                1.75,
+                2.25,
+                2.75,
+                20,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                10,
+                1,
+                1.5,
+                2,
+                2.5,
+                3
+            ],
+            "text": [
+                "forty",
+                "two",
+                "thirty-eight",
+                "one and a half",
+                "two and a half",
+                "thirty-four",
+                "one",
+                "two",
+                "three",
+                "twenty-eight",
+                "one and twenty-five hundredths",
+                "one and seventy-five hundredths",
+                "two and twenty-five hundredths",
+                "two and seventy-five hundredths",
+                "twenty",
+                "one",
+                "one and a half",
+                "two",
+                "two and a half",
+                "three",
+                "ten",
+                "one",
+                "one and a half",
+                "two",
+                "two and a half",
+                "three"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ],
+            "marker": {
+                "colorscale": [
+					[
+						0,
+						"#FFF"
+					],
+					[
+						0.01,
+						"#0FF"
+					],
+					[
+						0.1,
+						"#00F"
+					],
+					[
+						1,
+						"#000"
+					]
+				]
+            },
+            "domain": {
+                "x": [
+                    0.34,
+                    0.66
+                ]
+            }
+        },
+        {
+            "type": "treemap",
+            "textinfo": "label+value+percent parent+percent entry+percent root+text+current path",
+            "hoverinfo": "all",
+            "name": "with remainder values",
+            "level": "Oscar",
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "branchvalues": "remainder",
+            "values": [
+                0,
+                2,
+                0,
+                1.5,
+                2.5,
+                0,
+                1,
+                2,
+                3,
+                0,
+                1.25,
+                1.75,
+                2.25,
+                2.75,
+                0,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                0,
+                1,
+                1.5,
+                2,
+                2.5,
+                3
+            ],
+            "text": [
+                "zero",
+                "two",
+                "zero",
+                "one and a half",
+                "two and a half",
+                "zero",
+                "one",
+                "two",
+                "three",
+                "zero",
+                "one and twenty-five hundredths",
+                "one and seventy-five hundredths",
+                "two and twenty-five hundredths",
+                "two and seventy-five hundredths",
+                "zero",
+                "one",
+                "one and a half",
+                "two",
+                "two and a half",
+                "three",
+                "zero",
+                "one",
+                "one and a half",
+                "two",
+                "two and a half",
+                "three"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ],
+            "marker": {
+                "colorscale": [
+					[
+						0,
+						"#FFF"
+					],
+					[
+						0.01,
+						"#0FF"
+					],
+					[
+						0.1,
+						"#00F"
+					],
+					[
+						1,
+						"#000"
+					]
+				]
+            },
+            "domain": {
+                "x": [
+                    0.67,
+                    0.99
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "margin" : {
+            "t": 50,
+            "l": 0,
+            "r": 0,
+            "b": 25
+        },
+        "width": 1500,
+        "height": 600,
+        "shapes": [
+            {
+                "type": "rect",
+                "layer": "above",
+                "x0": 0.01,
+                "x1": 0.33,
+                "y0": 0,
+                "y1": 1
+            },
+            {
+                "type": "rect",
+                "layer": "above",
+                "x0": 0.34,
+                "x1": 0.66,
+                "y0": 0,
+                "y1": 1
+            },
+            {
+                "type": "rect",
+                "layer": "above",
+                "x0": 0.67,
+                "x1": 0.99,
+                "y0": 0,
+                "y1": 1
+            }
+        ],
+        "annotations": [
+            {
+                "showarrow": false,
+                "text": "<b>with counted leaves<br>",
+                "x": 0.17,
+                "xanchor": "center",
+                "y": 0,
+                "yanchor": "top"
+            },
+            {
+                "showarrow": false,
+                "text": "<b>with values and branchvalues: total<br>",
+                "x": 0.5,
+                "xanchor": "center",
+                "y": 0,
+                "yanchor": "top"
+            },
+            {
+                "showarrow": false,
+                "text": "<b>with values and branchvalues: remainder<br>",
+                "x": 0.83,
+                "xanchor": "center",
+                "y": 0,
+                "yanchor": "top"
+            }
+        ]
+    }
+}

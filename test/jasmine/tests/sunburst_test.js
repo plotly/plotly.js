@@ -71,6 +71,18 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[2].visible).toBe(false, 'no labels');
     });
 
+    it('should only coerce *count* when the *values* array is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], values: []},
+            {labels: [1], parents: [''], values: [1]}
+        ]);
+
+        expect(fullData[0].count).toBe('leaves');
+        expect(fullData[1].count).toBe('leaves', 'has empty values');
+        expect(fullData[2].count).toBe(undefined, 'has values');
+    });
+
     it('should not coerce *branchvalues* when *values* is not set', function() {
         _supply([
             {labels: [1], parents: [''], values: [1]},
@@ -101,6 +113,16 @@ describe('Test sunburst defaults:', function() {
 
         expect(fullData[0].marker.line.color).toBe(undefined, 'not coerced');
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
+    });
+
+    it('should default *leaf.opacity* depending on having or not having *colorscale*', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
+        ]);
+
+        expect(fullData[0].leaf.opacity).toBe(0.7, 'without colorscale');
+        expect(fullData[1].leaf.opacity).toBe(1, 'with colorscale');
     });
 
     it('should include "text" flag in *textinfo* when *text* is set', function() {
@@ -221,12 +243,16 @@ describe('Test sunburst calc:', function() {
         var parents = ['', 'Root', 'Root', 'B'];
 
         _calc([
-            {labels: labels, parents: parents},
+            {labels: labels, parents: parents, count: 'leaves+branches'},
+            {labels: labels, parents: parents, count: 'branches'},
+            {labels: labels, parents: parents}, // N.B. counts 'leaves' in this case
             {labels: labels, parents: parents, values: [0, 1, 2, 3]},
             {labels: labels, parents: parents, values: [30, 20, 10, 5], branchvalues: 'total'}
         ]);
 
         expect(extractPt('value')).toEqual([
+            [4, 2, 1, 1],
+            [2, 1, 0, 0],
             [2, 1, 1, 1],
             [6, 5, 1, 3],
             [30, 20, 10, 5]
@@ -245,8 +271,8 @@ describe('Test sunburst calc:', function() {
         expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
-        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children.');
-        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children.');
+        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
     });
 
     it('should warn labels/parents lead to ambiguous hierarchy', function() {
@@ -378,7 +404,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel\n6',
+                nums: 'Abel\nEve/\n17% of Eve\n6',
                 name: 'trace 0'
             },
             ptData: {
@@ -397,7 +423,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel',
+                nums: 'Abel\nEve/\n17% of Eve',
                 name: 't...'
             },
             ptData: {
@@ -945,10 +971,13 @@ describe('Test sunburst tweening:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function _run(gd, v) {
+    function _reset() {
         pathTweenFnLookup = {};
         textTweenFnLookup = {};
+    }
 
+    function _run(gd, v) {
+        _reset();
         click(gd, v)();
 
         // 1 second more than the click transition duration
@@ -980,7 +1009,7 @@ describe('Test sunburst tweening:', function() {
         expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
     }
 
-    it('should tween sector exit/update (case: branch, no maxdepth)', function(done) {
+    it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1018,7 +1047,7 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
 
-    it('should tween sector enter/update (case: entry, no maxdepth)', function(done) {
+    it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1057,7 +1086,7 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
 
-    it('should tween sector enter/update/exit (case: entry, maxdepth=2)', function(done) {
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1094,6 +1123,70 @@ describe('Test sunburst tweening:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
+        var mock = {
+            data: [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b', 'bb'],
+                parents: ['', 'Root', 'Root', 'B', 'b'],
+                maxdepth: 2,
+                level: 'B'
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 1))
+        .then(function() {
+            _assert('exit b radially outward and to parent sector angle', 'd', 'b',
+                'M350,133.75L350,100A135,1350,1,0485,235.00000000000003' +
+                'L451.25,235.00000000000003A101.25,101.250,1,1350,133.75Z'
+            );
+            _assert('enter new entry radially outward', 'd', 'Root',
+                'M350,235A0,00,1,0350,235A0,00,1,0350,235Z' +
+                'M383.75,235A33.75,33.750,1,1316.25,235A33.75,33.750,1,1383.75,235Z'
+            );
+            _assert('enter A counterclockwise', 'd', 'A',
+                'M417.5,235L485,235A135,1350,0,0350,100L350,167.5A67.5,67.50,0,1417.5,235Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M350,201.25L350,133.75A101.25,101.250,1,0451.25,235.00000000000003' +
+                'L383.75,235A33.75,33.750,1,1350,201.25Z'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    /*
+    it('should tween in sectors from new traces', function(done) {
+        Plotly.plot(gd, [{type: 'sunburst'}])
+        .then(_reset)
+        .then(function() {
+            return Plotly.animate(gd, [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B']
+            }]);
+        })
+        .then(function() {
+            _assert('enter entry from theta=0', 'd', 'Root',
+                ''
+            );
+            // _assert('enter A from theta=0', 'd', 'A',
+            //     ''
+            // );
+            // _assert('enter B from theta=0', 'd', 'B',
+            //     ''
+            // );
+            // _assert('enter b from theta=0', 'd', 'b',
+            //     ''
+            // );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+    */
 });
 
 describe('Test sunburst interactions edge cases', function() {
@@ -1239,16 +1332,189 @@ describe('Test sunburst interactions edge cases', function() {
     });
 });
 
-describe('Test sunburst texttemplate:', function() {
+describe('Test sunburst texttemplate without `values` should work at root level:', function() {
     checkTextTemplate([{
         type: 'sunburst',
-        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Esther'],
-        values: [11, 12, 13, 14, 15],
-        text: ['1', '2', '3', '4', '5'],
-        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth' ]
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
     }], 'g.slicetext', [
-      ['txt: %{label}', ['txt: Eve', 'txt: Cain', 'txt: Seth', 'txt: Enos', 'txt: Esther']],
-      [['txt: %{label}', '%{text}', 'value: %{value}'], ['txt: Eve', '2', 'value: 13', '', '']],
-      ['%{color}', ['rgba(0,0,0,0)', '#1f77b4', '#ff7f0e', '#1f77b4', '#1f77b4']]
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: %{value}', // N.B. there is no `values` array
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '100% of Awan',
+                'color: #9467bd'
+            ]
+        ]
     ]);
+});
+
+describe('Test sunburst texttemplate with *total* `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '9% of Eve',
+                '15% of Eve',
+                '3% of Eve',
+                '6% of Eve',
+                '17% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate with *remainder* `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '6% of Eve',
+                '5% of Eve',
+                '8% of Eve',
+                '2% of Eve',
+                '14% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate without `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['33% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '50% of Seth', '50% of Seth']],
+        ['%{percentParent} of %{parent}', ['33% of Eve', '50% of Seth', '50% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *total* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #ff7f0e', 'color: #ff7f0e', 'color: #ff7f0e']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['18% of Eve', '15% of Eve', '3% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '83% of Seth', '17% of Seth']],
+        ['%{percentParent} of %{parent}', ['18% of Eve', '83% of Seth', '17% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *remainder* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['20% of Eve', '8% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '42% of Seth', '8% of Seth']],
+        ['%{percentParent} of %{parent}', ['20% of Eve', '42% of Seth', '8% of Seth']],
+    ], /* skipEtra */ true);
 });

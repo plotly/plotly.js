@@ -13,6 +13,10 @@ var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 
+var Colorscale = require('../../components/colorscale');
+var hasColorscale = Colorscale.hasColorscale;
+var colorscaleDefaults = Colorscale.handleDefaults;
+
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -27,7 +31,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var vals = coerce('values');
-    if(vals && vals.length) coerce('branchvalues');
+    if(vals && vals.length) {
+        coerce('branchvalues');
+    } else {
+        coerce('count');
+    }
 
     coerce('level');
     coerce('maxdepth');
@@ -36,8 +44,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
     coerce('marker.colors');
+    var withColorscale = hasColorscale(traceIn, 'marker');
+    if(withColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+    }
 
-    coerce('leaf.opacity');
+    coerce('leaf.opacity', withColorscale ? 1 : 0.7);
 
     var text = coerce('text');
     coerce('texttemplate');

@@ -21,6 +21,7 @@ var tickText = require('../../plots/cartesian/axes').tickText;
 
 var style = require('./style');
 var helpers = require('./helpers');
+var constants = require('./constants');
 var attributes = require('./attributes');
 
 var attributeText = attributes.text;
@@ -28,8 +29,7 @@ var attributeTextPosition = attributes.textposition;
 
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
-// padding in pixels around text
-var TEXTPAD = 3;
+var TEXTPAD = constants.TEXTPAD;
 
 function keyFunc(d) {return d.id;}
 function getKeyFunc(trace) {
@@ -381,7 +381,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
             trace.constraintext === 'both' ||
             trace.constraintext === 'outside';
 
-        transform = getTransform(toMoveOutsideBar(x0, x1, y0, y1, textBB, {
+        transform = Lib.getTextTransform(toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: trace.textangle
@@ -391,7 +391,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = getTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
+        transform = Lib.getTextTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: trace.textangle,
@@ -547,35 +547,6 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
         scale: scale,
         rotate: rotate
     };
-}
-
-function getTransform(opts) {
-    var textX = opts.textX;
-    var textY = opts.textY;
-    var targetX = opts.targetX;
-    var targetY = opts.targetY;
-    var scale = opts.scale;
-    var rotate = opts.rotate;
-
-    var transformScale;
-    var transformRotate;
-    var transformTranslate;
-
-    if(scale < 1) transformScale = 'scale(' + scale + ') ';
-    else {
-        scale = 1;
-        transformScale = '';
-    }
-
-    transformRotate = (rotate) ?
-        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
-
-    // Note that scaling also affects the center of the text box
-    var translateX = (targetX - scale * textX);
-    var translateY = (targetY - scale * textY);
-    transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
-
-    return transformTranslate + transformScale + transformRotate;
 }
 
 function getText(fullLayout, calcTrace, index, xa, ya) {
@@ -734,7 +705,6 @@ function calcTextinfo(calcTrace, index, xa, ya) {
 
 module.exports = {
     plot: plot,
-    getTransform: getTransform,
     toMoveInsideBar: toMoveInsideBar,
     toMoveOutsideBar: toMoveOutsideBar
 };

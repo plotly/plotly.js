@@ -1,0 +1,92 @@
+{
+  "data": [
+    {
+      "type": "treemap",
+      "pathbar": {
+        "visible": false
+      },
+      "textinfo": "label+percent parent",
+      "labels": [
+        "Eve",
+        "Cain",
+        "Seth",
+        "Enos",
+        "Noam",
+        "Abel",
+        "Awan",
+        "Enoch",
+        "Azura"
+      ],
+      "parents": [
+        "",
+        "Eve",
+        "Eve",
+        "Seth",
+        "Seth",
+        "Eve",
+        "Eve",
+        "Awan",
+        "Eve"
+      ],
+      "domain": {
+        "x": [
+          0,
+          0.5
+        ]
+      }
+    },
+    {
+      "type": "treemap",
+      "pathbar": {
+        "visible": false
+      },
+      "textinfo": "label+percent entry",
+      "labels": [
+        "Cain",
+        "Seth",
+        "Enos",
+        "Noam",
+        "Abel",
+        "Awan",
+        "Enoch",
+        "Azura"
+      ],
+      "parents": [
+        "Eve",
+        "Eve",
+        "Seth",
+        "Seth",
+        "Eve",
+        "Eve",
+        "Awan",
+        "Eve"
+      ],
+      "domain": {
+        "x": [
+          0.5,
+          1
+        ]
+      }
+    }
+  ],
+  "layout": {
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "percent parent",
+        "x": 0.25,
+        "xanchor": "center",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
+        "text": "percent entry",
+        "x": 0.75,
+        "xanchor": "center",
+        "y": 1,
+        "yanchor": "bottom"
+      }
+    ]
+  }
+}

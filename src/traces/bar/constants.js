@@ -10,5 +10,6 @@
 'use strict';
 
 module.exports = {
+    TEXTPAD: 3, // padding in pixels around text
     eventDataKeys: []
 };

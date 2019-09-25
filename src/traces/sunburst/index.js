@@ -23,8 +23,10 @@ module.exports = {
     calc: require('./calc').calc,
     crossTraceCalc: require('./calc').crossTraceCalc,
 
-    plot: require('./plot'),
+    plot: require('./plot').plot,
     style: require('./style').style,
+
+    colorbar: require('../scatter/marker_colorbar'),
 
     meta: {
         description: [

@@ -2,6 +2,7 @@
   "data": [
     {
       "type": "sunburst",
+      "hoverinfo": "all",
       "ids": [
         "flare",
         "flare-analytics",

@@ -1901,6 +1901,42 @@ describe('Plotly.react and uirevision attributes', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('preserves treemap level changes', function(done) {
+        function assertLevel(msg, exp) {
+            expect(gd._fullData[0].level).toBe(exp, msg);
+        }
+
+        Plotly.react(gd, [{
+            type: 'treemap',
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
+            uirevision: 1
+        }])
+        .then(function() {
+            assertLevel('no set level at start', undefined);
+        })
+        .then(function() {
+            var nodeSeth = d3.select('.slice:nth-child(2)').node();
+            mouseEvent('click', 0, 0, {element: nodeSeth});
+        })
+        .then(function() {
+            assertLevel('after clicking on Seth sector', 'Seth');
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'treemap',
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
+                uirevision: 1
+            }]);
+        })
+        .then(function() {
+            assertLevel('after reacting with new data, but with same uirevision', 'Seth');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test Plotly.react + interactions under uirevision:', function() {
