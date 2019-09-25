@@ -1332,7 +1332,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 });
 
-describe('Test sunburst texttemplate without `values` should work:', function() {
+describe('Test sunburst texttemplate without `values` should work at root level:', function() {
     checkTextTemplate([{
         type: 'sunburst',
         labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
@@ -1342,9 +1342,10 @@ describe('Test sunburst texttemplate without `values` should work:', function() 
         ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
         ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1372,7 +1373,7 @@ describe('Test sunburst texttemplate without `values` should work:', function() 
     ]);
 });
 
-describe('Test sunburst texttemplate with *total* `values` should work:', function() {
+describe('Test sunburst texttemplate with *total* `values` should work at root level:', function() {
     checkTextTemplate([{
         type: 'sunburst',
         branchvalues: 'total',
@@ -1385,9 +1386,10 @@ describe('Test sunburst texttemplate with *total* `values` should work:', functi
         ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
         ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1415,7 +1417,7 @@ describe('Test sunburst texttemplate with *total* `values` should work:', functi
     ]);
 });
 
-describe('Test sunburst texttemplate with *remainder* `values` should work:', function() {
+describe('Test sunburst texttemplate with *remainder* `values` should work at root level:', function() {
     checkTextTemplate([{
         type: 'sunburst',
         branchvalues: 'remainder',
@@ -1428,9 +1430,10 @@ describe('Test sunburst texttemplate with *remainder* `values` should work:', fu
         ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
         ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
         ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
-        ['%{percentRoot} of %{root}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
-        ['%{percentEntry} of %{entry}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
-        ['%{percentParent} of %{parent}', ['54% of Eve', '10% of Eve', '12% of Eve', '5% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1447,7 +1450,7 @@ describe('Test sunburst texttemplate with *remainder* `values` should work:', fu
                 'label: Eve',
                 'text: fourteen',
                 'value: 12',
-                '5% of Eve',
+                '6% of Eve',
                 '5% of Eve',
                 '8% of Eve',
                 '2% of Eve',
@@ -1456,4 +1459,62 @@ describe('Test sunburst texttemplate with *remainder* `values` should work:', fu
             ]
         ]
     ]);
+});
+
+describe('Test sunburst texttemplate without `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['33% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '50% of Seth', '50% of Seth']],
+        ['%{percentParent} of %{parent}', ['33% of Eve', '50% of Seth', '50% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *total* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #ff7f0e', 'color: #ff7f0e', 'color: #ff7f0e']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['18% of Eve', '15% of Eve', '3% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '83% of Seth', '17% of Seth']],
+        ['%{percentParent} of %{parent}', ['18% of Eve', '83% of Seth', '17% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *remainder* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['20% of Eve', '8% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '42% of Seth', '8% of Seth']],
+        ['%{percentParent} of %{parent}', ['20% of Eve', '42% of Seth', '8% of Seth']],
+    ], /* skipEtra */ true);
 });

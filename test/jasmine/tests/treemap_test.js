@@ -1431,6 +1431,7 @@ describe('Test treemap texttemplate without `values` should work:', function() {
         ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
         ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
         ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
         ['%{percentEntry} of %{entry}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
         ['%{percentParent} of %{parent}', ['Eve', '100% of Seth', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '50% of Seth', '100% of Awan']],
@@ -1473,7 +1474,8 @@ describe('Test treemap texttemplate with *total* `values` should work:', functio
         ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
         ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
         ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
-        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']]
+        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
     ], /* skipEtra */ true);
 });
 
@@ -1489,6 +1491,7 @@ describe('Test treemap texttemplate with *remainder* `values` should work:', fun
         ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
         ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
         ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
-        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']]
+        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
     ], /* skipEtra */ true);
 });

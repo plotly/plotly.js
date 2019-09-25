@@ -13,16 +13,11 @@ var Color = require('../../components/color');
 var setCursor = require('../../lib/setcursor');
 var pieHelpers = require('../pie/helpers');
 
-function labelStr(label) {
-    return (label || label === 0) ? String(label) : '';
-}
-
 exports.findEntryWithLevel = function(hierarchy, level) {
     var out;
-    var key = labelStr(level);
-    if(key) {
+    if(level) {
         hierarchy.eachAfter(function(pt) {
-            if(exports.getPtId(pt) === key) {
+            if(exports.getPtId(pt) === level) {
                 return out = pt.copy();
             }
         });
@@ -32,12 +27,11 @@ exports.findEntryWithLevel = function(hierarchy, level) {
 
 exports.findEntryWithChild = function(hierarchy, childId) {
     var out;
-    var key = labelStr(childId);
     hierarchy.eachAfter(function(pt) {
         var children = pt.children || [];
         for(var i = 0; i < children.length; i++) {
             var child = children[i];
-            if(exports.getPtId(child) === key) {
+            if(exports.getPtId(child) === childId) {
                 return out = pt.copy();
             }
         }
@@ -61,12 +55,8 @@ exports.getPtLabel = function(pt) {
     return pt.data.data.label;
 };
 
-exports.replaceVoid = function(label, rootLabel) {
-    return label === undefined ? rootLabel : label;
-};
-
 exports.getVal = function(d) {
-    return d.hasOwnProperty('v') ? d.v : d.value;
+    return d.value;
 };
 
 exports.isHierarchyRoot = function(pt) {
@@ -155,6 +145,18 @@ exports.getMaxDepth = function(trace) {
 
 exports.isHeader = function(pt, trace) { // it is only used in treemap.
     return !(exports.isLeaf(pt) || pt.depth === trace._maxDepth - 1);
+};
+
+function getParentId(pt) {
+    var parent = pt.data.parent;
+    return parent ? parent.data.id : undefined;
+}
+
+exports.getParent = function(hierarchy, pt) {
+    var parentId = getParentId(pt);
+    return parentId === undefined ?
+        undefined :
+        exports.findEntryWithLevel(hierarchy, parentId);
 };
 
 exports.listPath = function(d, keyStr) {
