@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/treemap/constants');
 
 var d3 = require('d3');
@@ -1113,6 +1114,7 @@ describe('Test treemap tweening:', function() {
         return s.replace(/\s/g, '');
     }
 
+
     function _assert(msg, attrName, id, exp) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
@@ -1120,18 +1122,18 @@ describe('Test treemap tweening:', function() {
         // asserting at the mid point *should be* representative enough
         var t = 0.5;
         var actual = trim(fn(t));
+        var msg2 = msg + ' | node ' + id + ' @t=' + t;
 
-        // do not assert textBB translate piece,
-        // which isn't tweened and has OS-dependent results
         if(attrName === 'transform') {
-            actual = actual.split('translate').slice(0, 2).join('translate');
+            var fake = {attr: function() { return actual; }};
+            var xy = Drawing.getTranslate(fake);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, 1, msg2);
+        } else {
+            // we could maybe to bring in:
+            // https://github.com/hughsk/svg-path-parser
+            // to make these assertions more readable
+            expect(actual).toBe(trim(exp), msg2);
         }
-
-        // we could maybe to bring in:
-        // https://github.com/hughsk/svg-path-parser
-        // to make these assertions more readable
-
-        expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
     }
 
     it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
@@ -1158,12 +1160,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(221.75126)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(224.75150)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
+            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
         })
         .catch(failTest)
         .then(done);
@@ -1194,12 +1192,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(221.75126)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(224.75150)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
+            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
         })
         .catch(failTest)
         .then(done);
@@ -1230,12 +1224,8 @@ describe('Test treemap tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(220.25126)'
-            );
-            _assert('enter b text to new position', 'transform', 'b',
-                'translate(287.375195.5)scale(0.5)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [220.25126, 0]);
+            _assert('enter b text to new position', 'transform', 'b', [287.375195, 5]);
         })
         .catch(failTest)
         .then(done);
