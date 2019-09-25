@@ -10,13 +10,11 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var contourAttrs = require('../contour/attributes');
-var contourContourAttrs = contourAttrs.contours;
-var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterLineAttrs = scatterAttrs.line;
+var contourContourAttrs = contourAttrs.contours;
 
 module.exports = extendFlat({
     carpet: {
@@ -75,22 +73,13 @@ module.exports = extendFlat({
     },
 
     line: {
-        color: extendFlat({}, scatterLineAttrs.color, {
-            description: [
-                'Sets the color of the contour level.',
-                'Has no if `contours.coloring` is set to *lines*.'
-            ].join(' ')
-        }),
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
-        smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
-            description: [
-                'Sets the amount of smoothing for the contour lines,',
-                'where *0* corresponds to no smoothing.'
-            ].join(' ')
-        }),
+        color: contourAttrs.line.color,
+        width: contourAttrs.line.width,
+        dash: contourAttrs.line.dash,
+        smoothing: contourAttrs.line.smoothing,
         editType: 'plot'
     },
+
     transforms: undefined
 },
 

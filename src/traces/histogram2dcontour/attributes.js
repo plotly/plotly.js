@@ -36,7 +36,16 @@ module.exports = extendFlat({
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
-    line: contourAttrs.line,
+    line: {
+        color: contourAttrs.line.color,
+        width: extendFlat({}, contourAttrs.line.width, {
+            dflt: 0.5,
+            description: 'Sets the contour line width in (in px)'
+        }),
+        dash: contourAttrs.line.dash,
+        smoothing: contourAttrs.line.smoothing,
+        editType: 'plot'
+    },
     zhoverformat: histogram2dAttrs.zhoverformat,
     hovertemplate: histogram2dAttrs.hovertemplate
 },
