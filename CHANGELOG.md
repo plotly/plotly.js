@@ -10,6 +10,68 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.50.0] -- 2019-10-07
+
+### Added
+- Add `treemap` trace type [#4185, #4219, #4227, #4242]
+- Add `texttemplate` attribute to all traces that support on-graph text [#4071, #4179]
+- Add date custom formatting in `hovertemplate` and `texttemplate` e.g.
+  `'%{x|%b %-d, %Y}'` [#4071]
+- Add transition support to `bar` trace length, width, on-graph text positioning,
+  marker style and error bars [#4180, #4186]
+- Add attribute `count`, colorscale support and many `hoverinfo` / `textinfo` flags
+  to `sunburst` traces [#4185, #4245]
+- Add constraint info to `parcats` click and hover events [#4211]
+- Add support for legend scrolling via touch interactions [#3873, #4214]
+- Add `ru` and `uk` locales [#4204]
+- Publish minified dist npm packages for the main plotly.js bundle and
+  all our partial bundles [#4169]
+
+### Changed
+- Cap the number of redraws triggered by the auto-margin routine,
+  which should prevent all potential infinite redraw loops [#4216]
+- Improve cartesian axis draw performance by (1) computing its bounding box
+  only when required and (2) using a bounding-box computation cache [#4165]
+- Log message when margin-push values are too big to be considered during
+  auto-margin computations [#4160]
+- Log message when legend position is constrained into graph viewbox [#4160]
+- Process layout image using data URI synchronously [#4105]
+- Adapt default axis ranges to `rangemode` values `'tozero'` and `'nonnegative'` [#4171]
+- Show zeroline even when no grid lines are present [#4189]
+- Use `mapbox-gl` version 1.3.2 [#4230]
+- Make `touchmove` event listener non passive on mobile drag [#4231]
+- Improve `streamtube` trace description [#4181]
+- Improve `indicator` trace description [#4246]
+- Improve legend `x` and `y` attribute descriptions [#4160]
+
+### Fixed
+- Fix attempt at fixing gl3d in Chrome 77 problems [#4256]
+- Fix numerous legend positioning bug [#4160]
+- Fix numerous axis `automargin` bugs [#4165, #4216]
+- Correctly handle `<br>` and `\n` in `scattermapbox` on-graph text [#4176]
+- Fix `scattergl` hover over nulls (bug introduced in 1.45.0) [#4213]
+- Correctly remove off-screen annotations during pan interactions
+  (bug introduced in 1.40.0) [#4170]
+- Fix `contour` and `contourcarpet` label formatting via colorbar settings
+  (bug introduced in 1.48.0) [#4177]
+- Fix background rectangle dimensions for horizontal grouped legends [#4160]
+- Correctly handle non-linear axis types during transitions [#4249]
+- Fix `branchvalues: 'total'` for generated sunburst sectors [#4253]
+- Fix `Download plot` translations [#4148]
+- Fix `fr` translations for "Click to enter --- title" [#4204]
+- Fix tiny zoombox behavior [#4188]
+- Fix rendering of constraint contours with rounded-off edge path [#4102]
+- Fix "autoscale" modebar button bug where it sometimes toggled axis `showspikes` [#4241]
+- Fix multi-axis transition axis-to-axis range "leaks" [#4167]
+- Fix `toggleHover` and `resetViews` modebar buttons for
+  some partial bundle + graph setups [#4184]
+- Correctly list `color-rgba`  module as dependency [#4207]
+- Fix third-party dependency listing for `gl-cone3d` and `gl-streamtube3d` [#4208, #4215]
+- Fix `line.width` attr declaration in `*contour` traces [#4218]
+- Remove hover attribute from `carpet` and `contourcarpet` schema
+  (as they do not support hover yet) [#4102]
+
+
 ## [1.49.5] -- 2019-09-18
 
 ### Fixed
