@@ -12,7 +12,7 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var TEXTPAD = require('../bar/constants').TEXTPAD;
+
 var partition = require('./partition');
 var styleOne = require('./style').styleOne;
 var constants = require('./constants');
@@ -157,6 +157,16 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             hovered: false
         });
 
+        if(pt.x0 === pt.x1 && pt.y0 === pt.y1) {
+            pt._text = ' '; // use one space character instead of a blank string in this case
+        } else {
+            if(isHeader) {
+                pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
+            } else {
+                pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
+            }
+        }
+
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
@@ -164,38 +174,14 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var _x0 = pt.x0;
-        var _x1 = pt.x1;
-        var _y0 = pt.y0;
-        var _y1 = pt.y1;
-
-        var tx;
-        if(_x0 < _x1 && _y0 < _y1) {
-            if(isHeader) {
-                if(noRoomForHeader) return;
-
-                tx = helpers.getPtLabel(pt);
-            } else {
-                tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
-            }
-        } else { // handle text positions for out of range cases e.g. with maxdepth
-            tx = ' ';
-
-            var expand = 2 * TEXTPAD;
-            _x0 -= expand;
-            _x1 += expand;
-            _y0 -= expand;
-            _y1 += expand;
-        }
-
-        sliceText.text(tx)
+        sliceText.text(pt._text)
             .classed('slicetext', true)
             .attr('text-anchor', hasRight ? 'end' : (hasLeft || isHeader) ? 'start' : 'middle')
             .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(_x0, _x1, _y0, _y1, pt.textBB, {
+        pt.transform = toMoveInsideSlice(pt, {
             isHeader: isHeader
         });
 

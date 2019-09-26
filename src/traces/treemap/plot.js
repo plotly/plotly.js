@@ -162,14 +162,14 @@ function plotOne(gd, cd, element, transitionOpts) {
     var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
     var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);
 
-    var viewMapX = function(x) { return cenX + x; };
-    var viewMapY = function(y) { return cenY + y; };
+    var viewMapX = function(x) { return cenX + (x || 0); };
+    var viewMapY = function(y) { return cenY + (y || 0); };
 
     var barY0 = viewMapY(0);
     var barX0 = viewMapX(0);
 
-    var viewBarX = function(x) { return barX0 + x; };
-    var viewBarY = function(y) { return barY0 + y; };
+    var viewBarX = function(x) { return barX0 + (x || 0); };
+    var viewBarY = function(y) { return barY0 + (y || 0); };
 
     function pos(x, y) {
         return x + ',' + y;
@@ -273,7 +273,23 @@ function plotOne(gd, cd, element, transitionOpts) {
         );
     };
 
-    var toMoveInsideSlice = function(x0, x1, y0, y1, textBB, opts) {
+    var toMoveInsideSlice = function(pt, opts) {
+        var x0 = pt.x0;
+        var x1 = pt.x1;
+        var y0 = pt.y0;
+        var y1 = pt.y1;
+        var textBB = pt.textBB;
+
+        if(x0 === x1) {
+            x0 -= TEXTPAD;
+            x1 += TEXTPAD;
+        }
+
+        if(y0 === y1) {
+            y0 -= TEXTPAD;
+            y1 += TEXTPAD;
+        }
+
         var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
 
         var hasBottom = hasFlag('bottom');
@@ -327,20 +343,13 @@ function plotOne(gd, cd, element, transitionOpts) {
             else if(offsetDir === 'right') transform.targetX += deltaX;
         }
 
-        transform.targetX = viewMapX(transform.targetX);
-        transform.targetY = viewMapY(transform.targetY);
-
-        if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
-            return {};
-        }
-
         return {
             scale: transform.scale,
             rotate: transform.rotate,
             textX: transform.textX,
             textY: transform.textY,
-            targetX: transform.targetX,
-            targetY: transform.targetY
+            targetX: viewMapX(transform.targetX),
+            targetY: viewMapY(transform.targetY)
         };
     };
 
@@ -428,16 +437,16 @@ function plotOne(gd, cd, element, transitionOpts) {
         var origin = getOrigin(pt, onPathbar, refRect, size);
 
         Lib.extendFlat(prev, {
-            transform: toMoveInsideSlice(
-                origin.x0,
-                origin.x1,
-                origin.y0,
-                origin.y1,
-                pt.textBB,
-                {
-                    isHeader: helpers.isHeader(pt, trace)
-                }
-            )
+            transform: toMoveInsideSlice({
+                x0: origin.x0,
+                x1: origin.x1,
+                y0: origin.y0,
+                y1: origin.y1,
+                textBB: pt.textBB,
+                _text: pt._text
+            }, {
+                isHeader: helpers.isHeader(pt, trace)
+            })
         });
 
         if(prev0) {

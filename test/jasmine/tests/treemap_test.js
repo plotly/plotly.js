@@ -1066,7 +1066,7 @@ describe('Test treemap restyle:', function() {
         .then(_restyle({textinfo: 'value'}))
         .then(_assert('show input values', ['Root', 'B', '1', '3']))
         .then(_restyle({textinfo: 'none'}))
-        .then(_assert('no textinfo', ['Root', 'B', ' ', ' '])) // N.B. replaced empty string with space character for better transitions
+        .then(_assert('no textinfo', ['Root', 'B', '', '']))
         .then(_restyle({textinfo: 'label+text+value'}))
         .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))
@@ -1127,7 +1127,7 @@ describe('Test treemap tweening:', function() {
         if(attrName === 'transform') {
             var fake = {attr: function() { return actual; }};
             var xy = Drawing.getTranslate(fake);
-            expect([xy.x, xy.y]).toBeWithinArray(exp, 1, msg2);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, 2, msg2);
         } else {
             // we could maybe to bring in:
             // https://github.com/hughsk/svg-path-parser
@@ -1225,7 +1225,7 @@ describe('Test treemap tweening:', function() {
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
             _assert('move B text to new position', 'transform', 'B', [220.25126, 0]);
-            _assert('enter b text to new position', 'transform', 'b', [284.66071, 35714285714286]);
+            _assert('enter b text to new position', 'transform', 'b', [286.16071428571433, 35714285714286]);
         })
         .catch(failTest)
         .then(done);
