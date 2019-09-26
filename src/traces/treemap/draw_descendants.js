@@ -12,7 +12,7 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
-
+var TEXTPAD = require('../bar/constants').TEXTPAD;
 var partition = require('./partition');
 var styleOne = require('./style').styleOne;
 var constants = require('./constants');
@@ -164,13 +164,28 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var tx;
-        if(isHeader) {
-            if(noRoomForHeader) return;
+        var _x0 = pt.x0;
+        var _x1 = pt.x1;
+        var _y0 = pt.y0;
+        var _y1 = pt.y1;
 
-            tx = helpers.getPtLabel(pt);
-        } else {
-            tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
+        var tx;
+        if(_x0 < _x1 && _y0 < _y1) {
+            if(isHeader) {
+                if(noRoomForHeader) return;
+
+                tx = helpers.getPtLabel(pt);
+            } else {
+                tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
+            }
+        } else { // handle text positions for out of range cases e.g. with maxdepth
+            tx = ' ';
+
+            var expand = 2 * TEXTPAD;
+            _x0 -= expand;
+            _x1 += expand;
+            _y0 -= expand;
+            _y1 += expand;
         }
 
         sliceText.text(tx)
@@ -180,16 +195,9 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(
-            pt.x0,
-            pt.x1,
-            pt.y0,
-            pt.y1,
-            pt.textBB,
-            {
-                isHeader: isHeader
-            }
-        );
+        pt.transform = toMoveInsideSlice(_x0, _x1, _y0, _y1, pt.textBB, {
+            isHeader: isHeader
+        });
 
         if(helpers.isOutsideText(trace, pt)) {
             // consider in/out diff font sizes

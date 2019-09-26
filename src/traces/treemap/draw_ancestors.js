@@ -148,16 +148,9 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(
-            pt.x0,
-            pt.x1,
-            pt.y0,
-            pt.y1,
-            pt.textBB,
-            {
-                onPathbar: true
-            }
-        );
+        pt.transform = toMoveInsideSlice(pt.x0, pt.x1, pt.y0, pt.y1, pt.textBB, {
+            onPathbar: true
+        });
 
         if(helpers.isOutsideText(trace, pt)) {
             // consider in/out diff font sizes
