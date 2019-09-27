@@ -1066,7 +1066,7 @@ describe('Test treemap restyle:', function() {
         .then(_restyle({textinfo: 'value'}))
         .then(_assert('show input values', ['Root', 'B', '1', '3']))
         .then(_restyle({textinfo: 'none'}))
-        .then(_assert('no textinfo', ['Root', 'B', '', '']))
+        .then(_assert('no textinfo', ['Root', 'B', ' ', ' '])) // use one space character instead of a blank string to avoid jumps during transition
         .then(_restyle({textinfo: 'label+text+value'}))
         .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))

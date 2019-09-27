@@ -157,8 +157,8 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             hovered: false
         });
 
-        if(pt.x0 === pt.x1 && pt.y0 === pt.y1) {
-            pt._text = ' '; // use one space character instead of a blank string in this case
+        if(pt.x0 === pt.x1 || pt.y0 === pt.y1) {
+            pt._text = '';
         } else {
             if(isHeader) {
                 pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
@@ -174,7 +174,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        sliceText.text(pt._text)
+        sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
             .attr('text-anchor', hasRight ? 'end' : (hasLeft || isHeader) ? 'start' : 'middle')
             .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))

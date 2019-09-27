@@ -141,7 +141,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        sliceText.text(pt._text)
+        sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
             .attr('text-anchor', 'start')
             .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font, trace.pathdir))
