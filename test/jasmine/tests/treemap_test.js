@@ -346,7 +346,7 @@ describe('Test treemap calc:', function() {
 
         expect(extract('id')).toEqual(['dummy', 'A', 'B', 'b']);
         expect(extract('pid')).toEqual(['', 'dummy', 'dummy', 'B']);
-        expect(extract('label')).toEqual([undefined, 'A', 'B', 'b']);
+        expect(extract('label')).toEqual(['', 'A', 'B', 'b']);
     });
 
     it('should compute hierarchy values', function() {

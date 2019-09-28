@@ -52,8 +52,7 @@ exports.getPtId = function(pt) {
 };
 
 exports.getPtLabel = function(pt) {
-    var label = pt.data.data.label;
-    return label === undefined ? pt.data.data.pid : label;
+    return pt.data.data.label;
 };
 
 exports.getValue = function(d) {
