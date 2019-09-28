@@ -162,14 +162,14 @@ function plotOne(gd, cd, element, transitionOpts) {
     var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
     var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);
 
-    var viewMapX = function(x) { return cenX + (x || 0); };
-    var viewMapY = function(y) { return cenY + (y || 0); };
+    var viewMapX = function(x) { return cenX + x; };
+    var viewMapY = function(y) { return cenY + y; };
 
     var barY0 = viewMapY(0);
     var barX0 = viewMapX(0);
 
-    var viewBarX = function(x) { return barX0 + (x || 0); };
-    var viewBarY = function(y) { return barY0 + (y || 0); };
+    var viewBarX = function(x) { return barX0 + x; };
+    var viewBarY = function(y) { return barY0 + y; };
 
     function pos(x, y) {
         return x + ',' + y;
@@ -315,6 +315,11 @@ function plotOne(gd, cd, element, transitionOpts) {
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;
+            if(x0 >= x1) {
+                var mid = (x0 + x1) / 2;
+                x0 = mid - TEXTPAD;
+                x1 = mid + TEXTPAD;
+            }
 
             // limit the drawing area for headers
             var limY;
@@ -343,13 +348,20 @@ function plotOne(gd, cd, element, transitionOpts) {
             else if(offsetDir === 'right') transform.targetX += deltaX;
         }
 
+        transform.targetX = viewMapX(transform.targetX);
+        transform.targetY = viewMapY(transform.targetY);
+
+        if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
+            return {};
+        }
+
         return {
             scale: transform.scale,
             rotate: transform.rotate,
             textX: transform.textX,
             textY: transform.textY,
-            targetX: viewMapX(transform.targetX),
-            targetY: viewMapY(transform.targetY)
+            targetX: transform.targetX,
+            targetY: transform.targetY
         };
     };
 
