@@ -629,7 +629,7 @@ describe('Test treemap hover:', function() {
     });
 });
 
-describe('Test treemap hover with levels', function() {
+describe('Test treemap hover with and without levels', function() {
     var gd;
 
     var labels0 = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November', 'Oscar', 'Papa', 'Quebec', 'Romeo', 'Sierra', 'Tango', 'Uniform', 'Victor', 'Whiskey', 'X ray', 'Yankee', 'Zulu'];
@@ -646,7 +646,7 @@ describe('Test treemap hover with levels', function() {
             t.type = 'treemap';
             t.text = text0;
             t.values = values0;
-            t.level = 'Oscar';
+            t.level = spec.level;
             t.branchvalues = 'total';
             t.hovertemplate = 'path = %{currentPath}<br>label = %{label}<br>text = %{text}<br>value = %{value}<br>ratio to %{parent} = %{percentParent}<br>ratio to %{entry} = %{percentEntry}<br>ratio to %{root} = %{percentRoot}';
 
@@ -685,6 +685,23 @@ describe('Test treemap hover with levels', function() {
 
     [{
         desc: 'entry',
+        level: 'X ray',
+        pos: 0,
+        exp: {
+            label: {
+                name: 'trace 0',
+                nums: 'path = Alpha/Charlie/Foxtrot/Juliet/Oscar/Uniform/\nlabel = X ray\ntext = two\nvalue = 2\nratio to Uniform = 0.2\nratio to X ray = 1\nratio to Alpha = 0.05',
+            },
+            ptData: {
+                curveNumber: 0,
+                pointNumber: 23,
+                label: 'X ray',
+                parent: 'Uniform'
+            }
+        }
+    }, {
+        desc: 'entry',
+        level: 'Oscar',
         pos: 0,
         exp: {
             label: {
@@ -700,6 +717,7 @@ describe('Test treemap hover with levels', function() {
         }
     }, {
         desc: 'leaf',
+        level: 'Oscar',
         pos: 10,
         exp: {
             label: {
@@ -713,69 +731,9 @@ describe('Test treemap hover with levels', function() {
                 parent: 'Uniform'
             }
         }
-    }]
-    .forEach(function(spec) {
-        it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
-            run(spec).catch(failTest).then(done);
-        });
-    });
-});
-
-describe('Test treemap hover at root level', function() {
-    var gd;
-
-    var labels0 = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November', 'Oscar', 'Papa', 'Quebec', 'Romeo', 'Sierra', 'Tango', 'Uniform', 'Victor', 'Whiskey', 'X ray', 'Yankee', 'Zulu'];
-    var parents0 = ['', 'Alpha', 'Alpha', 'Charlie', 'Charlie', 'Charlie', 'Foxtrot', 'Foxtrot', 'Foxtrot', 'Foxtrot', 'Juliet', 'Juliet', 'Juliet', 'Juliet', 'Juliet', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform'];
-    var values0 = [40, 2, 38, 1.5, 2.5, 34, 1, 2, 3, 28, 1.25, 1.75, 2.25, 2.75, 20, 1, 1.5, 2, 2.5, 3, 10, 1, 1.5, 2, 2.5, 3];
-    var text0 = ['forty', 'two', 'thirty-eight', 'one and a half', 'two and a half', 'thirty-four', 'one', 'two', 'three', 'twenty-eight', 'one and twenty-five hundredths', 'one and seventy-five hundredths', 'two and twenty-five hundredths', 'two and seventy-five hundredths', 'twenty', 'one', 'one and a half', 'two', 'two and a half', 'three', 'ten', 'one', 'one and a half', 'two', 'two and a half', 'three'];
-
-    afterEach(destroyGraphDiv);
-
-    function run(spec) {
-        gd = createGraphDiv();
-
-        var data = (spec.traces || [{}]).map(function(t) {
-            t.type = 'treemap';
-            t.text = text0;
-            t.values = values0;
-            t.branchvalues = 'total';
-            t.hovertemplate = 'path = %{currentPath}<br>label = %{label}<br>text = %{text}<br>value = %{value}<br>ratio to %{parent} = %{percentParent}<br>ratio to %{entry} = %{percentEntry}<br>ratio to %{root} = %{percentRoot}';
-
-            if(!t.labels) t.labels = labels0.slice();
-            if(!t.parents) t.parents = parents0.slice();
-            return t;
-        });
-
-        var layout = Lib.extendFlat({
-            width: 500,
-            height: 500,
-            margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
-        }, spec.layout || {});
-
-        var exp = spec.exp || {};
-        var ptData = null;
-
-        return Plotly.plot(gd, data, layout)
-            .then(function() {
-                gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
-            })
-            .then(hover(gd, spec.pos))
-            .then(function() {
-                assertHoverLabelContent(exp.label);
-
-                for(var k in exp.ptData) {
-                    expect(ptData[k]).toBe(exp.ptData[k], 'pt event data key ' + k);
-                }
-
-                if(exp.style) {
-                    var gd3 = d3.select(gd);
-                    assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
-                }
-            });
-    }
-
-    [{
+    }, {
         desc: 'entry',
+        level: undefined, // root
         pos: 0,
         exp: {
             label: {
@@ -791,6 +749,7 @@ describe('Test treemap hover at root level', function() {
         }
     }, {
         desc: 'leaf',
+        level: undefined, // root
         pos: 10,
         exp: {
             label: {
@@ -806,7 +765,7 @@ describe('Test treemap hover at root level', function() {
         }
     }]
     .forEach(function(spec) {
-        it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
+        it('should generate correct hover labels and event data - ' + spec.desc + ' with level:' + spec.level, function(done) {
             run(spec).catch(failTest).then(done);
         });
     });

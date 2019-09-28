@@ -564,7 +564,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     obj.percentParentLabel = helpers.formatPercent(
         obj.percentParent, separators
     );
-    obj.parent = helpers.getPtLabel(parent);
+    obj.parent = helpers.isHierarchyRoot(pt) ? '' : helpers.getPtLabel(parent);
 
     obj.percentEntry = val / helpers.getValue(entry);
     obj.percentEntryLabel = helpers.formatPercent(

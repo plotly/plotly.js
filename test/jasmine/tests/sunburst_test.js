@@ -1345,7 +1345,7 @@ describe('Test sunburst texttemplate without `values` should work at root level:
         ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of ', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1389,7 +1389,7 @@ describe('Test sunburst texttemplate with *total* `values` should work at root l
         ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of ', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
         [
             [
                 'label: %{label}',
@@ -1433,7 +1433,7 @@ describe('Test sunburst texttemplate with *remainder* `values` should work at ro
         ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
         ['%{percentRoot} of %{root}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
         ['%{percentEntry} of %{entry}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
-        ['%{percentParent} of %{parent}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        ['%{percentParent} of %{parent}', ['100% of ', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
         [
             [
                 'label: %{label}',
