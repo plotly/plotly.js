@@ -6,10 +6,10 @@
             "lighting": {
                 "facenormalsepsilon": 0
             },
-            "opacity": 0.2,
+            "opacity": 0.1,
             "opacityscale": "extremes",
-            "colorscale": "Blackbody",
-            "reversescale": true,
+            "colorscale": "Portland",
+            "reversescale": false,
             "colorbar": {
                 "title": "<b>extremes</b><br>opacistyscale",
                 "len": 0.5,
