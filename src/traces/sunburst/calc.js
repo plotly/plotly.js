@@ -128,7 +128,8 @@ exports.calc = function(gd, trace) {
         cd.unshift({
             hasMultipleRoots: true,
             id: dummyId,
-            pid: ''
+            pid: '',
+            label: ''
         });
     }
 

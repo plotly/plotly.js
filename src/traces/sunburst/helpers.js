@@ -55,7 +55,7 @@ exports.getPtLabel = function(pt) {
     return pt.data.data.label;
 };
 
-exports.getVal = function(d) {
+exports.getValue = function(d) {
     return d.value;
 };
 
@@ -152,10 +152,7 @@ function getParentId(pt) {
 }
 
 exports.getParent = function(hierarchy, pt) {
-    var parentId = getParentId(pt);
-    return parentId === '' ?
-        undefined :
-        exports.findEntryWithLevel(hierarchy, parentId);
+    return exports.findEntryWithLevel(hierarchy, getParentId(pt));
 };
 
 exports.listPath = function(d, keyStr) {
