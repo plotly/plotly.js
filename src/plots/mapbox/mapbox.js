@@ -367,7 +367,10 @@ proto.resolveOnRender = function(resolve) {
         if(map.loaded()) {
             map.off('render', onRender);
             // resolve at end of render loop
-            setTimeout(resolve, 0);
+            //
+            // Need a 10ms delay (0ms should suffice to skip a thread in the
+            // render loop) to workaround mapbox-gl bug introduced in v1.3.0
+            setTimeout(resolve, 10);
         }
     });
 };
