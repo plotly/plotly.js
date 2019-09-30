@@ -24,11 +24,6 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
-    var rootLabel = hierarchy.data.data.pid;
-    var readLabel = function(refPt) {
-        var l = helpers.getPtLabel(refPt);
-        return l === undefined ? rootLabel : l;
-    };
 
     var isSunburst = trace.type === 'sunburst';
     var isTreemap = trace.type === 'treemap';
@@ -53,7 +48,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var isRoot = helpers.isHierarchyRoot(pt);
         var parent = helpers.getParent(hierarchy, pt);
 
-        var val = helpers.getVal(pt);
+        var val = helpers.getValue(pt);
 
         var _cast = function(astr) {
             return Lib.castOption(traceNow, ptNumber, astr);
@@ -109,24 +104,22 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 }
             };
 
-            if(parent) {
-                hoverPt.percentParent = pt.percentParent = val / helpers.getVal(parent);
-                hoverPt.parent = pt.parentString = readLabel(parent);
-                if(hasFlag('percent parent')) {
-                    tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
-                    insertPercent();
-                }
+            hoverPt.percentParent = pt.percentParent = val / helpers.getValue(parent);
+            hoverPt.parent = pt.parentString = helpers.getPtLabel(parent);
+            if(hasFlag('percent parent')) {
+                tx = helpers.formatPercent(hoverPt.percentParent, separators) + ' of ' + hoverPt.parent;
+                insertPercent();
             }
 
-            hoverPt.percentEntry = pt.percentEntry = val / helpers.getVal(entry);
-            hoverPt.entry = pt.entry = readLabel(entry);
+            hoverPt.percentEntry = pt.percentEntry = val / helpers.getValue(entry);
+            hoverPt.entry = pt.entry = helpers.getPtLabel(entry);
             if(hasFlag('percent entry') && !isRoot && !pt.onPathbar) {
                 tx = helpers.formatPercent(hoverPt.percentEntry, separators) + ' of ' + hoverPt.entry;
                 insertPercent();
             }
 
-            hoverPt.percentRoot = pt.percentRoot = val / helpers.getVal(hierarchy);
-            hoverPt.root = pt.root = readLabel(hierarchy);
+            hoverPt.percentRoot = pt.percentRoot = val / helpers.getValue(hierarchy);
+            hoverPt.root = pt.root = helpers.getPtLabel(hierarchy);
             if(hasFlag('percent root') && !isRoot) {
                 tx = helpers.formatPercent(hoverPt.percentRoot, separators) + ' of ' + hoverPt.root;
                 insertPercent();
@@ -307,7 +300,7 @@ function makeEventData(pt, trace, keys) {
         if(key in pt) out[key] = pt[key];
     }
     // handle special case of parent
-    if('parentString' in pt) out.parent = pt.parentString;
+    if('parentString' in pt && !helpers.isHierarchyRoot(pt)) out.parent = pt.parentString;
 
     appendArrayPointValue(out, trace, cdi.i);
 
