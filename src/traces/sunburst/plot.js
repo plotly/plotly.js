@@ -526,7 +526,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
                     thisText.push(tx);
                 };
 
-                if(hasFlag('percent parent')) {
+                if(hasFlag('percent parent') && !isRoot) {
                     percent = val / helpers.getValue(parent);
                     addPercent('parent');
                 }
@@ -560,11 +560,13 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
 
     obj.currentPath = helpers.getPath(pt.data);
 
-    obj.percentParent = val / helpers.getValue(parent);
-    obj.percentParentLabel = helpers.formatPercent(
-        obj.percentParent, separators
-    );
-    obj.parent = helpers.isHierarchyRoot(pt) ? '' : helpers.getPtLabel(parent);
+    if(!isRoot) {
+        obj.percentParent = val / helpers.getValue(parent);
+        obj.percentParentLabel = helpers.formatPercent(
+            obj.percentParent, separators
+        );
+        obj.parent = helpers.getPtLabel(parent);
+    }
 
     obj.percentEntry = val / helpers.getValue(entry);
     obj.percentEntryLabel = helpers.formatPercent(
