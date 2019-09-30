@@ -157,6 +157,16 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             hovered: false
         });
 
+        if(pt.x0 === pt.x1 || pt.y0 === pt.y1) {
+            pt._text = '';
+        } else {
+            if(isHeader) {
+                pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
+            } else {
+                pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
+            }
+        }
+
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
@@ -164,32 +174,16 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var tx;
-        if(isHeader) {
-            if(noRoomForHeader) return;
-
-            tx = helpers.getPtLabel(pt);
-        } else {
-            tx = formatSliceLabel(pt, entry, trace, cd, fullLayout) || ' ';
-        }
-
-        sliceText.text(tx)
+        sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
             .attr('text-anchor', hasRight ? 'end' : (hasLeft || isHeader) ? 'start' : 'middle')
             .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(
-            pt.x0,
-            pt.x1,
-            pt.y0,
-            pt.y1,
-            pt.textBB,
-            {
-                isHeader: isHeader
-            }
-        );
+        pt.transform = toMoveInsideSlice(pt, {
+            isHeader: isHeader
+        });
 
         if(helpers.isOutsideText(trace, pt)) {
             // consider in/out diff font sizes
