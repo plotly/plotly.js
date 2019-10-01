@@ -1231,6 +1231,36 @@ describe('ModeBar', function() {
                     buttonClosest.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
+
+                it('should work after clicking on "autoScale2d"', function() {
+                    var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonAutoScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+
+                it('should work after clicking on "resetScale2d"', function() {
+                    var buttonResetScale = selectButton(modeBar, 'resetScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonResetScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
             });
         });
 
