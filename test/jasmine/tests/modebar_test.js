@@ -1201,6 +1201,7 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
                 });
+
                 it('should makes spikelines visible', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1208,6 +1209,7 @@ describe('ModeBar', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
+
                 it('should not become disabled when hovermode is switched off closest', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1215,6 +1217,7 @@ describe('ModeBar', function() {
                     buttonCompare.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
                 });
+
                 it('should keep the state on changing the hovermode', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
