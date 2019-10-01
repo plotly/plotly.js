@@ -189,9 +189,10 @@ exports.calc = function(gd, trace) {
     var pullColor;
     var scaleColor;
     var colors = trace.marker.colors || [];
+    var hasColors = !!colors.length;
     trace._hasColorscale = hasColorscale(trace, 'marker');
     if(trace._hasColorscale) {
-        if(!colors.length) {
+        if(!hasColors) {
             colors = hasValues ? trace.values : trace._values;
         }
 
