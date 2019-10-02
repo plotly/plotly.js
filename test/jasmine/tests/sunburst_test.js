@@ -363,7 +363,27 @@ describe('Test sunburst calc:', function() {
         expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
     });
 
-    it('should use *marker.colors* numbers with colorscale', function() {
+    it('should use *marker.colors* numbers with default colorscale', function() {
+        _calc({
+            marker: { colors: [-4, -3, -2, -1, 0, 1, 2, 3, 4] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(5, 10, 172)');
+        expect(cd[1].color).toEqual('rgb(41, 55, 199)');
+        expect(cd[2].color).toEqual('rgb(77, 101, 226)');
+        expect(cd[3].color).toEqual('rgb(120, 146, 238)');
+        expect(cd[4].color).toEqual('rgb(190, 190, 190)');
+        expect(cd[5].color).toEqual('rgb(223, 164, 122)');
+        expect(cd[6].color).toEqual('rgb(221, 123, 80)');
+        expect(cd[7].color).toEqual('rgb(200, 66, 54)');
+        expect(cd[8].color).toEqual('rgb(178, 10, 28)');
+    });
+
+    it('should use *marker.colors* numbers with desired colorscale', function() {
         _calc({
             marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
