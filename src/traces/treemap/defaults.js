@@ -73,7 +73,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
     coerce('marker.colors');
-    var withColorscale = hasColorscale(traceIn, 'marker', 'colors');
+    var withColorscale = traceOut._hasColorscale = hasColorscale(traceIn, 'marker', 'colors');
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
