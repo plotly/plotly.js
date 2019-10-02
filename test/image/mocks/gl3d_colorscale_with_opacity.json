@@ -1,0 +1,465 @@
+{
+    "data": [
+        {
+            "meta": {
+                "columnNames": {
+                    "x": "Engine capacity, x",
+                    "y": "Mass, y",
+                    "z": "Engine power, z",
+                    "text": "data, text",
+                    "marker": {
+                        "color": "CO2, color"
+                    }
+                }
+            },
+            "mode": "markers",
+            "name": "Average parameters 2017",
+            "type": "scatter3d",
+            "x": [
+                "1598.0",
+                "1548.3",
+                "1633.5",
+                "1562.8",
+                "1699.4",
+                "1416.9",
+                "1558.2",
+                "1467.3",
+                "1376.9",
+                "1502.1",
+                "1599.9",
+                "1552.5",
+                "1486.1",
+                "1808.3",
+                "1669.7",
+                "1352.5",
+                "1769.7",
+                "1455.9",
+                "1530.5",
+                "1759.3",
+                "1508.9",
+                "1597.0"
+            ],
+            "y": [
+                "1435.1",
+                "1419.1",
+                "1413.7",
+                "1385.2",
+                "1455.2",
+                "1279.1",
+                "1434.2",
+                "1323.3",
+                "1242.7",
+                "1335.4",
+                "1370.1",
+                "1377.7",
+                "1313.0",
+                "1502.9",
+                "1474.0",
+                "1284.3",
+                "1620.3",
+                "1349.6",
+                "1351.2",
+                "1541.0",
+                "1387.4",
+                "1443.0"
+            ],
+            "z": [
+                "94.0",
+                "93.5",
+                "98.6",
+                "95.8",
+                "111.2",
+                "84.3",
+                "99.2",
+                "85.2",
+                "76.2",
+                "83.1",
+                "97.0",
+                "85.0",
+                "79.9",
+                "120.5",
+                "101.9",
+                "84.3",
+                "105.4",
+                "82.6",
+                "88.5",
+                "115.0",
+                "91.2",
+                "96.7"
+            ],
+            "marker": {
+                "line": {
+                    "color": "rgb(9, 9, 9)",
+                    "width": 5
+                },
+                "meta": {
+                    "columnNames": {
+                        "color": "CO2, color"
+                    }
+                },
+                "size": 20,
+                "symbol": "circle",
+                "opacity": 0.9,
+                "sizeref": 1667.599012345679,
+                "colorbar": {
+                    "ticks": "outside",
+                    "title": {
+                        "font": {
+                            "color": "rgb(242, 245, 250)",
+                            "family": "Courier New"
+                        },
+                        "text": "CO2 emissions<br>colorscale"
+                    },
+                    "tickfont": {
+                        "color": "rgb(242, 245, 250)",
+                        "family": "Courier New"
+                    },
+                    "thickness": 23,
+                    "tickcolor": "rgb(242, 245, 250)",
+                    "outlinewidth": 1
+                },
+                "color": [
+                    "120.7",
+                    "115.9",
+                    "126.3",
+                    "124.4",
+                    "127.4",
+                    "107.1",
+                    "118.2",
+                    "110.4",
+                    "108.8",
+                    "113.1",
+                    "125.6",
+                    "111.6",
+                    "113.4",
+                    "127.0",
+                    "128.8",
+                    "108.3",
+                    "82.6",
+                    "104.8",
+                    "120.6",
+                    "122.3",
+                    "119.6",
+                    "126.1"
+                ],
+                "sizemode": "area",
+                "fillcolor": "rgba(74,198,183,0.5)",
+                "showscale": true
+            },
+            "opacity": 0.9,
+            "text": [
+                "Country:  Austria <br>Eng. capacity : 1598.0\n  <br>Mass : 1435.1 <br>Eng. power : 94.0<br>CO2 : 120.7",
+                "Country:  Belgium <br>Eng. capacity : 1548.3\n  <br>Mass : 1419.1 <br>Eng. power : 93.5<br>CO2 : 115.9",
+                "Country:  Bulgaria <br>Eng. capacity : 1633.5\n  <br>Mass : 1413.7 <br>Eng. power : 98.6<br>CO2 : 126.3",
+                "Country:  Czech Republic <br>Eng. capacity :\n  1562.8 <br>Mass : 1385.2 <br>Eng. power : 95.8<br>CO2 :\n  124.4",
+                "Country:  Germany <br>Eng. capacity : 1699.4\n  <br>Mass : 1455.2 <br>Eng. power : 111.2<br>CO2 : 127.4",
+                "Country:  Denmark <br>Eng. capacity : 1416.9\n  <br>Mass : 1279.1 <br>Eng. power : 84.3<br>CO2 : 107.1",
+                "Country:  Finland <br>Eng. capacity : 1558.2\n  <br>Mass : 1434.2 <br>Eng. power : 99.2<br>CO2 : 118.2",
+                "Country:  France <br>Eng. capacity : 1467.3\n  <br>Mass : 1323.3 <br>Eng. power : 85.2<br>CO2 : 110.4",
+                "Country:  Greece <br>Eng. capacity : 1367.9\n  <br>Mass : 1242.7 <br>Eng. power : 76.2<br>CO2 : 108.8",
+                "Country:  Croatia <br>Eng. capacity : 1502.1\n  <br>Mass : 1335.4 <br>Eng. power : 83.1<br>CO2 : 113.1",
+                "Country:  Hungary <br>Eng. capacity : 1599.9\n  <br>Mass : 1370.1 <br>Eng. power : 97.0<br>CO2 : 125.6",
+                "Country:  Ireland <br>Eng. capacity : 1552.5\n  <br>Mass : 1377.7 <br>Eng. power : 85.0<br>CO2 : 111.6",
+                "Country:  Italy <br>Eng. capacity : 1486.1\n  <br>Mass : 1313.0 <br>Eng. power : 79.9<br>CO2 : 113.4",
+                "Country:  Luxembourg <br>Eng. capacity : 1808.3\n  <br>Mass : 1502.9 <br>Eng. power : 120.5<br>CO2 : 127.0",
+                "Country:  Latvia <br>Eng. capacity : 1669.7\n  <br>Mass : 1474.0 <br>Eng. power : 101.9<br>CO2 : 128.8",
+                "Country:  Netherlands <br>Eng. capacity :\n  1352.5 <br>Mass : 1284.3 <br>Eng. power : 84.3<br>CO2 :\n  108.3",
+                "Country:  Norway <br>Eng. capacity : 1769.7\n  <br>Mass : 1620.3 <br>Eng. power : 105.4<br>CO2 : 82.6",
+                "Country:  Portugal <br>Eng. capacity : 1455.9\n  <br>Mass : 1349.6 <br>Eng. power : 82.6<br>CO2 : 104.8",
+                "Country:  Romania <br>Eng. capacity : 1530.5\n  <br>Mass : 1351.2 <br>Eng. power : 88.5<br>CO2 : 120.6",
+                "Country:  Sweden <br>Eng. capacity : 1759.3\n  <br>Mass : 1541.0 <br>Eng. power : 115.0<br>CO2 : 122.3",
+                "Country:  Slovenia <br>Eng. capacity : 1508.9\n  <br>Mass : 1387.4<br>Eng. power : 91.2<br>CO2 : 119.6",
+                "Country:  Slovakia <br>Eng. capacity : 1597.0\n  <br>Mass : 1443.0 <br>Eng. power : 96.7<br>CO2 : 126.1"
+            ],
+            "colorbar": {
+                "x": 0.718942731277533,
+                "y": 0.4790697674418604,
+                "title": {
+                    "text": "CO2 emissions<br>colorscale"
+                }
+            },
+            "hoverinfo": "text",
+            "autocolorscale": false
+        }
+    ],
+    "layout": {
+        "font": {
+            "color": "rgb(255, 255, 255)"
+        },
+        "scene": {
+            "xaxis": {
+                "type": "linear",
+                "range": [
+                    1350,
+                    1850
+                ],
+                "ticks": "inside",
+                "title": {
+                    "font": {
+                        "size": 14,
+                        "family": "Courier New"
+                    },
+                    "text": "Engine Capacity [cc]"
+                },
+                "mirror": false,
+                "ticklen": 5,
+                "showgrid": true,
+                "showline": true,
+                "tickfont": {
+                    "size": 12,
+                    "family": "Courier New"
+                },
+                "autorange": false,
+                "gridcolor": "rgb(113, 117, 120)",
+                "gridwidth": 2,
+                "linecolor": "rgb(255, 255, 255)",
+                "linewidth": 2,
+                "tickangle": "auto",
+                "tickcolor": "rgb(255, 255, 255)",
+                "tickwidth": 2,
+                "showspikes": true,
+                "zerolinecolor": "rgb(255, 255, 255)",
+                "zerolinewidth": 1,
+                "showbackground": false,
+                "separatethousands": true
+            },
+            "yaxis": {
+                "type": "linear",
+                "range": [
+                    1200,
+                    1650
+                ],
+                "ticks": "inside",
+                "title": {
+                    "font": {
+                        "size": 14,
+                        "family": "Courier New"
+                    },
+                    "text": "Mass [kg]"
+                },
+                "ticklen": 5,
+                "gridwith": 2,
+                "showline": true,
+                "tickfont": {
+                    "family": "Courier New"
+                },
+                "autorange": false,
+                "gridcolor": "rgb(113, 117, 120)",
+                "linecolor": "rgb(255, 255, 255)",
+                "linewidth": 2,
+                "tickcolor": "rgb(255, 255, 255)",
+                "tickwidth": 2,
+                "showspikes": true,
+                "zerolinewidth": 1,
+                "separatethousands": true
+            },
+            "zaxis": {
+                "type": "linear",
+                "range": [
+                    75,
+                    148
+                ],
+                "ticks": "inside",
+                "title": {
+                    "font": {
+                        "size": 14,
+                        "family": "Courier New"
+                    },
+                    "text": "Engine Power [kg]"
+                },
+                "mirror": false,
+                "ticklen": 5,
+                "gridwith": 2,
+                "showline": true,
+                "tickfont": {
+                    "family": "Courier New"
+                },
+                "autorange": true,
+                "gridcolor": "rgb(113, 117, 120)",
+                "linecolor": "rgb(255, 255, 255)",
+                "linewidth": 2,
+                "tickcolor": "rgb(255, 255, 255)",
+                "tickwidth": 2,
+                "showspikes": true,
+                "zerolinewidth": 1,
+                "separatethousands": true
+            },
+            "camera": {
+                "up": {
+                    "x": 0.2036221845101748,
+                    "y": 0.22629541931911376,
+                    "z": 0.9525378675782348
+                },
+                "eye": {
+                    "x": -2.007068781359523,
+                    "y": -2.2305549494650494,
+                    "z": 0.9589625026126264
+                }
+            }
+        },
+        "title": {
+            "x": 0.2,
+            "pad": {
+                "t": 0
+            },
+            "font": {
+                "size": 26,
+                "family": "Courier New"
+            },
+            "text": "Average parameters 2017"
+        },
+        "width": 600,
+        "xaxis": {
+            "domain": [
+                0,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                1
+            ]
+        },
+        "height": 600,
+        "margin": {
+            "b": 25,
+            "l": 10,
+            "r": 10,
+            "t": 40
+        },
+        "autosize": false,
+        "dragmode": "zoom",
+        "colorscale": {
+            "diverging": [
+                [
+                    0,
+                    "#67001f"
+                ],
+                [
+                    0.1,
+                    "#b2182b"
+                ],
+                [
+                    0.2,
+                    "#d6604d"
+                ],
+                [
+                    0.3,
+                    "#f4a582"
+                ],
+                [
+                    0.4,
+                    "#fddbc7"
+                ],
+                [
+                    0.5,
+                    "#f7f7f7"
+                ],
+                [
+                    0.6,
+                    "#d1e5f0"
+                ],
+                [
+                    0.7,
+                    "#92c5de"
+                ],
+                [
+                    0.8,
+                    "#4393c3"
+                ],
+                [
+                    0.9,
+                    "#2166ac"
+                ],
+                [
+                    1,
+                    "#053061"
+                ]
+            ],
+            "sequential": [
+                [
+                    0,
+                    "#fff7ec"
+                ],
+                [
+                    0.125,
+                    "#fee8c8"
+                ],
+                [
+                    0.25,
+                    "#fdd49e"
+                ],
+                [
+                    0.375,
+                    "#fdbb84"
+                ],
+                [
+                    0.5,
+                    "#fc8d59"
+                ],
+                [
+                    0.625,
+                    "#ef6548"
+                ],
+                [
+                    0.75,
+                    "#d7301f"
+                ],
+                [
+                    0.875,
+                    "#b30000"
+                ],
+                [
+                    1,
+                    "#7f0000"
+                ]
+            ],
+            "sequentialminus": [
+                [
+                    0,
+                    "#000004"
+                ],
+                [
+                    0.1111111111111111,
+                    "#180f3d"
+                ],
+                [
+                    0.2222222222222222,
+                    "#440f76"
+                ],
+                [
+                    0.3333333333333333,
+                    "#721f81"
+                ],
+                [
+                    0.4444444444444444,
+                    "#9e2f7f"
+                ],
+                [
+                    0.5555555555555556,
+                    "#cd4071"
+                ],
+                [
+                    0.6666666666666666,
+                    "#f1605d"
+                ],
+                [
+                    0.7777777777777778,
+                    "#fd9668"
+                ],
+                [
+                    0.8888888888888888,
+                    "#feca8d"
+                ],
+                [
+                    1,
+                    "#fcfdbf"
+                ]
+            ]
+        },
+        "showlegend": false,
+        "plot_bgcolor": "rgb(243, 243, 243)",
+        "paper_bgcolor": "rgb(75, 75, 75)"
+    }
+}
