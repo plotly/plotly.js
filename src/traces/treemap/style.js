@@ -61,7 +61,8 @@ function styleOne(s, pt, trace, opts) {
         opacity =
             trace._hasColorscale || helpers.isLeaf(pt) ? 1 :
             pt.onPathbar ? trace.pathbar.opacity :
-                depthFade(pt.data.depth - trace._entryDepth);
+                helpers.isHierarchyRoot(pt) ? 1 :
+                    depthFade(pt.data.depth - trace._entryDepth);
     }
 
     s.style('stroke-width', lineWidth)

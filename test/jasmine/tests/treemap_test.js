@@ -1221,21 +1221,21 @@ describe('Test treemap restyle:', function() {
         }
 
         Plotly.plot(gd, mock)
-        .then(_assert('base', ['0', '1', '0.5', '0.5', '1', '1']))
+        .then(_assert('base', ['1', '1', '0.5', '0.5', '1', '1']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
         })
         .then(_restyle({'marker.opacitybase': 0.2}))
-        .then(_assert('lower marker.opacitybase', ['0', '1', '0.2', '0.5', '1', '1']))
+        .then(_assert('lower marker.opacitybase', ['1', '1', '0.2', '0.5', '1', '1']))
         .then(_restyle({'marker.opacitystep': 0.1}))
-        .then(_assert('lower marker.opacitystep', ['0', '1', '0.2', '0.1', '0.2', '1']))
+        .then(_assert('lower marker.opacitystep', ['1', '1', '0.2', '0.1', '0.2', '1']))
         .then(_restyle({'marker.opacitybase': 0.8}))
-        .then(_assert('raise marker.opacitybase', ['0', '1', '0.8', '0.1', '0.2', '1']))
+        .then(_assert('raise marker.opacitybase', ['1', '1', '0.8', '0.1', '0.2', '1']))
         .then(_restyle({'marker.opacitybase': null}))
-        .then(_assert('back to dflt', ['0', '1', '0.5', '0.1', '0.2', '1']))
+        .then(_assert('back to dflt', ['1', '1', '0.5', '0.1', '0.2', '1']))
         .then(_restyle({'marker.opacitystep': null}))
-        .then(_assert('back to dflt', ['0', '1', '0.5', '0.5', '1', '1']))
+        .then(_assert('back to dflt', ['1', '1', '0.5', '0.5', '1', '1']))
         .catch(failTest)
         .then(done);
     });
