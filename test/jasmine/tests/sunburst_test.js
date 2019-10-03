@@ -185,7 +185,7 @@ describe('Test sunburst calc:', function() {
     function extractPt(k) {
         var out = gd.calcdata.map(function(cd) {
             return cd[0].hierarchy.descendants().map(function(pt) {
-                return pt[k];
+                return Lib.nestedProperty(pt, k).get();
             });
         });
         return out.length > 1 ? out : out[0];
@@ -316,6 +316,54 @@ describe('Test sunburst calc:', function() {
 
         expect(extract('id')).toEqual(['true', '1', '2', '3', '4', '5', '6', '7', '8']);
         expect(extract('pid')).toEqual(['', 'true', 'true', '2', '2', 'true', 'true', '6', 'true']);
+    });
+
+    it('should compute correct sector *value* for generated implied root', function() {
+        _calc([{
+            labels: [ 'A', 'B', 'b'],
+            parents: ['Root', 'Root', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'remainder'
+        }, {
+            labels: [ 'A', 'B', 'b'],
+            parents: ['Root', 'Root', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'total'
+        }]);
+
+        expect(extractPt('data.data.id')).toEqual([
+            ['Root', 'B', 'A', 'b'],
+            ['Root', 'B', 'A', 'b']
+        ]);
+        expect(extractPt('value')).toEqual([
+            [4, 3, 1, 1],
+            [3, 2, 1, 1]
+        ]);
+    });
+
+    it('should compute correct sector *value* for generated "root of roots"', function() {
+        spyOn(Lib, 'randstr').and.callFake(function() { return 'dummy'; });
+
+        _calc([{
+            labels: [ 'A', 'B', 'b'],
+            parents: ['', '', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'remainder'
+        }, {
+            labels: [ 'A', 'B', 'b'],
+            parents: ['', '', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'total'
+        }]);
+
+        expect(extractPt('data.data.id')).toEqual([
+            ['dummy', 'B', 'A', 'b'],
+            ['dummy', 'B', 'A', 'b']
+        ]);
+        expect(extractPt('value')).toEqual([
+            [4, 3, 1, 1],
+            [3, 2, 1, 1]
+        ]);
     });
 });
 
