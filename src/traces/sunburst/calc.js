@@ -103,6 +103,7 @@ exports.calc = function(gd, trace) {
         if(impliedRoots.length === 1) {
             k = impliedRoots[0];
             cd.unshift({
+                hasImpliedRoot: true,
                 id: k,
                 pid: '',
                 label: k
@@ -150,12 +151,20 @@ exports.calc = function(gd, trace) {
                 break;
             case 'total':
                 hierarchy.each(function(d) {
-                    var v = d.data.data.v;
+                    var cdi = d.data.data;
+                    var v = cdi.v;
 
                     if(d.children) {
                         var partialSum = d.children.reduce(function(a, c) {
                             return a + c.data.data.v;
                         }, 0);
+
+                        // N.B. we must fill in `value` for generated sectors
+                        // with the partialSum to compute the correct partition
+                        if(cdi.hasImpliedRoot || cdi.hasMultipleRoots) {
+                            v = partialSum;
+                        }
+
                         if(v < partialSum) {
                             failed = true;
                             return Lib.warn([

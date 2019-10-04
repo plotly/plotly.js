@@ -2462,10 +2462,14 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                     yr1 = newLayout[ya._name].range.slice();
                 }
 
-                if(xr0 && xr1 && (xr0[0] !== xr1[0] || xr0[1] !== xr1[1])) {
+                if(xr0 && xr1 &&
+                    (xa.r2l(xr0[0]) !== xa.r2l(xr1[0]) || xa.r2l(xr0[1]) !== xa.r2l(xr1[1]))
+                ) {
                     editX = {xr0: xr0, xr1: xr1};
                 }
-                if(yr0 && yr1 && (yr0[0] !== yr1[0] || yr0[1] !== yr1[1])) {
+                if(yr0 && yr1 &&
+                    (ya.r2l(yr0[0]) !== ya.r2l(yr1[0]) || ya.r2l(yr0[1]) !== ya.r2l(yr1[1]))
+                ) {
                     editY = {yr0: yr0, yr1: yr1};
                 }
 
@@ -2559,10 +2563,10 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
             var editX = null;
             var editY = null;
 
-            if(xr0[0] !== xr1[0] || xr0[1] !== xr1[1]) {
+            if(xa.r2l(xr0[0]) !== xa.r2l(xr1[0]) || xa.r2l(xr0[1]) !== xa.r2l(xr1[1])) {
                 editX = {xr0: xr0, xr1: xr1};
             }
-            if(yr0[0] !== yr1[0] || yr0[1] !== yr1[1]) {
+            if(ya.r2l(yr0[0]) !== ya.r2l(yr1[0]) || ya.r2l(yr0[1]) !== ya.r2l(yr1[1])) {
                 editY = {yr0: yr0, yr1: yr1};
             }
 
