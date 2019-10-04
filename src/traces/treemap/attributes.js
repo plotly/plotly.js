@@ -139,30 +139,16 @@ module.exports = {
 
         colors: sunburstAttrs.marker.colors,
 
-        opacitybase: {
-            valType: 'number',
+        depthfade: {
+            valType: 'boolean',
             editType: 'style',
             role: 'style',
-            min: 0,
-            max: 1,
-            dflt: 0.5,
             description: [
-                'Sets the base opacity of the headers above root based on the depth from the entry.',
-                'Please note that the root itself would be drawn with opacity 1.',
-                'This options is not available when having a `colorscale`.',
-            ].join(' ')
-        },
-
-        opacitystep: {
-            valType: 'number',
-            editType: 'style',
-            role: 'style',
-            min: 0,
-            max: 1,
-            dflt: 0.5,
-            description: [
-                'Sets the increment for opacity of the headers based on the depth from the entry.',
-                'This options is not available when having a `colorscale`.'
+                'Fades headers towards the background.',
+                'When `marker.colors` are not set within the trace it is defaulted to *false*;',
+                'otherwise it is defaulted to *true*.',
+                'This options is not available when having a `colorscale` or',
+                'when .'
             ].join(' ')
         },
 

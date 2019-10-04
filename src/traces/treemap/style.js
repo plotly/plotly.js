@@ -36,21 +36,43 @@ function styleOne(s, pt, trace, opts) {
     var lineColor;
     var lineWidth;
     var opacity;
-
-    var depthFade = function(n) {
-        var base = trace.marker.opacitybase;
-        var step = trace.marker.opacitystep;
-
-        return n === 0 ? base :
-            Math.max(0, Math.min(1, n * step));
-    };
+    var fillColor = cdi.color;
 
     if(hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
         opacity = trace._hovered.marker.opacity;
     } else {
-        if(helpers.isHierarchyRoot(pt)) {
+        var isRoot = helpers.isHierarchyRoot(pt);
+
+        if(!pt.onPathbar && !trace._hasColorscale && trace.marker.depthfade) {
+            var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 1), fillColor);
+
+            // option 1 | using the height from the top
+            var maxDepth = helpers.getMaxDepth(trace);
+            var n;
+            if(isFinite(maxDepth)) {
+                if(helpers.isLeaf(pt)) {
+                    n = 0;
+                } else {
+                    n = (trace._maxVisibleLayers) - (pt.data.depth - trace._entryDepth);
+                }
+            } else {
+                n = pt.data.height + 1;
+            }
+
+            // option 2 | using depth form the bottom
+            // var n = pt.data.depth - trace._entryDepth + 1;
+
+            if(n > 0) {
+                for(var i = 0; i < n; i++) {
+                    var ratio = 0.5 * i / n;
+                    fillColor = Color.combine(Color.addOpacity(fadedColor, ratio), fillColor);
+                }
+            }
+        }
+
+        if(isRoot) {
             lineColor = 'rgba(0,0,0,0)';
             lineWidth = 0;
         } else {
@@ -58,15 +80,11 @@ function styleOne(s, pt, trace, opts) {
             lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
         }
 
-        opacity =
-            trace._hasColorscale || helpers.isLeaf(pt) ? 1 :
-            pt.onPathbar ? trace.pathbar.opacity :
-                helpers.isHierarchyRoot(pt) ? 1 :
-                    depthFade(pt.data.depth - trace._entryDepth);
+        opacity = pt.onPathbar ? trace.pathbar.opacity : null;
     }
 
     s.style('stroke-width', lineWidth)
-        .call(Color.fill, cdi.color)
+        .call(Color.fill, fillColor)
         .call(Color.stroke, lineColor)
         .style('opacity', opacity);
 }

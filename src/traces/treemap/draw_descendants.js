@@ -65,15 +65,24 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     var sliceData = allData.descendants();
 
+    var minVisibleDepth = Infinity;
+    var maxVisibleDepth = -Infinity;
+
     slices = slices.data(sliceData, function(pt) {
-        // hide slices that won't show up on graph
-        if(pt.depth >= trace._maxDepth) {
+        var depth = pt.depth;
+        if(depth >= trace._maxDepth) {
+            // hide slices that won't show up on graph
             pt.x0 = pt.x1 = (pt.x0 + pt.x1) / 2;
             pt.y0 = pt.y1 = (pt.y0 + pt.y1) / 2;
+        } else {
+            minVisibleDepth = Math.min(minVisibleDepth, depth);
+            maxVisibleDepth = Math.max(maxVisibleDepth, depth);
         }
 
         return helpers.getPtId(pt);
     });
+
+    trace._maxVisibleLayers = isFinite(maxVisibleDepth) ? maxVisibleDepth - minVisibleDepth + 1 : 0;
 
     slices.enter().append('g')
         .classed('slice', true);
@@ -184,14 +193,6 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         pt.transform = toMoveInsideSlice(pt, {
             isHeader: isHeader
         });
-
-        if(helpers.isOutsideText(trace, pt)) {
-            // consider in/out diff font sizes
-            pt.transform.targetY -= (
-                helpers.getOutsideTextFontKey('size', trace, pt, fullLayout.font) -
-                helpers.getInsideTextFontKey('size', trace, pt, fullLayout.font)
-            );
-        }
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {

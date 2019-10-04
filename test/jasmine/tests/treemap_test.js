@@ -116,17 +116,15 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should not coerce *marker.opacitybase*, *marker.opacitybase* and *pathbar.opacity* when having *colorscale*', function() {
+    it('should not coerce *marker.opacitybase* and *pathbar.opacity* when having *colorscale*', function() {
         _supply([
             {labels: [1], parents: ['']},
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
         ]);
 
         expect(fullData[0].marker.opacitybase).toBe(0.5);
-        expect(fullData[0].marker.opacitystep).toBe(0.5);
         expect(fullData[0].pathbar.opacity).toBe(0.5);
         expect(fullData[1].marker.opacitybase).toBe(undefined, 'not coerced');
-        expect(fullData[1].marker.opacitystep).toBe(undefined, 'not coerced');
         expect(fullData[1].pathbar.opacity).toBe(undefined, 'not coerced');
     });
 
@@ -1192,7 +1190,7 @@ describe('Test treemap restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *marker.opacitybase* and *marker.opacitystep*', function(done) {
+    it('should be able to restyle *marker.opacitybase*', function(done) {
         var mock = {
             data: [{
                 type: 'treemap', pathbar: { visible: false },
@@ -1228,14 +1226,10 @@ describe('Test treemap restyle:', function() {
         })
         .then(_restyle({'marker.opacitybase': 0.2}))
         .then(_assert('lower marker.opacitybase', ['1', '1', '0.2', '0.5', '1', '1']))
-        .then(_restyle({'marker.opacitystep': 0.1}))
-        .then(_assert('lower marker.opacitystep', ['1', '1', '0.2', '0.1', '0.2', '1']))
         .then(_restyle({'marker.opacitybase': 0.8}))
         .then(_assert('raise marker.opacitybase', ['1', '1', '0.8', '0.1', '0.2', '1']))
         .then(_restyle({'marker.opacitybase': null}))
         .then(_assert('back to dflt', ['1', '1', '0.5', '0.1', '0.2', '1']))
-        .then(_restyle({'marker.opacitystep': null}))
-        .then(_assert('back to dflt', ['1', '1', '0.5', '0.5', '1', '1']))
         .catch(failTest)
         .then(done);
     });
