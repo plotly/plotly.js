@@ -6,6 +6,7 @@
             "name": "bottom left textposition",
             "textposition": "bottom left",
             "pathbar": {
+                "opacity": 0.5,
                 "side": "bottom",
                 "textfont": {
                     "size": 12,
@@ -114,6 +115,7 @@
             "name": "bottom center textposition",
             "textposition": "bottom center",
             "pathbar": {
+                "opacity": 0.5,
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -223,6 +225,7 @@
             "name": "bottom right textposition",
             "textposition": "bottom right",
             "pathbar": {
+                "opacity": 0.5,
                 "side": "bottom",
                 "textfont": {
                     "size": 12,
@@ -651,6 +654,7 @@
             "name": "top left textposition",
             "textposition": "top left",
             "pathbar": {
+                "opacity": 0.5,
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"
@@ -760,6 +764,7 @@
             "name": "top center textposition",
             "textposition": "top center",
             "pathbar": {
+                "opacity": 0.5,
                 "side": "bottom",
                 "textfont": {
                     "size": 12,
@@ -870,6 +875,7 @@
             "name": "top right textposition",
             "textposition": "top right",
             "pathbar": {
+                "opacity": 0.5,
                 "textfont": {
                     "size": 12,
                     "family": "Times New Roman"

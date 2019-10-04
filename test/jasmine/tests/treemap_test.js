@@ -1226,7 +1226,7 @@ describe('Test treemap restyle:', function() {
         }
 
         Plotly.plot(gd, mock)
-        .then(_assert('base', ['', '', '', '0.5', '0.5']))
+        .then(_assert('base', ['', '', '', '1', '1']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
@@ -1236,7 +1236,7 @@ describe('Test treemap restyle:', function() {
         .then(_restyle({'pathbar.opacity': 0.8}))
         .then(_assert('raise pathbar.opacity', ['', '', '', '0.8', '0.8']))
         .then(_restyle({'pathbar.opacity': null}))
-        .then(_assert('back to dflt', ['', '', '', '0.5', '0.5']))
+        .then(_assert('back to dflt', ['', '', '', '1', '1']))
         .catch(failTest)
         .then(done);
     });

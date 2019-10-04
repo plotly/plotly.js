@@ -222,7 +222,7 @@ module.exports = {
             editType: 'style',
             role: 'style',
             min: 0,
-            dflt: 0.5,
+            dflt: 1,
             description: [
                 'Sets the opacity of the pathbar.',
                 'This option is not available when having a `colorscale`.'
