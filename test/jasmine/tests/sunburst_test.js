@@ -115,7 +115,7 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should default *leaf.opacity* depending on having or not having *colorscale*', function() {
+    it('should default *leaf.opacity* depending on a *colorscale* being present or not', function() {
         _supply([
             {labels: [1], parents: ['']},
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
@@ -154,7 +154,7 @@ describe('Test sunburst defaults:', function() {
             .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
     });
 
-    it('should not default *marker.colorscale* when not having *marker.colors*', function() {
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
         _supply([
             {labels: [1], parents: ['']}
         ]);
@@ -162,7 +162,7 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[0].marker.colorscale).toBe(undefined);
     });
 
-    it('should default *marker.colorscale* to *Reds* when having *marker.colors*', function() {
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
         _supply([
             {labels: [1], parents: [''], marker: {
                 colors: [0]

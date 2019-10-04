@@ -151,7 +151,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var transTextX = function(d) { return cx + d.pxmid[0] * d.transform.rCenter + (d.transform.x || 0); };
     var transTextY = function(d) { return cy + d.pxmid[1] * d.transform.rCenter + (d.transform.y || 0); };
 
-    slices = slices.data(sliceData, function(pt) { return helpers.getPtId(pt); });
+    slices = slices.data(sliceData, helpers.getPtId);
 
     slices.enter().append('g')
         .classed('slice', true);

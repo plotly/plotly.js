@@ -147,8 +147,7 @@ module.exports = {
                 'Fades headers towards the background.',
                 'When `marker.colors` are not set within the trace it is defaulted to *false*;',
                 'otherwise it is defaulted to *true*.',
-                'This options is not available when having a `colorscale` or',
-                'when .'
+                'This option is not available when having a `colorscale`.'
             ].join(' ')
         },
 
@@ -225,8 +224,8 @@ module.exports = {
             min: 0,
             dflt: 0.5,
             description: [
-                'Sets the opacity of the pathbar',
-                'This options is not available when having a `colorscale`.'
+                'Sets the opacity of the pathbar.',
+                'This option is not available when having a `colorscale`.'
             ].join(' ')
         },
 

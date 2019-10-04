@@ -116,16 +116,22 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should not coerce *marker.opacitybase* and *pathbar.opacity* when having *colorscale*', function() {
+    it('should default *marker.depthfade* depending on *marker.colors* is present or not', function() {
         _supply([
-            {labels: [1], parents: ['']},
+            {labels: ['A', 'B', 'a'], parents: ['', '', 'A']},
+            {labels: ['A', 'B', 'a'], parents: ['', '', 'A'], marker: {colors: ['red', 'green', 'blue']}}
+        ]);
+
+        expect(fullData[0].marker.depthfade).toBe(true);
+        expect(fullData[1].marker.depthfade).toBe(false);
+    });
+
+    it('should not coerce *marker.depthfade* when a *colorscale* is present', function() {
+        _supply([
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
         ]);
 
-        expect(fullData[0].marker.opacitybase).toBe(0.5);
-        expect(fullData[0].pathbar.opacity).toBe(0.5);
-        expect(fullData[1].marker.opacitybase).toBe(undefined, 'not coerced');
-        expect(fullData[1].pathbar.opacity).toBe(undefined, 'not coerced');
+        expect(fullData[0].marker.depthfade).toBe(undefined);
     });
 
     it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {
@@ -263,7 +269,7 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.thickness).toBe(30);
     });
 
-    it('should not default *marker.colorscale* when not having *marker.colors*', function() {
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
         _supply([
             {labels: [1], parents: ['']}
         ]);
@@ -271,7 +277,7 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].marker.colorscale).toBe(undefined);
     });
 
-    it('should default *marker.colorscale* to *Reds* when having *marker.colors*', function() {
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
         _supply([
             {labels: [1], parents: [''], marker: {
                 colors: [0]
@@ -1190,50 +1196,6 @@ describe('Test treemap restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *marker.opacitybase*', function(done) {
-        var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
-                parents: ['', 'Root', 'Root', 'B', 'b', 'b2']
-            }]
-        };
-
-        function _assert(msg, exp) {
-            return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
-
-                var opacities = [];
-                layer.selectAll('path.surface').each(function() {
-                    opacities.push(this.style.opacity);
-                });
-
-                expect(opacities).toEqual(exp, msg);
-
-                // editType:style
-                if(msg !== 'base') {
-                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
-                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
-                }
-            };
-        }
-
-        Plotly.plot(gd, mock)
-        .then(_assert('base', ['1', '1', '0.5', '0.5', '1', '1']))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
-        })
-        .then(_restyle({'marker.opacitybase': 0.2}))
-        .then(_assert('lower marker.opacitybase', ['1', '1', '0.2', '0.5', '1', '1']))
-        .then(_restyle({'marker.opacitybase': 0.8}))
-        .then(_assert('raise marker.opacitybase', ['1', '1', '0.8', '0.1', '0.2', '1']))
-        .then(_restyle({'marker.opacitybase': null}))
-        .then(_assert('back to dflt', ['1', '1', '0.5', '0.1', '0.2', '1']))
-        .catch(failTest)
-        .then(done);
-    });
-
     it('should be able to restyle *pathbar.opacity*', function(done) {
         var mock = {
             data: [{
@@ -1264,17 +1226,17 @@ describe('Test treemap restyle:', function() {
         }
 
         Plotly.plot(gd, mock)
-        .then(_assert('base', ['0.5', '0.5', '1', '0.5', '0.5']))
+        .then(_assert('base', ['', '', '', '0.5', '0.5']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
         })
         .then(_restyle({'pathbar.opacity': 0.2}))
-        .then(_assert('lower pathbar.opacity', ['0.5', '0.5', '1', '0.2', '0.2']))
+        .then(_assert('lower pathbar.opacity', ['', '', '', '0.2', '0.2']))
         .then(_restyle({'pathbar.opacity': 0.8}))
-        .then(_assert('raise pathbar.opacity', ['0.5', '0.5', '1', '0.8', '0.8']))
+        .then(_assert('raise pathbar.opacity', ['', '', '', '0.8', '0.8']))
         .then(_restyle({'pathbar.opacity': null}))
-        .then(_assert('back to dflt', ['0.5', '0.5', '1', '0.5', '0.5']))
+        .then(_assert('back to dflt', ['', '', '', '0.5', '0.5']))
         .catch(failTest)
         .then(done);
     });

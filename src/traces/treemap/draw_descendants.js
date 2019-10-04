@@ -67,8 +67,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     var minVisibleDepth = Infinity;
     var maxVisibleDepth = -Infinity;
-
-    slices = slices.data(sliceData, function(pt) {
+    sliceData.forEach(function(pt) {
         var depth = pt.depth;
         if(depth >= trace._maxDepth) {
             // hide slices that won't show up on graph
@@ -78,9 +77,9 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             minVisibleDepth = Math.min(minVisibleDepth, depth);
             maxVisibleDepth = Math.max(maxVisibleDepth, depth);
         }
-
-        return helpers.getPtId(pt);
     });
+
+    slices = slices.data(sliceData, helpers.getPtId);
 
     trace._maxVisibleLayers = isFinite(maxVisibleDepth) ? maxVisibleDepth - minVisibleDepth + 1 : 0;
 
