@@ -40,6 +40,14 @@ npm install plotly.js-dist
 
 and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = require('plotly.js-dist');`.
 
+If you are using TypeScript, `npm install @types/plotly.js` and provide a `plotly.js-dist.d.ts` file in your project with the following content:
+
+```typescript
+declare module "plotly.js-dist" {
+  export * from "plotly.js";
+}
+```
+
 ### Use the plotly.js CDN hosted by Fastly
 
 ```html
