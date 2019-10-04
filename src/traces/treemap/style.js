@@ -46,7 +46,7 @@ function styleOne(s, pt, trace, opts) {
         var isRoot = helpers.isHierarchyRoot(pt);
 
         if(!pt.onPathbar && !trace._hasColorscale && trace.marker.depthfade) {
-            var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 1), fillColor);
+            var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 0.75), fillColor);
 
             // option 1 | using the height from the top
             var maxDepth = helpers.getMaxDepth(trace);
