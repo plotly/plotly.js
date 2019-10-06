@@ -35,39 +35,48 @@ function styleOne(s, pt, trace, opts) {
     var ptNumber = cdi.i;
     var lineColor;
     var lineWidth;
-    var opacity;
     var fillColor = cdi.color;
 
     if(hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
-        opacity = trace._hovered.marker.opacity;
     } else {
         var isRoot = helpers.isHierarchyRoot(pt);
 
-        if(!pt.onPathbar && !trace._hasColorscale && trace.marker.depthfade) {
-            var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 0.75), fillColor);
-
-            // option 1 | using the height from the top
-            var maxDepth = helpers.getMaxDepth(trace);
-            var n;
-            if(isFinite(maxDepth)) {
-                if(helpers.isLeaf(pt)) {
-                    n = 0;
-                } else {
-                    n = (trace._maxVisibleLayers) - (pt.data.depth - trace._entryDepth);
-                }
+        if(!trace._hasColorscale) {
+            if(pt.onPathbar) {
+                // Combining colors with the background color.
+                // Better not to have transparent segments.
+                // Also this helps pathbar texts appear nicely below previous segments.
+                fillColor = Color.combine(Color.addOpacity(trace._backgroundColor, 1 - trace.pathbar.opacity), fillColor);
             } else {
-                n = pt.data.height + 1;
-            }
+                var depthfade = trace.marker.depthfade;
+                if(depthfade) {
+                    var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 0.75), fillColor);
+                    var n;
 
-            // option 2 | using depth form the bottom
-            // var n = pt.data.depth - trace._entryDepth + 1;
+                    if(depthfade === true) {
+                        var maxDepth = helpers.getMaxDepth(trace);
+                        if(isFinite(maxDepth)) {
+                            if(helpers.isLeaf(pt)) {
+                                n = 0;
+                            } else {
+                                n = (trace._maxVisibleLayers) - (pt.data.depth - trace._entryDepth);
+                            }
+                        } else {
+                            n = pt.data.height + 1;
+                        }
+                    } else { // i.e. case of depthfade === 'reversed'
+                        n = pt.data.depth - trace._entryDepth;
+                        if(!trace._atMultipleRoot) n++;
+                    }
 
-            if(n > 0) {
-                for(var i = 0; i < n; i++) {
-                    var ratio = 0.5 * i / n;
-                    fillColor = Color.combine(Color.addOpacity(fadedColor, ratio), fillColor);
+                    if(n > 0) {
+                        for(var i = 0; i < n; i++) {
+                            var ratio = 0.5 * i / n;
+                            fillColor = Color.combine(Color.addOpacity(fadedColor, ratio), fillColor);
+                        }
+                    }
                 }
             }
         }
@@ -79,14 +88,12 @@ function styleOne(s, pt, trace, opts) {
             lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
             lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
         }
-
-        opacity = pt.onPathbar ? trace.pathbar.opacity : null;
     }
 
     s.style('stroke-width', lineWidth)
         .call(Color.fill, fillColor)
         .call(Color.stroke, lineColor)
-        .style('opacity', opacity);
+        .style('opacity', null);
 }
 
 module.exports = {

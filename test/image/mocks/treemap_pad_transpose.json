@@ -14,6 +14,7 @@
                 "pad": 0
             },
             "marker": {
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -103,6 +104,7 @@
                 "pad": 0
             },
             "marker": {
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -375,7 +377,7 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "base",
+                "text": "base<br>depthfade: 'reversed'",
                 "font": {
                     "color": "white",
                     "size": 16
@@ -387,7 +389,7 @@
             },
             {
                 "showarrow": false,
-                "text": "flip y axis",
+                "text": "flip y axis<br>depthfade: 'reversed'",
                 "font": {
                     "color": "white",
                     "size": 16

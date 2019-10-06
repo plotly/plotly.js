@@ -140,14 +140,19 @@ module.exports = {
         colors: sunburstAttrs.marker.colors,
 
         depthfade: {
-            valType: 'boolean',
+            valType: 'enumerated',
+            values: [true, false, 'reversed'],
             editType: 'style',
             role: 'style',
             description: [
-                'Fades headers towards the background.',
+                'Fades headers towards the background. Background color with opacity of 0.75',
+                'is used as the destination fading color.',
                 'When `marker.colors` are not set within the trace it is defaulted to *false*;',
                 'otherwise it is defaulted to *true*.',
-                'This option is not available when having a `colorscale`.'
+                'The *reversed* option could be used to invert the direction of fade',
+                'in which the top elements within hierarchy drawn with fully saturated colors',
+                'while the leaves would be faded towards the background color',
+                'This option is not available when a `colorscale` is present.'
             ].join(' ')
         },
 
@@ -225,7 +230,7 @@ module.exports = {
             dflt: 1,
             description: [
                 'Sets the opacity of the pathbar.',
-                'This option is not available when having a `colorscale`.'
+                'This option is not available when a `colorscale` is present.'
             ].join(' ')
         },
 

@@ -91,9 +91,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         return pt.data.depth - entry.data.depth < maxDepth;
     };
 
-    // copy
-    trace._backgroundColor = fullLayout.paper_bgcolor;
-
     var gs = fullLayout._size;
     var domain = trace.domain;
 
@@ -151,13 +148,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         return {};
     };
 
-    trace._entryDepth = entry.data.depth;
-
     // N.B. handle multiple-root special case
     if(cd0.hasMultipleRoots && isRoot) {
         maxDepth++;
     }
+
     trace._maxDepth = maxDepth;
+    trace._backgroundColor = fullLayout.paper_bgcolor;
+    trace._entryDepth = entry.data.depth;
+    trace._atMultipleRoot = isRoot;
 
     var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
     var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);

@@ -1200,8 +1200,8 @@ describe('Test treemap restyle:', function() {
         var mock = {
             data: [{
                 type: 'treemap',
-                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
-                parents: ['', 'Root', 'Root', 'B', 'b', 'b2'],
+                labels: ['Root', 'A', 'B', 'b', ],
+                parents: ['', 'Root', 'Root', 'B'],
                 level: 'b'
             }]
         };
@@ -1211,11 +1211,14 @@ describe('Test treemap restyle:', function() {
                 var layer = d3.select(gd).select('.treemaplayer');
 
                 var opacities = [];
+                var fillColors = [];
                 layer.selectAll('path.surface').each(function() {
                     opacities.push(this.style.opacity);
+                    fillColors.push(this.style.fill);
                 });
 
-                expect(opacities).toEqual(exp, msg);
+                expect(opacities).toEqual(exp[0], msg);
+                expect(fillColors).toEqual(exp[1], msg);
 
                 // editType:style
                 if(msg !== 'base') {
@@ -1226,17 +1229,29 @@ describe('Test treemap restyle:', function() {
         }
 
         Plotly.plot(gd, mock)
-        .then(_assert('base', ['', '', '', '1', '1']))
+        .then(_assert('base', [
+            ['', '', ''], // opacity
+            ['rgb(255, 127, 14)', 'rgb(255, 127, 14)', 'rgb(255, 255, 255)'] // fill
+        ]))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
         })
         .then(_restyle({'pathbar.opacity': 0.2}))
-        .then(_assert('lower pathbar.opacity', ['', '', '', '0.2', '0.2']))
+        .then(_assert('lower pathbar.opacity', [
+            ['', '', ''], // opacity
+            ['rgb(255, 127, 14)', 'rgb(255, 229, 207)', 'rgb(255, 255, 255)'] // fill
+        ]))
         .then(_restyle({'pathbar.opacity': 0.8}))
-        .then(_assert('raise pathbar.opacity', ['', '', '', '0.8', '0.8']))
+        .then(_assert('raise pathbar.opacity', [
+            ['', '', ''], // opacity
+            ['rgb(255, 127, 14)', 'rgb(255, 153, 62)', 'rgb(255, 255, 255)'] // fill
+        ]))
         .then(_restyle({'pathbar.opacity': null}))
-        .then(_assert('back to dflt', ['', '', '', '1', '1']))
+        .then(_assert('back to dflt', [
+            ['', '', ''], // opacity
+            ['rgb(255, 127, 14)', 'rgb(255, 127, 14)', 'rgb(255, 255, 255)'] // fill
+        ]))
         .catch(failTest)
         .then(done);
     });
