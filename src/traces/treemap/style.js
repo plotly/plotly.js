@@ -68,7 +68,7 @@ function styleOne(s, pt, trace, opts) {
                         }
                     } else { // i.e. case of depthfade === 'reversed'
                         n = pt.data.depth - trace._entryDepth;
-                        if(!trace._atMultipleRoot) n++;
+                        if(!trace._atRootLevel) n++;
                     }
 
                     if(n > 0) {
