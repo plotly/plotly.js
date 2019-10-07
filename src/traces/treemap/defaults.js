@@ -89,13 +89,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
-    } else {
-        coerce('pathbar.opacity');
     }
 
     traceOut._hovered = {
         marker: {
-            opacity: 1,
             line: {
                 width: 2,
                 color: Color.contrast(layout.paper_bgcolor)

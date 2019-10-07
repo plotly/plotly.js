@@ -145,14 +145,14 @@ module.exports = {
             editType: 'style',
             role: 'style',
             description: [
-                'Fades headers towards the background. Background color with opacity of 0.75',
-                'is used as the destination fading color.',
-                'When `marker.colors` are not set within the trace it is defaulted to *false*;',
-                'otherwise it is defaulted to *true*.',
-                'The *reversed* option could be used to invert the direction of fade',
-                'in which the top elements within hierarchy drawn with fully saturated colors',
-                'while the leaves would be faded towards the background color',
-                'This option is not available when a `colorscale` is present.'
+                'Determines if the sector colors are faded towards',
+                'the background from the leaves up to the headers.',
+                'This option is unavailable when a `colorscale` is present,',
+                'defaults to false when `marker.colors` is set,',
+                'but otherwise defaults to true.',
+                'When set to *reversed*, the fading direction is inverted,',
+                'that is the top elements within hierarchy are drawn with fully saturated colors',
+                'while the leaves are faded towards the background color.'
             ].join(' ')
         },
 
@@ -219,18 +219,6 @@ module.exports = {
             description: [
                 'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
                 'with 3 pixles extra padding on each side.'
-            ].join(' ')
-        },
-
-        opacity: {
-            valType: 'number',
-            editType: 'style',
-            role: 'style',
-            min: 0,
-            dflt: 1,
-            description: [
-                'Sets the opacity of the pathbar.',
-                'This option is not available when a `colorscale` is present.'
             ].join(' ')
         },
 
