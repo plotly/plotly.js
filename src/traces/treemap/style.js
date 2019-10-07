@@ -36,56 +36,58 @@ function styleOne(s, pt, trace, opts) {
     var lineColor;
     var lineWidth;
     var fillColor = cdi.color;
+    var isRoot = helpers.isHierarchyRoot(pt);
+    var opacity = 1;
 
     if(hovered) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
     } else {
-        var isRoot = helpers.isHierarchyRoot(pt);
-
-        if(!trace._hasColorscale && !pt.onPathbar) {
-            var depthfade = trace.marker.depthfade;
-            if(depthfade) {
-                var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 0.75), fillColor);
-                var n;
-
-                if(depthfade === true) {
-                    var maxDepth = helpers.getMaxDepth(trace);
-                    if(isFinite(maxDepth)) {
-                        if(helpers.isLeaf(pt)) {
-                            n = 0;
-                        } else {
-                            n = (trace._maxVisibleLayers) - (pt.data.depth - trace._entryDepth);
-                        }
-                    } else {
-                        n = pt.data.height + 1;
-                    }
-                } else { // i.e. case of depthfade === 'reversed'
-                    n = pt.data.depth - trace._entryDepth;
-                    if(!trace._atRootLevel) n++;
-                }
-
-                if(n > 0) {
-                    for(var i = 0; i < n; i++) {
-                        var ratio = 0.5 * i / n;
-                        fillColor = Color.combine(Color.addOpacity(fadedColor, ratio), fillColor);
-                    }
-                }
-            }
-        }
-
-        if(isRoot) {
+        if(isRoot && fillColor === 'rgba(0,0,0,0)') {
+            opacity = 0;
             lineColor = 'rgba(0,0,0,0)';
             lineWidth = 0;
         } else {
             lineColor = Lib.castOption(trace, ptNumber, 'marker.line.color') || Color.defaultLine;
             lineWidth = Lib.castOption(trace, ptNumber, 'marker.line.width') || 0;
+
+            if(!trace._hasColorscale && !pt.onPathbar) {
+                var depthfade = trace.marker.depthfade;
+                if(depthfade) {
+                    var fadedColor = Color.combine(Color.addOpacity(trace._backgroundColor, 0.75), fillColor);
+                    var n;
+
+                    if(depthfade === true) {
+                        var maxDepth = helpers.getMaxDepth(trace);
+                        if(isFinite(maxDepth)) {
+                            if(helpers.isLeaf(pt)) {
+                                n = 0;
+                            } else {
+                                n = (trace._maxVisibleLayers) - (pt.data.depth - trace._entryDepth);
+                            }
+                        } else {
+                            n = pt.data.height + 1;
+                        }
+                    } else { // i.e. case of depthfade === 'reversed'
+                        n = pt.data.depth - trace._entryDepth;
+                        if(!trace._atRootLevel) n++;
+                    }
+
+                    if(n > 0) {
+                        for(var i = 0; i < n; i++) {
+                            var ratio = 0.5 * i / n;
+                            fillColor = Color.combine(Color.addOpacity(fadedColor, ratio), fillColor);
+                        }
+                    }
+                }
+            }
         }
     }
 
     s.style('stroke-width', lineWidth)
         .call(Color.fill, fillColor)
-        .call(Color.stroke, lineColor);
+        .call(Color.stroke, lineColor)
+        .style('opacity', opacity);
 }
 
 module.exports = {
