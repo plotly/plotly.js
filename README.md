@@ -40,14 +40,6 @@ npm install plotly.js-dist
 
 and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = require('plotly.js-dist');`.
 
-If you are using TypeScript, `npm install @types/plotly.js` and provide a `plotly.js-dist.d.ts` file in your project with the following content:
-
-```typescript
-declare module "plotly.js-dist" {
-  export * from "plotly.js";
-}
-```
-
 ### Use the plotly.js CDN hosted by Fastly
 
 ```html
@@ -161,6 +153,16 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started](https://plot.ly/julia/getting-started) |
 
 plotly.js charts can also be created and saved online for free at [plot.ly/create](https://plot.ly/create).
+
+## Related third-party projects
+
+[TypeScript](https://www.typescriptlang.org/) bindings are provided by the [DefinitelyTyped](https://definitelytyped.org/) project: run `npm install @types/plotly.js` and – when using `plotly.js-dist`, provide a `plotly.js-dist.d.ts` file in your project with the following content:
+
+```typescript
+declare module "plotly.js-dist" {
+  export * from "plotly.js";
+}
+```
 
 ## Creators
 
