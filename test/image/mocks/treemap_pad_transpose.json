@@ -14,8 +14,7 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.5,
-                "opacitystep": 0.05,
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -105,8 +104,7 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.5,
-                "opacitystep": 0.05,
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -196,8 +194,6 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.5,
-                "opacitystep": 0.05,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -287,8 +283,6 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.5,
-                "opacitystep": 0.05,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -383,8 +377,9 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "base",
+                "text": "base<br>depthfade: 'reversed'",
                 "font": {
+                    "color": "white",
                     "size": 16
                 },
                 "x": 0.25,
@@ -394,8 +389,9 @@
             },
             {
                 "showarrow": false,
-                "text": "flip y axis",
+                "text": "flip y axis<br>depthfade: 'reversed'",
                 "font": {
+                    "color": "white",
                     "size": 16
                 },
                 "x": 0.25,
@@ -407,6 +403,7 @@
                 "showarrow": false,
                 "text": "flip x axis",
                 "font": {
+                    "color": "white",
                     "size": 16
                 },
                 "x": 0.75,
@@ -418,6 +415,7 @@
                 "showarrow": false,
                 "text": "flip both axes",
                 "font": {
+                    "color": "white",
                     "size": 16
                 },
                 "x": 0.75,

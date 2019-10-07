@@ -72,8 +72,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
-    coerce('marker.colors');
-    var withColorscale = hasColorscale(traceIn, 'marker');
+    var colors = coerce('marker.colors');
+    var withColorscale = traceOut._hasColorscale = hasColorscale(traceIn, 'marker', 'colors');
+    if(withColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+    } else {
+        coerce('marker.depthfade', !(colors || []).length);
+    }
 
     var headerSize = traceOut.textfont.size * 2;
 
@@ -84,15 +89,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
-    } else {
-        coerce('marker.opacitybase');
-        coerce('marker.opacitystep');
-        coerce('pathbar.opacity');
     }
 
     traceOut._hovered = {
         marker: {
-            opacity: 1,
             line: {
                 width: 2,
                 color: Color.contrast(layout.paper_bgcolor)

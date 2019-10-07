@@ -139,29 +139,20 @@ module.exports = {
 
         colors: sunburstAttrs.marker.colors,
 
-        opacitybase: {
-            valType: 'number',
+        depthfade: {
+            valType: 'enumerated',
+            values: [true, false, 'reversed'],
             editType: 'style',
             role: 'style',
-            min: 0,
-            max: 1,
-            dflt: 0.5,
             description: [
-                'Sets the base opacity of the headers based on the depth from the entry.',
-                'This options is not available when having a `colorscale`.'
-            ].join(' ')
-        },
-
-        opacitystep: {
-            valType: 'number',
-            editType: 'style',
-            role: 'style',
-            min: 0,
-            max: 1,
-            dflt: 0.5,
-            description: [
-                'Sets the increment for opacity of the headers based on the depth from the entry.',
-                'This options is not available when having a `colorscale`.'
+                'Determines if the sector colors are faded towards',
+                'the background from the leaves up to the headers.',
+                'This option is unavailable when a `colorscale` is present,',
+                'defaults to false when `marker.colors` is set,',
+                'but otherwise defaults to true.',
+                'When set to *reversed*, the fading direction is inverted,',
+                'that is the top elements within hierarchy are drawn with fully saturated colors',
+                'while the leaves are faded towards the background color.'
             ].join(' ')
         },
 
@@ -228,18 +219,6 @@ module.exports = {
             description: [
                 'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
                 'with 3 pixles extra padding on each side.'
-            ].join(' ')
-        },
-
-        opacity: {
-            valType: 'number',
-            editType: 'style',
-            role: 'style',
-            min: 0,
-            dflt: 0.5,
-            description: [
-                'Sets the opacity of the pathbar',
-                'This options is not available when having a `colorscale`.'
             ].join(' ')
         },
 

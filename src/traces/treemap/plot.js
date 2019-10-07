@@ -84,6 +84,8 @@ function plotOne(gd, cd, element, transitionOpts) {
     var hierarchy = cd0.hierarchy;
     var hasTransition = helpers.hasTransition(transitionOpts);
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var isRoot = helpers.isHierarchyRoot(entry);
+
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
         return pt.data.depth - entry.data.depth < maxDepth;
@@ -146,18 +148,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         return {};
     };
 
-    var isRoot = helpers.isHierarchyRoot(entry);
-
-    trace._entryDepth = entry.data.depth;
-    if(isRoot) {
-        trace._entryDepth++;
-    }
-
     // N.B. handle multiple-root special case
     if(cd0.hasMultipleRoots && isRoot) {
         maxDepth++;
     }
+
     trace._maxDepth = maxDepth;
+    trace._backgroundColor = fullLayout.paper_bgcolor;
+    trace._entryDepth = entry.data.depth;
+    trace._atRootLevel = isRoot;
 
     var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
     var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);

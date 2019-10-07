@@ -14,8 +14,7 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.3,
-                "opacitystep": 0.1,
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -105,8 +104,7 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.3,
-                "opacitystep": 0.1,
+                "depthfade": "reversed",
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -196,8 +194,6 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.3,
-                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -287,8 +283,6 @@
                 "pad": 0
             },
             "marker": {
-                "opacitybase": 0.3,
-                "opacitystep": 0.1,
                 "pad": {
                     "t": 16,
                     "l": 8,
@@ -412,7 +406,7 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "base",
+                "text": "base<br>depthfade: 'reversed'",
                 "font": {
                     "size": 16
                 },
@@ -423,7 +417,7 @@
             },
             {
                 "showarrow": false,
-                "text": "flip y axis",
+                "text": "flip y axis<br>depthfade: 'reversed'",
                 "font": {
                     "size": 16
                 },

@@ -115,7 +115,7 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should default *leaf.opacity* depending on having or not having *colorscale*', function() {
+    it('should default *leaf.opacity* depending on a *colorscale* being present or not', function() {
         _supply([
             {labels: [1], parents: ['']},
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
@@ -152,6 +152,31 @@ describe('Test sunburst defaults:', function() {
         });
         expect(gd._fullLayout.sunburstcolorway)
             .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
+    });
+
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBe(undefined);
+    });
+
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
+        _supply([
+            {labels: [1], parents: [''], marker: {
+                colors: [0]
+            }}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBeCloseToArray([
+            [ 0, 'rgb(5,10,172)' ],
+            [ 0.35, 'rgb(106,137,247)' ],
+            [ 0.5, 'rgb(190,190,190)' ],
+            [ 0.6, 'rgb(220,170,132)' ],
+            [ 0.7, 'rgb(230,145,90)' ],
+            [ 1, 'rgb(178,10,28)' ]
+        ]);
     });
 });
 
@@ -364,6 +389,108 @@ describe('Test sunburst calc:', function() {
             [4, 3, 1, 1],
             [3, 2, 1, 1]
         ]);
+    });
+
+    it('should use *marker.colors*', function() {
+        _calc({
+            marker: { colors: ['pink', '#777', '#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#fff'] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgba(255, 192, 203, 1)');
+        expect(cd[1].color).toEqual('rgba(119, 119, 119, 1)');
+        expect(cd[2].color).toEqual('rgba(255, 0, 0, 1)');
+        expect(cd[3].color).toEqual('rgba(255, 255, 0, 1)');
+        expect(cd[4].color).toEqual('rgba(0, 255, 0, 1)');
+        expect(cd[5].color).toEqual('rgba(0, 255, 255, 1)');
+        expect(cd[6].color).toEqual('rgba(0, 0, 255, 1)');
+        expect(cd[7].color).toEqual('rgba(255, 0, 255, 1)');
+        expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
+    });
+
+    it('should use *marker.colors* numbers with default colorscale', function() {
+        _calc({
+            marker: { colors: [-4, -3, -2, -1, 0, 1, 2, 3, 4] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(5, 10, 172)');
+        expect(cd[1].color).toEqual('rgb(41, 55, 199)');
+        expect(cd[2].color).toEqual('rgb(77, 101, 226)');
+        expect(cd[3].color).toEqual('rgb(120, 146, 238)');
+        expect(cd[4].color).toEqual('rgb(190, 190, 190)');
+        expect(cd[5].color).toEqual('rgb(223, 164, 122)');
+        expect(cd[6].color).toEqual('rgb(221, 123, 80)');
+        expect(cd[7].color).toEqual('rgb(200, 66, 54)');
+        expect(cd[8].color).toEqual('rgb(178, 10, 28)');
+    });
+
+    it('should use *marker.colors* numbers with desired colorscale', function() {
+        _calc({
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use *marker.colors* numbers not values with colorscale', function() {
+        _calc({
+            values: [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use values with colorscale when *marker.colors* in empty', function() {
+        _calc({
+            values: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            marker: { colors: [], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
     });
 });
 

@@ -116,18 +116,22 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should not coerce *marker.opacitybase*, *marker.opacitybase* and *pathbar.opacity* when having *colorscale*', function() {
+    it('should default *marker.depthfade* depending on *marker.colors* is present or not', function() {
         _supply([
-            {labels: [1], parents: ['']},
+            {labels: ['A', 'B', 'a'], parents: ['', '', 'A']},
+            {labels: ['A', 'B', 'a'], parents: ['', '', 'A'], marker: {colors: ['red', 'green', 'blue']}}
+        ]);
+
+        expect(fullData[0].marker.depthfade).toBe(true);
+        expect(fullData[1].marker.depthfade).toBe(false);
+    });
+
+    it('should not coerce *marker.depthfade* when a *colorscale* is present', function() {
+        _supply([
             {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
         ]);
 
-        expect(fullData[0].marker.opacitybase).toBe(0.5);
-        expect(fullData[0].marker.opacitystep).toBe(0.5);
-        expect(fullData[0].pathbar.opacity).toBe(0.5);
-        expect(fullData[1].marker.opacitybase).toBe(undefined, 'not coerced');
-        expect(fullData[1].marker.opacitystep).toBe(undefined, 'not coerced');
-        expect(fullData[1].pathbar.opacity).toBe(undefined, 'not coerced');
+        expect(fullData[0].marker.depthfade).toBe(undefined);
     });
 
     it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {
@@ -263,6 +267,31 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
         expect(fullData[0].pathbar.textfont.size).toBe(24);
         expect(fullData[0].pathbar.thickness).toBe(30);
+    });
+
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBe(undefined);
+    });
+
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
+        _supply([
+            {labels: [1], parents: [''], marker: {
+                colors: [0]
+            }}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBeCloseToArray([
+            [ 0, 'rgb(5,10,172)' ],
+            [ 0.35, 'rgb(106,137,247)' ],
+            [ 0.5, 'rgb(190,190,190)' ],
+            [ 0.6, 'rgb(220,170,132)' ],
+            [ 0.7, 'rgb(230,145,90)' ],
+            [ 1, 'rgb(178,10,28)' ]
+        ]);
     });
 });
 
@@ -427,6 +456,108 @@ describe('Test treemap calc:', function() {
 
         expect(extract('id')).toEqual(['true', '1', '2', '3', '4', '5', '6', '7', '8']);
         expect(extract('pid')).toEqual(['', 'true', 'true', '2', '2', 'true', 'true', '6', 'true']);
+    });
+
+    it('should use *marker.colors*', function() {
+        _calc({
+            marker: { colors: ['pink', '#777', '#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#fff'] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgba(255, 192, 203, 1)');
+        expect(cd[1].color).toEqual('rgba(119, 119, 119, 1)');
+        expect(cd[2].color).toEqual('rgba(255, 0, 0, 1)');
+        expect(cd[3].color).toEqual('rgba(255, 255, 0, 1)');
+        expect(cd[4].color).toEqual('rgba(0, 255, 0, 1)');
+        expect(cd[5].color).toEqual('rgba(0, 255, 255, 1)');
+        expect(cd[6].color).toEqual('rgba(0, 0, 255, 1)');
+        expect(cd[7].color).toEqual('rgba(255, 0, 255, 1)');
+        expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
+    });
+
+    it('should use *marker.colors* numbers with default colorscale', function() {
+        _calc({
+            marker: { colors: [-4, -3, -2, -1, 0, 1, 2, 3, 4] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(5, 10, 172)');
+        expect(cd[1].color).toEqual('rgb(41, 55, 199)');
+        expect(cd[2].color).toEqual('rgb(77, 101, 226)');
+        expect(cd[3].color).toEqual('rgb(120, 146, 238)');
+        expect(cd[4].color).toEqual('rgb(190, 190, 190)');
+        expect(cd[5].color).toEqual('rgb(223, 164, 122)');
+        expect(cd[6].color).toEqual('rgb(221, 123, 80)');
+        expect(cd[7].color).toEqual('rgb(200, 66, 54)');
+        expect(cd[8].color).toEqual('rgb(178, 10, 28)');
+    });
+
+    it('should use *marker.colors* numbers with desired colorscale', function() {
+        _calc({
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use *marker.colors* numbers not values with colorscale', function() {
+        _calc({
+            values: [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use values with colorscale when *marker.colors* in empty', function() {
+        _calc({
+            values: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            marker: { colors: [], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
     });
 });
 
@@ -1061,99 +1192,6 @@ describe('Test treemap restyle:', function() {
         .then(_assert('with non-root level', 67))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 97))
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('should be able to restyle *marker.opacitybase* and *marker.opacitystep*', function(done) {
-        var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
-                parents: ['', 'Root', 'Root', 'B', 'b', 'b2']
-            }]
-        };
-
-        function _assert(msg, exp) {
-            return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
-
-                var opacities = [];
-                layer.selectAll('path.surface').each(function() {
-                    opacities.push(this.style.opacity);
-                });
-
-                expect(opacities).toEqual(exp, msg);
-
-                // editType:style
-                if(msg !== 'base') {
-                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
-                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
-                }
-            };
-        }
-
-        Plotly.plot(gd, mock)
-        .then(_assert('base', ['0', '1', '0.5', '0.5', '1', '1']))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
-        })
-        .then(_restyle({'marker.opacitybase': 0.2}))
-        .then(_assert('lower marker.opacitybase', ['0', '1', '0.2', '0.5', '1', '1']))
-        .then(_restyle({'marker.opacitystep': 0.1}))
-        .then(_assert('lower marker.opacitystep', ['0', '1', '0.2', '0.1', '0.2', '1']))
-        .then(_restyle({'marker.opacitybase': 0.8}))
-        .then(_assert('raise marker.opacitybase', ['0', '1', '0.8', '0.1', '0.2', '1']))
-        .then(_restyle({'marker.opacitybase': null}))
-        .then(_assert('back to dflt', ['0', '1', '0.5', '0.1', '0.2', '1']))
-        .then(_restyle({'marker.opacitystep': null}))
-        .then(_assert('back to dflt', ['0', '1', '0.5', '0.5', '1', '1']))
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('should be able to restyle *pathbar.opacity*', function(done) {
-        var mock = {
-            data: [{
-                type: 'treemap',
-                labels: ['Root', 'A', 'B', 'b', 'b2', 'b3'],
-                parents: ['', 'Root', 'Root', 'B', 'b', 'b2'],
-                level: 'b'
-            }]
-        };
-
-        function _assert(msg, exp) {
-            return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
-
-                var opacities = [];
-                layer.selectAll('path.surface').each(function() {
-                    opacities.push(this.style.opacity);
-                });
-
-                expect(opacities).toEqual(exp, msg);
-
-                // editType:style
-                if(msg !== 'base') {
-                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
-                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
-                }
-            };
-        }
-
-        Plotly.plot(gd, mock)
-        .then(_assert('base', ['0.5', '0.5', '1', '0.5', '0.5']))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
-        })
-        .then(_restyle({'pathbar.opacity': 0.2}))
-        .then(_assert('lower pathbar.opacity', ['0.5', '0.5', '1', '0.2', '0.2']))
-        .then(_restyle({'pathbar.opacity': 0.8}))
-        .then(_assert('raise pathbar.opacity', ['0.5', '0.5', '1', '0.8', '0.8']))
-        .then(_restyle({'pathbar.opacity': null}))
-        .then(_assert('back to dflt', ['0.5', '0.5', '1', '0.5', '0.5']))
         .catch(failTest)
         .then(done);
     });

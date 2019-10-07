@@ -15,10 +15,7 @@ var Lib = require('../../lib');
 var makeColorScaleFn = require('../../components/colorscale').makeColorScaleFuncFromTrace;
 var makePullColorFn = require('../pie/calc').makePullColorFn;
 var generateExtendedColors = require('../pie/calc').generateExtendedColors;
-
-var Colorscale = require('../../components/colorscale');
-var hasColorscale = Colorscale.hasColorscale;
-var colorscaleCalc = Colorscale.calc;
+var colorscaleCalc = require('../../components/colorscale').calc;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
@@ -198,9 +195,10 @@ exports.calc = function(gd, trace) {
     var pullColor;
     var scaleColor;
     var colors = trace.marker.colors || [];
-    trace._hasColorscale = hasColorscale(trace, 'marker');
+    var hasColors = !!colors.length;
+
     if(trace._hasColorscale) {
-        if(!colors.length) {
+        if(!hasColors) {
             colors = hasValues ? trace.values : trace._values;
         }
 
