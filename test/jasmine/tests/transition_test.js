@@ -694,10 +694,10 @@ describe('Plotly.react transitions:', function() {
             assertSpies('both trace and layout transitions', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
                 // one instantaneous transition options to halt other trace transitions (if any)
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
                 [Axes, 'drawOne', 1],
                 [Axes, 'drawOne', 1],
                 // one _module.plot call from the relayout at end of axis transition
