@@ -2,6 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = Plotly.Plots;
 var plotApiHelpers = require('@src/plot_api/helpers');
+var Axes = require('@src/plots/cartesian/axes');
 var Registry = require('@src/registry');
 var Drawing = require('@src/components/drawing');
 
@@ -650,6 +651,7 @@ describe('Plotly.react transitions:', function() {
         .then(function() {
             methods.push([gd._fullLayout._basePlotModules[0], 'plot']);
             methods.push([gd._fullLayout._basePlotModules[0], 'transitionAxes']);
+            methods.push([Axes, 'drawOne']);
             addSpies();
         })
         .then(function() {
@@ -660,7 +662,8 @@ describe('Plotly.react transitions:', function() {
             assertSpies('just trace transition', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'plot', 1],
-                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
+                [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0],
+                [Axes, 'drawOne', 0]
             ]);
         })
         .then(function() {
@@ -671,8 +674,13 @@ describe('Plotly.react transitions:', function() {
             assertSpies('just layout transition', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
                 // one _module.plot call from the relayout at end of axis transition
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
+                [Axes, 'drawOne', 1],
                 [gd._fullLayout._basePlotModules[0], 'plot', 1],
             ]);
         })
@@ -688,8 +696,13 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
                 // one instantaneous transition options to halt other trace transitions (if any)
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
                 // one _module.plot call from the relayout at end of axis transition
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-1, 1]}]],
+                [Axes, 'drawOne', 1],
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
@@ -707,7 +720,10 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function']],
                 // one by relayout call  at the end of instantaneous axis transition
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
+                [Axes, 'drawOne', 1],
+                [Axes, 'drawOne', 1],
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
+                [Axes, 'drawOne', 1],
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
