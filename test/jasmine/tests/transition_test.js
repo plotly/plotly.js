@@ -296,33 +296,117 @@ describe('Plotly.react transitions:', function() {
         });
     }
 
-    function assertSpies(msg, exps) {
-        exps.forEach(function(exp) {
-            var calls = exp[0][exp[1]].calls;
-            var cnt = calls.count();
+    /**
+     * assertSpies
+     *
+     * @param {string} _msg : base message string
+     * @param {array of arrays} _exps : expectations
+     *
+     *  assertSpies('test', [
+     *      [<spied-on {object}>, <method name {string}>, `value`].
+     *      [<spied-on {object}>, <method name {string}>, <args {array}>].
+     *      ....
+     *      [<spied-on {object}>, <method name {string}>, <0 or 1 {number}>]
+     *  ]);
+     *
+     *  - expectations items must be placed in the order in which they are invoked
+     *  - to test that a certain spy didn't get called use `0` as value
+     *  - to test that a certain spy did get called w/o checking its args use `1` as value
+     */
+    function assertSpies(_msg, _exps) {
+        var msg = function(i, exp, extra) {
+            return [_msg, 'Item #' + i, '@method ' + exp[1], (extra || '')].join(' | ');
+        };
 
-            if(Array.isArray(exp[2])) {
-                expect(cnt).toBe(exp[2].length, msg);
+        // check `_exps` structure and if "did (not) get called"
+        var failEarly = false;
+        _exps.forEach(function(exp, i) {
+            var spy = exp[0];
+            var methodName = exp[1];
+            var val = exp[2];
+            var calls = spy[methodName].calls;
+            var didGetCalled = calls.count() > 0;
+            var expectingACall;
 
-                var allArgs = calls.allArgs();
-                allArgs.forEach(function(args, i) {
-                    args.forEach(function(a, j) {
-                        var e = exp[2][i][j];
-                        if(Lib.isPlainObject(a) || Array.isArray(a)) {
-                            expect(a).toEqual(e, msg);
-                        } else if(typeof a === 'function') {
-                            expect('function').toBe(e, msg);
-                        } else {
-                            expect(a).toBe(e, msg);
-                        }
-                    });
-                });
-            } else if(typeof exp[2] === 'number') {
-                expect(cnt).toBe(exp[2], msg);
+            if(Array.isArray(val)) {
+                expectingACall = true;
+            } else if(val === 0 || val === 1) {
+                expectingACall = Boolean(val);
             } else {
-                fail('wrong arguments for assertSpies');
+                fail(_msg + '- Wrong arguments for assertSpies');
+            }
+
+            expect(didGetCalled).toBe(expectingACall, msg(i, exp, 'did (not) get called'));
+            failEarly = didGetCalled !== expectingACall;
+        });
+
+        if(failEarly) {
+            return fail(_msg + '- Wrong calls, assertSpies early fail');
+        }
+
+        // filter out `exps` items with `value=0`
+        var exps = _exps.filter(function(exp) {
+            var val = exp[2];
+            return val !== 0;
+        });
+
+        // find list of spies to assert (N.B. dedupe using `invocationOrder`)
+        var actuals = [];
+        var seen = {};
+        exps.forEach(function(exp) {
+            var spy = exp[0];
+            var methodName = exp[1];
+            var calls = spy[methodName].calls;
+            if(calls.count()) {
+                calls.all().forEach(function(c) {
+                    var k = c.invocationOrder;
+                    if(!seen[k]) {
+                        actuals.push([spy, methodName, c.args, k]);
+                        seen[k] = 1;
+                    }
+                });
             }
         });
+        actuals.sort(function(a, b) { return a[3] - b[3]; });
+
+        // sanity check
+        if(actuals.length !== exps.length) {
+            return fail(_msg + '- Something went wrong when building "actual" callData list');
+        }
+
+        for(var i = 0; i < exps.length; i++) {
+            var exp = exps[i];
+            var actual = actuals[i];
+            var val = exp[2];
+            var args = actual[2];
+
+            if(actual[0] !== exp[0] || actual[1] !== exp[1]) {
+                fail(_msg + '- Item #' + i + ' with method "' + exp[1] + '" is out-of-order');
+                continue;
+            }
+
+            if(Array.isArray(val)) {
+                // assert function arguments
+                expect(args.length).toBe(val.length, msg(i, exp, '# of args'));
+
+                for(var j = 0; j < args.length; j++) {
+                    var arg = args[j];
+                    var e = val[j];
+                    var msgj = msg(i, exp, 'arg #' + j);
+
+                    if(Lib.isPlainObject(arg)) {
+                        expect(arg).withContext(msgj + ' (obj check)').toEqual(e);
+                    } else if(Array.isArray(arg)) {
+                        expect(arg).withContext(msgj + ' (arr check)').toEqual(e);
+                    } else if(typeof arg === 'function') {
+                        expect('function').toBe(e, msgj + ' (fn check)');
+                    } else {
+                        expect(arg).toBe(e, msgj);
+                    }
+                }
+            }
+        }
+
         resetSpyCounters();
     }
 
@@ -362,7 +446,7 @@ describe('Plotly.react transitions:', function() {
         })
         .then(function() {
             assertSpies('with *transition* set and changes', [
-                [Plots, 'transitionFromReact', 1],
+                [Plots, 'transitionFromReact', 1]
             ]);
         })
         .catch(failTest)
@@ -547,7 +631,7 @@ describe('Plotly.react transitions:', function() {
         .then(function() {
             assertSpies('redraw required', [
                 [Plots, 'transitionFromReact', 1],
-                [Registry, 'call', [['redraw', gd]]]
+                [Registry, 'call', ['redraw', gd]]
             ]);
         })
         .catch(failTest)
@@ -588,7 +672,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
                 // one _module.plot call from the relayout at end of axis transition
-                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-2, 2]}]]],
+                [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
                 [gd._fullLayout._basePlotModules[0], 'plot', 1],
             ]);
         })
@@ -597,18 +681,16 @@ describe('Plotly.react transitions:', function() {
             layout.xaxis.range = [-1, 1];
             return Plotly.react(gd, data, layout);
         })
+        .then(delay(20))
         .then(function() {
             assertSpies('both trace and layout transitions', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-1, 1]}]]],
-                [gd._fullLayout._basePlotModules[0], 'plot', [
-                    // one instantaneous transition options to halt
-                    // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
-                    // one _module.plot call from the relayout at end of axis transition
-                    [gd]
-                ]],
+                // one instantaneous transition options to halt other trace transitions (if any)
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
+                // one _module.plot call from the relayout at end of axis transition
+                [Registry, 'call', ['relayout', gd, {'xaxis.range': [-1, 1]}]],
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
         .then(function() {
@@ -621,14 +703,12 @@ describe('Plotly.react transitions:', function() {
         .then(function() {
             assertSpies('both trace and layout transitions under *ordering:traces first*', [
                 [Plots, 'transitionFromReact', 1],
-                [gd._fullLayout._basePlotModules[0], 'plot', [
-                    // one smooth transition
-                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function'],
-                    // one by relayout call  at the end of instantaneous axis transition
-                    [gd]
-                ]],
+                // one smooth transition
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function']],
+                // one by relayout call  at the end of instantaneous axis transition
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Registry, 'call', [['relayout', gd, {'xaxis.range': [-2, 2]}]]]
+                [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
         .catch(failTest)
@@ -730,13 +810,10 @@ describe('Plotly.react transitions:', function() {
             assertSpies('must transition autoranged axes, not the traces', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [gd._fullLayout._basePlotModules[0], 'plot', [
-                    // one instantaneous transition options to halt
-                    // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
-                    // one _module.plot call from the relayout at end of axis transition
-                    [gd]
-                ]],
+                // one instantaneous transition options to halt other trace transitions (if any)
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
+                // one _module.plot call from the relayout at end of axis transition
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd]],
             ]);
             assertAxAutorange('axes are now autorange:false', false);
         })
@@ -748,10 +825,8 @@ describe('Plotly.react transitions:', function() {
             assertSpies('transition just traces, as now axis ranges are set', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0],
-                [gd._fullLayout._basePlotModules[0], 'plot', [
-                    // called from Plots.transitionFromReact
-                    [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
-                ]],
+                // called from Plots.transitionFromReact
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']]
             ]);
             assertAxAutorange('axes are still autorange:false', false);
         })
@@ -795,36 +870,34 @@ describe('Plotly.react transitions:', function() {
         })
         .then(function() {
             assertSpies('both trace and layout transitions', [
+                // xaxis call to _storeDirectGUIEdit from doAutoRange
+                [Registry, 'call', ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                    'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                    'xaxis.autorange': true
+                }]],
+                // yaxis call to _storeDirectGUIEdit from doAutoRange
+                [Registry, 'call', ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                    'yaxis.range': [9.26751592356688, 20.73248407643312],
+                    'yaxis.autorange': true
+                }]],
+
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Registry, 'call', [
-                    // xaxis call to _storeDirectGUIEdit from doAutoRange
-                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
-                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
-                        'xaxis.autorange': true
-                    }],
-                    // yaxis call to _storeDirectGUIEdit from doAutoRange
-                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
-                        'yaxis.range': [9.26751592356688, 20.73248407643312],
-                        'yaxis.autorange': true
-                    }],
-                    ['relayout', gd, {
-                        'yaxis.range': [9.26751592356688, 20.73248407643312]
-                    }],
-                    // xaxis call #2 to _storeDirectGUIEdit from doAutoRange,
-                    // as this axis is still autorange:true
-                    ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
-                        'xaxis.range': [-0.12852664576802508, 2.128526645768025],
-                        'xaxis.autorange': true
-                    }],
-                ]],
-                [gd._fullLayout._basePlotModules[0], 'plot', [
-                    // one instantaneous transition options to halt
-                    // other trace transitions (if any)
-                    [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function'],
-                    // one _module.plot call from the relayout at end of axis transition
-                    [gd]
-                ]]
+
+                // one instantaneous transition options to halt other trace transitions (if any)
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
+
+                // one _module.plot call from the relayout at end of axis transition
+                [Registry, 'call', ['relayout', gd, {
+                    'yaxis.range': [9.26751592356688, 20.73248407643312]
+                }]],
+                // xaxis call #2 to _storeDirectGUIEdit from doAutoRange,
+                // as this axis is still autorange:true
+                [Registry, 'call', ['_storeDirectGUIEdit', gd.layout, gd._fullLayout._preGUI, {
+                    'xaxis.range': [-0.12852664576802508, 2.128526645768025],
+                    'xaxis.autorange': true
+                }]],
+                [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
             assertAxAutorange('y-axis is now autorange:false', false);
         })
@@ -1002,8 +1075,9 @@ describe('Plotly.react transitions:', function() {
             var msg = 'transition into data2';
             assertSpies(msg, [
                 [Plots, 'transitionFromReact', 1],
-                [gd._fullLayout._basePlotModules[0], 'plot', 2],
-                [Registry, 'call', 1],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [Registry, 'call', ['redraw', gd]],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
             ]);
 
@@ -1015,8 +1089,9 @@ describe('Plotly.react transitions:', function() {
             var msg = 'transition back to data1';
             assertSpies(msg, [
                 [Plots, 'transitionFromReact', 1],
-                [Registry, 'call', 1],
-                [gd._fullLayout._basePlotModules[0], 'plot', 2],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
+                [Registry, 'call', ['redraw', gd]],
+                [gd._fullLayout._basePlotModules[0], 'plot', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 0]
             ]);
 
