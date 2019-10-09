@@ -33,6 +33,7 @@ var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+var CAP_SHIFT = require('../../constants/alignment').CAP_SHIFT;
 var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 
@@ -1859,6 +1860,11 @@ axes.drawOne = function(gd, ax, opts) {
                 transFn: transFn
             });
         });
+    } else if(ax.title.hasOwnProperty('standoff')) {
+        seq.push(function() {
+            var sgn = {l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)];
+            ax._depth = sgn * (getLabelLevelBbox()[ax.side] - mainLinePosition);
+        });
     }
 
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
@@ -1936,10 +1942,7 @@ axes.drawOne = function(gd, ax, opts) {
                 ax._anchorAxis.domain[domainIndices[0]];
 
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
-                push[s] += extraLines ?
-                    ax.title.font.size * (extraLines + 1) * LINE_SPACING :
-                    ax.title.font.size;
+                push[s] += approxTitleDepth(ax) + (ax.title.standoff || 0);
             }
 
             if(ax.mirror && ax.anchor !== 'free') {
@@ -2699,6 +2702,46 @@ axes.getPxPosition = function(gd, ax) {
     }
 };
 
+/**
+ * Approximate axis title depth (w/o computing its bounding box)
+ *
+ * @param {object} ax (full) axis object
+ *  - {string} title.text
+ *  - {number} title.font.size
+ *  - {number} title.standoff
+ * @return {number} (in px)
+ */
+function approxTitleDepth(ax) {
+    var fontSize = ax.title.font.size;
+    var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+    if(ax.title.hasOwnProperty('standoff')) {
+        return extraLines ?
+            fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING)) :
+            fontSize * CAP_SHIFT;
+    } else {
+        return extraLines ?
+            fontSize * (extraLines + 1) * LINE_SPACING :
+            fontSize;
+    }
+}
+
+/**
+ * Draw axis title, compute default standoff if necessary
+ *
+ * @param {DOM element} gd
+ * @param {object} ax (full) axis object
+ *  - {string} _id
+ *  - {string} _name
+ *  - {string} side
+ *  - {number} title.font.size
+ *  - {object} _selections
+ *
+ *  - {number} _depth
+ *  - {number} title.standoff
+ *  OR
+ *  - {number} linewidth
+ *  - {boolean} showticklabels
+ */
 function drawTitle(gd, ax) {
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
@@ -2706,11 +2749,26 @@ function drawTitle(gd, ax) {
     var fontSize = ax.title.font.size;
 
     var titleStandoff;
-    if(ax.type === 'multicategory') {
-        titleStandoff = ax._depth;
+
+    if(ax.title.hasOwnProperty('standoff')) {
+        titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
-        var offsetBase = 1.5;
-        titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
+        if(ax.type === 'multicategory') {
+            titleStandoff = ax._depth;
+        } else {
+            var offsetBase = 1.5;
+            titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
+        }
+
+        if(axLetter === 'x') {
+            titleStandoff += ax.side === 'top' ?
+                fontSize * (ax.showticklabels ? 1 : 0) :
+                fontSize * (ax.showticklabels ? 1.5 : 0.5);
+        } else {
+            titleStandoff += ax.side === 'right' ?
+                fontSize * (ax.showticklabels ? 1 : 0.5) :
+                fontSize * (ax.showticklabels ? 0.5 : 0);
+        }
     }
 
     var pos = axes.getPxPosition(gd, ax);
@@ -2718,23 +2776,10 @@ function drawTitle(gd, ax) {
 
     if(axLetter === 'x') {
         x = ax._offset + ax._length / 2;
-
-        if(ax.side === 'top') {
-            y = -titleStandoff - fontSize * (ax.showticklabels ? 1 : 0);
-        } else {
-            y = titleStandoff + fontSize * (ax.showticklabels ? 1.5 : 0.5);
-        }
-        y += pos;
+        y = (ax.side === 'top') ? pos - titleStandoff : pos + titleStandoff;
     } else {
         y = ax._offset + ax._length / 2;
-
-        if(ax.side === 'right') {
-            x = titleStandoff + fontSize * (ax.showticklabels ? 1 : 0.5);
-        } else {
-            x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
-        }
-        x += pos;
-
+        x = (ax.side === 'right') ? pos + titleStandoff : pos - titleStandoff;
         transform = {rotate: '-90', offset: 0};
     }
 
@@ -2752,6 +2797,10 @@ function drawTitle(gd, ax) {
             var translation = Drawing.getTranslate(tickLabels.node().parentNode);
             avoid.offsetLeft = translation.x;
             avoid.offsetTop = translation.y;
+        }
+
+        if(ax.title.hasOwnProperty('standoff')) {
+            avoid.pad = 0;
         }
     }
 

@@ -235,6 +235,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             grid: layoutOut.grid
         });
 
+        coerce('title.standoff');
+
         axLayoutOut._input = axLayoutIn;
     }
 

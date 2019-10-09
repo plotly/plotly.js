@@ -122,6 +122,7 @@ var radialAxisAttrs = {
 
         // TODO
         // - might need a 'titleside' and even 'titledirection' down the road
+        // - what about standoff ??
 
         editType: 'plot'
     },

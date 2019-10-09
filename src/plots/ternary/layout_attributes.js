@@ -19,6 +19,7 @@ var ternaryAxesAttrs = {
     title: {
         text: axesAttrs.title.text,
         font: axesAttrs.title.font
+        // TODO does standoff here make sense?
     },
     color: axesAttrs.color,
     // ticks

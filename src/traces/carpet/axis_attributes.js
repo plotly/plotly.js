@@ -57,6 +57,7 @@ module.exports = {
                 'by the now deprecated `titlefont` attribute.'
             ].join(' ')
         }),
+        // TODO how is this different than `title.standoff`
         offset: {
             valType: 'number',
             role: 'info',
