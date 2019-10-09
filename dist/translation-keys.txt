@@ -1,37 +1,37 @@
 Autoscale                                              // components/modebar/buttons.js:157
 Box Select                                             // components/modebar/buttons.js:121
-Click to enter Colorscale title                        // plots/plots.js:320
+Click to enter Colorscale title                        // plots/plots.js:322
 Click to enter Component A title                       // plots/ternary/ternary.js:376
 Click to enter Component B title                       // plots/ternary/ternary.js:386
 Click to enter Component C title                       // plots/ternary/ternary.js:396
 Click to enter Plot title                              // plot_api/plot_api.js:569
-Click to enter X axis title                            // plots/plots.js:318
-Click to enter Y axis title                            // plots/plots.js:319
-Click to enter radial axis title                       // plots/polar/polar.js:498
+Click to enter X axis title                            // plots/plots.js:320
+Click to enter Y axis title                            // plots/plots.js:321
+Click to enter radial axis title                       // plots/polar/polar.js:492
 Compare data on hover                                  // components/modebar/buttons.js:185
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:27
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:1094
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1087
 Download plot                                          // components/modebar/buttons.js:53
 Download plot as a png                                 // components/modebar/buttons.js:52
 Edit in Chart Studio                                   // components/modebar/buttons.js:85
 IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:63
 Lasso Select                                           // components/modebar/buttons.js:130
-Orbital rotation                                       // components/modebar/buttons.js:290
+Orbital rotation                                       // components/modebar/buttons.js:286
 Pan                                                    // components/modebar/buttons.js:112
 Produced with Plotly                                   // components/modebar/modebar.js:304
-Reset                                                  // components/modebar/buttons.js:442
+Reset                                                  // components/modebar/buttons.js:438
 Reset axes                                             // components/modebar/buttons.js:166
-Reset camera to default                                // components/modebar/buttons.js:328
-Reset camera to last save                              // components/modebar/buttons.js:336
-Reset view                                             // components/modebar/buttons.js:521
-Reset views                                            // components/modebar/buttons.js:559
+Reset camera to default                                // components/modebar/buttons.js:324
+Reset camera to last save                              // components/modebar/buttons.js:332
+Reset view                                             // components/modebar/buttons.js:517
+Reset views                                            // components/modebar/buttons.js:555
 Show closest data on hover                             // components/modebar/buttons.js:175
 Snapshot succeeded                                     // components/modebar/buttons.js:75
 Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:78
 Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:60
-Toggle Spike Lines                                     // components/modebar/buttons.js:578
-Toggle show closest data on hover                      // components/modebar/buttons.js:370
-Turntable rotation                                     // components/modebar/buttons.js:299
+Toggle Spike Lines                                     // components/modebar/buttons.js:574
+Toggle show closest data on hover                      // components/modebar/buttons.js:366
+Turntable rotation                                     // components/modebar/buttons.js:295
 Zoom                                                   // components/modebar/buttons.js:103
 Zoom in                                                // components/modebar/buttons.js:139
 Zoom out                                               // components/modebar/buttons.js:148
@@ -49,12 +49,12 @@ mean ± σ:                                              // traces/box/calc.js:1
 mean:                                                  // traces/box/calc.js:149
 median:                                                // traces/box/calc.js:144
 min:                                                   // traces/box/calc.js:145
-new text                                               // plots/plots.js:321
+new text                                               // plots/plots.js:323
 open:                                                  // traces/ohlc/calc.js:107
 outgoing flow count:                                   // traces/sankey/plot.js:169
 q1:                                                    // traces/box/calc.js:146
 q3:                                                    // traces/box/calc.js:147
 source:                                                // traces/sankey/plot.js:165
 target:                                                // traces/sankey/plot.js:166
-trace                                                  // plots/plots.js:323
+trace                                                  // plots/plots.js:325
 upper fence:                                           // traces/box/calc.js:151

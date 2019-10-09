@@ -15,10 +15,7 @@ var Lib = require('../../lib');
 var makeColorScaleFn = require('../../components/colorscale').makeColorScaleFuncFromTrace;
 var makePullColorFn = require('../pie/calc').makePullColorFn;
 var generateExtendedColors = require('../pie/calc').generateExtendedColors;
-
-var Colorscale = require('../../components/colorscale');
-var hasColorscale = Colorscale.hasColorscale;
-var colorscaleCalc = Colorscale.calc;
+var colorscaleCalc = require('../../components/colorscale').calc;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
@@ -106,6 +103,7 @@ exports.calc = function(gd, trace) {
         if(impliedRoots.length === 1) {
             k = impliedRoots[0];
             cd.unshift({
+                hasImpliedRoot: true,
                 id: k,
                 pid: '',
                 label: k
@@ -128,7 +126,8 @@ exports.calc = function(gd, trace) {
         cd.unshift({
             hasMultipleRoots: true,
             id: dummyId,
-            pid: ''
+            pid: '',
+            label: ''
         });
     }
 
@@ -152,12 +151,20 @@ exports.calc = function(gd, trace) {
                 break;
             case 'total':
                 hierarchy.each(function(d) {
-                    var v = d.data.data.v;
+                    var cdi = d.data.data;
+                    var v = cdi.v;
 
                     if(d.children) {
                         var partialSum = d.children.reduce(function(a, c) {
                             return a + c.data.data.v;
                         }, 0);
+
+                        // N.B. we must fill in `value` for generated sectors
+                        // with the partialSum to compute the correct partition
+                        if(cdi.hasImpliedRoot || cdi.hasMultipleRoots) {
+                            v = partialSum;
+                        }
+
                         if(v < partialSum) {
                             failed = true;
                             return Lib.warn([
@@ -188,9 +195,10 @@ exports.calc = function(gd, trace) {
     var pullColor;
     var scaleColor;
     var colors = trace.marker.colors || [];
-    trace._hasColorscale = hasColorscale(trace, 'marker');
+    var hasColors = !!colors.length;
+
     if(trace._hasColorscale) {
-        if(!colors.length) {
+        if(!hasColors) {
             colors = hasValues ? trace.values : trace._values;
         }
 

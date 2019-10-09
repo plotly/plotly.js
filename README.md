@@ -158,7 +158,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ### Active
 
-|   | Github | Twitter |
+|   | GitHub | Twitter |
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
@@ -167,7 +167,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ### Hall of Fame
 
-|   | Github | Twitter |
+|   | GitHub | Twitter |
 |---|--------|---------|
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |

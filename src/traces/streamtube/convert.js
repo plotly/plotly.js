@@ -123,8 +123,8 @@ function convert(scene, trace) {
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
 
-    if(trace.starts) {
-        var slen = trace._slen;
+    var slen = trace._slen;
+    if(slen) {
         tubeOpts.startingPositions = zip3(
             toDataCoords(trace.starts.x.slice(0, slen), 'xaxis'),
             toDataCoords(trace.starts.y.slice(0, slen), 'yaxis'),

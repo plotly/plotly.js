@@ -1201,6 +1201,7 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
                 });
+
                 it('should makes spikelines visible', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1208,6 +1209,7 @@ describe('ModeBar', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
+
                 it('should not become disabled when hovermode is switched off closest', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1215,6 +1217,7 @@ describe('ModeBar', function() {
                     buttonCompare.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
                 });
+
                 it('should keep the state on changing the hovermode', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1226,6 +1229,36 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
 
                     buttonClosest.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+
+                it('should work after clicking on "autoScale2d"', function() {
+                    var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonAutoScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+
+                it('should work after clicking on "resetScale2d"', function() {
+                    var buttonResetScale = selectButton(modeBar, 'resetScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonResetScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+                    buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
             });

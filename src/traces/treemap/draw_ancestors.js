@@ -73,7 +73,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
     sliceData.reverse();
 
-    slices = slices.data(sliceData, function(pt) { return helpers.getPtId(pt); });
+    slices = slices.data(sliceData, helpers.getPtId);
 
     slices.enter().append('g')
         .classed('pathbar', true);
@@ -132,6 +132,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             hovered: false
         });
 
+        pt._text = (helpers.getPtLabel(pt) || '').split('<br>').join(' ') || '';
+
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
@@ -139,25 +141,16 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var tx = (helpers.getPtLabel(pt) || ' ').split('<br>').join(' ');
-
-        sliceText.text(tx)
+        sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
             .attr('text-anchor', 'start')
             .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font, trace.pathdir))
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(
-            pt.x0,
-            pt.x1,
-            pt.y0,
-            pt.y1,
-            pt.textBB,
-            {
-                onPathbar: true
-            }
-        );
+        pt.transform = toMoveInsideSlice(pt, {
+            onPathbar: true
+        });
 
         if(helpers.isOutsideText(trace, pt)) {
             // consider in/out diff font sizes

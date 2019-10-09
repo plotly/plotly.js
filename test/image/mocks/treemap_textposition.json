@@ -229,6 +229,7 @@
                     "family": "Times New Roman"
                 }
             },
+            "marker": { "depthfade": "reversed" },
             "text": [
                 "A L P H A",
                 "B R A V O",
@@ -441,6 +442,7 @@
             "pathbar": {
                 "visible": false
             },
+            "marker": { "depthfade": "reversed" },
             "text": [
                 "A L P H A",
                 "B R A V O",
@@ -656,6 +658,7 @@
                     "family": "Times New Roman"
                 }
             },
+            "marker": { "depthfade": "reversed" },
             "text": [
                 "A L P H A",
                 "B R A V O",
@@ -977,6 +980,6 @@
     "layout": {
         "width": 1200,
         "height": 1200,
-        "paper_bgcolor": "#210"
+        "paper_bgcolor": "black"
     }
 }

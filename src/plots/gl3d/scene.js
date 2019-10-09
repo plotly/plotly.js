@@ -230,13 +230,20 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
         glplotOptions.canvas = STATIC_CANVAS;
     }
 
+    var failed = 0;
+
     try {
         scene.glplot = createPlot(glplotOptions);
     } catch(e) {
-        return false;
+        failed++;
+        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
+            scene.glplot = createPlot(glplotOptions);
+        } catch(e) {
+            failed++;
+        }
     }
 
-    return true;
+    return failed < 2;
 }
 
 function initializeGLPlot(scene, pixelRatio, canvas, gl) {

@@ -84,6 +84,8 @@ function plotOne(gd, cd, element, transitionOpts) {
     var hierarchy = cd0.hierarchy;
     var hasTransition = helpers.hasTransition(transitionOpts);
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+    var isRoot = helpers.isHierarchyRoot(entry);
+
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
         return pt.data.depth - entry.data.depth < maxDepth;
@@ -146,18 +148,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         return {};
     };
 
-    var isRoot = helpers.isHierarchyRoot(entry);
-
-    trace._entryDepth = entry.data.depth;
-    if(isRoot) {
-        trace._entryDepth++;
-    }
-
     // N.B. handle multiple-root special case
     if(cd0.hasMultipleRoots && isRoot) {
         maxDepth++;
     }
+
     trace._maxDepth = maxDepth;
+    trace._backgroundColor = fullLayout.paper_bgcolor;
+    trace._entryDepth = entry.data.depth;
+    trace._atRootLevel = isRoot;
 
     var cenX = -vpw / 2 + gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
     var cenY = -vph / 2 + gs.t + gs.h * (1 - (domain.y[1] + domain.y[0]) / 2);
@@ -273,7 +272,23 @@ function plotOne(gd, cd, element, transitionOpts) {
         );
     };
 
-    var toMoveInsideSlice = function(x0, x1, y0, y1, textBB, opts) {
+    var toMoveInsideSlice = function(pt, opts) {
+        var x0 = pt.x0;
+        var x1 = pt.x1;
+        var y0 = pt.y0;
+        var y1 = pt.y1;
+        var textBB = pt.textBB;
+
+        if(x0 === x1) {
+            x0 -= TEXTPAD;
+            x1 += TEXTPAD;
+        }
+
+        if(y0 === y1) {
+            y0 -= TEXTPAD;
+            y1 += TEXTPAD;
+        }
+
         var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
 
         var hasBottom = hasFlag('bottom');
@@ -299,6 +314,11 @@ function plotOne(gd, cd, element, transitionOpts) {
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;
+            if(x0 >= x1) {
+                var mid = (x0 + x1) / 2;
+                x0 = mid - TEXTPAD;
+                x1 = mid + TEXTPAD;
+            }
 
             // limit the drawing area for headers
             var limY;
@@ -428,16 +448,16 @@ function plotOne(gd, cd, element, transitionOpts) {
         var origin = getOrigin(pt, onPathbar, refRect, size);
 
         Lib.extendFlat(prev, {
-            transform: toMoveInsideSlice(
-                origin.x0,
-                origin.x1,
-                origin.y0,
-                origin.y1,
-                pt.textBB,
-                {
-                    isHeader: helpers.isHeader(pt, trace)
-                }
-            )
+            transform: toMoveInsideSlice({
+                x0: origin.x0,
+                x1: origin.x1,
+                y0: origin.y0,
+                y1: origin.y1,
+                textBB: pt.textBB,
+                _text: pt._text
+            }, {
+                isHeader: helpers.isHeader(pt, trace)
+            })
         });
 
         if(prev0) {

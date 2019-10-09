@@ -163,7 +163,7 @@ dragElement.init = function init(options) {
         if(options.dragmode !== false) {
             e.preventDefault();
             document.addEventListener('mousemove', onMove);
-            document.addEventListener('touchmove', onMove);
+            document.addEventListener('touchmove', onMove, {passive: false});
         }
 
         return;

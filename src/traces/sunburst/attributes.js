@@ -70,8 +70,8 @@ module.exports = {
         editType: 'calc',
         role: 'info',
         description: [
-            'Determines counting the number of *leaves* and/or *branches*,',
-            'when a `values` array is not provided.'
+            'Determines default for `values` when it is not provided,',
+            'by inferring a 1 for each of the *leaves* and/or *branches*, otherwise 0.'
         ].join(' ')
     },
 
