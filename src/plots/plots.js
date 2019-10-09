@@ -2611,14 +2611,14 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
                 axisTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
                 transitionedTraces = allTraceIndices;
                 traceTransitionOpts = transitionOpts;
-                transitionTraces();
                 setTimeout(transitionAxes, transitionOpts.duration);
+                transitionTraces();
             } else {
                 axisTransitionOpts = transitionOpts;
                 transitionedTraces = null;
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts, {duration: 0});
+                setTimeout(transitionTraces, axisTransitionOpts.duration);
                 transitionAxes();
-                transitionTraces();
             }
         } else if(axEdits.length) {
             axisTransitionOpts = transitionOpts;
