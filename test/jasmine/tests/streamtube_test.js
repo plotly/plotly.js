@@ -147,6 +147,24 @@ describe('Test streamtube starting positions defaults:', function() {
         expect(exp.cellsLength).toBe(obj.cells.length, 'cells length');
     }
 
+    it('@gl should ignore starts if one (x | y | z) dimension missing', function(done) {
+        var mock = makeFigure(4, 4, 4);
+        mock.data[0].starts = {
+            x: [0, 1, 2, 3],
+            // missing y
+            z: [0, 1, 2, 3]
+        };
+
+        Plotly.plot(gd, mock).then(function() {
+            _assert({
+                positionsLength: 6144,
+                cellsLength: 2048
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
         Plotly.plot(gd, makeFigure(3, 3, 3)).then(function() {
             _assert({
