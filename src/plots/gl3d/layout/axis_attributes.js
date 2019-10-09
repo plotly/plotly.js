@@ -71,7 +71,10 @@ module.exports = overrideAll({
     color: axesAttrs.color,
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
-    title: axesAttrs.title,
+    title: {
+        text: axesAttrs.title.text,
+        font: axesAttrs.title.font
+    },
     type: extendFlat({}, axesAttrs.type, {
         values: ['-', 'linear', 'log', 'date', 'category']
     }),

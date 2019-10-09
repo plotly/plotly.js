@@ -114,8 +114,17 @@ var radialAxisAttrs = {
     },
 
 
-    title: overrideAll(axesAttrs.title, 'plot', 'from-root'),
-    // might need a 'titleside' and even 'titledirection' down the road
+    title: {
+        // radial title is not gui-editable at the moment,
+        // so it needs dflt: '', similar to carpet axes.
+        text: extendFlat({}, axesAttrs.title.text, {editType: 'plot', dflt: ''}),
+        font: extendFlat({}, axesAttrs.title.font, {editType: 'plot'}),
+
+        // TODO
+        // - might need a 'titleside' and even 'titledirection' down the road
+
+        editType: 'plot'
+    },
 
     hoverformat: axesAttrs.hoverformat,
 
@@ -137,9 +146,6 @@ var radialAxisAttrs = {
         titlefont: axesAttrs._deprecated.titlefont
     }
 };
-
-// radial title is not gui-editable, so it needs dflt: '', similar to carpet axes.
-radialAxisAttrs.title.text.dflt = '';
 
 extendFlat(
     radialAxisAttrs,
