@@ -660,7 +660,7 @@ lib.minExtend = function(obj1, obj2) {
         v = obj1[k];
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
-        else if(Array.isArray(v)) {
+        else if(lib.isArrayOrTypedArray(v)) {
             if(k === 'colorscale') {
                 objOut[k] = v.slice();
             } else {
