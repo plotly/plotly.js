@@ -2607,6 +2607,56 @@ describe('hover updates', function() {
         })
         .then(done);
     });
+
+    it('should not attempt to rehover over exiting subplots', function(done) {
+        spyOn(Fx, 'hover').and.callThrough();
+
+        var data = [
+            {y: [1], hoverinfo: 'y'},
+            {y: [2], hoverinfo: 'y', xaxis: 'x2', yaxis: 'y2'}
+        ];
+
+        var data2 = [
+            {y: [1], hoverinfo: 'y'}
+        ];
+
+        var layout = {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {anchor: 'y2', domain: [0.5, 1]},
+            yaxis2: {anchor: 'x2'},
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        var gd = createGraphDiv();
+        var onPt2 = [300, 100];
+        var offPt2 = [250, 100];
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertLabelsCorrect(onPt2, [303, 100], '2', 'after 1st draw [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'after 1st draw [off-pt]');
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+        })
+        .then(function() {
+            var promise = Plotly.react(gd, data2, layout);
+            assertLabelsCorrect(onPt2, null, null, '2', 'before react() resolves [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'before react() resolves [off-pt]');
+            // N.B. no calls from Plots.rehover() as x2y2 subplot got removed!
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+            return promise;
+        })
+        .then(function() {
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+            assertLabelsCorrect(onPt2, null, null, '2', 'after react() resolves [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'after react() resolves [off-pt]');
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test hover label custom styling:', function() {
