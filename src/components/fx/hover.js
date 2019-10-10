@@ -235,13 +235,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             xaArray[i] = Axes.getFromId(gd, plotObj.xaxis._id);
             yaArray[i] = Axes.getFromId(gd, plotObj.yaxis._id);
-            continue;
+        } else if(fullLayout[spId] && fullLayout[spId]._subplot) {
+            // other subplot types
+            var _subplot = fullLayout[spId]._subplot;
+            xaArray[i] = _subplot.xaxis;
+            yaArray[i] = _subplot.yaxis;
+        } else {
+            Lib.warn('Unrecognized subplot: ' + spId);
+            return;
         }
-
-        // other subplot types
-        var _subplot = fullLayout[spId]._subplot;
-        xaArray[i] = _subplot.xaxis;
-        yaArray[i] = _subplot.yaxis;
     }
 
     var hovermode = evt.hovermode || fullLayout.hovermode;

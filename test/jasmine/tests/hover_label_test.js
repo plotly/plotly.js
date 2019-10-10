@@ -36,6 +36,41 @@ function touch(path, options) {
     return;
 }
 
+describe('Fx.hover:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('should warn when passing subplot ids that are not part of the graph', function(done) {
+        spyOn(Lib, 'warn');
+
+        var data = [
+            {y: [1], hoverinfo: 'y'}
+        ];
+
+        var layout = {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {anchor: 'y2', domain: [0.5, 1]},
+            yaxis2: {anchor: 'x2'},
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        Plotly.plot(gd, data, layout)
+        .then(function() {
+            Fx.hover(gd, {xpx: 300, ypx: 100}, 'x2y2');
+            expect(gd._hoverdata).toBe(undefined, 'did not generate hoverdata');
+            expect(Lib.warn).toHaveBeenCalledWith('Unrecognized subplot: x2y2');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('hover info', function() {
     'use strict';
 
@@ -2149,7 +2184,6 @@ describe('hover info on stacked subplots', function() {
         });
     });
 });
-
 
 describe('hover on many lines+bars', function() {
     'use strict';
