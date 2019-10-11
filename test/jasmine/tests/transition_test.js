@@ -1189,7 +1189,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('should update ranges of date and category axes', function(done) {
+    it('@flaky should update ranges of date and category axes', function(done) {
         Plotly.plot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
