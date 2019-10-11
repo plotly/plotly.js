@@ -1121,7 +1121,7 @@ describe('end-to-end scatter tests', function() {
 
             var legendPts = d3.select('.legend').selectAll('.scatterpts');
             expect(legendPts.size()).toBe(1, '# legend items');
-            expect(getColor(legendPts.node())).toBe('rgb(0, 0, 0)', 'legend pt color');
+            expect(getColor(legendPts.node())).toBe('rgb(0, 255, 0)', 'legend pt color');
             expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
         })
         .catch(failTest)
