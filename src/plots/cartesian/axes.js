@@ -1942,7 +1942,7 @@ axes.drawOne = function(gd, ax, opts) {
                     ax.title.font.size;
             }
 
-            if(ax.mirror) {
+            if(ax.mirror && ax.anchor !== 'free') {
                 mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
                 mirrorPush[sMirror] = ax.linewidth;
