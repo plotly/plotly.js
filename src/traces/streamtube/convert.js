@@ -122,6 +122,7 @@ function convert(scene, trace) {
     var meshz = toDataCoords(valsz, 'zaxis');
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
+    tubeOpts.gridFill = trace._gridFill;
 
     var slen = trace._slen;
     if(slen) {

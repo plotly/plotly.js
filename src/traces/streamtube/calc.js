@@ -56,6 +56,19 @@ module.exports = function calc(gd, trace) {
     var zMax = -Infinity;
     var zMin = Infinity;
 
+    var gridFill = '';
+    var filledX;
+    var filledY;
+    var filledZ;
+    var prevX;
+    var prevY;
+    var prevZ;
+    if(len) {
+        prevX = x[0];
+        prevY = y[0];
+        prevZ = z[0];
+    }
+
     for(i = 0; i < len; i++) {
         var xx = x[i];
         xMax = Math.max(xMax, xx);
@@ -68,7 +81,23 @@ module.exports = function calc(gd, trace) {
         var zz = z[i];
         zMax = Math.max(zMax, zz);
         zMin = Math.min(zMin, zz);
+
+        if(!filledX && xx !== prevX) {
+            filledX = true;
+            gridFill += 'x';
+        } else if(!filledY && yy !== prevY) {
+            filledY = true;
+            gridFill += 'y';
+        } else if(!filledZ && zz !== prevZ) {
+            filledZ = true;
+            gridFill += 'z';
+        }
     }
+    // fill if not filled - case of having 1 dimension
+    if(!filledX) gridFill += 'x';
+    if(!filledY) gridFill += 'y';
+    if(!filledZ) gridFill += 'z';
+
     for(i = 0; i < slen; i++) {
         var sx = startx[i];
         xMax = Math.max(xMax, sx);
@@ -89,4 +118,5 @@ module.exports = function calc(gd, trace) {
     trace._xbnds = [xMin, xMax];
     trace._ybnds = [yMin, yMax];
     trace._zbnds = [zMin, zMax];
+    trace._gridFill = gridFill;
 };
