@@ -104,18 +104,17 @@ function convert(scene, trace) {
         len
     );
 
-    var valsx = trace._valsx;
-    var valsy = trace._valsy;
-    var valsz = trace._valsz;
-
     // Over-specified mesh case, this would error in tube2mesh
-    if(valsx.length * valsy.length * valsz.length > len) {
-        return {positions: [], cells: []};
+    if(!len) {
+        return {
+            positions: [],
+            cells: []
+        };
     }
 
-    var meshx = toDataCoords(valsx, 'xaxis');
-    var meshy = toDataCoords(valsy, 'yaxis');
-    var meshz = toDataCoords(valsz, 'zaxis');
+    var meshx = toDataCoords(trace._Xs, 'xaxis');
+    var meshy = toDataCoords(trace._Ys, 'yaxis');
+    var meshz = toDataCoords(trace._Zs, 'zaxis');
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
     tubeOpts.gridFill = trace._gridFill;

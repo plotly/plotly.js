@@ -96,21 +96,30 @@ module.exports = function calc(gd, trace) {
     if(!filledY) gridFill += 'y';
     if(!filledZ) gridFill += 'z';
 
-    var valsx = distinctVals(trace.x.slice(0, len));
-    var valsy = distinctVals(trace.y.slice(0, len));
-    var valsz = distinctVals(trace.z.slice(0, len));
+    var Xs = distinctVals(trace.x.slice(0, len));
+    var Ys = distinctVals(trace.y.slice(0, len));
+    var Zs = distinctVals(trace.z.slice(0, len));
+
+    var empty = function() {
+        len = 0;
+        Xs = [];
+        Ys = [];
+        Zs = [];
+    };
+
+    // Over-specified mesh case, this would error in tube2mesh
+    if(!len || len < Xs.length * Ys.length * Zs.length) empty();
 
     var getArray = function(c) { return c === 'x' ? x : c === 'y' ? y : z; };
-    var getVals = function(c) { return c === 'x' ? valsx : c === 'y' ? valsy : valsz; };
-    var getLength = function(c) { return getVals(c).length; };
-    var getDir = function(c) { return (+(c[c.length - 1] - c[0])) * 2 + 1; };
+    var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
+    var getDir = function(c) { return (+(c[len - 1] - c[0])) * 2 + 1; };
 
     var arrK = getArray(gridFill[0]);
     var arrJ = getArray(gridFill[1]);
     var arrI = getArray(gridFill[2]);
-    var nk = getLength(gridFill[0]);
-    var nj = getLength(gridFill[1]);
-    var ni = getLength(gridFill[2]);
+    var nk = getVals(gridFill[0]).length;
+    var nj = getVals(gridFill[1]).length;
+    var ni = getVals(gridFill[2]).length;
 
     var arbitrary = false;
 
@@ -147,7 +156,7 @@ module.exports = function calc(gd, trace) {
 
     if(arbitrary) {
         Lib.warn('Encountered arbitrary coordinates! Unable to input data grid.');
-        len = 0;
+        empty();
     }
 
     for(i = 0; i < slen; i++) {
@@ -170,9 +179,9 @@ module.exports = function calc(gd, trace) {
     trace._xbnds = [xMin, xMax];
     trace._ybnds = [yMin, yMax];
     trace._zbnds = [zMin, zMax];
-    trace._valsx = valsx;
-    trace._valsy = valsy;
-    trace._valsz = valsz;
+    trace._Xs = Xs;
+    trace._Ys = Ys;
+    trace._Zs = Zs;
     trace._gridFill = gridFill;
 };
 
