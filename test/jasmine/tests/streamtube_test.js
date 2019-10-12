@@ -246,6 +246,108 @@ describe('Test streamtube interactions', function() {
         .then(done);
     });
 
+    it('@gl should work with negative grid steps', function(done) {
+        var x = [];
+        var y = [];
+        var z = [];
+        var u = [];
+        var v = [];
+        var w = [];
+
+        for(var i = 0; i < 3; i++) {
+            for(var j = 0; j < 4; j++) {
+                for(var k = 0; k < 5; k++) {
+                    x.push(-i);
+                    y.push(-j);
+                    z.push(-k);
+                    u.push(1);
+                    v.push(1);
+                    w.push(1);
+                }
+            }
+        }
+
+        var fig = {
+            data: [{
+                type: 'streamtube',
+                x: x,
+                y: y,
+                z: z,
+                u: u,
+                v: v,
+                w: w
+            }]
+        };
+
+        function _assert(msg, exp) {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('with negative steps', {
+                positionsLength: 6336,
+                cellsLength: 2112
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should return blank mesh grid if encountered arbitrary coordinates', function(done) {
+        var x = [];
+        var y = [];
+        var z = [];
+        var u = [];
+        var v = [];
+        var w = [];
+
+        for(var i = 0; i < 3; i++) {
+            for(var j = i; j < 4; j++) {
+                for(var k = j; k < 5; k++) {
+                    x.push(i);
+                    y.push(j);
+                    z.push(k);
+                    u.push(1);
+                    v.push(1);
+                    w.push(1);
+                }
+            }
+        }
+
+        var fig = {
+            data: [{
+                type: 'streamtube',
+                x: x,
+                y: y,
+                z: z,
+                u: u,
+                v: v,
+                w: w
+            }]
+        };
+
+        function _assert(msg, exp) {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('arbitrary coordinates', {
+                positionsLength: 0,
+                cellsLength: 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should add/clear gl objects correctly', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
         var trace = Lib.extendDeep({}, fig.data[0]);

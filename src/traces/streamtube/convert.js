@@ -62,10 +62,6 @@ proto.handlePick = function(selection) {
     }
 };
 
-function distinctVals(col) {
-    return Lib.distinctVals(col).vals;
-}
-
 function getDfltStartingPositions(vec) {
     var len = vec.length;
     var s;
@@ -108,9 +104,9 @@ function convert(scene, trace) {
         len
     );
 
-    var valsx = distinctVals(trace.x.slice(0, len));
-    var valsy = distinctVals(trace.y.slice(0, len));
-    var valsz = distinctVals(trace.z.slice(0, len));
+    var valsx = trace._valsx;
+    var valsy = trace._valsy;
+    var valsz = trace._valsz;
 
     // Over-specified mesh case, this would error in tube2mesh
     if(valsx.length * valsy.length * valsz.length > len) {
