@@ -100,6 +100,10 @@ module.exports = function calc(gd, trace) {
     var Ys = distinctVals(trace.y.slice(0, len));
     var Zs = distinctVals(trace.z.slice(0, len));
 
+    gridFill = gridFill.replace('x', (x[0] > x[len - 1] ? '-' : '+') + 'x');
+    gridFill = gridFill.replace('y', (y[0] > y[len - 1] ? '-' : '+') + 'y');
+    gridFill = gridFill.replace('z', (z[0] > z[len - 1] ? '-' : '+') + 'z');
+
     var empty = function() {
         len = 0;
         Xs = [];
@@ -114,12 +118,12 @@ module.exports = function calc(gd, trace) {
     var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
     var getDir = function(c) { return (+(c[len - 1] - c[0])) * 2 + 1; };
 
-    var arrK = getArray(gridFill[0]);
-    var arrJ = getArray(gridFill[1]);
-    var arrI = getArray(gridFill[2]);
-    var nk = getVals(gridFill[0]).length;
-    var nj = getVals(gridFill[1]).length;
-    var ni = getVals(gridFill[2]).length;
+    var arrK = getArray(gridFill[1]);
+    var arrJ = getArray(gridFill[3]);
+    var arrI = getArray(gridFill[5]);
+    var nk = getVals(gridFill[1]).length;
+    var nj = getVals(gridFill[3]).length;
+    var ni = getVals(gridFill[5]).length;
 
     var arbitrary = false;
 
@@ -127,9 +131,9 @@ module.exports = function calc(gd, trace) {
         return nk * (nj * _i + _j) + _k;
     };
 
-    var dirK = getDir(getArray(gridFill[0]));
-    var dirJ = getDir(getArray(gridFill[1]));
-    var dirI = getDir(getArray(gridFill[2]));
+    var dirK = getDir(getArray(gridFill[1]));
+    var dirJ = getDir(getArray(gridFill[3]));
+    var dirI = getDir(getArray(gridFill[5]));
 
     for(i = 0; i < ni - 1; i++) {
         for(j = 0; j < nj - 1; j++) {
