@@ -83,10 +83,12 @@ module.exports = function calc(gd, trace) {
         if(!filledX && x[i] !== firstX) {
             filledX = true;
             gridFill += 'x';
-        } else if(!filledY && y[i] !== firstY) {
+        }
+        if(!filledY && y[i] !== firstY) {
             filledY = true;
             gridFill += 'y';
-        } else if(!filledZ && z[i] !== firstZ) {
+        }
+        if(!filledZ && z[i] !== firstZ) {
             filledZ = true;
             gridFill += 'z';
         }

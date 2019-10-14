@@ -86,7 +86,7 @@
     "gl-scatter3d": "^1.2.2",
     "gl-select-box": "^1.0.3",
     "gl-spikes2d": "^1.0.2",
-    "gl-streamtube3d": "git://github.com/gl-vis/gl-streamtube3d.git#457cf0ad78cf3fa0a185ebf95a6c61e8c7d0dc0e",
+    "gl-streamtube3d": "git://github.com/gl-vis/gl-streamtube3d.git#8c04da2cf0edecbd7941fd5d8b8695dcb38a41d4",
     "gl-surface3d": "^1.4.6",
     "gl-text": "^1.1.8",
     "glslify": "^7.0.0",
