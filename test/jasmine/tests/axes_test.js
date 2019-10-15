@@ -3468,6 +3468,33 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should handle cases with free+mirror axes', function(done) {
+            Plotly.plot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                xaxis: {
+                    ticks: 'outside',
+                    mirror: 'ticks',
+                    anchor: 'free',
+                    automargin: true
+                },
+                yaxis: {
+                    showline: true,
+                    linewidth: 2,
+                    mirror: 'all',
+                    anchor: 'free',
+                    automargin: true
+                }
+            })
+            .then(function() {
+                // N.B. no '.automargin.mirror'
+                expect(Object.keys(gd._fullLayout._pushmargin))
+                    .toEqual(['x.automargin', 'y.automargin', 'base']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('zeroline visibility logic', function() {
