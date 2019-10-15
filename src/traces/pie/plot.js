@@ -10,6 +10,7 @@
 
 var d3 = require('d3');
 
+var Plots = require('../../plots/plots');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -242,6 +243,31 @@ function plot(gd, cdModule) {
             if(hasOutsideText) scootLabels(quadrants, trace);
 
             plotTextLines(slices, trace);
+
+            if(hasOutsideText && trace.automargin) {
+                // TODO if we ever want to improve perf,
+                // we could reuse the textBB computed above together
+                // with the sliceText transform info
+                var traceBbox = Drawing.bBox(plotGroup.node());
+
+                var domain = trace.domain;
+                var vpw = gs.w * (domain.x[1] - domain.x[0]);
+                var vph = gs.h * (domain.y[1] - domain.y[0]);
+                var xgap = (0.5 * vpw - cd0.r) / gs.w;
+                var ygap = (0.5 * vph - cd0.r) / gs.h;
+
+                Plots.autoMargin(gd, 'pie.' + trace.uid + '.automargin', {
+                    xl: domain.x[0] - xgap,
+                    xr: domain.x[1] + xgap,
+                    yb: domain.y[0] - ygap,
+                    yt: domain.y[1] + ygap,
+                    l: Math.max(cd0.cx - cd0.r - traceBbox.left, 0),
+                    r: Math.max(traceBbox.right - (cd0.cx + cd0.r), 0),
+                    b: Math.max(traceBbox.bottom - (cd0.cy + cd0.r), 0),
+                    t: Math.max(cd0.cy - cd0.r - traceBbox.top, 0),
+                    pad: 5
+                });
+            }
         });
     });
 

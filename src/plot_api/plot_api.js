@@ -290,6 +290,17 @@ function plot(gd, data, layout, config) {
         subroutines.drawMarginPushers(gd);
         Axes.allowAutoMargin(gd);
 
+        // TODO can this be moved elsewhere?
+        if(fullLayout._has('pie')) {
+            var fullData = gd._fullData;
+            for(var i = 0; i < fullData.length; i++) {
+                var trace = fullData[i];
+                if(trace.type === 'pie' && trace.automargin) {
+                    Plots.allowAutoMargin(gd, 'pie.' + trace.uid + '.automargin');
+                }
+            }
+        }
+
         Plots.doAutoMargin(gd);
         return Plots.previousPromises(gd);
     }
