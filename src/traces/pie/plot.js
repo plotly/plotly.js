@@ -22,9 +22,10 @@ var isValidTextValue = require('../../lib').isValidTextValue;
 
 function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
 
     prerenderTitles(cdModule, gd);
-    layoutAreas(cdModule, fullLayout._size);
+    layoutAreas(cdModule, gs);
 
     var plotGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdModule, 'trace').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -228,7 +229,7 @@ function plot(gd, cdModule) {
                 if(trace.title.position === 'middle center') {
                     transform = positionTitleInside(cd0);
                 } else {
-                    transform = positionTitleOutside(cd0, fullLayout._size);
+                    transform = positionTitleOutside(cd0, gs);
                 }
 
                 titleText.attr('transform',
