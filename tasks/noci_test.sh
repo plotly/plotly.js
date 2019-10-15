@@ -26,8 +26,6 @@ test_jasmine () {
 # since the update to mapbox-gl@0.44.0, we must use orca
 # as mapbox-gl versions >0.22.1 aren't supported on nw.js@0.12 used in the
 # 'old' image server
-#
-# cone traces don't render correctly in the imagetest container
 test_image () {
     $root/../orca/bin/orca.js graph \
         $root/test/image/mocks/mapbox_* \
