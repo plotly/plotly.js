@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Fx = require('@src/components/fx');
 
 var constants = require('@src/plots/mapbox/constants');
 var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
@@ -1150,6 +1151,38 @@ describe('@noCI, mapbox plots', function() {
         .then(function() {
             expect(hoverCnt).toEqual(1);
             expect(unhoverCnt).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not attempt to rehover over exiting subplots', function(done) {
+        spyOn(Fx, 'hover').and.callThrough();
+
+        function countHoverLabels() {
+            return d3.select('.hoverlayer').selectAll('g').size();
+        }
+
+        Promise.resolve()
+        .then(function() {
+            return _mouseEvent('mousemove', pointPos, function() {
+                expect(countHoverLabels()).toEqual(1);
+                expect(Fx.hover).toHaveBeenCalledTimes(1);
+                expect(Fx.hover.calls.argsFor(0)[2]).toBe('mapbox');
+                Fx.hover.calls.reset();
+            });
+        })
+        .then(function() { return Plotly.deleteTraces(gd, [0, 1]); })
+        .then(delay(10))
+        .then(function() {
+            return _mouseEvent('mousemove', pointPos, function() {
+                expect(countHoverLabels()).toEqual(0);
+                // N.B. no additional calls from Plots.rehover()
+                // (as 'mapbox' subplot is gone),
+                // just one on the fallback xy subplot
+                expect(Fx.hover).toHaveBeenCalledTimes(1);
+                expect(Fx.hover.calls.argsFor(0)[2]).toBe('xy');
+            });
         })
         .catch(failTest)
         .then(done);

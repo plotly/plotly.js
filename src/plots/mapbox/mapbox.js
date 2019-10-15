@@ -475,7 +475,7 @@ proto.initFx = function(calcData, fullLayout) {
         self.yaxis.p2c = function() { return evt.lngLat.lat; };
 
         gd._fullLayout._rehover = function() {
-            if(gd._fullLayout._hoversubplot === self.id) {
+            if(gd._fullLayout._hoversubplot === self.id && gd._fullLayout[self.id]) {
                 Fx.hover(gd, evt, self.id);
             }
         };
