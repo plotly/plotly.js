@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.50.1] -- 2019-10-15
+
+### Fixed
+- Guard against mirrored + automargin `anchor:'free'` axes (bug introduced in 1.50.0) [#4273]
+- Fix `streamtube` trace `starts` case when missing a dimension [#4265]
+- Fix `scattergl` performance for drawing legend items of traces with typed arrays [#4268]
+- Fix legend item style for markers with typed array colors [#4268]
+- Do not attempt to re-hover on exiting subplots [#4269]
+- Fix "layout first" transition race condition [#4262]
+
+
 ## [1.50.0] -- 2019-10-07
 
 ### Added
