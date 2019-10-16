@@ -60,7 +60,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         for(j = 0; j < calcTrace.length; j++) {
-            pointList.push(calcTrace[j].pos);
+            pointList.push(posAxis.c2l(calcTrace[j].pos, true));
             shownPts += (calcTrace[j].pts2 || []).length;
         }
     }
@@ -125,7 +125,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         t.bPos = bPos;
         t.bdPos = bdPos;
         t.wHover = wHover;
-
         // box/violin-only value-space push value
         var pushplus;
         var pushminus;
@@ -213,6 +212,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             padded: padded,
             vpadminus: vpadminus,
             vpadplus: vpadplus,
+            vpadLinearized: true,
             // N.B. SVG px-space positive/negative
             ppadminus: {x: ppadminus, y: ppadplus}[axLetter],
             ppadplus: {x: ppadplus, y: ppadminus}[axLetter],
