@@ -128,6 +128,42 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.ygap).toBe(undefined);
     });
 
+    it('should default connectgaps to false if `z` is not a one dimensional array', function() {
+        traceIn = {
+            type: 'heatmap',
+            z: [[0, null], [1, 2]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
+    it('should default connectgaps to true if `z` is a one dimensional array and `zsmooth` is not false', function() {
+        traceIn = {
+            zsmooth: 'fast',
+            type: 'heatmap',
+            x: [1, 1, 2, 2, 2],
+            y: [1, 2, 1, 2, 3],
+            z: [1, null, 4, 5, 6]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(true);
+    });
+
+    it('should default connectgaps to false if `zsmooth` is false', function() {
+        traceIn = {
+            zsmooth: false,
+            type: 'heatmap',
+            x: [1, 1, 2, 2, 2],
+            y: [1, 2, 1, 2, 3],
+            z: [1, null, 4, 5, 6]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
     it('should inherit layout.calendar', function() {
         traceIn = {
             x: [1, 2],
