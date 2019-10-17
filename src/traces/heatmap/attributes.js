@@ -81,13 +81,15 @@ module.exports = extendFlat({
     },
     connectgaps: {
         valType: 'boolean',
-        dflt: false,
         role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
-            'in the `z` data are filled in.'
+            'in the `z` data are filled in.',
+            'It is defaulted to true if `z` is a',
+            'one dimensional array and `zsmooth` is not false;',
+            'otherwise it is defaulted to false.'
         ].join(' ')
     },
     xgap: {

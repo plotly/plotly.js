@@ -64,6 +64,28 @@ describe('contour defaults', function() {
         expect(traceOut.autocontour).toBe(true);
     });
 
+    it('should default connectgaps to false if `z` is not a one dimensional array', function() {
+        traceIn = {
+            type: 'heatmap',
+            z: [[0, null], [1, 2]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
+    it('should default connectgaps to true if `z` is a one dimensional array', function() {
+        traceIn = {
+            type: 'heatmap',
+            x: [0, 1, 0, 1],
+            y: [0, 0, 1, 1],
+            z: [0, null, 1, 2]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(true);
+    });
+
     it('should inherit layout.calendar', function() {
         traceIn = {
             x: [1, 2],

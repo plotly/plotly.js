@@ -39,7 +39,16 @@ module.exports = extendFlat({
     zhoverformat: heatmapAttrs.zhoverformat,
     hovertemplate: heatmapAttrs.hovertemplate,
 
-    connectgaps: heatmapAttrs.connectgaps,
+    connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.',
+            'It is defaulted to true if `z` is a',
+            'one dimensional array',
+            'otherwise it is defaulted to false.'
+        ].join(' ')
+    }),
 
     fillcolor: {
         valType: 'color',
