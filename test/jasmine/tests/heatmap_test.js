@@ -976,4 +976,29 @@ describe('heatmap hover', function() {
             .then(done);
         });
     });
+
+    describe('missing data', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'heatmap',
+                    x: [10, 11, 10, 11],
+                    y: [100, 100, 101, 101],
+                    z: [null, 1, 2, 3],
+                    connectgaps: false,
+                    hovergaps: false
+                }]
+            }).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should not create zLabels when hovering on missing data and hovergaps is disabled', function() {
+            var pt = _hover(gd, 10, 100)[0];
+
+            expect(pt.index).toEqual([0, 0], 'have correct index');
+            assertLabels(pt, 10, 100, undefined);
+        });
+    });
 });

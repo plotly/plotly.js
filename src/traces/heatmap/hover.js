@@ -88,9 +88,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         }
     }
 
-    var zVal = z[ny][nx];
-    if(zmask && !zmask[ny][nx]) zVal = undefined;
-
     var text;
     if(Array.isArray(cd0.hovertext) && Array.isArray(cd0.hovertext[ny])) {
         text = cd0.hovertext[ny][nx];
@@ -98,18 +95,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         text = cd0.text[ny][nx];
     }
 
-    // dummy axis for formatting the z value
-    var cOpts = extractOpts(trace);
-    var dummyAx = {
-        type: 'linear',
-        range: [cOpts.min, cOpts.max],
-        hoverformat: zhoverformat,
-        _separators: xa._separators,
-        _numFormat: xa._numFormat
-    };
-    var zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
-
-    return [Lib.extendFlat(pointData, {
+    var obj = {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: pointData.maxHoverDistance,
@@ -120,8 +106,26 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         y1: y1,
         xLabelVal: xl,
         yLabelVal: yl,
-        zLabelVal: zVal,
-        zLabel: zLabel,
         text: text
-    })];
+    };
+
+    var zVal = z[ny][nx];
+    if(zmask && !zmask[ny][nx]) zVal = undefined;
+
+    if(zVal !== undefined || trace.hovergaps) {
+        // dummy axis for formatting the z value
+        var cOpts = extractOpts(trace);
+        var dummyAx = {
+            type: 'linear',
+            range: [cOpts.min, cOpts.max],
+            hoverformat: zhoverformat,
+            _separators: xa._separators,
+            _numFormat: xa._numFormat
+        };
+
+        obj.zLabelVal = zVal;
+        obj.zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
+    }
+
+    return [Lib.extendFlat(pointData, obj)];
 };
