@@ -305,17 +305,13 @@ describe('Test streamtube interactions', function() {
         var v = [];
         var w = [];
 
-        for(var i = 0; i < 3; i++) {
-            for(var j = i; j < 4; j++) {
-                for(var k = j; k < 5; k++) {
-                    x.push(i);
-                    y.push(j);
-                    z.push(k);
-                    u.push(1);
-                    v.push(1);
-                    w.push(1);
-                }
-            }
+        for(var n = 0; n < 1000; n++) {
+            x.push((10 * Math.random()) | 0);
+            y.push((10 * Math.random()) | 0);
+            z.push((10 * Math.random()) | 0);
+            u.push(1);
+            v.push(1);
+            w.push(1);
         }
 
         var fig = {
@@ -338,11 +334,15 @@ describe('Test streamtube interactions', function() {
             expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
         }
 
+        spyOn(Lib, 'warn');
+
         Plotly.plot(gd, fig).then(function() {
             _assert('arbitrary coordinates', {
                 positionsLength: 0,
                 cellsLength: 0
             });
+        }).then(function() {
+            expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
         })
         .catch(failTest)
         .then(done);

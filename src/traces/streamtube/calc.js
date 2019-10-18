@@ -118,7 +118,7 @@ module.exports = function calc(gd, trace) {
 
     var getArray = function(c) { return c === 'x' ? x : c === 'y' ? y : z; };
     var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
-    var getDir = function(c) { return (+(c[len - 1] - c[0])) * 2 + 1; };
+    var getDir = function(c) { return (c[len - 1] < c[0]) ? -1 : 1; };
 
     var arrK = getArray(gridFill[1]);
     var arrJ = getArray(gridFill[3]);
