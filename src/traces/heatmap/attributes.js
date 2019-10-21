@@ -87,7 +87,7 @@ module.exports = extendFlat({
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
-            'in the `z` data are hovered on.'
+            'in the `z` data have hover labels associated with them.'
         ].join(' ')
     },
     connectgaps: {
