@@ -8,8 +8,6 @@
 
 'use strict';
 
-// var Registry = require('../../registry');
-// var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
 module.exports = function calc(gd, trace) {

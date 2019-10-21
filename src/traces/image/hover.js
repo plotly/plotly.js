@@ -12,8 +12,6 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var constants = require('./constants');
 
-// var Axes = require('../../plots/cartesian/axes');
-
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd0 = pointData.cd[0];
     var trace = cd0.trace;
@@ -26,7 +24,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         return;
     }
 
-    // Find nearest pixel's index and pixel center
+    // Find nearest pixel's index
     var nx = Math.floor((xval - cd0.x0) / trace.dx);
     var ny = Math.floor(Math.abs(yval - cd0.y0) / trace.dy);
 
@@ -49,7 +47,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         if(dims === 4) colorstring.push(', ' + c[3] + s[3]);
         colorstring.push(']');
         colorstring = colorstring.join('');
-        pointData.extraText = '<span style="text-transform:uppercase">' + colormodel + '</span>: ' + colorstring;
+        pointData.extraText = colormodel.toUpperCase() + ': ' + colorstring;
     }
 
     var py = ya.c2p(cd0.y0 + (ny + 0.5) * trace.dy);

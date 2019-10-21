@@ -18,7 +18,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
     var z = coerce('z');
-    if(z === undefined || !z.length) {
+    if(z === undefined || !z.length || !z[0] || !z[0].length) {
         traceOut.visible = false;
         return;
     }

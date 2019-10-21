@@ -15,7 +15,7 @@ var constants = require('./constants');
 module.exports = {};
 
 // Generate a function to scale color components according to zmin/zmax and the colormodel
-module.exports.scaler = function(trace) {
+var scaler = function(trace) {
     var colormodel = trace.colormodel;
     var n = colormodel.length;
     var cr = constants.colormodel[colormodel];
@@ -114,7 +114,7 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
         var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
 
-        trace._scaler = module.exports.scaler(trace);
+        trace._scaler = scaler(trace);
         var fmt = constants.colormodel[trace.colormodel].fmt;
         var c;
         for(var i = 0; i < cd0.w; i++) {

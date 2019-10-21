@@ -11,6 +11,15 @@
 var plotAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
+var colormodel = require('./constants').colormodel;
+
+var cm = ['rgb', 'rgba', 'hsl', 'hsla'];
+var zminDesc = [];
+var zmaxDesc = [];
+for(var i = 0; i < cm.length; i++) {
+    zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].min.join(', ') + ']');
+    zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].max.join(', ') + ']');
+}
 
 module.exports = extendFlat({
     z: {
@@ -23,29 +32,43 @@ module.exports = extendFlat({
     },
     colormodel: {
         valType: 'enumerated',
-        values: ['rgb', 'rgba', 'hsl', 'hsla'],
+        values: cm,
         dflt: 'rgb',
         role: 'info',
         editType: 'plot',
         description: 'Color model used to map the numerical color components described in `z` into colors.'
     },
     zmin: {
-        valType: 'data_array',
+        valType: 'info_array',
+        dimensions: '1-2',
+        items: [
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'}
+        ],
         role: 'info',
         editType: 'plot',
         description: [
             'Array defining the lower bound for each color component.',
-            'For example, for the `rgba` colormodel, the default value is [0, 0, 0, 0].'
-        ].join(' ')
+            'Note that the default value will depend on the colormodel.'
+        ].concat(zminDesc).join(' ')
     },
     zmax: {
-        valType: 'data_array',
+        valType: 'info_array',
+        dimensions: '1-2',
+        items: [
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'},
+            {valType: 'number', editType: 'plot'}
+        ],
         role: 'info',
         editType: 'plot',
         description: [
             'Array defining the higher bound for each color component.',
-            'For example, for the `rgba` colormodel, the default value is [255, 255, 255, 1].'
-        ].join(' ')
+            'Note that the default value will depend on the colormodel.'
+        ].concat(zmaxDesc).join(' ')
     },
     x0: {
         valType: 'number',
