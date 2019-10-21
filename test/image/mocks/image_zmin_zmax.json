@@ -1,0 +1,72 @@
+{
+  "data": [
+    {
+      "type": "image",
+      "z": [[[255, 0, 0], [0, 255, 0], [0, 0, 255]]]
+    },
+    {
+      "type": "image",
+      "z": [[[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
+      "zmax": [1, 1, 1],
+      "yaxis": "y2",
+      "xaxis": "x2"
+    },
+    {
+      "type": "image",
+      "colormodel": "rgba",
+      "z": [[[255, 0, 0, 0.5], [0, 255, 0, 0.5], [0, 0, 255, 0.5]]],
+      "yaxis": "y3",
+      "xaxis": "x3"
+    },
+    {
+      "type": "image",
+      "colormodel": "rgba",
+      "z": [[[1, 0, 0, 50], [0, 1, 0, 50], [0, 0, 1, 50]]],
+      "zmax": [1, 1, 1, 100],
+      "yaxis": "y4",
+      "xaxis": "x4"
+    },
+    {
+    "type": "image",
+    "colormodel": "hsl",
+    "z": [[[90, 50, 50], [180, 50, 50], [270, 50, 50]]],
+    "yaxis": "y5",
+    "xaxis": "x5"
+    },
+    {
+      "type": "image",
+      "colormodel": "hsl",
+      "z": [[[0.25, 1, 1], [0.5, 1, 1], [0.75, 1, 1]]],
+      "zmax": [1, 2, 2],
+      "yaxis": "y6",
+      "xaxis": "x6"
+    },
+    {
+    "type": "image",
+    "colormodel": "hsla",
+    "z": [[[90, 50, 50, 0.5], [180, 50, 50, 0.5], [270, 50, 50, 0.5]]],
+    "yaxis": "y7",
+    "xaxis": "x7"
+    },
+    {
+      "type": "image",
+      "colormodel": "hsla",
+      "z": [[[0.25, 1, 1, 50], [0.5, 1, 1, 50], [0.75, 1, 1, 50]]],
+      "zmax": [1, 2, 2, 100],
+      "yaxis": "y8",
+      "xaxis": "x8"
+    }
+  ],
+  "layout": {
+    "width": 400,
+    "height": 800,
+    "grid": {
+      "rows": 4,
+      "columns": 2,
+      "pattern": "independent"
+    },
+    "title": {
+      "text": "zmin zmax"
+    }
+  }
+}

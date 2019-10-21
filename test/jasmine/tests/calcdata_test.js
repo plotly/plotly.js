@@ -886,7 +886,7 @@ describe('calculated data and points', function() {
             });
 
             // excludedTraces are traces that do not support sorting by value
-            var excludedTraces = [ 'carpet', 'contourcarpet'];
+            var excludedTraces = [ 'carpet', 'contourcarpet', 'image'];
 
             var supportedCartesianTraces = cartesianTraces.filter(function(t) {
                 if(excludedTraces.indexOf(t.type) === -1) return true;

@@ -87,6 +87,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
                 if(xaName) xaMustDisplay[xaName] = true;
             }
+
+            if(trace.type === 'image') {
+                if(yaName) yaMustForward[yaName] = false;
+                if(yaName) yaMayBackward[yaName] = true;
+            }
         }
 
         // Two things trigger axis visibility:
