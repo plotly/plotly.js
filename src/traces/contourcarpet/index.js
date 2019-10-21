@@ -19,7 +19,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'contourcarpet',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'carpet', 'contour', 'symbols', 'showLegend', 'hasLines', 'carpetDependent', 'noHover'],
+    categories: ['cartesian', 'svg', 'carpet', 'contour', 'symbols', 'showLegend', 'hasLines', 'carpetDependent', 'noHover', 'noSortingByValue'],
     meta: {
         hrName: 'contour_carpet',
         description: [
