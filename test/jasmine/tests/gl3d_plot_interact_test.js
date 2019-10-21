@@ -906,6 +906,24 @@ describe('Test gl3d drag and wheel interactions', function() {
             return scroll(sceneTarget2);
         })
         .then(function() {
+            expect(
+                gd._fullLayout.scene2.aspectratio.x
+            ).toEqual(
+                gd._fullLayout.scene2._scene.glplot.aspect[0]
+            );
+
+            expect(
+                gd._fullLayout.scene2.aspectratio.y
+            ).toEqual(
+                gd._fullLayout.scene2._scene.glplot.aspect[1]
+            );
+
+            expect(
+                gd._fullLayout.scene2.aspectratio.z
+            ).toEqual(
+                gd._fullLayout.scene2._scene.glplot.aspect[2]
+            );
+
             _assertAndReset(2);
         })
         .catch(failTest)

@@ -11,6 +11,7 @@
 
 var createCamera = require('gl-plot3d').createCamera;
 var createPlot = require('gl-plot3d').createScene;
+var mouseWheel = require('mouse-wheel');
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
 
@@ -243,7 +244,26 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
         }
     }
 
-    return failed < 2;
+    if(failed < 2) {
+        scene.wheelListener = mouseWheel(scene.glplot.canvas, function(dx, dy) {
+            // TODO remove now that we can disable scroll via scrollZoom?
+            if(scene.glplot.camera.keyBindingMode === false) return;
+            if(!scene.glplot.camera.enableWheel) return;
+
+            if(scene.glplot.camera._ortho) {
+                var s = (dx > dy) ? 1.1 : 1.0 / 1.1;
+
+                scene.fullSceneLayout.aspectratio.x = scene.glplot.aspect[0] *= s;
+                scene.fullSceneLayout.aspectratio.y = scene.glplot.aspect[1] *= s;
+                scene.fullSceneLayout.aspectratio.z = scene.glplot.aspect[2] *= s;
+
+                scene.glplot.redraw();
+            }
+        }, true);
+
+        return true;
+    }
+    return false;
 }
 
 function initializeGLPlot(scene, pixelRatio, canvas, gl) {
