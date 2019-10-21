@@ -112,7 +112,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var zVal = z[ny][nx];
     if(zmask && !zmask[ny][nx]) zVal = undefined;
 
-    if(zVal !== undefined || trace.hovergaps) {
+    if(zVal !== undefined || trace.hoverongaps) {
         // dummy axis for formatting the z value
         var cOpts = extractOpts(trace);
         var dummyAx = {

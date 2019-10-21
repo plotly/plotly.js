@@ -38,7 +38,7 @@ module.exports = extendFlat({
     ytype: heatmapAttrs.ytype,
     zhoverformat: heatmapAttrs.zhoverformat,
     hovertemplate: heatmapAttrs.hovertemplate,
-    hovergaps: heatmapAttrs.hovergaps,
+    hoverongaps: heatmapAttrs.hoverongaps,
     connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
         description: [
             'Determines whether or not gaps',

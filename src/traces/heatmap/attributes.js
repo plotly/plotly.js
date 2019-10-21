@@ -79,7 +79,7 @@ module.exports = extendFlat({
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
     },
-    hovergaps: {
+    hoverongaps: {
         valType: 'boolean',
         dflt: true,
         role: 'style',

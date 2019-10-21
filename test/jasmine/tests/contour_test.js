@@ -637,13 +637,13 @@ describe('contour hover', function() {
                     y: [100, 100, 101, 101],
                     z: [null, 1, 2, 3],
                     connectgaps: false,
-                    hovergaps: false
+                    hoverongaps: false
                 }]
             }).then(done);
         });
         afterAll(destroyGraphDiv);
 
-        it('should not create zLabels when hovering on missing data and hovergaps is disabled', function() {
+        it('should not create zLabels when hovering on missing data and hoverongaps is disabled', function() {
             var pt = _hover(gd, 10, 100)[0];
 
             expect(pt.index).toEqual([0, 0], 'have correct index');
