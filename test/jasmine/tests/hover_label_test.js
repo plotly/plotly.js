@@ -3,6 +3,8 @@ var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
+
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
 
@@ -1695,6 +1697,56 @@ describe('hover info', function() {
                 expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
                   .toBeWithin(0, 1);
             })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('constraints info graph viewport', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        it('hovermode:x common label should fit in the graph div width', function(done) {
+            function _assert(msg, exp) {
+                return function() {
+                    var label = d3.select('g.axistext');
+                    if(label.node()) {
+                        expect(label.text()).toBe(exp.txt, 'common label text| ' + msg);
+                        expect(Drawing.getTranslate(label).x)
+                            .toBeWithin(exp.lx, 5, 'common label translate-x| ' + msg);
+
+                        var startOfPath = label.select('path').attr('d').split('L')[0];
+                        expect(startOfPath).not.toBe('M0,0', 'offset start of label path| ' + msg);
+                    } else {
+                        fail('fail to generate common hover label');
+                    }
+                };
+            }
+
+            function _hoverLeft() { return _hover(gd, 30, 300); }
+
+            function _hoverRight() { return _hover(gd, 370, 300); }
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: ['2019-01-01', '2019-06-01', '2020-01-01'],
+                y: [2, 5, 10]
+            }], {
+                xaxis: {range: ['2019-02-06', '2019-12-01']},
+                margin: {l: 0, r: 0},
+                width: 400,
+                height: 400
+            })
+            .then(_hoverLeft)
+            .then(_assert('left-edge hover', {txt: 'Jan 1, 2019', lx: 37}))
+            .then(_hoverRight)
+            .then(_assert('right-edge hover', {txt: 'Jan 1, 2020', lx: 362}))
+            .then(function() { return Plotly.relayout(gd, 'xaxis.side', 'top'); })
+            .then(_hoverLeft)
+            .then(_assert('left-edge hover (side:top)', {txt: 'Jan 1, 2019', lx: 37}))
+            .then(_hoverRight)
+            .then(_assert('right-edge hover (side:top)', {txt: 'Jan 1, 2020', lx: 362}))
             .catch(failTest)
             .then(done);
         });
