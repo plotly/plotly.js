@@ -16,6 +16,7 @@ var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var failTest = require('../assets/fail_test');
 var touchEvent = require('../assets/touch_event');
+var negateIf = require('../assets/negate_if');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -1747,6 +1748,48 @@ describe('hover info', function() {
             .then(_assert('left-edge hover (side:top)', {txt: 'Jan 1, 2019', lx: 37}))
             .then(_hoverRight)
             .then(_assert('right-edge hover (side:top)', {txt: 'Jan 1, 2020', lx: 362}))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('hovermode:y common label should shift and clip text start into graph div', function(done) {
+            function _assert(msg, exp) {
+                return function() {
+                    var label = d3.select('g.axistext');
+                    if(label.node()) {
+                        var ltext = label.select('text');
+                        expect(ltext.text()).toBe(exp.txt, 'common label text| ' + msg);
+                        expect(ltext.attr('x')).toBeWithin(exp.ltx, 5, 'common label text x| ' + msg);
+
+                        negateIf(exp.clip, expect(ltext.attr('clip-path'))).toBe(null, 'text clip url| ' + msg);
+
+                        var fullLayout = gd._fullLayout;
+                        var clipId = 'clip' + fullLayout._uid + 'commonlabely';
+                        var clipPath = d3.select('#' + clipId);
+                        negateIf(exp.clip, expect(clipPath.node())).toBe(null, 'text clip path|' + msg);
+                    } else {
+                        fail('fail to generate common hover label');
+                    }
+                };
+            }
+
+            function _hoverWayLong() { return _hover(gd, 135, 100); }
+
+            function _hoverA() { return _hover(gd, 135, 20); }
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['Looong label', 'Loooooger label', 'Waay loooong label', 'a'],
+                x: [2, 5, 10, 2]
+            }], {
+                width: 400,
+                height: 400
+            })
+            .then(_hoverWayLong)
+            .then(_assert('on way long label', {txt: 'Waay loooong label', clip: true, ltx: 38}))
+            .then(_hoverA)
+            .then(_assert('on "a" label', {txt: 'a', clip: false, ltx: -9}))
             .catch(failTest)
             .then(done);
         });
