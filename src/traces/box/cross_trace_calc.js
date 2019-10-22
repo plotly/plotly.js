@@ -125,6 +125,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         t.bPos = bPos;
         t.bdPos = bdPos;
         t.wHover = wHover;
+
         // box/violin-only value-space push value
         var pushplus;
         var pushminus;
