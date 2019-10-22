@@ -71,12 +71,30 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         var h = cd0.h;
         var dx = trace.dx;
         var dy = trace.dy;
-        var left = xa.c2p(x0);
-        var right = xa.c2p(x0 + w * dx);
-        var top = ya.c2p(y0);
-        var bottom = ya.c2p(y0 + h * dy);
 
-        var temp;
+        var left, right, temp, top, bottom, i;
+        // in case of log of a negative
+        i = 0;
+        while(left === undefined && i < w) {
+            left = xa.c2p(x0 + i * dx);
+            i++;
+        }
+        i = w;
+        while(right === undefined && i > 0) {
+            right = xa.c2p(x0 + i * dx);
+            i--;
+        }
+        i = 0;
+        while(top === undefined && i < h) {
+            top = ya.c2p(y0 + i * dy);
+            i++;
+        }
+        i = h;
+        while(bottom === undefined && i > 0) {
+            bottom = ya.c2p(y0 + i * dy);
+            i--;
+        }
+
         if(right < left) {
             temp = right;
             right = left;
@@ -117,13 +135,15 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         trace._scaler = scaler(trace);
         var fmt = constants.colormodel[trace.colormodel].fmt;
         var c;
-        for(var i = 0; i < cd0.w; i++) {
-            if(ipx(i + 1) === ipx(i)) continue;
+        for(i = 0; i < cd0.w; i++) {
+            var ipx0 = ipx(i); var ipx1 = ipx(i + 1);
+            if(ipx1 === ipx0 || isNaN(ipx1) || isNaN(ipx0)) continue;
             for(var j = 0; j < cd0.h; j++) {
-                if(jpx(j + 1) === jpx(j) || !z[j][i]) continue;
+                var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
+                if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
                 c = trace._scaler(z[j][i]);
                 context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
-                context.fillRect(ipx(i), jpx(j), ipx(i + 1) - ipx(i), jpx(j + 1) - jpx(j));
+                context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
             }
         }
 
