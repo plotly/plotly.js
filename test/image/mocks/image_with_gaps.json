@@ -1,0 +1,14 @@
+{
+  "data": [{
+    "type": "image",
+    "z": [
+      [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+      [[1, 0, 0], [0, 1, 0]],
+      [[1, 0, 0]]
+    ],
+    "zmax": [1, 1, 1]
+  }],
+  "layout": {
+    "width": 400, "height": 400, "title": {"text": "Image with missing pixels"}
+  }
+}

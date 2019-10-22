@@ -120,7 +120,7 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         for(var i = 0; i < cd0.w; i++) {
             if(ipx(i + 1) === ipx(i)) continue;
             for(var j = 0; j < cd0.h; j++) {
-                if(jpx(j + 1) === jpx(j)) continue;
+                if(jpx(j + 1) === jpx(j) || !z[j][i]) continue;
                 c = trace._scaler(z[j][i]);
                 context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
                 context.fillRect(ipx(i), jpx(j), ipx(i + 1) - ipx(i), jpx(j + 1) - jpx(j));

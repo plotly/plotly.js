@@ -28,6 +28,9 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var nx = Math.floor((xval - cd0.x0) / trace.dx);
     var ny = Math.floor(Math.abs(yval - cd0.y0) / trace.dy);
 
+    // return early if pixel is undefined
+    if(!cd0.z[ny][nx]) return;
+
     var hoverinfo = cd0.hi || trace.hoverinfo;
     var fmtColor;
     if(hoverinfo) {
