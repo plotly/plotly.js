@@ -385,7 +385,7 @@ function findExtremes(ax, data, opts) {
             // more than an order of mag, clip it to one order. This is so
             // we don't have non-positive errors or absurdly large lower
             // range due to rounding errors
-            // if(isLog && vmin < vmax / 10) vmin = vmax / 10;
+            if(isLog && vmin < vmax / 10) vmin = vmax / 10;
 
             dmin = ax.c2l(vmin);
             dmax = ax.c2l(vmax);
