@@ -994,11 +994,16 @@ describe('heatmap hover', function() {
         });
         afterAll(destroyGraphDiv);
 
-        it('should not create zLabels when hovering on missing data and hoverongaps is disabled', function() {
+        it('should not display hover on missing data and hoverongaps is disabled', function() {
             var pt = _hover(gd, 10, 100)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
-            assertLabels(pt, 10, 100, undefined);
+            var hoverData;
+            gd.on('plotly_hover', function(data) {
+                hoverData = data;
+            });
+
+            expect(hoverData).toEqual(undefined);
+            expect(pt).toEqual(undefined);
         });
     });
 });

@@ -619,13 +619,6 @@ describe('contour hover', function() {
         return hoverData;
     }
 
-    function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
-        expect(hoverPoint.xLabelVal).toBe(xLabel, 'have correct x label');
-        expect(hoverPoint.yLabelVal).toBe(yLabel, 'have correct y label');
-        expect(hoverPoint.zLabelVal).toBe(zLabel, 'have correct z label');
-        expect(hoverPoint.text).toBe(text, 'have correct text label');
-    }
-
     describe('missing data', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
@@ -643,11 +636,16 @@ describe('contour hover', function() {
         });
         afterAll(destroyGraphDiv);
 
-        it('should not create zLabels when hovering on missing data and hoverongaps is disabled', function() {
+        it('should not display hover on missing data and hoverongaps is disabled', function() {
             var pt = _hover(gd, 10, 100)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
-            assertLabels(pt, 10, 100, undefined);
+            var hoverData;
+            gd.on('plotly_hover', function(data) {
+                hoverData = data;
+            });
+
+            expect(hoverData).toEqual(undefined);
+            expect(pt).toEqual(undefined);
         });
     });
 });
