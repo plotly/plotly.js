@@ -13,6 +13,7 @@ var convertOnSelect = require('./convert').convertOnSelect;
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function ChoroplethMapbox(subplot, uid) {
+    this.type = 'choroplethmapbox';
     this.subplot = subplot;
     this.uid = uid;
 

@@ -13,6 +13,7 @@ var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 var ORDER = ['fill', 'line', 'circle', 'symbol'];
 
 function ScatterMapbox(subplot, uid) {
+    this.type = 'scattermapbox';
     this.subplot = subplot;
     this.uid = uid;
 

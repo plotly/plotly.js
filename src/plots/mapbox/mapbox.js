@@ -315,9 +315,16 @@ proto.updateData = function(calcData) {
         trace = calcTrace[0].trace;
         traceObj = traceHash[trace.uid];
 
+        var didUpdate = false;
         if(traceObj) {
-            traceObj.update(calcTrace);
-        } else if(trace._module) {
+            if(traceObj.type === trace.type) {
+                traceObj.update(calcTrace);
+                didUpdate = true;
+            } else {
+                traceObj.dispose();
+            }
+        }
+        if(!didUpdate && trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
