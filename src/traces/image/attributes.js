@@ -40,7 +40,6 @@ module.exports = extendFlat({
     },
     zmin: {
         valType: 'info_array',
-        dimensions: '1-2',
         items: [
             {valType: 'number', editType: 'plot'},
             {valType: 'number', editType: 'plot'},
