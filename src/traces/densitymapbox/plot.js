@@ -12,6 +12,7 @@ var convert = require('./convert');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function DensityMapbox(subplot, uid) {
+    this.type = 'densitymapbox';
     this.subplot = subplot;
     this.uid = uid;
 
