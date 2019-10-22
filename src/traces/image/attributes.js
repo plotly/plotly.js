@@ -17,8 +17,8 @@ var cm = ['rgb', 'rgba', 'hsl', 'hsla'];
 var zminDesc = [];
 var zmaxDesc = [];
 for(var i = 0; i < cm.length; i++) {
-    zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].min.join(', ') + ']');
-    zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].max.join(', ') + ']');
+    zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].min.join(', ') + '].');
+    zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + colormodel[cm[i]].max.join(', ') + '].');
 }
 
 module.exports = extendFlat({
@@ -51,12 +51,12 @@ module.exports = extendFlat({
         editType: 'plot',
         description: [
             'Array defining the lower bound for each color component.',
-            'Note that the default value will depend on the colormodel.'
-        ].concat(zminDesc).join(' ')
+            'Note that the default value will depend on the colormodel.',
+            zminDesc.join(' ')
+        ].join(' ')
     },
     zmax: {
         valType: 'info_array',
-        dimensions: '1-2',
         items: [
             {valType: 'number', editType: 'plot'},
             {valType: 'number', editType: 'plot'},
@@ -67,8 +67,9 @@ module.exports = extendFlat({
         editType: 'plot',
         description: [
             'Array defining the higher bound for each color component.',
-            'Note that the default value will depend on the colormodel.'
-        ].concat(zmaxDesc).join(' ')
+            'Note that the default value will depend on the colormodel.',
+            zmaxDesc.join(' ')
+        ].join(' ')
     },
     x0: {
         valType: 'number',

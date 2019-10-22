@@ -77,6 +77,27 @@ describe('image supplyDefaults', function() {
             supplyDefaults(traceIn, traceOut);
         });
     });
+
+    it('should handle incomplete zmin/zmax', function() {
+        traceIn = {
+            z: [[[1, 1, 1, 1]]],
+            zmin: [10, 10],
+            zmax: [null, 20]
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.zmin).toEqual([10, 10, 0], 'zmin default');
+        expect(traceOut.zmax).toEqual([255, 20, 255], 'zmax default');
+
+        traceIn = {
+            z: [[[1, 1, 1, 1]]],
+            colormodel: 'hsla',
+            zmin: [null, 10, null, null, 100],
+            zmax: [20]
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.zmin).toEqual([0, 10, 0, 0], 'zmin default');
+        expect(traceOut.zmax).toEqual([20, 100, 100, 1], 'zmax default');
+    });
 });
 
 describe('image plot', function() {
