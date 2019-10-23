@@ -187,6 +187,15 @@ module.exports = {
     outsidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the sector.'
     }),
+    automargin: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines whether outside text labels can push the margins.'
+        ].join(' ')
+    },
 
     title: {
         text: {

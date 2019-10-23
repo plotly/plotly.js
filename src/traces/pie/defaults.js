@@ -64,6 +64,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             moduleHasTextangle: false,
             moduleHasInsideanchor: false
         });
+
+        var hasBoth = Array.isArray(textposition) || textposition === 'auto';
+        var hasOutside = hasBoth || textposition === 'outside';
+        if(hasOutside) {
+            coerce('automargin');
+        }
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
