@@ -1112,28 +1112,6 @@ describe('A bar plot', function() {
         };
     }
 
-    checkTextTemplate([{
-        type: 'bar',
-        y: [1, 5, 3, 2],
-        text: ['A', 'B', 'C', 'D'],
-        textposition: 'inside',
-        hovertemplate: '%{text}'
-    }], 'text.bartext', [
-      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
-      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
-    ]);
-
-    checkTextTemplate([{
-        type: 'bar',
-        textposition: 'outside',
-        x: ['2019-01-01', '2019-02-01'],
-        y: [1, 2],
-        hovertemplate: '%{x}',
-        texttemplate: '%{x}'
-    }], 'text.bartext', [
-      ['%{x}', ['2019-01-01', '2019-02-01']]
-    ]);
-
     it('should show bar texts (inside case)', function(done) {
         var data = [{
             y: [10, 20, 30],
@@ -2494,6 +2472,30 @@ describe('bar hover', function() {
             });
         });
     });
+});
+
+describe('Text templates on bar traces:', function() {
+    checkTextTemplate([{
+        type: 'bar',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
+      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
+    ]);
+
+    checkTextTemplate([{
+        type: 'bar',
+        textposition: 'outside',
+        x: ['2019-01-01', '2019-02-01'],
+        y: [1, 2],
+        hovertemplate: '%{x}',
+        texttemplate: '%{x}'
+    }], 'text.bartext', [
+      ['%{x}', ['2019-01-01', '2019-02-01']]
+    ]);
 });
 
 describe('event data', function() {
