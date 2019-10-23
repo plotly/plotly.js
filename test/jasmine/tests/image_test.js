@@ -334,6 +334,22 @@ describe('image hover:', function() {
             return Fx.hover('graph', evt, 'xy');
         }
 
+        it('should NOT display the color information when hoverinfo is the default value', function(done) {
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].colormodel = 'rgb';
+            mockCopy.data[0].hoverinfo = null;
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() {_hover(205, 125);})
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'x: 25.5\ny: 14.5\nz: [54, 136, 153]',
+                    name: ''
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should display RGB channel values', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
             mockCopy.data[0].colormodel = 'rgb';

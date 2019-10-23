@@ -60,6 +60,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         text = trace.text[ny][nx];
     }
 
+    // TODO: for color model with 3 dims, display something useful for hovertemplate `%{color[3]}`
     var py = ya.c2p(cd0.y0 + (ny + 0.5) * trace.dy);
     var xVal = cd0.x0 + (nx + 0.5) * trace.dx;
     var yVal = cd0.y0 + (ny + 0.5) * trace.dy;

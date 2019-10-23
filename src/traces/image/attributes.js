@@ -109,7 +109,8 @@ module.exports = extendFlat({
         description: 'Same as `text`.'
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['x', 'y', 'z', 'color', 'name', 'text']
+        flags: ['x', 'y', 'z', 'color', 'name', 'text'],
+        dflt: 'x+y+z+text+name'
     }),
     hovertemplate: hovertemplateAttrs({}, {
         keys: ['z', 'color', 'colormodel']
