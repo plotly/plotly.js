@@ -2494,7 +2494,23 @@ describe('Text templates on bar traces:', function() {
         hovertemplate: '%{x}',
         texttemplate: '%{x}'
     }], 'text.bartext', [
-      ['%{x}', ['2019-01-01', '2019-02-01']]
+      ['%{x}', ['Jan 1, 2019', 'Feb 1, 2019']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'bar',
+            textposition: 'inside',
+            x: ['a', 'b'],
+            y: ['1000', '1200'],
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        },
+    }, 'text.bartext', [
+        ['%{x} is %{y}', ['*a* is $1000.00 !', '*b* is $1200.00 !']],
+        ['%{label} is %{value}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
     ]);
 });
 
