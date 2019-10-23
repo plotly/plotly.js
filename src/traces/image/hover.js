@@ -63,7 +63,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         x1: xa.c2p(cd0.x0 + (nx + 1) * trace.dx),
         y0: py,
         y1: py,
-        c: c,
+        color: c,
         xVal: xVal,
         xLabelVal: xVal,
         yVal: yVal,
@@ -71,10 +71,11 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         zLabelVal: zLabel,
         hovertemplateLabels: {
             'zLabel': zLabel,
-            'cLabel': colorstring,
-            'c[0]Label': c[0] + s[0],
-            'c[1]Label': c[1] + s[1],
-            'c[2]Label': c[2] + s[2]
+            'colorLabel': colorstring,
+            'color[0]Label': c[0] + s[0],
+            'color[1]Label': c[1] + s[1],
+            'color[2]Label': c[2] + s[2],
+            'color[3]Label': c[3] + s[3]
         }
     })];
 };

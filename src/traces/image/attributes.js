@@ -102,6 +102,6 @@ module.exports = extendFlat({
         flags: ['x', 'y', 'z', 'color', 'name']
     }),
     hovertemplate: hovertemplateAttrs({}, {
-        keys: ['z', 'c', 'colormodel']
+        keys: ['z', 'color', 'colormodel']
     })
 });
