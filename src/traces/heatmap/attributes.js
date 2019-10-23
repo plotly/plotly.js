@@ -79,6 +79,17 @@ module.exports = extendFlat({
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
     },
+    hoverongaps: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        editType: 'none',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data have hover labels associated with them.'
+        ].join(' ')
+    },
     connectgaps: {
         valType: 'boolean',
         role: 'info',

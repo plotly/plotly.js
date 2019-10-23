@@ -91,6 +91,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var zVal = z[ny][nx];
     if(zmask && !zmask[ny][nx]) zVal = undefined;
 
+    if(zVal === undefined && !trace.hoverongaps) return;
+
     var text;
     if(Array.isArray(cd0.hovertext) && Array.isArray(cd0.hovertext[ny])) {
         text = cd0.hovertext[ny][nx];

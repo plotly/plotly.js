@@ -35,6 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hoverongaps');
 
     var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', Lib.isArray1D(traceOut.z));

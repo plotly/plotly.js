@@ -66,7 +66,7 @@ describe('contour defaults', function() {
 
     it('should default connectgaps to false if `z` is not a one dimensional array', function() {
         traceIn = {
-            type: 'heatmap',
+            type: 'contour',
             z: [[0, null], [1, 2]]
         };
 
@@ -76,7 +76,7 @@ describe('contour defaults', function() {
 
     it('should default connectgaps to true if `z` is a one dimensional array', function() {
         traceIn = {
-            type: 'heatmap',
+            type: 'contour',
             x: [0, 1, 0, 1],
             y: [0, 0, 1, 1],
             z: [0, null, 1, 2]
@@ -589,5 +589,63 @@ describe('contour plotting and editing', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('contour hover', function() {
+    'use strict';
+
+    var gd;
+
+    function _hover(gd, xval, yval) {
+        var fullLayout = gd._fullLayout;
+        var calcData = gd.calcdata;
+        var hoverData = [];
+
+        for(var i = 0; i < calcData.length; i++) {
+            var pointData = {
+                index: false,
+                distance: 20,
+                cd: calcData[i],
+                trace: calcData[i][0].trace,
+                xa: fullLayout.xaxis,
+                ya: fullLayout.yaxis
+            };
+
+            var hoverPoint = Contour.hoverPoints(pointData, xval, yval);
+            if(hoverPoint) hoverData.push(hoverPoint[0]);
+        }
+
+        return hoverData;
+    }
+
+    describe('missing data', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'contour',
+                    x: [10, 11, 10, 11],
+                    y: [100, 100, 101, 101],
+                    z: [null, 1, 2, 3],
+                    connectgaps: false,
+                    hoverongaps: false
+                }]
+            }).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should not display hover on missing data and hoverongaps is disabled', function() {
+            var pt = _hover(gd, 10, 100)[0];
+
+            var hoverData;
+            gd.on('plotly_hover', function(data) {
+                hoverData = data;
+            });
+
+            expect(hoverData).toEqual(undefined);
+            expect(pt).toEqual(undefined);
+        });
     });
 });
