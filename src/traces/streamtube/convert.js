@@ -62,10 +62,6 @@ proto.handlePick = function(selection) {
     }
 };
 
-function distinctVals(col) {
-    return Lib.distinctVals(col).vals;
-}
-
 function getDfltStartingPositions(vec) {
     var len = vec.length;
     var s;
@@ -108,20 +104,20 @@ function convert(scene, trace) {
         len
     );
 
-    var valsx = distinctVals(trace.x.slice(0, len));
-    var valsy = distinctVals(trace.y.slice(0, len));
-    var valsz = distinctVals(trace.z.slice(0, len));
-
     // Over-specified mesh case, this would error in tube2mesh
-    if(valsx.length * valsy.length * valsz.length > len) {
-        return {positions: [], cells: []};
+    if(!len) {
+        return {
+            positions: [],
+            cells: []
+        };
     }
 
-    var meshx = toDataCoords(valsx, 'xaxis');
-    var meshy = toDataCoords(valsy, 'yaxis');
-    var meshz = toDataCoords(valsz, 'zaxis');
+    var meshx = toDataCoords(trace._Xs, 'xaxis');
+    var meshy = toDataCoords(trace._Ys, 'yaxis');
+    var meshz = toDataCoords(trace._Zs, 'zaxis');
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
+    tubeOpts.gridFill = trace._gridFill;
 
     var slen = trace._slen;
     if(slen) {
