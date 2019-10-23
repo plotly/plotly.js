@@ -1187,7 +1187,10 @@ describe('Test gl3d annotations', function() {
         var camera = scene.getCamera();
 
         camera.eye = {x: x, y: y, z: z};
-        scene.setCamera(camera);
+        scene.setViewport({
+            camera: camera,
+            aspectratio: gd._fullLayout.scene.aspectratio
+        });
         // need a fairly long delay to let the camera update here
         // 300 was not robust for me (AJ), 500 seems to be.
         return delay(500)();

@@ -1968,11 +1968,14 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         function _mouseup() {
             var sceneLayout = gd._fullLayout.scene;
             var cameraOld = sceneLayout.camera;
-            sceneLayout._scene.setCamera({
-                projection: {type: 'perspective'},
-                eye: {x: 2, y: 2, z: 2},
-                center: cameraOld.center,
-                up: cameraOld.up
+            sceneLayout._scene.setViewport({
+                camera: {
+                    projection: {type: 'perspective'},
+                    eye: {x: 2, y: 2, z: 2},
+                    center: cameraOld.center,
+                    up: cameraOld.up
+                },
+                aspectratio: gd._fullLayout.scene.aspectratio
             });
 
             var target = gd.querySelector('.svg-container .gl-container #scene canvas');

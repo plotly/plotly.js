@@ -9,9 +9,10 @@
 
 'use strict';
 
-var createCamera = require('gl-plot3d').createCamera;
-var createPlot = require('gl-plot3d').createScene;
-var mouseWheel = require('mouse-wheel');
+var glPlot3d = require('gl-plot3d');
+var createCamera = glPlot3d.createCamera;
+var createPlot = glPlot3d.createScene;
+
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
 
@@ -244,26 +245,7 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
         }
     }
 
-    if(failed < 2) {
-        scene.wheelListener = mouseWheel(scene.glplot.canvas, function(dx, dy) {
-            // TODO remove now that we can disable scroll via scrollZoom?
-            if(scene.glplot.camera.keyBindingMode === false) return;
-            if(!scene.glplot.camera.enableWheel) return;
-
-            if(scene.glplot.camera._ortho) {
-                var s = (dx > dy) ? 1.1 : 1.0 / 1.1;
-
-                scene.fullSceneLayout.aspectratio.x = scene.glplot.aspect[0] *= s;
-                scene.fullSceneLayout.aspectratio.y = scene.glplot.aspect[1] *= s;
-                scene.fullSceneLayout.aspectratio.z = scene.glplot.aspect[2] *= s;
-
-                scene.glplot.redraw();
-            }
-        }, true);
-
-        return true;
-    }
-    return false;
+    return failed < 2;
 }
 
 function initializeGLPlot(scene, pixelRatio, canvas, gl) {
@@ -280,12 +262,23 @@ function initializeGLPlot(scene, pixelRatio, canvas, gl) {
 
     var gd = scene.graphDiv;
 
+    var makeUpdate = function() {
+        var update = {};
+
+        // camera updates
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+
+        // scene updates
+        update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
+
+        return update;
+    };
+
     var relayoutCallback = function(scene) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
-        var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
-        scene.saveCamera(gd.layout);
+        var update = makeUpdate();
+        scene.saveLayout(gd.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
@@ -293,8 +286,21 @@ function initializeGLPlot(scene, pixelRatio, canvas, gl) {
         relayoutCallback(scene);
     });
 
-    scene.glplot.canvas.addEventListener('wheel', function() {
+    scene.glplot.canvas.addEventListener('wheel', function(e) {
         if(gd._context._scrollZoom.gl3d) {
+            if(scene.glplot.camera._ortho) {
+                var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
+
+                var aspectratio = scene.fullSceneLayout.aspectratio;
+
+                aspectratio.x = scene.glplot.aspect[0] *= s;
+                aspectratio.y = scene.glplot.aspect[1] *= s;
+                aspectratio.z = scene.glplot.aspect[2] *= s;
+
+                scene.glplot.setAspectratio(aspectratio);
+                scene.glplot.redraw();
+            }
+
             relayoutCallback(scene);
         }
     }, passiveSupported ? {passive: false} : false);
@@ -303,8 +309,7 @@ function initializeGLPlot(scene, pixelRatio, canvas, gl) {
         if(scene.fullSceneLayout.dragmode === false) return;
         if(scene.camera.mouseListener.buttons === 0) return;
 
-        var update = {};
-        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        var update = makeUpdate();
         scene.graphDiv.emit('plotly_relayouting', update);
     });
 
@@ -516,7 +521,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
-    this.setCamera(fullSceneLayout.camera);
+    this.setViewport(fullSceneLayout);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
     this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
 
@@ -740,8 +745,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
      * Finally assign the computed aspecratio to the glplot module. This will have an effect
      * on the next render cycle.
      */
-    this.glplot.aspect = aspectRatio;
-
+    this.glplot.setAspectratio(fullSceneLayout.aspectratio);
 
     // Update frame position for multi plots
     var domain = fullSceneLayout.domain || null;
@@ -771,9 +775,9 @@ proto.destroy = function() {
     this.glplot = null;
 };
 
-// getOrbitCamera :: plotly_coords -> orbit_camera_coords
+// getCameraArrays :: plotly_coords -> orbit_camera_coords
 // inverse of getLayoutCamera
-function getOrbitCamera(camera) {
+function getCameraArrays(camera) {
     return [
         [camera.eye.x, camera.eye.y, camera.eye.z],
         [camera.center.x, camera.center.y, camera.center.z],
@@ -782,7 +786,7 @@ function getOrbitCamera(camera) {
 }
 
 // getLayoutCamera :: orbit_camera_coords -> plotly_coords
-// inverse of getOrbitCamera
+// inverse of getCameraArrays
 function getLayoutCamera(camera) {
     return {
         up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
@@ -798,9 +802,12 @@ proto.getCamera = function getCamera() {
     return getLayoutCamera(this.glplot.camera);
 };
 
-// set camera position with a set of plotly coords
-proto.setCamera = function setCamera(cameraData) {
-    this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+// set gl-plot3d camera position and scene aspects with a set of plotly coords
+proto.setViewport = function setViewport(sceneLayout) {
+    var cameraData = sceneLayout.camera;
+
+    this.glplot.camera.lookAt.apply(this, getCameraArrays(cameraData));
+    this.glplot.setAspectratio(sceneLayout.aspectratio);
 
     var newOrtho = (cameraData.projection.type === 'orthographic');
     var oldOrtho = this.glplot.camera._ortho;
@@ -827,11 +834,17 @@ proto.setCamera = function setCamera(cameraData) {
 };
 
 // save camera to user layout (i.e. gd.layout)
-proto.saveCamera = function saveCamera(layout) {
+proto.saveLayout = function saveLayout(layout) {
     var fullLayout = this.fullLayout;
+
     var cameraData = this.getCamera();
     var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
     var cameraDataLastSave = cameraNestedProp.get();
+
+    var aspectData = this.glplot.getAspectratio();
+    var aspectNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+    var aspectDataLastSave = aspectNestedProp.get();
+
     var hasChanged = false;
 
     function same(x, y, i, j) {
@@ -859,15 +872,33 @@ proto.saveCamera = function saveCamera(layout) {
         }
     }
 
+    if(!hasChanged) {
+        if(aspectDataLastSave === undefined) {
+            hasChanged = true;
+        } else {
+            if(
+                aspectDataLastSave.x !== aspectData.x ||
+                aspectDataLastSave.y !== aspectData.y ||
+                aspectDataLastSave.z !== aspectData.z
+            ) {
+                hasChanged = true;
+            }
+        }
+    }
+
     if(hasChanged) {
         var preGUI = {};
         preGUI[this.id + '.camera'] = cameraDataLastSave;
+        preGUI[this.id + '.aspectratio'] = aspectDataLastSave;
         Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
 
         cameraNestedProp.set(cameraData);
 
         var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
         cameraFullNP.set(cameraData);
+
+        var aspectFullNP = Lib.nestedProperty(fullLayout, this.id + '.aspectratio');
+        aspectFullNP.set(aspectData);
     }
 
     return hasChanged;
