@@ -9,6 +9,7 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
+var maxRowLength = require('../../lib').maxRowLength;
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
@@ -17,7 +18,7 @@ module.exports = function calc(gd, trace) {
     var x0 = trace.x0 - trace.dx / 2;
     var y0 = trace.y0 - trace.dy / 2;
     var h = trace.z.length;
-    var w = trace.z[0].length;
+    var w = maxRowLength(trace.z);
 
     trace._extremes[xa._id] = Axes.findExtremes(xa, [x0, x0 + w * trace.dx]);
     trace._extremes[ya._id] = Axes.findExtremes(ya, [y0, y0 + h * trace.dy]);
