@@ -420,5 +420,26 @@ describe('image hover:', function() {
                 .then(done);
             });
         });
+
+        it('should support hovertemplate variable text', function(done) {
+            var mockCopy = {data: [{
+                type: 'image',
+                z: [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[0, 0, 1], [1, 0, 0], [0, 1, 0]]],
+                zmax: [1, 1, 1],
+                text: [['A', 'B', 'C'], ['D', 'E', 'F']],
+                hovertemplate: '%{text}<extra></extra>'
+            }], layout: {width: 400, height: 400}};
+
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() {_hover(140, 200);})
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: 'E',
+                    name: ''
+                }, 'variable text should be available!');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

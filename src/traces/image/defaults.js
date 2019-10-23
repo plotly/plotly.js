@@ -32,5 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('zmin', constants.colormodel[colormodel].min);
     coerce('zmax', constants.colormodel[colormodel].max);
 
+    coerce('text');
+    coerce('hovertext');
     coerce('hovertemplate');
 };

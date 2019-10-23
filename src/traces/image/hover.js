@@ -53,6 +53,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         pointData.extraText = colormodel.toUpperCase() + ': ' + colorstring;
     }
 
+    var text;
+    if(Array.isArray(trace.hovertext) && Array.isArray(trace.hovertext[ny])) {
+        text = trace.hovertext[ny][nx];
+    } else if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+        text = trace.text[ny][nx];
+    }
+
     var py = ya.c2p(cd0.y0 + (ny + 0.5) * trace.dy);
     var xVal = cd0.x0 + (nx + 0.5) * trace.dx;
     var yVal = cd0.y0 + (ny + 0.5) * trace.dy;
@@ -69,6 +76,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         yVal: yVal,
         yLabelVal: yVal,
         zLabelVal: zLabel,
+        text: text,
         hovertemplateLabels: {
             'zLabel': zLabel,
             'colorLabel': colorstring,

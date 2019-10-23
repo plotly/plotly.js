@@ -98,8 +98,18 @@ module.exports = extendFlat({
         editType: 'calc',
         description: 'Set the pixel\'s vertical size'
     },
+    text: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: 'Sets the text elements associated with each z value.'
+    },
+    hovertext: {
+        valType: 'data_array',
+        editType: 'plot',
+        description: 'Same as `text`.'
+    },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['x', 'y', 'z', 'color', 'name']
+        flags: ['x', 'y', 'z', 'color', 'name', 'text']
     }),
     hovertemplate: hovertemplateAttrs({}, {
         keys: ['z', 'color', 'colormodel']
