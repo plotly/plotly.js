@@ -32,10 +32,11 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
-var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
-var CAP_SHIFT = require('../../constants/alignment').CAP_SHIFT;
-var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
-var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
+var alignmentConstants = require('../../constants/alignment');
+var MID_SHIFT = alignmentConstants.MID_SHIFT;
+var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var OPPOSITE_SIDE = alignmentConstants.OPPOSITE_SIDE;
 
 var axes = module.exports = {};
 
