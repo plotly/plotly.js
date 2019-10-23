@@ -16,7 +16,11 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var ternaryAxesAttrs = {
-    title: axesAttrs.title,
+    title: {
+        text: axesAttrs.title.text,
+        font: axesAttrs.title.font
+        // TODO does standoff here make sense?
+    },
     color: axesAttrs.color,
     // ticks
     tickmode: axesAttrs.tickmode,

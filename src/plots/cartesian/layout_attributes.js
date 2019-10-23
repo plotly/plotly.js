@@ -62,6 +62,21 @@ module.exports = {
                 'by the now deprecated `titlefont` attribute.'
             ].join(' ')
         }),
+        standoff: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            editType: 'ticks',
+            description: [
+                'Sets the standoff distance (in px) between the axis labels and the title text',
+                'The default value is a function of the axis tick labels, the title `font.size`',
+                'and the axis `linewidth`.',
+                'Note that the axis title position is always constrained within the margins,',
+                'so the actual standoff distance is always less than the set or default value.',
+                'By setting `standoff` and turning on `automargin`, plotly.js will push the',
+                'margins to fit the axis title at given standoff distance.'
+            ].join(' ')
+        },
         editType: 'ticks'
     },
     type: {

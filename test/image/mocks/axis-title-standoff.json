@@ -1,0 +1,59 @@
+{
+  "data": [
+    {"x": ["looooooooooong label"], "y": [1]},
+    {"y": ["looooooooooong label"], "x": [1], "xaxis": "x2", "yaxis": "y2"}
+  ],
+  "layout": {
+    "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+    "width": 600,
+    "height": 500,
+    "showlegend": false,
+    "title": {
+      "text": "No axis automargin:true<br>with default margins",
+      "x": 0,
+      "xanchor": "left",
+      "xref": "paper"
+    },
+    "xaxis": {
+      "title": {
+        "text": "X Axis (standoff:10)",
+        "standoff": 10,
+        "font": {"size": 25}
+      },
+      "showline": true,
+      "mirror": true,
+      "ticks": "outside"
+    },
+    "yaxis": {
+      "title": {
+        "text": "Y<br>Axis (standoff:8)",
+        "standoff": 0,
+        "font": {"size": 8}
+      },
+      "showline": true,
+      "mirror": true
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "side": "top",
+      "title": {
+        "text": "X<br>Axis 2<br>(standoff:0)",
+        "standoff": 0
+      },
+      "showline": true,
+      "mirror": true
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "side": "right",
+      "title": {
+        "text": "Y Axis 2 (standoff:0)",
+        "standoff": 0
+      },
+      "showline": true,
+      "mirror": true,
+      "ticks": "outside",
+      "tickangle": 80
+    }
+  }
+}
