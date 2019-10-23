@@ -1,3 +1,5 @@
+'use strict';
+
 var Plotly = require('@lib/index');
 var Registry = require('@src/registry');
 
@@ -7,17 +9,25 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
-'use strict';
-
 module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
-    var isGL = Registry.traceIs(mock[0].type, 'gl');
-    var isPolar = Registry.traceIs(mock[0].type, 'polar');
-    var isScatterLike = Registry.traceIs(mock[0].type, 'scatter-like');
-    var isBarLike = Registry.traceIs(mock[0].type, 'bar-like');
+    var data;
+    var layout;
+    if(Array.isArray(mock)) {
+        data = mock;
+        layout = {};
+    } else {
+        data = mock.data;
+        layout = mock.layout || {};
+    }
+
+    var isGL = Registry.traceIs(data[0].type, 'gl');
+    var isPolar = Registry.traceIs(data[0].type, 'polar');
+    var isScatterLike = Registry.traceIs(data[0].type, 'scatter-like');
+    var isBarLike = Registry.traceIs(data[0].type, 'bar-like');
 
     it('should not coerce textinfo when texttemplate is defined', function() {
         var gd = {};
-        gd.data = Lib.extendDeep([], mock);
+        gd.data = Lib.extendDeep([], data);
         gd.data[0].textinfo = 'text';
         gd.data[0].texttemplate = 'texttemplate';
         supplyAllDefaults(gd);
@@ -27,7 +37,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
     if(isScatterLike) {
         it('should not coerce texttemplate when mode has no `text` flag', function() {
             var gd = {};
-            gd.data = Lib.extendDeep([], mock);
+            gd.data = Lib.extendDeep([], data);
             gd.data[0].mode = 'markers';
             gd.data[0].texttemplate = 'texttemplate';
             supplyAllDefaults(gd);
@@ -38,7 +48,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
     if(isBarLike) {
         it('should not coerce texttemplate when textposition is `none`', function() {
             var gd = {};
-            gd.data = Lib.extendDeep([], mock);
+            gd.data = Lib.extendDeep([], data);
             gd.data[0].textposition = 'none';
             gd.data[0].texttemplate = 'texttemplate';
             supplyAllDefaults(gd);
@@ -56,19 +66,19 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
         for(i = 0; i < N; i++) {
             customdata.push(Lib.randstr({}));
         }
-        mock[0].customdata = customdata;
+        data[0].customdata = customdata;
         tests.push(['%{customdata}', customdata]);
 
         // Generate meta
-        mock[0].meta = {'colname': 'A'};
+        data[0].meta = {'colname': 'A'};
         var metaSolution = [];
         for(i = 0; i < N; i++) {
-            metaSolution.push(mock[0].meta.colname);
+            metaSolution.push(data[0].meta.colname);
         }
         tests.push(['%{meta.colname}', metaSolution]);
 
         // Make sure that empty text shows up as an empty string
-        var emptyTextMock = Lib.extendDeep([], mock);
+        var emptyTextMock = Lib.extendDeep([], data);
         var emptyTextSolution = [];
         emptyTextMock[0].text = [];
         for(i = 0; i < N; i++) {
@@ -81,9 +91,9 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
         tests.forEach(function(test) {
             it('@gl should support texttemplate', function(done) {
                 var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep([], test[2] || mock);
-                mockCopy[0].texttemplate = test[0];
-                Plotly.newPlot(gd, mockCopy)
+                var dataCopy = Lib.extendDeep([], test[2] || data);
+                dataCopy[0].texttemplate = test[0];
+                Plotly.newPlot(gd, dataCopy, Lib.extendDeep({}, layout))
                     .then(function() {
                         var glText;
                         if(isPolar) {
@@ -113,9 +123,9 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
         tests.forEach(function(test) {
             it('should support texttemplate', function(done) {
                 var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep([], test[2] || mock);
-                mockCopy[0].texttemplate = test[0];
-                Plotly.newPlot(gd, mockCopy)
+                var dataCopy = Lib.extendDeep([], test[2] || data);
+                dataCopy[0].texttemplate = test[0];
+                Plotly.newPlot(gd, dataCopy, Lib.extendDeep({}, layout))
                     .then(function() {
                         var pts = Plotly.d3.selectAll(selector);
                         expect(pts.size()).toBe(test[1].length);
