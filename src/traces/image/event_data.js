@@ -15,6 +15,5 @@ module.exports = function eventData(out, pt) {
     if(pt.ya) out.yaxis = pt.ya;
     out.color = pt.color;
     out.colormodel = pt.trace.colormodel;
-    out.text = pt.text;
     return out;
 };

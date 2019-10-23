@@ -48,7 +48,7 @@ var scaler = function(trace) {
     }
 
     return function(pixel) {
-        var c = pixel.slice();
+        var c = pixel.slice(0, n);
         for(var k = 0; k < n; k++) {
             c[k] = s[k](c[k]);
         }
