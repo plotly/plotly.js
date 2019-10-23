@@ -218,6 +218,28 @@ describe('image plot', function() {
         .then(done);
     });
 
+    it('should handle restyling x0/y0 to category', function(done) {
+        var mock = require('@mocks/image_opacity.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        var x = []; var y = [];
+        Plotly.newPlot(gd, mockCopy).then(function() {
+            return Plotly.restyle(gd, {x0: 50, y0: 50});
+        }).then(function() {
+            x.push(d3.select(sel).attr('x'));
+            y.push(d3.select(sel).attr('y'));
+
+            return Plotly.restyle(gd, {x0: 'A', y0: 'F'});
+        }).then(function() {
+            x.push(d3.select(sel).attr('x'));
+            y.push(d3.select(sel).attr('y'));
+            expect(x[1]).toEqual(x[0], 'image element should have same x position');
+            expect(y[1]).toEqual(y[0], 'image element should have same y position');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
