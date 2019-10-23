@@ -74,14 +74,14 @@ module.exports = extendFlat({
         valType: 'any',
         dflt: 0,
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: 'Set the image\'s x position.'
     },
     y0: {
         valType: 'any',
         dflt: 0,
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: 'Set the image\'s y position.'
     },
     dx: {
