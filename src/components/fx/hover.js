@@ -772,6 +772,11 @@ function createHoverText(hoverData, opts, gd) {
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
         var contrastColor = Color.contrast(commonBgColor);
+        var commonLabelFont = {
+            family: commonLabelOpts.font.family || fontFamily,
+            size: commonLabelOpts.font.size || fontSize,
+            color: commonLabelOpts.font.color || contrastColor
+        };
 
         lpath.style({
             fill: commonBgColor,
@@ -779,11 +784,7 @@ function createHoverText(hoverData, opts, gd) {
         });
 
         ltext.text(t0)
-            .call(Drawing.font,
-                commonLabelOpts.font.family || fontFamily,
-                commonLabelOpts.font.size || fontSize,
-                commonLabelOpts.font.color || contrastColor
-             )
+            .call(Drawing.font, commonLabelFont)
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
 
@@ -861,22 +862,38 @@ function createHoverText(hoverData, opts, gd) {
                 'H' + leftsign + HOVERARROWSIZE + 'V-' + HOVERARROWSIZE + 'Z');
 
             var halfHeight = tbb.height / 2;
+            var lty = outerTop - tbb.top - halfHeight;
             var clipId = 'clip' + fullLayout._uid + 'commonlabel' + ya._id;
             var clipPath;
-            var ltx;
 
             if(lx < (tbb.width + 2 * HOVERTEXTPAD + HOVERARROWSIZE)) {
-                ltx = tbb.width - lx + HOVERTEXTPAD;
                 clipPath = 'M-' + (HOVERARROWSIZE + HOVERTEXTPAD) + '-' + halfHeight +
                     'h-' + (tbb.width - HOVERTEXTPAD) +
                     'V' + halfHeight +
                     'h' + (tbb.width - HOVERTEXTPAD) + 'Z';
+
+                var ltx = tbb.width - lx + HOVERTEXTPAD;
+                svgTextUtils.positionText(ltext, ltx, lty);
+
+                // shift each line (except the longest) so that start-of-line
+                // is always visible
+                if(anchor === 'end') {
+                    ltext.selectAll('tspan').each(function() {
+                        var s = d3.select(this);
+                        var dummy = Drawing.tester.append('text')
+                            .text(s.text())
+                            .call(Drawing.font, commonLabelFont);
+                        var dummyBB = dummy.node().getBoundingClientRect();
+                        if(dummyBB.width < tbb.width) {
+                            s.attr('x', ltx - dummyBB.width);
+                        }
+                        dummy.remove();
+                    });
+                }
             } else {
-                ltx = sgn * (HOVERTEXTPAD + HOVERARROWSIZE);
+                svgTextUtils.positionText(ltext, sgn * (HOVERTEXTPAD + HOVERARROWSIZE), lty);
                 clipPath = null;
             }
-
-            svgTextUtils.positionText(ltext, ltx, outerTop - tbb.top - halfHeight);
 
             var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : []);
             textClip.enter().append('clipPath').attr('id', clipId).append('path');

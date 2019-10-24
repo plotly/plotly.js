@@ -1767,6 +1767,18 @@ describe('hover info', function() {
                         var clipId = 'clip' + fullLayout._uid + 'commonlabely';
                         var clipPath = d3.select('#' + clipId);
                         negateIf(exp.clip, expect(clipPath.node())).toBe(null, 'text clip path|' + msg);
+
+                        if(exp.tspanX) {
+                            var tspans = label.selectAll('tspan');
+                            if(tspans.size()) {
+                                tspans.each(function(d, i) {
+                                    var s = d3.select(this);
+                                    expect(s.attr('x')).toBeWithin(exp.tspanX[i], 5, i + '- tspan shift| ' + msg);
+                                });
+                            } else {
+                                fail('fail to generate tspans in hover label');
+                            }
+                        }
                     } else {
                         fail('fail to generate common hover label');
                     }
@@ -1790,6 +1802,18 @@ describe('hover info', function() {
             .then(_assert('on way long label', {txt: 'Waay loooong label', clip: true, ltx: 38}))
             .then(_hoverA)
             .then(_assert('on "a" label', {txt: 'a', clip: false, ltx: -9}))
+            .then(function() {
+                return Plotly.restyle(gd, {
+                    y: [['Looong label', 'Loooooger label', 'SHORT!<br>Waay loooong label', 'a']]
+                });
+            })
+            .then(_hoverWayLong)
+            .then(_assert('on way long label (multi-line case)', {
+                txt: 'SHORT!Waay loooong label',
+                clip: true,
+                ltx: 38,
+                tspanX: [-11, 38]
+            }))
             .catch(failTest)
             .then(done);
         });
