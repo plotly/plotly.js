@@ -417,7 +417,6 @@ proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
-    var camera = this.glplot.camera;
     var pixelRatio = this.glplot.pixelRatio;
     this.glplot.dispose();
 
@@ -426,7 +425,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, camera, pixelRatio, canvas, gl)) {
+        if(!initializeGLPlot(scene, pixelRatio, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
