@@ -248,10 +248,10 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
     return failed < 2;
 }
 
-function initializeGLPlot(scene, pixelRatio, canvas, gl) {
+function initializeGLPlot(scene, canvas, gl) {
     scene.initializeGLCamera();
 
-    var success = tryCreatePlot(scene, scene.camera, pixelRatio, canvas, gl);
+    var success = tryCreatePlot(scene, scene.camera, scene.pixelRatio, canvas, gl);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -393,7 +393,7 @@ function Scene(options, fullLayout) {
     this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
     this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
-    initializeGLPlot(this, this.pixelRatio);
+    initializeGLPlot(this);
 }
 
 var proto = Scene.prototype;
@@ -417,7 +417,7 @@ proto.recoverContext = function() {
     var scene = this;
     var gl = this.glplot.gl;
     var canvas = this.glplot.canvas;
-    var pixelRatio = this.glplot.pixelRatio;
+
     this.glplot.dispose();
 
     function tryRecover() {
@@ -425,7 +425,7 @@ proto.recoverContext = function() {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, pixelRatio, canvas, gl)) {
+        if(!initializeGLPlot(scene, canvas, gl)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -825,8 +825,6 @@ proto.setViewport = function(sceneLayout) {
     if(newOrtho !== oldOrtho) {
         this.glplot.redraw();
 
-        var pixelRatio = this.glplot.pixelRatio;
-
         var RGBA = this.glplot.clearColor;
         this.glplot.gl.clearColor(
             RGBA[0], RGBA[1], RGBA[2], RGBA[3]
@@ -838,7 +836,7 @@ proto.setViewport = function(sceneLayout) {
 
         this.glplot.dispose();
 
-        initializeGLPlot(this, pixelRatio);
+        initializeGLPlot(this);
         this.glplot.camera._ortho = newOrtho;
     }
 };
