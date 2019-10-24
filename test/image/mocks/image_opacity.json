@@ -1,0 +1,13 @@
+{
+  "data": [{
+    "type": "image",
+    "opacity": 0.1,
+    "z": [[[255, 0, 0], [0, 255, 0], [0, 0, 255]]]
+    }],
+    "layout": {
+      "width": 400, "height": 400,
+      "title": {
+        "text": "image with opacity 0.1"
+      }
+    }
+}

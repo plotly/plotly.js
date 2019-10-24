@@ -885,11 +885,9 @@ describe('calculated data and points', function() {
                 return t.categories.length && t.categories.indexOf('cartesian') !== -1;
             });
 
-            // excludedTraces are traces that do not support sorting by value
-            var excludedTraces = [ 'carpet', 'contourcarpet'];
-
+            // exclude traces that do not support sorting by value
             var supportedCartesianTraces = cartesianTraces.filter(function(t) {
-                if(excludedTraces.indexOf(t.type) === -1) return true;
+                if(t.categories.indexOf('noSortingByValue') === -1) return true;
             });
 
             var cat = ['a', 'b', 'c'];
