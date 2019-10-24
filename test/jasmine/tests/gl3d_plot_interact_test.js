@@ -1175,6 +1175,65 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(done);
     });
 
+    it('@gl should update the scene aspectratio when zooming with scroll wheel i.e. orthographic case', function(done) {
+        var sceneLayout, sceneLayout2, sceneTarget, sceneTarget2;
+
+        var mock = {
+            data: [
+                { type: 'scatter3d', x: [1, 2, 3], y: [2, 3, 1], z: [3, 1, 2] },
+                { type: 'surface', scene: 'scene2', x: [1, 2], y: [2, 1], z: [[1, 2], [2, 1]] }
+            ],
+            layout: {
+                scene: { camera: { projection: {type: 'orthographic'}}},
+                scene2: { camera: { projection: {type: 'orthographic'}}, aspectratio: { x: 3, y: 2, z: 1 }}
+            }
+        };
+
+        var aspectratio;
+        var relayoutEvent;
+        var relayoutCnt = 0;
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+
+            sceneLayout = gd._fullLayout.scene;
+            sceneLayout2 = gd._fullLayout.scene2;
+            sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
+            sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
+
+            expect(sceneLayout.aspectratio).toEqual({x: 1, y: 1, z: 1});
+            expect(sceneLayout2.aspectratio).toEqual({x: 3, y: 2, z: 1});
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            expect(relayoutCnt).toEqual(1);
+
+            aspectratio = relayoutEvent['scene.aspectratio'];
+            expect(aspectratio.x).toBeCloseTo(0.909, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.909, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+        })
+        .then(function() {
+            return scroll(sceneTarget2);
+        })
+        .then(function() {
+            expect(relayoutCnt).toEqual(2);
+
+            aspectratio = relayoutEvent['scene2.aspectratio'];
+            expect(aspectratio.x).toBeCloseTo(2.727, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(1.818, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should fire plotly_relayouting events when dragged - perspective case', function(done) {
         var sceneTarget, relayoutEvent;
 
@@ -1216,8 +1275,10 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             expect(events.length).toEqual(nsteps);
             expect(relayoutCnt).toEqual(1);
+
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
+                expect(key).not.toBe('scene.aspectratio');
             });
         })
         .catch(failTest)
@@ -1267,6 +1328,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(relayoutCnt).toEqual(1);
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
+                expect(key).not.toBe('scene.aspectratio');
             });
         })
         .catch(failTest)
