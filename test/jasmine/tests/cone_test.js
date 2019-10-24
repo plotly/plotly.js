@@ -177,6 +177,39 @@ describe('Test cone autorange:', function() {
     });
 });
 
+describe('Test cone autorange:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should skip identical positions in calculating cone vectorScale', function(done) {
+        Plotly.plot(gd, {
+            data: [
+                {
+                    type: 'cone',
+                    x: [-1, -1, -3, -4],
+                    y: [1, 1, 3, 4],
+                    z: [1, 1, 3, 4],
+                    u: [-1, 2, -3, -4],
+                    v: [1, -2, 3, 4],
+                    w: [1, -2, 3, 4]
+                }
+            ]
+        }).then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].vectorScale).toBeCloseTo(0.2857, 4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('Test cone interactions', function() {
     var gd;
 
