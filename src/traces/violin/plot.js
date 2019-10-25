@@ -28,7 +28,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             connectGaps: true,
             baseTolerance: 0.75,
             shape: 'spline',
-            simplify: true
+            simplify: true,
+            linearized: true
         });
         return Drawing.smoothopen(segments[0], 1);
     }
@@ -64,8 +65,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             var pathSel = d3.select(this);
             var density = d.density;
             var len = density.length;
-            var posCenter = d.pos + bPos;
-            var posCenterPx = posAxis.c2p(posCenter);
+            var posCenter = posAxis.c2l(d.pos + bPos, true);
+            var posCenterPx = posAxis.l2p(posCenter);
 
             var scale;
             if(trace.width) {
@@ -85,7 +86,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                 for(i = 0; i < len; i++) {
                     pt = pts[i] = {};
                     pt[t.posLetter] = posCenter + (density[i].v / scale);
-                    pt[t.valLetter] = density[i].t;
+                    pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
                 pathPos = makePath(pts);
             }
@@ -95,7 +96,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                 for(k = 0, i = len - 1; k < len; k++, i--) {
                     pt = pts[k] = {};
                     pt[t.posLetter] = posCenter - (density[i].v / scale);
-                    pt[t.valLetter] = density[i].t;
+                    pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
                 pathNeg = makePath(pts);
             }
