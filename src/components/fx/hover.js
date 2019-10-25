@@ -772,6 +772,11 @@ function createHoverText(hoverData, opts, gd) {
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
         var contrastColor = Color.contrast(commonBgColor);
+        var commonLabelFont = {
+            family: commonLabelOpts.font.family || fontFamily,
+            size: commonLabelOpts.font.size || fontSize,
+            color: commonLabelOpts.font.color || contrastColor
+        };
 
         lpath.style({
             fill: commonBgColor,
@@ -779,41 +784,76 @@ function createHoverText(hoverData, opts, gd) {
         });
 
         ltext.text(t0)
-            .call(Drawing.font,
-                commonLabelOpts.font.family || fontFamily,
-                commonLabelOpts.font.size || fontSize,
-                commonLabelOpts.font.color || contrastColor
-             )
+            .call(Drawing.font, commonLabelFont)
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
 
         label.attr('transform', '');
 
         var tbb = ltext.node().getBoundingClientRect();
+        var lx, ly;
+
         if(hovermode === 'x') {
+            var topsign = xa.side === 'top' ? '-' : '';
+
             ltext.attr('text-anchor', 'middle')
                 .call(svgTextUtils.positionText, 0, (xa.side === 'top' ?
                     (outerTop - tbb.bottom - HOVERARROWSIZE - HOVERTEXTPAD) :
                     (outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD)));
 
-            var topsign = xa.side === 'top' ? '-' : '';
-            lpath.attr('d', 'M0,0' +
-                'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE +
-                'H' + (HOVERTEXTPAD + tbb.width / 2) +
-                'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                'H-' + (HOVERTEXTPAD + tbb.width / 2) +
-                'V' + topsign + HOVERARROWSIZE + 'H-' + HOVERARROWSIZE + 'Z');
+            lx = xa._offset + (c0.x0 + c0.x1) / 2;
+            ly = ya._offset + (xa.side === 'top' ? 0 : ya._length);
 
-            label.attr('transform', 'translate(' +
-                (xa._offset + (c0.x0 + c0.x1) / 2) + ',' +
-                (ya._offset + (xa.side === 'top' ? 0 : ya._length)) + ')');
+            var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
+
+            if(lx < halfWidth) {
+                lx = halfWidth;
+
+                lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' +
+                    'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE +
+                    'H' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
+                    'H-' + halfWidth +
+                    'V' + topsign + HOVERARROWSIZE +
+                    'Z');
+            } else if(lx > (fullLayout.width - halfWidth)) {
+                lx = fullLayout.width - halfWidth;
+
+                lpath.attr('d', 'M' + (halfWidth - HOVERARROWSIZE) + ',0' +
+                    'L' + halfWidth + ',' + topsign + HOVERARROWSIZE +
+                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
+                    'H-' + halfWidth +
+                    'V' + topsign + HOVERARROWSIZE +
+                    'H' + (halfWidth - HOVERARROWSIZE * 2) + 'Z');
+            } else {
+                lpath.attr('d', 'M0,0' +
+                    'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE +
+                    'H' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
+                    'H-' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'V' + topsign + HOVERARROWSIZE +
+                    'H-' + HOVERARROWSIZE + 'Z');
+            }
         } else {
-            ltext.attr('text-anchor', ya.side === 'right' ? 'start' : 'end')
-                .call(svgTextUtils.positionText,
-                    (ya.side === 'right' ? 1 : -1) * (HOVERTEXTPAD + HOVERARROWSIZE),
-                    outerTop - tbb.top - tbb.height / 2);
+            var anchor;
+            var sgn;
+            var leftsign;
+            if(ya.side === 'right') {
+                anchor = 'start';
+                sgn = 1;
+                leftsign = '';
+                lx = xa._offset + xa._length;
+            } else {
+                anchor = 'end';
+                sgn = -1;
+                leftsign = '-';
+                lx = xa._offset;
+            }
 
-            var leftsign = ya.side === 'right' ? '' : '-';
+            ly = ya._offset + (c0.y0 + c0.y1) / 2;
+
+            ltext.attr('text-anchor', anchor);
+
             lpath.attr('d', 'M0,0' +
                 'L' + leftsign + HOVERARROWSIZE + ',' + HOVERARROWSIZE +
                 'V' + (HOVERTEXTPAD + tbb.height / 2) +
@@ -821,10 +861,49 @@ function createHoverText(hoverData, opts, gd) {
                 'V-' + (HOVERTEXTPAD + tbb.height / 2) +
                 'H' + leftsign + HOVERARROWSIZE + 'V-' + HOVERARROWSIZE + 'Z');
 
-            label.attr('transform', 'translate(' +
-                (xa._offset + (ya.side === 'right' ? xa._length : 0)) + ',' +
-                (ya._offset + (c0.y0 + c0.y1) / 2) + ')');
+            var halfHeight = tbb.height / 2;
+            var lty = outerTop - tbb.top - halfHeight;
+            var clipId = 'clip' + fullLayout._uid + 'commonlabel' + ya._id;
+            var clipPath;
+
+            if(lx < (tbb.width + 2 * HOVERTEXTPAD + HOVERARROWSIZE)) {
+                clipPath = 'M-' + (HOVERARROWSIZE + HOVERTEXTPAD) + '-' + halfHeight +
+                    'h-' + (tbb.width - HOVERTEXTPAD) +
+                    'V' + halfHeight +
+                    'h' + (tbb.width - HOVERTEXTPAD) + 'Z';
+
+                var ltx = tbb.width - lx + HOVERTEXTPAD;
+                svgTextUtils.positionText(ltext, ltx, lty);
+
+                // shift each line (except the longest) so that start-of-line
+                // is always visible
+                if(anchor === 'end') {
+                    ltext.selectAll('tspan').each(function() {
+                        var s = d3.select(this);
+                        var dummy = Drawing.tester.append('text')
+                            .text(s.text())
+                            .call(Drawing.font, commonLabelFont);
+                        var dummyBB = dummy.node().getBoundingClientRect();
+                        if(dummyBB.width < tbb.width) {
+                            s.attr('x', ltx - dummyBB.width);
+                        }
+                        dummy.remove();
+                    });
+                }
+            } else {
+                svgTextUtils.positionText(ltext, sgn * (HOVERTEXTPAD + HOVERARROWSIZE), lty);
+                clipPath = null;
+            }
+
+            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : []);
+            textClip.enter().append('clipPath').attr('id', clipId).append('path');
+            textClip.exit().remove();
+            textClip.select('path').attr('d', clipPath);
+            Drawing.setClipUrl(ltext, clipPath ? clipId : null, gd);
         }
+
+        label.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
         // remove the "close but not quite" points
         // because of error bars, only take up to a space
         hoverData = hoverData.filter(function(d) {
