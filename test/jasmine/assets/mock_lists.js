@@ -23,6 +23,7 @@ var svgMockList = [
     ['finance_style', require('@mocks/finance_style.json')],
     ['geo_first', require('@mocks/geo_first.json')],
     ['indicator_bignumber', require('@mocks/indicator_bignumber.json')],
+    ['image_adventurer', require('@mocks/image_adventurer.json')],
     ['layout_image', require('@mocks/layout_image.json')],
     ['layout-colorway', require('@mocks/layout-colorway.json')],
     ['multicategory', require('@mocks/multicategory.json')],
