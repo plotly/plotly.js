@@ -13,6 +13,27 @@ describe('Test Plots', function() {
     'use strict';
 
     describe('Plots.supplyDefaults', function() {
+        it('should not accept ranges where the end is not greater than the start', function() {
+            var gd = {
+                data: [{
+                    type: 'pie',
+                    domain: {
+                        x: [0.4, 0],
+                        y: [0.5, 0.5]
+                    },
+                    values: [1, 2, 3, 4],
+                    labels: ['a', 'b', 'c', 'd'],
+                    text: ['text', 'should', 'be', 'inside']
+                }]
+            };
+
+            supplyAllDefaults(gd);
+            expect(gd._fullData[0].domain.x[0]).toBe(0);
+            expect(gd._fullData[0].domain.y[1]).toBe(1);
+            expect(gd._fullData[0].domain.x[0]).toBe(0);
+            expect(gd._fullData[0].domain.y[1]).toBe(1);
+        });
+
         it('should not throw an error when gd is a plain object', function() {
             var height = 100;
             var gd = {
