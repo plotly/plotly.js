@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "mode": "lines",
+      "y": [1, 1],
+      "line": {
+        "width": 5,
+        "color": "blue"
+      }
+    }
+  ],
+  "layout": {
+    "updatemenus": [
+      {
+        "type": "buttons",
+        "buttons": [
+          {
+            "label": "toggle",
+            "method": "restyle",
+            "args": [
+              "line.color",
+              "blue"
+            ],
+            "args2": [
+              "line.color",
+              "red"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
