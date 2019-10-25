@@ -344,17 +344,27 @@ function handleCamera3d(gd, ev) {
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i];
-        var key = sceneId + '.camera';
+        var camera = sceneId + '.camera';
+        var aspectratio = sceneId + '.aspectratio';
         var scene = fullLayout[sceneId]._scene;
+        var didUpdate;
 
         if(attr === 'resetLastSave') {
-            aobj[key + '.up'] = scene.viewInitial.up;
-            aobj[key + '.eye'] = scene.viewInitial.eye;
-            aobj[key + '.center'] = scene.viewInitial.center;
+            aobj[camera + '.up'] = scene.viewInitial.up;
+            aobj[camera + '.eye'] = scene.viewInitial.eye;
+            aobj[camera + '.center'] = scene.viewInitial.center;
+            didUpdate = true;
         } else if(attr === 'resetDefault') {
-            aobj[key + '.up'] = null;
-            aobj[key + '.eye'] = null;
-            aobj[key + '.center'] = null;
+            aobj[camera + '.up'] = null;
+            aobj[camera + '.eye'] = null;
+            aobj[camera + '.center'] = null;
+            didUpdate = true;
+        }
+
+        if(didUpdate) {
+            aobj[aspectratio + '.x'] = scene.viewInitial.aspectratio.x;
+            aobj[aspectratio + '.y'] = scene.viewInitial.aspectratio.y;
+            aobj[aspectratio + '.z'] = scene.viewInitial.aspectratio.z;
         }
     }
 

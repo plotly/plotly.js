@@ -578,8 +578,7 @@ exports.doCamera = function(gd) {
         var sceneLayout = fullLayout[sceneIds[i]];
         var scene = sceneLayout._scene;
 
-        var cameraData = sceneLayout.camera;
-        scene.setCamera(cameraData);
+        scene.setViewport(sceneLayout);
     }
 };
 
