@@ -100,6 +100,62 @@ describe('image supplyDefaults', function() {
     });
 });
 
+describe('image smart layout defaults', function() {
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should reverse yaxis if only images are present', function(done) {
+        Plotly.newPlot(gd, [{type: 'image', z: [[[255, 0, 0]]]}])
+        .then(function(gd) {
+            expect(gd._fullLayout.yaxis.range[0]).toBeGreaterThan(gd._fullLayout.yaxis.range[1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should NOT reverse yaxis if another trace is present', function(done) {
+        Plotly.newPlot(gd, [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}])
+        .then(function(gd) {
+            expect(gd._fullLayout.yaxis.range[1]).toBeGreaterThan(gd._fullLayout.yaxis.range[0]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should set scaleanchor to make square pixels if only images are present', function(done) {
+        Plotly.newPlot(gd, [{type: 'image', z: [[[255, 0, 0]]]}])
+        .then(function(gd) {
+            expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should NOT set scaleanchor if another trace is present', function(done) {
+        Plotly.newPlot(gd, [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}])
+        .then(function(gd) {
+            expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should NOT set scaleanchor if it\'s already defined', function(done) {
+        Plotly.newPlot(gd, [
+          {type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}
+        ], {yaxis: {scaleanchor: 'x3'}})
+        .then(function(gd) {
+            expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('image plot', function() {
     'use strict';
 
@@ -444,7 +500,7 @@ describe('image hover:', function() {
                 zmax: [1, 1, 1],
                 text: [['A', 'B', 'C'], ['D', 'E', 'F']],
                 hovertemplate: '%{text}<extra></extra>'
-            }], layout: {width: 400, height: 400}};
+            }], layout: {width: 400, height: 400, yaxis: {scaleanchor: null}}};
 
             Plotly.newPlot(gd, mockCopy)
             .then(function() {_hover(140, 200);})

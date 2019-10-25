@@ -5,6 +5,7 @@
     "z": [[[255, 0, 0], [0, 255, 0], [0, 0, 255]]]
     }],
     "layout": {
+      "yaxis": {"scaleanchor": null},
       "width": 400, "height": 400,
       "title": {
         "text": "image with opacity 0.1"

@@ -17,7 +17,9 @@ var concatExtremes = require('./autorange').concatExtremes;
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 var FROM_BL = require('../../constants/alignment').FROM_BL;
 
-exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
+exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, opts) {
+    var allAxisIds = opts.allAxisIds;
+    var layoutOut = opts.layoutOut;
     var constraintGroups = layoutOut._axisConstraintGroups;
     var matchGroups = layoutOut._axisMatchGroups;
     var axId = containerOut._id;
@@ -53,14 +55,14 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, a
     // 'matches' wins over 'scaleanchor' (for now)
     var scaleanchor, scaleOpts;
 
-    if(!matches && containerIn.scaleanchor && !(containerOut.fixedrange && constrain !== 'domain')) {
+    if(!matches && (containerIn.scaleanchor || opts.scaleanchorDflt) && !(containerOut.fixedrange && constrain !== 'domain')) {
         scaleOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
         scaleanchor = Lib.coerce(containerIn, containerOut, {
             scaleanchor: {
                 valType: 'enumerated',
                 values: scaleOpts.linkableAxes || []
             }
-        }, 'scaleanchor');
+        }, 'scaleanchor', opts.scaleanchorDflt);
     }
 
     if(matches) {
