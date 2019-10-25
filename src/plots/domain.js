@@ -131,6 +131,6 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     var y = coerce('domain.y', dfltY);
 
     // don't accept bad input data
-    if(!(x[0] < x[1])) containerOut.domain.x = dfltX;
-    if(!(y[0] < y[1])) containerOut.domain.y = dfltY;
+    if(!(x[0] < x[1])) containerOut.domain.x = dfltX.slice();
+    if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
