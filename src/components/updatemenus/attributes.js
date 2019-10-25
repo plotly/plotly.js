@@ -48,6 +48,22 @@ var buttonsAttrs = templatedArray('button', {
             'method set in `method` on click.'
         ].join(' ')
     },
+    args2: {
+        valType: 'info_array',
+        role: 'info',
+        freeLength: true,
+        items: [
+            {valType: 'any'},
+            {valType: 'any'},
+            {valType: 'any'}
+        ],
+        description: [
+            'Sets a 2nd set of `args`,',
+            'these arguments values are passed to the Plotly',
+            'method set in `method` when clicking this button while in the active state.',
+            'Use this to create toggle buttons.'
+        ].join(' ')
+    },
     label: {
         valType: 'string',
         role: 'info',
