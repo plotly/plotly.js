@@ -24,7 +24,11 @@ module.exports = {
     animatable: false,
     meta: {
         description: [
-            'Display an image, i.e. data on a 2D regular raster.'
+            'Display an image, i.e. data on a 2D regular raster.',
+            'If only images are displayed in a subplot,',
+            'the y axis will be reversed (ie. `autorange: \'reversed\'`)',
+            'and it will have the same scale as the x axis (ie. `scaleanchor: \'x\,`)',
+            'in order for pixels to be rendered as squares.'
         ].join(' ')
     }
 };
