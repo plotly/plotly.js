@@ -43,6 +43,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var yaMayReverse = {};
     var yaMustNotScaleanchor = {};
     var yaMayScaleanchor = {};
+    var yaMustNotConstrainDomain = {};
+    var yaMayConstrainDomain = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
@@ -81,16 +83,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 if(yaName) yaMayHide[yaName] = true;
             }
             yaMustNotScaleanchor[yaName] = true;
+            yaMustNotConstrainDomain[yaName] = true;
         } else if(trace.type === 'image') {
             if(yaName) {
                 yaMayReverse[yaName] = true;
                 yaMayScaleanchor[yaName] = true;
+                yaMayConstrainDomain[yaName] = true;
             }
         } else {
             if(yaName) {
                 yaMustDisplay[yaName] = true;
                 yaMustNotReverse[yaName] = true;
                 yaMustNotScaleanchor[yaName] = true;
+                yaMustNotConstrainDomain[yaName] = true;
             }
 
             if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
@@ -309,10 +314,18 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         ) {
             scaleanchorDflt = axLayoutOut.anchor;
         }
+
+        var constrainDflt = null;
+        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('constrain') &&
+              !yaMustNotConstrainDomain[axName] && yaMayConstrainDomain[axName]
+        ) {
+            constrainDflt = 'domain';
+        }
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
             allAxisIds: allAxisIds,
             layoutOut: layoutOut,
-            scaleanchorDflt: scaleanchorDflt
+            scaleanchorDflt: scaleanchorDflt,
+            constrainDflt: constrainDflt
         });
     }
 

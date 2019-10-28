@@ -123,6 +123,14 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.autorange).not.toBe('reversed');
     });
 
+    it('should NOT reverse yaxis if it\'s already defined', function() {
+        gd = {};
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+        gd.layout = {yaxis: {autorange: false}};
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.autorange).toBe(false);
+    });
+
     it('should set scaleanchor to make square pixels if only images are present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
@@ -138,10 +146,31 @@ describe('image smart layout defaults', function() {
     });
 
     it('should NOT set scaleanchor if it\'s already defined', function() {
-        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         gd.layout = {yaxis: {scaleanchor: 'x3'}};
         supplyAllDefaults(gd);
         expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
+    });
+
+    it('should constrain axes to domain if only images are present', function() {
+        gd = {};
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.constrain).toBe('domain');
+    });
+
+    it('should NOT constrain axes to domain if another trace is present', function() {
+        gd = {};
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.constrain).toBe(undefined);
+    });
+
+    it('should NOT constrain axes to domain if it\'s already defined', function() {
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+        gd.layout = {yaxis: {constrain: false}};
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.constrain).toBe(undefined);
     });
 });
 
@@ -489,7 +518,7 @@ describe('image hover:', function() {
                 zmax: [1, 1, 1],
                 text: [['A', 'B', 'C'], ['D', 'E', 'F']],
                 hovertemplate: '%{text}<extra></extra>'
-            }], layout: {width: 400, height: 400}};
+            }], layout: {width: 400, height: 400, yaxis: {constrain: 'range'}}};
 
             Plotly.newPlot(gd, mockCopy)
             .then(function() {_hover(140, 180);})
