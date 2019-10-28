@@ -304,7 +304,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut = layoutOut[axName];
 
         var scaleanchorDflt = null;
-        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && !yaMustNotScaleanchor[axName] && yaMayScaleanchor[axName]) {
+        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') &&
+              !yaMustNotScaleanchor[axName] && yaMayScaleanchor[axName]
+        ) {
             scaleanchorDflt = axLayoutOut.anchor;
         }
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
