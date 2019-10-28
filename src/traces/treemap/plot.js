@@ -82,9 +82,20 @@ function plotOne(gd, cd, element, transitionOpts) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var hierarchy = cd0.hierarchy;
-    var hasTransition = helpers.hasTransition(transitionOpts);
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
+
+    var gTrace = d3.select(element);
+    var selAncestors = gTrace.selectAll('g.pathbar');
+    var selDescendants = gTrace.selectAll('g.slice');
+
+    if(!entry) {
+        selAncestors.remove();
+        selDescendants.remove();
+        return;
+    }
+
     var isRoot = helpers.isHierarchyRoot(entry);
+    var hasTransition = helpers.hasTransition(transitionOpts);
 
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
@@ -516,16 +527,6 @@ function plotOne(gd, cd, element, transitionOpts) {
             rotate: d.transform.rotate
         });
     };
-
-    var gTrace = d3.select(element);
-    var selAncestors = gTrace.selectAll('g.pathbar');
-    var selDescendants = gTrace.selectAll('g.slice');
-
-    if(!entry) {
-        selAncestors.remove();
-        selDescendants.remove();
-        return;
-    }
 
     if(hasTransition) {
         // Important: do this before binding new sliceData!

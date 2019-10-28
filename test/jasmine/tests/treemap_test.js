@@ -561,6 +561,29 @@ describe('Test treemap calc:', function() {
     });
 });
 
+describe('Test treemap plot:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('should return early from the plot when there is no entry', function(done) {
+        Plotly.plot(gd, [{
+            labels: ['a', 'b'],
+            parents: ['A', 'B'],
+            type: 'treemap'
+        }])
+        .then(function() {
+            var gd3 = d3.select(gd);
+            var element = gd3.select('.treemap trace').node();
+            expect(element).toBe(null);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('Test treemap hover:', function() {
     var gd;
 
