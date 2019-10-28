@@ -139,10 +139,10 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             bPosPxOffset = 0;
         } else if(hasPositiveSide) {
             bdPosScaled = [0, bdPos * boxWidth / 2];
-            bPosPxOffset = -boxLineWidth;
+            bPosPxOffset = boxLineWidth * {x: 1, y: -1}[t.posLetter];
         } else {
             bdPosScaled = [bdPos * boxWidth / 2, 0];
-            bPosPxOffset = boxLineWidth;
+            bPosPxOffset = boxLineWidth * {x: -1, y: 1}[t.posLetter];
         }
 
         // inner box
