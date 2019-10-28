@@ -28,7 +28,8 @@ module.exports = {
             'If only images are displayed in a subplot,',
             'the y axis will be reversed (ie. `autorange: \'reversed\'`)',
             'and it will have the same scale as the x axis (ie. `scaleanchor: \'x\,`)',
-            'in order for pixels to be rendered as squares.'
+            'in order for pixels to be rendered as squares and',
+            'the y axis is constrained to the domain (ie. `constrain: \'domain\'`).'
         ].join(' ')
     }
 };
