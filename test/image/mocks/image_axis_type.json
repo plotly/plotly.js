@@ -28,7 +28,6 @@
       "width": 400, "height": 600, "title": {"text": "Image on categorical and log axes"},
       "grid": {"rows": 2, "columns": 1, "pattern": "independent"},
       "xaxis2": {"type": "log"},
-      "yaxis": {"scaleanchor": null},
-      "yaxis2": {"type": "log", "scaleanchor": null}
+      "yaxis2": {"type": "log"}
     }
 }

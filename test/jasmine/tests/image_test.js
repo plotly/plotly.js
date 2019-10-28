@@ -500,10 +500,10 @@ describe('image hover:', function() {
                 zmax: [1, 1, 1],
                 text: [['A', 'B', 'C'], ['D', 'E', 'F']],
                 hovertemplate: '%{text}<extra></extra>'
-            }], layout: {width: 400, height: 400, yaxis: {scaleanchor: null}}};
+            }], layout: {width: 400, height: 400}};
 
             Plotly.newPlot(gd, mockCopy)
-            .then(function() {_hover(140, 200);})
+            .then(function() {_hover(140, 180);})
             .then(function() {
                 assertHoverLabelContent({
                     nums: 'E',

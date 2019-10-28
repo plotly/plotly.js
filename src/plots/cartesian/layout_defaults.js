@@ -82,8 +82,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             }
             yaMustNotScaleanchor[yaName] = true;
         } else if(trace.type === 'image') {
-            if(yaName) yaMayReverse[yaName] = true;
-            if(yaName) yaMayScaleanchor[yaName] = true;
+            if(yaName) {
+                yaMayReverse[yaName] = true;
+                yaMayScaleanchor[yaName] = true;
+            }
         } else {
             if(yaName) {
                 yaMustDisplay[yaName] = true;

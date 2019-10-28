@@ -20,6 +20,7 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, opts) {
     var allAxisIds = opts.allAxisIds;
     var layoutOut = opts.layoutOut;
+    var scaleanchorDflt = opts.scaleanchorDflt;
     var constraintGroups = layoutOut._axisConstraintGroups;
     var matchGroups = layoutOut._axisMatchGroups;
     var axId = containerOut._id;
@@ -55,14 +56,17 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
     // 'matches' wins over 'scaleanchor' (for now)
     var scaleanchor, scaleOpts;
 
-    if(!matches && (containerIn.scaleanchor || opts.scaleanchorDflt) && !(containerOut.fixedrange && constrain !== 'domain')) {
+    if(!matches &&
+       !(containerOut.fixedrange && constrain !== 'domain') &&
+       (containerIn.scaleanchor || scaleanchorDflt)
+     ) {
         scaleOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
         scaleanchor = Lib.coerce(containerIn, containerOut, {
             scaleanchor: {
                 valType: 'enumerated',
                 values: scaleOpts.linkableAxes || []
             }
-        }, 'scaleanchor', opts.scaleanchorDflt);
+        }, 'scaleanchor', scaleanchorDflt);
     }
 
     if(matches) {

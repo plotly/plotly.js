@@ -60,14 +60,6 @@
   "layout": {
     "width": 400,
     "height": 800,
-    "yaxis": {"scaleanchor": null},
-    "yaxis2": {"scaleanchor": null},
-    "yaxis3": {"scaleanchor": null},
-    "yaxis4": {"scaleanchor": null},
-    "yaxis5": {"scaleanchor": null},
-    "yaxis6": {"scaleanchor": null},
-    "yaxis7": {"scaleanchor": null},
-    "yaxis8": {"scaleanchor": null},
     "grid": {
       "rows": 4,
       "columns": 2,
