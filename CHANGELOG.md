@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.51.0] -- 2019-10-29
+
+### Added
+- Add `image` trace type [#4289, #4307, #4313, #4319]
+- Add `automargin` attribute in pie traces, enabling outside text labels
+  to push the margins [#4278]
+- Add `title.standoff` attribute to cartesian axes, setting the
+  distance in pixels between the tick labels and the axis title [#4279]
+- Add `hoverongaps` attribute to `heatmap` and `contour` traces,
+  for suppressing hover labels on missing data [#4291]
+- Add `args2` attribute to `updatemenus` buttons which can be used to
+  create toggle buttons [#4305]
+- Add `zh-CN` locale [#4276, #4310]
+
+### Changed
+- Introduce workarounds for "common" (aka axis) hover label clipping
+  about the graph's viewport [#4298]
+- No longer accept trace `domain` settings where end is not greater
+  than start [#4304]
+
+### Fixed
+- Fix `streamtube` coloring and positioning when generated
+  with non-`xyz` grid signatures [#4271]
+- Fix trace-type update calls on mapbox subplots [#4295]
+- Fix width of `box` and `violin` items on log position axes [#4283]
+- Fix box/meanline offset for one-sided vertical `violin` traces [#4314]
+- Fix missing gaps in some `scattergl` line traces [#4316]
+- Fix event data during scroll on gl3d subplots with orthographic projections [#4292]
+- Handle data with identical positions in `cone` traces [#4306]
+- Handle invalid entry before trying to render `treemap` trace [#4312]
+- Fix `heatmap` and `contour` description for `connectgaps` [#4284]
+
+
 ## [1.50.1] -- 2019-10-15
 
 ### Fixed
