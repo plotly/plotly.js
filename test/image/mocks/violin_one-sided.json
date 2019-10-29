@@ -1,0 +1,62 @@
+{
+  "data": [
+    {
+      "type": "violin",
+      "x0": 10,
+      "y": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "box": { "visible": true },
+      "meanline": { "visible": true },
+      "side": "positive"
+    },
+    {
+      "type": "violin",
+      "x0": 100,
+      "y": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "box": { "visible": true },
+      "meanline": { "visible": true },
+      "side": "negative"
+    },
+    {
+      "type": "violin",
+      "y0": 10,
+      "x": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "box": { "visible": true },
+      "meanline": { "visible": true },
+      "side": "positive",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "violin",
+      "y0": 100,
+      "x": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "box": { "visible": true },
+      "meanline": { "visible": true },
+      "side": "negative",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "ticks": "inside"
+    },
+    "yaxis2": {
+      "ticks": "inside"
+    },
+    "showlegend": false,
+    "grid": {
+      "columns": 2,
+      "rows": 1,
+      "pattern": "independent"
+    },
+    "width": 500,
+    "hieght": 500,
+    "margin": {
+      "t": 40,
+      "l": 40,
+      "r": 40,
+      "b": 40
+    }
+  }
+}
