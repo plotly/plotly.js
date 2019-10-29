@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "type": "scattergl",
+            "mode": "lines+markers",
+            "y": [
+                1,
+                null,
+                1,
+                2
+            ],
+            "x": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "connectgaps": false
+        },
+        {
+            "type": "scattergl",
+            "mode": "lines+markers",
+            "y": [
+                3,
+                null,
+                3,
+                3
+            ],
+            "x": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "connectgaps": false
+        }
+    ],
+    "layout": {
+        "showlegend": false,
+        "margin": {
+            "t": 20,
+            "b": 20,
+            "l": 20,
+            "r": 20
+        },
+        "width": 400,
+        "height": 300
+    }
+}
