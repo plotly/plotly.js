@@ -109,7 +109,7 @@ describe('image smart layout defaults', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should reverse yaxis if only images are present', function() {
+    it('should reverse yaxis if images are present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         supplyAllDefaults(gd);
@@ -131,7 +131,7 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.autorange).toBe(false);
     });
 
-    it('should set scaleanchor to make square pixels if only images are present', function() {
+    it('should set scaleanchor to make square pixels if images are present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         supplyAllDefaults(gd);
@@ -152,7 +152,7 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
     });
 
-    it('should constrain axes to domain if only images are present', function() {
+    it('should constrain axes to domain if images are present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         supplyAllDefaults(gd);
