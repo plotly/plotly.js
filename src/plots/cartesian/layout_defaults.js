@@ -305,12 +305,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var scaleanchorDflt;
         if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && axHasImage[axName]) {
             scaleanchorDflt = axLayoutOut.anchor;
-        }
+        } else {scaleanchorDflt = undefined;}
 
         var constrainDflt;
         if(!axLayoutIn.hasOwnProperty('constrain') && axHasImage[axName]) {
             constrainDflt = 'domain';
-        }
+        } else {constrainDflt = undefined;}
+
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
             allAxisIds: allAxisIds,
             layoutOut: layoutOut,
