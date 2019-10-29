@@ -1,6 +1,6 @@
 {
 "layout": {
-  "width": 400, "height": 400, "yaxis": {"scaleanchor": "x"}, "margin": {"t":25, "b": 25, "r": 25, "l": 40}
+  "width": 400, "height": 400, "yaxis": {"scaleanchor": "x", "autorange": "reversed"}, "margin": {"t":25, "b": 25, "r": 25, "l": 40}
 },
   "data": [
     {"x":[50, 150, 350, 50], "y":[350, 23, 100, 350]},
