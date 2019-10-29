@@ -264,6 +264,7 @@ dragElement.init = function init(options) {
 
 function coverSlip() {
     var cover = document.createElement('div');
+    var fullscreenElement = document.fullscreenElement;
 
     cover.className = 'dragcover';
     var cStyle = cover.style;
@@ -274,6 +275,12 @@ function coverSlip() {
     cStyle.bottom = 0;
     cStyle.zIndex = 999999999;
     cStyle.background = 'none';
+
+    if(fullscreenElement) {
+        fullscreenElement.appendChild(cover);
+
+        return cover;
+    }
 
     document.body.appendChild(cover);
 
