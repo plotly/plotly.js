@@ -156,6 +156,7 @@ describe('image smart layout defaults', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         supplyAllDefaults(gd);
+        expect(gd._fullLayout.xaxis.constrain).toBe('domain');
         expect(gd._fullLayout.yaxis.constrain).toBe('domain');
     });
 
@@ -163,13 +164,15 @@ describe('image smart layout defaults', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
         supplyAllDefaults(gd);
+        expect(gd._fullLayout.xaxis.constrain).toBe('domain');
         expect(gd._fullLayout.yaxis.constrain).toBe('domain');
     });
 
     it('should NOT constrain axes to domain if it\'s already defined', function() {
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
-        gd.layout = {yaxis: {constrain: false}};
+        gd.layout = {yaxis: {constrain: false}, xaxis: {constrain: false}};
         supplyAllDefaults(gd);
+        expect(gd._fullLayout.xaxis.constrain).toBe(undefined);
         expect(gd._fullLayout.yaxis.constrain).toBe(undefined);
     });
 });
