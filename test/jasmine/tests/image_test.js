@@ -116,11 +116,11 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.autorange).toBe('reversed');
     });
 
-    it('should NOT reverse yaxis if another trace is present', function() {
+    it('should reverse yaxis even if another trace is present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
         supplyAllDefaults(gd);
-        expect(gd._fullLayout.yaxis.autorange).not.toBe('reversed');
+        expect(gd._fullLayout.yaxis.autorange).toBe('reversed');
     });
 
     it('should NOT reverse yaxis if it\'s already defined', function() {
@@ -138,11 +138,11 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
     });
 
-    it('should NOT set scaleanchor if another trace is present', function() {
+    it('should set scaleanchor even if another trace is present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
         supplyAllDefaults(gd);
-        expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
+        expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
     });
 
     it('should NOT set scaleanchor if it\'s already defined', function() {
@@ -159,11 +159,11 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.constrain).toBe('domain');
     });
 
-    it('should NOT constrain axes to domain if another trace is present', function() {
+    it('should constrain axes to domain even if another trace is present', function() {
         gd = {};
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {type: 'scatter', y: [5, 3, 2]}];
         supplyAllDefaults(gd);
-        expect(gd._fullLayout.yaxis.constrain).toBe(undefined);
+        expect(gd._fullLayout.yaxis.constrain).toBe('domain');
     });
 
     it('should NOT constrain axes to domain if it\'s already defined', function() {
