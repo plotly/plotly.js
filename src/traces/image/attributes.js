@@ -114,5 +114,7 @@ module.exports = extendFlat({
     }),
     hovertemplate: hovertemplateAttrs({}, {
         keys: ['z', 'color', 'colormodel']
-    })
+    }),
+
+    transforms: undefined
 });
