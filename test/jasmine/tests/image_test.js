@@ -172,8 +172,8 @@ describe('image smart layout defaults', function() {
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
         gd.layout = {yaxis: {constrain: false}, xaxis: {constrain: false}};
         supplyAllDefaults(gd);
-        expect(gd._fullLayout.xaxis.constrain).toBe(undefined);
-        expect(gd._fullLayout.yaxis.constrain).toBe(undefined);
+        expect(gd._fullLayout.xaxis.constrain).toBe('range');
+        expect(gd._fullLayout.yaxis.constrain).toBe('range');
     });
 });
 

@@ -302,12 +302,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var scaleanchorDflt = null;
+        var scaleanchorDflt;
         if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && axHasImage[axName]) {
             scaleanchorDflt = axLayoutOut.anchor;
         }
 
-        var constrainDflt = null;
+        var constrainDflt;
         if(!axLayoutIn.hasOwnProperty('constrain') && axHasImage[axName]) {
             constrainDflt = 'domain';
         }
