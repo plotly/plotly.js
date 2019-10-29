@@ -41,8 +41,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var yaMustDisplay = {};
     var yaMustNotReverse = {};
     var yaMayReverse = {};
-    var yaMustNotScaleanchor = {};
-    var yaMayScaleanchor = {};
+    var axHasImage = {};
     var outerTicks = {};
     var noGrids = {};
     var i, j;
@@ -80,17 +79,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             } else {
                 if(yaName) yaMayHide[yaName] = true;
             }
-            yaMustNotScaleanchor[yaName] = true;
         } else if(trace.type === 'image') {
-            if(yaName) {
-                yaMayReverse[yaName] = true;
-                yaMayScaleanchor[yaName] = true;
-            }
+            if(yaName) axHasImage[yaName] = true;
+            if(xaName) axHasImage[xaName] = true;
         } else {
             if(yaName) {
                 yaMustDisplay[yaName] = true;
                 yaMustNotReverse[yaName] = true;
-                yaMustNotScaleanchor[yaName] = true;
             }
 
             if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
@@ -201,7 +196,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             (axLetter === 'y' && !yaMustDisplay[axName] && yaMayHide[axName]);
 
         var reverseDflt =
-            (axLetter === 'y' && !yaMustNotReverse[axName] && yaMayReverse[axName]);
+            (axLetter === 'y' &&
+              (
+                (!yaMustNotReverse[axName] && yaMayReverse[axName]) ||
+                axHasImage[axName]
+              ));
 
         var defaultOptions = {
             letter: axLetter,
@@ -303,16 +302,21 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var scaleanchorDflt = null;
-        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') &&
-              !yaMustNotScaleanchor[axName] && yaMayScaleanchor[axName]
-        ) {
+        var scaleanchorDflt;
+        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && axHasImage[axName]) {
             scaleanchorDflt = axLayoutOut.anchor;
-        }
+        } else {scaleanchorDflt = undefined;}
+
+        var constrainDflt;
+        if(!axLayoutIn.hasOwnProperty('constrain') && axHasImage[axName]) {
+            constrainDflt = 'domain';
+        } else {constrainDflt = undefined;}
+
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
             allAxisIds: allAxisIds,
             layoutOut: layoutOut,
-            scaleanchorDflt: scaleanchorDflt
+            scaleanchorDflt: scaleanchorDflt,
+            constrainDflt: constrainDflt
         });
     }
 

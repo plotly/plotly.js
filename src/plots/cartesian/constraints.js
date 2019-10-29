@@ -21,6 +21,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
     var allAxisIds = opts.allAxisIds;
     var layoutOut = opts.layoutOut;
     var scaleanchorDflt = opts.scaleanchorDflt;
+    var constrainDflt = opts.constrainDflt;
     var constraintGroups = layoutOut._axisConstraintGroups;
     var matchGroups = layoutOut._axisMatchGroups;
     var axId = containerOut._id;
@@ -31,7 +32,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
 
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
-    var constrain = coerce('constrain');
+    var constrain = coerce('constrain', constrainDflt);
     Lib.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
