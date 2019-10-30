@@ -2,6 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var ScatterGl = require('@src/traces/scattergl');
+var TOO_MANY_POINTS = require('@src/traces/scattergl/constants').TOO_MANY_POINTS;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -582,6 +583,48 @@ describe('end-to-end scattergl tests', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('@gl should reset the sanp to length after react and not to TOO_MANY_POINTS constant', function(done) {
+        function fig(num) {
+            var x = [];
+            var y = [];
+            for(var i = 0; i < num; i++) {
+                x.push(Math.random());
+                y.push(Math.random());
+            }
+
+            return {
+                data: [{
+                    x: x, y: y,
+                    mode: 'lines+markers',
+                    type: 'scattergl',
+                    marker: {
+                        size: 20,
+                        color: 'rgba(0,0,255,0.5)'
+                    }
+                }]
+            };
+        }
+
+        var getSnap = function() {
+            return gd._fullLayout._plots.xy._scene.markerOptions[0].snap;
+        };
+
+        Plotly.newPlot(gd, fig(TOO_MANY_POINTS))
+        .then(function() {
+            expect(getSnap()).toEqual(TOO_MANY_POINTS);
+
+            return Plotly.react(gd, fig(20));
+        })
+        .then(function() {
+            expect(getSnap()).toEqual(20);
+
+            return Plotly.react(gd, fig(TOO_MANY_POINTS + 1));
+        })
+        .then(function() {
+            expect(getSnap()).toEqual(TOO_MANY_POINTS + 1);
+        }).catch(failTest).then(done);
     });
 });
 
