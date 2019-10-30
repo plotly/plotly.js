@@ -75,11 +75,12 @@ case $1 in
 
     image)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
-        npm run test-image -- $SUITE --filter || EXIT_STATE=$?
+        npm run test-image -- $SUITE --filter --skip-flaky || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     image2)
+        retry npm run test-image -- --just-flaky
         npm run test-export     || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
