@@ -9,6 +9,7 @@
 'use strict';
 var d3 = require('d3');
 var Lib = require('../../lib');
+var isNumeric = require('fast-isnumeric');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
@@ -50,6 +51,7 @@ var scaler = function(trace) {
     return function(pixel) {
         var c = pixel.slice(0, n);
         for(var k = 0; k < n; k++) {
+            if(!c[k] || !isNumeric(c[k])) return false;
             c[k] = s[k](c[k]);
         }
         return c;
@@ -142,7 +144,12 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
                 var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
                 if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
                 c = trace._scaler(z[j][i]);
-                context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                if(c) {
+                    context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                } else {
+                    // Return a transparent pixel
+                    context.fillStyle = 'rgba(0,0,0,0)';
+                }
                 context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
             }
         }

@@ -1,0 +1,16 @@
+{
+  "data": [{
+    "type": "image",
+    "hoverinfo": "all",
+    "z": [
+      [
+        [true, true, true],
+        [false, false, false]
+      ]
+    ]
+  }],
+  "layout": {
+    "width": 400,
+    "height": 400
+  }
+}
