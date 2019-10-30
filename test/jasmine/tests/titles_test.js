@@ -1141,7 +1141,7 @@ describe('Editable titles', function() {
         .then(done);
     });
 
-    it('has no hover effects for titles that used to be blank', function(done) {
+    it('@flaky has no hover effects for titles that used to be blank', function(done) {
         Plotly.plot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
