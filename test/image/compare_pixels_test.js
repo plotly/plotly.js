@@ -101,6 +101,7 @@ if(allMock || argv.filter) {
 }
 
 var FLAKY_LIST = [
+    'treemap_textposition'
 ];
 
 console.log('');
