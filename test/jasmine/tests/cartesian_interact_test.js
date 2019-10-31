@@ -1588,8 +1588,10 @@ describe('axis zoom/pan and main plot zoom', function() {
                 clipTranslate: [0, 0]
             }))
             .then(function() {
+                Lib.seedPseudoRandom();
+
                 interval = setInterval(function() {
-                    Plotly.extendTraces(gd, { y: [[Math.random()]] }, [0]);
+                    Plotly.extendTraces(gd, { y: [[Lib.pseudoRandom()]] }, [0]);
                 }, step);
             })
             .then(delay(1.5 * step))

@@ -586,12 +586,14 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should reset the sanp to length after react and not to TOO_MANY_POINTS constant', function(done) {
+        Lib.seedPseudoRandom();
+
         function fig(num) {
             var x = [];
             var y = [];
             for(var i = 0; i < num; i++) {
-                x.push(Math.random());
-                y.push(Math.random());
+                x.push(Lib.pseudoRandom());
+                y.push(Lib.pseudoRandom());
             }
 
             return {
