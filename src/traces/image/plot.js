@@ -51,8 +51,9 @@ var scaler = function(trace) {
     return function(pixel) {
         var c = pixel.slice(0, n);
         for(var k = 0; k < n; k++) {
-            if(!c[k] || !isNumeric(c[k])) return false;
-            c[k] = s[k](c[k]);
+            var ck = c[k];
+            if(!isNumeric(ck)) return false;
+            c[k] = s[k](ck);
         }
         return c;
     };
