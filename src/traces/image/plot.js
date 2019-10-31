@@ -7,31 +7,30 @@
 */
 
 'use strict';
+
 var d3 = require('d3');
 var Lib = require('../../lib');
 var isNumeric = require('fast-isnumeric');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
-module.exports = {};
+function scale(zero, factor, min, max) {
+    return function(c) {
+        c = (c - zero) * factor;
+        c = Lib.constrain(c, min, max);
+        return c;
+    };
+}
+
+function constrain(min, max) {
+    return function(c) { return Lib.constrain(c, min, max);};
+}
 
 // Generate a function to scale color components according to zmin/zmax and the colormodel
-var scaler = function(trace) {
+var makeScaler = function(trace) {
     var colormodel = trace.colormodel;
     var n = colormodel.length;
     var cr = constants.colormodel[colormodel];
-
-    function scale(zero, factor, min, max) {
-        return function(c) {
-            c = (c - zero) * factor;
-            c = Lib.constrain(c, min, max);
-            return c;
-        };
-    }
-
-    function constrain(min, max) {
-        return function(c) { return Lib.constrain(c, min, max);};
-    }
 
     var s = [];
     // Loop over all color components
@@ -58,7 +57,8 @@ var scaler = function(trace) {
         return c;
     };
 };
-module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
+
+module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -132,10 +132,11 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         canvas.width = imageWidth;
         canvas.height = imageHeight;
         var context = canvas.getContext('2d');
+
         var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
         var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
 
-        trace._scaler = scaler(trace);
+        trace._scaler = makeScaler(trace);
         var fmt = constants.colormodel[trace.colormodel].fmt;
         var c;
         for(i = 0; i < cd0.w; i++) {
