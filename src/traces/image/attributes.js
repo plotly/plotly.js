@@ -35,7 +35,7 @@ module.exports = extendFlat({
         values: cm,
         dflt: 'rgb',
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: 'Color model used to map the numerical color components described in `z` into colors.'
     },
     zmin: {

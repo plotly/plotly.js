@@ -61,18 +61,18 @@ function makeScaler(trace) {
     var n = colormodel.length;
     var cr = constants.colormodel[colormodel];
 
-    var s = [];
+    trace._sArray = [];
     // Loop over all color components
     for(var k = 0; k < n; k++) {
         if(cr.min[k] !== trace.zmin[k] || cr.max[k] !== trace.zmax[k]) {
-            s.push(scale(
+            trace._sArray.push(scale(
                 trace.zmin[k],
                 (cr.max[k] - cr.min[k]) / (trace.zmax[k] - trace.zmin[k]),
                 cr.min[k],
                 cr.max[k]
             ));
         } else {
-            s.push(constrain(cr.min[k], cr.max[k]));
+            trace._sArray.push(constrain(cr.min[k], cr.max[k]));
         }
     }
 
@@ -81,7 +81,7 @@ function makeScaler(trace) {
         for(var k = 0; k < n; k++) {
             var ck = c[k];
             if(!isNumeric(ck)) return false;
-            c[k] = s[k](ck);
+            c[k] = trace._sArray[k](ck);
         }
         return c;
     };
