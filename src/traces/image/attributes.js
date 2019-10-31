@@ -41,13 +41,13 @@ module.exports = extendFlat({
     zmin: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'}
         ],
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Array defining the lower bound for each color component.',
             'Note that the default value will depend on the colormodel.',
@@ -57,13 +57,13 @@ module.exports = extendFlat({
     zmax: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'}
         ],
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Array defining the higher bound for each color component.',
             'Note that the default value will depend on the colormodel.',

@@ -8,6 +8,9 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+var constants = require('./constants');
+var isNumeric = require('fast-isnumeric');
 var Axes = require('../../plots/cartesian/axes');
 var maxRowLength = require('../../lib').maxRowLength;
 
@@ -28,6 +31,7 @@ module.exports = function calc(gd, trace) {
     if(ya && ya.type === 'log') for(i = 0; i < h; i++) yrange.push(y0 + i * trace.dy);
     trace._extremes[xa._id] = Axes.findExtremes(xa, xrange);
     trace._extremes[ya._id] = Axes.findExtremes(ya, yrange);
+    trace._scaler = makeScaler(trace);
 
     var cd0 = {
         x0: x0,
@@ -38,3 +42,47 @@ module.exports = function calc(gd, trace) {
     };
     return [cd0];
 };
+
+function scale(zero, factor, min, max) {
+    return function(c) {
+        c = (c - zero) * factor;
+        c = Lib.constrain(c, min, max);
+        return c;
+    };
+}
+
+function constrain(min, max) {
+    return function(c) { return Lib.constrain(c, min, max);};
+}
+
+// Generate a function to scale color components according to zmin/zmax and the colormodel
+function makeScaler(trace) {
+    var colormodel = trace.colormodel;
+    var n = colormodel.length;
+    var cr = constants.colormodel[colormodel];
+
+    var s = [];
+    // Loop over all color components
+    for(var k = 0; k < n; k++) {
+        if(cr.min[k] !== trace.zmin[k] || cr.max[k] !== trace.zmax[k]) {
+            s.push(scale(
+                trace.zmin[k],
+                (cr.max[k] - cr.min[k]) / (trace.zmax[k] - trace.zmin[k]),
+                cr.min[k],
+                cr.max[k]
+            ));
+        } else {
+            s.push(constrain(cr.min[k], cr.max[k]));
+        }
+    }
+
+    return function(pixel) {
+        var c = pixel.slice(0, n);
+        for(var k = 0; k < n; k++) {
+            var ck = c[k];
+            if(!isNumeric(ck)) return false;
+            c[k] = s[k](ck);
+        }
+        return c;
+    };
+}
