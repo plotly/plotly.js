@@ -454,6 +454,8 @@ describe('parcoords edge cases', function() {
         var mockCopy = Lib.extendDeep({}, mock2);
         var dim, i, j;
 
+        Lib.seedPseudoRandom();
+
         mockCopy.layout.width = 320;
         for(i = 0; i < mockCopy.data[0].dimensions.length; i++) {
             dim = mockCopy.data[0].dimensions[i];
@@ -461,7 +463,7 @@ describe('parcoords edge cases', function() {
             dim.range = [1, 2];
             dim.values = [];
             for(j = 0; j < 1; j++) {
-                dim.values[j] = 1 + Math.random();
+                dim.values[j] = 1 + Lib.pseudoRandom();
             }
         }
 
@@ -527,6 +529,8 @@ describe('parcoords edge cases', function() {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
+        Lib.seedPseudoRandom();
+
         mockCopy.layout.width = 1680;
         mockCopy.data[0].dimensions = [];
         for(i = 0; i < 60; i++) {
@@ -537,7 +541,7 @@ describe('parcoords edge cases', function() {
             newDimension.range = [1, 2];
             newDimension.values = [];
             for(j = 0; j < 100; j++) {
-                newDimension.values[j] = 1 + Math.random();
+                newDimension.values[j] = 1 + Lib.pseudoRandom();
             }
             mockCopy.data[0].dimensions[i] = newDimension;
         }
@@ -555,6 +559,8 @@ describe('parcoords edge cases', function() {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
+        Lib.seedPseudoRandom();
+
         mockCopy.layout.width = 1680;
         for(i = 0; i < 70; i++) {
             newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
@@ -563,7 +569,7 @@ describe('parcoords edge cases', function() {
             delete newDimension.constraintrange;
             newDimension.range = [0, 999];
             for(j = 0; j < 10; j++) {
-                newDimension.values[j] = Math.floor(1000 * Math.random());
+                newDimension.values[j] = Math.floor(1000 * Lib.pseudoRandom());
             }
             mockCopy.data[0].dimensions[i] = newDimension;
         }
@@ -581,6 +587,8 @@ describe('parcoords edge cases', function() {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
+        Lib.seedPseudoRandom();
+
         mockCopy.layout.width = 1680;
         for(i = 0; i < 60; i++) {
             newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
@@ -590,7 +598,7 @@ describe('parcoords edge cases', function() {
             newDimension.range = [0, 999];
             newDimension.values = [];
             for(j = 0; j < 65 - i; j++) {
-                newDimension.values[j] = Math.floor(1000 * Math.random());
+                newDimension.values[j] = Math.floor(1000 * Lib.pseudoRandom());
             }
             mockCopy.data[0].dimensions[i] = newDimension;
         }
@@ -608,6 +616,8 @@ describe('parcoords edge cases', function() {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
+        Lib.seedPseudoRandom();
+
         mockCopy.layout.width = 680;
         mockCopy.data[0].dimensions = [];
         for(i = 0; i < 5; i++) {
@@ -618,7 +628,7 @@ describe('parcoords edge cases', function() {
             newDimension.range = [1, 2];
             newDimension.values = [];
             for(j = 0; j < 100; j++) {
-                newDimension.values[j] = 1 + Math.random();
+                newDimension.values[j] = 1 + Lib.pseudoRandom();
             }
             mockCopy.data[0].dimensions[i] = newDimension;
         }

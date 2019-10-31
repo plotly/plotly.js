@@ -89,8 +89,10 @@ function transpose(a) {
     return a[0].map(function(ignore, columnIndex) {return a.map(function(row) {return row[columnIndex];});});
 }
 
+Lib.seedPseudoRandom();
+
 function jitter(maxJitterRatio, n) {
-    return n * (1 + maxJitterRatio * (2 * Math.random() - 1));
+    return n * (1 + maxJitterRatio * (2 * Lib.pseudoRandom() - 1));
 }
 
 function rotate(rad, point) {

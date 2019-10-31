@@ -305,10 +305,12 @@ describe('Test streamtube interactions', function() {
         var v = [];
         var w = [];
 
+        Lib.seedPseudoRandom();
+
         for(var n = 0; n < 1000; n++) {
-            x.push((10 * Math.random()) | 0);
-            y.push((10 * Math.random()) | 0);
-            z.push((10 * Math.random()) | 0);
+            x.push((10 * Lib.pseudoRandom()) | 0);
+            y.push((10 * Lib.pseudoRandom()) | 0);
+            z.push((10 * Lib.pseudoRandom()) | 0);
             u.push(1);
             v.push(1);
             w.push(1);
