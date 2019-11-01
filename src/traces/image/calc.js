@@ -43,11 +43,9 @@ module.exports = function calc(gd, trace) {
     return [cd0];
 };
 
-function scale(zero, factor, min, max) {
+function scale(zero, ratio, min, max) {
     return function(c) {
-        c = (c - zero) * factor;
-        c = Lib.constrain(c, min, max);
-        return c;
+        return Lib.constrain((c - zero) * ratio, min, max);
     };
 }
 
