@@ -12,7 +12,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     calc: require('./calc'),
-    plot: require('./plot').plot,
+    plot: require('./plot'),
     style: require('./style'),
     hoverPoints: require('./hover'),
     eventData: require('./event_data'),

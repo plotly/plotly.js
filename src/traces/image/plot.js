@@ -7,55 +7,13 @@
 */
 
 'use strict';
+
 var d3 = require('d3');
 var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
-module.exports = {};
-
-// Generate a function to scale color components according to zmin/zmax and the colormodel
-var scaler = function(trace) {
-    var colormodel = trace.colormodel;
-    var n = colormodel.length;
-    var cr = constants.colormodel[colormodel];
-
-    function scale(zero, factor, min, max) {
-        return function(c) {
-            c = (c - zero) * factor;
-            c = Lib.constrain(c, min, max);
-            return c;
-        };
-    }
-
-    function constrain(min, max) {
-        return function(c) { return Lib.constrain(c, min, max);};
-    }
-
-    var s = [];
-    // Loop over all color components
-    for(var k = 0; k < n; k++) {
-        if(cr.min[k] !== trace.zmin[k] || cr.max[k] !== trace.zmax[k]) {
-            s.push(scale(
-                trace.zmin[k],
-                (cr.max[k] - cr.min[k]) / (trace.zmax[k] - trace.zmin[k]),
-                cr.min[k],
-                cr.max[k]
-            ));
-        } else {
-            s.push(constrain(cr.min[k], cr.max[k]));
-        }
-    }
-
-    return function(pixel) {
-        var c = pixel.slice(0, n);
-        for(var k = 0; k < n; k++) {
-            c[k] = s[k](c[k]);
-        }
-        return c;
-    };
-};
-module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
+module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -129,10 +87,10 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         canvas.width = imageWidth;
         canvas.height = imageHeight;
         var context = canvas.getContext('2d');
+
         var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
         var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
 
-        trace._scaler = scaler(trace);
         var fmt = constants.colormodel[trace.colormodel].fmt;
         var c;
         for(i = 0; i < cd0.w; i++) {
@@ -142,7 +100,12 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
                 var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
                 if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
                 c = trace._scaler(z[j][i]);
-                context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                if(c) {
+                    context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                } else {
+                    // Return a transparent pixel
+                    context.fillStyle = 'rgba(0,0,0,0)';
+                }
                 context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
             }
         }
