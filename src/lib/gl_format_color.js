@@ -91,7 +91,7 @@ function parseColorScale(cont, alpha) {
         var rgb = color.toRgb();
         return {
             index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, alpha]
+            rgb: [rgb.r, rgb.g, rgb.b, rgb.a]
         };
     });
 }
