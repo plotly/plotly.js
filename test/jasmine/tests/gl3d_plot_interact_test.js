@@ -93,7 +93,7 @@ describe('Test gl3d before/after plot', function() {
         })
         .then(delay(20))
         .then(function() {
-            var cameraBefore = gd._fullLayout.scene._scene.glplot.camera;
+            var cameraBefore = gd._fullLayout.scene._scene.camera;
             expect(cameraBefore.up[0]).toBeCloseTo(0, 2, 'cameraBefore.up[0]');
             expect(cameraBefore.up[1]).toBeCloseTo(0, 2, 'cameraBefore.up[1]');
             expect(cameraBefore.up[2]).toBeCloseTo(1, 2, 'cameraBefore.up[2]');
@@ -108,7 +108,7 @@ describe('Test gl3d before/after plot', function() {
         .then(_clickThere)
         .then(delay(20))
         .then(function() {
-            var cameraAfter = gd._fullLayout.scene._scene.glplot.camera;
+            var cameraAfter = gd._fullLayout.scene._scene.camera;
             expect(cameraAfter.up[0]).toBeCloseTo(0, 2, 'cameraAfter.up[0]');
             expect(cameraAfter.up[1]).toBeCloseTo(0, 2, 'cameraAfter.up[1]');
             expect(cameraAfter.up[2]).toBeCloseTo(1, 2, 'cameraAfter.up[2]');
@@ -123,7 +123,7 @@ describe('Test gl3d before/after plot', function() {
         .then(_clickOtherplace)
         .then(delay(20))
         .then(function() {
-            var cameraFinal = gd._fullLayout.scene._scene.glplot.camera;
+            var cameraFinal = gd._fullLayout.scene._scene.camera;
             expect(cameraFinal.up[0]).toBeCloseTo(0, 2, 'cameraFinal.up[0]');
             expect(cameraFinal.up[1]).toBeCloseTo(0, 2, 'cameraFinal.up[1]');
             expect(cameraFinal.up[2]).toBeCloseTo(1, 2, 'cameraFinal.up[2]');
@@ -300,7 +300,7 @@ describe('Test gl3d plots', function() {
         .then(delay(20))
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
         .then(done);
     });
@@ -326,7 +326,7 @@ describe('Test gl3d plots', function() {
         .then(delay(20))
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
         .then(done);
     });
@@ -355,28 +355,28 @@ describe('Test gl3d plots', function() {
         })
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
         .then(function() {
             return Plotly.relayout(gd, 'scene.camera.eye.z', 2);
         })
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === true).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
         .then(function() {
             return Plotly.relayout(gd, 'scene.camera.projection.type', 'perspective');
         })
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
         .then(function() {
             return Plotly.relayout(gd, 'scene.camera.eye.z', 3);
         })
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
-            expect(gd._fullLayout.scene._scene.glplot.camera._ortho === false).toBe(true);
+            expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
         .then(done);
     });

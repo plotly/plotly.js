@@ -293,7 +293,7 @@ function initializeGLPlot(scene, canvas, gl) {
 
     scene.glplot.canvas.addEventListener('wheel', function(e) {
         if(gd._context._scrollZoom.gl3d) {
-            if(scene.glplot.camera._ortho) {
+            if(scene.camera._ortho) {
                 var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
                 var o = scene.glplot.getAspectratio();
                 scene.glplot.setAspectratio({
@@ -325,8 +325,6 @@ function initializeGLPlot(scene, canvas, gl) {
             }
         }, false);
     }
-
-    scene.glplot.camera = scene.camera;
 
     scene.glplot.oncontextloss = function() {
         scene.recoverContext();
@@ -779,7 +777,7 @@ proto.destroy = function() {
 
     this.camera.mouseListener.enabled = false;
     this.container.removeEventListener('wheel', this.camera.wheelListener);
-    this.camera = this.glplot.camera = null;
+    this.camera = null;
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
     this.glplot = null;
@@ -808,19 +806,19 @@ function getLayoutCamera(camera) {
 
 // get camera position in plotly coords from 'gl-plot3d' coords
 proto.getCamera = function() {
-    this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera);
+    this.camera.view.recalcMatrix(this.camera.view.lastT());
+    return getLayoutCamera(this.camera);
 };
 
 // set gl-plot3d camera position and scene aspects with a set of plotly coords
 proto.setViewport = function(sceneLayout) {
     var cameraData = sceneLayout.camera;
 
-    this.glplot.camera.lookAt.apply(this, getCameraArrays(cameraData));
+    this.camera.lookAt.apply(this, getCameraArrays(cameraData));
     this.glplot.setAspectratio(sceneLayout.aspectratio);
 
     var newOrtho = (cameraData.projection.type === 'orthographic');
-    var oldOrtho = this.glplot.camera._ortho;
+    var oldOrtho = this.camera._ortho;
 
     if(newOrtho !== oldOrtho) {
         this.glplot.redraw();
@@ -837,7 +835,7 @@ proto.setViewport = function(sceneLayout) {
         this.glplot.dispose();
 
         initializeGLPlot(this);
-        this.glplot.camera._ortho = newOrtho;
+        this.camera._ortho = newOrtho;
     }
 };
 
