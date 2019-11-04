@@ -128,7 +128,7 @@ function render(scene) {
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface' || trace.type === 'volume') {
-            labels.valueLabel = Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            labels.valueLabel = Axes.tickText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
             vectorTx.push('value: ' + labels.valueLabel);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
@@ -197,10 +197,10 @@ function render(scene) {
     scene.drawAnnotations(scene);
 }
 
-function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
+function tryCreatePlot(scene) {
     var glplotOptions = {
-        canvas: canvas,
-        gl: gl,
+        canvas: scene.canvas,
+        gl: scene.gl,
         container: scene.container,
         axes: scene.axesOptions,
         spikes: scene.spikeOptions,
@@ -208,8 +208,8 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
         snapToData: true,
         autoScale: true,
         autoBounds: false,
-        cameraObject: cameraObject,
-        pixelRatio: pixelRatio
+        cameraObject: scene.camera,
+        pixelRatio: scene.pixelRatio
     };
 
     // for static plots, we reuse the WebGL context
@@ -248,10 +248,10 @@ function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
     return failed < 2;
 }
 
-function initializeGLPlot(scene, canvas, gl) {
+function initializeGLPlot(scene) {
     scene.initializeGLCamera();
 
-    var success = tryCreatePlot(scene, scene.camera, scene.pixelRatio, canvas, gl);
+    var success = tryCreatePlot(scene);
     /*
     * createPlot will throw when webgl is not enabled in the client.
     * Lets return an instance of the module with all functions noop'd.
@@ -413,17 +413,15 @@ proto.initializeGLCamera = function() {
 
 proto.recoverContext = function() {
     var scene = this;
-    var gl = this.glplot.gl;
-    var canvas = this.glplot.canvas;
 
-    this.glplot.dispose();
+    scene.glplot.dispose();
 
     function tryRecover() {
-        if(gl.isContextLost()) {
+        if(scene.glplot.gl.isContextLost()) {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, canvas, gl)) {
+        if(!initializeGLPlot(scene)) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
@@ -506,10 +504,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var fullSceneLayout = fullLayout[this.id];
     var sceneLayout = layout[this.id];
 
-    if(fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
-    else this.glplot.clearColor = [0, 0, 0, 0];
-
-    this.glplot.snapToData = true;
+    this.glplot.setClearColor(str2RGBAarray(fullSceneLayout.bgcolor));
 
     // Update layout
     this.fullLayout = fullLayout;
@@ -688,8 +683,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
         // Update plot bounds
-        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
-        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
+        this.glplot.setBounds(i, {
+            min: sceneBounds[0][i] * dataScale[i],
+            max: sceneBounds[1][i] * dataScale[i]
+        });
     }
 
     var axesScaleRatio = [1, 1, 1];
@@ -821,21 +818,10 @@ proto.setViewport = function(sceneLayout) {
     var oldOrtho = this.camera._ortho;
 
     if(newOrtho !== oldOrtho) {
-        this.glplot.redraw();
-
-        var RGBA = this.glplot.clearColor;
-        this.glplot.gl.clearColor(
-            RGBA[0], RGBA[1], RGBA[2], RGBA[3]
-        );
-        this.glplot.gl.clear(
-            this.glplot.gl.DEPTH_BUFFER_BIT |
-            this.glplot.gl.COLOR_BUFFER_BIT
-        );
-
+        this.glplot.redraw(); // TODO: figure out why we need to redraw here?
+        this.glplot.clearRGBA();
         this.glplot.dispose();
-
         initializeGLPlot(this);
-        this.camera._ortho = newOrtho;
     }
 };
 
@@ -1046,17 +1032,17 @@ proto.setConvert = function() {
 };
 
 proto.make4thDimension = function() {
-    var _this = this;
-    var gd = _this.graphDiv;
+    var scene = this;
+    var gd = scene.graphDiv;
     var fullLayout = gd._fullLayout;
 
     // mock axis for hover formatting
-    _this.mockAxis = {
+    scene._mockAxis = {
         type: 'linear',
         showexponent: 'all',
         exponentformat: 'B'
     };
-    Axes.setConvert(_this.mockAxis, fullLayout);
+    Axes.setConvert(scene._mockAxis, fullLayout);
 };
 
 module.exports = Scene;
