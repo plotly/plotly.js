@@ -514,13 +514,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var fullSceneLayout = fullLayout[scene.id];
     var sceneLayout = layout[scene.id];
 
-    scene.glplot.setClearColor(str2RGBAarray(fullSceneLayout.bgcolor));
-
     // Update layout
     scene.fullLayout = fullLayout;
     scene.fullSceneLayout = fullSceneLayout;
 
-    scene.glplotLayout = fullSceneLayout;
     scene.axesOptions.merge(fullLayout, fullSceneLayout);
     scene.spikeOptions.merge(fullSceneLayout);
 
@@ -529,8 +526,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     scene.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
     scene.camera.enableWheel = scene.graphDiv._context._scrollZoom.gl3d;
 
-    // Update scene
-    scene.glplot.update({});
+    // Update scene background
+    scene.glplot.setClearColor(str2RGBAarray(fullSceneLayout.bgcolor));
 
     // Update axes functions BEFORE updating traces
     scene.setConvert(axis);
