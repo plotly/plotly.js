@@ -15,6 +15,7 @@ var createPlot = glPlot3d.createScene;
 
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
+var isMobile = require('is-mobile')({ tablet: true });
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -91,9 +92,14 @@ var proto = Scene.prototype;
 
 proto.tryCreatePlot = function() {
     var scene = this;
-    var glplotOptions = {
+    var opts = {
         canvas: scene.canvas,
         gl: scene.gl,
+        glOptions: {
+            preserveDrawingBuffer: isMobile,
+            premultipliedAlpha: true,
+            antialias: true
+        },
         container: scene.container,
         axes: scene.axesOptions,
         spikes: scene.spikeOptions,
@@ -120,19 +126,19 @@ proto.tryCreatePlot = function() {
                 throw new Error('error creating static canvas/context for image server');
             }
         }
-        glplotOptions.pixelRatio = scene.pixelRatio;
-        glplotOptions.gl = STATIC_CONTEXT;
-        glplotOptions.canvas = STATIC_CANVAS;
+
+        opts.gl = STATIC_CONTEXT;
+        opts.canvas = STATIC_CANVAS;
     }
 
     var failed = 0;
 
     try {
-        scene.glplot = createPlot(glplotOptions);
+        scene.glplot = createPlot(opts);
     } catch(e) {
         failed++;
         try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
-            scene.glplot = createPlot(glplotOptions);
+            scene.glplot = createPlot(opts);
         } catch(e) {
             failed++;
         }
