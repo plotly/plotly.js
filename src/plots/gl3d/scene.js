@@ -33,7 +33,228 @@ var computeTickMarks = require('./layout/tick_marks');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
-function render(scene) {
+function Scene(options, fullLayout) {
+    // create sub container for plot
+    var sceneContainer = document.createElement('div');
+    var plotContainer = options.container;
+
+    // keep a ref to the graph div to fire hover+click events
+    this.graphDiv = options.graphDiv;
+
+    // create SVG container for hover text
+    var svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top = svgContainer.style.left = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = 20;
+    svgContainer.style['pointer-events'] = 'none';
+    sceneContainer.appendChild(svgContainer);
+    this.svgContainer = svgContainer;
+
+    // Tag the container with the sceneID
+    sceneContainer.id = options.id;
+    sceneContainer.style.position = 'absolute';
+    sceneContainer.style.top = sceneContainer.style.left = '0px';
+    sceneContainer.style.width = sceneContainer.style.height = '100%';
+    plotContainer.appendChild(sceneContainer);
+
+    this.fullLayout = fullLayout;
+    this.id = options.id || 'scene';
+    this.fullSceneLayout = fullLayout[this.id];
+
+    // Saved from last call to plot()
+    this.plotArgs = [ [], {}, {} ];
+
+    /*
+     * Move this to calc step? Why does it work here?
+     */
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
+    this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
+    this.container = sceneContainer;
+    this.staticMode = !!options.staticPlot;
+    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
+
+    // Coordinate rescaling
+    this.dataScale = [1, 1, 1];
+
+    this.contourLevels = [ [], [], [] ];
+
+    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
+    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
+
+    this.initializeGLPlot();
+}
+
+var proto = Scene.prototype;
+
+proto.tryCreatePlot = function() {
+    var scene = this;
+    var glplotOptions = {
+        canvas: scene.canvas,
+        gl: scene.gl,
+        container: scene.container,
+        axes: scene.axesOptions,
+        spikes: scene.spikeOptions,
+        pickRadius: 10,
+        snapToData: true,
+        autoScale: true,
+        autoBounds: false,
+        cameraObject: scene.camera,
+        pixelRatio: scene.pixelRatio
+    };
+
+    // for static plots, we reuse the WebGL context
+    //  as WebKit doesn't collect them reliably
+    if(scene.staticMode) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            STATIC_CONTEXT = getContext({
+                canvas: STATIC_CANVAS,
+                preserveDrawingBuffer: true,
+                premultipliedAlpha: true,
+                antialias: true
+            });
+            if(!STATIC_CONTEXT) {
+                throw new Error('error creating static canvas/context for image server');
+            }
+        }
+        glplotOptions.pixelRatio = scene.pixelRatio;
+        glplotOptions.gl = STATIC_CONTEXT;
+        glplotOptions.canvas = STATIC_CANVAS;
+    }
+
+    var failed = 0;
+
+    try {
+        scene.glplot = createPlot(glplotOptions);
+    } catch(e) {
+        failed++;
+        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
+            scene.glplot = createPlot(glplotOptions);
+        } catch(e) {
+            failed++;
+        }
+    }
+
+    return failed < 2;
+};
+
+proto.initializeGLCamera = function() {
+    var scene = this;
+    var cameraData = scene.fullSceneLayout.camera;
+    var isOrtho = (cameraData.projection.type === 'orthographic');
+
+    scene.camera = createCamera(scene.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        _ortho: isOrtho,
+        zoomMin: 0.01,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
+
+proto.initializeGLPlot = function() {
+    var scene = this;
+
+    scene.initializeGLCamera();
+
+    var success = scene.tryCreatePlot();
+    /*
+    * createPlot will throw when webgl is not enabled in the client.
+    * Lets return an instance of the module with all functions noop'd.
+    * The destroy method - which will remove the container from the DOM
+    * is overridden with a function that removes the container only.
+    */
+    if(!success) return showNoWebGlMsg(scene);
+
+    // List of scene objects
+    scene.traces = {};
+
+    scene.make4thDimension();
+
+    var gd = scene.graphDiv;
+    var layout = gd.layout;
+
+    var makeUpdate = function() {
+        var update = {};
+
+        if(scene.isCameraChanged(layout)) {
+            // camera updates
+            update[scene.id + '.camera'] = scene.getCamera();
+        }
+
+        if(scene.isAspectChanged(layout)) {
+            // scene updates
+            update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
+        }
+
+        return update;
+    };
+
+    var relayoutCallback = function(scene) {
+        if(scene.fullSceneLayout.dragmode === false) return;
+
+        var update = makeUpdate();
+        scene.saveLayout(layout);
+        scene.graphDiv.emit('plotly_relayout', update);
+    };
+
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function(e) {
+        if(gd._context._scrollZoom.gl3d) {
+            if(scene.camera._ortho) {
+                var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
+                var o = scene.glplot.getAspectratio();
+                scene.glplot.setAspectratio({
+                    x: s * o.x,
+                    y: s * o.y,
+                    z: s * o.z
+                });
+            }
+
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
+
+    scene.glplot.canvas.addEventListener('mousemove', function() {
+        if(scene.fullSceneLayout.dragmode === false) return;
+        if(scene.camera.mouseListener.buttons === 0) return;
+
+        var update = makeUpdate();
+        scene.graphDiv.emit('plotly_relayouting', update);
+    });
+
+    if(!scene.staticMode) {
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
+            if(gd && gd.emit) {
+                gd.emit('plotly_webglcontextlost', {
+                    event: event,
+                    layer: scene.id
+                });
+            }
+        }, false);
+    }
+
+    scene.glplot.oncontextloss = function() {
+        scene.recoverContext();
+    };
+
+    scene.glplot.onrender = function() {
+        scene.render();
+    };
+
+    return true;
+};
+
+proto.render = function() {
+    var scene = this;
     var gd = scene.graphDiv;
     var trace;
 
@@ -195,224 +416,6 @@ function render(scene) {
     }
 
     scene.drawAnnotations(scene);
-}
-
-function Scene(options, fullLayout) {
-    // create sub container for plot
-    var sceneContainer = document.createElement('div');
-    var plotContainer = options.container;
-
-    // keep a ref to the graph div to fire hover+click events
-    this.graphDiv = options.graphDiv;
-
-    // create SVG container for hover text
-    var svgContainer = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'svg');
-    svgContainer.style.position = 'absolute';
-    svgContainer.style.top = svgContainer.style.left = '0px';
-    svgContainer.style.width = svgContainer.style.height = '100%';
-    svgContainer.style['z-index'] = 20;
-    svgContainer.style['pointer-events'] = 'none';
-    sceneContainer.appendChild(svgContainer);
-    this.svgContainer = svgContainer;
-
-    // Tag the container with the sceneID
-    sceneContainer.id = options.id;
-    sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top = sceneContainer.style.left = '0px';
-    sceneContainer.style.width = sceneContainer.style.height = '100%';
-    plotContainer.appendChild(sceneContainer);
-
-    this.fullLayout = fullLayout;
-    this.id = options.id || 'scene';
-    this.fullSceneLayout = fullLayout[this.id];
-
-    // Saved from last call to plot()
-    this.plotArgs = [ [], {}, {} ];
-
-    /*
-     * Move this to calc step? Why does it work here?
-     */
-    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
-    this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
-    this.container = sceneContainer;
-    this.staticMode = !!options.staticPlot;
-    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
-
-    // Coordinate rescaling
-    this.dataScale = [1, 1, 1];
-
-    this.contourLevels = [ [], [], [] ];
-
-    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
-    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
-
-    this.initializeGLPlot();
-}
-
-var proto = Scene.prototype;
-
-proto.tryCreatePlot = function() {
-    var scene = this;
-    var glplotOptions = {
-        canvas: scene.canvas,
-        gl: scene.gl,
-        container: scene.container,
-        axes: scene.axesOptions,
-        spikes: scene.spikeOptions,
-        pickRadius: 10,
-        snapToData: true,
-        autoScale: true,
-        autoBounds: false,
-        cameraObject: scene.camera,
-        pixelRatio: scene.pixelRatio
-    };
-
-    // for static plots, we reuse the WebGL context
-    //  as WebKit doesn't collect them reliably
-    if(scene.staticMode) {
-        if(!STATIC_CONTEXT) {
-            STATIC_CANVAS = document.createElement('canvas');
-            STATIC_CONTEXT = getContext({
-                canvas: STATIC_CANVAS,
-                preserveDrawingBuffer: true,
-                premultipliedAlpha: true,
-                antialias: true
-            });
-            if(!STATIC_CONTEXT) {
-                throw new Error('error creating static canvas/context for image server');
-            }
-        }
-        glplotOptions.pixelRatio = scene.pixelRatio;
-        glplotOptions.gl = STATIC_CONTEXT;
-        glplotOptions.canvas = STATIC_CANVAS;
-    }
-
-    var failed = 0;
-
-    try {
-        scene.glplot = createPlot(glplotOptions);
-    } catch(e) {
-        failed++;
-        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
-            scene.glplot = createPlot(glplotOptions);
-        } catch(e) {
-            failed++;
-        }
-    }
-
-    return failed < 2;
-};
-
-proto.initializeGLCamera = function() {
-    var scene = this;
-    var cameraData = scene.fullSceneLayout.camera;
-    var isOrtho = (cameraData.projection.type === 'orthographic');
-
-    scene.camera = createCamera(scene.container, {
-        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-        _ortho: isOrtho,
-        zoomMin: 0.01,
-        zoomMax: 100,
-        mode: 'orbit'
-    });
-};
-
-proto.initializeGLPlot = function() {
-    var scene = this;
-
-    scene.initializeGLCamera();
-
-    var success = scene.tryCreatePlot();
-    /*
-    * createPlot will throw when webgl is not enabled in the client.
-    * Lets return an instance of the module with all functions noop'd.
-    * The destroy method - which will remove the container from the DOM
-    * is overridden with a function that removes the container only.
-    */
-    if(!success) return showNoWebGlMsg(scene);
-
-    var gd = scene.graphDiv;
-    var layout = gd.layout;
-
-    var makeUpdate = function() {
-        var update = {};
-
-        if(scene.isCameraChanged(layout)) {
-            // camera updates
-            update[scene.id + '.camera'] = scene.getCamera();
-        }
-
-        if(scene.isAspectChanged(layout)) {
-            // scene updates
-            update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
-        }
-
-        return update;
-    };
-
-    var relayoutCallback = function(scene) {
-        if(scene.fullSceneLayout.dragmode === false) return;
-
-        var update = makeUpdate();
-        scene.saveLayout(layout);
-        scene.graphDiv.emit('plotly_relayout', update);
-    };
-
-    scene.glplot.canvas.addEventListener('mouseup', function() {
-        relayoutCallback(scene);
-    });
-
-    scene.glplot.canvas.addEventListener('wheel', function(e) {
-        if(gd._context._scrollZoom.gl3d) {
-            if(scene.camera._ortho) {
-                var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
-                var o = scene.glplot.getAspectratio();
-                scene.glplot.setAspectratio({
-                    x: s * o.x,
-                    y: s * o.y,
-                    z: s * o.z
-                });
-            }
-
-            relayoutCallback(scene);
-        }
-    }, passiveSupported ? {passive: false} : false);
-
-    scene.glplot.canvas.addEventListener('mousemove', function() {
-        if(scene.fullSceneLayout.dragmode === false) return;
-        if(scene.camera.mouseListener.buttons === 0) return;
-
-        var update = makeUpdate();
-        scene.graphDiv.emit('plotly_relayouting', update);
-    });
-
-    if(!scene.staticMode) {
-        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
-            if(gd && gd.emit) {
-                gd.emit('plotly_webglcontextlost', {
-                    event: event,
-                    layer: scene.id
-                });
-            }
-        }, false);
-    }
-
-    scene.glplot.oncontextloss = function() {
-        scene.recoverContext();
-    };
-
-    scene.glplot.onrender = render.bind(null, scene);
-
-    // List of scene objects
-    scene.traces = {};
-
-    scene.make4thDimension();
-
-    return true;
 };
 
 proto.recoverContext = function() {
