@@ -97,7 +97,7 @@ proto.tryCreatePlot = function() {
         gl: scene.gl,
         glOptions: {
             preserveDrawingBuffer: isMobile,
-            premultipliedAlpha: true,
+            premultipliedAlpha: false,
             antialias: true
         },
         container: scene.container,
