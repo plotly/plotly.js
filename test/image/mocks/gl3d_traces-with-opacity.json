@@ -9,6 +9,7 @@
     ],
     "lightposition": { "x": 1000, "y": 1000, "z": 0 },
     "opacity": 1,
+    "colorscale": [[0, "#FF0"], [1, "#FF0"]],
     "showscale": false,
     "type": "surface",
     "name": "surface",
@@ -23,6 +24,7 @@
     "flatshading": true,
     "lightposition": { "x": 1000, "y": 1000, "z": 0 },
     "opacity": 1,
+    "color": "#FF0",
     "type": "mesh3d",
     "name": "mesh3d",
     "scene": "scene2"
@@ -116,7 +118,7 @@
     "scene1": {
       "domain": {
         "x": [0, 0.25],
-        "y": [0, 0.25]
+        "y": [0, 0.5]
       },
       "camera": { "eye": { "x": 1.5, "y": 3, "z": 1 } }
     },
