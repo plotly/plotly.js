@@ -112,10 +112,18 @@
       "k":[2, 3, 1, 3],
       "intensity": [0, 1, 2, 3],
       "coloraxis": "coloraxis"
+  }, {
+    "type": "surface",
+    "x": [0, 1],
+    "y": [2, 3],
+    "z": [[3, 1], [2, 2]],
+    "coloraxis": "coloraxis"
   },
 
   {
       "type": "isosurface",
+      "isomax": 0,
+      "isomin": null,
       "value": [
           0, 125, 250, 375, 500, 625, 750, 875, 1000,
           -125, 0, 125, 250, 375, 500, 625, 750, 875,
@@ -485,6 +493,7 @@
       "coloraxis": "coloraxis2"
   }, {
      "type": "volume",
+     "opacityscale": "min",
      "value": [
          1000.000, 866.025, 500.000, 0.000, -500.000, -866.025, -1000.000, -866.025, -500.000, -0.000, 500.000, 866.025, 1000.000,
          1500.000, 1366.025, 1000.000, 500.000, 0.000, -366.025, -500.000, -366.025, -0.000, 500.000, 1000.000, 1366.025, 1500.000,
@@ -1225,6 +1234,16 @@
   "layout": {
     "title": "gl3d trace with shared coloraxes",
 
+    "scene": {
+      "camera": {
+        "eye": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      }
+    },
+
     "coloraxis": {
       "colorscale": "Viridis",
       "colorbar": {
@@ -1234,6 +1253,7 @@
     },
     "coloraxis2": {
       "colorscale": "Viridis",
+      "reversescale": true,
       "colorbar": {
         "x": 1.1,
         "xanchor": "left"
