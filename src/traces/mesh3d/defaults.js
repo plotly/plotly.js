@@ -68,8 +68,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'contour.show',
         'contour.color',
         'contour.width',
-        'colorscale',
-        'reversescale',
         'flatshading',
         'alphahull',
         'delaunayaxis',
