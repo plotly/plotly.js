@@ -65,16 +65,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lightposition.x',
         'lightposition.y',
         'lightposition.z',
-        'contour.show',
-        'contour.color',
-        'contour.width',
-        'colorscale',
-        'reversescale',
         'flatshading',
         'alphahull',
         'delaunayaxis',
         'opacity'
     ].forEach(function(x) { coerce(x); });
+
+    var showContour = coerce('contour.show');
+    if(showContour) {
+        coerce('contour.color');
+        coerce('contour.width');
+    }
 
     if('intensity' in traceIn) {
         coerce('intensity');
