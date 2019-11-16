@@ -8,7 +8,7 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var colormodel = require('./constants').colormodel;
@@ -108,7 +108,7 @@ module.exports = extendFlat({
         editType: 'plot',
         description: 'Same as `text`.'
     },
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['x', 'y', 'z', 'color', 'name', 'text'],
         dflt: 'x+y+z+text+name'
     }),

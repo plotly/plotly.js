@@ -9,7 +9,7 @@
 'use strict';
 
 var extendFlat = require('../../lib/extend').extendFlat;
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -47,7 +47,7 @@ var line = extendFlat(
 module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['count', 'probability'],
         editType: 'plot',
         arrayOk: false
