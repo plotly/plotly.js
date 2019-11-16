@@ -21,7 +21,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'mesh3d',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d'],
+    categories: ['gl3d', 'showLegend'],
     meta: {
         description: [
             'Draws sets of triangles with coordinates given by',
