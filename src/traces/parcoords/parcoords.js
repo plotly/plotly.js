@@ -293,7 +293,6 @@ function viewModel(state, callbacks, model) {
         } else tickvals = undefined;
 
         truncatedValues = helpers.convertTypedArray(truncatedValues);
-        truncatedValues = helpers.convertTypedArray(truncatedValues);
 
         return {
             key: key,
