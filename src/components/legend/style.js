@@ -14,6 +14,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
+var extractOpts = require('../colorscale/helpers').extractOpts;
 
 var subTypes = require('../../traces/scatter/subtypes');
 var stylePie = require('../../traces/pie/style_one');
@@ -40,16 +41,6 @@ module.exports = function style(s, gd) {
             return 0;
         }
         return constantItemSizing ? cst : Math.min(v, max);
-    };
-
-    var getColorscale = function(trace) {
-        var coloraxis = trace.coloraxis;
-        return (coloraxis ? fullLayout[coloraxis] : trace).colorscale;
-    };
-
-    var getReversescale = function(trace) {
-        var coloraxis = trace.coloraxis;
-        return (coloraxis ? fullLayout[coloraxis] : trace).reversescale;
     };
 
     s.each(function(d) {
@@ -114,8 +105,9 @@ module.exports = function style(s, gd) {
         var showGradientFill = false;
         var dMod, tMod;
 
-        var colorscale = getColorscale(trace);
-        var reversescale = getReversescale(trace);
+        var cOpts = extractOpts(trace);
+        var colorscale = cOpts.colorscale;
+        var reversescale = cOpts.reversescale;
 
         var fillGradient = function(s) {
             if(s.size()) {
