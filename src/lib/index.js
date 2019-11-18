@@ -179,6 +179,16 @@ lib.isIndex = function(v, len) {
     return isNumeric(v) && (v >= 0) && (v % 1 === 0);
 };
 
+lib.allIsNumeric = function(values) {
+    var len = values.length;
+    for(var i = 0; i < len; i++) {
+        if(!isNumeric(values[i])) {
+            return false;
+        }
+    }
+    return true;
+};
+
 lib.noop = require('./noop');
 lib.identity = require('./identity');
 

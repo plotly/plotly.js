@@ -518,7 +518,7 @@ describe('parcoords edge cases', function() {
         Plotly.plot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(2);
-            expect(document.querySelectorAll('.axis').length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(1);
             expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
         })
         .catch(failTest)

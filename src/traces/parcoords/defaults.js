@@ -45,7 +45,7 @@ function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
 
     var values = coerce('values');
     var visible = coerce('visible');
-    if(!(values && values.length)) {
+    if(!(values && values.length && Lib.allIsNumeric(values))) {
         visible = dimensionOut.visible = false;
     }
 

@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "type": "parcoords",
+            "dimensions": [
+                {
+                    "label": "A",
+                    "values": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "label": "B",
+                    "values": [
+                        -1,
+                        null,
+                        1
+                    ]
+                },
+                {
+                    "label": "C",
+                    "values": [
+                        "1e1",
+                        "1e2",
+                        "1e3"
+                    ]
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400
+    }
+}
