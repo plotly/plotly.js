@@ -11,7 +11,7 @@
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var defaultLine = require('../../components/color/attributes').defaultLine;
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -73,11 +73,11 @@ module.exports = extendFlat({
         editType: 'plot'
     },
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
     }),
-    hovertemplate: hovertemplateAttrs(),
+    hovertemplate: hovertemplateAttrs()
 },
 
     colorScaleAttrs('', {
