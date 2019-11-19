@@ -93,7 +93,8 @@ function drawOne(gd, index) {
         var attrs = {
             'data-index': index,
             'fill-rule': 'evenodd',
-            d: getPathString(gd, options)
+            d: getPathString(gd, options),
+            class: options._input.className
         };
         var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
