@@ -23,6 +23,7 @@ module.exports = function calcAutorange(gd) {
 
     for(var i = 0; i < shapeList.length; i++) {
         var shape = shapeList[i];
+        if (shape._input.autorange==false) continue;
         shape._extremes = {};
 
         var ax, bounds;
