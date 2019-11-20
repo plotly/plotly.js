@@ -2544,7 +2544,7 @@ describe('hover on fill', function() {
             assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
 
             // hover on the cartesian trace in the corner
-            assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
+            assertLabelsCorrect([363, 122], [367, 122], 'trace 38');
         })
         .catch(failTest)
         .then(done);
