@@ -2828,6 +2828,15 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
+    // clear relinked cmin/cmax values in shared axes to start aggregation from scratch
+    for(var k in fullLayout._colorAxes) {
+        var cOpts = fullLayout[k];
+        if(cOpts.cauto !== false) {
+            delete cOpts.cmin;
+            delete cOpts.cmax;
+        }
+    }
+
     var hasCalcTransform = false;
 
     function transformCalci(i) {

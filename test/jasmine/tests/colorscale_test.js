@@ -1101,6 +1101,42 @@ describe('Test colorscale restyle calls:', function() {
         .then(done);
     });
 
+    it('should update coloraxis cmin/cmax on color value changes', function(done) {
+        function fig(mc) {
+            return {
+                data: [{
+                    mode: 'markers',
+                    y: [1, 2, 3],
+                    marker: {
+                        coloraxis: 'coloraxis',
+                        color: mc
+                    }
+                }]
+            };
+        }
+
+        function _assert(msg, cmin, cmax) {
+            return function() {
+                var cOpts = gd._fullLayout.coloraxis;
+                expect(cOpts.cmin).toBe(cmin, msg + '| cmin');
+                expect(cOpts.cmax).toBe(cmax, msg + '| cmax');
+            };
+        }
+
+        Plotly.react(gd, fig([1, 2, 3]))
+        .then(_assert('marker.color [1,2,3]', 1, 3))
+        .then(function() { return Plotly.react(gd, fig([1, 5, 3])); })
+        .then(_assert('marker.color [1,5,3]', 1, 5))
+        .then(function() { return Plotly.react(gd, fig([1, 2, 3])); })
+        .then(_assert('back to marker.color [1,2,3]', 1, 3))
+        .then(function() { return Plotly.react(gd, fig([-1, 2, 3])); })
+        .then(_assert('marker.color [-1,2,3]', -1, 3))
+        .then(function() { return Plotly.react(gd, fig([1, 2, 3])); })
+        .then(_assert('back again to marker.color [1,2,3]', 1, 3))
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should work with templates', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
