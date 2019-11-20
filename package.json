@@ -43,7 +43,7 @@
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
-    "preversion": "check-node-version --node 12.13 --npm 6.12.0 && npm-link-check && npm ls --prod",
+    "preversion": "check-node-version --node 12.13 --npm 6.13 && npm-link-check && npm ls --prod",
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
