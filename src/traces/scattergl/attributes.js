@@ -8,7 +8,7 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -92,7 +92,7 @@ var attrs = module.exports = overrideAll({
         textfont: scatterAttrs.unselected.textfont
     },
 
-    opacity: plotAttrs.opacity
+    opacity: baseAttrs.opacity
 
 }, 'calc', 'nested');
 

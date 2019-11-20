@@ -1045,11 +1045,13 @@ describe('update menus interaction with scrollbox:', function() {
         }
     };
 
+    Lib.seedPseudoRandom();
+
     for(var i = 0, n = 20; i < n; i++) {
         var j;
 
         var y;
-        for(j = 0, y = []; j < 10; j++) y.push(Math.random);
+        for(j = 0, y = []; j < 10; j++) y.push(Lib.pseudoRandom());
 
         mock.data.push({
             y: y,

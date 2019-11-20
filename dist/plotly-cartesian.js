@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.51.0
+* plotly.js (cartesian) v1.51.1
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34164,7 +34164,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.51.0';
+exports.version = '1.51.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -78490,31 +78490,31 @@ module.exports = extendFlat({
         values: cm,
         dflt: 'rgb',
         
-        editType: 'plot',
+        editType: 'calc',
         
     },
     zmin: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'}
         ],
         
-        editType: 'plot',
+        editType: 'calc',
         
     },
     zmax: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'},
+            {valType: 'number', editType: 'calc'}
         ],
         
-        editType: 'plot',
+        editType: 'calc',
         
     },
     x0: {
@@ -78577,6 +78577,9 @@ module.exports = extendFlat({
 
 'use strict';
 
+var Lib = _dereq_('../../lib');
+var constants = _dereq_('./constants');
+var isNumeric = _dereq_('fast-isnumeric');
 var Axes = _dereq_('../../plots/cartesian/axes');
 var maxRowLength = _dereq_('../../lib').maxRowLength;
 
@@ -78597,6 +78600,7 @@ module.exports = function calc(gd, trace) {
     if(ya && ya.type === 'log') for(i = 0; i < h; i++) yrange.push(y0 + i * trace.dy);
     trace._extremes[xa._id] = Axes.findExtremes(xa, xrange);
     trace._extremes[ya._id] = Axes.findExtremes(ya, yrange);
+    trace._scaler = makeScaler(trace);
 
     var cd0 = {
         x0: x0,
@@ -78608,7 +78612,49 @@ module.exports = function calc(gd, trace) {
     return [cd0];
 };
 
-},{"../../lib":169,"../../plots/cartesian/axes":213}],356:[function(_dereq_,module,exports){
+function scale(zero, ratio, min, max) {
+    return function(c) {
+        return Lib.constrain((c - zero) * ratio, min, max);
+    };
+}
+
+function constrain(min, max) {
+    return function(c) { return Lib.constrain(c, min, max);};
+}
+
+// Generate a function to scale color components according to zmin/zmax and the colormodel
+function makeScaler(trace) {
+    var colormodel = trace.colormodel;
+    var n = colormodel.length;
+    var cr = constants.colormodel[colormodel];
+
+    trace._sArray = [];
+    // Loop over all color components
+    for(var k = 0; k < n; k++) {
+        if(cr.min[k] !== trace.zmin[k] || cr.max[k] !== trace.zmax[k]) {
+            trace._sArray.push(scale(
+                trace.zmin[k],
+                (cr.max[k] - cr.min[k]) / (trace.zmax[k] - trace.zmin[k]),
+                cr.min[k],
+                cr.max[k]
+            ));
+        } else {
+            trace._sArray.push(constrain(cr.min[k], cr.max[k]));
+        }
+    }
+
+    return function(pixel) {
+        var c = pixel.slice(0, n);
+        for(var k = 0; k < n; k++) {
+            var ck = c[k];
+            if(!isNumeric(ck)) return false;
+            c[k] = trace._sArray[k](ck);
+        }
+        return c;
+    };
+}
+
+},{"../../lib":169,"../../plots/cartesian/axes":213,"./constants":356,"fast-isnumeric":18}],356:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
@@ -78616,7 +78662,6 @@ module.exports = function calc(gd, trace) {
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -78667,7 +78712,6 @@ module.exports = {
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -78829,7 +78873,7 @@ module.exports = {
     attributes: _dereq_('./attributes'),
     supplyDefaults: _dereq_('./defaults'),
     calc: _dereq_('./calc'),
-    plot: _dereq_('./plot').plot,
+    plot: _dereq_('./plot'),
     style: _dereq_('./style'),
     hoverPoints: _dereq_('./hover'),
     eventData: _dereq_('./event_data'),
@@ -78854,55 +78898,13 @@ module.exports = {
 */
 
 'use strict';
+
 var d3 = _dereq_('d3');
 var Lib = _dereq_('../../lib');
 var xmlnsNamespaces = _dereq_('../../constants/xmlns_namespaces');
 var constants = _dereq_('./constants');
 
-module.exports = {};
-
-// Generate a function to scale color components according to zmin/zmax and the colormodel
-var scaler = function(trace) {
-    var colormodel = trace.colormodel;
-    var n = colormodel.length;
-    var cr = constants.colormodel[colormodel];
-
-    function scale(zero, factor, min, max) {
-        return function(c) {
-            c = (c - zero) * factor;
-            c = Lib.constrain(c, min, max);
-            return c;
-        };
-    }
-
-    function constrain(min, max) {
-        return function(c) { return Lib.constrain(c, min, max);};
-    }
-
-    var s = [];
-    // Loop over all color components
-    for(var k = 0; k < n; k++) {
-        if(cr.min[k] !== trace.zmin[k] || cr.max[k] !== trace.zmax[k]) {
-            s.push(scale(
-                trace.zmin[k],
-                (cr.max[k] - cr.min[k]) / (trace.zmax[k] - trace.zmin[k]),
-                cr.min[k],
-                cr.max[k]
-            ));
-        } else {
-            s.push(constrain(cr.min[k], cr.max[k]));
-        }
-    }
-
-    return function(pixel) {
-        var c = pixel.slice(0, n);
-        for(var k = 0; k < n; k++) {
-            c[k] = s[k](c[k]);
-        }
-        return c;
-    };
-};
-module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
+module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -78976,10 +78978,10 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
         canvas.width = imageWidth;
         canvas.height = imageHeight;
         var context = canvas.getContext('2d');
+
         var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
         var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
 
-        trace._scaler = scaler(trace);
         var fmt = constants.colormodel[trace.colormodel].fmt;
         var c;
         for(i = 0; i < cd0.w; i++) {
@@ -78989,7 +78991,12 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
                 var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
                 if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
                 c = trace._scaler(z[j][i]);
-                context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                if(c) {
+                    context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                } else {
+                    // Return a transparent pixel
+                    context.fillStyle = 'rgba(0,0,0,0)';
+                }
                 context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
             }
         }
@@ -79020,7 +79027,6 @@ module.exports.plot = function(gd, plotinfo, cdimage, imageLayer) {
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 

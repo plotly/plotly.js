@@ -8,7 +8,7 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
@@ -174,7 +174,7 @@ module.exports = {
     }),
 
     hovertext: pieAttrs.hovertext,
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: [
             'label',
             'text',

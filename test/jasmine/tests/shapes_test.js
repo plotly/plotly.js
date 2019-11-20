@@ -275,12 +275,14 @@ describe('Test shapes:', function() {
             null;
     }
 
+    Lib.seedPseudoRandom();
+
     function getRandomShape() {
         return {
-            x0: Math.random(),
-            y0: Math.random(),
-            x1: Math.random(),
-            y1: Math.random()
+            x0: Lib.pseudoRandom(),
+            y0: Lib.pseudoRandom(),
+            x1: Lib.pseudoRandom(),
+            y1: Lib.pseudoRandom()
         };
     }
 

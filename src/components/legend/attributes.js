@@ -17,7 +17,10 @@ module.exports = {
         valType: 'color',
         role: 'style',
         editType: 'legend',
-        description: 'Sets the legend background color.'
+        description: [
+            'Sets the legend background color.',
+            'Defaults to `layout.paper_bgcolor`.'
+        ].join(' ')
     },
     bordercolor: {
         valType: 'color',

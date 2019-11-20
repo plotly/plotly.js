@@ -13,7 +13,7 @@ var texttemplateAttrs = require('../../plots/template_attributes').texttemplateA
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -122,7 +122,7 @@ module.exports = overrideAll({
         marker: scatterAttrs.unselected.marker
     },
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
     }),
     hovertemplate: hovertemplateAttrs(),

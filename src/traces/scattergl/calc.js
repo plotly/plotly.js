@@ -97,12 +97,7 @@ module.exports = function calc(gd, trace) {
     if(opts.line && !scene.line2d) scene.line2d = true;
     if((opts.errorX || opts.errorY) && !scene.error2d) scene.error2d = true;
     if(opts.text && !scene.glText) scene.glText = true;
-
-    // FIXME: organize it in a more appropriate manner, probably in sceneOptions
-    // put point-cluster instance for optimized regl calc
-    if(opts.marker) {
-        opts.marker.snap = stash.tree || TOO_MANY_POINTS;
-    }
+    if(opts.marker) opts.marker.snap = len;
 
     scene.lineOptions.push(opts.line);
     scene.errorXOptions.push(opts.errorX);

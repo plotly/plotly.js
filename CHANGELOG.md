@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.51.1] -- 2019-11-04
+
+### Fixed
+- Fix `scattergl` mising points plot and react (bug introduced in 1.33.0) [#4323]
+- Skip non-numeric values in `image` trace plot [#4325]
+
+
 ## [1.51.0] -- 2019-10-29
 
 ### Added
