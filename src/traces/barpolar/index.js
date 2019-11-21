@@ -24,6 +24,7 @@ module.exports = {
 
     plot: require('./plot'),
     colorbar: require('../scatter/marker_colorbar'),
+    formatLabels: require('../scatterpolar/format_labels'),
 
     style: require('../bar/style').style,
     styleOnSelect: require('../bar/style').styleOnSelect,

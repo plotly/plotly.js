@@ -24,6 +24,7 @@ module.exports = {
     arraysToCalcdata: require('./arrays_to_calcdata'),
     plot: require('./plot'),
     colorbar: require('./marker_colorbar'),
+    formatLabels: require('./format_labels'),
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover'),

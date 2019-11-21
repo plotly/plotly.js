@@ -17,6 +17,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults').supplyDefaults,
     colorbar: require('../scatter/marker_colorbar'),
+    formatLabels: require('./format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     style: require('../scatter/style').style,
