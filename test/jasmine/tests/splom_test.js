@@ -943,18 +943,24 @@ describe('Test splom interactions:', function() {
         .then(done);
     });
 
-    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+    it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
         fig.layout.showlegend = false;
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w, msg);
-            expect(canvas.node().height).toBe(h, msg);
+            expect(canvas.node().width).toBe(w, msg + '| canvas width');
+            expect(canvas.node().height).toBe(h, msg + '| canvas height');
 
             var gl = canvas.data()[0].regl._gl;
-            expect(gl.drawingBufferWidth).toBe(w, msg);
-            expect(gl.drawingBufferHeight).toBe(h, msg);
+            if(/Chrome\/78/.test(window.navigator.userAgent)) {
+                // N.B. for some reason 4096 is the max dimension allowed by Chrome 78
+                expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
+            } else {
+                expect(gl.drawingBufferWidth).toBe(w, msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight).toBe(h, msg + '| drawingBufferHeight');
+            }
         }
 
         var methods = ['cleanPlot', 'supplyDefaults', 'doCalcdata'];

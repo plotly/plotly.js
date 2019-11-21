@@ -884,7 +884,7 @@ function createHoverText(hoverData, opts, gd) {
                             .text(s.text())
                             .call(Drawing.font, commonLabelFont);
                         var dummyBB = dummy.node().getBoundingClientRect();
-                        if(dummyBB.width < tbb.width) {
+                        if(Math.round(dummyBB.width) < Math.round(tbb.width)) {
                             s.attr('x', ltx - dummyBB.width);
                         }
                         dummy.remove();

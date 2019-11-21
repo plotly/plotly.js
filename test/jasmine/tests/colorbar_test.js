@@ -397,7 +397,7 @@ describe('Test colorbar:', function() {
             return document.querySelector('.colorbar');
         }
 
-        it('can drag root-level colorbars in editable mode', function(done) {
+        it('@flaky can drag root-level colorbars in editable mode', function(done) {
             Plotly.newPlot(gd,
                 [{z: [[1, 2], [3, 4]], type: 'heatmap'}],
                 {width: 400, height: 400},
@@ -417,7 +417,7 @@ describe('Test colorbar:', function() {
             .then(done);
         });
 
-        it('can drag marker-level colorbars in editable mode', function(done) {
+        it('@flaky can drag marker-level colorbars in editable mode', function(done) {
             Plotly.newPlot(gd,
                 [{y: [1, 2, 1], marker: {color: [0, 1, 2], showscale: true}}],
                 {width: 400, height: 400},
@@ -437,7 +437,7 @@ describe('Test colorbar:', function() {
             .then(done);
         });
 
-        it('can drag colorbars linked to color axes in editable mode', function(done) {
+        it('@flaky can drag colorbars linked to color axes in editable mode', function(done) {
             Plotly.newPlot(gd,
                 [{z: [[1, 2], [3, 4]], type: 'heatmap', coloraxis: 'coloraxis'}],
                 {coloraxis: {}, width: 400, height: 400},
