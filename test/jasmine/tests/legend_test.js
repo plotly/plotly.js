@@ -172,6 +172,44 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.orientation).toEqual('v');
     });
 
+    it('should not coerce `title.font` and `title.side` if the `title.text` is blank', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                title: {
+                    text: ''
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.font).toEqual(undefined);
+        expect(layoutOut.legend.title.side).toEqual(undefined);
+    });
+
+    it('should default `title.side` to *top* for vertical legends', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                title: {
+                    text: 'Legend Title'
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.side).toEqual('top');
+    });
+
+    it('should default `title.side` to *left* for horizontal legends', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                orientation: 'h',
+                title: {
+                    text: 'Legend Title'
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.side).toEqual('left');
+    });
+
     describe('for horizontal legends', function() {
         var layoutInForHorizontalLegends;
 
