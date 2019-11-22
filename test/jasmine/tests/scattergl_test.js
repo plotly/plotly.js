@@ -39,17 +39,6 @@ describe('end-to-end scattergl tests', function() {
         }).catch(failTest).then(done);
     });
 
-    checkTextTemplate([{
-        type: 'scattergl',
-        mode: 'text+lines',
-        x: [1, 2, 3, 4],
-        y: [2, 3, 4, 5],
-        text: ['A', 'B', 'C', 'D'],
-    }], '@gl', [
-        ['%{text}: %{x}, %{y}', ['A: 1, 2', 'B: 2, 3', 'C: 3, 4', 'D: 4, 5']],
-        [['%{x}', '%{x}', '%{text}', '%{y}'], ['1', '2', 'C', '5']]
-    ]);
-
     it('@gl should update a plot with text labels', function(done) {
         Plotly.react(gd, [{
             type: 'scattergl',
@@ -760,4 +749,46 @@ describe('Test scattergl autorange:', function() {
             .then(done);
         });
     });
+});
+
+describe('Test texttemplate for scattergl', function() {
+    checkTextTemplate([{
+        type: 'scattergl',
+        mode: 'text+lines',
+        x: [1, 2, 3, 4],
+        y: [2, 3, 4, 5],
+        text: ['A', 'B', 'C', 'D'],
+    }], '@gl', [
+        ['%{text}: %{x}, %{y}', ['A: 1, 2', 'B: 2, 3', 'C: 3, 4', 'D: 4, 5']],
+        [['%{x}', '%{x}', '%{text}', '%{y}'], ['1', '2', 'C', '5']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scattergl',
+            mode: 'text',
+            x: ['a', 'b'],
+            y: ['1000', '1200']
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        }
+    }, '@gl', [
+        ['%{x} is %{y}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scattergl',
+            mode: 'text',
+            y: ['1000', '1200']
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        }
+    }, '@gl', [
+        ['%{x} is %{y}', ['*0* is $1000.00 !', '*1* is $1200.00 !']]
+    ]);
 });

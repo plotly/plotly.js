@@ -20,6 +20,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     crossTraceDefaults: require('../scatter/cross_trace_defaults'),
     colorbar: require('../scatter/marker_colorbar'),
+    formatLabels: require('./format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     hoverPoints: hover.hoverPoints,
