@@ -22,6 +22,7 @@ module.exports = {
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover').hoverPoints,
+    eventData: require('./event_data'),
     selectPoints: require('./select'),
 
     moduleType: 'trace',

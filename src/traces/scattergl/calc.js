@@ -36,8 +36,8 @@ module.exports = function calc(gd, trace) {
     var stash = {};
     var i, xx, yy;
 
-    var x = xa.makeCalcdata(trace, 'x');
-    var y = ya.makeCalcdata(trace, 'y');
+    var x = trace._x = xa.makeCalcdata(trace, 'x');
+    var y = trace._y = ya.makeCalcdata(trace, 'y');
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values

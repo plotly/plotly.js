@@ -49,9 +49,9 @@ function convertStyle(gd, trace) {
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = convertTextStyle(trace, gd);
-        opts.textSel = convertTextSelection(trace, trace.selected);
-        opts.textUnsel = convertTextSelection(trace, trace.unselected);
+        opts.text = convertTextStyle(gd, trace);
+        opts.textSel = convertTextSelection(gd, trace, trace.selected);
+        opts.textUnsel = convertTextSelection(gd, trace, trace.unselected);
     }
 
     if(subTypes.hasMarkers(trace)) {
@@ -102,7 +102,8 @@ function convertStyle(gd, trace) {
     return opts;
 }
 
-function convertTextStyle(trace, gd) {
+function convertTextStyle(gd, trace) {
+    var fullLayout = gd._fullLayout;
     var count = trace._length;
     var textfontIn = trace.textfont;
     var textpositionIn = trace.textposition;
@@ -116,14 +117,21 @@ function convertTextStyle(trace, gd) {
     var texttemplate = trace.texttemplate;
     if(texttemplate) {
         optsOut.text = [];
+
+        var d3locale = fullLayout._d3locale;
         var isArray = Array.isArray(texttemplate);
         var N = isArray ? Math.min(texttemplate.length, count) : count;
-        var txt = isArray ? function(i) {return texttemplate[i];} : function() { return texttemplate;};
-        var d3locale = gd._fullLayout._d3locale;
+        var txt = isArray ?
+            function(i) { return texttemplate[i]; } :
+            function() { return texttemplate; };
+
         for(i = 0; i < N; i++) {
-            var pt = {};
-            appendArrayPointValue(pt, trace, i);
-            optsOut.text.push(Lib.texttemplateString(txt(i), pt, d3locale, pt, trace._meta || {}));
+            var d = {i: i};
+            var labels = trace._module.formatLabels(d, trace, fullLayout);
+            var pointValues = {};
+            appendArrayPointValue(pointValues, trace, i);
+            var meta = trace._meta || {};
+            optsOut.text.push(Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta));
         }
     } else {
         if(Array.isArray(trace.text) && trace.text.length < count) {
@@ -339,7 +347,7 @@ function convertMarkerSelection(trace, target) {
     return optsOut;
 }
 
-function convertTextSelection(trace, target) {
+function convertTextSelection(gd, trace, target) {
     var optsOut = {};
 
     if(!target) return optsOut;
@@ -348,13 +356,14 @@ function convertTextSelection(trace, target) {
         var optsIn = {
             opacity: 1,
             text: trace.text,
+            texttemplate: trace.texttemplate,
             textposition: trace.textposition,
             textfont: Lib.extendFlat({}, trace.textfont)
         };
         if(target.textfont) {
             Lib.extendFlat(optsIn.textfont, target.textfont);
         }
-        optsOut = convertTextStyle(optsIn);
+        optsOut = convertTextStyle(gd, optsIn);
     }
 
     return optsOut;

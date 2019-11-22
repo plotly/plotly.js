@@ -212,4 +212,21 @@ describe('Test scatterpolar texttemplate:', function() {
         ['%{text}: (%{r:0.2f}, %{theta:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
         [['', 'b%{theta:0.2f}', '%{theta:0.2f}'], ['', 'b90.00', '180.00']]
     ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scatterpolar',
+            mode: 'text',
+            theta: ['a', 'b'],
+            r: ['1000', '1200']
+        }],
+        layout: {
+            polar: {
+                radialaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'},
+                angularaxis: { tickprefix: '*', ticksuffix: '*' }
+            }
+        }
+    }, '.textpoint', [
+        ['%{theta} is %{r}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
 });

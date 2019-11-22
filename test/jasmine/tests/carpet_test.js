@@ -730,7 +730,8 @@ describe('scattercarpet texttemplates', function() {
         'b': [1, 2, 3],
         'y': [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
     }], 'g.textpoint', [
-        ['%{text}: %{a:0.1f}, %{b:0.1f}', ['A: 0.1, 1.5', 'B: 0.1, 1.5', 'C: 0.3, 1.5']]
+        ['%{text}: %{a:0.1f}, %{b:0.1f}', ['A: 0.1, 1.5', 'B: 0.1, 1.5', 'C: 0.3, 1.5']],
+        ['%{y}', ['1.000', '1.000', '2.200']]
     ]);
 });
 describe('contourcarpet plotting & editing', function() {

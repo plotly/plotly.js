@@ -26,9 +26,9 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var drawing = module.exports = {};
-var appendArrayPointValue = require('../fx/helpers').appendArrayPointValue;
 
 // -----------------------------------------------------
 // styling functions for plot elements
@@ -680,32 +680,36 @@ function extracTextFontSize(d, trace) {
 }
 
 // draw text at points
-drawing.textPointStyle = function(s, trace, gd, inLegend) {
+drawing.textPointStyle = function(s, trace, gd) {
     if(!s.size()) return;
 
     var selectedTextColorFn;
-
     if(trace.selectedpoints) {
         var fns = drawing.makeSelectedTextStyleFns(trace);
         selectedTextColorFn = fns.selectedTextColorFn;
     }
 
-    var template = trace.texttemplate;
-    // If styling text in legends, do not use texttemplate
-    if(inLegend) template = false;
+    var texttemplate = trace.texttemplate;
+    var fullLayout = gd._fullLayout;
+
     s.each(function(d) {
         var p = d3.select(this);
-        var text = Lib.extractOption(d, trace, template ? 'txt' : 'tx', template ? 'texttemplate' : 'text');
+
+        var text = texttemplate ?
+            Lib.extractOption(d, trace, 'txt', 'texttemplate') :
+            Lib.extractOption(d, trace, 'tx', 'text');
 
         if(!text && text !== 0) {
             p.remove();
             return;
         }
 
-        if(template) {
-            var pt = {};
-            appendArrayPointValue(pt, trace, d.i);
-            text = Lib.texttemplateString(text, {}, gd._fullLayout._d3locale, pt, d, trace._meta || {});
+        if(texttemplate) {
+            var labels = trace._module.formatLabels ? trace._module.formatLabels(d, trace, fullLayout) : {};
+            var pointValues = {};
+            appendArrayPointValue(pointValues, trace, d.i);
+            var meta = trace._meta || {};
+            text = Lib.texttemplateString(text, labels, fullLayout._d3locale, pointValues, d, meta);
         }
 
         var pos = d.tp || trace.textposition;

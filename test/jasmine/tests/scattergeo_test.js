@@ -446,7 +446,7 @@ describe('Test scattergeo texttemplate:', function() {
         'lat': [45.5, 43.4, 49.13],
         'text': ['Montreal', 'Toronto', 'Vancouver']
     }], '.scattergeo text', [
-        ['%{text}: %{lon}, %{lat}', ['Montreal: -73.57, 45.5', 'Toronto: -79.24, 43.4', 'Vancouver: -123.06, 49.13']]
+        ['%{text}: %{lon}, %{lat}', ['Montreal: −73.57, 45.5', 'Toronto: −79.24, 43.4', 'Vancouver: −123.06, 49.13']]
     ]);
 
     checkTextTemplate([{

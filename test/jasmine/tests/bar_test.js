@@ -1112,28 +1112,6 @@ describe('A bar plot', function() {
         };
     }
 
-    checkTextTemplate([{
-        type: 'bar',
-        y: [1, 5, 3, 2],
-        text: ['A', 'B', 'C', 'D'],
-        textposition: 'inside',
-        hovertemplate: '%{text}'
-    }], 'text.bartext', [
-      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
-      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
-    ]);
-
-    checkTextTemplate([{
-        type: 'bar',
-        textposition: 'outside',
-        x: ['2019-01-01', '2019-02-01'],
-        y: [1, 2],
-        hovertemplate: '%{x}',
-        texttemplate: '%{x}'
-    }], 'text.bartext', [
-      ['%{x}', ['2019-01-01', '2019-02-01']]
-    ]);
-
     it('should show bar texts (inside case)', function(done) {
         var data = [{
             y: [10, 20, 30],
@@ -2347,6 +2325,50 @@ describe('bar hover', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should allow both x/y tokens and label/value tokens', function(done) {
+            gd = createGraphDiv();
+
+            function _hover(xpx, ypx) {
+                return function() {
+                    Fx.hover(gd, {xpx: xpx, ypx: ypx}, 'xy');
+                    Lib.clearThrottle();
+                };
+            }
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'bar',
+                    x: ['a', 'b'],
+                    y: ['1000', '1200'],
+                    hovertemplate: ['%{x} is %{y}', '%{label} is %{value}']
+                }],
+                layout: {
+                    xaxis: { tickprefix: '*', ticksuffix: '*' },
+                    yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'},
+                    width: 400,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    hovermode: 'closest'
+                }
+            })
+            .then(_hover(100, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*a* is $1000.00 !',
+                    name: 'trace 0'
+                });
+            })
+            .then(_hover(300, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*b* is $1200.00 !',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('with special width/offset combinations', function() {
@@ -2494,6 +2516,46 @@ describe('bar hover', function() {
             });
         });
     });
+});
+
+describe('Text templates on bar traces:', function() {
+    checkTextTemplate([{
+        type: 'bar',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
+      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
+    ]);
+
+    checkTextTemplate([{
+        type: 'bar',
+        textposition: 'outside',
+        x: ['2019-01-01', '2019-02-01'],
+        y: [1, 2],
+        hovertemplate: '%{x}',
+        texttemplate: '%{x}'
+    }], 'text.bartext', [
+      ['%{x}', ['Jan 1, 2019', 'Feb 1, 2019']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'bar',
+            textposition: 'inside',
+            x: ['a', 'b'],
+            y: ['1000', '1200'],
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        },
+    }, 'text.bartext', [
+        ['%{x} is %{y}', ['*a* is $1000.00 !', '*b* is $1200.00 !']],
+        ['%{label} is %{value}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
 });
 
 describe('event data', function() {
