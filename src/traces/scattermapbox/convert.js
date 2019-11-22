@@ -19,6 +19,7 @@ var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;
 var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
@@ -233,6 +234,7 @@ function makeCircleOpts(calcTrace) {
 }
 
 function makeSymbolGeoJSON(calcTrace, gd) {
+    var fullLayout = gd._fullLayout;
     var trace = calcTrace[0].trace;
 
     var marker = trace.marker || {};
@@ -253,18 +255,23 @@ function makeSymbolGeoJSON(calcTrace, gd) {
 
         if(isBADNUM(calcPt.lonlat)) continue;
 
-        var txt = trace.texttemplate;
-        if(txt) {
-            var txti = Array.isArray(txt) ? (txt[i] || '') : txt;
-            calcPt.text = calcPt.tx;
-            calcPt.lon = calcPt.lonlat[0];
-            calcPt.lat = calcPt.lonlat[1];
-            calcPt.customdata = calcPt.data;
-            calcPt.txt = Lib.texttemplateString(txti, {}, gd._fullLayout._d3locale, calcPt, trace._meta || {});
+        var texttemplate = trace.texttemplate;
+        var text;
+
+        if(texttemplate) {
+            var tt = Array.isArray(texttemplate) ? (texttemplate[i] || '') : texttemplate;
+            var labels = trace._module.formatLabels(calcPt, trace, fullLayout);
+            var pointValues = {};
+            appendArrayPointValue(pointValues, trace, calcPt.i);
+            var meta = trace._meta || {};
+            text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
+        } else {
+            text = fillText(calcPt.tx);
         }
 
-        var text = txt ? calcPt.txt : fillText(calcPt.tx);
-        if(text) text = text.replace(NEWLINES, '').replace(BR_TAG_ALL, '\n');
+        if(text) {
+            text = text.replace(NEWLINES, '').replace(BR_TAG_ALL, '\n');
+        }
 
         features.push({
             type: 'Feature',

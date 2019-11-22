@@ -12,6 +12,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     colorbar: require('../scatter/marker_colorbar'),
+    formatLabels: require('./format_labels'),
     calc: require('../scattergeo/calc'),
     plot: require('./plot'),
     hoverPoints: require('./hover'),
