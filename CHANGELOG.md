@@ -10,6 +10,25 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.51.2] -- 2019-11-25
+
+### Fixed
+- Fix `texttemplate`formatting on axes that define
+  tick prefixes and suffixes [#4380, #4384]
+- Fix `cmin` and `cmax` computations during color
+  value updates on shared color axes [#4366]
+- Fix `contour` and `histogram2dcontour` legend item
+  rendering when `reversescale` is turned on [#4356]
+- Fix `contour` and `histogram2dcontour` legend item
+  rendering when set to a shared color axis [#4356]
+- Handle missing `vertexcolor` and `facecolor` during `mesh3d` rendering [#4353]
+- No longer coerce `contour` and `colorscale` attributes for `mesh3d`
+  when not needed [#4346]
+- Remove a duplicate function call in `parcoords` code [#4357]
+- Include `opacity` in the `surface` trace plot schema [#4344]
+- Mention `legend.bgcolor` default in attribute description [#4362]
+
+
 ## [1.51.1] -- 2019-11-04
 
 ### Fixed
