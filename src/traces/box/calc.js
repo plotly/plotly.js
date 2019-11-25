@@ -77,7 +77,7 @@ module.exports = function calc(gd, trace) {
         if(ptsPerBin[i].length > 0) {
             var pts = ptsPerBin[i].sort(sortByVal);
             var boxVals = pts.map(extractVal);
-            var bvLen = boxVals.length;
+            var N = boxVals.length;
 
             cdi = {};
             cdi.pos = posDistinct[i];
@@ -85,19 +85,38 @@ module.exports = function calc(gd, trace) {
 
             // Sort categories by values
             cdi[posLetter] = cdi.pos;
-            cdi[valLetter] = cdi.pts.map(function(pt) { return pt.v; });
+            cdi[valLetter] = cdi.pts.map(extractVal);
 
             cdi.min = boxVals[0];
-            cdi.max = boxVals[bvLen - 1];
-            cdi.mean = Lib.mean(boxVals, bvLen);
-            cdi.sd = Lib.stdev(boxVals, bvLen, cdi.mean);
+            cdi.max = boxVals[N - 1];
+            cdi.mean = Lib.mean(boxVals, N);
+            cdi.sd = Lib.stdev(boxVals, N, cdi.mean);
 
-            // first quartile
-            cdi.q1 = Lib.interp(boxVals, 0.25);
-             // median
+            // median
             cdi.med = Lib.interp(boxVals, 0.5);
-            // third quartile
-            cdi.q3 = Lib.interp(boxVals, 0.75);
+
+            var quartilemethod = trace.quartilemethod;
+
+            if((N % 2) && (quartilemethod === 'exclusive' || quartilemethod === 'inclusive')) {
+                var lower;
+                var upper;
+
+                if(quartilemethod === 'exclusive') {
+                    // do NOT include the median in either half
+                    lower = boxVals.slice(0, N / 2);
+                    upper = boxVals.slice(N / 2 + 1);
+                } else if(quartilemethod === 'inclusive') {
+                    // include the median in either half
+                    lower = boxVals.slice(0, N / 2 + 1);
+                    upper = boxVals.slice(N / 2);
+                }
+
+                cdi.q1 = Lib.interp(lower, 0.5);
+                cdi.q3 = Lib.interp(upper, 0.5);
+            } else {
+                cdi.q1 = Lib.interp(boxVals, 0.25);
+                cdi.q3 = Lib.interp(boxVals, 0.75);
+            }
 
             // lower and upper fences - last point inside
             // 1.5 interquartile ranges from quartiles
@@ -105,7 +124,7 @@ module.exports = function calc(gd, trace) {
                 cdi.q1,
                 boxVals[Math.min(
                     Lib.findBin(2.5 * cdi.q1 - 1.5 * cdi.q3, boxVals, true) + 1,
-                    bvLen - 1
+                    N - 1
                 )]
             );
             cdi.uf = Math.max(
@@ -123,7 +142,7 @@ module.exports = function calc(gd, trace) {
 
             // lower and upper notches ~95% Confidence Intervals for median
             var iqr = cdi.q3 - cdi.q1;
-            var mci = 1.57 * iqr / Math.sqrt(bvLen);
+            var mci = 1.57 * iqr / Math.sqrt(N);
             cdi.ln = cdi.med - mci;
             cdi.un = cdi.med + mci;
             minLowerNotch = Math.min(minLowerNotch, cdi.ln);

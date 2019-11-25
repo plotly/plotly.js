@@ -29,6 +29,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('whiskerwidth');
     coerce('boxmean');
     coerce('width');
+    coerce('quartilemethod');
 
     var notched = coerce('notched', traceIn.notchwidth !== undefined);
     if(notched) coerce('notchwidth');

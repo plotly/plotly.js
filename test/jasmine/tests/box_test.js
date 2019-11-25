@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 
 var Box = require('@src/traces/box');
 
@@ -608,5 +609,96 @@ describe('Test box restyle:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('Test box calc', function() {
+    var gd;
+
+    function _calc(attrs, layout) {
+        gd = {
+            data: [Lib.extendFlat({type: 'box'}, attrs)],
+            layout: layout || {},
+            calcdata: []
+        };
+        supplyAllDefaults(gd);
+        Plots.doCalcdata(gd);
+        return gd.calcdata[0];
+    }
+
+    it('should compute q1/q3 depending on *quartilemethod*', function() {
+        // samples from https://en.wikipedia.org/wiki/Quartile
+        var specs = {
+            // N is odd and is spanned by (4n+3)
+            odd: {
+                sample: [6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 20.25, q3: 42.75},
+                    exclusive: {q1: 15, q3: 43},
+                    inclusive: {q1: 25.5, q3: 42.5}
+                }
+            },
+            // N is odd and is spanned by (4n+1)
+            odd2: {
+                sample: [6, 15, 36, 39, 40, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 30.75, q3: 44},
+                    exclusive: {q1: 25.5, q3: 45},
+                    inclusive: {q1: 36, q3: 43}
+                }
+            },
+            // N is even
+            even: {
+                sample: [7, 15, 36, 39, 40, 41],
+                methods: {
+                    linear: {q1: 15, q3: 40},
+                    exclusive: {q1: 15, q3: 40},
+                    inclusive: {q1: 15, q3: 40}
+                }
+            },
+            // samples from http://jse.amstat.org/v14n3/langford.html
+            s4: {
+                sample: [1, 2, 3, 4],
+                methods: {
+                    linear: {q1: 1.5, q3: 3.5},
+                    exclusive: {q1: 1.5, q3: 3.5},
+                    inclusive: {q1: 1.5, q3: 3.5}
+                }
+            },
+            s5: {
+                sample: [1, 2, 3, 4, 5],
+                methods: {
+                    linear: {q1: 1.75, q3: 4.25},
+                    exclusive: {q1: 1.5, q3: 4.5},
+                    inclusive: {q1: 2, q3: 4}
+                }
+            },
+            s6: {
+                sample: [1, 2, 3, 4, 5, 6],
+                methods: {
+                    linear: {q1: 2, q3: 5},
+                    exclusive: {q1: 2, q3: 5},
+                    inclusive: {q1: 2, q3: 5}
+                }
+            },
+            s7: {
+                sample: [1, 2, 3, 4, 5, 6, 7],
+                methods: {
+                    linear: {q1: 2.25, q3: 5.75},
+                    exclusive: {q1: 2, q3: 6},
+                    inclusive: {q1: 2.5, q3: 5.5}
+                }
+            }
+        };
+
+        for(var name in specs) {
+            var spec = specs[name];
+
+            for(var m in spec.methods) {
+                var cd = _calc({y: spec.sample, quartilemethod: m});
+                expect(cd[0].q1).toBe(spec.methods[m].q1, ['q1', m, name].join(' | '));
+                expect(cd[0].q3).toBe(spec.methods[m].q3, ['q3', m, name].join(' | '));
+            }
+        }
     });
 });
