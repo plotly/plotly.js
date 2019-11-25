@@ -12,6 +12,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
+    formatLabels: require('../scattermapbox/format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     hoverPoints: require('./hover'),
