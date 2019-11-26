@@ -1230,7 +1230,10 @@ function attachWheelEventHandler(element, handler) {
     if(!supportsPassive) {
         if(element.onwheel !== undefined) element.onwheel = handler;
         else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
-        else { element.addEventListener('wheel', handler, {passive: false}); }
+        else if(element.isAddedWheelEvent) {
+            element.isAddedWheelEvent = true;
+            element.addEventListener('wheel', handler, {passive: false});
+        }
     } else {
         var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
 
