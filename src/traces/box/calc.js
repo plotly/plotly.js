@@ -69,6 +69,9 @@ module.exports = function calc(gd, trace) {
         Lib.identity :
         function(pt) { return (pt.v < cdi.lf || pt.v > cdi.uf); };
 
+    var minLowerNotch = Infinity;
+    var maxUpperNotch = -Infinity;
+
     // build calcdata trace items, one item per distinct position
     for(i = 0; i < pLen; i++) {
         if(ptsPerBin[i].length > 0) {
@@ -123,6 +126,8 @@ module.exports = function calc(gd, trace) {
             var mci = 1.57 * iqr / Math.sqrt(bvLen);
             cdi.ln = cdi.med - mci;
             cdi.un = cdi.med + mci;
+            minLowerNotch = Math.min(minLowerNotch, cdi.ln);
+            maxUpperNotch = Math.max(maxUpperNotch, cdi.un);
 
             cdi.pts2 = pts.filter(ptFilterFn);
 
@@ -131,8 +136,11 @@ module.exports = function calc(gd, trace) {
     }
 
     calcSelection(cd, trace);
-    var extremes = Axes.findExtremes(valAxis, val, {padded: true});
-    trace._extremes[valAxis._id] = extremes;
+
+    trace._extremes[valAxis._id] = Axes.findExtremes(valAxis,
+        trace.notched ? val.concat([minLowerNotch, maxUpperNotch]) : val,
+        {padded: true}
+    );
 
     if(cd.length > 0) {
         cd[0].t = {

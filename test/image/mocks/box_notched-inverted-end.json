@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "x": [113.35, 29.54, 21.7, 113.35, 29.54, 21.7],
+      "name": "[113.35,29.54,21.7,113.35,29.54,21.7]",
+      "type": "box",
+      "notched": true
+    },
+    {
+      "x": [39.4, 88.63, 39.4, 88.63],
+      "name": "[39.4,88.63,39.4,88.63]",
+      "type": "box",
+      "notched": true
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Samples where the confidence interval<br>median ± 1.57 / IQR * sqrt(N)<br>go beyond the fences",
+      "x": 0.02
+    },
+    "xaxis": {
+      "showline": true,
+      "mirror": true,
+      "zeroline": false
+    },
+    "yaxis": {
+      "showline": true,
+      "mirror": true,
+      "zeroline": false
+    },
+    "showlegend": false,
+    "margin": {"l": 220, "b": 20, "r": 20},
+    "width": 600,
+    "height": 300
+  }
+}
