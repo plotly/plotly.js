@@ -573,7 +573,7 @@ module.exports = function style(s, gd) {
                 if(s.size()) {
                     var gradientID = 'legendfill-' + trace.uid;
                     Drawing.gradient(s, gd, gradientID,
-                        reversescale ? 'horizontal' : 'horizontalreversed',
+                        getGradientDirection(reversescale),
                         colorscale, 'fill');
                 }
             };

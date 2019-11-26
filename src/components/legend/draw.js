@@ -64,9 +64,9 @@ module.exports = function draw(gd) {
         .style('stroke-width', opts.borderwidth + 'px');
 
 
-    var title = fullLayout.legend.title;
-    gd._fullLayout._legendTitleWidth = 0;
-    gd._fullLayout._legendTitleHeight = 0;
+    var title = opts.title;
+    opts._titleWidth = 0;
+    opts._titleHeight = 0;
     if(title.text) {
         var titleEl = Lib.ensureSingle(legend, 'text', 'legendtitletext');
         titleEl.attr('text-anchor', 'start')
@@ -383,7 +383,7 @@ function drawTexts(g, gd) {
 
     textEl.attr('text-anchor', 'start')
         .classed('user-select-none', true)
-        .call(Drawing.font, fullLayout.legend.font)
+        .call(Drawing.font, opts.font)
         .text(isEditable ? ensureLength(name, maxNameLength) : name);
 
     svgTextUtils.positionText(textEl, constants.textGap, 0);
@@ -483,10 +483,8 @@ function computeTextDimensions(g, gd) {
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
     var bw = gd._fullLayout.legend.borderwidth;
-    var opts = legendItem ?
-        gd._fullLayout.legend :
-        gd._fullLayout.legend.title;
-    var lineHeight = opts.font.size * LINE_SPACING;
+    var opts = gd._fullLayout.legend;
+    var lineHeight = (legendItem ? opts : opts.title).font.size * LINE_SPACING;
     var height, width;
 
     if(mathjaxNode) {
@@ -525,11 +523,11 @@ function computeTextDimensions(g, gd) {
         legendItem.height = Math.max(height, 16) + 3;
         legendItem.width = width;
     } else { // case of title
-        if(opts.side.indexOf('left') !== -1) {
-            gd._fullLayout._legendTitleWidth = width;
+        if(opts.title.side.indexOf('left') !== -1) {
+            opts._titleWidth = width;
         }
-        if(opts.side.indexOf('top') !== -1) {
-            gd._fullLayout._legendTitleHeight = height;
+        if(opts.title.side.indexOf('top') !== -1) {
+            opts._titleHeight = height;
         }
     }
 }
@@ -548,8 +546,6 @@ function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout;
     var opts = fullLayout.legend;
     var gs = fullLayout._size;
-    opts._titleWidth = fullLayout._legendTitleWidth;
-    opts._titleHeight = fullLayout._legendTitleHeight;
 
     var isVertical = helpers.isVertical(opts);
     var isGrouped = helpers.isGrouped(opts);
