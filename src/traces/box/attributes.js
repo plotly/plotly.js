@@ -52,6 +52,7 @@ module.exports = {
             'See overview for more info.'
         ].join(' ')
     },
+
     name: {
         valType: 'string',
         role: 'info',
@@ -64,40 +65,10 @@ module.exports = {
             'missing and the position axis is categorical'
         ].join(' ')
     },
-    text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets the text elements associated with each sample value.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.',
-            'To be seen, trace `hoverinfo` must contain a *text* flag.'
-        ].join(' ')
-    }),
-    hovertext: extendFlat({}, scatterAttrs.hovertext, {
-        description: 'Same as `text`.'
-    }),
-    hovertemplate: hovertemplateAttrs({
-        description: [
-            'N.B. This only has an effect when hovering on points.'
-        ].join(' ')
-    }),
-    whiskerwidth: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0.5,
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Sets the width of the whiskers relative to',
-            'the box\' width.',
-            'For example, with 1, the whiskers are as wide as the box(es).'
-        ].join(' ')
-    },
+
     notched: {
         valType: 'boolean',
-        role: 'style',
+        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not notches are drawn.',
@@ -121,6 +92,7 @@ module.exports = {
             'For example, with 0, the notches are as wide as the box(es).'
         ].join(' ')
     },
+
     boxpoints: {
         valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
@@ -135,18 +107,6 @@ module.exports = {
             'are highlighted (see `outliercolor`)',
             'If *all*, all sample points are shown',
             'If *false*, only the box(es) are shown with no sample points'
-        ].join(' ')
-    },
-    boxmean: {
-        valType: 'enumerated',
-        values: [true, 'sd', false],
-        dflt: false,
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'If *true*, the mean of the box(es)\' underlying distribution is',
-            'drawn as a dashed line inside the box(es).',
-            'If *sd* the standard deviation is also drawn.'
         ].join(' ')
     },
     jitter: {
@@ -175,6 +135,20 @@ module.exports = {
             'right (left) for vertical boxes and above (below) for horizontal boxes'
         ].join(' ')
     },
+
+    boxmean: {
+        valType: 'enumerated',
+        values: [true, 'sd', false],
+        dflt: false,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'If *true*, the mean of the box(es)\' underlying distribution is',
+            'drawn as a dashed line inside the box(es).',
+            'If *sd* the standard deviation is also drawn.'
+        ].join(' ')
+    },
+
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],
@@ -270,6 +244,7 @@ module.exports = {
         },
         editType: 'plot'
     },
+
     line: {
         color: {
             valType: 'color',
@@ -287,7 +262,22 @@ module.exports = {
         },
         editType: 'plot'
     },
+
     fillcolor: scatterAttrs.fillcolor,
+
+    whiskerwidth: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0.5,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Sets the width of the whiskers relative to',
+            'the box\' width.',
+            'For example, with 1, the whiskers are as wide as the box(es).'
+        ].join(' ')
+    },
 
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup,
@@ -300,6 +290,26 @@ module.exports = {
         marker: scatterAttrs.unselected.marker,
         editType: 'style'
     },
+
+    text: extendFlat({}, scatterAttrs.text, {
+        description: [
+            'Sets the text elements associated with each sample value.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
+    }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: 'Same as `text`.'
+    }),
+    hovertemplate: hovertemplateAttrs({
+        description: [
+            'N.B. This only has an effect when hovering on points.'
+        ].join(' ')
+    }),
+
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],
