@@ -26,6 +26,7 @@ var selectOnClick = require('../cartesian/select').selectOnClick;
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
 
+var geoUtils = require('../../lib/geo_location_utils');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
 
@@ -72,6 +73,7 @@ module.exports = function createGeo(opts) {
 proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this;
     var geoLayout = fullLayout[this.id];
+    var geoPromises = [];
 
     var needsTopojson = false;
     for(var k in constants.layerNameToAdjective) {
@@ -86,35 +88,34 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
             break;
         }
     }
-    if(!needsTopojson) {
-        return _this.update(geoCalcData, fullLayout);
+
+    if(needsTopojson) {
+        var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
+        if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
+            _this.topojsonName = topojsonNameNew;
+
+            if(PlotlyGeoAssets.topojson[_this.topojsonName] === undefined) {
+                geoPromises.push(_this.fetchTopojson());
+            }
+        }
     }
 
-    var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
+    geoPromises = geoPromises.concat(geoUtils.fetchTraceGeoData(geoCalcData));
 
-    if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
-        _this.topojsonName = topojsonNameNew;
-
-        if(PlotlyGeoAssets.topojson[_this.topojsonName] === undefined) {
-            promises.push(_this.fetchTopojson().then(function(topojson) {
-                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
-                _this.topojson = topojson;
-                _this.update(geoCalcData, fullLayout);
-            }));
-        } else {
+    promises.push(new Promise(function(resolve, reject) {
+        Promise.all(geoPromises).then(function() {
             _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
             _this.update(geoCalcData, fullLayout);
-        }
-    } else {
-        _this.update(geoCalcData, fullLayout);
-    }
+            resolve();
+        })
+        .catch(reject);
+    }));
 };
 
 proto.fetchTopojson = function() {
-    var topojsonPath = topojsonUtils.getTopojsonPath(
-        this.topojsonURL,
-        this.topojsonName
-    );
+    var _this = this;
+    var topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonURL, _this.topojsonName);
+
     return new Promise(function(resolve, reject) {
         d3.json(topojsonPath, function(err, topojson) {
             if(err) {
@@ -132,7 +133,9 @@ proto.fetchTopojson = function() {
                     ].join(' ')));
                 }
             }
-            resolve(topojson);
+
+            PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
+            resolve();
         });
     });
 };

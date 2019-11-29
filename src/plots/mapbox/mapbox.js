@@ -8,18 +8,17 @@
 
 'use strict';
 
-/* global PlotlyGeoAssets:false */
-
 var mapboxgl = require('mapbox-gl');
-var d3 = require('d3');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var geoUtils = require('../../lib/geo_location_utils');
 var Registry = require('../../registry');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
+
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');
 
@@ -130,7 +129,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         map.once('load', resolve);
     }));
 
-    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+    promises = promises.concat(geoUtils.fetchTraceGeoData(calcData));
 
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);
@@ -138,39 +137,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
     }).catch(reject);
-};
-
-proto.fetchMapData = function(calcData) {
-    var promises = [];
-
-    function fetch(url) {
-        return new Promise(function(resolve, reject) {
-            d3.json(url, function(err, d) {
-                if(err) {
-                    delete PlotlyGeoAssets[url];
-                    var msg = err.status === 404 ?
-                        ('GeoJSON at URL "' + url + '" does not exist.') :
-                        ('Unexpected error while fetching from ' + url);
-                    return reject(new Error(msg));
-                }
-
-                PlotlyGeoAssets[url] = d;
-                resolve(d);
-            });
-        });
-    }
-
-    for(var i = 0; i < calcData.length; i++) {
-        var trace = calcData[i][0].trace;
-        var url = trace.geojson;
-
-        if(typeof url === 'string' && !PlotlyGeoAssets[url]) {
-            PlotlyGeoAssets[url] = 'pending';
-            promises.push(fetch(url));
-        }
-    }
-
-    return promises;
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
@@ -196,7 +162,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         }));
     }
 
-    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+    promises = promises.concat(geoUtils.fetchTraceGeoData(calcData));
 
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);

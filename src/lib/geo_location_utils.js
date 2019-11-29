@@ -8,15 +8,22 @@
 
 'use strict';
 
+var d3 = require('d3');
 var countryRegex = require('country-regex');
-var Lib = require('../lib');
+var turfArea = require('@turf/area');
+var turfCentroid = require('@turf/centroid');
+
+var identity = require('./identity');
+var loggers = require('./loggers');
+var isPlainObject = require('./is_plain_object');
+var polygon = require('./polygon');
 
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(countryRegex);
 
 var locationmodeToIdFinder = {
-    'ISO-3': Lib.identity,
-    'USA-states': Lib.identity,
+    'ISO-3': identity,
+    'USA-states': identity,
     'country names': countryNameToISO3
 };
 
@@ -28,7 +35,7 @@ function countryNameToISO3(countryName) {
         if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }
 
-    Lib.log('Unrecognized country name: ' + countryName + '.');
+    loggers.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
 }
@@ -64,7 +71,7 @@ function locationToFeature(locationmode, location, features) {
             if(f.id === locationId) return f;
         }
 
-        Lib.log([
+        loggers.log([
             'Location with id', locationId,
             'does not have a matching topojson feature at this resolution.'
         ].join(' '));
@@ -73,6 +80,256 @@ function locationToFeature(locationmode, location, features) {
     return false;
 }
 
+function feature2polygons(feature) {
+    var geometry = feature.geometry;
+    var coords = geometry.coordinates;
+    var loc = feature.id;
+
+    var polygons = [];
+    var appendPolygon, j, k, m;
+
+    function doesCrossAntiMerdian(pts) {
+        for(var l = 0; l < pts.length - 1; l++) {
+            if(pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+        }
+        return null;
+    }
+
+    if(loc === 'RUS' || loc === 'FJI') {
+        // Russia and Fiji have landmasses that cross the antimeridian,
+        // we need to add +360 to their longitude coordinates, so that
+        // polygon 'contains' doesn't get confused when crossing the antimeridian.
+        //
+        // Note that other countries have polygons on either side of the antimeridian
+        // (e.g. some Aleutian island for the USA), but those don't confuse
+        // the 'contains' method; these are skipped here.
+        appendPolygon = function(_pts) {
+            var pts;
+
+            if(doesCrossAntiMerdian(_pts) === null) {
+                pts = _pts;
+            } else {
+                pts = new Array(_pts.length);
+                for(m = 0; m < _pts.length; m++) {
+                    // do not mutate calcdata[i][j].geojson !!
+                    pts[m] = [
+                        _pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0],
+                        _pts[m][1]
+                    ];
+                }
+            }
+
+            polygons.push(polygon.tester(pts));
+        };
+    } else if(loc === 'ATA') {
+        // Antarctica has a landmass that wraps around every longitudes which
+        // confuses the 'contains' methods.
+        appendPolygon = function(pts) {
+            var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
+
+            // polygon that do not cross anti-meridian need no special handling
+            if(crossAntiMeridianIndex === null) {
+                return polygons.push(polygon.tester(pts));
+            }
+
+            // stitch polygon by adding pt over South Pole,
+            // so that it covers the projected region covers all latitudes
+            //
+            // Note that the algorithm below only works for polygons that
+            // start and end on longitude -180 (like the ones built by
+            // https://github.com/etpinard/sane-topojson).
+            var stitch = new Array(pts.length + 1);
+            var si = 0;
+
+            for(m = 0; m < pts.length; m++) {
+                if(m > crossAntiMeridianIndex) {
+                    stitch[si++] = [pts[m][0] + 360, pts[m][1]];
+                } else if(m === crossAntiMeridianIndex) {
+                    stitch[si++] = pts[m];
+                    stitch[si++] = [pts[m][0], -90];
+                } else {
+                    stitch[si++] = pts[m];
+                }
+            }
+
+            // polygon.tester by default appends pt[0] to the points list,
+            // we must remove it here, to avoid a jump in longitude from 180 to -180,
+            // that would confuse the 'contains' method
+            var tester = polygon.tester(stitch);
+            tester.pts.pop();
+            polygons.push(tester);
+        };
+    } else {
+        // otherwise using same array ref is fine
+        appendPolygon = function(pts) {
+            polygons.push(polygon.tester(pts));
+        };
+    }
+
+    switch(geometry.type) {
+        case 'MultiPolygon':
+            for(j = 0; j < coords.length; j++) {
+                for(k = 0; k < coords[j].length; k++) {
+                    appendPolygon(coords[j][k]);
+                }
+            }
+            break;
+        case 'Polygon':
+            for(j = 0; j < coords.length; j++) {
+                appendPolygon(coords[j]);
+            }
+            break;
+    }
+
+    return polygons;
+}
+
+function extractTraceFeature(calcTrace) {
+    var trace = calcTrace[0].trace;
+
+    var geojsonIn = typeof trace.geojson === 'string' ?
+        (window.PlotlyGeoAssets || {})[trace.geojson] :
+        trace.geojson;
+
+    // This should not happen, but just in case something goes
+    // really wrong when fetching the GeoJSON
+    if(!isPlainObject(geojsonIn)) {
+        loggers.error('Oops ... something when wrong when fetching ' + trace.geojson);
+        return false;
+    }
+
+    var lookup = {};
+    var featuresOut = [];
+    var i;
+
+    for(i = 0; i < trace._length; i++) {
+        var cdi = calcTrace[i];
+        if(cdi.loc) lookup[cdi.loc] = cdi;
+    }
+
+    function appendFeature(fIn) {
+        var cdi = lookup[fIn.id];
+
+        if(cdi) {
+            var geometry = fIn.geometry;
+
+            if(geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+                var fOut = {
+                    type: 'Feature',
+                    geometry: geometry,
+                    properties: {}
+                };
+
+                // Compute centroid, add it to the properties
+                fOut.properties.ct = findCentroid(fOut);
+
+                // Mutate in in/out features into calcdata
+                cdi.fIn = fIn;
+                cdi.fOut = fOut;
+
+                featuresOut.push(fOut);
+            } else {
+                loggers.log([
+                    'Location with id', cdi.loc, 'does not have a valid GeoJSON geometry,',
+                    'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
+                ].join(' '));
+            }
+        }
+
+        // remove key from lookup, so that we can track (if any)
+        // the locations that did not have a corresponding GeoJSON feature
+        delete lookup[fIn.id];
+    }
+
+    switch(geojsonIn.type) {
+        case 'FeatureCollection':
+            var featuresIn = geojsonIn.features;
+            for(i = 0; i < featuresIn.length; i++) {
+                appendFeature(featuresIn[i]);
+            }
+            break;
+        case 'Feature':
+            appendFeature(geojsonIn);
+            break;
+        default:
+            loggers.warn([
+                'Invalid GeoJSON type', (geojsonIn.type || 'none') + ',',
+                'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
+            ].join(' '));
+            return false;
+    }
+
+    for(var loc in lookup) {
+        loggers.log('Location with id ' + loc + ' does not have a matching feature');
+    }
+
+    return featuresOut;
+}
+
+// TODO this find the centroid of the polygon of maxArea
+// (just like we currently do for geo choropleth polygons),
+// maybe instead it would make more sense to compute the centroid
+// of each polygon and consider those on hover/select
+function findCentroid(feature) {
+    var geometry = feature.geometry;
+    var poly;
+
+    if(geometry.type === 'MultiPolygon') {
+        var coords = geometry.coordinates;
+        var maxArea = 0;
+
+        for(var i = 0; i < coords.length; i++) {
+            var polyi = {type: 'Polygon', coordinates: coords[i]};
+            var area = turfArea.default(polyi);
+            if(area > maxArea) {
+                maxArea = area;
+                poly = polyi;
+            }
+        }
+    } else {
+        poly = geometry;
+    }
+
+    return turfCentroid.default(poly).geometry.coordinates;
+}
+
+function fetchTraceGeoData(calcData) {
+    var PlotlyGeoAssets = window.PlotlyGeoAssets || {};
+    var promises = [];
+
+    function fetch(url) {
+        return new Promise(function(resolve, reject) {
+            d3.json(url, function(err, d) {
+                if(err) {
+                    delete PlotlyGeoAssets[url];
+                    var msg = err.status === 404 ?
+                        ('GeoJSON at URL "' + url + '" does not exist.') :
+                        ('Unexpected error while fetching from ' + url);
+                    return reject(new Error(msg));
+                }
+
+                PlotlyGeoAssets[url] = d;
+                resolve(d);
+            });
+        });
+    }
+
+    for(var i = 0; i < calcData.length; i++) {
+        var trace = calcData[i][0].trace;
+        var url = trace.geojson;
+
+        if(typeof url === 'string' && !PlotlyGeoAssets[url]) {
+            PlotlyGeoAssets[url] = 'pending';
+            promises.push(fetch(url));
+        }
+    }
+
+    return promises;
+}
+
 module.exports = {
-    locationToFeature: locationToFeature
+    locationToFeature: locationToFeature,
+    feature2polygons: feature2polygons,
+    extractTraceFeature: extractTraceFeature,
+    fetchTraceGeoData: fetchTraceGeoData
 };

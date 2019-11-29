@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var loggers = require('@src/lib/loggers');
 
 var convertModule = require('@src/traces/choroplethmapbox/convert');
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
@@ -150,19 +151,19 @@ describe('Test choroplethmapbox convert:', function() {
     });
 
     it('should return early if something goes wrong while fetching a GeoJSON', function() {
-        spyOn(Lib, 'error');
+        spyOn(loggers, 'error');
 
         var opts = _convert({
             locations: ['a'], z: [1],
             geojson: 'url'
         });
 
-        expect(Lib.error).toHaveBeenCalledWith('Oops ... something when wrong when fetching url');
+        expect(loggers.error).toHaveBeenCalledWith('Oops ... something when wrong when fetching url');
         expectBlank(opts);
     });
 
     describe('should warn when set GeoJSON is not a *FeatureCollection* or a *Feature* type and return early', function() {
-        beforeEach(function() { spyOn(Lib, 'warn'); });
+        beforeEach(function() { spyOn(loggers, 'warn'); });
 
         it('- case missing *type* key', function() {
             var opts = _convert({
@@ -172,7 +173,7 @@ describe('Test choroplethmapbox convert:', function() {
                 }
             });
             expectBlank(opts);
-            expect(Lib.warn).toHaveBeenCalledWith([
+            expect(loggers.warn).toHaveBeenCalledWith([
                 'Invalid GeoJSON type none,',
                 'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
             ].join(' '));
@@ -186,7 +187,7 @@ describe('Test choroplethmapbox convert:', function() {
                 }
             });
             expectBlank(opts);
-            expect(Lib.warn).toHaveBeenCalledWith([
+            expect(loggers.warn).toHaveBeenCalledWith([
                 'Invalid GeoJSON type nop!,',
                 'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
             ].join(' '));
@@ -194,7 +195,7 @@ describe('Test choroplethmapbox convert:', function() {
     });
 
     describe('should log when crossing a GeoJSON geometry that is not a *Polygon* or a *MultiPolygon* type', function() {
-        beforeEach(function() { spyOn(Lib, 'log'); });
+        beforeEach(function() { spyOn(loggers, 'log'); });
 
         it('- case missing geometry *type*', function() {
             var trace = base();
@@ -202,7 +203,7 @@ describe('Test choroplethmapbox convert:', function() {
 
             var opts = _convert(trace);
             expect(opts.geojson.features.length).toBe(2, '# of feature to be rendered');
-            expect(Lib.log).toHaveBeenCalledWith([
+            expect(loggers.log).toHaveBeenCalledWith([
                 'Location with id b does not have a valid GeoJSON geometry,',
                 'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
             ].join(' '));
@@ -214,7 +215,7 @@ describe('Test choroplethmapbox convert:', function() {
 
             var opts = _convert(trace);
             expect(opts.geojson.features.length).toBe(2, '# of feature to be rendered');
-            expect(Lib.log).toHaveBeenCalledWith([
+            expect(loggers.log).toHaveBeenCalledWith([
                 'Location with id c does not have a valid GeoJSON geometry,',
                 'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
             ].join(' '));
@@ -222,7 +223,7 @@ describe('Test choroplethmapbox convert:', function() {
     });
 
     it('should log when an entry set in *locations* does not a matching feature in the GeoJSON', function() {
-        spyOn(Lib, 'log');
+        spyOn(loggers, 'log');
 
         var trace = base();
         trace.locations = ['a', 'b', 'c', 'd'];
@@ -230,7 +231,7 @@ describe('Test choroplethmapbox convert:', function() {
 
         var opts = _convert(trace);
         expect(opts.geojson.features.length).toBe(3, '# of features to be rendered');
-        expect(Lib.log).toHaveBeenCalledWith('Location with id d does not have a matching feature');
+        expect(loggers.log).toHaveBeenCalledWith('Location with id d does not have a matching feature');
     });
 
     describe('should accept numbers as *locations* items', function() {

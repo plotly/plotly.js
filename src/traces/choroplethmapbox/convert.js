@@ -9,15 +9,13 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var turfArea = require('@turf/area');
-var turfCentroid = require('@turf/centroid');
 
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
 
 var makeBlank = require('../../lib/geojson_utils').makeBlank;
-var feature2polygons = require('../choropleth/plot').feature2polygons;
+var geoUtils = require('../../lib/geo_location_utils');
 
 /* N.B.
  *
@@ -52,25 +50,9 @@ function convert(calcTrace) {
 
     if(!isVisible) return opts;
 
-    var geojsonIn = typeof trace.geojson === 'string' ?
-        (window.PlotlyGeoAssets || {})[trace.geojson] :
-        trace.geojson;
+    var features = geoUtils.extractTraceFeature(calcTrace);
 
-    // This should not happen, but just in case something goes
-    // really wrong when fetching the GeoJSON
-    if(!Lib.isPlainObject(geojsonIn)) {
-        Lib.error('Oops ... something when wrong when fetching ' + trace.geojson);
-        return opts;
-    }
-
-    var lookup = {};
-    var featuresOut = [];
-    var i;
-
-    for(i = 0; i < calcTrace.length; i++) {
-        var cdi = calcTrace[i];
-        if(cdi.loc) lookup[cdi.loc] = cdi;
-    }
+    if(!features) return opts;
 
     var sclFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
     var marker = trace.marker;
@@ -94,63 +76,19 @@ function convert(calcTrace) {
         lineWidthFn = function(d) { return d.mlw; };
     }
 
-    function appendFeature(fIn) {
-        var cdi = lookup[fIn.id];
+    for(var i = 0; i < calcTrace.length; i++) {
+        var cdi = calcTrace[i];
+        var fOut = cdi.fOut;
 
-        if(cdi) {
-            var geometry = fIn.geometry;
-
-            if(geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-                var props = {fc: sclFunc(cdi.z)};
-
-                if(opacityFn) props.mo = opacityFn(cdi);
-                if(lineColorFn) props.mlc = lineColorFn(cdi);
-                if(lineWidthFn) props.mlw = lineWidthFn(cdi);
-
-                var fOut = {
-                    type: 'Feature',
-                    geometry: geometry,
-                    properties: props
-                };
-
-                cdi._polygons = feature2polygons(fOut);
-                cdi.ct = findCentroid(fOut);
-                cdi.fIn = fIn;
-                cdi.fOut = fOut;
-                featuresOut.push(fOut);
-            } else {
-                Lib.log([
-                    'Location with id', cdi.loc, 'does not have a valid GeoJSON geometry,',
-                    'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
-                ].join(' '));
-            }
+        if(fOut) {
+            var props = fOut.properties;
+            props.fc = sclFunc(cdi.z);
+            if(opacityFn) props.mo = opacityFn(cdi);
+            if(lineColorFn) props.mlc = lineColorFn(cdi);
+            if(lineWidthFn) props.mlw = lineWidthFn(cdi);
+            cdi.ct = props.ct;
+            cdi._polygons = geoUtils.feature2polygons(fOut);
         }
-
-        // remove key from lookup, so that we can track (if any)
-        // the locations that did not have a corresponding GeoJSON feature
-        delete lookup[fIn.id];
-    }
-
-    switch(geojsonIn.type) {
-        case 'FeatureCollection':
-            var featuresIn = geojsonIn.features;
-            for(i = 0; i < featuresIn.length; i++) {
-                appendFeature(featuresIn[i]);
-            }
-            break;
-        case 'Feature':
-            appendFeature(geojsonIn);
-            break;
-        default:
-            Lib.warn([
-                'Invalid GeoJSON type', (geojsonIn.type || 'none') + ',',
-                'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
-            ].join(' '));
-            return opts;
-    }
-
-    for(var loc in lookup) {
-        Lib.log('Location with id ' + loc + ' does not have a matching feature');
     }
 
     var opacitySetting = opacityFn ?
@@ -175,7 +113,7 @@ function convert(calcTrace) {
     fill.layout.visibility = 'visible';
     line.layout.visibility = 'visible';
 
-    opts.geojson = {type: 'FeatureCollection', features: featuresOut};
+    opts.geojson = {type: 'FeatureCollection', features: features};
 
     convertOnSelect(calcTrace);
 
@@ -208,33 +146,6 @@ function convertOnSelect(calcTrace) {
     Lib.extendFlat(opts.line.paint, {'line-opacity': opacitySetting});
 
     return opts;
-}
-
-// TODO this find the centroid of the polygon of maxArea
-// (just like we currently do for geo choropleth polygons),
-// maybe instead it would make more sense to compute the centroid
-// of each polygon and consider those on hover/select
-function findCentroid(feature) {
-    var geometry = feature.geometry;
-    var poly;
-
-    if(geometry.type === 'MultiPolygon') {
-        var coords = geometry.coordinates;
-        var maxArea = 0;
-
-        for(var i = 0; i < coords.length; i++) {
-            var polyi = {type: 'Polygon', coordinates: coords[i]};
-            var area = turfArea.default(polyi);
-            if(area > maxArea) {
-                maxArea = area;
-                poly = polyi;
-            }
-        }
-    } else {
-        poly = geometry;
-    }
-
-    return turfCentroid.default(poly).geometry.coordinates;
 }
 
 module.exports = {

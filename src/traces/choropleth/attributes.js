@@ -33,6 +33,19 @@ module.exports = extendFlat({
         editType: 'calc',
         description: 'Sets the color values.'
     },
+    geojson: extendFlat({}, scatterGeoAttrs.geojson, {
+        description: [
+            'Sets optional GeoJSON data associated with this trace.',
+            'If not given, the features on the base map are used.',
+
+            'Can be set as a valid GeoJSON object or as URL string',
+            'Note that we only accept GeoJSON of type *FeatureCollection* and *Feature*',
+            'with geometries of type *Polygon* and *MultiPolygon*.'
+
+            // TODO add topojson support with additional 'topojsonobject' attr?
+            // https://github.com/topojson/topojson-specification/blob/master/README.md
+        ].join(' ')
+    }),
     text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),

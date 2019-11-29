@@ -14,8 +14,8 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
-var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var geoJsonUtils = require('../../lib/geojson_utils');
+var geoUtils = require('../../lib/geo_location_utils');
 var subTypes = require('../scatter/subtypes');
 var style = require('./style');
 
@@ -77,16 +77,22 @@ module.exports = function plot(gd, geo, calcData) {
 
 function calcGeoJSON(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
+    var len = trace._length;
+    var i, calcPt;
 
-    if(!Array.isArray(trace.locations)) return;
+    if(Array.isArray(trace.locations)) {
+        var locationmode = trace.locationmode;
+        var features = locationmode === 'geojson-id' ?
+            geoUtils.extractTraceFeature(calcTrace) :
+            getTopojsonFeatures(trace, topojson);
+        for(i = 0; i < len; i++) {
+            calcPt = calcTrace[i];
 
-    var features = getTopojsonFeatures(trace, topojson);
-    var locationmode = trace.locationmode;
+            var feature = locationmode === 'geojson-id' ?
+                calcPt.fOut :
+                geoUtils.locationToFeature(locationmode, calcPt.loc, features);
 
-    for(var i = 0; i < calcTrace.length; i++) {
-        var calcPt = calcTrace[i];
-        var feature = locationToFeature(locationmode, calcPt.loc, features);
-
-        calcPt.lonlat = feature ? feature.properties.ct : [BADNUM, BADNUM];
+            calcPt.lonlat = feature ? feature.properties.ct : [BADNUM, BADNUM];
+        }
     }
 }
