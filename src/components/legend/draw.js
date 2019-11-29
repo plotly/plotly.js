@@ -523,13 +523,26 @@ function computeTextDimensions(g, gd) {
         legendItem.height = Math.max(height, 16) + 3;
         legendItem.width = width;
     } else { // case of title
-        if(opts.title.side.indexOf('left') !== -1) {
-            opts._titleWidth = width;
+        opts._titleWidth = width;
+        opts._titleHeight = height;
+    }
+}
+
+function getTitleSize(opts) {
+    var w = 0;
+    var h = 0;
+
+    var side = opts.title.side;
+    if(side) {
+        if(side.indexOf('left') !== -1) {
+            w = opts._titleWidth;
         }
-        if(opts.title.side.indexOf('top') !== -1) {
-            opts._titleHeight = height;
+        if(side.indexOf('top') !== -1) {
+            h = opts._titleHeight;
         }
     }
+
+    return [w, h];
 }
 
 /*
@@ -570,13 +583,14 @@ function computeLegendDimensions(gd, groups, traces) {
     var toggleRectWidth = 0;
     opts._width = 0;
     opts._height = 0;
+    var titleSize = getTitleSize(opts);
 
     if(isVertical) {
         traces.each(function(d) {
             var h = d[0].height;
             Drawing.setTranslate(this,
-                bw + opts._titleWidth,
-                bw + opts._titleHeight + opts._height + h / 2 + itemGap
+                bw + titleSize[0],
+                bw + titleSize[1] + opts._height + h / 2 + itemGap
             );
             opts._height += h;
             opts._width = Math.max(opts._width, d[0].width);
@@ -628,8 +642,8 @@ function computeLegendDimensions(gd, groups, traces) {
                 d3.select(this).selectAll('g.traces').each(function(d) {
                     var h = d[0].height;
                     Drawing.setTranslate(this,
-                        opts._titleWidth,
-                        bw + opts._titleHeight + itemGap + h / 2 + offsetY
+                        titleSize[0],
+                        titleSize[1] + bw + itemGap + h / 2 + offsetY
                     );
                     offsetY += h;
                     maxWidthInGroup = Math.max(maxWidthInGroup, textGap + d[0].width);
@@ -674,8 +688,8 @@ function computeLegendDimensions(gd, groups, traces) {
                 }
 
                 Drawing.setTranslate(this,
-                    bw + opts._titleWidth + offsetX,
-                    bw + opts._titleHeight + offsetY + h / 2 + itemGap
+                    titleSize[0] + bw + offsetX,
+                    titleSize[1] + bw + offsetY + h / 2 + itemGap
                 );
 
                 rowWidth = offsetX + w + itemGap;
@@ -693,8 +707,19 @@ function computeLegendDimensions(gd, groups, traces) {
         }
     }
 
-    opts._width = Math.ceil(opts._width + opts._titleWidth);
-    opts._height = Math.ceil(opts._height + opts._titleHeight);
+    opts._width = Math.ceil(
+        Math.max(
+            opts._width + titleSize[0],
+            opts._titleWidth + 2 * (bw + constants.titlePad)
+        )
+    );
+
+    opts._height = Math.ceil(
+        Math.max(
+            opts._height + titleSize[1],
+            opts._titleHeight + 2 * (bw + constants.itemGap)
+        )
+    );
 
     opts._effHeight = Math.min(opts._height, opts._maxHeight);
 

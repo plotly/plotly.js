@@ -47,7 +47,7 @@
             "bgcolor": "yellow",
             "orientation": "h",
             "title": {
-                "text": "<b>World</b> <i>Countries</i>",
+                "text": "<b>World</b> <i>Countries</i><br>legends on <sub>different lines!</sub>",
                 "font": {
                     "size": 15,
                     "family": "Times New Roman"

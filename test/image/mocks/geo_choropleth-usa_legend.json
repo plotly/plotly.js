@@ -110,7 +110,9 @@
                 "WY"
             ],
             "colorbar": {
-                "title": "Millions USD"
+                "title": {
+                    "text": "Millions USD"
+                }
             },
             "type": "choropleth",
             "z": [
@@ -173,6 +175,11 @@
         "autosize": true,
         "title": {
             "text": "2011 US Agriculture Exports by State"
+        },
+        "legend": {
+            "title": {
+                "text": "2011 US Agriculture<br>Exports by State"
+            }
         },
         "height": 250,
         "width": 450,
