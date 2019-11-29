@@ -499,11 +499,16 @@ module.exports = function style(s, gd) {
                     break;
                 case 'choropleth' :
                 case 'choroplethmapbox' :
-                case 'densitymapbox' :
                     ptsData = [
                         ['M-6,-6V6H6V-6Z']
                     ];
                     useGradient = true;
+                    break;
+                case 'densitymapbox' :
+                    ptsData = [
+                        ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
+                    ];
+                    useGradient = 'radial';
                     break;
                 case 'cone' :
                     ptsData = [
@@ -573,7 +578,7 @@ module.exports = function style(s, gd) {
                 if(s.size()) {
                     var gradientID = 'legendfill-' + trace.uid;
                     Drawing.gradient(s, gd, gradientID,
-                        getGradientDirection(reversescale),
+                        getGradientDirection(reversescale, useGradient === 'radial'),
                         colorscale, 'fill');
                 }
             };
@@ -602,6 +607,7 @@ module.exports = function style(s, gd) {
     }
 };
 
-function getGradientDirection(reversescale) {
-    return reversescale ? 'horizontal' : 'horizontalreversed';
+function getGradientDirection(reversescale, isRadial) {
+    var str = isRadial ? 'radial' : 'horizontal';
+    return str + (reversescale ? '' : 'reversed');
 }
