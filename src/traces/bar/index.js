@@ -18,7 +18,7 @@ module.exports = {
     crossTraceCalc: require('./cross_trace_calc').crossTraceCalc,
     colorbar: require('../scatter/marker_colorbar'),
     arraysToCalcdata: require('./arrays_to_calcdata'),
-    plot: require('./plot').plot,
+    plot: require('./plot'),
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover').hoverPoints,

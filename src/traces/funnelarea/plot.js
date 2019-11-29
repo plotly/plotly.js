@@ -14,8 +14,7 @@ var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
-var barPlot = require('../bar/plot');
-var toMoveInsideBar = barPlot.toMoveInsideBar;
+var toMoveInsideBar = require('../bar/helpers').toMoveInsideBar;
 
 var pieHelpers = require('../pie/helpers');
 var piePlot = require('../pie/plot');

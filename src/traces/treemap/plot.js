@@ -15,7 +15,7 @@ var helpers = require('../sunburst/helpers');
 
 var Lib = require('../../lib');
 var TEXTPAD = require('../bar/constants').TEXTPAD;
-var toMoveInsideBar = require('../bar/plot').toMoveInsideBar;
+var toMoveInsideBar = require('../bar/helpers').toMoveInsideBar;
 
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
