@@ -13,6 +13,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
     calc: require('./calc'),
+    calcGeoJSON: require('./plot').calcGeoJSON,
     plot: require('./plot').plot,
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,

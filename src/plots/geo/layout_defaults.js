@@ -6,10 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var Lib = require('../../lib');
 var handleSubplotDefaults = require('../subplot_defaults');
+var getSubplotData = require('../get_data').getSubplotData;
+
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 
@@ -20,11 +22,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'geo',
         attributes: layoutAttributes,
         handleDefaults: handleGeoDefaults,
+        fullData: fullData,
         partition: 'y'
     });
 };
 
-function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
+function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
+    var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
+    var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
     var show;
 
     var resolution = coerce('resolution');
@@ -39,7 +44,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
 
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
     var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
-    geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
+    var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
     for(var i = 0; i < axesNames.length; i++) {
         var axisName = axesNames[i];
@@ -58,7 +63,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
             rangeDflt = [rot - hSpan, rot + hSpan];
         }
 
-        coerce(axisName + '.range', rangeDflt);
+        var range = coerce(axisName + '.range', rangeDflt);
         coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
@@ -67,6 +72,20 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
         }
+
+        // mock axis for autorange computations
+        geoLayoutOut[axisName]._ax = {
+            type: 'linear',
+            _id: axisName.slice(0, 3),
+            _traceIndices: traceIndices,
+            setScale: Lib.identity,
+            c2l: Lib.identity,
+            r2l: Lib.identity,
+            autorange: true,
+            range: range.slice(),
+            _m: 1,
+            _input: {}
+        };
     }
 
     var lonRange = geoLayoutOut.lonaxis.range;
@@ -158,4 +177,27 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     }
 
     coerce('bgcolor');
+
+    var fitBounds = coerce('fitbounds');
+
+    // clear attributes that will get auto-filled later
+    if(fitBounds) {
+        delete geoLayoutOut.projection.scale;
+
+        if(isScoped) {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+        } else if(isClipped) {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+            delete geoLayoutOut.projection.rotation.lon;
+            delete geoLayoutOut.projection.rotation.lat;
+            delete geoLayoutOut.lonaxis.range;
+            delete geoLayoutOut.lataxis.range;
+        } else {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+            delete geoLayoutOut.projection.rotation.lon;
+        }
+    }
 }

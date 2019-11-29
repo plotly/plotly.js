@@ -12,6 +12,7 @@ var d3 = require('d3');
 var countryRegex = require('country-regex');
 var turfArea = require('@turf/area');
 var turfCentroid = require('@turf/centroid');
+var turfBbox = require('@turf/bbox');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -185,9 +186,7 @@ function feature2polygons(feature) {
     return polygons;
 }
 
-function extractTraceFeature(calcTrace) {
-    var trace = calcTrace[0].trace;
-
+function getTraceGeojson(trace) {
     var geojsonIn = typeof trace.geojson === 'string' ?
         (window.PlotlyGeoAssets || {})[trace.geojson] :
         trace.geojson;
@@ -198,6 +197,15 @@ function extractTraceFeature(calcTrace) {
         loggers.error('Oops ... something when wrong when fetching ' + trace.geojson);
         return false;
     }
+
+    return geojsonIn;
+}
+
+function extractTraceFeature(calcTrace) {
+    var trace = calcTrace[0].trace;
+
+    var geojsonIn = getTraceGeojson(trace);
+    if(!geojsonIn) return false;
 
     var lookup = {};
     var featuresOut = [];
@@ -336,9 +344,17 @@ function fetchTraceGeoData(calcData) {
     return promises;
 }
 
+// TODO `turf/bbox` gives wrong result when the input feature/geometry
+// crosses the anti-meridian. We should try to implement our own bbox logic.
+function computeBbox(d) {
+    return turfBbox.default(d);
+}
+
 module.exports = {
     locationToFeature: locationToFeature,
     feature2polygons: feature2polygons,
+    getTraceGeojson: getTraceGeojson,
     extractTraceFeature: extractTraceFeature,
-    fetchTraceGeoData: fetchTraceGeoData
+    fetchTraceGeoData: fetchTraceGeoData,
+    computeBbox: computeBbox
 };

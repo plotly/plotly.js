@@ -2442,7 +2442,7 @@ var layoutUIControlPatterns = [
     {pattern: /(hover|drag)mode$/, attr: 'modebar.uirevision'},
 
     {pattern: /^(scene\d*)\.camera/},
-    {pattern: /^(geo\d*)\.(projection|center)/},
+    {pattern: /^(geo\d*)\.(projection|center|fitbounds)/},
     {pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/},
     {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/},
     {pattern: /^(polar\d*\.angularaxis)\.rotation/},

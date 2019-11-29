@@ -75,6 +75,33 @@ var attrs = module.exports = overrideAll({
         ].join(' ')
     }),
 
+    fitbounds: {
+        valType: 'enumerated',
+        values: [false, 'locations', 'geojson'],
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines if this subplot\'s view settings are auto-computed to fit trace data.',
+
+            'On scoped maps, setting `fitbounds` leads to `center.lon` and `center.lat` getting auto-filled.',
+
+            'On maps with a non-clipped projection, setting `fitbounds` leads to `center.lon`, `center.lat`,',
+            'and `projection.rotation.lon` getting auto-filled.',
+
+            'On maps with a clipped projection, setting `fitbounds` leads to `center.lon`, `center.lat`,',
+            '`projection.rotation.lon`, `projection.rotation.lat`, `lonaxis.range` and `lonaxis.range`',
+            'getting auto-filled.',
+
+            // TODO we should auto-fill `projection.parallels` for maps
+            // with conic projection, but how?
+
+            'If *locations*, only the trace\'s visible locations are considered in the `fitbounds` computations.',
+            'If *geojson*, the entire trace input `geojson` (if provided) is considered in the `fitbounds` computations,',
+            'Defaults to *false*.'
+        ].join(' ')
+    },
+
     resolution: {
         valType: 'enumerated',
         values: [110, 50],
