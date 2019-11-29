@@ -81,6 +81,9 @@ plots.resize = function(gd) {
             reject(new Error('Resize must be passed a displayed plot div element.'));
         }
 
+        if(gd._rejectResize) gd._rejectResize();
+        gd._rejectResize = reject;
+
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
         gd._redrawTimer = setTimeout(function() {
