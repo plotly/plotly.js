@@ -63,20 +63,20 @@ module.exports = function draw(gd) {
         .call(Color.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth + 'px');
 
+    var scrollBox = Lib.ensureSingle(legend, 'g', 'scrollbox');
 
     var title = opts.title;
     opts._titleWidth = 0;
     opts._titleHeight = 0;
     if(title.text) {
-        var titleEl = Lib.ensureSingle(legend, 'text', 'legendtitletext');
+        var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
         titleEl.attr('text-anchor', 'start')
             .classed('user-select-none', true)
             .call(Drawing.font, title.font)
             .text(title.text);
 
-        textLayout(titleEl, legend, gd); // handle mathjax or multi-line text and compute title height
+        textLayout(titleEl, scrollBox, gd); // handle mathjax or multi-line text and compute title height
     }
-    var scrollBox = Lib.ensureSingle(legend, 'g', 'scrollbox');
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
         s.attr(constants.scrollBarEnterAttrs)
