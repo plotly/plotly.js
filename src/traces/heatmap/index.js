@@ -20,7 +20,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'heatmap',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', '2dMap'],
+    categories: ['cartesian', 'svg', '2dMap', 'showLegend'],
     meta: {
         description: [
             'The data that describes the heatmap value-to-color mapping',

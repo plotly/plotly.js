@@ -23,7 +23,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'choropleth',
     basePlotModule: require('../../plots/geo'),
-    categories: ['geo', 'noOpacity'],
+    categories: ['geo', 'noOpacity', 'showLegend'],
     meta: {
         description: [
             'The data that describes the choropleth value-to-color mapping',

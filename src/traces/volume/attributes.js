@@ -86,7 +86,8 @@ colorScaleAttrs('', {
     flatshading: isosurfaceAttrs.flatshading,
     contour: isosurfaceAttrs.contour,
 
-    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 }), 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';

@@ -172,6 +172,44 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.orientation).toEqual('v');
     });
 
+    it('should not coerce `title.font` and `title.side` if the `title.text` is blank', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                title: {
+                    text: ''
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.font).toEqual(undefined);
+        expect(layoutOut.legend.title.side).toEqual(undefined);
+    });
+
+    it('should default `title.side` to *top* for vertical legends', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                title: {
+                    text: 'Legend Title'
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.side).toEqual('top');
+    });
+
+    it('should default `title.side` to *left* for horizontal legends', function() {
+        var layoutWithTitle = Lib.extendDeep({
+            legend: {
+                orientation: 'h',
+                title: {
+                    text: 'Legend Title'
+                }
+            }
+        }, layoutIn);
+        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        expect(layoutOut.legend.title.side).toEqual('left');
+    });
+
     describe('for horizontal legends', function() {
         var layoutInForHorizontalLegends;
 
@@ -740,6 +778,42 @@ describe('legend relayout update', function() {
         .then(_assert('base', [5, 4.4], [512, 29]))
         .then(function() { return Plotly.relayout(gd, 'legend.x', 0.8); })
         .then(_assert('after relayout almost to right edge', [188, 4.4], [512, 29]))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should fit in graph viewport when changing legend.title.side', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        fig.layout.legend = {
+            title: {
+                text: 'legend title'
+            }
+        };
+
+        function _assert(msg, xy, wh) {
+            return function() {
+                var fullLayout = gd._fullLayout;
+                var legend3 = d3.select('g.legend');
+                var bg3 = legend3.select('rect.bg');
+                var translate = Drawing.getTranslate(legend3);
+                var x = translate.x;
+                var y = translate.y;
+                var w = +bg3.attr('width');
+                var h = +bg3.attr('height');
+
+                expect([x, y]).toBeWithinArray(xy, 25, msg + '| legend x,y');
+                expect([w, h]).toBeWithinArray(wh, 25, msg + '| legend w,h');
+                expect(x + w <= fullLayout.width).toBe(true, msg + '| fits in x');
+                expect(y + h <= fullLayout.height).toBe(true, msg + '| fits in y');
+            };
+        }
+
+        Plotly.plot(gd, fig)
+        .then(_assert('base', [667.72, 60], [120, 83]))
+        .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'left'); })
+        .then(_assert('after relayout to *left*', [607.54, 60], [180, 67]))
+        .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'top'); })
+        .then(_assert('after relayout to *top*', [667.72, 60], [120, 83]))
         .catch(failTest)
         .then(done);
     });

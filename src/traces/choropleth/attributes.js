@@ -77,7 +77,8 @@ module.exports = extendFlat({
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
     }),
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
 
     colorScaleAttrs('', {

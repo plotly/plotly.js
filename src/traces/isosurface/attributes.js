@@ -232,7 +232,8 @@ var attrs = module.exports = overrideAll(extendFlat({
         arrayOk: true,
         description: 'Same as `text`.'
     },
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
 
 colorScaleAttrs('', {

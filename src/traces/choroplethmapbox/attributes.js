@@ -11,7 +11,7 @@
 var choroplethAttrs = require('../choropleth/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-
+var baseAttrs = require('../../plots/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = extendFlat({
@@ -103,7 +103,8 @@ module.exports = extendFlat({
     },
 
     hoverinfo: choroplethAttrs.hoverinfo,
-    hovertemplate: hovertemplateAttrs({}, {keys: ['properties']})
+    hovertemplate: hovertemplateAttrs({}, {keys: ['properties']}),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
 
     colorScaleAttrs('', {

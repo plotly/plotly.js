@@ -9,7 +9,6 @@
 'use strict';
 
 module.exports = {
-
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     crossTraceDefaults: require('../histogram/cross_trace_defaults'),
@@ -24,7 +23,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'histogram2d',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', '2dMap', 'histogram'],
+    categories: ['cartesian', 'svg', '2dMap', 'histogram', 'showLegend'],
     meta: {
         hrName: 'histogram_2d',
         description: [

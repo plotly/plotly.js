@@ -21,7 +21,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'surface',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', '2dMap'],
+    categories: ['gl3d', '2dMap', 'showLegend'],
     meta: {
         description: [
             'The data the describes the coordinates of the surface is set in `z`.',
