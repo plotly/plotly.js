@@ -777,6 +777,42 @@ describe('sankey tests', function() {
             .then(done);
         });
 
+        it('should position hover labels correctly', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+            .then(function() {
+                _hover(900, 230);
+
+                assertLabel(
+                    ['source: Thermal generation', 'target: Losses', '787TWh'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+
+                var g = d3.select('.hovertext');
+                var pos = g.node().getBoundingClientRect();
+                expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
+                expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
+                return Plotly.restyle(gd, 'orientation', 'v');
+            })
+            .then(function() {
+                _hover(520, 500);
+
+                assertLabel(
+                    ['source: Thermal generation', 'target: Losses', '787TWh'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+
+                var g = d3.select('.hovertext');
+                var pos = g.node().getBoundingClientRect();
+                expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
+                expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should show the correct hover labels when hovertemplate is specified', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
