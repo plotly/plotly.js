@@ -792,8 +792,8 @@ describe('sankey tests', function() {
 
                 var g = d3.select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
-                expect(pos.x).toBeCloseTo(555, 0, 'it should have correct x position');
-                expect(pos.y).toBeCloseTo(196, 0, 'it should have correct y position');
+                expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
+                expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
                 return Plotly.restyle(gd, 'orientation', 'v');
             })
             .then(function() {
@@ -806,8 +806,8 @@ describe('sankey tests', function() {
 
                 var g = d3.select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
-                expect(pos.x).toBeCloseTo(279, 0, 'it should have correct x position');
-                expect(pos.y).toBeCloseTo(500, 0, 'it should have correct y position');
+                expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
+                expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
             })
             .catch(failTest)
             .then(done);
