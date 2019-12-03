@@ -1519,6 +1519,53 @@ describe('legend interaction', function() {
             });
         });
 
+        describe('legend visibility with *showlegend:false* traces', function() {
+            beforeEach(function(done) {
+                Plotly.plot(gd, [
+                    {y: [1, 2, 3]},
+                    {y: [2, 3, 1]},
+                    {type: 'heatmap', z: [[1, 2], [3, 4]], showscale: false}
+                ])
+                .then(done);
+            });
+
+            it('isolate trace in legend, ignore trace that is not in legend', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([true, 'legendonly', true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([true, true, true]))
+                    .catch(failTest).then(done);
+            });
+
+            it('isolate trace in legend, ignore trace that is not in legend (2)', function(done) {
+                Promise.resolve()
+                    .then(click(1, 2))
+                    .then(assertVisible(['legendonly', true, true]))
+                    .then(click(1, 2))
+                    .then(assertVisible([true, true, true]))
+                    .catch(failTest).then(done);
+            });
+
+            it('isolate trace in legend AND trace in associated legendgroup', function(done) {
+                Plotly.restyle(gd, 'legendgroup', ['group', '', 'group'])
+                    .then(click(0, 2))
+                    .then(assertVisible([true, 'legendonly', true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([true, true, true]))
+                    .catch(failTest).then(done);
+            });
+
+            it('isolate trace in legend, hide trace not in legend that has set legendgroup', function(done) {
+                Plotly.restyle(gd, 'legendgroup', ['group', '', 'group'])
+                    .then(click(1, 2))
+                    .then(assertVisible(['legendonly', true, 'legendonly']))
+                    .then(click(1, 2))
+                    .then(assertVisible([true, true, true]))
+                    .catch(failTest).then(done);
+            });
+        });
+
         describe('custom legend click/doubleclick handlers', function() {
             var fig, to;
 
