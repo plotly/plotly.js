@@ -416,16 +416,13 @@ describe('Test Plots', function() {
         describe('returns Promises', function() {
             afterEach(destroyGraphDiv);
 
-            it('should reject or resolve them all', function(done) {
+            it('should resolve them all', function(done) {
                 gd = createGraphDiv();
                 var p = [];
                 Plotly.newPlot(gd, [{y: [5, 2, 5]}])
                     .then(function() {
-                        // First call should get rejected
-                        p.push(Plotly.Plots.resize(gd).catch(function() {
-                            return Promise.resolve(true);
-                        }));
-                        // because we call the function again within 100ms
+                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plotly.Plots.resize(gd));
                         p.push(Plotly.Plots.resize(gd));
                         return Promise.all(p);
                     })
