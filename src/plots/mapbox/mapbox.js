@@ -135,7 +135,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);
         self.updateData(calcData);
-        self.updateLayout(fullLayout);
+        self.updateLayout(fullLayout, true);
         self.resolveOnRender(resolve);
     }).catch(reject);
 };
@@ -346,7 +346,7 @@ proto.updateData = function(calcData) {
     }
 };
 
-proto.updateLayout = function(fullLayout) {
+proto.updateLayout = function(fullLayout, initialView) {
     var map = this.map;
     var opts = fullLayout[this.id];
 
@@ -364,6 +364,11 @@ proto.updateLayout = function(fullLayout) {
         map.scrollZoom.enable();
     } else {
         map.scrollZoom.disable();
+    }
+    if(initialView === true) {
+        // Add derived properties to viewInitial so they are included in
+        // the plotly_relayout event that is emitted when the plot is reset
+        this.viewInitial._derived = this.getView()._derived;
     }
 };
 
@@ -747,17 +752,29 @@ proto.getView = function() {
     var mapCenter = map.getCenter();
     var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
+    var canvas = map.getCanvas();
+    var w = canvas.width;
+    var h = canvas.height;
+    var cUL = map.unproject([0, 0]).toArray();
+    var cUR = map.unproject([w, 0]).toArray();
+    var cLR = map.unproject([w, h]).toArray();
+    var cLL = map.unproject([0, h]).toArray();
+    var coordinates = [cUL, cUR, cLR, cLL];
+
     return {
         center: center,
         zoom: map.getZoom(),
         bearing: map.getBearing(),
-        pitch: map.getPitch()
+        pitch: map.getPitch(),
+        _derived: {
+            coordinates: coordinates
+        }
     };
 };
 
 proto.getViewEdits = function(cont) {
     var id = this.id;
-    var keys = ['center', 'zoom', 'bearing', 'pitch'];
+    var keys = ['center', 'zoom', 'bearing', 'pitch', '_derived'];
     var obj = {};
 
     for(var i = 0; i < keys.length; i++) {
