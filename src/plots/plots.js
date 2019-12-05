@@ -105,7 +105,10 @@ plots.resize = function(gd) {
             Registry.call('relayout', gd, {autosize: true}).then(function() {
                 gd.changed = oldchanged;
                 // Only resolve if a new call hasn't been made!
-                if(gd._resolveResize === resolve) resolve(gd);
+                if(gd._resolveResize === resolve) {
+                    delete gd._resolveResize;
+                    resolve(gd);
+                }
             });
         }, 100);
     });
