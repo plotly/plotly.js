@@ -10,7 +10,7 @@
 
 module.exports = {
     attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
+    supplyDefaults: require('./defaults').supplyDefaults,
     supplyLayoutDefaults: require('./layout_defaults'),
     layoutAttributes: require('./layout_attributes'),
 

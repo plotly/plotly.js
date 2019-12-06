@@ -55,6 +55,44 @@ describe('Pie defaults', function() {
         expect(out.visible).toBe(false);
     });
 
+    it('allows falsy json values to skip but does not allow bad values and zero sum', function() {
+        var out;
+
+        [null, 0, '', false].forEach(function(e) {
+            out = _supply({type: 'pie', values: [1, e, 3]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(3, e);
+
+            out = _supply({type: 'pie', values: [1, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+
+            out = _supply({type: 'pie', values: [e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+        });
+
+        ['not a positive value', '-1', -1, NaN, -Infinity, undefined].forEach(function(e) {
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+
+            out = _supply({type: 'pie', values: [1, e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+        });
+
+        ['1', '+1', '1e1'].forEach(function(e) {
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+        });
+    });
+
     it('is marked invisible if either labels or values is empty', function() {
         var out = _supply({type: 'pie', labels: [], values: [1, 2]});
         expect(out.visible).toBe(false);
