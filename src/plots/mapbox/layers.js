@@ -38,6 +38,8 @@ proto.update = function update(opts) {
         // IMPORTANT: must create source before layer to not cause errors
         this.updateSource(opts);
         this.updateLayer(opts);
+    } else if(this.needsNewImage(opts)) {
+        this.updateImage(opts);
     } else if(this.needsNewSource(opts)) {
         // IMPORTANT: must delete layer before source to not cause errors
         this.removeLayer();
@@ -50,6 +52,18 @@ proto.update = function update(opts) {
     }
 
     this.visible = isVisible(opts);
+};
+
+proto.needsNewImage = function(opts) {
+    var map = this.subplot.map;
+    return (
+        map.getSource(this.idSource) &&
+        this.sourceType === 'image' &&
+        opts.sourcetype === 'image' &&
+        (this.source !== opts.source ||
+            JSON.stringify(this.coordinates) !==
+            JSON.stringify(opts.coordinates))
+    );
 };
 
 proto.needsNewSource = function(opts) {
@@ -68,6 +82,13 @@ proto.needsNewLayer = function(opts) {
         this.layerType !== opts.type ||
         this.below !== this.subplot.belowLookup['layout-' + this.index]
     );
+};
+
+proto.updateImage = function(opts) {
+    var map = this.subplot.map;
+    map.getSource(this.idSource).updateImage({
+        url: opts.source, coordinates: opts.coordinates
+    });
 };
 
 proto.updateSource = function(opts) {
@@ -221,6 +242,11 @@ function convertOpts(opts) {
                 'icon-color': opts.color,
                 'text-color': symbol.textfont.color,
                 'text-opacity': opts.opacity
+            });
+            break;
+        case 'raster':
+            Lib.extendFlat(paint, {
+                'raster-fade-duration': 0
             });
             break;
     }
