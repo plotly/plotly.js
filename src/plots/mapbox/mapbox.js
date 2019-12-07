@@ -755,19 +755,18 @@ proto.getView = function() {
     var canvas = map.getCanvas();
     var w = canvas.width;
     var h = canvas.height;
-    var cUL = map.unproject([0, 0]).toArray();
-    var cUR = map.unproject([w, 0]).toArray();
-    var cLR = map.unproject([w, h]).toArray();
-    var cLL = map.unproject([0, h]).toArray();
-    var coordinates = [cUL, cUR, cLR, cLL];
-
     return {
         center: center,
         zoom: map.getZoom(),
         bearing: map.getBearing(),
         pitch: map.getPitch(),
         _derived: {
-            coordinates: coordinates
+            coordinates: [
+                map.unproject([0, 0]).toArray(),
+                map.unproject([w, 0]).toArray(),
+                map.unproject([w, h]).toArray(),
+                map.unproject([0, h]).toArray()
+            ]
         }
     };
 };
