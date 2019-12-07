@@ -2555,7 +2555,9 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 }
             }
         } else {
-            Lib.warn('unrecognized GUI edit: ' + key);
+            if(key.search('._derived') < 0) {
+                Lib.warn('unrecognized GUI edit: ' + key);
+            }
         }
         // if we got this far, the new value was accepted as the new starting
         // point (either because it changed or revision changed)
