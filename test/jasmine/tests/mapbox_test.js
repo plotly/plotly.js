@@ -1226,17 +1226,17 @@ describe('@noCI, mapbox plots', function() {
             expect(layout.zoom).toBeCloseTo(zoom);
         }
 
-        function _assert(center, zoom, lonMin, latMin, lonMax, latMax) {
+        function _assert(center, zoom, lon0, lat0, lon1, lat1) {
             _assertLayout(center, zoom);
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
             expect(evtData['mapbox._derived']).toEqual({
                 coordinates: [
-                    [lonMin, latMax],
-                    [lonMax, latMax],
-                    [lonMax, latMin],
-                    [lonMin, latMin]
+                    [lon0, lat1],
+                    [lon1, lat1],
+                    [lon1, lat0],
+                    [lon0, lat0]
                 ]});
         }
 
