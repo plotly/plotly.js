@@ -135,7 +135,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);
         self.updateData(calcData);
-        self.updateLayout(fullLayout, true);
+        self.updateLayout(fullLayout);
+        self.updateDerived();
         self.resolveOnRender(resolve);
     }).catch(reject);
 };
@@ -346,7 +347,7 @@ proto.updateData = function(calcData) {
     }
 };
 
-proto.updateLayout = function(fullLayout, initialView) {
+proto.updateLayout = function(fullLayout) {
     var map = this.map;
     var opts = fullLayout[this.id];
 
@@ -365,11 +366,10 @@ proto.updateLayout = function(fullLayout, initialView) {
     } else {
         map.scrollZoom.disable();
     }
-    if(initialView === true) {
-        // Add derived properties to viewInitial so they are included in
-        // the plotly_relayout event that is emitted when the plot is reset
-        this.viewInitial._derived = this.getView()._derived;
-    }
+};
+
+proto.updateDerived = function() {
+    this.viewInitial._derived = this.getView()._derived;
 };
 
 proto.resolveOnRender = function(resolve) {
