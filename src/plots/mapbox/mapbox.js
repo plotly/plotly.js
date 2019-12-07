@@ -461,7 +461,7 @@ proto.initFx = function(calcData, fullLayout) {
             optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
             optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
-            gd.emit('plotly_relayout', self.getViewEdits(viewNow, true));
+            gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
         }
         wheeling = false;
 
@@ -509,7 +509,7 @@ proto.initFx = function(calcData, fullLayout) {
 
     function emitUpdate() {
         var viewNow = self.getView();
-        gd.emit('plotly_relayouting', self.getViewEdits(viewNow, true));
+        gd.emit('plotly_relayouting', self.getViewEditsWithDerived(viewNow));
     }
 
     map.on('drag', emitUpdate);
@@ -532,7 +532,7 @@ proto.initFx = function(calcData, fullLayout) {
         optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
         gd.emit('plotly_doubleclick', null);
-        gd.emit('plotly_relayout', self.getViewEdits(viewNow, true));
+        gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
     });
 
     // define event handlers on map creation, to keep one ref per map,
@@ -771,12 +771,9 @@ proto.getView = function() {
     };
 };
 
-proto.getViewEdits = function(cont, derived) {
+proto.getViewEdits = function(cont) {
     var id = this.id;
     var keys = ['center', 'zoom', 'bearing', 'pitch'];
-    if(derived === true) {
-        keys.push('_derived');
-    }
     var obj = {};
 
     for(var i = 0; i < keys.length; i++) {
@@ -784,6 +781,13 @@ proto.getViewEdits = function(cont, derived) {
         obj[id + '.' + k] = cont[k];
     }
 
+    return obj;
+};
+
+proto.getViewEditsWithDerived = function(cont) {
+    var id = this.id;
+    var obj = this.getViewEdits(cont);
+    obj[id + '._derived'] = cont._derived;
     return obj;
 };
 
