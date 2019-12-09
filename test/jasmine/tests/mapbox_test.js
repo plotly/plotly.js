@@ -1226,11 +1226,18 @@ describe('@noCI, mapbox plots', function() {
             expect(layout.zoom).toBeCloseTo(zoom);
         }
 
-        function _assert(center, zoom) {
+        function _assert(center, zoom, lon0, lat0, lon1, lat1) {
             _assertLayout(center, zoom);
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
+            expect(evtData['mapbox._derived']).toEqual({
+                coordinates: [
+                    [lon0, lat1],
+                    [lon1, lat1],
+                    [lon1, lat0],
+                    [lon0, lat0]
+                ]});
         }
 
         _assertLayout([-4.710, 19.475], 1.234);
@@ -1241,7 +1248,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(1, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(0, 'double click cnt');
-            _assert([-19.651, 13.751], 1.234);
+            _assert([-19.651, 13.751], 1.234,
+                -155.15981291032617, -25.560300274373148,
+                115.85734493011842, 47.573988219006424);
 
             return _doubleClick(p1);
         })
@@ -1249,7 +1258,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(2, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
-            _assert([-4.710, 19.475], 1.234);
+            _assert([-4.710, 19.475], 1.234,
+                -140.21950652441467, -20.054298691163496,
+                130.79765131602989, 51.4513888208798);
 
             return _scroll(pointPos);
         })

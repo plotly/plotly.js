@@ -456,7 +456,7 @@ proto.initFx = function(calcData, fullLayout) {
             optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
             optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
-            gd.emit('plotly_relayout', self.getViewEdits(viewNow));
+            gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
         }
         wheeling = false;
 
@@ -504,7 +504,7 @@ proto.initFx = function(calcData, fullLayout) {
 
     function emitUpdate() {
         var viewNow = self.getView();
-        gd.emit('plotly_relayouting', self.getViewEdits(viewNow));
+        gd.emit('plotly_relayouting', self.getViewEditsWithDerived(viewNow));
     }
 
     map.on('drag', emitUpdate);
@@ -527,7 +527,7 @@ proto.initFx = function(calcData, fullLayout) {
         optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
         gd.emit('plotly_doubleclick', null);
-        gd.emit('plotly_relayout', self.getViewEdits(viewNow));
+        gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
     });
 
     // define event handlers on map creation, to keep one ref per map,
@@ -747,11 +747,22 @@ proto.getView = function() {
     var mapCenter = map.getCenter();
     var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
+    var canvas = map.getCanvas();
+    var w = canvas.width;
+    var h = canvas.height;
     return {
         center: center,
         zoom: map.getZoom(),
         bearing: map.getBearing(),
-        pitch: map.getPitch()
+        pitch: map.getPitch(),
+        _derived: {
+            coordinates: [
+                map.unproject([0, 0]).toArray(),
+                map.unproject([w, 0]).toArray(),
+                map.unproject([w, h]).toArray(),
+                map.unproject([0, h]).toArray()
+            ]
+        }
     };
 };
 
@@ -765,6 +776,13 @@ proto.getViewEdits = function(cont) {
         obj[id + '.' + k] = cont[k];
     }
 
+    return obj;
+};
+
+proto.getViewEditsWithDerived = function(cont) {
+    var id = this.id;
+    var obj = this.getViewEdits(cont);
+    obj[id + '._derived'] = cont._derived;
     return obj;
 };
 
