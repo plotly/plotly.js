@@ -172,7 +172,7 @@ function transformOne(trace, state) {
     var groups = trace.transforms[transformIndex].groups;
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
-    if(!(Array.isArray(groups)) || groups.length === 0) {
+    if(!(Lib.isArrayOrTypedArray(groups)) || groups.length === 0) {
         return [trace];
     }
 
