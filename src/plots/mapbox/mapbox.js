@@ -138,7 +138,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         self.fillBelowLookup(calcData, fullLayout);
         self.updateData(calcData);
         self.updateLayout(fullLayout);
-        self.updateDerived();
         self.resolveOnRender(resolve);
     }).catch(reject);
 };
@@ -370,10 +369,6 @@ proto.updateLayout = function(fullLayout) {
     } else {
         map.scrollZoom.disable();
     }
-};
-
-proto.updateDerived = function() {
-    this.viewInitial._derived = this.getView()._derived;
 };
 
 proto.resolveOnRender = function(resolve) {

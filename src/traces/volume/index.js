@@ -21,7 +21,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'volume',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d'],
+    categories: ['gl3d', 'showLegend'],
     meta: {
         description: [
             'Draws volume trace between iso-min and iso-max values with coordinates given by',

@@ -84,7 +84,8 @@ module.exports = extendFlat({
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'z', 'text', 'name']
     }),
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
     colorScaleAttrs('', {
         cLetter: 'z',

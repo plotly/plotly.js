@@ -1,4 +1,5 @@
 var fs = require('fs');
+var minimist = require('minimist');
 
 var getMockList = require('./assets/get_mock_list');
 var getRequestOpts = require('./assets/get_image_request_options');
@@ -34,15 +35,22 @@ var QUEUE_WAIT = 10;
  *      npm run baseline -- gl3d_*
  *
  */
-var pattern = process.argv[2];
-var mockList = getMockList(pattern);
 
-if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
-}
+var argv = minimist(process.argv.slice(2), {});
+
+var allMockList = [];
+argv._.forEach(function(pattern) {
+    var mockList = getMockList(pattern);
+
+    if(mockList.length === 0) {
+        throw new Error('No mocks found with pattern ' + pattern);
+    }
+
+    allMockList = allMockList.concat(mockList);
+});
 
 // main
-runInQueue(mockList);
+runInQueue(allMockList);
 
 function runInQueue(mockList) {
     var index = 0;

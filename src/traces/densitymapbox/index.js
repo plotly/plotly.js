@@ -37,7 +37,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'densitymapbox',
     basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl'],
+    categories: ['mapbox', 'gl', 'showLegend'],
     meta: {
         hr_name: 'density_mapbox',
         description: [

@@ -21,7 +21,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'isosurface',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d'],
+    categories: ['gl3d', 'showLegend'],
     meta: {
         description: [
             'Draws isosurfaces between iso-min and iso-max values with coordinates given by',

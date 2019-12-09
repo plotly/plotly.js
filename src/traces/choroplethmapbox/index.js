@@ -52,7 +52,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'choroplethmapbox',
     basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl', 'noOpacity'],
+    categories: ['mapbox', 'gl', 'noOpacity', 'showLegend'],
     meta: {
         hr_name: 'choropleth_mapbox',
         description: [

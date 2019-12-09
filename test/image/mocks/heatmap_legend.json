@@ -1,0 +1,123 @@
+{
+    "data": [
+        {
+            "legendgroup": "heatmap",
+            "showlegend": true,
+            "showscale": false,
+            "x": [0, 10, 12],
+            "y": [10, 12, 0],
+            "z": [1, 2, 3],
+            "zsmooth": "best",
+            "type": "heatmap",
+            "name": "heatmap"
+        },
+        {
+            "legendgroup": "heatmap",
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "showlegend": true,
+            "showscale": false,
+            "reversescale": true,
+            "x": [0, 10, 12],
+            "y": [10, 12, 0],
+            "z": [1, 2, 3],
+            "zsmooth": "best",
+            "type": "heatmap",
+            "name": "heatmap reversed scale"
+        },
+        {
+            "legendgroup": "contour",
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "showlegend": true,
+            "showscale": false,
+            "x": [0, 10, 12],
+            "y": [10, 12, 0],
+            "z": [1, 2, 3],
+            "contours": {"coloring": "heatmap"},
+            "line": {"color": "#fff"},
+            "type": "contour",
+            "name": "contour"
+        },
+        {
+            "legendgroup": "contour",
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "showlegend": true,
+            "showscale": false,
+            "reversescale": true,
+            "x": [0, 10, 12],
+            "y": [10, 12, 0],
+            "z": [1, 2, 3],
+            "contours": {"coloring": "heatmap"},
+            "line": {"color": "#fff"},
+            "type": "contour",
+            "name": "contour reversed scale"
+        }
+    ],
+    "layout": {
+        "legend": {
+            "orientation": "h",
+            "title": {
+                "side": "top left",
+                "text": "<b><i>heatmap and contour legends<i></b>"
+            }
+        },
+        "height": 800,
+        "width": 800,
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}

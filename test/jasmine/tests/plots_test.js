@@ -412,6 +412,31 @@ describe('Test Plots', function() {
                     .then(done);
             });
         });
+
+        describe('returns Promises', function() {
+            afterEach(destroyGraphDiv);
+
+            it('should resolve them all', function(done) {
+                gd = createGraphDiv();
+                var p = [];
+                Plotly.newPlot(gd, [{y: [5, 2, 5]}])
+                    .then(function() {
+                        gd.style.width = '500px';
+                        gd.style.height = '500px';
+                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plotly.Plots.resize(gd));
+                        return Promise.all(p);
+                    })
+                    .then(function(v) {
+                        // Make sure they all resolve to the same value
+                        expect(v[0]).toEqual(v[1]);
+                        expect(v[1]).toEqual(v[2]);
+                    })
+                    .catch(failTest)
+                    .then(done);
+            });
+        });
     });
 
     describe('Plots.purge', function() {

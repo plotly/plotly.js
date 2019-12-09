@@ -144,7 +144,8 @@ var attrs = {
             'tubeu', 'tubev', 'tubew',
             'norm', 'divergence'
         ]
-    })
+    }),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };
 
 extendFlat(attrs, colorScaleAttrs('', {

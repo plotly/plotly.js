@@ -166,7 +166,9 @@ var attrs = {
         editType: 'calc',
         description: 'Same as `text`.'
     },
-    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']})
+
+    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']}),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };
 
 extendFlat(attrs, colorScaleAttrs('', {

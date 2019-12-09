@@ -1,0 +1,203 @@
+{
+    "data": [
+        {
+            "x": [
+                "apples",
+                "apples",
+                "apples",
+                "apples",
+                "lemons",
+                "lemons"
+            ],
+            "y": [
+                "red",
+                "red",
+                "yellow",
+                "green",
+                "yellow",
+                "yellow"
+            ],
+            "z": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "histfunc": "sum",
+            "showlegend": true,
+            "showscale": false,
+            "type": "histogram2d",
+            "name": "histogram2d"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "x": [
+                "apples",
+                "apples",
+                "apples",
+                "apples",
+                "lemons",
+                "lemons"
+            ],
+            "y": [
+                "red",
+                "red",
+                "yellow",
+                "green",
+                "yellow",
+                "yellow"
+            ],
+            "z": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "histfunc": "sum",
+            "showlegend": true,
+            "showscale": false,
+            "reversescale": true,
+            "type": "histogram2d",
+            "name": "histogram2d reversed scale"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "x": [
+                "apples",
+                "apples",
+                "apples",
+                "apples",
+                "lemons",
+                "lemons"
+            ],
+            "y": [
+                "red",
+                "red",
+                "yellow",
+                "green",
+                "yellow",
+                "yellow"
+            ],
+            "z": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "histfunc": "sum",
+            "showlegend": true,
+            "showscale": false,
+            "type": "histogram2dcontour",
+            "name": "histogram2dcontour"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "x": [
+                "apples",
+                "apples",
+                "apples",
+                "apples",
+                "lemons",
+                "lemons"
+            ],
+            "y": [
+                "red",
+                "red",
+                "yellow",
+                "green",
+                "yellow",
+                "yellow"
+            ],
+            "z": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "histfunc": "sum",
+            "showlegend": true,
+            "showscale": false,
+            "reversescale": true,
+            "type": "histogram2dcontour",
+            "name": "histogram2dcontour reversed scale"
+        }
+    ],
+    "layout": {
+        "legend": {
+            "title": {
+                "text": "<i>histogram2d</i> &<br><b>histogram2dcontour</b> legends:",
+                "font": {
+                    "family": "Times New Roman",
+                    "size": 16
+                }
+            }
+        },
+        "height": 800,
+        "width": 800,
+        "xaxis": {
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.45
+            ]
+        }
+    }
+}

@@ -1,0 +1,245 @@
+{
+  "data":  [{
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "color": "#FF0",
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "mesh3d",
+    "scene": "scene1"
+  }, {
+    "showlegend": true,
+    "x":[0, -1, -2, 0],
+    "y":[0, 0, 1, 2],
+    "z":[0, 2, 0, 1],
+    "i":[0, 0, 0, 1],
+    "j":[1, 2, 3, 2],
+    "k":[2, 3, 1, 3],
+    "facecolor": ["#F00", "#FF0", "#0F0", "#0FF"],
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "mesh3d",
+    "scene": "scene2"
+  }, {
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "intensity": [-1, 2, -3, 4, -5, 6, -7, 8],
+    "showscale": false,
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "mesh3d",
+    "scene": "scene3"
+  }, {
+    "showlegend": true,
+    "x":[0, -1, -2, 0],
+    "y":[0, 0, 1, 2],
+    "z":[0, 2, 0, 1],
+    "i":[0, 0, 0, 1],
+    "j":[1, 2, 3, 2],
+    "k":[2, 3, 1, 3],
+    "vertexcolor": ["#F00", "#FF0", "#0F0", "#0FF"],
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "mesh3d",
+    "scene": "scene4"
+  }, {
+    "showlegend": true,
+    "x": [-1, 0, 1],
+    "y": [-1, 0, 1],
+    "z": [
+      [0, 1, 0],
+      [1, 0, 1],
+      [0, 1, 0]
+    ],
+    "surfacecolor": [
+      [0, 1, 2],
+      [0, 1, 2],
+      [0, 1, 2]
+    ],
+    "showscale": false,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "surface",
+    "name": "surface",
+    "scene": "scene5"
+  }, {
+    "showlegend": true,
+    "x": [-1, 0, 1],
+    "y": [-1, 0, 1],
+    "z": [
+      [0, 1, 0],
+      [1, 0, 1],
+      [0, 1, 0]
+    ],
+    "showscale": false,
+    "reversescale": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "surface",
+    "name": "surface",
+    "scene": "scene6"
+  }, {
+    "showlegend": true,
+    "x": [0, 0, 1, 1, 0, 0, 1, 1],
+    "y": [0, 1, 1, 0, 0, 1, 1, 0],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "u": [0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1],
+    "v": [0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5],
+    "w": [0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1],
+    "showscale": false,
+    "reversescale": true,
+    "colorscale": "Viridis",
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "cone",
+    "name": "cone",
+    "scene": "scene7"
+  }, {
+    "showlegend": true,
+    "x": [0, 0, 1, 1, 0, 0, 1, 1],
+    "y": [0, 1, 1, 0, 0, 1, 1, 0],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "u": [0, 0, 2, 2, 0, 0, 2, 2],
+    "v": [0, 2, 2, 0, 0, 2, 2, 0],
+    "w": [0, 0, 0, 0, 2, 2, 2, 2],
+    "starts": {
+        "x": [0.25, 0.5, 0.75, 0.25, 0.5, 0.75, 0.25, 0.5, 0.75],
+        "y": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "z": [0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75]
+    },
+    "showscale": false,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "streamtube",
+    "name": "streamtube",
+    "scene": "scene8"
+  }, {
+    "showlegend": true,
+    "x": [0, 0, 0, 0, 1, 1, 1, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 1, 0, 1, 0, 1, 0, 1],
+    "value": [-1, -1, -1, 1, 1, -1, -1, -1],
+    "showscale": false,
+    "colorscale": "Portland",
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "isomin": -0.3,
+    "isomax": 0.3,
+    "type": "isosurface",
+    "name": "isosurface",
+    "scene": "scene9"
+  }, {
+    "showlegend": true,
+    "x": [0, 0, 0, 0, 1, 1, 1, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 1, 0, 1, 0, 1, 0, 1],
+    "value": [0, 0, 0, 1, 1, 0, 0, 0],
+    "showscale": false,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "opacityscale": "max",
+    "type": "volume",
+    "name": "volume",
+    "scene": "scene10"
+  }],
+  "layout": {
+    "margin": {
+      "t": 0,
+      "b": 0,
+      "l": 0,
+      "r": 0
+    },
+    "width": 1000,
+    "height": 500,
+    "legend": {
+      "borderwidth": 5,
+      "bordercolor": "gray",
+      "bgcolor": "orange",
+      "title": {
+          "text": "<i>Plotly</i>'s<br>3-D traces<br>with multi-line<br>legend title<br>",
+          "font": {
+              "size": 17,
+              "family": "Times New Roman"
+          }
+      }
+    },
+    "scene1": {
+      "domain": {
+        "x": [0, 0.2],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene2": {
+      "domain": {
+        "x": [0, 0.2],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene3": {
+      "domain": {
+        "x": [0.2, 0.4],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene4": {
+      "domain": {
+        "x": [0.2, 0.4],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene5": {
+      "domain": {
+        "x": [0.4, 0.6],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene6": {
+      "domain": {
+        "x": [0.4, 0.6],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene7": {
+      "domain": {
+        "x": [0.6, 0.8],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene8": {
+      "domain": {
+        "x": [0.6, 0.8],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene9": {
+      "domain": {
+        "x": [0.8, 1],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    },
+    "scene10": {
+      "domain": {
+        "x": [0.8, 1],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -3, "z": 1 } }
+    }
+  }
+}

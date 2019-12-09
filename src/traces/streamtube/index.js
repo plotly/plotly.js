@@ -12,7 +12,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'streamtube',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d'],
+    categories: ['gl3d', 'showLegend'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
