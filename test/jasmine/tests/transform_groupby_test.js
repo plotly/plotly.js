@@ -333,7 +333,7 @@ describe('groupby', function() {
             .then(done);
         });
 
-        it ('Plotly.plot should group points properly using typed array', function(done) {
+        it('Plotly.plot should group points properly using typed array', function(done) {
             var data = Lib.extendDeep([], mockDataWithTypedArrayGroups);
 
             var gd = createGraphDiv();
@@ -347,7 +347,7 @@ describe('groupby', function() {
             })
             .catch(failTest)
             .then(done);
-        })
+        });
     });
 
     describe('many-to-many transforms', function() {
