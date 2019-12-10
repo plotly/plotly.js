@@ -326,8 +326,25 @@ function fetchTraceGeoData(calcData) {
                 }
 
                 PlotlyGeoAssets[url] = d;
-                resolve(d);
+                return resolve(d);
             });
+        });
+    }
+
+    function wait(url) {
+        return new Promise(function(resolve, reject) {
+            var cnt = 0;
+            var interval = setInterval(function() {
+                if(PlotlyGeoAssets[url] && PlotlyGeoAssets[url] !== 'pending') {
+                    clearInterval(interval);
+                    return resolve(PlotlyGeoAssets[url]);
+                }
+                if(cnt > 100) {
+                    clearInterval(interval);
+                    return reject('Unexpected error while fetching from ' + url);
+                }
+                cnt++;
+            }, 50);
         });
     }
 
@@ -335,9 +352,13 @@ function fetchTraceGeoData(calcData) {
         var trace = calcData[i][0].trace;
         var url = trace.geojson;
 
-        if(typeof url === 'string' && !PlotlyGeoAssets[url]) {
-            PlotlyGeoAssets[url] = 'pending';
-            promises.push(fetch(url));
+        if(typeof url === 'string') {
+            if(!PlotlyGeoAssets[url]) {
+                PlotlyGeoAssets[url] = 'pending';
+                promises.push(fetch(url));
+            } else if(PlotlyGeoAssets[url] === 'pending') {
+                promises.push(wait(url));
+            }
         }
     }
 
