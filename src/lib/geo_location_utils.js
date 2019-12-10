@@ -213,7 +213,9 @@ function extractTraceFeature(calcTrace) {
 
     for(i = 0; i < trace._length; i++) {
         var cdi = calcTrace[i];
-        if(cdi.loc) lookup[cdi.loc] = cdi;
+        if(cdi.loc || cdi.loc === 0) {
+            lookup[cdi.loc] = cdi;
+        }
     }
 
     function appendFeature(fIn) {

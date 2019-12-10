@@ -18,17 +18,28 @@ var calcSelection = require('../scatter/calc_selection');
 
 var _ = require('../../lib')._;
 
+function isNonBlankString(v) {
+    return v && typeof v === 'string';
+}
+
 module.exports = function calc(gd, trace) {
     var hasLocationData = Array.isArray(trace.locations);
     var len = hasLocationData ? trace.locations.length : trace._length;
     var calcTrace = new Array(len);
+
+    var isValidLoc;
+    if(trace.geojson) {
+        isValidLoc = function(v) { return isNonBlankString(v) || isNumeric(v); };
+    } else {
+        isValidLoc = isNonBlankString;
+    }
 
     for(var i = 0; i < len; i++) {
         var calcPt = calcTrace[i] = {};
 
         if(hasLocationData) {
             var loc = trace.locations[i];
-            calcPt.loc = typeof loc === 'string' ? loc : null;
+            calcPt.loc = isValidLoc(loc) ? loc : null;
         } else {
             var lon = trace.lon[i];
             var lat = trace.lat[i];
