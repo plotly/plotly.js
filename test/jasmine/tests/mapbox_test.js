@@ -935,6 +935,57 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should be able to update layer image', function(done) {
+        var coords = [
+            [-80.425, 46.437],
+            [-71.516, 46.437],
+            [-71.516, 37.936],
+            [-80.425, 37.936]
+        ];
+        function makeFigure(source) {
+            return {
+                data: [{type: 'scattermapbox'}],
+                layout: {
+                    mapbox: {
+                        layers: [{
+                            'sourcetype': 'image',
+                            'coordinates': coords,
+                            'source': source
+                        }]
+                    }
+                }
+            };
+        }
+
+        var map = null;
+        var layerSource = null;
+
+        // Single pixel PNGs generated with http://png-pixel.com/
+        var prefix = 'data:image/png;base64,';
+        var redImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'P8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+        var greenImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'Nk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==';
+
+        Plotly.react(gd, makeFigure(redImage)).then(function() {
+            var mapbox = gd._fullLayout.mapbox._subplot;
+            map = mapbox.map;
+            layerSource = map.getSource(mapbox.layerList[0].idSource);
+
+            spyOn(layerSource, 'updateImage').and.callThrough();
+            spyOn(map, 'removeSource').and.callThrough();
+            return Plotly.react(gd, makeFigure(greenImage));
+        })
+        .then(function() {
+            expect(layerSource.updateImage).toHaveBeenCalledWith(
+                {url: greenImage, coordinates: coords}
+            );
+            expect(map.removeSource).not.toHaveBeenCalled();
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should be able to react to layer changes', function(done) {
         function makeFigure(color) {
             return {
