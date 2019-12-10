@@ -584,6 +584,53 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('@gl should not update center while dragging', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setCenter').and.callThrough();
+
+        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lon: 13.5, lat: -19.5}});
+        }).then(function() {
+            // First relayout on mapbox.center results in setCenter call
+            expect(map.setCenter).toHaveBeenCalledWith([13.5, -19.5]);
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            return _mouseEvent('mousedown', pointPos, noop);
+        }).then(function() {
+            return _mouseEvent('mousemove', p1, noop);
+        }).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lat: 0, lon: 0}});
+        }).then(function() {
+            return _mouseEvent('mouseup', p1, noop);
+        }).then(function() {
+            // Second relayout on mapbox.center does not result in a setCenter
+            // call since map drag is underway
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not update zoom while scroll wheeling', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setZoom').and.callThrough();
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.zoom': 5});
+        }).then(function() {
+            // First relayout on mapbox.zoom results in setZoom call
+            expect(map.setZoom).toHaveBeenCalledWith(5);
+            expect(map.setZoom).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
+            return Plotly.relayout(gd, {'mapbox.zoom': 2}).then(function() {
+                // Second relayout on mapbox.zoom does not result in setZoom
+                // call since a scroll wheel zoom is underway
+                expect(map.setZoom).toHaveBeenCalledTimes(1);
+            });
+        }).then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('@gl should be able to restyle', function(done) {
         var restyleCnt = 0;
         var relayoutCnt = 0;
