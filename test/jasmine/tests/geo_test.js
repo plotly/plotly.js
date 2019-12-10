@@ -861,7 +861,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                    'location', 'z'
+                    'location', 'z', 'ct'
                 ]);
             });
 
@@ -889,7 +889,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                    'location', 'z'
+                    'location', 'z', 'ct'
                 ]);
             });
 
@@ -921,7 +921,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                    'location', 'z'
+                    'location', 'z', 'ct'
                 ]);
             });
 

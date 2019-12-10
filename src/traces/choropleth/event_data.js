@@ -17,6 +17,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     if(cdi.fIn && cdi.fIn.properties) {
         out.properties = cdi.fIn.properties;
     }
+    out.ct = cdi.ct;
 
     return out;
 };

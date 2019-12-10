@@ -622,11 +622,11 @@ describe('@noCI Test choroplethmapbox hover:', function() {
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
-            fig.data[0].hovertemplate = '### %{location}<extra>%{location} ###</extra>';
+            fig.data[0].hovertemplate = '### %{location}<extra>%{ct[0]:.1f} | %{ct[1]:.1f} ###</extra>';
             return fig;
         },
         nums: '### 100',
-        name: '100 ###',
+        name: '-86.7 | 32.0 ###',
         evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
     }];
 

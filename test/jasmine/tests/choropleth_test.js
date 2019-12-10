@@ -306,10 +306,10 @@ describe('Test choropleth hover:', function() {
     it('should include *properties* from input custom geojson', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
         fig.data = [fig.data[1]];
-        fig.data[0].hovertemplate = '%{properties.name}<extra></extra>';
+        fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
         fig.layout.geo.projection = {scale: 20};
 
-        run([300, 200], fig, ['New York']).then(done);
+        run([300, 200], fig, ['New York', '-75.1 | 42.6']).then(done);
     });
 });
 
