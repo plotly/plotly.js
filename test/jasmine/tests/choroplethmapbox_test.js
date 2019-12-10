@@ -174,8 +174,8 @@ describe('Test choroplethmapbox convert:', function() {
             });
             expectBlank(opts);
             expect(loggers.warn).toHaveBeenCalledWith([
-                'Invalid GeoJSON type none,',
-                'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
+                'Invalid GeoJSON type none.',
+                'Traces with locationmode *geojson-id* only support *FeatureCollection* and *Feature* types.'
             ].join(' '));
         });
 
@@ -188,8 +188,8 @@ describe('Test choroplethmapbox convert:', function() {
             });
             expectBlank(opts);
             expect(loggers.warn).toHaveBeenCalledWith([
-                'Invalid GeoJSON type nop!,',
-                'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
+                'Invalid GeoJSON type nop!.',
+                'Traces with locationmode *geojson-id* only support *FeatureCollection* and *Feature* types.'
             ].join(' '));
         });
     });
@@ -204,8 +204,8 @@ describe('Test choroplethmapbox convert:', function() {
             var opts = _convert(trace);
             expect(opts.geojson.features.length).toBe(2, '# of feature to be rendered');
             expect(loggers.log).toHaveBeenCalledWith([
-                'Location with id b does not have a valid GeoJSON geometry,',
-                'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
+                'Location b does not have a valid GeoJSON geometry.',
+                'Traces with locationmode *geojson-id* only support *Polygon* and *MultiPolygon* geometries.'
             ].join(' '));
         });
 
@@ -216,8 +216,8 @@ describe('Test choroplethmapbox convert:', function() {
             var opts = _convert(trace);
             expect(opts.geojson.features.length).toBe(2, '# of feature to be rendered');
             expect(loggers.log).toHaveBeenCalledWith([
-                'Location with id c does not have a valid GeoJSON geometry,',
-                'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
+                'Location c does not have a valid GeoJSON geometry.',
+                'Traces with locationmode *geojson-id* only support *Polygon* and *MultiPolygon* geometries.'
             ].join(' '));
         });
     });
@@ -231,7 +231,7 @@ describe('Test choroplethmapbox convert:', function() {
 
         var opts = _convert(trace);
         expect(opts.geojson.features.length).toBe(3, '# of features to be rendered');
-        expect(loggers.log).toHaveBeenCalledWith('Location with id d does not have a matching feature');
+        expect(loggers.log).toHaveBeenCalledWith('Location *d* does not have a matching feature with id-key *id*.');
     });
 
     describe('should accept numbers as *locations* items', function() {
@@ -594,7 +594,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         desc: 'with "typeof number" locations[i] and feature id (in *name* label case)',
         patch: function() {
             var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
-            fig.data.shift();
+            fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
             return fig;
@@ -606,7 +606,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         desc: 'with "typeof number" locations[i] and feature id (in *nums* label case)',
         patch: function() {
             var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
-            fig.data.shift();
+            fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
             fig.data[0].hoverinfo = 'location+name';
@@ -619,7 +619,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         desc: 'with "typeof number" locations[i] and feature id (hovertemplate case)',
         patch: function() {
             var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
-            fig.data.shift();
+            fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
             fig.data[0].hovertemplate = '### %{location}<extra>%{location} ###</extra>';

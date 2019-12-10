@@ -16,6 +16,7 @@ var turfCentroid = require('@turf/centroid');
 var identity = require('./identity');
 var loggers = require('./loggers');
 var isPlainObject = require('./is_plain_object');
+var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 
 // make list of all country iso3 ids from at runtime
@@ -208,7 +209,8 @@ function extractTraceFeature(calcTrace) {
     }
 
     function appendFeature(fIn) {
-        var cdi = lookup[fIn.id];
+        var id = nestedProperty(fIn, trace.featureidkey || 'id').get();
+        var cdi = lookup[id];
 
         if(cdi) {
             var geometry = fIn.geometry;
@@ -216,6 +218,7 @@ function extractTraceFeature(calcTrace) {
             if(geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
                 var fOut = {
                     type: 'Feature',
+                    id: id,
                     geometry: geometry,
                     properties: {}
                 };
@@ -230,15 +233,16 @@ function extractTraceFeature(calcTrace) {
                 featuresOut.push(fOut);
             } else {
                 loggers.log([
-                    'Location with id', cdi.loc, 'does not have a valid GeoJSON geometry,',
-                    'choroplethmapbox traces only support *Polygon* and *MultiPolygon* geometries.'
+                    'Location', cdi.loc, 'does not have a valid GeoJSON geometry.',
+                    'Traces with locationmode *geojson-id* only support',
+                    '*Polygon* and *MultiPolygon* geometries.'
                 ].join(' '));
             }
         }
 
         // remove key from lookup, so that we can track (if any)
         // the locations that did not have a corresponding GeoJSON feature
-        delete lookup[fIn.id];
+        delete lookup[id];
     }
 
     switch(geojsonIn.type) {
@@ -253,14 +257,19 @@ function extractTraceFeature(calcTrace) {
             break;
         default:
             loggers.warn([
-                'Invalid GeoJSON type', (geojsonIn.type || 'none') + ',',
-                'choroplethmapbox traces only support *FeatureCollection* and *Feature* types.'
+                'Invalid GeoJSON type', (geojsonIn.type || 'none') + '.',
+                'Traces with locationmode *geojson-id* only support',
+                '*FeatureCollection* and *Feature* types.'
             ].join(' '));
             return false;
     }
 
     for(var loc in lookup) {
-        loggers.log('Location with id ' + loc + ' does not have a matching feature');
+        loggers.log([
+            'Location *' + loc + '*',
+            'does not have a matching feature with id-key',
+            '*' + trace.featureidkey + '*.'
+        ].join(' '));
     }
 
     return featuresOut;

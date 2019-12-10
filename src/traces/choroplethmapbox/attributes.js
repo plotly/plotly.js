@@ -28,9 +28,7 @@ module.exports = extendFlat({
     // Maybe start with only one value (that we could name e.g. 'geojson-id'),
     // but eventually:
     // - we could also support for our own dist/topojson/*
-    // - some people might want `geojson-properties-name` to map data arrays to
-    //   GeoJSON features
-    // locationmode: choroplethAttrs.locationmode,
+    //   .. and locationmode: choroplethAttrs.locationmode,
 
     z: {
         valType: 'data_array',
@@ -52,6 +50,13 @@ module.exports = extendFlat({
             'with geometries of type *Polygon* and *MultiPolygon*.'
         ].join(' ')
     },
+    featureidkey: extendFlat({}, choroplethAttrs.featureidkey, {
+        description: [
+            'Sets the key in GeoJSON features which is used as id to match the items',
+            'included in the `locations` array.',
+            'Support nested property, for example *properties.name*.'
+        ].join(' ')
+    }),
 
     // TODO agree on name / behaviour
     //

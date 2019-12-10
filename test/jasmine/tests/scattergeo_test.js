@@ -129,6 +129,25 @@ describe('Test scattergeo defaults', function() {
         ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe(undefined, 'lon/lat coordinates');
     });
+
+    it('should only coerce *featureidkey* when locationmode is *geojson-id', function() {
+        traceIn = {
+            locations: ['CAN', 'USA'],
+            geojson: 'url',
+            featureidkey: 'properties.name'
+        };
+        traceOut = {};
+        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.featureidkey).toBe('properties.name', 'coerced');
+
+        traceIn = {
+            locations: ['CAN', 'USA'],
+            featureidkey: 'properties.name'
+        };
+        traceOut = {};
+        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.featureidkey).toBe(undefined, 'NOT coerced');
+    });
 });
 
 describe('Test scattergeo calc', function() {

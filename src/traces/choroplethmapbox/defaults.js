@@ -29,6 +29,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    coerce('featureidkey');
+
     traceOut._length = Math.min(locations.length, z.length);
 
     coerce('below');

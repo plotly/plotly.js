@@ -46,6 +46,8 @@ module.exports = extendFlat({
             // https://github.com/topojson/topojson-specification/blob/master/README.md
         ].join(' ')
     }),
+    featureidkey: scatterGeoAttrs.featureidkey,
+
     text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),

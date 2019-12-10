@@ -70,6 +70,18 @@ module.exports = overrideAll({
             // https://github.com/topojson/topojson-specification/blob/master/README.md
         ].join(' ')
     },
+    featureidkey: {
+        valType: 'string',
+        role: 'info',
+        editType: 'calc',
+        dflt: 'id',
+        description: [
+            'Sets the key in GeoJSON features which is used as id to match the items',
+            'included in the `locations` array.',
+            'Only has an effect when `geojson` is set.',
+            'Support nested property, for example *properties.name*.'
+        ].join(' ')
+    },
 
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
 

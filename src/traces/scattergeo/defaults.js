@@ -32,7 +32,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson)) {
             locationmodeDflt = 'geojson-id';
         }
-        coerce('locationmode', locationmodeDflt);
+
+        var locationMode = coerce('locationmode', locationmodeDflt);
+
+        if(locationMode === 'geojson-id') {
+            coerce('featureidkey');
+        }
+
         len = locations.length;
     } else {
         var lon = coerce('lon') || [];

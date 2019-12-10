@@ -127,6 +127,27 @@ describe('Test choropleth', function() {
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.locationmode).toBe('ISO-3', 'invalid object');
         });
+
+        it('should only coerce *featureidkey* when locationmode is *geojson-id', function() {
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: 'url',
+                featureidkey: 'properties.name'
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.featureidkey).toBe('properties.name', 'coerced');
+
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                featureidkey: 'properties.name'
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.featureidkey).toBe(undefined, 'NOT coerced');
+        });
     });
 });
 
