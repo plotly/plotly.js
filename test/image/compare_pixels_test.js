@@ -101,7 +101,9 @@ if(allMock || argv.filter) {
 }
 
 var FLAKY_LIST = [
-    'treemap_textposition'
+    'treemap_textposition',
+    'trace_metatext',
+    'gl3d_directions-streamtube1'
 ];
 
 console.log('');
