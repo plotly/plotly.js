@@ -618,6 +618,42 @@ modeBarButtons.resetViewMapbox = {
     }
 };
 
+modeBarButtons.zoomInMapbox = {
+    name: 'zoomInMapbox',
+    title: function(gd) { return _(gd, 'Zoom in'); },
+    attr: 'zoom',
+    val: 'in',
+    icon: Icons.zoom_plus,
+    click: handleMapboxZoom
+};
+
+modeBarButtons.zoomOutMapbox = {
+    name: 'zoomOutMapbox',
+    title: function(gd) { return _(gd, 'Zoom out'); },
+    attr: 'zoom',
+    val: 'out',
+    icon: Icons.zoom_minus,
+    click: handleMapboxZoom
+};
+
+function handleMapboxZoom(gd, ev) {
+    var button = ev.currentTarget;
+    var val = button.getAttribute('data-val');
+    var fullLayout = gd._fullLayout;
+    var subplotIds = fullLayout._subplots.mapbox || [];
+    var scalar = 1.05;
+    var aObj = {};
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var id = subplotIds[i];
+        var current = fullLayout[id].zoom;
+        var next = (val === 'in') ? scalar * current : current / scalar;
+        aObj[id + '.zoom'] = next;
+    }
+
+    Registry.call('_guiRelayout', gd, aObj);
+}
+
 function resetView(gd, subplotType) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[subplotType] || [];
