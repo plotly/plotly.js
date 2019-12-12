@@ -16,6 +16,7 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var recordMinTextSize = require('../bar/plot').recordMinTextSize;
 
 var helpers = require('./helpers');
 var eventData = require('./event_data');
@@ -52,7 +53,7 @@ function plot(gd, cdModule) {
             ];
             var hasOutsideText = false;
 
-            slices.each(function(pt) {
+            slices.each(function(pt, i) {
                 if(pt.hidden) {
                     d3.select(this).selectAll('path,g').remove();
                     return;
@@ -131,7 +132,7 @@ function plot(gd, cdModule) {
                 formatSliceLabel(gd, pt, cd0);
                 var textPosition = helpers.castOption(trace.textposition, pt.pts);
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
-                    .data(pt.text && (textPosition !== 'none') ? [0] : []);
+                    .data(pt.text && (textPosition !== 'none') ? [pt] : []);
 
                 sliceTextGroup.enter().append('g')
                     .classed('slicetext', true);
@@ -144,15 +145,19 @@ function plot(gd, cdModule) {
                         s.attr('data-notex', 1);
                     });
 
+                    var font = Lib.extendFlat({}, textPosition === 'outside' ?
+                        determineOutsideTextFont(trace, pt, fullLayout.font) :
+                        determineInsideTextFont(trace, pt, fullLayout.font), {}
+                    );
+                    font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+
                     sliceText.text(pt.text)
                         .attr({
                             'class': 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
                         })
-                        .call(Drawing.font, textPosition === 'outside' ?
-                          determineOutsideTextFont(trace, pt, gd._fullLayout.font) :
-                          determineInsideTextFont(trace, pt, gd._fullLayout.font))
+                        .call(Drawing.font, font)
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
@@ -164,36 +169,39 @@ function plot(gd, cdModule) {
                     } else {
                         transform = transformInsideText(textBB, pt, cd0);
                         if(textPosition === 'auto' && transform.scale < 1) {
-                            sliceText.call(Drawing.font, trace.outsidetextfont);
-                            if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
-                                    trace.outsidetextfont.size !== trace.insidetextfont.size) {
+                            var newFont = Lib.extendFlat({}, trace.outsidetextfont, {});
+                            newFont.size = Math.max(newFont.size, fullLayout.uniformtext.minsize || 0);
+
+                            sliceText.call(Drawing.font, newFont);
+                            if(newFont.family !== font.family || newFont.size !== font.size) {
+                                // recompute bounding box
                                 textBB = Drawing.bBox(sliceText.node());
                             }
                             transform = transformOutsideText(textBB, pt);
                         }
                     }
 
-                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0);
-                    var translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
+                    var pxtxt = pt.pxtxt || pt.pxmid;
+                    transform.targetX = cx + pxtxt[0] * transform.rCenter + (transform.x || 0);
+                    transform.targetY = cy + pxtxt[1] * transform.rCenter + (transform.y || 0);
+                    computeTransform(transform, textBB);
 
                     // save some stuff to use later ensure no labels overlap
                     if(transform.outside) {
-                        pt.yLabelMin = translateY - textBB.height / 2;
-                        pt.yLabelMid = translateY;
-                        pt.yLabelMax = translateY + textBB.height / 2;
+                        var targetY = transform.targetY;
+                        pt.yLabelMin = targetY - textBB.height / 2;
+                        pt.yLabelMid = targetY;
+                        pt.yLabelMax = targetY + textBB.height / 2;
                         pt.labelExtraX = 0;
                         pt.labelExtraY = 0;
                         hasOutsideText = true;
                     }
 
-                    sliceText.attr('transform',
-                        'translate(' + translateX + ',' + translateY + ')' +
-                        (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
-                        (transform.rotate ? ('rotate(' + transform.rotate + ')') : '') +
-                        'translate(' +
-                            (-(textBB.left + textBB.right) / 2) + ',' +
-                            (-(textBB.top + textBB.bottom) / 2) +
-                        ')');
+                    transform.fontSize = font.size;
+                    recordMinTextSize(trace.type, transform, fullLayout);
+                    cd[i].transform = transform;
+
+                    sliceText.attr('transform', Lib.getTextTransform(transform, true));
                 });
             });
 
@@ -298,8 +306,10 @@ function plotTextLines(slices, trace) {
         // first move the text to its new location
         var sliceText = sliceTop.select('g.slicetext text');
 
-        sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
-            sliceText.attr('transform'));
+        pt.transform.targetX += pt.labelExtraX;
+        pt.transform.targetY += pt.labelExtraY;
+
+        sliceText.attr('transform', Lib.getTextTransform(pt.transform));
 
         // then add a line to the new location
         var lineStartX = pt.cxFinal + pt.pxmid[0];
@@ -549,59 +559,126 @@ function prerenderTitles(cdModule, gd) {
 
 function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
-    var textAspect = textBB.width / textBB.height;
     var halfAngle = pt.halfangle;
+    var midAngle = pt.midangle;
     var ring = pt.ring;
     var rInscribed = pt.rInscribed;
     var r = cd0.r || pt.rpx1;
+    var orientation = cd0.trace.insidetextorientation;
+    var allTransforms = [];
 
-    // max size text can be inserted inside without rotating it
-    // this inscribes the text rectangle in a circle, which is then inscribed
-    // in the slice, so it will be an underestimate, which some day we may want
-    // to improve so this case can get more use
-    var transform = {
-        scale: rInscribed * r * 2 / textDiameter,
+    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
 
-        // and the center position and rotation in this case
-        rCenter: 1 - rInscribed,
-        rotate: 0
-    };
+    if(isCircle || orientation === 'auto' || orientation === 'h') {
+        // max size text can be inserted inside without rotating it
+        // this inscribes the text rectangle in a circle, which is then inscribed
+        // in the slice, so it will be an underestimate, which some day we may want
+        // to improve so this case can get more use
+        var transform = {
+            scale: rInscribed * r * 2 / textDiameter,
 
-    if(transform.scale >= 1) return transform;
+            // and the center position and rotation in this case
+            rCenter: 1 - rInscribed,
+            rotate: 0
+        };
 
+        if(transform.scale >= 1) return transform;
+
+        allTransforms.push(transform);
+    }
+
+    if(orientation === 'h') {
+        // max size if text is placed (horizontally) at the top or bottom of the arc
+
+        var considerCrossing = function(angle, key) {
+            if(isCrossing(pt, angle)) {
+                var dStart = Math.abs(angle - pt.startangle);
+                var dStop = Math.abs(angle - pt.stopangle);
+
+                var closestEdge = dStart < dStop ? dStart : dStop;
+
+                var newT;
+                if(key === 'tan') {
+                    newT = calcTanTransform(textBB, r, ring, closestEdge, 0);
+                } else { // case of 'rad'
+                    newT = calcRadTransform(textBB, r, ring, closestEdge, Math.PI / 2);
+                }
+                newT._repos = getCoords(r, angle);
+
+                allTransforms.push(newT);
+            }
+        };
+
+        for(var i = 3; i >= -3; i--) { // to cover all cases with trace.rotation added
+            considerCrossing(Math.PI * (i + 0.0), 'tan');
+            considerCrossing(Math.PI * (i + 0.5), 'rad');
+        }
+    }
+
+    if(orientation === 'auto' || orientation === 'r') {
+        allTransforms.push(calcRadTransform(textBB, r, ring, halfAngle, midAngle));
+    }
+
+    if(orientation === 'auto' || orientation === 't') {
+        allTransforms.push(calcTanTransform(textBB, r, ring, halfAngle, midAngle));
+    }
+
+    var maxScaleTransform = allTransforms.sort(function(a, b) {
+        return b.scale - a.scale;
+    })[0];
+
+    if(maxScaleTransform._repos) {
+        pt.pxtxt = maxScaleTransform._repos;
+    }
+
+    return maxScaleTransform;
+}
+
+function isCrossing(pt, angle) {
+    var start = pt.startangle;
+    var stop = pt.stopangle;
+    return (
+        (start > angle && angle > stop) ||
+        (start < angle && angle < stop)
+    );
+}
+
+function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
     // max size if text is rotated radially
-    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfHeightRotRadial = r * Math.min(
-        1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
-        ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
-    );
-    var radialTransform = {
-        scale: maxHalfHeightRotRadial * 2 / textBB.height,
-        rCenter: Math.cos(maxHalfHeightRotRadial / r) -
-            maxHalfHeightRotRadial * textAspect / r,
-        rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
+    var a = textBB.width / textBB.height;
+    var s = calcMaxHalfSize(a, halfAngle, r, ring);
+    return {
+        scale: s * 2 / textBB.height,
+        rCenter: calcRCenter(a, s / r),
+        rotate: calcRotate(midAngle)
     };
+}
 
+function calcTanTransform(textBB, r, ring, halfAngle, midAngle) {
     // max size if text is rotated tangentially
-    var aspectInv = 1 / textAspect;
-    var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
-    var maxHalfWidthTangential = r * Math.min(
-        1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
-        ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
-    );
-    var tangentialTransform = {
-        scale: maxHalfWidthTangential * 2 / textBB.width,
-        rCenter: Math.cos(maxHalfWidthTangential / r) -
-            maxHalfWidthTangential / textAspect / r,
-        rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
+    var a = textBB.height / textBB.width;
+    var s = calcMaxHalfSize(a, halfAngle, r, ring);
+    return {
+        scale: s * 2 / textBB.width,
+        rCenter: calcRCenter(a, s / r),
+        rotate: calcRotate(midAngle + Math.PI / 2)
     };
-    // if we need a rotated transform, pick the biggest one
-    // even if both are bigger than 1
-    var rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
-            tangentialTransform : radialTransform;
+}
 
-    if(transform.scale < 1 && rotatedTransform.scale > transform.scale) return rotatedTransform;
-    return transform;
+function calcRCenter(a, b) {
+    return Math.cos(b) - a * b;
+}
+
+function calcRotate(t) {
+    return (180 / Math.PI * t + 720) % 180 - 90;
+}
+
+function calcMaxHalfSize(a, halfAngle, r, ring) {
+    var q = a + 1 / (2 * Math.tan(halfAngle));
+    return r * Math.min(
+        1 / (Math.sqrt(q * q + 0.5) + q),
+        ring / (Math.sqrt(a * a + ring / 2) + a)
+    );
 }
 
 function getInscribedRadiusFraction(pt, cd0) {
@@ -921,6 +998,7 @@ function groupScale(cdModule, scaleGroups) {
 
 function setCoords(cd) {
     var cd0 = cd[0];
+    var r = cd0.r;
     var trace = cd0.trace;
     var currentAngle = trace.rotation * Math.PI / 180;
     var angleFactor = 2 * Math.PI / cd0.vTotal;
@@ -941,11 +1019,7 @@ function setCoords(cd) {
         lastPt = 'px0';
     }
 
-    function getCoords(angle) {
-        return [cd0.r * Math.sin(angle), -cd0.r * Math.cos(angle)];
-    }
-
-    currentCoords = getCoords(currentAngle);
+    currentCoords = getCoords(r, currentAngle);
 
     for(i = 0; i < cd.length; i++) {
         cdi = cd[i];
@@ -953,12 +1027,13 @@ function setCoords(cd) {
 
         cdi[firstPt] = currentCoords;
 
+        cdi.startangle = currentAngle;
         currentAngle += angleFactor * cdi.v / 2;
-        cdi.pxmid = getCoords(currentAngle);
+        cdi.pxmid = getCoords(r, currentAngle);
         cdi.midangle = currentAngle;
-
         currentAngle += angleFactor * cdi.v / 2;
-        currentCoords = getCoords(currentAngle);
+        currentCoords = getCoords(r, currentAngle);
+        cdi.stopangle = currentAngle;
 
         cdi[lastPt] = currentCoords;
 
@@ -968,6 +1043,10 @@ function setCoords(cd) {
         cdi.ring = 1 - trace.hole;
         cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
+}
+
+function getCoords(r, angle) {
+    return [r * Math.sin(angle), -r * Math.cos(angle)];
 }
 
 function formatSliceLabel(gd, pt, cd0) {
@@ -1024,6 +1103,24 @@ function formatSliceLabel(gd, pt, cd0) {
         }
     }
 }
+
+function computeTransform(
+    transform,  // inout
+    textBB      // in
+) {
+    var rotate = transform.rotate;
+    var scale = transform.scale;
+    if(scale > 1) scale = 1;
+
+    var a = rotate * Math.PI / 180;
+    var cosA = Math.cos(a);
+    var sinA = Math.sin(a);
+    var midX = (textBB.left + textBB.right) / 2;
+    var midY = (textBB.top + textBB.bottom) / 2;
+    transform.textX = midX * cosA - midY * sinA;
+    transform.textY = midX * sinA + midY * cosA;
+}
+
 module.exports = {
     plot: plot,
     formatSliceLabel: formatSliceLabel,
@@ -1033,4 +1130,5 @@ module.exports = {
     prerenderTitles: prerenderTitles,
     layoutAreas: layoutAreas,
     attachFxHandlers: attachFxHandlers,
+    computeTransform: computeTransform
 };

@@ -70,6 +70,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(hasOutside) {
             coerce('automargin');
         }
+
+        if(textposition !== 'none' && textposition !== 'outside') {
+            coerce('insidetextorientation');
+        }
     }
 
     handleDomainDefaults(traceOut, layout, coerce);

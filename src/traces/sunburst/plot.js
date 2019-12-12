@@ -14,8 +14,10 @@ var d3Hierarchy = require('d3-hierarchy');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-
-var transformInsideText = require('../pie/plot').transformInsideText;
+var recordMinTextSize = require('../bar/plot').recordMinTextSize;
+var piePlot = require('../pie/plot');
+var computeTransform = piePlot.computeTransform;
+var transformInsideText = piePlot.transformInsideText;
 var styleOne = require('./style').styleOne;
 
 var attachFxHandlers = require('./fx');
@@ -148,8 +150,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     // slice path generation fn
     var pathSlice = function(d) { return Lib.pathAnnulus(d.rpx0, d.rpx1, d.x0, d.x1, cx, cy); };
     // slice text translate x/y
-    var transTextX = function(d) { return cx + d.pxmid[0] * d.transform.rCenter + (d.transform.x || 0); };
-    var transTextY = function(d) { return cy + d.pxmid[1] * d.transform.rCenter + (d.transform.y || 0); };
+
+    var getTargetX = function(d) { return cx + (d.pxtxt || d.pxmid)[0] * d.transform.rCenter + (d.transform.x || 0); };
+    var getTargetY = function(d) { return cy + (d.pxtxt || d.pxmid)[1] * d.transform.rCenter + (d.transform.y || 0); };
 
     slices = slices.data(sliceData, helpers.getPtId);
 
@@ -214,6 +217,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         pt.xmid = (pt.x0 + pt.x1) / 2;
         pt.pxmid = rx2px(pt.rpx1, pt.xmid);
         pt.midangle = -(pt.xmid - Math.PI / 2);
+        pt.startangle = -(pt.x0 - Math.PI / 2);
+        pt.stopangle = -(pt.x1 - Math.PI / 2);
         pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1) || Math.PI, Math.PI);
         pt.ring = 1 - (pt.rpx0 / pt.rpx1);
         pt.rInscribed = getInscribedRadiusFraction(pt, trace);
@@ -248,26 +253,29 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.attr('data-notex', 1);
         });
 
+        var font = Lib.extendFlat({}, helpers.determineTextFont(trace, pt, fullLayout.font), {});
+        font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+
         sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
-            .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))
+            .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
         pt.transform = transformInsideText(textBB, pt, cd0);
-        pt.translateX = transTextX(pt);
-        pt.translateY = transTextY(pt);
+        pt.transform.targetX = getTargetX(pt);
+        pt.transform.targetY = getTargetY(pt);
 
         var strTransform = function(d, textBB) {
-            return 'translate(' + d.translateX + ',' + d.translateY + ')' +
-                (d.transform.scale < 1 ? ('scale(' + d.transform.scale + ')') : '') +
-                (d.transform.rotate ? ('rotate(' + d.transform.rotate + ')') : '') +
-                'translate(' +
-                    (-(textBB.left + textBB.right) / 2) + ',' +
-                    (-(textBB.top + textBB.bottom) / 2) +
-                ')';
+            var transform = d.transform;
+            computeTransform(transform, textBB);
+
+            transform.fontSize = font.size;
+            recordMinTextSize(trace.type, transform, fullLayout);
+
+            return Lib.getTextTransform(transform, true);
         };
 
         if(hasTransition) {
@@ -431,18 +439,17 @@ function plotOne(gd, cd, element, transitionOpts) {
                 }
             };
 
-            var out = {
+            recordMinTextSize(trace.type, transform, fullLayout);
+            return {
                 rpx1: rpx1Fn(t),
-                translateX: transTextX(d),
-                translateY: transTextY(d),
                 transform: {
+                    targetX: getTargetX(d),
+                    targetY: getTargetY(d),
                     scale: scaleFn(t),
                     rotate: rotateFn(t),
                     rCenter: rCenter
                 }
             };
-
-            return out;
         };
     }
 

@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
 var d3 = require('d3');
@@ -1170,18 +1171,18 @@ describe('Test sunburst tweening:', function() {
         // asserting at the mid point *should be* representative enough
         var t = 0.5;
         var actual = trim(fn(t));
+        var msg2 = msg + ' | node ' + id + ' @t=' + t;
 
-        // do not assert textBB translate piece,
-        // which isn't tweened and has OS-dependent results
         if(attrName === 'transform') {
-            actual = actual.split('translate').slice(0, 2).join('translate');
-        }
-
+            var fake = {attr: function() { return actual; }};
+            var xy = Drawing.getTranslate(fake);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, 2, msg2);
+        } else {
         // we could maybe to bring in:
         // https://github.com/hughsk/svg-path-parser
         // to make these assertions more readable
-
-        expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
+            expect(actual).toBe(trim(exp), msg2);
+        }
     }
 
     it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
@@ -1211,12 +1212,8 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(313.45694251914836,271.54305748085164)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [313.45, 275.54]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
@@ -1250,12 +1247,8 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(316.8522926358638,268.1477073641362)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [316.85, 272.14]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
@@ -1288,12 +1281,8 @@ describe('Test sunburst tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M350,133.75 L350,100 A135,1350,0,0350,370 L350,336.25 A101.25,101.250,0,1350,133.75Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(303.0160689531907,281.9839310468093)'
-            );
-            _assert('enter b text to new position', 'transform', 'b',
-                'translate(248.75,235)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [303.01, 285.98]);
+            _assert('enter b text to new position', 'transform', 'b', [248.75, 239]);
         })
         .catch(failTest)
         .then(done);

@@ -181,6 +181,21 @@ module.exports = {
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
+    insidetextorientation: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['h', 'r', 't', 'auto'],
+        dflt: 'auto',
+        editType: 'plot',
+        description: [
+            'Determines the orientation of text inside slices.',
+            'With *auto* the texts may automatically be',
+            'rotated to fit with the maximum size inside the slice.',
+            'Using *h* option forces text to be horizontal.',
+            'Using *r* option forces text to be radial.',
+            'Using *t* option forces text to be tangential.'
+        ].join(' ')
+    },
     insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the sector.'
     }),
