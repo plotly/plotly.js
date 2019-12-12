@@ -20,8 +20,46 @@ var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
+function resizeText(gd, gTrace, traceType) {
+    var fullLayout = gd._fullLayout;
+    var minSize = fullLayout['_' + traceType + 'Text_minsize'];
+    if(minSize) {
+        var shouldHide = fullLayout.uniformtext.mode === 'hide';
+
+        var t;
+        switch(traceType) {
+            case 'funnelarea' :
+            case 'pie' :
+            case 'sunburst' :
+            case 'treemap' :
+                t = gTrace.selectAll('g.slicetext').selectAll('text');
+                break;
+            default :
+                t = gTrace.selectAll('g.points').selectAll('g.point').selectAll('text');
+        }
+
+        var isCenter = (
+            traceType === 'pie' ||
+            traceType === 'sunburst'
+        );
+
+        t.each(function(d) {
+            var transform = d.transform;
+
+            transform.scale = minSize / transform.fontSize;
+            d3.select(this).attr('transform', Lib.getTextTransform(transform, isCenter));
+
+            if(shouldHide && transform.hide) {
+                d3.select(this).text(' ');
+            }
+        });
+    }
+}
+
 function style(gd) {
     var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+    resizeText(gd, s, 'bar');
+
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
@@ -57,7 +95,9 @@ function stylePoints(sel, trace, gd) {
 function styleTextPoints(sel, trace, gd) {
     sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
-        var font = determineFont(tx, d, trace, gd);
+        var font = Lib.extendFlat({}, determineFont(tx, d, trace, gd), {});
+        font.size = Math.max(font.size, gd._fullLayout.uniformtext.minsize || 0);
+
         Drawing.font(tx, font);
     });
 }
@@ -85,6 +125,7 @@ function styleTextInSelectionMode(txs, trace, gd) {
 
         if(d.selected) {
             font = Lib.extendFlat({}, determineFont(tx, d, trace, gd));
+            font.size = Math.max(font.size, gd._fullLayout.uniformtext.minsize || 0);
 
             var selectedFontColor = trace.selected.textfont && trace.selected.textfont.color;
             if(selectedFontColor) {
@@ -171,5 +212,6 @@ module.exports = {
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
     getOutsideTextFont: getOutsideTextFont,
-    getBarColor: getBarColor
+    getBarColor: getBarColor,
+    resizeText: resizeText
 };

@@ -13,11 +13,13 @@ var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
-
-var styleTextPoints = require('../bar/style').styleTextPoints;
+var barStyle = require('../bar/style');
+var resizeText = barStyle.resizeText;
+var styleTextPoints = barStyle.styleTextPoints;
 
 function style(gd, cd, sel) {
     var s = sel ? sel : d3.select(gd).selectAll('g.waterfalllayer').selectAll('g.trace');
+    resizeText(gd, s, 'waterfall');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
 

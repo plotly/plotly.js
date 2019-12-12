@@ -237,14 +237,14 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo, opts);
 }
 
-function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, makeOnCompleteCallback) {
+function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
     var fullLayout = gd._fullLayout;
     var textPosition;
 
-    function appendTextNode(bar, text, textFont) {
+    function appendTextNode(bar, text, font) {
         var textSelection = Lib.ensureSingle(bar, 'text')
             .text(text)
             .attr({
@@ -254,17 +254,17 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
                 // tex and regular text together
                 'data-notex': 1
             })
-            .call(Drawing.font, textFont)
+            .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
         return textSelection;
     }
 
     // get trace attributes
-    var trace = calcTrace[0].trace;
+    var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
-    var text = getText(fullLayout, calcTrace, i, xa, ya);
+    var text = getText(fullLayout, cd, i, xa, ya);
     textPosition = getTextPosition(trace, i);
 
     // compute text position
@@ -272,7 +272,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
         opts.mode === 'stack' ||
         opts.mode === 'relative';
 
-    var calcBar = calcTrace[i];
+    var calcBar = cd[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
 
     if(!text ||
@@ -285,7 +285,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
     }
 
     var layoutFont = fullLayout.font;
-    var barColor = style.getBarColor(calcTrace[i], trace);
+    var barColor = style.getBarColor(cd[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
 
@@ -318,6 +318,7 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
     var textBB;
     var textWidth;
     var textHeight;
+    var font;
 
     if(textPosition === 'outside') {
         if(!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
@@ -327,7 +328,11 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
         if(isOutmostBar) {
             // draw text using insideTextFont and check if it fits inside bar
             textPosition = 'inside';
-            textSelection = appendTextNode(bar, text, insideTextFont);
+
+            font = Lib.extendFlat({}, insideTextFont, {});
+            font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+
+            textSelection = appendTextNode(bar, text, font);
 
             textBB = Drawing.bBox(textSelection.node()),
             textWidth = textBB.width,
@@ -357,9 +362,10 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
     }
 
     if(!textSelection) {
-        textSelection = appendTextNode(bar, text,
-                (textPosition === 'outside') ?
-                outsideTextFont : insideTextFont);
+        font = Lib.extendFlat({}, (textPosition === 'outside') ? outsideTextFont : insideTextFont, {});
+        font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+
+        textSelection = appendTextNode(bar, text, font);
 
         var currentTransform = textSelection.attr('transform');
         textSelection.attr('transform', '');
@@ -374,6 +380,8 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
         }
     }
 
+    var angle = trace.textangle;
+
     // compute text transform
     var transform, constrained;
     if(textPosition === 'outside') {
@@ -381,25 +389,52 @@ function appendBarText(gd, plotinfo, bar, calcTrace, i, x0, x1, y0, y1, opts, ma
             trace.constraintext === 'both' ||
             trace.constraintext === 'outside';
 
-        transform = Lib.getTextTransform(toMoveOutsideBar(x0, x1, y0, y1, textBB, {
+        transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
-            angle: trace.textangle
-        }));
+            angle: angle
+        });
     } else {
         constrained =
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = Lib.getTextTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
+        transform = toMoveInsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
-            angle: trace.textangle,
+            angle: angle,
             anchor: trace.insidetextanchor
-        }));
+        });
     }
 
-    transition(textSelection, opts, makeOnCompleteCallback).attr('transform', transform);
+    transform.fontSize = font.size;
+    recordMinTextSize(trace.type, transform, fullLayout);
+    calcBar.transform = transform;
+
+    transition(textSelection, opts, makeOnCompleteCallback)
+        .attr('transform', Lib.getTextTransform(transform));
+}
+
+function recordMinTextSize(
+    traceType, // in
+    transform, // inout
+    fullLayout // inout
+) {
+    if(fullLayout.uniformtext.mode) {
+        var minKey = '_' + traceType + 'Text_minsize';
+        var minSize = fullLayout.uniformtext.minsize;
+        var size = transform.scale * transform.fontSize;
+
+        transform.hide = size < minSize;
+
+        fullLayout[minKey] = fullLayout[minKey] || Infinity;
+        if(!transform.hide) {
+            fullLayout[minKey] = Math.min(
+                fullLayout[minKey],
+                Math.max(size, minSize)
+            );
+        }
+    }
 }
 
 function getRotateFromAngle(angle) {
@@ -549,15 +584,15 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     };
 }
 
-function getText(fullLayout, calcTrace, index, xa, ya) {
-    var trace = calcTrace[0].trace;
+function getText(fullLayout, cd, index, xa, ya) {
+    var trace = cd[0].trace;
     var texttemplate = trace.texttemplate;
 
     var value;
     if(texttemplate) {
-        value = calcTexttemplate(fullLayout, calcTrace, index, xa, ya);
+        value = calcTexttemplate(fullLayout, cd, index, xa, ya);
     } else if(trace.textinfo) {
-        value = calcTextinfo(calcTrace, index, xa, ya);
+        value = calcTextinfo(cd, index, xa, ya);
     } else {
         value = helpers.getValue(trace.text, index);
     }
@@ -570,8 +605,8 @@ function getTextPosition(trace, index) {
     return helpers.coerceEnumerated(attributeTextPosition, value);
 }
 
-function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
-    var trace = calcTrace[0].trace;
+function calcTexttemplate(fullLayout, cd, index, xa, ya) {
+    var trace = cd[0].trace;
     var texttemplate = Lib.castOption(trace, index, 'texttemplate');
     if(!texttemplate) return '';
     var isWaterfall = (trace.type === 'waterfall');
@@ -599,7 +634,7 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
         return tickText(vAxis, +v, true).text;
     }
 
-    var cdi = calcTrace[index];
+    var cdi = cd[index];
     var obj = {};
 
     obj.label = cdi.p;
@@ -640,8 +675,8 @@ function calcTexttemplate(fullLayout, calcTrace, index, xa, ya) {
     return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
 }
 
-function calcTextinfo(calcTrace, index, xa, ya) {
-    var trace = calcTrace[0].trace;
+function calcTextinfo(cd, index, xa, ya) {
+    var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
     var isWaterfall = (trace.type === 'waterfall');
     var isFunnel = (trace.type === 'funnel');
@@ -657,7 +692,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     }
 
     var textinfo = trace.textinfo;
-    var cdi = calcTrace[index];
+    var cdi = cd[index];
 
     var parts = textinfo.split('+');
     var text = [];
@@ -666,7 +701,7 @@ function calcTextinfo(calcTrace, index, xa, ya) {
     var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
 
     if(hasFlag('label')) {
-        text.push(formatLabel(calcTrace[index].p));
+        text.push(formatLabel(cd[index].p));
     }
 
     if(hasFlag('text')) {
@@ -717,5 +752,5 @@ function calcTextinfo(calcTrace, index, xa, ya) {
 module.exports = {
     plot: plot,
     toMoveInsideBar: toMoveInsideBar,
-    toMoveOutsideBar: toMoveOutsideBar
+    recordMinTextSize: recordMinTextSize
 };

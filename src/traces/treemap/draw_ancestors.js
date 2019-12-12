@@ -141,10 +141,13 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
+        var font = Lib.extendFlat({}, helpers.determineTextFont(trace, pt, fullLayout.font, trace.pathdir), {});
+        font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+
         sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
             .attr('text-anchor', 'start')
-            .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font, trace.pathdir))
+            .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
@@ -152,12 +155,17 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             onPathbar: true
         });
 
+        pt.transform.fontSize = font.size;
+
         if(helpers.isOutsideText(trace, pt)) {
             // consider in/out diff font sizes
-            pt.transform.targetY -= (
-                helpers.getOutsideTextFontKey('size', trace, pt, fullLayout.font) -
-                helpers.getInsideTextFontKey('size', trace, pt, fullLayout.font)
-            );
+            var outsideFont = helpers.getOutsideTextFontKey('size', trace, pt, fullLayout.font);
+            var insideFont = helpers.getInsideTextFontKey('size', trace, pt, fullLayout.font);
+
+            var diffFontSize = outsideFont - insideFont;
+
+            pt.transform.targetY -= diffFontSize;
+            pt.transform.fontSize -= diffFontSize;
         }
 
         if(hasTransition) {

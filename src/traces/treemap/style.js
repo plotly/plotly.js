@@ -12,9 +12,13 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
 var helpers = require('../sunburst/helpers');
+var resizeText = require('../bar/style').resizeText;
 
 function style(gd) {
-    gd._fullLayout._treemaplayer.selectAll('.trace').each(function(cd) {
+    var s = gd._fullLayout._treemaplayer.selectAll('.trace');
+    resizeText(gd, s, 'treemap');
+
+    s.each(function(cd) {
         var gTrace = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;

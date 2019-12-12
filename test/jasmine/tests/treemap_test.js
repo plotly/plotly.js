@@ -1363,8 +1363,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
-            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126]);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150]);
         })
         .catch(failTest)
         .then(done);
@@ -1395,8 +1395,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
-            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126]);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150]);
         })
         .catch(failTest)
         .then(done);
@@ -1427,11 +1427,8 @@ describe('Test treemap tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [220.25126, 0]);
-
-            // TODO this node gets cleared out of viewport to some
-            // machine-dependent position - skip for now
-            // _assert('enter b text to new position', 'transform', 'b', [286.16071428571433, 35714285714286]);
+            _assert('move B text to new position', 'transform', 'B', [221.25, 126]);
+            _assert('enter b text to new position', 'transform', 'b', [286.63, 196.35]);
         })
         .catch(failTest)
         .then(done);
