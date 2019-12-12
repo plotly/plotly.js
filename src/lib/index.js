@@ -1182,31 +1182,30 @@ lib.isHidden = function(gd) {
     return !display || display === 'none';
 };
 
-lib.getTextTransform = function(opts) {
+lib.getTextTransform = function(opts, isCenter) {
     var textX = opts.textX;
     var textY = opts.textY;
     var targetX = opts.targetX;
     var targetY = opts.targetY;
-    var scale = opts.scale;
     var rotate = opts.rotate;
+    var scale = opts.scale;
+    if(!scale) scale = 0;
+    else if(scale > 1) scale = 1;
 
-    var transformScale;
-    var transformRotate;
-    var transformTranslate;
-
-    if(scale < 1) transformScale = 'scale(' + scale + ') ';
-    else {
-        scale = 1;
-        transformScale = '';
-    }
-
-    transformRotate = (rotate) ?
-        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
-
-    // Note that scaling also affects the center of the text box
-    var translateX = (targetX - scale * textX);
-    var translateY = (targetY - scale * textY);
-    transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
-
-    return transformTranslate + transformScale + transformRotate;
+    return (
+        'translate(' +
+            (targetX - scale * textX) + ',' +
+            (targetY - scale * textY) +
+        ')' +
+        (scale < 1 ?
+            'scale(' + scale + ')' :
+            ''
+        ) +
+        (rotate ?
+            'rotate(' + rotate +
+                (isCenter ? '' : ' ' + textX + ' ' + textY) +
+            ')' :
+            ''
+        )
+    );
 };
