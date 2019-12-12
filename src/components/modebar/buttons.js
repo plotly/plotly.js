@@ -641,7 +641,7 @@ function handleMapboxZoom(gd, ev) {
     var val = button.getAttribute('data-val');
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots.mapbox || [];
-    var scalar = 1.3;
+    var scalar = 1.05;
     var aObj = {};
 
     for(var i = 0; i < subplotIds.length; i++) {
