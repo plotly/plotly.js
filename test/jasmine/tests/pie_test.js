@@ -94,6 +94,21 @@ describe('Pie defaults', function() {
         var out2 = _supply({type: 'pie', labels: ['A', 'B'], values: [1, 2], textposition: 'outside'});
         expect(out2.insidetextorientation).toBe(undefined, 'textposition outside');
     });
+
+    it('should coerce *insidetextorientation* if `textposition` is *inside* or *auto*', function() {
+        var out = _supply({type: 'pie', labels: ['A', 'B'], values: [1, 2], textposition: 'auto'});
+        expect(out.insidetextorientation).toBe('auto', 'textposition auto');
+
+        var out2 = _supply({type: 'pie', labels: ['A', 'B'], values: [1, 2], textposition: 'inside'});
+        expect(out2.insidetextorientation).toBe('auto', 'textposition inside');
+    });
+
+    it('should coerce *insidetextorientation* if `textposition` is an array', function() {
+        var out = _supply({type: 'pie', labels: ['A', 'B', 'C', 'D', 'E', 'F'], values: [1, 2, 3, 4, 5, 6],
+            textposition: [null, '', 'none', 'auto', 'inside', 'outside']
+        });
+        expect(out.insidetextorientation).toBe('auto', 'textposition auto');
+    });
 });
 
 describe('Pie traces', function() {

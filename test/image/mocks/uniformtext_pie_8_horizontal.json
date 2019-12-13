@@ -13,7 +13,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -40,7 +40,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -67,7 +67,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -94,7 +94,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -121,7 +121,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -148,7 +148,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -175,7 +175,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {
@@ -202,7 +202,7 @@
                 "invisible"
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "inside",
             "hole": 0.5,
             "domain": {

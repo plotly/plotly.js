@@ -2,7 +2,7 @@
 	"data": [
 		{
             "type": "sunburst",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "domain": {
                 "y": [0.5, 1]
             },

@@ -145,11 +145,10 @@ function plot(gd, cdModule) {
                         s.attr('data-notex', 1);
                     });
 
-                    var font = Lib.extendFlat({}, textPosition === 'outside' ?
+                    var font = Lib.ensureUniformFontSize(gd, textPosition === 'outside' ?
                         determineOutsideTextFont(trace, pt, fullLayout.font) :
-                        determineInsideTextFont(trace, pt, fullLayout.font), {}
+                        determineInsideTextFont(trace, pt, fullLayout.font)
                     );
-                    font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
 
                     sliceText.text(pt.text)
                         .attr({
@@ -169,14 +168,11 @@ function plot(gd, cdModule) {
                     } else {
                         transform = transformInsideText(textBB, pt, cd0);
                         if(textPosition === 'auto' && transform.scale < 1) {
-                            var newFont = Lib.extendFlat({}, trace.outsidetextfont, {});
-                            newFont.size = Math.max(newFont.size, fullLayout.uniformtext.minsize || 0);
+                            var newFont = Lib.ensureUniformFontSize(gd, trace.outsidetextfont);
 
                             sliceText.call(Drawing.font, newFont);
-                            if(newFont.family !== font.family || newFont.size !== font.size) {
-                                // recompute bounding box
-                                textBB = Drawing.bBox(sliceText.node());
-                            }
+                            textBB = Drawing.bBox(sliceText.node());
+
                             transform = transformOutsideText(textBB, pt);
                         }
                     }
@@ -201,7 +197,7 @@ function plot(gd, cdModule) {
                     recordMinTextSize(trace.type, transform, fullLayout);
                     cd[i].transform = transform;
 
-                    sliceText.attr('transform', Lib.getTextTransform(transform, true));
+                    sliceText.attr('transform', Lib.getTextTransform(transform));
                 });
             });
 
@@ -565,11 +561,14 @@ function transformInsideText(textBB, pt, cd0) {
     var rInscribed = pt.rInscribed;
     var r = cd0.r || pt.rpx1;
     var orientation = cd0.trace.insidetextorientation;
+    var isHorizontal = orientation === 'horizontal';
+    var isTangential = orientation === 'tangential';
+    var isRadial = orientation === 'radial';
+    var isAuto = orientation === 'auto';
+    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
     var allTransforms = [];
 
-    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
-
-    if(isCircle || orientation === 'auto' || orientation === 'h') {
+    if(isCircle || isAuto || isHorizontal) {
         // max size text can be inserted inside without rotating it
         // this inscribes the text rectangle in a circle, which is then inscribed
         // in the slice, so it will be an underestimate, which some day we may want
@@ -587,7 +586,7 @@ function transformInsideText(textBB, pt, cd0) {
         allTransforms.push(transform);
     }
 
-    if(orientation === 'h') {
+    if(isHorizontal) {
         // max size if text is placed (horizontally) at the top or bottom of the arc
 
         var considerCrossing = function(angle, key) {
@@ -603,23 +602,23 @@ function transformInsideText(textBB, pt, cd0) {
                 } else { // case of 'rad'
                     newT = calcRadTransform(textBB, r, ring, closestEdge, Math.PI / 2);
                 }
-                newT._repos = getCoords(r, angle);
+                newT.pxtxt = getCoords(r, angle);
 
                 allTransforms.push(newT);
             }
         };
 
         for(var i = 3; i >= -3; i--) { // to cover all cases with trace.rotation added
-            considerCrossing(Math.PI * (i + 0.0), 'tan');
+            considerCrossing(Math.PI * i, 'tan');
             considerCrossing(Math.PI * (i + 0.5), 'rad');
         }
     }
 
-    if(orientation === 'auto' || orientation === 'r') {
+    if(isAuto || isRadial) {
         allTransforms.push(calcRadTransform(textBB, r, ring, halfAngle, midAngle));
     }
 
-    if(orientation === 'auto' || orientation === 't') {
+    if(isAuto || isTangential) {
         allTransforms.push(calcTanTransform(textBB, r, ring, halfAngle, midAngle));
     }
 
@@ -627,8 +626,9 @@ function transformInsideText(textBB, pt, cd0) {
         return b.scale - a.scale;
     })[0];
 
-    if(maxScaleTransform._repos) {
-        pt.pxtxt = maxScaleTransform._repos;
+    if(maxScaleTransform.pxtxt) {
+        // copy text position if not at the middle
+        pt.pxtxt = maxScaleTransform.pxtxt;
     }
 
     return maxScaleTransform;
@@ -1119,6 +1119,7 @@ function computeTransform(
     var midY = (textBB.top + textBB.bottom) / 2;
     transform.textX = midX * cosA - midY * sinA;
     transform.textY = midX * sinA + midY * cosA;
+    transform.noCenter = true;
 }
 
 module.exports = {

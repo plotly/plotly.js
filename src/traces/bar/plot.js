@@ -329,8 +329,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
             // draw text using insideTextFont and check if it fits inside bar
             textPosition = 'inside';
 
-            font = Lib.extendFlat({}, insideTextFont, {});
-            font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+            font = Lib.ensureUniformFontSize(gd, insideTextFont);
 
             textSelection = appendTextNode(bar, text, font);
 
@@ -362,8 +361,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     }
 
     if(!textSelection) {
-        font = Lib.extendFlat({}, (textPosition === 'outside') ? outsideTextFont : insideTextFont, {});
-        font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+        font = Lib.ensureUniformFontSize(gd, (textPosition === 'outside') ? outsideTextFont : insideTextFont);
 
         textSelection = appendTextNode(bar, text, font);
 

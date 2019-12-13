@@ -38,20 +38,11 @@ function resizeText(gd, gTrace, traceType) {
                 t = gTrace.selectAll('g.points').selectAll('g.point').selectAll('text');
         }
 
-        var isCenter = (
-            traceType === 'pie' ||
-            traceType === 'sunburst'
-        );
-
         t.each(function(d) {
             var transform = d.transform;
-
             transform.scale = minSize / transform.fontSize;
-            d3.select(this).attr('transform', Lib.getTextTransform(transform, isCenter));
-
-            if(shouldHide && transform.hide) {
-                d3.select(this).text(' ');
-            }
+            d3.select(this).attr('transform', Lib.getTextTransform(transform));
+            d3.select(this).attr('display', shouldHide && transform.hide ? 'none' : null);
         });
     }
 }
@@ -95,8 +86,7 @@ function stylePoints(sel, trace, gd) {
 function styleTextPoints(sel, trace, gd) {
     sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
-        var font = Lib.extendFlat({}, determineFont(tx, d, trace, gd), {});
-        font.size = Math.max(font.size, gd._fullLayout.uniformtext.minsize || 0);
+        var font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
 
         Drawing.font(tx, font);
     });
@@ -124,8 +114,7 @@ function styleTextInSelectionMode(txs, trace, gd) {
         var font;
 
         if(d.selected) {
-            font = Lib.extendFlat({}, determineFont(tx, d, trace, gd));
-            font.size = Math.max(font.size, gd._fullLayout.uniformtext.minsize || 0);
+            font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
 
             var selectedFontColor = trace.selected.textfont && trace.selected.textfont.color;
             if(selectedFontColor) {

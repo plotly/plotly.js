@@ -8,7 +8,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -30,7 +30,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -52,7 +52,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -74,7 +74,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -96,7 +96,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -118,7 +118,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -140,7 +140,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {
@@ -162,7 +162,7 @@
                 0.25
             ],
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "textposition": "auto",
             "hole": 0.5,
             "domain": {

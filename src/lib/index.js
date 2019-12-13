@@ -1182,13 +1182,17 @@ lib.isHidden = function(gd) {
     return !display || display === 'none';
 };
 
-lib.getTextTransform = function(opts, isCenter) {
-    var textX = opts.textX;
-    var textY = opts.textY;
-    var targetX = opts.targetX;
-    var targetY = opts.targetY;
-    var rotate = opts.rotate;
-    var scale = opts.scale;
+/** Return transform text for bar bar-like rectangles and pie-like slices
+ *  @param {object} transform
+ */
+lib.getTextTransform = function(transform) {
+    var noCenter = transform.noCenter;
+    var textX = transform.textX;
+    var textY = transform.textY;
+    var targetX = transform.targetX;
+    var targetY = transform.targetY;
+    var rotate = transform.rotate;
+    var scale = transform.scale;
     if(!scale) scale = 0;
     else if(scale > 1) scale = 1;
 
@@ -1198,14 +1202,21 @@ lib.getTextTransform = function(opts, isCenter) {
             (targetY - scale * textY) +
         ')' +
         (scale < 1 ?
-            'scale(' + scale + ')' :
-            ''
+            'scale(' + scale + ')' : ''
         ) +
         (rotate ?
             'rotate(' + rotate +
-                (isCenter ? '' : ' ' + textX + ' ' + textY) +
-            ')' :
-            ''
+                (noCenter ? '' : ' ' + textX + ' ' + textY) +
+            ')' : ''
         )
     );
+};
+
+lib.ensureUniformFontSize = function(gd, baseFont) {
+    var out = lib.extendFlat({}, baseFont);
+    out.size = Math.max(
+        baseFont.size,
+        gd._fullLayout.uniformtext.minsize || 0
+    );
+    return out;
 };

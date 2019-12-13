@@ -2,7 +2,7 @@
     "data": [
         {
             "name": "horizontal",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "type": "sunburst",
             "level": "Juliet",
             "parents": [
@@ -105,7 +105,7 @@
         },
         {
             "name": "radial",
-            "insidetextorientation": "r",
+            "insidetextorientation": "radial",
             "type": "sunburst",
             "level": "Juliet",
             "parents": [
@@ -179,7 +179,7 @@
         },
         {
             "name": "tangential",
-            "insidetextorientation": "t",
+            "insidetextorientation": "tangential",
             "type": "sunburst",
             "level": "Juliet",
             "parents": [

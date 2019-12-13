@@ -253,8 +253,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.attr('data-notex', 1);
         });
 
-        var font = Lib.extendFlat({}, helpers.determineTextFont(trace, pt, fullLayout.font), {});
-        font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+        var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
 
         sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)

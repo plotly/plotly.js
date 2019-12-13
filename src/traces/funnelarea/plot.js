@@ -96,8 +96,7 @@ module.exports = function plot(gd, cdModule) {
                         s.attr('data-notex', 1);
                     });
 
-                    var font = Lib.extendFlat({}, determineInsideTextFont(trace, pt, fullLayout.font), {});
-                    font.size = Math.max(font.size, fullLayout.uniformtext.minsize || 0);
+                    var font = Lib.ensureUniformFontSize(gd, determineInsideTextFont(trace, pt, fullLayout.font));
 
                     sliceText.text(pt.text)
                         .attr({

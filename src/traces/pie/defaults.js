@@ -71,7 +71,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce('automargin');
         }
 
-        if(textposition !== 'none' && textposition !== 'outside') {
+        if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
             coerce('insidetextorientation');
         }
     }

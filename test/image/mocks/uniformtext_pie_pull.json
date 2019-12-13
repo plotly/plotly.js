@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "hole": 0.25,
             "domain": {
                 "y": [
@@ -58,7 +58,7 @@
         },
         {
             "type": "pie",
-            "insidetextorientation": "h",
+            "insidetextorientation": "horizontal",
             "hole": 0.25,
             "domain": {
                 "y": [
