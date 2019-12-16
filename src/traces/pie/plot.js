@@ -568,25 +568,7 @@ function transformInsideText(textBB, pt, cd0) {
     var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
     var allTransforms = [];
 
-    if(isCircle || isAuto || isHorizontal) {
-        // max size text can be inserted inside without rotating it
-        // this inscribes the text rectangle in a circle, which is then inscribed
-        // in the slice, so it will be an underestimate, which some day we may want
-        // to improve so this case can get more use
-        var transform = {
-            scale: rInscribed * r * 2 / textDiameter,
-
-            // and the center position and rotation in this case
-            rCenter: 1 - rInscribed,
-            rotate: 0
-        };
-
-        if(transform.scale >= 1) return transform;
-
-        allTransforms.push(transform);
-    }
-
-    if(isHorizontal) {
+    if(!isAuto) {
         // max size if text is placed (horizontally) at the top or bottom of the arc
 
         var considerCrossing = function(angle, key) {
@@ -608,10 +590,38 @@ function transformInsideText(textBB, pt, cd0) {
             }
         };
 
-        for(var i = 3; i >= -3; i--) { // to cover all cases with trace.rotation added
-            considerCrossing(Math.PI * i, 'tan');
-            considerCrossing(Math.PI * (i + 0.5), 'rad');
+        // to cover all cases with trace.rotation added
+        var i;
+        if(isHorizontal || isTangential) {
+            // top
+            for(i = 4; i >= -4; i -= 2) considerCrossing(Math.PI * i, 'tan');
+            // bottom
+            for(i = 4; i >= -4; i -= 2) considerCrossing(Math.PI * (i + 1), 'tan');
         }
+        if(isHorizontal || isRadial) {
+            // left
+            for(i = 4; i >= -4; i -= 2) considerCrossing(Math.PI * (i + 1.5), 'rad');
+            // right
+            for(i = 4; i >= -4; i -= 2) considerCrossing(Math.PI * (i + 0.5), 'rad');
+        }
+    }
+
+    if(isCircle || isAuto || isHorizontal) {
+        // max size text can be inserted inside without rotating it
+        // this inscribes the text rectangle in a circle, which is then inscribed
+        // in the slice, so it will be an underestimate, which some day we may want
+        // to improve so this case can get more use
+        var transform = {
+            scale: rInscribed * r * 2 / textDiameter,
+
+            // and the center position and rotation in this case
+            rCenter: 1 - rInscribed,
+            rotate: 0
+        };
+
+        if(transform.scale >= 1) return transform;
+
+        allTransforms.push(transform);
     }
 
     if(isAuto || isRadial) {
@@ -622,16 +632,29 @@ function transformInsideText(textBB, pt, cd0) {
         allTransforms.push(calcTanTransform(textBB, r, ring, halfAngle, midAngle));
     }
 
-    var maxScaleTransform = allTransforms.sort(function(a, b) {
-        return b.scale - a.scale;
-    })[0];
+    var id = 0;
+    var maxScale = 0;
+    for(var k = 0; k < allTransforms.length; k++) {
+        var s = allTransforms[k].scale;
+        if(maxScale < s) {
+            maxScale = s;
+            id = k;
+        }
 
-    if(maxScaleTransform.pxtxt) {
-        // copy text position if not at the middle
-        pt.pxtxt = maxScaleTransform.pxtxt;
+        if(!isAuto && maxScale >= 1) {
+            // respect test order for non-auto options
+            break;
+        }
     }
 
-    return maxScaleTransform;
+    var selTransform = allTransforms[id];
+
+    if(selTransform.pxtxt) {
+        // copy text position if not at the middle
+        pt.pxtxt = selTransform.pxtxt;
+    }
+
+    return selTransform;
 }
 
 function isCrossing(pt, angle) {

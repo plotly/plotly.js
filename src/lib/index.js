@@ -1184,6 +1184,13 @@ lib.isHidden = function(gd) {
 
 /** Return transform text for bar bar-like rectangles and pie-like slices
  *  @param {object} transform
+ *  - targetX: desired position on the x-axis
+ *  - targetY: desired position on the y-axis
+ *  - textX: width of text
+ *  - textY: height of text
+ *  - scale: (optional) scale applied after translate
+ *  - rotate: (optional) rotation applied after scale
+ *  - noCenter: when defined no extra arguments needed in rotation
  */
 lib.getTextTransform = function(transform) {
     var noCenter = transform.noCenter;
