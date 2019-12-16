@@ -32,17 +32,19 @@ function resizeText(gd, gTrace, traceType) {
             case 'pie' :
             case 'sunburst' :
             case 'treemap' :
-                t = gTrace.selectAll('g.slicetext').selectAll('text');
+                t = gTrace.selectAll('g.slicetext');
                 break;
             default :
-                t = gTrace.selectAll('g.points').selectAll('g.point').selectAll('text');
+                t = gTrace.selectAll('g.points').selectAll('g.point');
         }
 
         t.each(function(d) {
             var transform = d.transform;
             transform.scale = minSize / transform.fontSize;
-            d3.select(this).attr('transform', Lib.getTextTransform(transform));
-            d3.select(this).attr('display', shouldHide && transform.hide ? 'none' : null);
+
+            var el = d3.select(this).select('text');
+            el.attr('transform', Lib.getTextTransform(transform));
+            el.attr('display', shouldHide && transform.hide ? 'none' : null);
         });
     }
 }
