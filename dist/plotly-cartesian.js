@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.51.2
+* plotly.js (cartesian) v1.51.3
 * Copyright 2012-2019, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34182,7 +34182,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.51.2';
+exports.version = '1.51.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -60547,12 +60547,15 @@ plots.redrawText = function(gd) {
 plots.resize = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    return new Promise(function(resolve, reject) {
+    var resolveLastResize;
+    var p = new Promise(function(resolve, reject) {
         if(!gd || Lib.isHidden(gd)) {
             reject(new Error('Resize must be passed a displayed plot div element.'));
         }
 
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
+        if(gd._resolveResize) resolveLastResize = gd._resolveResize;
+        gd._resolveResize = resolve;
 
         gd._redrawTimer = setTimeout(function() {
             // return if there is nothing to resize or is hidden
@@ -60572,10 +60575,17 @@ plots.resize = function(gd) {
 
             Registry.call('relayout', gd, {autosize: true}).then(function() {
                 gd.changed = oldchanged;
-                resolve(gd);
+                // Only resolve if a new call hasn't been made!
+                if(gd._resolveResize === resolve) {
+                    delete gd._resolveResize;
+                    resolve(gd);
+                }
             });
         }, 100);
     });
+
+    if(resolveLastResize) resolveLastResize(p);
+    return p;
 };
 
 
@@ -71108,6 +71118,9 @@ module.exports = function calc(gd, trace) {
         Lib.identity :
         function(pt) { return (pt.v < cdi.lf || pt.v > cdi.uf); };
 
+    var minLowerNotch = Infinity;
+    var maxUpperNotch = -Infinity;
+
     // build calcdata trace items, one item per distinct position
     for(i = 0; i < pLen; i++) {
         if(ptsPerBin[i].length > 0) {
@@ -71162,6 +71175,8 @@ module.exports = function calc(gd, trace) {
             var mci = 1.57 * iqr / Math.sqrt(bvLen);
             cdi.ln = cdi.med - mci;
             cdi.un = cdi.med + mci;
+            minLowerNotch = Math.min(minLowerNotch, cdi.ln);
+            maxUpperNotch = Math.max(maxUpperNotch, cdi.un);
 
             cdi.pts2 = pts.filter(ptFilterFn);
 
@@ -71170,8 +71185,11 @@ module.exports = function calc(gd, trace) {
     }
 
     calcSelection(cd, trace);
-    var extremes = Axes.findExtremes(valAxis, val, {padded: true});
-    trace._extremes[valAxis._id] = extremes;
+
+    trace._extremes[valAxis._id] = Axes.findExtremes(valAxis,
+        trace.notched ? val.concat([minLowerNotch, maxUpperNotch]) : val,
+        {padded: true}
+    );
 
     if(cd.length > 0) {
         cd[0].t = {
