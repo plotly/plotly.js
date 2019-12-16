@@ -49,6 +49,8 @@ function Mapbox(gd, id) {
     this.traceHash = {};
     this.layerList = [];
     this.belowLookup = {};
+    this.dragging = false;
+    this.wheeling = false;
 }
 
 var proto = Mapbox.prototype;
@@ -350,10 +352,12 @@ proto.updateLayout = function(fullLayout) {
     var map = this.map;
     var opts = fullLayout[this.id];
 
-    map.setCenter(convertCenter(opts.center));
-    map.setZoom(opts.zoom);
-    map.setBearing(opts.bearing);
-    map.setPitch(opts.pitch);
+    if(!this.dragging && !this.wheeling) {
+        map.setCenter(convertCenter(opts.center));
+        map.setZoom(opts.zoom);
+        map.setBearing(opts.bearing);
+        map.setPitch(opts.pitch);
+    }
 
     this.updateLayers(fullLayout);
     this.updateFramework(fullLayout);
@@ -430,8 +434,6 @@ proto.initFx = function(calcData, fullLayout) {
     var gd = self.gd;
     var map = self.map;
 
-    var wheeling = false;
-
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(evt) {
         if(!self.map) return;
@@ -446,7 +448,7 @@ proto.initFx = function(calcData, fullLayout) {
         // mouse target (filtering out API calls) to not
         // duplicate 'plotly_relayout' events.
 
-        if(evt.originalEvent || wheeling) {
+        if(evt.originalEvent || self.wheeling) {
             var optsNow = fullLayoutNow[self.id];
             Registry.call('_storeDirectGUIEdit', gd.layout, fullLayoutNow._preGUI, self.getViewEdits(optsNow));
 
@@ -455,10 +457,13 @@ proto.initFx = function(calcData, fullLayout) {
             optsNow._input.zoom = optsNow.zoom = viewNow.zoom;
             optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
             optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
-
             gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
         }
-        wheeling = false;
+        if(evt.originalEvent && evt.originalEvent.type === 'mouseup') {
+            self.dragging = false;
+        } else if(self.wheeling) {
+            self.wheeling = false;
+        }
 
         if(fullLayoutNow._rehover) {
             fullLayoutNow._rehover();
@@ -466,7 +471,7 @@ proto.initFx = function(calcData, fullLayout) {
     });
 
     map.on('wheel', function() {
-        wheeling = true;
+        self.wheeling = true;
     });
 
     map.on('mousemove', function(evt) {
@@ -495,7 +500,10 @@ proto.initFx = function(calcData, fullLayout) {
         Fx.loneUnhover(fullLayout._hoverlayer);
     }
 
-    map.on('dragstart', unhover);
+    map.on('dragstart', function() {
+        self.dragging = true;
+        unhover();
+    });
     map.on('zoomstart', unhover);
 
     map.on('mouseout', function() {
