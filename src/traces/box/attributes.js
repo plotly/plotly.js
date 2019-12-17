@@ -96,7 +96,6 @@ module.exports = {
     boxpoints: {
         valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
-        dflt: 'outliers',
         role: 'style',
         editType: 'calc',
         description: [
@@ -106,7 +105,10 @@ module.exports = {
             'points either less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1',
             'are highlighted (see `outliercolor`)',
             'If *all*, all sample points are shown',
-            'If *false*, only the box(es) are shown with no sample points'
+            'If *false*, only the box(es) are shown with no sample points',
+            'Defaults to *suspectedoutliers* when `marker.outliercolor` or',
+            '`marker.line.outliercolor` is set,',
+            'otherwise defaults to *outliers*.'
         ].join(' ')
     },
     jitter: {
