@@ -73,7 +73,7 @@ module.exports = {
         description: [
             'Determines whether or not notches are drawn.',
             'Notches displays a confidence interval around the median.',
-            'We compute the confidence interval as median +/- 1.57 / IQR * sqrt(N),',
+            'We compute the confidence interval as median +/- 1.57 * IQR / sqrt(N),',
             'where IQR is the interquartile range and N is the sample size.',
             'If two boxes\' notches do not overlap there is 95% confidence their medians differ.',
             'See https://sites.google.com/site/davidsstatistics/home/notched-box-plots for more info.'
