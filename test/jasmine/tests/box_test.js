@@ -753,6 +753,72 @@ describe('Test box hover:', function() {
         nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
         name: ['', '', '', '', ''],
         axis: 'trace 0'
+    }, {
+        desc: 'q1/median/q3 signature on boxes',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }],
+            layout: {
+                width: 400,
+                height: 400
+            }
+        },
+        pos: [200, 200],
+        nums: ['median: 2', 'q1: 1', 'q3: 3'],
+        name: ['', '', ''],
+        axis: 'A'
+    }, {
+        desc: 'q1/median/q3 signature on points',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                hoveron: 'points',
+                pointpos: 0
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, b: 0, r: 0}
+            }
+        },
+        pos: [200, 200],
+        nums: '2',
+        name: '',
+        axis: 'A'
+    }, {
+        desc: 'q1/median/q3 signature on points + hovertemplate',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                hoveron: 'points',
+                pointpos: 0,
+                hovertemplate: '%{x} | %{y}<extra>%{pointNumber[0]} | %{pointNumber[1]}</extra>'
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, b: 0, r: 0}
+            }
+        },
+        pos: [200, 200],
+        nums: 'A | 2',
+        name: '0 | 2',
+        axis: 'A'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
@@ -1303,6 +1369,31 @@ describe('Test box calc', function() {
                     {v: 1, i: [0, 0], tx: 'a', htx: 'A'},
                     {v: 2, i: [0, 1], tx: 'b', htx: 'B'},
                     {v: 3, i: [0, 2], tx: 'c', htx: 'C'}
+                ]]
+            );
+        });
+
+        it('should tag selected sample points', function() {
+            var cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                x: [[1, 3, 2]]
+            });
+            _assert('base case', cd[0],
+                ['pts'],
+                [[{v: 1, i: [0, 0]}, {v: 2, i: [0, 2]}, {v: 3, i: [0, 1]}]]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                x: [[1, 3, 2]],
+                selectedpoints: [[0, 1]]
+            });
+            _assert('with set selectedpoints', cd[0],
+                ['pts'],
+                [[
+                    {v: 1, i: [0, 0]},
+                    {v: 2, i: [0, 2]},
+                    {v: 3, i: [0, 1], selected: 1}
                 ]]
             );
         });
