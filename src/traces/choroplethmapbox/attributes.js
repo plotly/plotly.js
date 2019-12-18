@@ -45,9 +45,10 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the GeoJSON data associated with this trace.',
-            'Can be set as a valid GeoJSON object or as URL string',
-            'Note that we only accept GeoJSON of type *FeatureCollection* and *Feature*',
-            'with geometries of type *Polygon* and *MultiPolygon*.'
+
+            'It can be set as a valid GeoJSON object or as a URL string.',
+            'Note that we only accept GeoJSONs of type *FeatureCollection* or *Feature*',
+            'with geometries of type *Polygon* or *MultiPolygon*.'
         ].join(' ')
     },
     featureidkey: extendFlat({}, choroplethAttrs.featureidkey, {

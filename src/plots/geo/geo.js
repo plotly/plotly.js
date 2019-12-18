@@ -282,7 +282,12 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
             (b[1][0] - b[0][0]) / (b2[1][0] - b2[0][0]),
             (b[1][1] - b[0][1]) / (b2[1][1] - b2[0][1])
         );
-        projection.scale(k2 * s);
+
+        if(isFinite(k2)) {
+            projection.scale(k2 * s);
+        } else {
+            Lib.warn('Something went wrong during' + this.id + 'fitbounds computations.');
+        }
     } else {
         // adjust projection to user setting
         projection.scale(projLayout.scale * s);

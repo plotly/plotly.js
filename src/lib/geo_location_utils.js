@@ -187,14 +187,14 @@ function feature2polygons(feature) {
 }
 
 function getTraceGeojson(trace) {
-    var geojsonIn = typeof trace.geojson === 'string' ?
-        (window.PlotlyGeoAssets || {})[trace.geojson] :
-        trace.geojson;
+    var g = trace.geojson;
+    var PlotlyGeoAssets = window.PlotlyGeoAssets || {};
+    var geojsonIn = typeof g === 'string' ? PlotlyGeoAssets[g] : g;
 
     // This should not happen, but just in case something goes
     // really wrong when fetching the GeoJSON
     if(!isPlainObject(geojsonIn)) {
-        loggers.error('Oops ... something when wrong when fetching ' + trace.geojson);
+        loggers.error('Oops ... something went wrong when fetching ' + g);
         return false;
     }
 

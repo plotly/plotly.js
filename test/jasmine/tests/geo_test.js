@@ -2114,7 +2114,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             var msg = '[' + step + '] ';
 
             var geoLayout = gd._fullLayout.geo;
-            var rotation = geoLayout.projection.rotation || [];
+            var rotation = geoLayout.projection.rotation || {};
             var scale = geoLayout.projection.scale;
 
             expect([rotation.lon, rotation.lat]).toBeCloseToArray(attr[0], -0.5, msg + 'rotation.(lon|lat)');

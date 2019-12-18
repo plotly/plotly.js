@@ -38,9 +38,9 @@ module.exports = extendFlat({
             'Sets optional GeoJSON data associated with this trace.',
             'If not given, the features on the base map are used.',
 
-            'Can be set as a valid GeoJSON object or as URL string',
-            'Note that we only accept GeoJSON of type *FeatureCollection* and *Feature*',
-            'with geometries of type *Polygon* and *MultiPolygon*.'
+            'It can be set as a valid GeoJSON object or as a URL string.',
+            'Note that we only accept GeoJSONs of type *FeatureCollection* or *Feature*',
+            'with geometries of type *Polygon* or *MultiPolygon*.'
 
             // TODO add topojson support with additional 'topojsonobject' attr?
             // https://github.com/topojson/topojson-specification/blob/master/README.md

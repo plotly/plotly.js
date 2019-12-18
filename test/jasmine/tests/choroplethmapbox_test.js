@@ -158,7 +158,7 @@ describe('Test choroplethmapbox convert:', function() {
             geojson: 'url'
         });
 
-        expect(loggers.error).toHaveBeenCalledWith('Oops ... something when wrong when fetching url');
+        expect(loggers.error).toHaveBeenCalledWith('Oops ... something went wrong when fetching url');
         expectBlank(opts);
     });
 
