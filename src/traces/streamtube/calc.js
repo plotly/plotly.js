@@ -25,11 +25,14 @@ module.exports = function calc(gd, trace) {
     var slen = 0;
     var startx, starty, startz;
     if(trace.starts) {
-        startx = trace.starts.x || [];
-        starty = trace.starts.y || [];
-        startz = trace.starts.z || [];
+        startx = filter(trace.starts.x || []);
+        starty = filter(trace.starts.y || []);
+        startz = filter(trace.starts.z || []);
         slen = Math.min(startx.length, starty.length, startz.length);
     }
+    trace._startsX = startx || [];
+    trace._startsY = starty || [];
+    trace._startsZ = startz || [];
 
     var normMax = 0;
     var normMin = Infinity;
@@ -61,13 +64,18 @@ module.exports = function calc(gd, trace) {
     var filledX;
     var filledY;
     var filledZ;
-    var firstX;
-    var firstY;
-    var firstZ;
+    var firstX, lastX;
+    var firstY, lastY;
+    var firstZ, lastZ;
     if(len) {
-        firstX = x[0];
-        firstY = y[0];
-        firstZ = z[0];
+        firstX = +x[0];
+        firstY = +y[0];
+        firstZ = +z[0];
+    }
+    if(len > 1) {
+        lastX = +x[len - 1];
+        lastY = +y[len - 1];
+        lastZ = +z[len - 1];
     }
 
     for(i = 0; i < len; i++) {
@@ -80,15 +88,15 @@ module.exports = function calc(gd, trace) {
         zMax = Math.max(zMax, z[i]);
         zMin = Math.min(zMin, z[i]);
 
-        if(!filledX && x[i] !== firstX) {
+        if(!filledX && (+x[i]) !== firstX) {
             filledX = true;
             gridFill += 'x';
         }
-        if(!filledY && y[i] !== firstY) {
+        if(!filledY && (+y[i]) !== firstY) {
             filledY = true;
             gridFill += 'y';
         }
-        if(!filledZ && z[i] !== firstZ) {
+        if(!filledZ && (+z[i]) !== firstZ) {
             filledZ = true;
             gridFill += 'z';
         }
@@ -98,13 +106,13 @@ module.exports = function calc(gd, trace) {
     if(!filledY) gridFill += 'y';
     if(!filledZ) gridFill += 'z';
 
-    var Xs = distinctVals(trace.x.slice(0, len));
-    var Ys = distinctVals(trace.y.slice(0, len));
-    var Zs = distinctVals(trace.z.slice(0, len));
+    var Xs = distinctVals(filter(trace.x, len));
+    var Ys = distinctVals(filter(trace.y, len));
+    var Zs = distinctVals(filter(trace.z, len));
 
-    gridFill = gridFill.replace('x', (x[0] > x[len - 1] ? '-' : '+') + 'x');
-    gridFill = gridFill.replace('y', (y[0] > y[len - 1] ? '-' : '+') + 'y');
-    gridFill = gridFill.replace('z', (z[0] > z[len - 1] ? '-' : '+') + 'z');
+    gridFill = gridFill.replace('x', (firstX > lastX ? '-' : '+') + 'x');
+    gridFill = gridFill.replace('y', (firstY > lastY ? '-' : '+') + 'y');
+    gridFill = gridFill.replace('z', (firstZ > lastZ ? '-' : '+') + 'z');
 
     var empty = function() {
         len = 0;
@@ -118,7 +126,7 @@ module.exports = function calc(gd, trace) {
 
     var getArray = function(c) { return c === 'x' ? x : c === 'y' ? y : z; };
     var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
-    var getDir = function(c) { return (c[len - 1] < c[0]) ? -1 : 1; };
+    var getDir = function(c) { return lessThan(c[len - 1], c[0]) ? -1 : 1; };
 
     var arrK = getArray(gridFill[1]);
     var arrJ = getArray(gridFill[3]);
@@ -146,9 +154,9 @@ module.exports = function calc(gd, trace) {
                 var q100 = getIndex(i + 1, j, k);
 
                 if(
-                    !(arrK[q000] * dirK < arrK[q001] * dirK) ||
-                    !(arrJ[q000] * dirJ < arrJ[q010] * dirJ) ||
-                    !(arrI[q000] * dirI < arrI[q100] * dirI)
+                    !lessThan(arrK[q000] * dirK, arrK[q001] * dirK) ||
+                    !lessThan(arrJ[q000] * dirJ, arrJ[q010] * dirJ) ||
+                    !lessThan(arrI[q000] * dirI, arrI[q100] * dirI)
                 ) {
                     arbitrary = true;
                 }
@@ -193,4 +201,18 @@ module.exports = function calc(gd, trace) {
 
 function distinctVals(col) {
     return Lib.distinctVals(col).vals;
+}
+
+function filter(arr, len) {
+    if(len === undefined) len = arr.length;
+
+    var values = [];
+    for(var i = 0; i < len; i++) {
+        values[i] = +arr[i];
+    }
+    return values;
+}
+
+function lessThan(a, b) {
+    return +a < +b;
 }

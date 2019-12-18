@@ -122,9 +122,9 @@ function convert(scene, trace) {
     var slen = trace._slen;
     if(slen) {
         tubeOpts.startingPositions = zip3(
-            toDataCoords(trace.starts.x.slice(0, slen), 'xaxis'),
-            toDataCoords(trace.starts.y.slice(0, slen), 'yaxis'),
-            toDataCoords(trace.starts.z.slice(0, slen), 'zaxis')
+            toDataCoords(trace._startsX, 'xaxis'),
+            toDataCoords(trace._startsY, 'yaxis'),
+            toDataCoords(trace._startsZ, 'zaxis')
         );
     } else {
         // Default starting positions:
