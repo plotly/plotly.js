@@ -433,9 +433,11 @@ function plotOne(gd, cd, element, transitionOpts) {
             var x0 = x0Fn(t);
             var x1 = x1Fn(t);
             var rCenter = rCenterFn(t);
+            var pxmid = rx2px(rpx1, (x0 + x1) / 2);
 
             var d = {
-                pxmid: rx2px(rpx1, (x0 + x1) / 2),
+                pxtxt: pt.pxtxt || pxmid,
+                pxmid: pxmid,
                 transform: {
                     rCenter: rCenter,
                     x: transform.x,
