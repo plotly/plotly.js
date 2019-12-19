@@ -1797,3 +1797,222 @@ describe('Test pie interactions edge cases:', function() {
         .then(done);
     });
 });
+
+describe('pie inside text orientation', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextRotations(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['rotations'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('rotate(');
+                var rotate = 0;
+                if(pos0 !== -1) {
+                    pos0 += 'rotate'.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    rotate = +(transform.substring(pos0 + 1, pos1 - 1));
+                }
+
+                expect(opts.rotations[i]).toBeCloseTo(rotate, 1, 'rotation for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react to new insidetextorientation option', function(done) {
+        var fig = {
+            data: [{
+                type: 'pie',
+                lables: [1, 2, 4, 8, 16, 32, 64],
+                values: [1, 2, 4, 8, 16, 32, 64],
+                sort: false,
+
+                text: [
+                    '',
+                    '1',
+                    '22',
+                    '333',
+                    '4444',
+                    '55555',
+                    '666666',
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                showlegend: false
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextRotations('using default "auto"', {
+            rotations: [-2.83, 78.66, 61.65, 0, 0, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'horizontal';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "horizontal"', {
+            rotations: [0, 0, 0, 0, 0, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'radial';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "radial"', {
+            rotations: [87.16, 78.66, 61.65, 27.64, -40.39, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'tangential';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "tangential"', {
+            rotations: [-2.83, -11.34, -28.35, -62.36, 49.61, -86.46]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'auto';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('back to "auto"', {
+            rotations: [-2.83, 78.66, 61.65, 0, 0, 0]
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('pie uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale'.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'pie',
+                lables: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                sort: false,
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '|',
+                    '=',
+                    '$',
+                    'very long lablel'
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                showlegend: false
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 0.22, 0.22, 0.22, 0.22, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});

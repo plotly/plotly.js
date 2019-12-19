@@ -40,11 +40,12 @@ function resizeText(gd, gTrace, traceType) {
 
         t.each(function(d) {
             var transform = d.transform;
-            transform.scale = minSize / transform.fontSize;
+            if(transform) {
+                transform.scale = (shouldHide && transform.hide) ? 0 : minSize / transform.fontSize;
 
-            var el = d3.select(this).select('text');
-            el.attr('transform', Lib.getTextTransform(transform));
-            el.attr('display', shouldHide && transform.hide ? 'none' : null);
+                var el = d3.select(this).select('text');
+                el.attr('transform', Lib.getTextTransform(transform));
+            }
         });
     }
 }
