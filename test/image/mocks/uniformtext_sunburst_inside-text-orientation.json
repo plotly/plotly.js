@@ -338,6 +338,9 @@
         "font": {
             "size": 14
         },
+        "uniformtext": {
+            "mode": "hide"
+        },
         "shapes": [
             {
                 "type": "rect",

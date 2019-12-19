@@ -274,7 +274,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             transform.fontSize = font.size;
             recordMinTextSize(trace.type, transform, fullLayout);
 
-            return Lib.getTextTransform(transform, true);
+            return Lib.getTextTransform(transform);
         };
 
         if(hasTransition) {

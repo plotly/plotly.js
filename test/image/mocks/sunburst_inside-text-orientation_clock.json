@@ -302,11 +302,6 @@
             "l": 10,
             "r": 10
         },
-        "legend": {
-            "title": {
-                "text": "<b>inside text orientation</b>"
-            }
-        },
         "font": {
             "size": 14
         },
