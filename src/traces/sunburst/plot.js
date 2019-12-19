@@ -264,6 +264,11 @@ function plotOne(gd, cd, element, transitionOpts) {
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
         pt.transform = transformInsideText(textBB, pt, cd0);
+        if(pt.transform.pxtxt) {
+            // copy text position if not at the middle
+            pt.pxtxt = pt.transform.pxtxt;
+        }
+
         pt.transform.targetX = getTargetX(pt);
         pt.transform.targetY = getTargetY(pt);
 

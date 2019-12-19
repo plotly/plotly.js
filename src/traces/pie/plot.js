@@ -175,6 +175,11 @@ function plot(gd, cdModule) {
 
                             transform = transformOutsideText(textBB, pt);
                         }
+
+                        if(transform.pxtxt) {
+                            // copy text position if not at the middle
+                            pt.pxtxt = transform.pxtxt;
+                        }
                     }
 
                     var pxtxt = pt.pxtxt || pt.pxmid;
@@ -646,15 +651,7 @@ function transformInsideText(textBB, pt, cd0) {
             break;
         }
     }
-
-    var selTransform = allTransforms[id];
-
-    if(selTransform.pxtxt) {
-        // copy text position if not at the middle
-        pt.pxtxt = selTransform.pxtxt;
-    }
-
-    return selTransform;
+    return allTransforms[id];
 }
 
 function isCrossing(pt, angle) {
