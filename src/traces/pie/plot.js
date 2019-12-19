@@ -175,16 +175,12 @@ function plot(gd, cdModule) {
 
                             transform = transformOutsideText(textBB, pt);
                         }
-
-                        if(transform.pxtxt) {
-                            // copy text position if not at the middle
-                            pt.pxtxt = transform.pxtxt;
-                        }
                     }
 
-                    var pxtxt = pt.pxtxt || pt.pxmid;
-                    transform.targetX = cx + pxtxt[0] * transform.rCenter + (transform.x || 0);
-                    transform.targetY = cy + pxtxt[1] * transform.rCenter + (transform.y || 0);
+                    var textPosAngle = transform.textPosAngle;
+                    var textXY = textPosAngle === undefined ? pt.pxmid : getCoords(cd0.r, textPosAngle);
+                    transform.targetX = cx + textXY[0] * transform.rCenter + (transform.x || 0);
+                    transform.targetY = cy + textXY[1] * transform.rCenter + (transform.y || 0);
                     computeTransform(transform, textBB);
 
                     // save some stuff to use later ensure no labels overlap
@@ -572,6 +568,7 @@ function transformInsideText(textBB, pt, cd0) {
     var isAuto = orientation === 'auto';
     var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
     var allTransforms = [];
+    var newT;
 
     if(!isAuto) {
         // max size if text is placed (horizontally) at the top or bottom of the arc
@@ -583,13 +580,12 @@ function transformInsideText(textBB, pt, cd0) {
 
                 var closestEdge = dStart < dStop ? dStart : dStop;
 
-                var newT;
                 if(key === 'tan') {
                     newT = calcTanTransform(textBB, r, ring, closestEdge, 0);
                 } else { // case of 'rad'
                     newT = calcRadTransform(textBB, r, ring, closestEdge, Math.PI / 2);
                 }
-                newT.pxtxt = getCoords(r, angle);
+                newT.textPosAngle = angle;
 
                 allTransforms.push(newT);
             }
@@ -616,7 +612,7 @@ function transformInsideText(textBB, pt, cd0) {
         // this inscribes the text rectangle in a circle, which is then inscribed
         // in the slice, so it will be an underestimate, which some day we may want
         // to improve so this case can get more use
-        var transform = {
+        newT = {
             scale: rInscribed * r * 2 / textDiameter,
 
             // and the center position and rotation in this case
@@ -624,17 +620,22 @@ function transformInsideText(textBB, pt, cd0) {
             rotate: 0
         };
 
-        if(transform.scale >= 1) return transform;
+        newT.textPosAngle = (pt.startangle + pt.stopangle) / 2;
+        if(newT.scale >= 1) return newT;
 
-        allTransforms.push(transform);
+        allTransforms.push(newT);
     }
 
     if(isAuto || isRadial) {
-        allTransforms.push(calcRadTransform(textBB, r, ring, halfAngle, midAngle));
+        newT = calcRadTransform(textBB, r, ring, halfAngle, midAngle);
+        newT.textPosAngle = (pt.startangle + pt.stopangle) / 2;
+        allTransforms.push(newT);
     }
 
     if(isAuto || isTangential) {
-        allTransforms.push(calcTanTransform(textBB, r, ring, halfAngle, midAngle));
+        newT = calcTanTransform(textBB, r, ring, halfAngle, midAngle);
+        newT.textPosAngle = (pt.startangle + pt.stopangle) / 2;
+        allTransforms.push(newT);
     }
 
     var id = 0;

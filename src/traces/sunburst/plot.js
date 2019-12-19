@@ -151,8 +151,8 @@ function plotOne(gd, cd, element, transitionOpts) {
     var pathSlice = function(d) { return Lib.pathAnnulus(d.rpx0, d.rpx1, d.x0, d.x1, cx, cy); };
     // slice text translate x/y
 
-    var getTargetX = function(d) { return cx + (d.pxtxt || d.pxmid)[0] * d.transform.rCenter + (d.transform.x || 0); };
-    var getTargetY = function(d) { return cy + (d.pxtxt || d.pxmid)[1] * d.transform.rCenter + (d.transform.y || 0); };
+    var getTargetX = function(d) { return cx + getTextXY(d)[0] * d.transform.rCenter + (d.transform.x || 0); };
+    var getTargetY = function(d) { return cy + getTextXY(d)[1] * d.transform.rCenter + (d.transform.y || 0); };
 
     slices = slices.data(sliceData, helpers.getPtId);
 
@@ -264,11 +264,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
         pt.transform = transformInsideText(textBB, pt, cd0);
-        if(pt.transform.pxtxt) {
-            // copy text position if not at the middle
-            pt.pxtxt = pt.transform.pxtxt;
-        }
-
         pt.transform.targetX = getTargetX(pt);
         pt.transform.targetY = getTargetY(pt);
 
@@ -382,6 +377,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             prev = {
                 rpx1: pt.rpx1,
                 transform: {
+                    textPosAngle: transform.textPosAngle,
                     scale: 0,
                     rotate: transform.rotate,
                     rCenter: transform.rCenter,
@@ -414,6 +410,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
+        var textPosAngleFn = d3.interpolate(prev.transform.textPosAngle, pt.transform.textPosAngle);
         var rpx1Fn = d3.interpolate(prev.rpx1, pt.rpx1);
         var x0Fn = d3.interpolate(prev.x0, pt.x0);
         var x1Fn = d3.interpolate(prev.x1, pt.x1);
@@ -434,11 +431,13 @@ function plotOne(gd, cd, element, transitionOpts) {
             var x1 = x1Fn(t);
             var rCenter = rCenterFn(t);
             var pxmid = rx2px(rpx1, (x0 + x1) / 2);
+            var textPosAngle = textPosAngleFn(t);
 
             var d = {
-                pxtxt: pt.pxtxt || pxmid,
                 pxmid: pxmid,
+                rpx1: rpx1,
                 transform: {
+                    textPosAngle: textPosAngle,
                     rCenter: rCenter,
                     x: transform.x,
                     y: transform.y
@@ -447,7 +446,6 @@ function plotOne(gd, cd, element, transitionOpts) {
 
             recordMinTextSize(trace.type, transform, fullLayout);
             return {
-                rpx1: rpx1Fn(t),
                 transform: {
                     targetX: getTargetX(d),
                     targetY: getTargetY(d),
@@ -612,4 +610,12 @@ function getInscribedRadiusFraction(pt) {
             pt.ring / 2
         ));
     }
+}
+
+function getTextXY(d) {
+    return getCoords(d.rpx1, d.transform.textPosAngle);
+}
+
+function getCoords(r, angle) {
+    return [r * Math.sin(angle), -r * Math.cos(angle)];
 }
