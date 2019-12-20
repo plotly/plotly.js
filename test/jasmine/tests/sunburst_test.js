@@ -1067,7 +1067,7 @@ describe('Test sunburst restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *textinfo*', function(done) {
+    it('should be able to restyle *textinfo* with various *insidetextorientation*', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1119,6 +1119,27 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('no textinfo', ['', '', '', '']))
         .then(_restyle({textinfo: 'label+text+value'}))
         .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'horizontal'
+        .then(_restyle({insidetextorientation: 'horizontal'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'tangential'
+        .then(_restyle({insidetextorientation: 'tangential'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'radial'
+        .then(_restyle({insidetextorientation: 'radial'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
         .catch(failTest)
