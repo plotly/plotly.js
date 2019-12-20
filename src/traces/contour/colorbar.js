@@ -8,7 +8,7 @@
 
 'use strict';
 
-var extractOpts = require('../../components/colorscale').extractOpts;
+var Colorscale = require('../../components/colorscale');
 var makeColorMap = require('./make_color_map');
 var endPlus = require('./end_plus');
 
@@ -20,8 +20,10 @@ function calc(gd, trace, opts) {
     var colorMap = makeColorMap(trace, {isColorbar: true});
 
     if(coloring === 'heatmap') {
-        var cOpts = extractOpts(trace);
-        opts._fillgradient = trace.colorscale;
+        var cOpts = Colorscale.extractOpts(trace);
+        opts._fillgradient = cOpts.reversescale ?
+            Colorscale.flipScale(cOpts.colorscale) :
+            cOpts.colorscale;
         opts._zrange = [cOpts.min, cOpts.max];
     } else if(coloring === 'fill') {
         opts._fillcolor = colorMap;
