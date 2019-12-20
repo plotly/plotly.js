@@ -1374,6 +1374,178 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
     */
+
+    it('should update text position during transition using *auto* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'auto'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [309.3085305481173, 202.66937078300114]);
+            _assert('move O text to new position', 'transform', 'O', [337.158534264498, 162.57550532369754]);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [455.10235209157037, 177.717459723826]);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.2952497427013]);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [457.21539566810236, 178.44157384259557]);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.3617907020963]);
+            _assert('move U text to new position', 'transform', 'U', [387.0665312800944, 146.39132446549587]);
+            _assert('move V text to new position', 'transform', 'V', [467.5637172232141, 214.71357776223093]);
+            _assert('move W text to new position', 'transform', 'W', [453.6883022471187, 176.23118240799604]);
+            _assert('move X text to new position', 'transform', 'X', [428.32070483274055, 145.007590714263]);
+            _assert('move Y text to new position', 'transform', 'Y', [393.6173101979463, 123.958130483835]);
+            _assert('move Z text to new position', 'transform', 'Z', [359.52567880729003, 116.05583257124167]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [298.18238454231454, 239]);
+            _assert('move O text to new position', 'transform', 'O', [299.00421744782363, 183.7721980352468]);
+            _assert('move U text to new position', 'transform', 'U', [418.6530444037927, 162.19895218157865]);
+            _assert('move V text to new position', 'transform', 'V', [471.8671910181962, 218.0219264868202]);
+            _assert('move W text to new position', 'transform', 'W', [459.0093083790858, 178.21113754411613]);
+            _assert('move X text to new position', 'transform', 'X', [433.74669513154777, 144.8536840385141]);
+            _assert('move Y text to new position', 'transform', 'Y', [398.67767996405655, 121.9940236084775]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.00770212095256, 116.19286557341015]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [317.71031126211744, 202.23522389350774]);
+            _assert('move V text to new position', 'transform', 'V', [444.88381073744586, 191.14358863479603]);
+            _assert('move W text to new position', 'transform', 'W', [365.5485731154604, 134.6827081871288]);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [247.47466543373307, 255.288278237516]);
+            _assert('move Z text to new position', 'transform', 'Z', [300.75324430542196, 332.0135787956955]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [441.011030377721, 188.63633201157208]);
+            _assert('move W text to new position', 'transform', 'W', [382.1346244328249, 135.0126788235936]);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
+            _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [445.2341347726318, 190.47976534033592]);
+            _assert('move W text to new position', 'transform', 'W', [366.3829959511747, 133.44080859889465]);
+            _assert('move X text to new position', 'transform', 'X', [274.43577526068776, 163.42796276068773]);
+            _assert('move Y text to new position', 'transform', 'Y', [244.44862109889465, 255.71893345117468]);
+            _assert('move Z text to new position', 'transform', 'Z', [301.6438278403359, 334.2263222726318]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test sunburst interactions edge cases', function() {
