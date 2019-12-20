@@ -2213,13 +2213,13 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                     'geo.projection.rotation.lon', 'geo.projection.rotation.lat',
                     'geo.projection.scale', 'geo.fitbounds'
                 ]);
-                return scroll([300, 300], [-200, -200]);
+                return scroll([300, 300], [-100, -100]);
             })
             .then(function() {
                 _assert('after scroll', [
-                    [-15.19, 16.91], 1.319
+                    [-17.5597, 18.862], 1.1488
                 ], [
-                    [15.19, -16.91], 211.15
+                    [17.5597, -18.862], 183.818
                 ], [
                     'geo.projection.rotation.lon', 'geo.projection.rotation.lat',
                     'geo.projection.scale'
@@ -2228,9 +2228,9 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             })
             .then(function() {
                 _assert('after some relayout call that causes a replot', [
-                    [-15.19, 16.91], 1.319
+                    [-17.5597, 18.862], 1.1488
                 ], [
-                    [15.19, -16.91], 211.15
+                    [17.5597, -18.862], 183.818
                 ], [
                     'geo.showocean'
                 ]);
