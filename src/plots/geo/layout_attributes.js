@@ -200,6 +200,12 @@ var attrs = module.exports = overrideAll({
             ].join(' ')
         }
     },
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: 'Sets the default visibility of the base layers.'
+    },
     showcoastlines: {
         valType: 'boolean',
         role: 'info',

@@ -623,6 +623,69 @@ describe('Test Geo layout defaults', function() {
             });
         });
     });
+
+    describe('geo.visible should override show* defaults', function() {
+        var keys = [
+            'lonaxis.showgrid',
+            'lataxis.showgrid',
+            'showcoastlines',
+            'showocean',
+            'showland',
+            'showlakes',
+            'showrivers',
+            'showcountries',
+            'showsubunits',
+            'showframe'
+        ];
+
+        function _assert(extra) {
+            var geo = layoutOut.geo;
+            keys.forEach(function(k) {
+                var actual = Lib.nestedProperty(geo, k).get();
+                if(extra && k in extra) {
+                    expect(actual).toBe(extra[k], k);
+                } else {
+                    expect(actual).toBe(false, k);
+                }
+            });
+        }
+
+        it('- base case', function() {
+            layoutIn = {
+                geo: { visible: false }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _assert({
+                showsubunits: undefined
+            });
+        });
+
+        it('- scoped case', function() {
+            layoutIn = {
+                geo: { scope: 'europe', visible: false }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _assert({
+                showframe: undefined,
+                showsubunits: undefined
+            });
+        });
+
+        it('- scope:usa case', function() {
+            layoutIn = {
+                geo: { scope: 'usa', visible: false }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _assert({
+                showframe: undefined,
+                showcoastlines: undefined,
+                showocean: undefined
+            });
+        });
+    });
 });
 
 describe('geojson / topojson utils', function() {
@@ -1556,7 +1619,20 @@ describe('Test geo interactions', function() {
             .then(done);
         });
 
-        // TODO add test for scope:'none'
+        it('- geo.visible:false', function(done) {
+            Plotly.plot(gd, [{
+                type: 'scattergeo',
+                lon: [0],
+                lat: [0]
+            }], {
+                geo: {visible: false}
+            })
+            .then(_assert(0))
+            .then(function() { return Plotly.relayout(gd, 'geo.visible', true); })
+            .then(_assert(1))
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 

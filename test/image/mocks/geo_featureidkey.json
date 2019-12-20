@@ -57,7 +57,8 @@
   "layout": {
     "geo": {
       "center": { "lon": -86, "lat": 33 },
-      "projection": {"scale": 30}
+      "projection": {"scale": 30},
+      "visible": false
     },
     "width": 600,
     "height": 400,

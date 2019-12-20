@@ -30,7 +30,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
     var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
-    var show;
 
     var resolution = coerce('resolution');
     var scope = coerce('scope');
@@ -45,6 +44,9 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
     var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
+
+    var visible = coerce('visible');
+    var show;
 
     for(var i = 0; i < axesNames.length; i++) {
         var axisName = axesNames[i];
@@ -67,7 +69,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
-        show = coerce(axisName + '.showgrid');
+        show = coerce(axisName + '.showgrid', !visible ? false : undefined);
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
@@ -106,13 +108,13 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce('projection.rotation.lat', dfltProjRotate[1]);
         coerce('projection.rotation.roll', dfltProjRotate[2]);
 
-        show = coerce('showcoastlines', !isScoped);
+        show = coerce('showcoastlines', !isScoped && visible);
         if(show) {
             coerce('coastlinecolor');
             coerce('coastlinewidth');
         }
 
-        show = coerce('showocean');
+        show = coerce('showocean', !visible ? false : undefined);
         if(show) coerce('oceancolor');
     }
 
@@ -140,19 +142,19 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
 
     coerce('projection.scale');
 
-    show = coerce('showland');
+    show = coerce('showland', !visible ? false : undefined);
     if(show) coerce('landcolor');
 
-    show = coerce('showlakes');
+    show = coerce('showlakes', !visible ? false : undefined);
     if(show) coerce('lakecolor');
 
-    show = coerce('showrivers');
+    show = coerce('showrivers', !visible ? false : undefined);
     if(show) {
         coerce('rivercolor');
         coerce('riverwidth');
     }
 
-    show = coerce('showcountries', isScoped && scope !== 'usa');
+    show = coerce('showcountries', isScoped && scope !== 'usa' && visible);
     if(show) {
         coerce('countrycolor');
         coerce('countrywidth');
@@ -162,14 +164,15 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
-        coerce('showsubunits', true);
+        //   !!
+        coerce('showsubunits', visible);
         coerce('subunitcolor');
         coerce('subunitwidth');
     }
 
     if(!isScoped) {
         // Does not work in non-world scopes
-        show = coerce('showframe', true);
+        show = coerce('showframe', visible);
         if(show) {
             coerce('framecolor');
             coerce('framewidth');
