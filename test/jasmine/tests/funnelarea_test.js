@@ -1755,7 +1755,7 @@ describe('funnelarea uniformtext', function() {
         var fig = {
             data: [{
                 type: 'funnelarea',
-                lables: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 sort: false,
 

@@ -17,6 +17,8 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
+var SLICES_TEXT_SELECTOR = '.treemaplayer text.slicetext';
+
 function _mouseEvent(type, gd, v) {
     return function() {
         if(Array.isArray(v)) {
@@ -1687,4 +1689,119 @@ describe('Test treemap texttemplate with *remainder* `values` should work:', fun
         ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
         ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
     ], /* skipEtra */ true);
+});
+
+describe('treemap uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale'.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'treemap', tiling: { packing: 'slice' },
+                parents: ['', '', '', '', '', '', '', '', '', ''],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '|',
+                    '=',
+                    '$',
+                    'very long lablel'
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 225,
+                height: 450
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+        }))
+
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+        }))
+
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+
+        .then(function() {
+            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        }))
+
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+
+        .catch(failTest)
+        .then(done);
+    });
 });

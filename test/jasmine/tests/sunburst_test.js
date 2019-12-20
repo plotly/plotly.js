@@ -17,6 +17,8 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
+var SLICES_TEXT_SELECTOR = '.sunburstlayer text.slicetext';
+
 function _mouseEvent(type, gd, v) {
     return function() {
         if(Array.isArray(v)) {
@@ -1702,4 +1704,219 @@ describe('Test sunburst texttemplate with *remainder* `values` should work when 
         ['%{percentEntry} of %{entry}', ['100% of Seth', '42% of Seth', '8% of Seth']],
         ['%{percentParent} of %{parent}', ['20% of Eve', '42% of Seth', '8% of Seth']],
     ], /* skipEtra */ true);
+});
+
+describe('sunburst inside text orientation', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextRotations(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['rotations'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('rotate(');
+                var rotate = 0;
+                if(pos0 !== -1) {
+                    pos0 += 'rotate'.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    rotate = +(transform.substring(pos0 + 1, pos1 - 1));
+                }
+
+                expect(opts.rotations[i]).toBeCloseTo(rotate, 1, 'rotation for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react to new insidetextorientation option', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', '', '', '', ''],
+                labels: [64, 32, 16, 8, 4, 2, 1],
+                values: [64, 32, 16, 8, 4, 2, 1],
+
+                text: [
+                    '666666',
+                    '55555',
+                    '4444',
+                    '333',
+                    '22',
+                    '1',
+                    ''
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextRotations('using default "auto"', {
+            rotations: [-0.71, 0, 0, 31.18, 14.17, -84.33, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'horizontal';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "horizontal"', {
+            rotations: [0, 0, 0, 0, 0, 0, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'radial';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "radial"', {
+            rotations: [89.29, -46.77, 65.20, 31.18, 14.17, 5.67, 1.42]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'tangential';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "tangential"', {
+            rotations: [0, 43.23, -24.80, -58.81, -75.83, -84.33, -88.58]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'auto';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('back to "auto"', {
+            rotations: [-0.71, 0, 0, 31.18, 14.17, -84.33, 0]
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('sunburst uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale'.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', '', '', '', '', '', '', ''],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '|',
+                    '=',
+                    '$',
+                    'very long lablel'
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 0.22, 0.22, 0.22, 0.22, 0.22, 0.22, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
 });

@@ -1836,7 +1836,7 @@ describe('pie inside text orientation', function() {
         var fig = {
             data: [{
                 type: 'pie',
-                lables: [1, 2, 4, 8, 16, 32, 64],
+                labels: [1, 2, 4, 8, 16, 32, 64],
                 values: [1, 2, 4, 8, 16, 32, 64],
                 sort: false,
 
@@ -1940,7 +1940,7 @@ describe('pie uniformtext', function() {
         var fig = {
             data: [{
                 type: 'pie',
-                lables: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 sort: false,
 
