@@ -59,6 +59,7 @@
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@turf/area": "^6.0.1",
+    "@turf/bbox": "^6.0.1",
     "@turf/centroid": "^6.0.2",
     "alpha-shape": "^1.0.0",
     "canvas-fit": "^1.5.0",

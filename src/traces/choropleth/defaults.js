@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -28,7 +27,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     traceOut._length = Math.min(locations.length, z.length);
 
-    coerce('locationmode');
+    var geojson = coerce('geojson');
+
+    var locationmodeDflt;
+    if((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson)) {
+        locationmodeDflt = 'geojson-id';
+    }
+
+    var locationMode = coerce('locationmode', locationmodeDflt);
+
+    if(locationMode === 'geojson-id') {
+        coerce('featureidkey');
+    }
 
     coerce('text');
     coerce('hovertext');

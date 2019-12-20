@@ -42,12 +42,44 @@ module.exports = overrideAll({
     },
     locationmode: {
         valType: 'enumerated',
-        values: ['ISO-3', 'USA-states', 'country names'],
+        values: ['ISO-3', 'USA-states', 'country names', 'geojson-id'],
         role: 'info',
         dflt: 'ISO-3',
         description: [
             'Determines the set of locations used to match entries in `locations`',
-            'to regions on the map.'
+            'to regions on the map.',
+            'Values *ISO-3*, *USA-states*, *country names* correspond to features on',
+            'the base map and value *geojson-id* corresponds to features from a custom',
+            'GeoJSON linked to the `geojson` attribute.'
+        ].join(' ')
+    },
+
+    geojson: {
+        valType: 'any',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets optional GeoJSON data associated with this trace.',
+            'If not given, the features on the base map are used when `locations` is set.',
+
+            'It can be set as a valid GeoJSON object or as a URL string.',
+            'Note that we only accept GeoJSONs of type *FeatureCollection* or *Feature*',
+            'with geometries of type *Polygon* or *MultiPolygon*.'
+
+            // TODO add topojson support with additional 'topojsonobject' attr?
+            // https://github.com/topojson/topojson-specification/blob/master/README.md
+        ].join(' ')
+    },
+    featureidkey: {
+        valType: 'string',
+        role: 'info',
+        editType: 'calc',
+        dflt: 'id',
+        description: [
+            'Sets the key in GeoJSON features which is used as id to match the items',
+            'included in the `locations` array.',
+            'Only has an effect when `geojson` is set.',
+            'Support nested property, for example *properties.name*.'
         ].join(' ')
     },
 
