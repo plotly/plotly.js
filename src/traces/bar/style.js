@@ -32,10 +32,10 @@ function resizeText(gd, gTrace, traceType) {
             case 'pie' :
             case 'sunburst' :
             case 'treemap' :
-                t = gTrace.selectAll('g.slicetext');
+                t = gTrace.selectAll('g.slice');
                 break;
             default :
-                t = gTrace.selectAll('g.points').selectAll('g.point');
+                t = gTrace.selectAll('g.points > g.point');
         }
 
         t.each(function(d) {

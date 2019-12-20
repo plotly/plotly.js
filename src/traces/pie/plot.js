@@ -132,7 +132,7 @@ function plot(gd, cdModule) {
                 formatSliceLabel(gd, pt, cd0);
                 var textPosition = helpers.castOption(trace.textposition, pt.pts);
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
-                    .data(pt.text && (textPosition !== 'none') ? [pt] : []);
+                    .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
                 sliceTextGroup.enter().append('g')
                     .classed('slicetext', true);
