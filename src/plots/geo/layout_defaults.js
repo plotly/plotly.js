@@ -164,7 +164,6 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
-        //   !!
         coerce('showsubunits', visible);
         coerce('subunitcolor');
         coerce('subunitwidth');
