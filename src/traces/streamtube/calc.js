@@ -206,6 +206,9 @@ function distinctVals(col) {
 function filter(arr, len) {
     if(len === undefined) len = arr.length;
 
+    // no need for casting typed arrays to numbers
+    if(Lib.isTypedArray(arr)) return arr.slice(0, len);
+
     var values = [];
     for(var i = 0; i < len; i++) {
         values[i] = +arr[i];
