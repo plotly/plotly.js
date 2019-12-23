@@ -1320,7 +1320,7 @@ describe('Test treemap tweening:', function() {
     }
 
 
-    function _assert(msg, attrName, id, exp) {
+    function _assert(msg, attrName, id, exp, tolerance) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
@@ -1332,7 +1332,7 @@ describe('Test treemap tweening:', function() {
         if(attrName === 'transform') {
             var fake = {attr: function() { return actual; }};
             var xy = Drawing.getTranslate(fake);
-            expect([xy.x, xy.y]).toBeWithinArray(exp, 2, msg2);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
         } else {
             // we could maybe to bring in:
             // https://github.com/hughsk/svg-path-parser
@@ -1365,8 +1365,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [222.75, 126]);
-            _assert('move b text to new position', 'transform', 'b', [225.75, 150]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
         .catch(failTest)
         .then(done);
@@ -1397,8 +1397,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [222.75, 126]);
-            _assert('move b text to new position', 'transform', 'b', [225.75, 150]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
         .catch(failTest)
         .then(done);
@@ -1429,7 +1429,7 @@ describe('Test treemap tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [221.25, 126]);
+            _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
             _assert('enter b text to new position', 'transform', 'b', [286.63, 196.35]);
         })
         .catch(failTest)

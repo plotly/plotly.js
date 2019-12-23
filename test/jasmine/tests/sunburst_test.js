@@ -1187,7 +1187,7 @@ describe('Test sunburst tweening:', function() {
         return s.replace(/\s/g, '');
     }
 
-    function _assert(msg, attrName, id, exp) {
+    function _assert(msg, attrName, id, exp, tolerance) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
@@ -1199,7 +1199,7 @@ describe('Test sunburst tweening:', function() {
         if(attrName === 'transform') {
             var fake = {attr: function() { return actual; }};
             var xy = Drawing.getTranslate(fake);
-            expect([xy.x, xy.y]).toBeWithinArray(exp, 2, msg2);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
         } else {
         // we could maybe to bring in:
         // https://github.com/hughsk/svg-path-parser
@@ -1388,10 +1388,10 @@ describe('Test sunburst tweening:', function() {
         .then(_run(gd, 4))
         .then(function() {
             _assert('move J text to new position', 'transform', 'J', [309.3085305481173, 202.66937078300114]);
-            _assert('move O text to new position', 'transform', 'O', [337.158534264498, 162.57550532369754]);
+            _assert('move O text to new position', 'transform', 'O', [337.158534264498, 162.57550532369754], 5);
             _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
             _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
-            _assert('move W text to new position', 'transform', 'W', [455.10235209157037, 177.717459723826]);
+            _assert('move W text to new position', 'transform', 'W', [455.10235209157037, 177.717459723826], 5);
             _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
             _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
             _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
@@ -1514,7 +1514,7 @@ describe('Test sunburst tweening:', function() {
         .then(function() {
             _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
             _assert('move V text to new position', 'transform', 'V', [441.011030377721, 188.63633201157208]);
-            _assert('move W text to new position', 'transform', 'W', [382.1346244328249, 135.0126788235936]);
+            _assert('move W text to new position', 'transform', 'W', [382.1346244328249, 135.0126788235936], 5);
             _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
             _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
             _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
