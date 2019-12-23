@@ -55,7 +55,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         if(!groupName) groupName = fallbackGroupName;
 
         var axType = getAxisType(traceOut, binDir);
-        var calendar = traceOut[binDir + 'calendar'];
+        var calendar = traceOut[binDir + 'calendar'] || '';
         var binOpts = allBinOpts[groupName];
         var needsNewItem = true;
 
