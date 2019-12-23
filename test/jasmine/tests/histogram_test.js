@@ -479,7 +479,7 @@ describe('Test histogram', function() {
             );
         });
 
-        it('should not group traces across different calendars when the calendar module is not registered', function() {
+        it('should attempt to group traces when the *calendars* module is not registered', function() {
             var original = Registry.getComponentMethod;
             var cnt = 0;
 
