@@ -11,9 +11,13 @@
 var d3 = require('d3');
 
 var styleOne = require('./style_one');
+var resizeText = require('../bar/style').resizeText;
 
 module.exports = function style(gd) {
-    gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
+    var s = gd._fullLayout._pielayer.selectAll('.trace');
+    resizeText(gd, s, 'pie');
+
+    s.each(function(cd) {
         var cd0 = cd[0];
         var trace = cd0.trace;
         var traceSelection = d3.select(this);

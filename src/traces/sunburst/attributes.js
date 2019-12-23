@@ -192,6 +192,7 @@ module.exports = {
     }),
 
     textfont: pieAttrs.textfont,
+    insidetextorientation: pieAttrs.insidetextorientation,
     insidetextfont: pieAttrs.insidetextfont,
     outsidetextfont: pieAttrs.outsidetextfont,
 

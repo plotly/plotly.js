@@ -1,0 +1,135 @@
+{
+    "data": [
+        {
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "hole": 0.25,
+            "domain": {
+                "y": [
+                    0.5,
+                    1
+                ]
+            },
+            "sort": false,
+            "labels": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+            ],
+            "values": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+            ],
+            "pull": [
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5
+            ],
+            "textposition": "inside",
+            "textinfo": "value"
+        },
+        {
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "hole": 0.25,
+            "domain": {
+                "y": [
+                    0,
+                    0.5
+                ]
+            },
+            "sort": false,
+            "labels": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+            ],
+            "text": [
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice",
+                "slice"
+            ],
+            "pull": [
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5,
+                0,
+                0.5
+            ],
+            "textposition": "inside",
+            "textinfo": "text"
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 900,
+        "margin": {
+            "t": 10,
+            "b": 10,
+            "l": 10,
+            "r": 10
+        },
+        "legend": {
+            "title": {
+                "text": "<b>pie uniform text</b><br>with <i>horizontal</i> orientation<br>minsize=20"
+            }
+        },
+        "uniformtext": {
+            "mode": "hide",
+            "minsize": 20
+        }
+    }
+}

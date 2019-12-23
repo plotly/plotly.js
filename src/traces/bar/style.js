@@ -20,8 +20,40 @@ var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
+function resizeText(gd, gTrace, traceType) {
+    var fullLayout = gd._fullLayout;
+    var minSize = fullLayout['_' + traceType + 'Text_minsize'];
+    if(minSize) {
+        var shouldHide = fullLayout.uniformtext.mode === 'hide';
+
+        var t;
+        switch(traceType) {
+            case 'funnelarea' :
+            case 'pie' :
+            case 'sunburst' :
+            case 'treemap' :
+                t = gTrace.selectAll('g.slice');
+                break;
+            default :
+                t = gTrace.selectAll('g.points > g.point');
+        }
+
+        t.each(function(d) {
+            var transform = d.transform;
+            if(transform) {
+                transform.scale = (shouldHide && transform.hide) ? 0 : minSize / transform.fontSize;
+
+                var el = d3.select(this).select('text');
+                el.attr('transform', Lib.getTextTransform(transform));
+            }
+        });
+    }
+}
+
 function style(gd) {
     var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+    resizeText(gd, s, 'bar');
+
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
@@ -57,7 +89,8 @@ function stylePoints(sel, trace, gd) {
 function styleTextPoints(sel, trace, gd) {
     sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
-        var font = determineFont(tx, d, trace, gd);
+        var font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
+
         Drawing.font(tx, font);
     });
 }
@@ -84,7 +117,7 @@ function styleTextInSelectionMode(txs, trace, gd) {
         var font;
 
         if(d.selected) {
-            font = Lib.extendFlat({}, determineFont(tx, d, trace, gd));
+            font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
 
             var selectedFontColor = trace.selected.textfont && trace.selected.textfont.color;
             if(selectedFontColor) {
@@ -171,5 +204,6 @@ module.exports = {
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
     getOutsideTextFont: getOutsideTextFont,
-    getBarColor: getBarColor
+    getBarColor: getBarColor,
+    resizeText: resizeText
 };
