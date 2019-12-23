@@ -1902,12 +1902,12 @@ describe('sunburst inside text orientation', function() {
                 var pos0 = transform.indexOf('rotate(');
                 var rotate = 0;
                 if(pos0 !== -1) {
-                    pos0 += 'rotate'.length;
+                    pos0 += 'rotate('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    rotate = +(transform.substring(pos0 + 1, pos1 - 1));
+                    rotate = +(transform.substring(pos0, pos1));
                 }
 
-                expect(opts.rotations[i]).toBeCloseTo(rotate, 1, 'rotation for element ' + i, msg);
+                expect(opts.rotations[i]).toBeCloseTo(rotate, -1, 'rotation for element ' + i, msg);
             }
         };
     }
@@ -1916,21 +1916,21 @@ describe('sunburst inside text orientation', function() {
         var fig = {
             data: [{
                 type: 'sunburst',
-                parents: ['', '', '', '', '', '', ''],
-                labels: [64, 32, 16, 8, 4, 2, 1],
-                values: [64, 32, 16, 8, 4, 2, 1],
+                parents: ['', '', '', ''],
+                labels: [64, 32, 16, 8],
+                values: [64, 32, 16, 8],
+                sort: false,
 
                 text: [
-                    '666666',
-                    '55555',
-                    '4444',
-                    '333',
-                    '22',
-                    '1',
-                    ''
+                    'very long label',
+                    'label',
+                    'long label',
+                    '+'
                 ],
 
-                textinfo: 'text'
+                textinfo: 'text',
+                textposition: 'inside',
+                showlegend: false
             }],
             layout: {
                 width: 300,
@@ -1940,35 +1940,35 @@ describe('sunburst inside text orientation', function() {
 
         Plotly.plot(gd, fig)
         .then(assertTextRotations('using default "auto"', {
-            rotations: [-0.71, 0, 0, 31.18, 14.17, -84.33, 0]
+            rotations: [-0.6, 0, 48, 0]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'horizontal';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "horizontal"', {
-            rotations: [0, 0, 0, 0, 0, 0, 0]
+            rotations: [0, 0, 0, 0]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'radial';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "radial"', {
-            rotations: [89.29, -46.77, 65.20, 31.18, 14.17, 5.67, 1.42]
+            rotations: [84, -60, 48, 12]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'tangential';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "tangential"', {
-            rotations: [0, 43.23, -24.80, -58.81, -75.83, -84.33, -88.58]
+            rotations: [0, 0, -42, -78]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'auto';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('back to "auto"', {
-            rotations: [-0.71, 0, 0, 31.18, 14.17, -84.33, 0]
+            rotations: [-0.6, 0, 48, 0]
         }))
         .catch(failTest)
         .then(done);
@@ -2004,9 +2004,9 @@ describe('sunburst uniformtext', function() {
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
                 if(pos0 !== -1) {
-                    pos0 += 'scale'.length;
+                    pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                    scale = +(transform.substring(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -2029,7 +2029,7 @@ describe('sunburst uniformtext', function() {
                     '',
                     ' ',
                     '.',
-                    '|',
+                    '+',
                     '=',
                     '$',
                     'very long lablel'
@@ -2070,7 +2070,7 @@ describe('sunburst uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 32', {
             fontsizes: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32],
-            scales: [0, 0.22, 0.22, 0.22, 0.22, 0.22, 0.22, 0, 0, 0],
+            scales: [0, 0.22, 0.22, 0.22, 0.22, 0.22, 0, 0, 0, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size

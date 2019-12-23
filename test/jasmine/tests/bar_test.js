@@ -2817,9 +2817,9 @@ describe('bar uniformtext', function() {
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
                 if(pos0 !== -1) {
-                    pos0 += 'scale'.length;
+                    pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                    scale = +(transform.substring(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);

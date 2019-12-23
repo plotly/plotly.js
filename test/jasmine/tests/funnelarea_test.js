@@ -1741,9 +1741,9 @@ describe('funnelarea uniformtext', function() {
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
                 if(pos0 !== -1) {
-                    pos0 += 'scale'.length;
+                    pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                    scale = +(transform.substring(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -1755,6 +1755,7 @@ describe('funnelarea uniformtext', function() {
         var fig = {
             data: [{
                 type: 'funnelarea',
+                baseratio: 1,
                 labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 sort: false,
@@ -1768,8 +1769,8 @@ describe('funnelarea uniformtext', function() {
                     '.',
                     '|',
                     '=',
-                    '$',
-                    'long lablel'
+                    'longest word in German',
+                    'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
                 ],
 
                 textinfo: 'text',
@@ -1777,15 +1778,15 @@ describe('funnelarea uniformtext', function() {
                 showlegend: false
             }],
             layout: {
-                width: 350,
-                height: 350
+                width: 450,
+                height: 450
             }
         };
 
         Plotly.plot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.40, 1, 0.62, 0.70, 0.82, 0.98, 1, 0.91],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.69],
         }))
         .then(function() {
             fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
@@ -1793,7 +1794,7 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using mode: "hide"', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+            scales: [0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
@@ -1801,7 +1802,7 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 9', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0, 0.4, 0, 0, 0.4, 0.4, 0.4, 0.4],
+            scales: [0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
@@ -1809,23 +1810,23 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 32', {
             fontsizes: [32, 32, 32, 32, 32, 32, 32, 32],
-            scales: [0, 0.15, 0, 0, 0, 0, 0, 0],
+            scales: [0, 0.26, 0, 0, 0, 0, 0, 0],
         }))
         .then(function() {
-            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
             return Plotly.react(gd, fig);
         })
-        .then(assertTextSizes('using minsize: 16', {
-            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16],
-            scales: [0, 0.3, 0, 0, 0, 0, 0.3, 0],
+        .then(assertTextSizes('using minsize: 13', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.mode = 'show';
             return Plotly.react(gd, fig);
         })
         .then(assertTextSizes('using mode: "show"', {
-            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16],
-            scales: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64],
         }))
         .catch(failTest)
         .then(done);

@@ -1822,12 +1822,12 @@ describe('pie inside text orientation', function() {
                 var pos0 = transform.indexOf('rotate(');
                 var rotate = 0;
                 if(pos0 !== -1) {
-                    pos0 += 'rotate'.length;
+                    pos0 += 'rotate('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    rotate = +(transform.substring(pos0 + 1, pos1 - 1));
+                    rotate = +(transform.substring(pos0, pos1));
                 }
 
-                expect(opts.rotations[i]).toBeCloseTo(rotate, 1, 'rotation for element ' + i, msg);
+                expect(opts.rotations[i]).toBeCloseTo(rotate, -1, 'rotation for element ' + i, msg);
             }
         };
     }
@@ -1836,18 +1836,15 @@ describe('pie inside text orientation', function() {
         var fig = {
             data: [{
                 type: 'pie',
-                labels: [1, 2, 4, 8, 16, 32, 64],
-                values: [1, 2, 4, 8, 16, 32, 64],
+                labels: [64, 32, 16, 8],
+                values: [64, 32, 16, 8],
                 sort: false,
 
                 text: [
-                    '',
-                    '1',
-                    '22',
-                    '333',
-                    '4444',
-                    '55555',
-                    '666666',
+                    'very long label',
+                    'label',
+                    'long label',
+                    '+'
                 ],
 
                 textinfo: 'text',
@@ -1862,35 +1859,35 @@ describe('pie inside text orientation', function() {
 
         Plotly.plot(gd, fig)
         .then(assertTextRotations('using default "auto"', {
-            rotations: [-2.83, 78.66, 61.65, 0, 0, 0]
+            rotations: [-84, 0, -30, 0]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'horizontal';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "horizontal"', {
-            rotations: [0, 0, 0, 0, 0, 0]
+            rotations: [0, 0, 0, 0]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'radial';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "radial"', {
-            rotations: [87.16, 78.66, 61.65, 27.64, -40.39, 0]
+            rotations: [0, 42, -30, -66]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'tangential';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "tangential"', {
-            rotations: [-2.83, -11.34, -28.35, -62.36, 49.61, -86.46]
+            rotations: [-84, -48, 60, 24]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'auto';
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('back to "auto"', {
-            rotations: [-2.83, 78.66, 61.65, 0, 0, 0]
+            rotations: [-84, 0, -30, 0]
         }))
         .catch(failTest)
         .then(done);
@@ -1926,9 +1923,9 @@ describe('pie uniformtext', function() {
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
                 if(pos0 !== -1) {
-                    pos0 += 'scale'.length;
+                    pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                    scale = +(transform.substring(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -1951,7 +1948,7 @@ describe('pie uniformtext', function() {
                     '',
                     ' ',
                     '.',
-                    '|',
+                    '+',
                     '=',
                     '$',
                     'very long lablel'
@@ -1994,7 +1991,7 @@ describe('pie uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 32', {
             fontsizes: [32, 32, 32, 32, 32, 32, 32, 32],
-            scales: [0, 0.22, 0.22, 0.22, 0.22, 0, 0, 0],
+            scales: [0, 0.22, 0.22, 0.22, 0, 0, 0, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size

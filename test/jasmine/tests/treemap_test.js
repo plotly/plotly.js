@@ -1720,9 +1720,9 @@ describe('treemap uniformtext', function() {
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
                 if(pos0 !== -1) {
-                    pos0 += 'scale'.length;
+                    pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0 + 1, pos1 - 1));
+                    scale = +(transform.substring(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -1747,60 +1747,55 @@ describe('treemap uniformtext', function() {
                     '.',
                     '|',
                     '=',
-                    '$',
-                    'very long lablel'
+                    'longest word in German',
+                    'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
                 ],
 
                 textinfo: 'text'
             }],
             layout: {
-                width: 225,
-                height: 450
+                width: 500,
+                height: 500
             }
         };
 
         Plotly.plot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
         }))
-
         .then(function() {
             fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
             return Plotly.react(gd, fig);
         })
         .then(assertTextSizes('using mode: "hide"', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
         }))
-
         .then(function() {
             fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
             return Plotly.react(gd, fig);
         })
         .then(assertTextSizes('using minsize: 9', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
         }))
-
         .then(function() {
-            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
             return Plotly.react(gd, fig);
         })
-        .then(assertTextSizes('using minsize: 16', {
-            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
-            scales: [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        .then(assertTextSizes('using minsize: 13', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
         }))
-
         .then(function() {
             fig.layout.uniformtext.mode = 'show';
             return Plotly.react(gd, fig);
         })
         .then(assertTextSizes('using mode: "show"', {
-            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         }))
-
         .catch(failTest)
         .then(done);
     });
