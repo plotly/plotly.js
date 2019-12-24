@@ -344,6 +344,24 @@ describe('Plotly.Snapshot', function() {
                 .catch(failTest)
                 .then(done);
             });
+
+            it('- legend3dandfriends case', function(done) {
+                var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-legend.json'));
+
+                Plotly.plot(gd, fig)
+                .then(function() { return Plotly.Snapshot.toSVG(gd); })
+                .then(function(svg) {
+                    var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+
+                    var fillItems = svgDOM.getElementsByClassName('legend3dandfriends');
+                    expect(fillItems.length).toBe(4, '# of legend items');
+                    for(var i = 0; i < fillItems.length; i++) {
+                        checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
 
         it('should adapt *viewBox* attribute under *scale* option', function(done) {
