@@ -9,14 +9,21 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
+var processGrid = require('../streamtube/calc').processGrid;
 
 module.exports = function calc(gd, trace) {
     trace._len = Math.min(trace.x.length, trace.y.length, trace.z.length, trace.value.length);
 
+    var grid = processGrid(trace);
+    trace._gridFill = grid.fill;
+    trace._Xs = grid.Xs;
+    trace._Ys = grid.Ys;
+    trace._Zs = grid.Zs;
+    trace._len = grid.len;
+
     var min = Infinity;
     var max = -Infinity;
-    var len = trace.value.length;
-    for(var i = 0; i < len; i++) {
+    for(var i = 0; i < trace._len; i++) {
         var v = trace.value[i];
         min = Math.min(min, v);
         max = Math.max(max, v);
@@ -24,7 +31,6 @@ module.exports = function calc(gd, trace) {
 
     trace._minValues = min;
     trace._maxValues = max;
-
     trace._vMin = (trace.isomin === undefined || trace.isomin === null) ? min : trace.isomin;
     trace._vMax = (trace.isomax === undefined || trace.isomin === null) ? max : trace.isomax;
 

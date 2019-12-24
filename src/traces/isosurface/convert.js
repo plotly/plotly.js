@@ -9,17 +9,10 @@
 'use strict';
 
 var createMesh = require('gl-mesh3d');
-
-var Lib = require('../../lib');
-
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var extractOpts = require('../../components/colorscale').extractOpts;
 var zip3 = require('../../plots/gl3d/zip3');
-
-function distinctVals(col) {
-    return Lib.distinctVals(col).vals;
-}
 
 var findNearestOnAxis = function(w, arr) {
     for(var q = arr.length - 1; q > 0; q--) {
@@ -136,6 +129,8 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
+var GRID_TYPES = ['xyz', 'xzy', 'yxz', 'yzx', 'zxy', 'zyx'];
+
 function generateIsoMeshes(data) {
     data._i = [];
     data._j = [];
@@ -154,17 +149,32 @@ function generateIsoMeshes(data) {
     var numVertices;
     var beginVertextLength;
 
-    var Xs = distinctVals(data.x.slice(0, data._len));
-    var Ys = distinctVals(data.y.slice(0, data._len));
-    var Zs = distinctVals(data.z.slice(0, data._len));
+    var Xs = data._Xs;
+    var Ys = data._Ys;
+    var Zs = data._Zs;
 
     var width = Xs.length;
     var height = Ys.length;
     var depth = Zs.length;
 
-    function getIndex(i, j, k) {
-        return k + depth * j + depth * height * i;
-    }
+    var filled = GRID_TYPES.indexOf(data._gridFill.replace(/-/g, '').replace(/\+/g, ''));
+
+    var getIndex = function(i, j, k) {
+        switch(filled) {
+            case 5: // 'zyx'
+                return k + depth * j + depth * height * i;
+            case 4: // 'zxy'
+                return k + depth * i + depth * width * j;
+            case 3: // 'yzx'
+                return j + height * k + height * depth * i;
+            case 2: // 'yxz'
+                return j + height * i + height * width * k;
+            case 1: // 'xzy'
+                return i + width * k + width * depth * j;
+            default: // case 0: // 'xyz'
+                return i + width * j + width * height * k;
+        }
+    };
 
     var minValues = data._minValues;
     var maxValues = data._maxValues;
