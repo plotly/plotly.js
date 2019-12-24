@@ -248,7 +248,8 @@ describe('Test streamtube interactions', function() {
 
     [ // list of directions
         'number',
-        'string'
+        'string',
+        'typedArray'
     ].forEach(function(format) {
         [ // list of directions
             [-1, -1, -1],
@@ -295,6 +296,15 @@ describe('Test streamtube interactions', function() {
                             z.push(newZ);
                         }
                     }
+                }
+
+                if(format === 'typedArray') {
+                    u = new Int16Array(u);
+                    v = new Int32Array(v);
+                    w = new Int32Array(w);
+                    x = new Float32Array(x);
+                    y = new Float32Array(y);
+                    z = new Float64Array(z);
                 }
 
                 var fig = {

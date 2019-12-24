@@ -11,16 +11,22 @@
 var Lib = require('../../lib');
 var colorscaleCalc = require('../../components/colorscale/calc');
 
-module.exports = function calc(gd, trace) {
-    var i, j, k;
+function calc(gd, trace) {
+    trace._len = Math.min(
+        trace.x.length,
+        trace.y.length,
+        trace.z.length,
+        trace.u.length,
+        trace.v.length,
+        trace.w.length
+    );
 
-    var u = trace.u;
-    var v = trace.v;
-    var w = trace.w;
-    var x = trace.x;
-    var y = trace.y;
-    var z = trace.z;
-    var len = Math.min(x.length, y.length, z.length, u.length, v.length, w.length);
+    var grid = processGrid(trace);
+    trace._gridFill = grid.fill;
+    trace._Xs = grid.Xs;
+    trace._Ys = grid.Ys;
+    trace._Zs = grid.Zs;
+    trace._len = grid.len;
 
     var slen = 0;
     var startx, starty, startz;
@@ -36,12 +42,12 @@ module.exports = function calc(gd, trace) {
 
     var normMax = 0;
     var normMin = Infinity;
-
-    for(i = 0; i < len; i++) {
-        var uu = u[i];
-        var vv = v[i];
-        var ww = w[i];
-        var norm = Math.sqrt(uu * uu + vv * vv + ww * ww);
+    var i;
+    for(i = 0; i < trace._len; i++) {
+        var u = trace.u[i];
+        var v = trace.v[i];
+        var w = trace.w[i];
+        var norm = Math.sqrt(u * u + v * v + w * w);
 
         normMax = Math.max(normMax, norm);
         normMin = Math.min(normMin, norm);
@@ -52,6 +58,35 @@ module.exports = function calc(gd, trace) {
         containerStr: '',
         cLetter: 'c'
     });
+
+    for(i = 0; i < slen; i++) {
+        var sx = startx[i];
+        grid.xMax = Math.max(grid.xMax, sx);
+        grid.xMin = Math.min(grid.xMin, sx);
+
+        var sy = starty[i];
+        grid.yMax = Math.max(grid.yMax, sy);
+        grid.yMin = Math.min(grid.yMin, sy);
+
+        var sz = startz[i];
+        grid.zMax = Math.max(grid.zMax, sz);
+        grid.zMin = Math.min(grid.zMin, sz);
+    }
+
+    trace._slen = slen;
+    trace._normMax = normMax;
+    trace._xbnds = [grid.xMin, grid.xMax];
+    trace._ybnds = [grid.yMin, grid.yMax];
+    trace._zbnds = [grid.zMin, grid.zMax];
+}
+
+function processGrid(trace) {
+    var x = trace.x;
+    var y = trace.y;
+    var z = trace.z;
+    var len = trace._len;
+
+    var i, j, k;
 
     var xMax = -Infinity;
     var xMin = Infinity;
@@ -106,9 +141,9 @@ module.exports = function calc(gd, trace) {
     if(!filledY) gridFill += 'y';
     if(!filledZ) gridFill += 'z';
 
-    var Xs = distinctVals(filter(trace.x, len));
-    var Ys = distinctVals(filter(trace.y, len));
-    var Zs = distinctVals(filter(trace.z, len));
+    var Xs = distinctVals(trace.x, len);
+    var Ys = distinctVals(trace.y, len);
+    var Zs = distinctVals(trace.z, len);
 
     gridFill = gridFill.replace('x', (firstX > lastX ? '-' : '+') + 'x');
     gridFill = gridFill.replace('y', (firstY > lastY ? '-' : '+') + 'y');
@@ -173,41 +208,30 @@ module.exports = function calc(gd, trace) {
         empty();
     }
 
-    for(i = 0; i < slen; i++) {
-        var sx = startx[i];
-        xMax = Math.max(xMax, sx);
-        xMin = Math.min(xMin, sx);
-
-        var sy = starty[i];
-        yMax = Math.max(yMax, sy);
-        yMin = Math.min(yMin, sy);
-
-        var sz = startz[i];
-        zMax = Math.max(zMax, sz);
-        zMin = Math.min(zMin, sz);
-    }
-
-    trace._len = len;
-    trace._slen = slen;
-    trace._normMax = normMax;
-    trace._xbnds = [xMin, xMax];
-    trace._ybnds = [yMin, yMax];
-    trace._zbnds = [zMin, zMax];
-    trace._Xs = Xs;
-    trace._Ys = Ys;
-    trace._Zs = Zs;
-    trace._gridFill = gridFill;
-};
+    return {
+        xMin: xMin,
+        yMin: yMin,
+        zMin: zMin,
+        xMax: xMax,
+        yMax: yMax,
+        zMax: zMax,
+        Xs: Xs,
+        Ys: Ys,
+        Zs: Zs,
+        len: len,
+        fill: gridFill
+    };
+}
 
 function distinctVals(col) {
-    return Lib.distinctVals(col).vals;
+    return Lib.distinctVals(filter(col)).vals;
 }
 
 function filter(arr, len) {
     if(len === undefined) len = arr.length;
 
     // no need for casting typed arrays to numbers
-    if(Lib.isTypedArray(arr)) return arr.slice(0, len);
+    if(Lib.isTypedArray(arr)) return arr.subarray(0, len);
 
     var values = [];
     for(var i = 0; i < len; i++) {
@@ -219,3 +243,8 @@ function filter(arr, len) {
 function lessThan(a, b) {
     return +a < +b;
 }
+
+module.exports = {
+    calc: calc,
+    processGrid: processGrid
+};

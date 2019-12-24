@@ -20,7 +20,7 @@ module.exports = {
         min: 'cmin',
         max: 'cmax'
     },
-    calc: require('./calc'),
+    calc: require('./calc').calc,
     plot: require('./convert'),
     eventData: function(out, pt) {
         out.tubex = out.x;
