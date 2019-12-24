@@ -115,7 +115,7 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-    svg.selectAll('.point, .scatterpts, .legendfill>path, .legendlines>path, .cbfill').each(function() {
+    svg.selectAll('.point, .scatterpts, .legendfill>path, .legendlines>path, path.legend3dandfriends, .cbfill').each(function() {
         var pt = d3.select(this);
 
         // similar to font family styles above,
