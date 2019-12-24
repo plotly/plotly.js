@@ -260,6 +260,30 @@ describe('Test boxes supplyDefaults', function() {
                 x0: undefined, dx: undefined,
                 y0: 0, dy: 1
             });
+            _check('with set 2D x (sliced to length q1/median/q3)', {
+                x: [[1, 2, 3], [2, 3, 4]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: 1
+            });
+            _check('with set 2D x (sliced to x.length)', {
+                x: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: 1
+            });
             _check('with set y', {
                 y: [0],
                 q1: [1],
@@ -274,6 +298,30 @@ describe('Test boxes supplyDefaults', function() {
             });
             _check('with set 2d y', {
                 y: [[1, 2, 3]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d y (sliced to y.length)', {
+                y: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d y (sliced to q1/median/q3 length)', {
+                y: [[1, 2, 3], [2, 3, 4]],
                 q1: [1],
                 median: [2],
                 q3: [3]
@@ -299,6 +347,21 @@ describe('Test boxes supplyDefaults', function() {
                 x0: undefined, dx: undefined,
                 y0: undefined, dy: undefined
             });
+            _check('with set x AND 2d y (sliced to y.length)', {
+                x: [0, 1],
+                y: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x: [0, 1],
+                y: [[1, 2, 3]],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
             _check('with set 2d x AND y', {
                 x: [[1, 2, 3]],
                 y: [4],
@@ -313,6 +376,78 @@ describe('Test boxes supplyDefaults', function() {
                 y: [4],
                 x0: undefined, dx: undefined,
                 y0: undefined, dy: undefined
+            });
+            _check('with set 2d x AND y (sliced to x.length)', {
+                x: [[1, 2, 3]],
+                y: [4, 5],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x: [[1, 2, 3]],
+                y: [4, 5],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d multicategory x AND 2d y', {
+                x: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                y: [
+                    [0, 1, 2, 3, 4],
+                    [1, 2, 3, 4, 5],
+                    [2, 3, 4, 5, 6],
+                    [3, 4, 5, 6, 7]
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 4
+            });
+            _check('with set 2d x AND 2d multicategory y', {
+                y: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                x: [
+                    [0, 1, 2, 3, 4],
+                    [1, 2, 3, 4, 5],
+                    [2, 3, 4, 5, 6],
+                    [3, 4, 5, 6, 7]
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 4
+            });
+            _check('with set category 2d x AND 2d y (edge case!)', {
+                x: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                y: [
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c']
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 4
             });
             _check('with just y0', {
                 y0: 4,

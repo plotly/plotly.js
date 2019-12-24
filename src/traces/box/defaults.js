@@ -12,6 +12,7 @@ var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -128,7 +129,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
                 break;
             case '20':
                 defaultOrientation = 'h';
-                len = Math.min(sLen, xLen);
+                len = Math.min(sLen, x.length);
                 break;
             // just y
             case '01':
@@ -137,25 +138,50 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
                 break;
             case '02':
                 defaultOrientation = 'v';
-                len = Math.min(sLen, yLen);
+                len = Math.min(sLen, y.length);
                 break;
             // both
             case '12':
                 defaultOrientation = 'v';
-                len = Math.min(sLen, xLen, yLen);
+                len = Math.min(sLen, xLen, y.length);
                 break;
             case '21':
                 defaultOrientation = 'h';
-                len = Math.min(sLen, xLen, yLen);
+                len = Math.min(sLen, x.length, yLen);
                 break;
             case '11':
                 // this one is ill-defined
                 len = 0;
                 break;
             case '22':
-                // this one case happen on multi-category axes
-                defaultOrientation = 'v';
-                len = Math.min(sLen, xLen, yLen);
+                var hasCategories = false;
+                var i;
+                for(i = 0; i < x.length; i++) {
+                    if(autoType(x[i]) === 'category') {
+                        hasCategories = true;
+                        break;
+                    }
+                }
+
+                if(hasCategories) {
+                    defaultOrientation = 'v';
+                    len = Math.min(sLen, xLen, y.length);
+                } else {
+                    for(i = 0; i < y.length; i++) {
+                        if(autoType(y[i]) === 'category') {
+                            hasCategories = true;
+                            break;
+                        }
+                    }
+
+                    if(hasCategories) {
+                        defaultOrientation = 'h';
+                        len = Math.min(sLen, x.length, yLen);
+                    } else {
+                        defaultOrientation = 'v';
+                        len = Math.min(sLen, xLen, y.length);
+                    }
+                }
                 break;
         }
     } else if(yDims > 0) {
