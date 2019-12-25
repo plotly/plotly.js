@@ -17,6 +17,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;
 var recordMinTextSize = barPlot.recordMinTextSize;
+var clearMinTextSize = barPlot.clearMinTextSize;
 
 var pieHelpers = require('../pie/helpers');
 var piePlot = require('../pie/plot');
@@ -31,6 +32,8 @@ var formatSliceLabel = piePlot.formatSliceLabel;
 
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
+
+    clearMinTextSize('funnelarea', fullLayout);
 
     prerenderTitles(cdModule, gd);
     layoutAreas(cdModule, fullLayout._size);

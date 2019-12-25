@@ -10,7 +10,6 @@
 
 var d3 = require('d3');
 
-var hasTransition = require('../sunburst/helpers').hasTransition;
 var helpers = require('../sunburst/helpers');
 
 var Lib = require('../../lib');
@@ -18,7 +17,8 @@ var TEXTPAD = require('../bar/constants').TEXTPAD;
 var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;
 var recordMinTextSize = barPlot.recordMinTextSize;
-
+var clearMinTextSize = barPlot.clearMinTextSize;
+var style = require('./style').style;
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
 var drawAncestors = require('./draw_ancestors');
@@ -32,6 +32,8 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     // updated are removed.
     var isFullReplot = !transitionOpts;
 
+    clearMinTextSize('treemap', fullLayout);
+
     join = layer.selectAll('g.trace.treemap')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
 
@@ -41,7 +43,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
 
     join.order();
 
-    if(hasTransition(transitionOpts)) {
+    if(helpers.hasTransition(transitionOpts)) {
         if(makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
@@ -66,6 +68,10 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
         join.each(function(cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
+
+        if(fullLayout.uniformtext.mode) {
+            style(gd);
+        }
     }
 
     if(isFullReplot) {
@@ -351,6 +357,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             angle: 0,
             anchor: anchor
         });
+        transform.fontSize = opts.fontSize;
 
         if(offsetDir !== 'center') {
             var deltaX = (x1 - x0) / 2 - transform.scale * (textBB.right - textBB.left) / 2;

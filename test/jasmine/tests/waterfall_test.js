@@ -1822,7 +1822,7 @@ describe('waterfall uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 9', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12],
-            scales: [0, 0.48, 0.48, 0.48, 0.48, 0.48, 0.48],
+            scales: [0, 1, 1, 1, 1, 1, 1],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
@@ -1838,7 +1838,7 @@ describe('waterfall uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 14', {
             fontsizes: [14, 14, 14, 14, 14, 14, 14],
-            scales: [0, 0.36, 0.36, 0.36, 0.36, 0.36, 0.36],
+            scales: [0, 1, 1, 1, 1, 1, 1],
         }))
         .then(function() {
             fig.layout.uniformtext.mode = 'show';
@@ -1846,7 +1846,15 @@ describe('waterfall uniformtext', function() {
         })
         .then(assertTextSizes('using mode: "show"', {
             fontsizes: [14, 14, 14, 14, 14, 14, 14],
-            scales: [0.36, 0.36, 0.36, 0.36, 0.36, 0.36, 0.36],
+            scales: [1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 1, 1, 1, 1, 1, 1],
         }))
         .catch(failTest)
         .then(done);

@@ -151,6 +151,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         pt.textBB = Drawing.bBox(sliceText.node());
         pt.transform = toMoveInsideSlice(pt, {
+            fontSize: font.size,
             onPathbar: true
         });
 

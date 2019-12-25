@@ -192,6 +192,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         pt.textBB = Drawing.bBox(sliceText.node());
         pt.transform = toMoveInsideSlice(pt, {
+            fontSize: font.size,
             isHeader: isHeader
         });
         pt.transform.fontSize = font.size;

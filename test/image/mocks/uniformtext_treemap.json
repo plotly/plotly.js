@@ -1,113 +1,10 @@
 {
     "data": [
         {
-            "name": "horizontal",
-            "insidetextorientation": "horizontal",
-            "type": "sunburst",
-            "level": "Juliet",
-            "parents": [
-                "",
-                "Alpha",
-                "Alpha",
-                "Charlie",
-                "Charlie",
-                "Charlie",
-                "Foxtrot",
-                "Foxtrot",
-                "Foxtrot",
-                "Foxtrot",
-                "Juliet",
-                "Juliet",
-                "Juliet",
-                "Juliet",
-                "Juliet",
-                "Oscar",
-                "Oscar",
-                "Oscar",
-                "Oscar",
-                "Oscar",
-                "Oscar",
-                "Uniform",
-                "Uniform",
-                "Uniform",
-                "Uniform",
-                "Uniform",
-                "Uniform"
-            ],
-            "labels": [
-                "Alpha",
-                "Bravo",
-                "Charlie",
-                "Delta",
-                "Echo",
-                "Foxtrot",
-                "Golf",
-                "Hotel",
-                "India",
-                "Juliet",
-                "Kilo",
-                "Lima",
-                "Mike",
-                "November",
-                "Oscar",
-                "Papa",
-                "Quebec",
-                "Romeo",
-                "Sierra",
-                "Tango",
-                "Uniform",
-                "Victor",
-                "Whiskey",
-                "X ray",
-                "Yankee",
-                "Zulu"
-            ],
             "marker": {
-                "colors": [
-                    "aquamarine",
-                    "brown",
-                    "chocolate",
-                    "darkblue",
-                    "darkgreen",
-                    "forestgreen",
-                    "gold",
-                    "honeydew",
-                    "indigo",
-                    "navajowhite",
-                    "khaki",
-                    "lightblue",
-                    "magenta",
-                    "navy",
-                    "orange",
-                    "pink",
-                    "aqua",
-                    "red",
-                    "silver",
-                    "tomato",
-                    "turquoise",
-                    "violet",
-                    "wheat",
-                    "yellow",
-                    "azure"
-                ]
+                "coloraxis": "coloraxis"
             },
-            "textinfo": "label",
-            "domain": {
-                "x": [
-                    0.5,
-                    1
-                ],
-                "y": [
-                    0.5,
-                    1
-                ]
-            }
-        },
-        {
-            "name": "radial",
-            "insidetextorientation": "radial",
-            "type": "sunburst",
-            "level": "Juliet",
+            "type": "treemap",
             "parents": [
                 "",
                 "Alpha",
@@ -168,19 +65,20 @@
             "textinfo": "label",
             "domain": {
                 "x": [
-                    0.5,
-                    1
+                    0.52,
+                    0.98
                 ],
                 "y": [
-                    0,
-                    0.5
+                    0.52,
+                    0.98
                 ]
             }
         },
         {
-            "name": "tangential",
-            "insidetextorientation": "tangential",
-            "type": "sunburst",
+            "marker": {
+                "coloraxis": "coloraxis"
+            },
+            "type": "treemap",
             "level": "Juliet",
             "parents": [
                 "",
@@ -240,22 +138,27 @@
                 "Zulu"
             ],
             "textinfo": "label",
+            "textfont": {
+                "family": "Raleway, sans-serif",
+                "color": "#FFF"
+            },
             "domain": {
                 "x": [
-                    0,
-                    0.5
+                    0.52,
+                    0.98
                 ],
                 "y": [
-                    0,
-                    0.5
+                    0.02,
+                    0.48
                 ]
             }
         },
         {
-            "name": "auto",
-            "insidetextorientation": "auto",
-            "type": "sunburst",
-            "level": "Juliet",
+            "marker": {
+                "coloraxis": "coloraxis"
+            },
+            "type": "treemap",
+            "level": "Oscar",
             "parents": [
                 "",
                 "Alpha",
@@ -314,19 +217,107 @@
                 "Zulu"
             ],
             "textinfo": "label",
+            "textfont": {
+                "family": "Courier New, monospace",
+                "color": "#000"
+            },
             "domain": {
                 "x": [
-                    0,
-                    0.5
+                    0.02,
+                    0.48
                 ],
                 "y": [
-                    0.5,
-                    1
+                    0.02,
+                    0.48
+                ]
+            }
+        },
+        {
+            "marker": {
+                "coloraxis": "coloraxis"
+            },
+            "type": "treemap",
+            "level": "Uniform",
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ],
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "textinfo": "label",
+            "textfont": {
+                "family": "Times New Roman, Times, serif",
+                "color": "#FF0"
+            },
+            "domain": {
+                "x": [
+                    0.02,
+                    0.48
+                ],
+                "y": [
+                    0.52,
+                    0.98
                 ]
             }
         }
     ],
     "layout": {
+        "coloraxis": {
+            "colorscale": "Portland",
+            "reversescale": true,
+            "showscale": false
+        },
         "width": 800,
         "height": 800,
         "margin": {
@@ -336,98 +327,11 @@
             "r": 10
         },
         "font": {
-            "size": 14
+            "size": 20
         },
         "uniformtext": {
+            "minsize": 20,
             "mode": "hide"
-        },
-        "shapes": [
-            {
-                "type": "rect",
-                "layer": "below",
-                "x0": 0,
-                "x1": 0.5,
-                "y0": 0,
-                "y1": 0.5
-            },
-            {
-                "type": "rect",
-                "layer": "below",
-                "x0": 0.5,
-                "x1": 1,
-                "y0": 0,
-                "y1": 0.5
-            },
-            {
-                "type": "rect",
-                "layer": "below",
-                "x0": 0.5,
-                "x1": 1,
-                "y0": 0.5,
-                "y1": 1
-            },
-            {
-                "type": "rect",
-                "layer": "below",
-                "x0": 0,
-                "x1": 0.5,
-                "y0": 0.5,
-                "y1": 1
-            }
-        ],
-        "annotations": [
-            {
-                "text": "auto",
-                "showarrow": false,
-                "xref": "paper",
-                "yref": "paper",
-                "xanchor": "right",
-                "yanchor": "bottom",
-                "x": 0.5,
-                "y": 0.5,
-                "font": {
-                    "size": 20
-                }
-            },
-            {
-                "text": "tangential",
-                "showarrow": false,
-                "xref": "paper",
-                "yref": "paper",
-                "xanchor": "right",
-                "yanchor": "bottom",
-                "x": 0.5,
-                "y": 0,
-                "font": {
-                    "size": 20
-                }
-            },
-            {
-                "text": "radial",
-                "showarrow": false,
-                "xref": "paper",
-                "yref": "paper",
-                "xanchor": "right",
-                "yanchor": "bottom",
-                "x": 1,
-                "y": 0,
-                "font": {
-                    "size": 20
-                }
-            },
-            {
-                "text": "horizontal",
-                "showarrow": false,
-                "xref": "paper",
-                "yref": "paper",
-                "xanchor": "right",
-                "yanchor": "bottom",
-                "x": 1,
-                "y": 0.5,
-                "font": {
-                    "size": 20
-                }
-            }
-        ]
+        }
     }
 }

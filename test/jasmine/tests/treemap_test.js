@@ -1796,6 +1796,14 @@ describe('treemap uniformtext', function() {
             fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
+        }))
         .catch(failTest)
         .then(done);
     });

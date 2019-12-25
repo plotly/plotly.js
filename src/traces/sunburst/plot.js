@@ -14,12 +14,14 @@ var d3Hierarchy = require('d3-hierarchy');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var recordMinTextSize = require('../bar/plot').recordMinTextSize;
+var barPlot = require('../bar/plot');
+var recordMinTextSize = barPlot.recordMinTextSize;
+var clearMinTextSize = barPlot.clearMinTextSize;
 var piePlot = require('../pie/plot');
 var computeTransform = piePlot.computeTransform;
 var transformInsideText = piePlot.transformInsideText;
 var styleOne = require('./style').styleOne;
-
+var style = require('./style').style;
 var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
@@ -33,6 +35,8 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     // updated are removed.
     var isFullReplot = !transitionOpts;
     var hasTransition = helpers.hasTransition(transitionOpts);
+
+    clearMinTextSize('sunburst', fullLayout);
 
     join = layer.selectAll('g.trace.sunburst')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
@@ -70,6 +74,10 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
         join.each(function(cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
+
+        if(fullLayout.uniformtext.mode) {
+            style(gd);
+        }
     }
 
     if(isFullReplot) {

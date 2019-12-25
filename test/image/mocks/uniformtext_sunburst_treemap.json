@@ -11,10 +11,8 @@
 			"marker": {
 				"line": {
 					"color": "#777"
-				},
-                "colorscale": "Blackbody",
-                "reversescale": true,
-				"showscale": false
+                },
+                "coloraxis": "coloraxis"
 			},
             "labels": [
                 "Alpha",
@@ -84,10 +82,8 @@
 			"marker": {
 				"line": {
 					"color": "#777"
-				},
-                "colorscale": "Blackbody",
-                "reversescale": true,
-				"showscale": false
+                },
+                "coloraxis": "coloraxis"
             },
             "level": "Juliet",
             "labels": [
@@ -150,6 +146,11 @@
 		}
 	],
 	"layout": {
+        "coloraxis": {
+            "colorscale": "Blackbody",
+            "reversescale": true,
+            "showscale": false
+        },
 		"width": 500,
         "height": 1000,
         "margin": {

@@ -91,6 +91,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             gap: fullLayout.bargap,
             groupgap: fullLayout.bargroupgap
         };
+
+        // don't clear bar when this is called from waterfall or funnel
+        clearMinTextSize('bar', fullLayout);
     }
 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
@@ -419,7 +422,7 @@ function recordMinTextSize(
     fullLayout // inout
 ) {
     if(fullLayout.uniformtext.mode) {
-        var minKey = '_' + traceType + 'Text_minsize';
+        var minKey = getMinKey(traceType);
         var minSize = fullLayout.uniformtext.minsize;
         var size = transform.scale * transform.fontSize;
 
@@ -433,6 +436,18 @@ function recordMinTextSize(
             );
         }
     }
+}
+
+function clearMinTextSize(
+    traceType, // in
+    fullLayout // inout
+) {
+    var minKey = getMinKey(traceType);
+    fullLayout[minKey] = undefined;
+}
+
+function getMinKey(traceType) {
+    return '_' + traceType + 'Text_minsize';
 }
 
 function getRotateFromAngle(angle) {
@@ -750,5 +765,6 @@ function calcTextinfo(cd, index, xa, ya) {
 module.exports = {
     plot: plot,
     toMoveInsideBar: toMoveInsideBar,
-    recordMinTextSize: recordMinTextSize
+    recordMinTextSize: recordMinTextSize,
+    clearMinTextSize: clearMinTextSize
 };
