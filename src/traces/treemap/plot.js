@@ -18,7 +18,7 @@ var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;
 var recordMinTextSize = barPlot.recordMinTextSize;
 var clearMinTextSize = barPlot.clearMinTextSize;
-var style = require('./style').style;
+var resizeText = require('../bar/style').resizeText;
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
 var drawAncestors = require('./draw_ancestors');
@@ -70,7 +70,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
         });
 
         if(fullLayout.uniformtext.mode) {
-            style(gd);
+            resizeText(gd, fullLayout._treemaplayer.selectAll('.trace'), 'treemap');
         }
     }
 

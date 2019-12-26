@@ -21,7 +21,7 @@ var piePlot = require('../pie/plot');
 var computeTransform = piePlot.computeTransform;
 var transformInsideText = piePlot.transformInsideText;
 var styleOne = require('./style').styleOne;
-var style = require('./style').style;
+var resizeText = require('../bar/style').resizeText;
 var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
@@ -76,7 +76,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
         });
 
         if(fullLayout.uniformtext.mode) {
-            style(gd);
+            resizeText(gd, fullLayout._sunburstlayer.selectAll('.trace'), 'sunburst');
         }
     }
 
