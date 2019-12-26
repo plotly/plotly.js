@@ -1807,4 +1807,68 @@ describe('treemap uniformtext', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should uniform text scales after transition', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'treemap',
+                parents: [
+                    '',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform'
+                ],
+                labels: [
+                    'Oscar',
+                    'Papa',
+                    'Quebec',
+                    'Romeo',
+                    'Sierra',
+                    'Tango',
+                    'Uniform',
+                    'Victor',
+                    'Whiskey',
+                    'X ray',
+                    'Yankee',
+                    'Zulu'
+                ],
+                textinfo: 'label'
+            }],
+            layout: {
+                width: 350,
+                height: 350,
+                uniformtext: {
+                    mode: 'hide',
+                    minsize: 10
+                }
+            }
+        })
+        .then(assertTextSizes('before click', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.84, 0.84, 0.84, 0, 0.84, 0.84, 0, 0.84, 0, 0.84, 0.84, 0],
+        }))
+        .then(click(gd, 2)) // click on Uniform
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click child', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86],
+        }))
+        .then(click(gd, 1)) // click on Oscar
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click parent', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.84, 0.84, 0.84, 0, 0.84, 0.84, 0, 0.84, 0, 0.84, 0.84, 0],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
 });
