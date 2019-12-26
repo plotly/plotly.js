@@ -43,7 +43,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
 
     join.order();
 
-    if(helpers.hasTransition(transitionOpts)) {
+    if(!fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts)) {
         if(makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
@@ -103,7 +103,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     }
 
     var isRoot = helpers.isHierarchyRoot(entry);
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {

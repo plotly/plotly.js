@@ -34,7 +34,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     clearMinTextSize('sunburst', fullLayout);
 
@@ -87,7 +87,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
 function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     var gTrace = d3.select(element);
     var slices = gTrace.selectAll('g.slice');
