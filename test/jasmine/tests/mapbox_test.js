@@ -410,7 +410,7 @@ describe('mapbox credentials', function() {
         }], {
             mapbox: {
                 accesstoken: MAPBOX_ACCESS_TOKEN,
-                style: 'mapbox://styles/etpinard/cip93fm98000sbmnuednknloo'
+                style: 'mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m'
             }
         }).catch(function() {
             cnt++;
