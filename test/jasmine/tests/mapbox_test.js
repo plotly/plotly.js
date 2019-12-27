@@ -1329,13 +1329,13 @@ describe('@noCI, mapbox plots', function() {
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
-            expect(evtData['mapbox._derived']).toEqual({
-                coordinates: [
-                    [lon0, lat1],
-                    [lon1, lat1],
-                    [lon1, lat0],
-                    [lon0, lat0]
-                ]});
+            expect(Object.keys(evtData['mapbox._derived'])).toEqual(['coordinates']);
+            expect(evtData['mapbox._derived'].coordinates).toBeCloseTo2DArray([
+                [lon0, lat1],
+                [lon1, lat1],
+                [lon1, lat0],
+                [lon0, lat0]
+            ], -0.1);
         }
 
         _assertLayout([-4.710, 19.475], 1.234);
