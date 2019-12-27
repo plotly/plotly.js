@@ -223,8 +223,8 @@ function processGrid(trace) {
     };
 }
 
-function distinctVals(col) {
-    return Lib.distinctVals(filter(col)).vals;
+function distinctVals(col, len) {
+    return Lib.distinctVals(filter(col, len)).vals;
 }
 
 function filter(arr, len) {
