@@ -17,6 +17,8 @@ var makePullColorFn = require('../pie/calc').makePullColorFn;
 var generateExtendedColors = require('../pie/calc').generateExtendedColors;
 var colorscaleCalc = require('../../components/colorscale').calc;
 
+var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
+
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
 
@@ -165,7 +167,7 @@ exports.calc = function(gd, trace) {
                             v = partialSum;
                         }
 
-                        if(v < partialSum) {
+                        if(v < partialSum * ALMOST_EQUAL) {
                             failed = true;
                             return Lib.warn([
                                 'Total value for node', d.data.data.id,
