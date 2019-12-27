@@ -144,8 +144,19 @@ module.exports = extendFlat({
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the vertex intensity values,',
-            'used for plotting fields on meshes'
+            'Sets the intensity values for vertices or cells',
+            'as defined by `intensitymode`.',
+            'It can be used for plotting fields on meshes.'
+        ].join(' ')
+    },
+    intensitymode: {
+        valType: 'enumerated',
+        values: ['vertex', 'cell'],
+        dflt: 'vertex',
+        editType: 'calc',
+        role: 'info',
+        description: [
+            'Determines the source of `intensity` values.'
         ].join(' ')
     },
 
