@@ -21,6 +21,10 @@ function calc(gd, trace) {
         trace.w.length
     );
 
+    ['u', 'v', 'w', 'x', 'y', 'z'].forEach(function(e) {
+        trace['_' + e] = filter(trace[e], trace._len);
+    });
+
     var grid = processGrid(trace);
     trace._gridFill = grid.fill;
     trace._Xs = grid.Xs;
@@ -44,9 +48,9 @@ function calc(gd, trace) {
     var normMin = Infinity;
     var i;
     for(i = 0; i < trace._len; i++) {
-        var u = trace.u[i];
-        var v = trace.v[i];
-        var w = trace.w[i];
+        var u = trace._u[i];
+        var v = trace._v[i];
+        var w = trace._w[i];
         var norm = Math.sqrt(u * u + v * v + w * w);
 
         normMax = Math.max(normMax, norm);
@@ -81,9 +85,9 @@ function calc(gd, trace) {
 }
 
 function processGrid(trace) {
-    var x = trace.x;
-    var y = trace.y;
-    var z = trace.z;
+    var x = trace._x;
+    var y = trace._y;
+    var z = trace._z;
     var len = trace._len;
 
     var i, j, k;
@@ -141,9 +145,9 @@ function processGrid(trace) {
     if(!filledY) gridFill += 'y';
     if(!filledZ) gridFill += 'z';
 
-    var Xs = distinctVals(trace.x, len);
-    var Ys = distinctVals(trace.y, len);
-    var Zs = distinctVals(trace.z, len);
+    var Xs = distinctVals(trace._x);
+    var Ys = distinctVals(trace._y);
+    var Zs = distinctVals(trace._z);
 
     gridFill = gridFill.replace('x', (firstX > lastX ? '-' : '+') + 'x');
     gridFill = gridFill.replace('y', (firstY > lastY ? '-' : '+') + 'y');
@@ -161,7 +165,7 @@ function processGrid(trace) {
 
     var getArray = function(c) { return c === 'x' ? x : c === 'y' ? y : z; };
     var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
-    var getDir = function(c) { return lessThan(c[len - 1], c[0]) ? -1 : 1; };
+    var getDir = function(c) { return c[len - 1] < c[0] ? -1 : 1; };
 
     var arrK = getArray(gridFill[1]);
     var arrJ = getArray(gridFill[3]);
@@ -189,9 +193,9 @@ function processGrid(trace) {
                 var q100 = getIndex(i + 1, j, k);
 
                 if(
-                    !lessThan(arrK[q000] * dirK, arrK[q001] * dirK) ||
-                    !lessThan(arrJ[q000] * dirJ, arrJ[q010] * dirJ) ||
-                    !lessThan(arrI[q000] * dirI, arrI[q100] * dirI)
+                    !(arrK[q000] * dirK < arrK[q001] * dirK) ||
+                    !(arrJ[q000] * dirJ < arrJ[q010] * dirJ) ||
+                    !(arrI[q000] * dirI < arrI[q100] * dirI)
                 ) {
                     arbitrary = true;
                 }
@@ -223,8 +227,8 @@ function processGrid(trace) {
     };
 }
 
-function distinctVals(col, len) {
-    return Lib.distinctVals(filter(col, len)).vals;
+function distinctVals(col) {
+    return Lib.distinctVals(col).vals;
 }
 
 function filter(arr, len) {
@@ -240,11 +244,8 @@ function filter(arr, len) {
     return values;
 }
 
-function lessThan(a, b) {
-    return +a < +b;
-}
-
 module.exports = {
     calc: calc,
+    filter: filter,
     processGrid: processGrid
 };

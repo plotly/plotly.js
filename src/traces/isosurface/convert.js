@@ -46,9 +46,9 @@ proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
         var rawId = selection.data.index;
 
-        var x = this.data._x[rawId];
-        var y = this.data._y[rawId];
-        var z = this.data._z[rawId];
+        var x = this.data._meshX[rawId];
+        var y = this.data._meshY[rawId];
+        var z = this.data._meshZ[rawId];
 
         var height = this.data._Ys.length;
         var depth = this.data._Zs.length;
@@ -60,10 +60,10 @@ proto.handlePick = function(selection) {
         var selectIndex = selection.index = k + depth * j + depth * height * i;
 
         selection.traceCoordinate = [
-            this.data._x[selectIndex],
-            this.data._y[selectIndex],
-            this.data._z[selectIndex],
-            this.data.value[selectIndex]
+            this.data._meshX[selectIndex],
+            this.data._meshY[selectIndex],
+            this.data._meshZ[selectIndex],
+            this.data._value[selectIndex]
         ];
 
         var text = this.data.hovertext || this.data.text;
@@ -91,11 +91,11 @@ proto.update = function(data) {
     }
 
     var positions = zip3(
-        toDataCoords(layout.xaxis, data._x, scene.dataScale[0], data.xcalendar),
-        toDataCoords(layout.yaxis, data._y, scene.dataScale[1], data.ycalendar),
-        toDataCoords(layout.zaxis, data._z, scene.dataScale[2], data.zcalendar));
+        toDataCoords(layout.xaxis, data._meshX, scene.dataScale[0], data.xcalendar),
+        toDataCoords(layout.yaxis, data._meshY, scene.dataScale[1], data.ycalendar),
+        toDataCoords(layout.zaxis, data._meshZ, scene.dataScale[2], data.zcalendar));
 
-    var cells = zip3(data._i, data._j, data._k);
+    var cells = zip3(data._meshI, data._meshJ, data._meshK);
 
     var config = {
         positions: positions,
@@ -116,7 +116,7 @@ proto.update = function(data) {
     };
 
     var cOpts = extractOpts(data);
-    config.vertexIntensity = data._intensity;
+    config.vertexIntensity = data._meshIntensity;
     config.vertexIntensityBounds = [cOpts.min, cOpts.max];
     config.colormap = parseColorScale(data);
 
@@ -132,9 +132,9 @@ proto.dispose = function() {
 var GRID_TYPES = ['xyz', 'xzy', 'yxz', 'yzx', 'zxy', 'zyx'];
 
 function generateIsoMeshes(data) {
-    data._i = [];
-    data._j = [];
-    data._k = [];
+    data._meshI = [];
+    data._meshJ = [];
+    data._meshK = [];
 
     var showSurface = data.surface.show;
     var showSpaceframe = data.spaceframe.show;
@@ -228,9 +228,9 @@ function generateIsoMeshes(data) {
     }
 
     function addFace(a, b, c) {
-        data._i.push(a);
-        data._j.push(b);
-        data._k.push(c);
+        data._meshI.push(a);
+        data._meshJ.push(b);
+        data._meshK.push(c);
         numFaces++;
 
         return numFaces - 1;
@@ -389,10 +389,10 @@ function generateIsoMeshes(data) {
             var index = indecies[q];
             xyzv.push(
                 [
-                    data.x[index],
-                    data.y[index],
-                    data.z[index],
-                    data.value[index]
+                    data._x[index],
+                    data._y[index],
+                    data._z[index],
+                    data._value[index]
                 ]
             );
         }
@@ -880,10 +880,10 @@ function generateIsoMeshes(data) {
                 for(var k = 0; k < depth; k++) {
                     var index = getIndex(i, j, k);
                     addVertex(
-                        data.x[index],
-                        data.y[index],
-                        data.z[index],
-                        data.value[index]
+                        data._x[index],
+                        data._y[index],
+                        data._z[index],
+                        data._value[index]
                     );
                 }
             }
@@ -1021,10 +1021,10 @@ function generateIsoMeshes(data) {
             emptyVertices();
         }
 
-        data._x = allXs;
-        data._y = allYs;
-        data._z = allZs;
-        data._intensity = allVs;
+        data._meshX = allXs;
+        data._meshY = allYs;
+        data._meshZ = allZs;
+        data._meshIntensity = allVs;
 
         data._Xs = Xs;
         data._Ys = Ys;
