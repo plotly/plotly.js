@@ -2136,8 +2136,8 @@ describe('sunburst uniformtext', function() {
                 textinfo: 'label'
             }],
             layout: {
-                width: 350,
-                height: 350,
+                width: 320,
+                height: 320,
                 uniformtext: {
                     mode: 'hide',
                     minsize: 10
@@ -2146,7 +2146,7 @@ describe('sunburst uniformtext', function() {
         })
         .then(assertTextSizes('before click', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.92, 0.92, 0.92, 0, 0, 0, 0, 0.92, 0.92, 0.92, 0.92, 0.92],
+            scales: [0.86, 0.86, 0, 0, 0, 0, 0, 0.86, 0, 0.86, 0.86, 0.86],
         }))
         .then(click(gd, 2)) // click on Uniform
         .then(delay(constants.CLICK_TRANSITION_TIME + 1))
@@ -2158,7 +2158,7 @@ describe('sunburst uniformtext', function() {
         .then(delay(constants.CLICK_TRANSITION_TIME + 1))
         .then(assertTextSizes('after click parent', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.92, 0.92, 0.92, 0, 0, 0, 0, 0.92, 0.92, 0.92, 0.92, 0.92],
+            scales: [0.86, 0.86, 0, 0, 0, 0, 0, 0.86, 0, 0.86, 0.86, 0.86],
         }))
         .catch(failTest)
         .then(done);
