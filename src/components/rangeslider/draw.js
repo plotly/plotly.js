@@ -99,6 +99,15 @@ module.exports = function(gd) {
                 ];
             }
 
+            // make sure the slider's axis range (axRng) doesn't go above the
+            // axis max or below the axis min (rng)
+            if(axRng[1] > rng[1]) {
+                newRng[1] = rng[1];
+            }
+            if(axRng[0] < rng[0]) {
+                newRng[0] = rng[0];
+            }
+
             opts.range = opts._input.range = Lib.simpleMap(newRng, axisOpts.l2r);
         }
 
