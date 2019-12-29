@@ -107,14 +107,14 @@ function processGrid(trace) {
     var firstY, lastY;
     var firstZ, lastZ;
     if(len) {
-        firstX = +x[0];
-        firstY = +y[0];
-        firstZ = +z[0];
+        firstX = x[0];
+        firstY = y[0];
+        firstZ = z[0];
     }
     if(len > 1) {
-        lastX = +x[len - 1];
-        lastY = +y[len - 1];
-        lastZ = +z[len - 1];
+        lastX = x[len - 1];
+        lastY = y[len - 1];
+        lastZ = z[len - 1];
     }
 
     for(i = 0; i < len; i++) {
@@ -127,15 +127,15 @@ function processGrid(trace) {
         zMax = Math.max(zMax, z[i]);
         zMin = Math.min(zMin, z[i]);
 
-        if(!filledX && (+x[i]) !== firstX) {
+        if(!filledX && x[i] !== firstX) {
             filledX = true;
             gridFill += 'x';
         }
-        if(!filledY && (+y[i]) !== firstY) {
+        if(!filledY && y[i] !== firstY) {
             filledY = true;
             gridFill += 'y';
         }
-        if(!filledZ && (+z[i]) !== firstZ) {
+        if(!filledZ && z[i] !== firstZ) {
             filledZ = true;
             gridFill += 'z';
         }
