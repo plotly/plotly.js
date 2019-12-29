@@ -2123,11 +2123,11 @@ describe('sunburst uniformtext', function() {
                     'Oscar',
                     'Papa',
                     'Quebec',
-                    'Romeo',
+                    'Romeo and Juliet',
                     'Sierra',
                     'Tango',
                     'Uniform',
-                    'Victor',
+                    'ViKtor Korchnoi - Anatoly Karpov',
                     'Whiskey',
                     'X ray',
                     'Yankee',
@@ -2136,29 +2136,29 @@ describe('sunburst uniformtext', function() {
                 textinfo: 'label'
             }],
             layout: {
-                width: 320,
-                height: 320,
+                width: 500,
+                height: 500,
                 uniformtext: {
                     mode: 'hide',
-                    minsize: 10
+                    minsize: 12
                 }
             }
         })
         .then(assertTextSizes('before click', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.86, 0.86, 0, 0, 0, 0, 0, 0.86, 0, 0.86, 0.86, 0.86],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
         .then(click(gd, 2)) // click on Uniform
         .then(delay(constants.CLICK_TRANSITION_TIME + 1))
         .then(assertTextSizes('after click child', {
             fontsizes: [12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1],
+            scales: [1, 0, 1, 1, 1, 1],
         }))
         .then(click(gd, 1)) // click on Oscar
         .then(delay(constants.CLICK_TRANSITION_TIME + 1))
         .then(assertTextSizes('after click parent', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.86, 0.86, 0, 0, 0, 0, 0, 0.86, 0, 0.86, 0.86, 0.86],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
         .catch(failTest)
         .then(done);
