@@ -140,7 +140,8 @@
             "textinfo": "label",
             "textfont": {
                 "family": "Raleway, sans-serif",
-                "color": "#FFF"
+                "color": "#FFF",
+                "size": 15
             },
             "domain": {
                 "x": [
@@ -217,9 +218,17 @@
                 "Zulu"
             ],
             "textinfo": "label",
-            "textfont": {
+            "insidetextfont": {
                 "family": "Courier New, monospace",
-                "color": "#000"
+                "color": "#000",
+                "size": 10
+            },
+            "pathbar": {
+                "textfont": {
+                    "family": "Times New Roman, Times, serif",
+                    "color": "#FF0",
+                    "size": 20
+                }
             },
             "domain": {
                 "x": [
@@ -296,9 +305,17 @@
                 "Zulu"
             ],
             "textinfo": "label",
-            "textfont": {
+            "insidetextfont": {
                 "family": "Times New Roman, Times, serif",
-                "color": "#FF0"
+                "color": "#FF0",
+                "size": 20
+            },
+            "pathbar": {
+                "textfont": {
+                    "family": "Courier New, monospace",
+                    "color": "#000",
+                    "size": 10
+                }
             },
             "domain": {
                 "x": [
@@ -326,11 +343,8 @@
             "l": 10,
             "r": 10
         },
-        "font": {
-            "size": 20
-        },
         "uniformtext": {
-            "minsize": 20,
+            "minsize": 15,
             "mode": "hide"
         }
     }
