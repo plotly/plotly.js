@@ -99,15 +99,6 @@ module.exports = function(gd) {
                 ];
             }
 
-            // make sure the slider's axis range (axRng) doesn't go above the
-            // axis max or below the axis min (rng)
-            if(axRng[1] > rng[1]) {
-                newRng[1] = rng[1];
-            }
-            if(axRng[0] < rng[0]) {
-                newRng[0] = rng[0];
-            }
-
             opts.range = opts._input.range = Lib.simpleMap(newRng, axisOpts.l2r);
         }
 
@@ -214,18 +205,27 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
             switch(target) {
                 case slideBox:
                     cursor = 'ew-resize';
+                    if(minVal + delta > axisOpts._length || maxVal + delta < 0) {
+                        return;
+                    }
                     pixelMin = minVal + delta;
                     pixelMax = maxVal + delta;
                     break;
 
                 case grabAreaMin:
                     cursor = 'col-resize';
+                    if(minVal + delta > axisOpts._length) {
+                        return;
+                    }
                     pixelMin = minVal + delta;
                     pixelMax = maxVal;
                     break;
 
                 case grabAreaMax:
                     cursor = 'col-resize';
+                    if(maxVal + delta < 0) {
+                        return;
+                    }
                     pixelMin = minVal;
                     pixelMax = maxVal + delta;
                     break;
