@@ -376,7 +376,9 @@ var configAttributes = {
     },
 
     logging: {
-        valType: 'boolean',
+        valType: 'integer',
+        min: 0,
+        max: 2,
         dflt: 1,
         description: [
             'Turn all console logging on or off (errors will be thrown)',
