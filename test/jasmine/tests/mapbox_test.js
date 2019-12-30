@@ -295,7 +295,7 @@ describe('mapbox credentials', function() {
             }]);
         }).toThrow(new Error(constants.missingStyleErrorMsg));
 
-        expect(Lib.error).toHaveBeenCalledTimes(0);
+        expect(Lib.error).toHaveBeenCalledWith(constants.missingStyleErrorMsg);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should throw error when setting a Mapbox style w/o a registered token', function() {

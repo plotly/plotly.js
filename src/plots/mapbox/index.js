@@ -250,6 +250,7 @@ function findAccessToken(gd, mapboxIds) {
         var msg = hasOneSetMapboxStyle ?
             constants.noAccessTokenErrorMsg :
             constants.missingStyleErrorMsg;
+        Lib.error(msg);
         throw new Error(msg);
     }
 
