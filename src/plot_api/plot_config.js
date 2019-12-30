@@ -390,6 +390,21 @@ var configAttributes = {
         ].join(' ')
     },
 
+    onGraphLogging: {
+        valType: 'integer',
+        min: 0,
+        max: 2,
+        dflt: 0,
+        description: [
+            'Set on-graph logging (notifier) level',
+            'This should ONLY be set via Plotly.setPlotConfig',
+            'Available levels:',
+            '0: no on-graph logs',
+            '1: warnings and errors, but not informational messages',
+            '2: verbose logs'
+        ].join(' ')
+    },
+
     queueLength: {
         valType: 'integer',
         min: 0,
