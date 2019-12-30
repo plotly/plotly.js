@@ -57,8 +57,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
+    var hasPathbar = coerce('pathbar.visible');
+
     var textposition = 'auto';
     handleText(traceIn, traceOut, layout, coerce, textposition, {
+        hasPathbar: hasPathbar,
         moduleHasSelected: false,
         moduleHasUnselected: false,
         moduleHasConstrain: false,
@@ -103,10 +106,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     };
 
-    var hasPathbar = coerce('pathbar.visible');
     if(hasPathbar) {
-        Lib.coerceFont(coerce, 'pathbar.textfont', layout.font);
-
         // This works even for multi-line labels as treemap pathbar trim out line breaks
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 

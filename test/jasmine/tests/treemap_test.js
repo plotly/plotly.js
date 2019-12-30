@@ -251,7 +251,7 @@ describe('Test treemap defaults:', function() {
         ]);
 
         expect(fullData[0].pathbar.textfont.family).toBe('"Open Sans", verdana, arial, sans-serif');
-        expect(fullData[0].pathbar.textfont.color).toBe('#444');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(12);
         expect(fullData[0].pathbar.thickness).toBe(18);
         expect(fullData[0].pathbar.side).toBe('top');
@@ -266,7 +266,7 @@ describe('Test treemap defaults:', function() {
         });
 
         expect(fullData[0].pathbar.textfont.family).toBe('Times New Romans');
-        expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(24);
         expect(fullData[0].pathbar.thickness).toBe(30);
     });

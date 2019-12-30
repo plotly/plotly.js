@@ -26,19 +26,19 @@ function resizeText(gd, gTrace, traceType) {
     if(minSize) {
         var shouldHide = fullLayout.uniformtext.mode === 'hide';
 
-        var t;
+        var selector;
         switch(traceType) {
             case 'funnelarea' :
             case 'pie' :
             case 'sunburst' :
             case 'treemap' :
-                t = gTrace.selectAll('g.slice');
+                selector = 'g.slice';
                 break;
             default :
-                t = gTrace.selectAll('g.points > g.point');
+                selector = 'g.points > g.point';
         }
 
-        t.each(function(d) {
+        gTrace.selectAll(selector).each(function(d) {
             var transform = d.transform;
             if(transform) {
                 transform.scale = (shouldHide && transform.hide) ? 0 : minSize / transform.fontSize;
