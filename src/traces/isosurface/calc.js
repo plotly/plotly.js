@@ -20,9 +20,10 @@ module.exports = function calc(gd, trace) {
         trace.value.length
     );
 
-    ['value', 'x', 'y', 'z'].forEach(function(e) {
-        trace['_' + e] = filter(trace[e], trace._len);
-    });
+    trace._x = filter(trace.x, trace._len);
+    trace._y = filter(trace.y, trace._len);
+    trace._z = filter(trace.z, trace._len);
+    trace._value = filter(trace.value, trace._len);
 
     var grid = processGrid(trace);
     trace._gridFill = grid.fill;

@@ -13,17 +13,20 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 
 function calc(gd, trace) {
     trace._len = Math.min(
-        trace.x.length,
-        trace.y.length,
-        trace.z.length,
         trace.u.length,
         trace.v.length,
-        trace.w.length
+        trace.w.length,
+        trace.x.length,
+        trace.y.length,
+        trace.z.length
     );
 
-    ['u', 'v', 'w', 'x', 'y', 'z'].forEach(function(e) {
-        trace['_' + e] = filter(trace[e], trace._len);
-    });
+    trace._u = filter(trace.u, trace._len);
+    trace._v = filter(trace.v, trace._len);
+    trace._w = filter(trace.w, trace._len);
+    trace._x = filter(trace.x, trace._len);
+    trace._y = filter(trace.y, trace._len);
+    trace._z = filter(trace.z, trace._len);
 
     var grid = processGrid(trace);
     trace._gridFill = grid.fill;
