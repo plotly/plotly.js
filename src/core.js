@@ -65,6 +65,11 @@ register([
     require('./locale-en-us')
 ]);
 
+// locales that are present in the window should be loaded
+if(window.PlotlyLocales && window.PlotlyLocales.length) {
+    register(window.PlotlyLocales);
+}
+
 // plot icons
 exports.Icons = require('./fonts/ploticon');
 
