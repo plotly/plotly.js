@@ -79,6 +79,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if('intensity' in traceIn) {
         coerce('intensity');
+        coerce('intensitymode');
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
     } else {
         traceOut.showscale = false;

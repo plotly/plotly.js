@@ -160,8 +160,9 @@ proto.update = function(data) {
     if(data.intensity) {
         var cOpts = extractOpts(data);
         this.color = '#fff';
-        config.vertexIntensity = data.intensity;
-        config.vertexIntensityBounds = [cOpts.min, cOpts.max];
+        var mode = data.intensitymode;
+        config[mode + 'Intensity'] = data.intensity;
+        config[mode + 'IntensityBounds'] = [cOpts.min, cOpts.max];
         config.colormap = parseColorScale(data);
     } else if(data.vertexcolor) {
         this.color = data.vertexcolor[0];
