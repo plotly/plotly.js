@@ -424,18 +424,31 @@ function getRotateFromAngle(angle) {
     return (angle === 'auto') ? 0 : angle;
 }
 
+function getRotatedTextSize(textBB, rotate) {
+    var a = Math.PI / 180 * rotate;
+    var absSin = Math.abs(Math.sin(a));
+    var absCos = Math.abs(Math.cos(a));
+
+    return {
+        x: textBB.width * absCos + textBB.height * absSin,
+        y: textBB.width * absSin + textBB.height * absCos
+    };
+}
+
 function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
-    var anchor = opts.anchor || 0;
+    var anchor = opts.anchor || 'end';
+    var isEnd = anchor === 'end';
+    var isStart = anchor === 'start';
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
     var lx = Math.abs(x1 - x0);
     var ly = Math.abs(y1 - y0);
 
-    // compute left space
+    // compute remaining space
     var textpad = (
         lx > (2 * TEXTPAD) &&
         ly > (2 * TEXTPAD)
@@ -463,38 +476,29 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     }
 
     var rotate = getRotateFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
-
-    // compute text space
-    var tx = textWidth * absCos + textHeight * absSin;
-    var ty = textWidth * absSin + textHeight * absCos;
+    var t = getRotatedTextSize(textBB, rotate);
 
     var scale = 1;
     if(constrained) {
         scale = Math.min(
             1,
-            lx / tx,
-            ly / ty
+            lx / t.x,
+            ly / t.y
         );
-        scale = Math.min(1, scale);
     }
 
     // compute text and target positions
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
-
-    if(anchor !== 'middle') { // case of 'start' or 'end'
-        var targetWidth = scale * (isHorizontal !== isAutoRotated ? textHeight : textWidth);
-        var targetHeight = scale * (isHorizontal !== isAutoRotated ? textWidth : textHeight);
-        textpad += 0.5 * (targetWidth * absSin + targetHeight * absCos);
+    if(isStart || isEnd) {
+        textpad += 0.5 * scale * (isHorizontal !== isAutoRotated ? t.x : t.y);
 
         if(isHorizontal) {
             textpad *= dirSign(x0, x1);
-            targetX = (anchor === 'start') ? x0 + textpad : x1 - textpad;
+            targetX = isStart ? x0 + textpad : x1 - textpad;
         } else {
             textpad *= dirSign(y0, y1);
-            targetY = (anchor === 'start') ? y0 + textpad : y1 - textpad;
+            targetY = isStart ? y0 + textpad : y1 - textpad;
         }
     }
 
@@ -542,14 +546,10 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     }
 
     var rotate = getRotateFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
+    var t = getRotatedTextSize(textBB, rotate);
 
     // compute text and target positions
-    var targetWidth = scale * (isHorizontal ? textHeight : textWidth);
-    var targetHeight = scale * (isHorizontal ? textWidth : textHeight);
-    textpad += 0.5 * (targetWidth * absSin + targetHeight * absCos);
-
+    textpad += 0.5 * scale * (isHorizontal ? t.x : t.y);
     var targetX = (x0 + x1) / 2;
     var targetY = (y0 + y1) / 2;
 
