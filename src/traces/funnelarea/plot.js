@@ -16,9 +16,9 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;
-var recordMinTextSize = barPlot.recordMinTextSize;
-var clearMinTextSize = barPlot.clearMinTextSize;
-
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
 var pieHelpers = require('../pie/helpers');
 var piePlot = require('../pie/plot');
 

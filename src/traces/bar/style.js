@@ -14,43 +14,12 @@ var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
+var resizeText = require('./uniform_text').resizeText;
 var attributes = require('./attributes');
 var attributeTextFont = attributes.textfont;
 var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
-
-function resizeText(gd, gTrace, traceType) {
-    var fullLayout = gd._fullLayout;
-    var minSize = fullLayout['_' + traceType + 'Text_minsize'];
-    if(minSize) {
-        var shouldHide = fullLayout.uniformtext.mode === 'hide';
-
-        var selector;
-        switch(traceType) {
-            case 'funnelarea' :
-            case 'pie' :
-            case 'sunburst' :
-                selector = 'g.slice';
-                break;
-            case 'treemap' :
-                selector = 'g.slice, g.pathbar';
-                break;
-            default :
-                selector = 'g.points > g.point';
-        }
-
-        gTrace.selectAll(selector).each(function(d) {
-            var transform = d.transform;
-            if(transform) {
-                transform.scale = (shouldHide && transform.hide) ? 0 : minSize / transform.fontSize;
-
-                var el = d3.select(this).select('text');
-                el.attr('transform', Lib.getTextTransform(transform));
-            }
-        });
-    }
-}
 
 function style(gd) {
     var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');

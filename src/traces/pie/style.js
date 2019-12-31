@@ -11,7 +11,7 @@
 var d3 = require('d3');
 
 var styleOne = require('./style_one');
-var resizeText = require('../bar/style').resizeText;
+var resizeText = require('../bar/uniform_text').resizeText;
 
 module.exports = function style(gd) {
     var s = gd._fullLayout._pielayer.selectAll('.trace');

@@ -19,6 +19,7 @@ var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 var tickText = require('../../plots/cartesian/axes').tickText;
 
+var uniformText = require('./uniform_text');
 var style = require('./style');
 var helpers = require('./helpers');
 var constants = require('./constants');
@@ -93,7 +94,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         };
 
         // don't clear bar when this is called from waterfall or funnel
-        clearMinTextSize('bar', fullLayout);
+        uniformText.clearMinTextSize('bar', fullLayout);
     }
 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
@@ -409,45 +410,11 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     }
 
     transform.fontSize = font.size;
-    recordMinTextSize(trace.type, transform, fullLayout);
+    uniformText.recordMinTextSize(trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
     transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
         .attr('transform', Lib.getTextTransform(transform));
-}
-
-function recordMinTextSize(
-    traceType, // in
-    transform, // inout
-    fullLayout // inout
-) {
-    if(fullLayout.uniformtext.mode) {
-        var minKey = getMinKey(traceType);
-        var minSize = fullLayout.uniformtext.minsize;
-        var size = transform.scale * transform.fontSize;
-
-        transform.hide = size < minSize;
-
-        fullLayout[minKey] = fullLayout[minKey] || Infinity;
-        if(!transform.hide) {
-            fullLayout[minKey] = Math.min(
-                fullLayout[minKey],
-                Math.max(size, minSize)
-            );
-        }
-    }
-}
-
-function clearMinTextSize(
-    traceType, // in
-    fullLayout // inout
-) {
-    var minKey = getMinKey(traceType);
-    fullLayout[minKey] = undefined;
-}
-
-function getMinKey(traceType) {
-    return '_' + traceType + 'Text_minsize';
 }
 
 function getRotateFromAngle(angle) {
@@ -769,7 +736,5 @@ function calcTextinfo(cd, index, xa, ya) {
 
 module.exports = {
     plot: plot,
-    toMoveInsideBar: toMoveInsideBar,
-    recordMinTextSize: recordMinTextSize,
-    clearMinTextSize: clearMinTextSize
+    toMoveInsideBar: toMoveInsideBar
 };

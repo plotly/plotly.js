@@ -16,9 +16,9 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var barPlot = require('../bar/plot');
-var recordMinTextSize = barPlot.recordMinTextSize;
-var clearMinTextSize = barPlot.clearMinTextSize;
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
 
 var helpers = require('./helpers');
 var eventData = require('./event_data');
