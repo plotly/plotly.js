@@ -465,6 +465,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var lx = Math.abs(x1 - x0);
     var ly = Math.abs(y1 - y0);
 
+    // compute left space
     var textpad = (
         lx > (2 * TEXTPAD) &&
         ly > (2 * TEXTPAD)
@@ -495,15 +496,19 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
     var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
 
-    // compute and apply text padding
-    var dx = Math.max(lx * absCos, ly * absSin);
-    var dy = Math.max(lx * absSin, ly * absCos);
+    // compute text space
+    var tx = textWidth * absCos + textHeight * absSin;
+    var ty = textWidth * absSin + textHeight * absCos;
 
-    var scale = (constrained) ?
-        Math.min(dx / textWidth, dy / textHeight) :
-        Math.max(absCos, absSin);
-
-    scale = Math.min(1, scale);
+    var scale = 1;
+    if(constrained) {
+        scale = Math.min(
+            1,
+            lx / tx,
+            ly / ty
+        );
+        scale = Math.min(1, scale);
+    }
 
     // compute text and target positions
     var targetX = (x0 + x1) / 2;
