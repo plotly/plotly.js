@@ -20,6 +20,9 @@ var Registry = require('../../registry');
 var tickText = require('../../plots/cartesian/axes').tickText;
 
 var uniformText = require('./uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
+
 var style = require('./style');
 var helpers = require('./helpers');
 var constants = require('./constants');
@@ -94,7 +97,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         };
 
         // don't clear bar when this is called from waterfall or funnel
-        uniformText.clearMinTextSize('bar', fullLayout);
+        clearMinTextSize('bar', fullLayout);
     }
 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
@@ -410,7 +413,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     }
 
     transform.fontSize = font.size;
-    uniformText.recordMinTextSize(trace.type, transform, fullLayout);
+    recordMinTextSize(trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
     transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
