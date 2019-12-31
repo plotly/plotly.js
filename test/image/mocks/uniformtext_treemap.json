@@ -79,7 +79,7 @@
                 "coloraxis": "coloraxis"
             },
             "type": "treemap",
-            "level": "Juliet",
+            "level": "Uniform",
             "parents": [
                 "",
                 "Alpha",
@@ -159,7 +159,7 @@
                 "coloraxis": "coloraxis"
             },
             "type": "treemap",
-            "level": "Oscar",
+            "level": "Whiskey",
             "parents": [
                 "",
                 "Alpha",
@@ -246,7 +246,7 @@
                 "coloraxis": "coloraxis"
             },
             "type": "treemap",
-            "level": "Uniform",
+            "level": "Juliet",
             "parents": [
                 "",
                 "Alpha",
@@ -335,7 +335,7 @@
             "reversescale": true,
             "showscale": false
         },
-        "width": 800,
+        "width": 550,
         "height": 800,
         "margin": {
             "t": 10,
@@ -344,7 +344,7 @@
             "r": 10
         },
         "uniformtext": {
-            "minsize": 15,
+            "minsize": 12,
             "mode": "hide"
         }
     }

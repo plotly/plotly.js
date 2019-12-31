@@ -31,8 +31,10 @@ function resizeText(gd, gTrace, traceType) {
             case 'funnelarea' :
             case 'pie' :
             case 'sunburst' :
-            case 'treemap' :
                 selector = 'g.slice';
+                break;
+            case 'treemap' :
+                selector = 'g.slice, g.pathbar';
                 break;
             default :
                 selector = 'g.points > g.point';
