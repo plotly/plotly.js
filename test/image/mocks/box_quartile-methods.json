@@ -1,0 +1,17 @@
+{
+  "data": [{
+    "type": "box",
+    "y": [1, 2, 3, 4, 5],
+    "name": "linear"
+  }, {
+    "type": "box",
+    "y": [1, 2, 3, 4, 5],
+    "name": "exclusive",
+    "quartilemethod": "exclusive"
+  }, {
+    "type": "box",
+    "y": [1, 2, 3, 4, 5],
+    "name": "inclusive",
+    "quartilemethod": "inclusive"
+  }]
+}

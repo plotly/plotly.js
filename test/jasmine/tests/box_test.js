@@ -1,5 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 
 var Box = require('@src/traces/box');
 
@@ -199,6 +200,439 @@ describe('Test boxes supplyDefaults', function() {
         supplyAllDefaults(gd);
         expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
         expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+    });
+
+    describe('q1/median/q3 API signature', function() {
+        function _check(msg, t, exp) {
+            var gd = { data: [Lib.extendFlat({type: 'box'}, t)] };
+            supplyAllDefaults(gd);
+            for(var k in exp) {
+                var actual = gd._fullData[0][k];
+                if(Array.isArray(exp[k])) {
+                    expect(actual).toEqual(exp[k], msg + ' | ' + k);
+                } else {
+                    expect(actual).toBe(exp[k], msg + ' | ' + k);
+                }
+            }
+        }
+
+        it('should result in correct orientation results', function() {
+            _check('insufficient (no median)', {
+                q1: [1],
+                q3: [3]
+            }, {
+                visible: false,
+                orientation: undefined,
+                _length: undefined
+            });
+            _check('just q1/median/q3', {
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined,
+                _length: 1
+            });
+            _check('with set x', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2D x', {
+                x: [[1, 2, 3]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: 1
+            });
+            _check('with set 2D x (sliced to length q1/median/q3)', {
+                x: [[1, 2, 3], [2, 3, 4]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: 1
+            });
+            _check('with set 2D x (sliced to x.length)', {
+                x: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: 1
+            });
+            _check('with set y', {
+                y: [0],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d y', {
+                y: [[1, 2, 3]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d y (sliced to y.length)', {
+                y: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d y (sliced to q1/median/q3 length)', {
+                y: [[1, 2, 3], [2, 3, 4]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: 0, dx: 1,
+                y0: undefined, dy: undefined
+            });
+            _check('with set x AND 2d y', {
+                x: [0],
+                y: [[1, 2, 3]],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x: [0],
+                y: [[1, 2, 3]],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set x AND 2d y (sliced to y.length)', {
+                x: [0, 1],
+                y: [[1, 2, 3]],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x: [0, 1],
+                y: [[1, 2, 3]],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d x AND y', {
+                x: [[1, 2, 3]],
+                y: [4],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x: [[1, 2, 3]],
+                y: [4],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d x AND y (sliced to x.length)', {
+                x: [[1, 2, 3]],
+                y: [4, 5],
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x: [[1, 2, 3]],
+                y: [4, 5],
+                x0: undefined, dx: undefined,
+                y0: undefined, dy: undefined
+            });
+            _check('with set 2d multicategory x AND 2d y', {
+                x: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                y: [
+                    [0, 1, 2, 3, 4],
+                    [1, 2, 3, 4, 5],
+                    [2, 3, 4, 5, 6],
+                    [3, 4, 5, 6, 7]
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 4
+            });
+            _check('with set 2d x AND 2d multicategory y', {
+                y: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                x: [
+                    [0, 1, 2, 3, 4],
+                    [1, 2, 3, 4, 5],
+                    [2, 3, 4, 5, 6],
+                    [3, 4, 5, 6, 7]
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 4
+            });
+            _check('with set category 2d x AND 2d y (edge case!)', {
+                x: [
+                    ['2017', '2017', '2018', '2018'],
+                    ['q1', 'q2', 'q1', 'q2']
+                ],
+                y: [
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c'],
+                    ['a', 'b', 'c']
+                ],
+                q1: [1, 2, 3, 4],
+                median: [2, 3, 4, 5],
+                q3: [3, 4, 5, 6]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 4
+            });
+            _check('with just y0', {
+                y0: 4,
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 4, dy: 1
+            });
+            _check('with just dy', {
+                dy: -0.4,
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: 0, dy: -0.4
+            });
+            _check('with x0/dx AND y0/dy (ignores y0/dy)', {
+                x0: -1, dx: -0.2,
+                y0: -10, dy: -0.4,
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'v',
+                _length: 1,
+                x0: -1, dx: -0.2,
+                y0: undefined, dy: undefined
+            });
+            _check('with x0/dx AND y0/dy AND orientation:h (ignores x0/dx)', {
+                x0: -1, dx: -0.2,
+                y0: -10, dy: -0.4,
+                orientation: 'h',
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                visible: true,
+                orientation: 'h',
+                _length: 1,
+                x0: undefined, dx: undefined,
+                y0: -10, dy: -0.4
+            });
+        });
+
+        it('should coerce lowerfence and upperfence', function() {
+            var lf = [-1];
+            var uf = [5];
+
+            _check('insufficient (no median)', {
+                q1: [1],
+                q3: [3],
+                lowerfence: lf,
+                upperfence: uf
+            }, {
+                visible: false,
+                lowerfence: undefined,
+                upperfence: undefined
+            });
+            _check('x/y signature', {
+                x: [0],
+                y: [1],
+                lowerfence: lf,
+                upperfence: uf
+            }, {
+                visible: true,
+                lowerfence: undefined,
+                upperfence: undefined
+            });
+            _check('base', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3],
+                lowerfence: lf,
+                upperfence: uf
+            }, {
+                visible: true,
+                lowerfence: lf,
+                upperfence: uf
+            });
+        });
+
+        it('should lead to correct boxmean default', function() {
+            var mean = [2.2];
+            var sd = [0.1];
+
+            _check('x/y signature', {
+                x: [0],
+                y: [1],
+            }, {
+                boxmean: false
+            });
+            _check('base', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                boxmean: false
+            });
+            _check('with mean set', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3],
+                mean: mean
+            }, {
+                boxmean: true,
+                mean: mean
+            });
+            _check('with mean and sd set', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3],
+                mean: mean,
+                sd: sd
+            }, {
+                boxmean: 'sd',
+                mean: mean,
+                sd: sd
+            });
+        });
+
+        it('should lead to correct notched default', function() {
+            var ns = [0.05];
+
+            _check('x/y signature', {
+                x: [0],
+                y: [1],
+                notchwidth: 0.1
+            }, {
+                notched: true,
+                notchwidth: 0.1
+            });
+            _check('base', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3],
+                notchwidth: 0.1
+            }, {
+                notched: false,
+                notchwidth: undefined
+            });
+            _check('with notchspan set', {
+                x: [0],
+                q1: [1],
+                median: [2],
+                q3: [3],
+                notchspan: ns
+            }, {
+                notchspan: ns,
+                notched: true,
+                notchwidth: 0.25
+            });
+        });
+
+        it('should lead to correct boxpoints default', function() {
+            _check('set default to *all*', {
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }, {
+                boxpoints: 'all'
+            });
+            _check('honours valid user input', {
+                q1: [1],
+                median: [2],
+                q3: [3],
+                boxpoints: 'outliers'
+            }, {
+                boxpoints: 'outliers'
+            });
+        });
     });
 });
 
@@ -454,6 +888,72 @@ describe('Test box hover:', function() {
         nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
         name: ['', '', '', '', ''],
         axis: 'trace 0'
+    }, {
+        desc: 'q1/median/q3 signature on boxes',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3]
+            }],
+            layout: {
+                width: 400,
+                height: 400
+            }
+        },
+        pos: [200, 200],
+        nums: ['median: 2', 'q1: 1', 'q3: 3'],
+        name: ['', '', ''],
+        axis: 'A'
+    }, {
+        desc: 'q1/median/q3 signature on points',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                hoveron: 'points',
+                pointpos: 0
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, b: 0, r: 0}
+            }
+        },
+        pos: [200, 200],
+        nums: '2',
+        name: '',
+        axis: 'A'
+    }, {
+        desc: 'q1/median/q3 signature on points + hovertemplate',
+        mock: {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                hoveron: 'points',
+                pointpos: 0,
+                hovertemplate: '%{x} | %{y}<extra>%{pointNumber[0]} | %{pointNumber[1]}</extra>'
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, b: 0, r: 0}
+            }
+        },
+        pos: [200, 200],
+        nums: 'A | 2',
+        name: '0 | 2',
+        axis: 'A'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(failTest).then(done);
@@ -608,5 +1108,429 @@ describe('Test box restyle:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('Test box calc', function() {
+    var gd;
+
+    function _calc(attrs, layout) {
+        gd = {
+            data: [Lib.extendFlat({type: 'box'}, attrs)],
+            layout: layout || {},
+            calcdata: []
+        };
+        supplyAllDefaults(gd);
+        Plots.doCalcdata(gd);
+        return gd.calcdata[0];
+    }
+
+    it('should compute q1/q3 depending on *quartilemethod*', function() {
+        // samples from https://en.wikipedia.org/wiki/Quartile
+        var specs = {
+            // N is odd and is spanned by (4n+3)
+            odd: {
+                sample: [6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 20.25, q3: 42.75},
+                    exclusive: {q1: 15, q3: 43},
+                    inclusive: {q1: 25.5, q3: 42.5}
+                }
+            },
+            // N is odd and is spanned by (4n+1)
+            odd2: {
+                sample: [6, 15, 36, 39, 40, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 30.75, q3: 44},
+                    exclusive: {q1: 25.5, q3: 45},
+                    inclusive: {q1: 36, q3: 43}
+                }
+            },
+            // N is even
+            even: {
+                sample: [7, 15, 36, 39, 40, 41],
+                methods: {
+                    linear: {q1: 15, q3: 40},
+                    exclusive: {q1: 15, q3: 40},
+                    inclusive: {q1: 15, q3: 40}
+                }
+            },
+            // samples from http://jse.amstat.org/v14n3/langford.html
+            s4: {
+                sample: [1, 2, 3, 4],
+                methods: {
+                    linear: {q1: 1.5, q3: 3.5},
+                    exclusive: {q1: 1.5, q3: 3.5},
+                    inclusive: {q1: 1.5, q3: 3.5}
+                }
+            },
+            s5: {
+                sample: [1, 2, 3, 4, 5],
+                methods: {
+                    linear: {q1: 1.75, q3: 4.25},
+                    exclusive: {q1: 1.5, q3: 4.5},
+                    inclusive: {q1: 2, q3: 4}
+                }
+            },
+            s6: {
+                sample: [1, 2, 3, 4, 5, 6],
+                methods: {
+                    linear: {q1: 2, q3: 5},
+                    exclusive: {q1: 2, q3: 5},
+                    inclusive: {q1: 2, q3: 5}
+                }
+            },
+            s7: {
+                sample: [1, 2, 3, 4, 5, 6, 7],
+                methods: {
+                    linear: {q1: 2.25, q3: 5.75},
+                    exclusive: {q1: 2, q3: 6},
+                    inclusive: {q1: 2.5, q3: 5.5}
+                }
+            }
+        };
+
+        for(var name in specs) {
+            var spec = specs[name];
+
+            for(var m in spec.methods) {
+                var cd = _calc({y: spec.sample, quartilemethod: m});
+                expect(cd[0].q1).toBe(spec.methods[m].q1, ['q1', m, name].join(' | '));
+                expect(cd[0].q3).toBe(spec.methods[m].q3, ['q3', m, name].join(' | '));
+            }
+        }
+    });
+
+    describe('with q1/median/q3 API signature inputs', function() {
+        function minimal(patch) {
+            return Lib.extendFlat({
+                q1: [1, 2],
+                median: [2, 3],
+                q3: [3, 4],
+            }, patch || {});
+        }
+
+        function base(patch) {
+            return Lib.extendFlat(minimal({
+                x: [1, 2],
+                lowerfence: [0, 1],
+                upperfence: [4, 5]
+            }), patch || {});
+        }
+
+        function _assert(msg, d, keys, exp) {
+            var actual = keys.map(function(k) { return d[k]; });
+            expect(actual).withContext(keys.join(', ') + ' | ' + msg).toEqual(exp);
+        }
+
+        it('should skip box corresponding to non-numeric positions', function() {
+            var cd = _calc(base({x: [null, 2]}));
+            expect(cd.length).toBe(1, 'has length 1');
+            _assert('', cd[0],
+                ['x', 'lf', 'q1', 'med', 'q3', 'uf'],
+                [2, 1, 2, 3, 4, 5]
+            );
+        });
+
+        it('should be able to set positions from x0/dx and y0/dy', function() {
+            var cd = _calc(minimal());
+            _assert('blank', cd[0], ['x'], [0]);
+            _assert('blank', cd[1], ['x'], [1]);
+
+            cd = _calc(minimal({x0: 5, dx: 2}));
+            _assert('x0/dx cd[0]', cd[0], ['x'], [5]);
+            _assert('x0/dx cd[1]', cd[1], ['x'], [7]);
+
+            cd = _calc(minimal({y0: 9, dy: -3}));
+            _assert('y0/dy cd[0]', cd[0], ['y'], [9]);
+            _assert('y0/dy cd[1]', cd[1], ['y'], [6]);
+        });
+
+        it('should warn when q1/median/q3 values are invalid', function() {
+            spyOn(Lib, 'warn');
+
+            var cd = _calc(base({q1: [null, 2]}));
+            _assert('non-numeric q1', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [2, 2, 2, 2, 2]
+            );
+            cd = _calc(base({q1: [10, 2]}));
+            _assert('invalid q1', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [2, 2, 2, 2, 2]
+            );
+
+            cd = _calc(base({q3: [3, null]}));
+            _assert('non-numeric q3', cd[1],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [3, 3, 3, 3, 3]
+            );
+            cd = _calc(base({q3: [3, -10]}));
+            _assert('invalid q3', cd[1],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [3, 3, 3, 3, 3]
+            );
+
+            cd = _calc(base({median: [null, 3]}));
+            _assert('non-numeric median', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [2, 2, 2, 2, 2]
+            );
+            cd = _calc(base({median: [null, 3], q1: [null, 2]}));
+            _assert('non-numeric median AND q1', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [3, 3, 3, 3, 3]
+            );
+            cd = _calc(base({median: [null, 3], q3: [null, 4]}));
+            _assert('non-numeric median AND q3', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [1, 1, 1, 1, 1]
+            );
+            cd = _calc(base({median: [null, 3], q1: [null, 2], q3: [null, 4]}));
+            _assert('non-numeric median, q1 and q3', cd[0],
+                ['lf', 'q1', 'med', 'q3', 'uf'],
+                [0, 0, 0, 0, 0]
+            );
+
+            expect(Lib.warn).toHaveBeenCalledTimes(8);
+        });
+
+        it('should set *lf* / *uf*:', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('to q1/q3 when only q1/median/q3 are set', cd[0],
+                ['lf', 'uf'],
+                [1, 3]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], lowerfence: [null], upperfence: [NaN]});
+            _assert('to q1/q3 when only lowerfence/upperfence input is non-numeric', cd[0],
+                ['lf', 'uf'],
+                [1, 3]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], lowerfence: [1.5], upperfence: [2.5]});
+            _assert('to q1/q3 when only lowerfence/upperfence input is invalid', cd[0],
+                ['lf', 'uf'],
+                [1, 3]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], lowerfence: [0.5], upperfence: [3.5]});
+            _assert('to lowerfence/upperfence when valid', cd[0],
+                ['lf', 'uf'],
+                [0.5, 3.5]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], y: [[0, 1, 2, 3, 4]]});
+            _assert('to computed value when a sample is set', cd[0],
+                ['lf', 'uf'],
+                [0, 4]
+            );
+        });
+
+        it('should fill *mean* and *sd*', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('to (q1+q3)/2 and the IQR respectively when *mean* and *sd* are not set', cd[0],
+                ['mean', 'sd'],
+                [2, 2]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], mean: [NaN], sd: [-10]});
+            _assert('to (q1+q3)/2 and the IQR respectively when *mean* and *sd* are invalid', cd[0],
+                ['mean', 'sd'],
+                [2, 2]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], mean: [1.1], sd: [0.1]});
+            _assert('to *mean* and *sd* when invalid', cd[0],
+                ['mean', 'sd'],
+                [1.1, 0.1]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], x: [[0, 1, 2, 3, 4, 5]]});
+            _assert('to computed value when a sample is set', cd[0],
+                ['mean', 'sd'],
+                [2.5, 1.707825127659933]
+            );
+        });
+
+        it('should fill *lo* and *uo*', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('using q1 and q3', cd[0],
+                ['lo', 'uo'],
+                [-5, 9]
+            );
+        });
+
+        it('should fill *ln* and *un*', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3], notchspan: [null]});
+            _assert('to *median* value when input is non-numeric', cd[0],
+                ['ln', 'un'],
+                [2, 2]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], notchspan: [-10]});
+            _assert('to *median* value when input is negative', cd[0],
+                ['ln', 'un'],
+                [2, 2]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], notchspan: [0.1]});
+            _assert('to *median* -/+ input value when valid', cd[0],
+                ['ln', 'un'],
+                [1.9, 2.1]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], y: [[0, 1, 2, 3, 4, 5, 6]]});
+            _assert('to computed value when a sample is set', cd[0],
+                ['ln', 'un'],
+                [0.8131915547510264, 3.1868084452489738]
+            );
+        });
+
+        it('should fill in *pts* and *pts2* arrays with sample items', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('empty case', cd[0],
+                ['pts', 'pts2'],
+                [[], []]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                y: [[0, 4, 1, 5, 2, 3]],
+                boxpoints: 'all'
+            });
+            _assert('with sample + boxpoints:all', cd[0],
+                ['pts', 'pts2'],
+                [[
+                    {v: 0, i: [0, 0]}, {v: 1, i: [0, 2]}, {v: 2, i: [0, 4]},
+                    {v: 3, i: [0, 5]}, {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ], [
+                    {v: 0, i: [0, 0]}, {v: 1, i: [0, 2]}, {v: 2, i: [0, 4]},
+                    {v: 3, i: [0, 5]}, {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ]]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                y: [[0, 4, 1, 5, 2, 3]],
+                boxpoints: 'outliers'
+            });
+            _assert('with sample + boxpoints:outliers', cd[0],
+                ['pts', 'pts2'],
+                [[
+                    {v: 0, i: [0, 0]}, {v: 1, i: [0, 2]}, {v: 2, i: [0, 4]},
+                    {v: 3, i: [0, 5]}, {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ], []]
+            );
+
+            // same as for boxpoints: 'outliers', suspectedoutliers style logic happens in box/plot.js
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                y: [[0, 4, 1, 5, 2, 3]],
+                boxpoints: 'suspectedoutliers'
+            });
+            _assert('with sample + boxpoints:suspectedoutliers', cd[0],
+                ['pts', 'pts2'],
+                [[
+                    {v: 0, i: [0, 0]}, {v: 1, i: [0, 2]}, {v: 2, i: [0, 4]},
+                    {v: 3, i: [0, 5]}, {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ], []]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                lowerfence: [1],
+                upperfence: [3],
+                y: [[0, 4, 1, 5, 2, 3]],
+                boxpoints: 'outliers'
+            });
+            _assert('with sample + set lowerfence/upperfence + boxpoints:outliers', cd[0],
+                ['pts', 'pts2'],
+                [[
+                    {v: 0, i: [0, 0]}, {v: 1, i: [0, 2]}, {v: 2, i: [0, 4]},
+                    {v: 3, i: [0, 5]}, {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ], [
+                    {v: 0, i: [0, 0]},
+                    {v: 4, i: [0, 1]}, {v: 5, i: [0, 3]}
+                ]]
+            );
+        });
+
+        it('should compute correct *min* and *max* values', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('simple q1/median/q3', cd[0],
+                ['min', 'max'],
+                [1, 3]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], x: [[0, 1, 5, 3, 4, 2]]});
+            _assert('with sample', cd[0],
+                ['min', 'max'],
+                [0, 5]
+            );
+
+            cd = _calc({q1: [1], median: [2], q3: [3], notchspan: [2.5]});
+            _assert('inverted notches', cd[0],
+                ['min', 'max'],
+                [-0.5, 4.5]
+            );
+        });
+
+        it('should fill 2D per-point text/hovertext values', function() {
+            var cd = _calc({q1: [1], median: [2], q3: [3]});
+            _assert('simple q1/median/q3', cd[0],
+                ['pts'],
+                [[]]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                y: [[1, 2, 3]],
+                text: ['a'], hovertext: ['b']
+            });
+            _assert('invalid text/hovertext 1D array case', cd[0],
+                ['pts'],
+                [[{v: 1, i: [0, 0]}, {v: 2, i: [0, 1]}, {v: 3, i: [0, 2]}]]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                y: [[1, 2, 3]],
+                text: [['a', 'b', 'c']], hovertext: [['A', 'B', 'C']]
+            });
+            _assert('valid text/hovertext 2D array case', cd[0],
+                ['pts'],
+                [[
+                    {v: 1, i: [0, 0], tx: 'a', htx: 'A'},
+                    {v: 2, i: [0, 1], tx: 'b', htx: 'B'},
+                    {v: 3, i: [0, 2], tx: 'c', htx: 'C'}
+                ]]
+            );
+        });
+
+        it('should tag selected sample points', function() {
+            var cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                x: [[1, 3, 2]]
+            });
+            _assert('base case', cd[0],
+                ['pts'],
+                [[{v: 1, i: [0, 0]}, {v: 2, i: [0, 2]}, {v: 3, i: [0, 1]}]]
+            );
+
+            cd = _calc({
+                q1: [1], median: [2], q3: [3],
+                x: [[1, 3, 2]],
+                selectedpoints: [[0, 1]]
+            });
+            _assert('with set selectedpoints', cd[0],
+                ['pts'],
+                [[
+                    {v: 1, i: [0, 0]},
+                    {v: 2, i: [0, 2]},
+                    {v: 3, i: [0, 1], selected: 1}
+                ]]
+            );
+        });
     });
 });
