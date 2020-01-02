@@ -410,7 +410,7 @@ describe('mapbox credentials', function() {
         }], {
             mapbox: {
                 accesstoken: MAPBOX_ACCESS_TOKEN,
-                style: 'mapbox://styles/etpinard/cip93fm98000sbmnuednknloo'
+                style: 'mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m'
             }
         }).catch(function() {
             cnt++;
@@ -1329,13 +1329,13 @@ describe('@noCI, mapbox plots', function() {
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
-            expect(evtData['mapbox._derived']).toEqual({
-                coordinates: [
-                    [lon0, lat1],
-                    [lon1, lat1],
-                    [lon1, lat0],
-                    [lon0, lat0]
-                ]});
+            expect(Object.keys(evtData['mapbox._derived'])).toEqual(['coordinates']);
+            expect(evtData['mapbox._derived'].coordinates).toBeCloseTo2DArray([
+                [lon0, lat1],
+                [lon1, lat1],
+                [lon1, lat0],
+                [lon0, lat0]
+            ], -0.1);
         }
 
         _assertLayout([-4.710, 19.475], 1.234);

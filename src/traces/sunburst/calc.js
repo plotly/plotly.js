@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,6 +16,8 @@ var makeColorScaleFn = require('../../components/colorscale').makeColorScaleFunc
 var makePullColorFn = require('../pie/calc').makePullColorFn;
 var generateExtendedColors = require('../pie/calc').generateExtendedColors;
 var colorscaleCalc = require('../../components/colorscale').calc;
+
+var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
@@ -165,7 +167,7 @@ exports.calc = function(gd, trace) {
                             v = partialSum;
                         }
 
-                        if(v < partialSum) {
+                        if(v < partialSum * ALMOST_EQUAL) {
                             failed = true;
                             return Lib.warn([
                                 'Total value for node', d.data.data.id,

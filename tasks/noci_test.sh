@@ -30,7 +30,7 @@ test_image () {
     $root/../orca/bin/orca.js graph \
         $root/test/image/mocks/mapbox_* \
         --plotly $root/build/plotly.js \
-        --mapbox-access-token "pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ" \
+        --mapbox-access-token "pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A" \
         --output-dir $root/test/image/baselines/ \
         --verbose || EXIT_STATE=$?
 }
