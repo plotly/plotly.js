@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -217,26 +217,32 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var fullLayoutNow = gd._fullLayout;
         var traceNow = gd._fullData[trace.index];
 
-        var clickVal = Events.triggerHandler(gd, 'plotly_' + trace.type + 'click', {
+        var noTransition = isSunburst && (helpers.isHierarchyRoot(pt) || helpers.isLeaf(pt));
+
+        var id = helpers.getPtId(pt);
+        var nextEntry = helpers.isEntry(pt) ?
+            helpers.findEntryWithChild(hierarchy, id) :
+            helpers.findEntryWithLevel(hierarchy, id);
+        var nextLevel = helpers.getPtId(nextEntry);
+
+        var typeClickEvtData = {
             points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
             event: d3.event
-        });
+        };
+        if(!noTransition) typeClickEvtData.nextLevel = nextLevel;
 
-        // 'regular' click event when sunburst/treemap click is disabled or when
-        // clicking on leaves or the hierarchy root
-        if(
-            clickVal === false ||
-            isSunburst && (
-                helpers.isHierarchyRoot(pt) ||
-                helpers.isLeaf(pt)
-            )
-        ) {
-            if(fullLayoutNow.hovermode) {
-                gd._hoverdata = [makeEventData(pt, traceNow, opts.eventDataKeys)];
-                Fx.click(gd, d3.event);
-            }
-            return;
+        var clickVal = Events.triggerHandler(gd, 'plotly_' + trace.type + 'click', typeClickEvtData);
+
+        if(clickVal !== false && fullLayoutNow.hovermode) {
+            gd._hoverdata = [makeEventData(pt, traceNow, opts.eventDataKeys)];
+            Fx.click(gd, d3.event);
         }
+
+        // if click does not trigger a transition, we're done!
+        if(noTransition) return;
+
+        // if custom handler returns false, we're done!
+        if(clickVal === false) return;
 
         // skip if triggered from dragging a nearby cartesian subplot
         if(gd._dragging) return;
@@ -251,13 +257,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             level: traceNow.level
         });
 
-        var id = helpers.getPtId(pt);
-        var nextEntry = helpers.isEntry(pt) ?
-            helpers.findEntryWithChild(hierarchy, id) :
-            helpers.findEntryWithLevel(hierarchy, id);
-
         var frame = {
-            data: [{level: helpers.getPtId(nextEntry)}],
+            data: [{level: nextLevel}],
             traces: [trace.index]
         };
 

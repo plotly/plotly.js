@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -300,9 +300,10 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
         }
     }
 
-    var fullID = 'g' + gd._fullLayout._uid + '-' + gradientID;
+    var fullLayout = gd._fullLayout;
+    var fullID = 'g' + fullLayout._uid + '-' + gradientID;
 
-    var gradient = gd._fullLayout._defs.select('.gradients')
+    var gradient = fullLayout._defs.select('.gradients')
         .selectAll('#' + fullID)
         .data([type + colorStops.join(';')], Lib.identity);
 
@@ -333,6 +334,13 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
 
     sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
+
+    var className2query = function(s) {
+        return '.' + s.attr('class').replace(/\s/g, '.');
+    };
+    var k = className2query(d3.select(sel.node().parentNode)) +
+        '>' + className2query(sel);
+    fullLayout._gradientUrlQueryParts[k] = 1;
 };
 
 /*
@@ -343,8 +351,14 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  * The upside of this is arbitrary points can share gradient defs
  */
 drawing.initGradients = function(gd) {
-    var gradientsGroup = Lib.ensureSingle(gd._fullLayout._defs, 'g', 'gradients');
+    var fullLayout = gd._fullLayout;
+
+    var gradientsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
+
+    // initialize stash of query parts filled in Drawing.gradient,
+    // used to fix URL strings during image exports
+    fullLayout._gradientUrlQueryParts = {};
 };
 
 

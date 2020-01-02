@@ -3,6 +3,7 @@ var Choropleth = require('@src/traces/choropleth');
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var loggers = require('@src/lib/loggers');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -87,6 +88,65 @@ describe('Test choropleth', function() {
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.marker.line.width).toBe(0, 'mlw');
             expect(traceOut.marker.line.color).toBe(undefined, 'mlc');
+        });
+
+        it('should default locationmode to *geojson-id* when a valid *geojson* is provided', function() {
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: 'url'
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.locationmode).toBe('geojson-id', 'valid url string');
+
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: {}
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.locationmode).toBe('geojson-id', 'valid object');
+
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: ''
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.locationmode).toBe('ISO-3', 'invalid sting');
+
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: []
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.locationmode).toBe('ISO-3', 'invalid object');
+        });
+
+        it('should only coerce *featureidkey* when locationmode is *geojson-id', function() {
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                geojson: 'url',
+                featureidkey: 'properties.name'
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.featureidkey).toBe('properties.name', 'coerced');
+
+            traceIn = {
+                locations: ['CAN', 'USA'],
+                z: [1, 2],
+                featureidkey: 'properties.name'
+            };
+            traceOut = {};
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.featureidkey).toBe(undefined, 'NOT coerced');
         });
     });
 });
@@ -242,6 +302,15 @@ describe('Test choropleth hover:', function() {
             run(pos, fig, exp).then(done);
         });
     });
+
+    it('should include *properties* from input custom geojson', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
+        fig.data = [fig.data[1]];
+        fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
+        fig.layout.geo.projection = {scale: 20};
+
+        run([300, 200], fig, ['New York', '-75.1 | 42.6']).then(done);
+    });
 });
 
 describe('choropleth drawing', function() {
@@ -254,7 +323,7 @@ describe('choropleth drawing', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an error with bad locations', function(done) {
-        spyOn(Lib, 'log');
+        spyOn(loggers, 'log');
         Plotly.newPlot(gd, [{
             locations: ['canada', 0, null, '', 'utopia'],
             z: [1, 2, 3, 4, 5],
@@ -263,7 +332,7 @@ describe('choropleth drawing', function() {
         }])
         .then(function() {
             // only utopia logs - others are silently ignored
-            expect(Lib.log).toHaveBeenCalledTimes(1);
+            expect(loggers.log).toHaveBeenCalledTimes(1);
         })
         .catch(failTest)
         .then(done);

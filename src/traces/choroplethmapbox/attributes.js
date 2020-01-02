@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,9 +28,7 @@ module.exports = extendFlat({
     // Maybe start with only one value (that we could name e.g. 'geojson-id'),
     // but eventually:
     // - we could also support for our own dist/topojson/*
-    // - some people might want `geojson-properties-name` to map data arrays to
-    //   GeoJSON features
-    // locationmode: choroplethAttrs.locationmode,
+    //   .. and locationmode: choroplethAttrs.locationmode,
 
     z: {
         valType: 'data_array',
@@ -47,11 +45,19 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Sets the GeoJSON data associated with this trace.',
-            'Can be set as a valid GeoJSON object or as URL string',
-            'Note that we only accept GeoJSON of type *FeatureCollection* and *Feature*',
-            'with geometries of type *Polygon* and *MultiPolygon*.'
+
+            'It can be set as a valid GeoJSON object or as a URL string.',
+            'Note that we only accept GeoJSONs of type *FeatureCollection* or *Feature*',
+            'with geometries of type *Polygon* or *MultiPolygon*.'
         ].join(' ')
     },
+    featureidkey: extendFlat({}, choroplethAttrs.featureidkey, {
+        description: [
+            'Sets the key in GeoJSON features which is used as id to match the items',
+            'included in the `locations` array.',
+            'Support nested property, for example *properties.name*.'
+        ].join(' ')
+    }),
 
     // TODO agree on name / behaviour
     //

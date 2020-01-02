@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -160,8 +160,9 @@ proto.update = function(data) {
     if(data.intensity) {
         var cOpts = extractOpts(data);
         this.color = '#fff';
-        config.vertexIntensity = data.intensity;
-        config.vertexIntensityBounds = [cOpts.min, cOpts.max];
+        var mode = data.intensitymode;
+        config[mode + 'Intensity'] = data.intensity;
+        config[mode + 'IntensityBounds'] = [cOpts.min, cOpts.max];
         config.colormap = parseColorScale(data);
     } else if(data.vertexcolor) {
         this.color = data.vertexcolor[0];

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -115,21 +115,29 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-    svg.selectAll('.point, .scatterpts, .legendfill>path, .legendlines>path, .cbfill').each(function() {
-        var pt = d3.select(this);
 
-        // similar to font family styles above,
-        // we must remove " after the SVG DOM has been serialized
-        var fill = this.style.fill;
-        if(fill && fill.indexOf('url(') !== -1) {
-            pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-        }
+    if(fullLayout._gradientUrlQueryParts) {
+        var queryParts = [];
+        for(var k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
 
-        var stroke = this.style.stroke;
-        if(stroke && stroke.indexOf('url(') !== -1) {
-            pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        if(queryParts.length) {
+            svg.selectAll(queryParts.join(',')).each(function() {
+                var pt = d3.select(this);
+
+                // similar to font family styles above,
+                // we must remove " after the SVG DOM has been serialized
+                var fill = this.style.fill;
+                if(fill && fill.indexOf('url(') !== -1) {
+                    pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+                }
+
+                var stroke = this.style.stroke;
+                if(stroke && stroke.indexOf('url(') !== -1) {
+                    pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+                }
+            });
         }
-    });
+    }
 
     if(format === 'pdf' || format === 'eps') {
         // these formats make the extra line MathJax adds around symbols look super thick in some cases

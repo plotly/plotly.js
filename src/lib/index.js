@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -1184,31 +1184,48 @@ lib.isHidden = function(gd) {
     return !display || display === 'none';
 };
 
-lib.getTextTransform = function(opts) {
-    var textX = opts.textX;
-    var textY = opts.textY;
-    var targetX = opts.targetX;
-    var targetY = opts.targetY;
-    var scale = opts.scale;
-    var rotate = opts.rotate;
+/** Return transform text for bar bar-like rectangles and pie-like slices
+ *  @param {object} transform
+ *  - targetX: desired position on the x-axis
+ *  - targetY: desired position on the y-axis
+ *  - textX: width of text
+ *  - textY: height of text
+ *  - scale: (optional) scale applied after translate
+ *  - rotate: (optional) rotation applied after scale
+ *  - noCenter: when defined no extra arguments needed in rotation
+ */
+lib.getTextTransform = function(transform) {
+    var noCenter = transform.noCenter;
+    var textX = transform.textX;
+    var textY = transform.textY;
+    var targetX = transform.targetX;
+    var targetY = transform.targetY;
+    var rotate = transform.rotate;
+    var scale = transform.scale;
+    if(!scale) scale = 0;
+    else if(scale > 1) scale = 1;
 
-    var transformScale;
-    var transformRotate;
-    var transformTranslate;
+    return (
+        'translate(' +
+            (targetX - scale * textX) + ',' +
+            (targetY - scale * textY) +
+        ')' +
+        (scale < 1 ?
+            'scale(' + scale + ')' : ''
+        ) +
+        (rotate ?
+            'rotate(' + rotate +
+                (noCenter ? '' : ' ' + textX + ' ' + textY) +
+            ')' : ''
+        )
+    );
+};
 
-    if(scale < 1) transformScale = 'scale(' + scale + ') ';
-    else {
-        scale = 1;
-        transformScale = '';
-    }
-
-    transformRotate = (rotate) ?
-        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
-
-    // Note that scaling also affects the center of the text box
-    var translateX = (targetX - scale * textX);
-    var translateY = (targetY - scale * textY);
-    transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
-
-    return transformTranslate + transformScale + transformRotate;
+lib.ensureUniformFontSize = function(gd, baseFont) {
+    var out = lib.extendFlat({}, baseFont);
+    out.size = Math.max(
+        baseFont.size,
+        gd._fullLayout.uniformtext.minsize || 0
+    );
+    return out;
 };

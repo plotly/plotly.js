@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "z": [
+        [ 10, 10.625, 12.5, 15.625, 20 ],
+        [ 5.625, 6.25, 8.125, 11.25, 15.625 ],
+        [ 2.5, 3.125, 5, 8.125, 12.5 ],
+        [ 0.625, 1.25, 3.125, 6.25, 10.625 ],
+        [ 0, 0.625, 2.5, 5.625, 10 ]
+      ],
+      "x": [ -9, -6, -5, -3, -1 ],
+      "y": [ 0, 1, 4, 5, 7 ],
+      "type": "contour",
+      "contours": {
+        "coloring": "heatmap"
+      },
+      "reversescale": true,
+      "colorbar": {
+        "len": 0.5,
+        "y": 1,
+        "yanchor": "top",
+        "title": {"text": "trace colorscale", "side": "right"}
+      }
+    },
+    {
+      "z": [
+        [ 10, 10.625, 12.5, 15.625, 20 ],
+        [ 5.625, 6.25, 8.125, 11.25, 15.625 ],
+        [ 2.5, 3.125, 5, 8.125, 12.5 ],
+        [ 0.625, 1.25, 3.125, 6.25, 10.625 ],
+        [ 0, 0.625, 2.5, 5.625, 10 ]
+      ],
+      "x": [ -9, -6, -5, -3, -1 ],
+      "y": [ 0, 1, 4, 5, 7 ],
+      "type": "contour",
+      "contours": {
+        "coloring": "heatmap"
+      },
+      "coloraxis": "coloraxis",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 2, "columns": 1, "pattern": "independent"},
+    "title": {
+      "text": "Setting the X and Y Coordinates in a Contour Plot + reverse scale"
+    },
+    "coloraxis": {
+      "reversescale": true,
+      "colorbar": {
+        "len": 0.5,
+        "y": 0,
+        "yanchor": "bottom",
+        "title": {"text": "coloraxis colorscale", "side": "right"}
+      }
+    }
+  }
+}

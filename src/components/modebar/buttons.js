@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -303,7 +303,7 @@ function handleDrag3d(gd, ev) {
     var button = ev.currentTarget;
     var attr = button.getAttribute('data-attr');
     var val = button.getAttribute('data-val') || true;
-    var sceneIds = gd._fullLayout._subplots.gl3d;
+    var sceneIds = gd._fullLayout._subplots.gl3d || [];
     var layoutUpdate = {};
 
     var parts = attr.split('.');
@@ -468,7 +468,7 @@ function handleGeo(gd, ev) {
     var attr = button.getAttribute('data-attr');
     var val = button.getAttribute('data-val') || true;
     var fullLayout = gd._fullLayout;
-    var geoIds = fullLayout._subplots.geo;
+    var geoIds = fullLayout._subplots.geo || [];
 
     for(var i = 0; i < geoIds.length; i++) {
         var id = geoIds[i];
@@ -479,9 +479,11 @@ function handleGeo(gd, ev) {
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
             Registry.call('_guiRelayout', gd, id + '.projection.scale', newScale);
-        } else if(attr === 'reset') {
-            resetView(gd, 'geo');
         }
+    }
+
+    if(attr === 'reset') {
+        resetView(gd, 'geo');
     }
 }
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,9 @@ var helpers = require('../sunburst/helpers');
 
 var Lib = require('../../lib');
 var TEXTPAD = require('../bar/constants').TEXTPAD;
-var toMoveInsideBar = require('../bar/plot').toMoveInsideBar;
+var barPlot = require('../bar/plot');
+var toMoveInsideBar = barPlot.toMoveInsideBar;
+var recordMinTextSize = barPlot.recordMinTextSize;
 
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
@@ -365,6 +367,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             return {};
         }
 
+        recordMinTextSize(trace.type, transform, fullLayout);
         return {
             scale: transform.scale,
             rotate: transform.rotate,
@@ -481,14 +484,16 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
+        var transform = pt.transform;
+        recordMinTextSize(trace.type, transform, fullLayout);
         return d3.interpolate(prev, {
             transform: {
-                scale: pt.transform.scale,
-                rotate: pt.transform.rotate,
-                textX: pt.transform.textX,
-                textY: pt.transform.textY,
-                targetX: pt.transform.targetX,
-                targetY: pt.transform.targetY
+                scale: transform.scale,
+                rotate: transform.rotate,
+                textX: transform.textX,
+                textY: transform.textY,
+                targetX: transform.targetX,
+                targetY: transform.targetY
             }
         });
     };
@@ -518,13 +523,16 @@ function plotOne(gd, cd, element, transitionOpts) {
     };
 
     var strTransform = function(d) {
+        var transform = d.transform;
+        recordMinTextSize(trace.type, transform, fullLayout);
+
         return Lib.getTextTransform({
-            textX: d.transform.textX,
-            textY: d.transform.textY,
-            targetX: d.transform.targetX,
-            targetY: d.transform.targetY,
-            scale: d.transform.scale,
-            rotate: d.transform.rotate
+            textX: transform.textX,
+            textY: transform.textY,
+            targetX: transform.targetX,
+            targetY: transform.targetY,
+            scale: transform.scale,
+            rotate: transform.rotate
         });
     };
 

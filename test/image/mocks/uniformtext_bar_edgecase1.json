@@ -1,0 +1,42 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "orientation": "h",
+            "x": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "y": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "text": [
+                "9",
+                "iiiii",
+                "i",
+                "d",
+                "50"
+            ],
+            "textposition": "auto",
+            "textangle": 0
+        }
+    ],
+    "layout": {
+        "height": 300,
+        "width": 500,
+        "font": {
+            "size": 24
+        },
+        "uniformtext": {
+            "minsize": 9,
+            "mode": "hide"
+        }
+    }
+}

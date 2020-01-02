@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -70,6 +70,7 @@ function sync(geo, projection, cb) {
 
     cb(set);
     set('projection.scale', projection.scale() / geo.fitScale);
+    set('fitbounds', false);
     gd.emit('plotly_relayout', eventData);
 }
 
@@ -179,7 +180,6 @@ function zoomNonClipped(geo, projection) {
             'geo.center.lon': center[0],
             'geo.center.lat': center[1],
             'geo.projection.rotation.lon': -rotate[0]
-
         });
     }
 
