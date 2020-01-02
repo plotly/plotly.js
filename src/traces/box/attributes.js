@@ -94,7 +94,7 @@ module.exports = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the Quartile 1 values,',
+            'Sets the Quartile 1 values.',
             'There should be as many items as the number of boxes desired.',
         ].join(' ')
     },
@@ -112,7 +112,7 @@ module.exports = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the Quartile 3 values,',
+            'Sets the Quartile 3 values.',
             'There should be as many items as the number of boxes desired.',
         ].join(' ')
     },
@@ -121,7 +121,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the lower fence values,',
+            'Sets the lower fence values.',
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `lowerfence` is not provided but a sample (in `y` or `x`) is set,',
@@ -133,7 +133,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the upper fence values,',
+            'Sets the upper fence values.',
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `upperfence` is not provided but a sample (in `y` or `x`) is set,',
@@ -173,7 +173,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the notch span from the boxes\' `median` values,',
+            'Sets the notch span from the boxes\' `median` values.',
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `notchspan` is not provided but a sample (in `y` or `x`) is set,',
@@ -201,7 +201,7 @@ module.exports = {
             'If *all*, all sample points are shown',
             'If *false*, only the box(es) are shown with no sample points',
             'Defaults to *suspectedoutliers* when `marker.outliercolor` or',
-            '`marker.line.outliercolor` is set.,',
+            '`marker.line.outliercolor` is set.',
             'Defaults to *all* under the q1/median/q3 signature.',
             'Otherwise defaults to *outliers*.',
         ].join(' ')
@@ -242,7 +242,7 @@ module.exports = {
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
             'If *sd* the standard deviation is also drawn.',
-            'Defaults to *true* when `mean` is set',
+            'Defaults to *true* when `mean` is set.',
             'Defaults to *sd* when `sd` is set',
             'Otherwise defaults to *false*.'
         ].join(' ')
@@ -252,7 +252,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the mean values,',
+            'Sets the mean values.',
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `mean` is not provided but a sample (in `y` or `x`) is set,',
@@ -264,7 +264,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the standard deviation values,',
+            'Sets the standard deviation values.',
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `sd` is not provided but a sample (in `y` or `x`) is set,',
@@ -294,10 +294,10 @@ module.exports = {
             'Sets the method used to compute the sample\'s Q1 and Q3 quartiles.',
 
             'The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3',
-            'as computed using method #10 listed on http://www.amstat.org/publications/jse/v14n3/langford.html).',
+            'as computed using method #10 (listed on http://www.amstat.org/publications/jse/v14n3/langford.html).',
 
             'The *exclusive* method uses the median to divide the ordered dataset into two halves',
-            'if the sample is odd, it does not includes the median in either half -',
+            'if the sample is odd, it does not include the median in either half -',
             'Q1 is then the median of the lower half and',
             'Q3 the median of the upper half.',
 

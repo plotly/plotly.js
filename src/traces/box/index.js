@@ -35,14 +35,14 @@ module.exports = {
             'by default they span +/- 1.5 times the interquartile range (IQR: Q3-Q1),',
             'The sample mean and standard deviation as well as notches and',
             'the sample, outlier and suspected outliers points can be optionally',
-            'added to the box plot',
+            'added to the box plot.',
 
             'The values and positions corresponding to each boxes can be input',
             'using two signatures.',
 
             'The first signature expects users to supply the sample values in the `y`',
             'data array for vertical boxes (`x` for horizontal boxes).',
-            'By supplying an `x` (`y`) array, one box per distinct x (y) value is drawn',
+            'By supplying an `x` (`y`) array, one box per distinct `x` (`y`) value is drawn',
             'If no `x` (`y`) {array} is provided, a single box is drawn.',
             'In this case, the box is positioned with the trace `name` or with `x0` (`y0`) if provided.',
 
