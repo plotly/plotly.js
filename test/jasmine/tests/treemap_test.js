@@ -1042,11 +1042,16 @@ describe('Test treemap clicks:', function() {
             if(trackers.treemapclick.length === 1) {
                 expect(trackers.treemapclick[0].event).toBeDefined();
                 expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
+                expect(trackers.treemapclick[0].nextLevel).toBe('Seth');
             } else {
                 fail('incorrect plotly_treemapclick triggering');
             }
 
-            if(trackers.click.length) {
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined();
+                expect(trackers.click[0].points[0].label).toBe('Seth');
+                expect(trackers.click[0].nextLevel).not.toBeDefined();
+            } else {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -1084,16 +1089,6 @@ describe('Test treemap clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        // should be same before and after 2nd click
-        function _assertCommon(msg) {
-            if(trackers.click.length) {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        }
-
         Plotly.plot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
@@ -1103,27 +1098,50 @@ describe('Test treemap clicks:', function() {
             if(trackers.treemapclick.length === 1) {
                 expect(trackers.treemapclick[0].event).toBeDefined(msg);
                 expect(trackers.treemapclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.treemapclick[0].nextLevel).toBe('Seth', msg);
             } else {
                 fail('incorrect plotly_treemapclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .then(click(gd, 4))
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_treemapclick twice, but not additional
-            // plotly_click nor plotly_animating
+            // should trigger plotly_treemapclick and plotly_click twice,
+            // but not plotly_animating
 
             if(trackers.treemapclick.length === 2) {
                 expect(trackers.treemapclick[0].event).toBeDefined(msg);
                 expect(trackers.treemapclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.treemapclick[0].nextLevel).toBe('Awan', msg);
             } else {
                 fail('incorrect plotly_treemapclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 2) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .catch(failTest)
         .then(done);
@@ -1143,10 +1161,7 @@ describe('Test treemap clicks:', function() {
                 fail('incorrect plotly_treemapclick triggering');
             }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-            } else {
+            if(trackers.click.length !== 0) {
                 fail('incorrect plotly_click triggering');
             }
 
