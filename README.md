@@ -184,7 +184,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ## Copyright and license
 
-Code and documentation copyright 2019 Plotly, Inc.
+Code and documentation copyright 2020 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 
