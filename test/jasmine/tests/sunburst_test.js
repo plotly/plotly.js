@@ -811,11 +811,16 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined();
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth');
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth');
             } else {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length) {
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined();
+                expect(trackers.click[0].points[0].label).toBe('Seth');
+                expect(trackers.click[0].nextLevel).not.toBeDefined();
+            } else {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -888,16 +893,6 @@ describe('Test sunburst clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        // should be same before and after 2nd click
-        function _assertCommon(msg) {
-            if(trackers.click.length) {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        }
-
         Plotly.plot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
@@ -907,27 +902,49 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .then(click(gd, 4))
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_sunburstclick twice, but not additional
-            // plotly_click nor plotly_animating
+            // should trigger plotly_sunburstclick and plotly_click twice,
+            // but not plotly_animating
 
             if(trackers.sunburstclick.length === 2) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Awan', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 2) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .catch(failTest)
         .then(done);
@@ -947,10 +964,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-            } else {
+            if(trackers.click.length !== 0) {
                 fail('incorrect plotly_click triggering');
             }
 
