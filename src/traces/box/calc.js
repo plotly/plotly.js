@@ -178,7 +178,6 @@ module.exports = function calc(gd, trace) {
         );
     } else {
         var valArray = valAxis.makeCalcdata(trace, valLetter);
-        var quartilemethod = trace.quartilemethod;
         var posBins = makeBins(posDistinct, dPos);
         var pLen = posDistinct.length;
         var ptsPerBin = initNestedArray(pLen);
@@ -199,6 +198,10 @@ module.exports = function calc(gd, trace) {
         var minLowerNotch = Infinity;
         var maxUpperNotch = -Infinity;
 
+        var quartilemethod = trace.quartilemethod;
+        var usesExclusive = quartilemethod === 'exclusive';
+        var usesInclusive = quartilemethod === 'inclusive';
+
         // build calcdata trace items, one item per distinct position
         for(i = 0; i < pLen; i++) {
             if(ptsPerBin[i].length > 0) {
@@ -215,15 +218,15 @@ module.exports = function calc(gd, trace) {
                 cdi.sd = Lib.stdev(boxVals, N, cdi.mean);
                 cdi.med = Lib.interp(boxVals, 0.5);
 
-                if((N % 2) && (quartilemethod === 'exclusive' || quartilemethod === 'inclusive')) {
+                if((N % 2) && (usesExclusive || usesInclusive)) {
                     var lower;
                     var upper;
 
-                    if(quartilemethod === 'exclusive') {
+                    if(usesExclusive) {
                         // do NOT include the median in either half
                         lower = boxVals.slice(0, N / 2);
                         upper = boxVals.slice(N / 2 + 1);
-                    } else if(quartilemethod === 'inclusive') {
+                    } else if(usesInclusive) {
                         // include the median in either half
                         lower = boxVals.slice(0, N / 2 + 1);
                         upper = boxVals.slice(N / 2);
