@@ -7,7 +7,8 @@ var intoStream = require('into-stream');
 var constants = require('./constants');
 
 var prefix = 'var locale=';
-var suffix = ';if(typeof Plotly === \'undefined\') {window.PlotlyLocales = window.PlotlyLocales || []; window.PlotlyLocales.push(locale);} else {Plotly.register(locale);}';
+var suffix = ';window.PlotlyConfig = window.PlotlyConfig || {};';
+suffix += 'if(typeof Plotly === \'undefined\') {window.PlotlyConfig.locales = window.PlotlyConfig.locales || []; window.PlotlyConfig.locales.push(locale);} else {Plotly.register(locale);}';
 
 var moduleMarker = 'module.exports = ';
 
