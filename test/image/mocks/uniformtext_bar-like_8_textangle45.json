@@ -130,7 +130,6 @@
             "type": "waterfall",
             "textinfo": "text",
             "textposition": "inside",
-            "insidetextanchor": "middle",
             "textangle": -45,
             "xaxis": "x4",
             "yaxis": "y4"

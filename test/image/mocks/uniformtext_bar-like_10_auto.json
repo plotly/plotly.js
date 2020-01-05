@@ -124,7 +124,6 @@
             "type": "waterfall",
             "textinfo": "text",
             "textposition": "inside",
-            "insidetextanchor": "middle",
             "xaxis": "x4",
             "yaxis": "y4"
         }

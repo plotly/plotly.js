@@ -457,25 +457,16 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     lx -= 2 * textpad;
     ly -= 2 * textpad;
 
-    var autoRotate = (angle === 'auto');
-    var isAutoRotated = false;
-    if(autoRotate &&
+    var rotate = getRotateFromAngle(angle);
+    if((angle === 'auto') &&
         !(textWidth <= lx && textHeight <= ly) &&
         (textWidth > lx || textHeight > ly) && (
         !(textWidth > ly || textHeight > lx) ||
         ((textWidth < textHeight) !== (lx < ly))
     )) {
-        isAutoRotated = true;
+        rotate += 90;
     }
 
-    if(isAutoRotated) {
-        // don't rotate yet only swap bar width with height
-        var tmp = ly;
-        ly = lx;
-        lx = tmp;
-    }
-
-    var rotate = getRotateFromAngle(angle);
     var t = getRotatedTextSize(textBB, rotate);
 
     var scale = 1;
@@ -488,31 +479,42 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     }
 
     // compute text and target positions
-    var targetX = (x0 + x1) / 2;
-    var targetY = (y0 + y1) / 2;
-    if(isStart || isEnd) {
-        textpad += 0.5 * scale * (isHorizontal !== isAutoRotated ? t.x : t.y);
-
-        if(isHorizontal) {
-            textpad *= dirSign(x0, x1);
-            targetX = isStart ? x0 + textpad : x1 - textpad;
-        } else {
-            textpad *= dirSign(y0, y1);
-            targetY = isStart ? y0 + textpad : y1 - textpad;
-        }
-    }
-
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
+    var anchorX = 0;
+    var anchorY = 0;
+    if(isStart || isEnd) {
+        var extrapad = (isHorizontal ? t.x : t.y) / 2;
+        var dir = isHorizontal ? dirSign(x0, x1) : dirSign(y0, y1);
 
-    // lastly apply auto rotation
-    if(isAutoRotated) rotate += 90;
+        if(isHorizontal) {
+            if(isStart) {
+                targetX = x0 + dir * textpad;
+                anchorX = -dir * extrapad;
+            } else {
+                targetX = x1 - dir * textpad;
+                anchorX = dir * extrapad;
+            }
+        } else {
+            if(isStart) {
+                targetY = y0 + dir * textpad;
+                anchorY = -dir * extrapad;
+            } else {
+                targetY = y1 - dir * textpad;
+                anchorY = dir * extrapad;
+            }
+        }
+    }
 
     return {
         textX: textX,
         textY: textY,
         targetX: targetX,
         targetY: targetY,
+        anchorX: anchorX,
+        anchorY: anchorY,
         scale: scale,
         rotate: rotate
     };
@@ -549,24 +551,30 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var t = getRotatedTextSize(textBB, rotate);
 
     // compute text and target positions
-    textpad += 0.5 * scale * (isHorizontal ? t.x : t.y);
-    var targetX = (x0 + x1) / 2;
-    var targetY = (y0 + y1) / 2;
-
-    if(isHorizontal) {
-        targetX = x1 - textpad * dirSign(x1, x0);
-    } else {
-        targetY = y1 + textpad * dirSign(y0, y1);
-    }
-
+    var extrapad = (isHorizontal ? t.x : t.y) / 2;
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
+    var anchorX = 0;
+    var anchorY = 0;
+
+    var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+    if(isHorizontal) {
+        targetX = x1 - dir * textpad;
+        anchorX = dir * extrapad;
+    } else {
+        targetY = y1 + dir * textpad;
+        anchorY = -dir * extrapad;
+    }
 
     return {
         textX: textX,
         textY: textY,
         targetX: targetX,
         targetY: targetY,
+        anchorX: anchorX,
+        anchorY: anchorY,
         scale: scale,
         rotate: rotate
     };

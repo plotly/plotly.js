@@ -368,8 +368,10 @@ function plotOne(gd, cd, element, transitionOpts) {
             else if(offsetDir === 'right') transform.targetX += deltaX;
         }
 
-        transform.targetX = viewMapX(transform.targetX);
-        transform.targetY = viewMapY(transform.targetY);
+        transform.targetX = viewMapX(transform.targetX - transform.anchorX * transform.scale);
+        transform.targetY = viewMapY(transform.targetY - transform.anchorY * transform.scale);
+        transform.anchorX = 0;
+        transform.anchorY = 0;
 
         if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
             return {};
