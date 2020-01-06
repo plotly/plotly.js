@@ -97,7 +97,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     }
 
     updateSlices.each(function(pt) {
-        pt._hoverX = viewX(pt.x1 - height / 2);
+        pt._hoverX = viewX(pt.x1 - Math.min(width, height) / 2);
         pt._hoverY = viewY(pt.y1 - height / 2);
 
         var sliceTop = d3.select(this);
@@ -141,7 +141,9 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
             s.attr('data-notex', 1);
         });
 
-        var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font, trace.pathdir));
+        var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font, {
+            onPathbar: true
+        }));
 
         sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
@@ -151,21 +153,10 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         pt.textBB = Drawing.bBox(sliceText.node());
         pt.transform = toMoveInsideSlice(pt, {
+            fontSize: font.size,
             onPathbar: true
         });
-
         pt.transform.fontSize = font.size;
-
-        if(helpers.isOutsideText(trace, pt)) {
-            // consider in/out diff font sizes
-            var outsideFont = helpers.getOutsideTextFontKey('size', trace, pt, fullLayout.font);
-            var insideFont = helpers.getInsideTextFontKey('size', trace, pt, fullLayout.font);
-
-            var diffFontSize = outsideFont - insideFont;
-
-            pt.transform.targetY -= diffFontSize;
-            pt.transform.fontSize -= diffFontSize;
-        }
 
         if(hasTransition) {
             sliceText.transition().attrTween('transform', function(pt2) {

@@ -14,12 +14,14 @@ var d3Hierarchy = require('d3-hierarchy');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var recordMinTextSize = require('../bar/plot').recordMinTextSize;
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
 var piePlot = require('../pie/plot');
 var computeTransform = piePlot.computeTransform;
 var transformInsideText = piePlot.transformInsideText;
 var styleOne = require('./style').styleOne;
-
+var resizeText = require('../bar/style').resizeText;
 var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
@@ -32,7 +34,9 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
+
+    clearMinTextSize('sunburst', fullLayout);
 
     join = layer.selectAll('g.trace.sunburst')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
@@ -70,6 +74,10 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
         join.each(function(cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
+
+        if(fullLayout.uniformtext.mode) {
+            resizeText(gd, fullLayout._sunburstlayer.selectAll('.trace'), 'sunburst');
+        }
     }
 
     if(isFullReplot) {
@@ -79,7 +87,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
 function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     var gTrace = d3.select(element);
     var slices = gTrace.selectAll('g.slice');

@@ -16,7 +16,9 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var recordMinTextSize = require('../bar/plot').recordMinTextSize;
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
 
 var helpers = require('./helpers');
 var eventData = require('./event_data');
@@ -25,6 +27,8 @@ var isValidTextValue = require('../../lib').isValidTextValue;
 function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
+
+    clearMinTextSize('pie', fullLayout);
 
     prerenderTitles(cdModule, gd);
     layoutAreas(cdModule, gs);

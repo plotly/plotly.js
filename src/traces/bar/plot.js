@@ -19,6 +19,10 @@ var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 var tickText = require('../../plots/cartesian/axes').tickText;
 
+var uniformText = require('./uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
+
 var style = require('./style');
 var helpers = require('./helpers');
 var constants = require('./constants');
@@ -58,8 +62,8 @@ function getXY(di, xa, ya, isHorizontal) {
     return isHorizontal ? [s, p] : [p, s];
 }
 
-function transition(selection, opts, makeOnCompleteCallback) {
-    if(hasTransition(opts)) {
+function transition(selection, fullLayout, opts, makeOnCompleteCallback) {
+    if(!fullLayout.uniformtext.mode && hasTransition(opts)) {
         var onComplete;
         if(makeOnCompleteCallback) {
             onComplete = makeOnCompleteCallback();
@@ -91,6 +95,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             gap: fullLayout.bargap,
             groupgap: fullLayout.bargroupgap
         };
+
+        // don't clear bar when this is called from waterfall or funnel
+        clearMinTextSize('bar', fullLayout);
     }
 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
@@ -209,13 +216,13 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 y1 = fixpx(y1, y0);
             }
 
-            var sel = transition(Lib.ensureSingle(bar, 'path'), opts, makeOnCompleteCallback);
+            var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
             sel
                 .style('vector-effect', 'non-scaling-stroke')
                 .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            if(hasTransition(opts)) {
+            if(!fullLayout.uniformtext.mode && hasTransition(opts)) {
                 var styleFns = Drawing.makePointStyleFns(trace);
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
@@ -409,47 +416,39 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     recordMinTextSize(trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
-    transition(textSelection, opts, makeOnCompleteCallback)
+    transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
         .attr('transform', Lib.getTextTransform(transform));
-}
-
-function recordMinTextSize(
-    traceType, // in
-    transform, // inout
-    fullLayout // inout
-) {
-    if(fullLayout.uniformtext.mode) {
-        var minKey = '_' + traceType + 'Text_minsize';
-        var minSize = fullLayout.uniformtext.minsize;
-        var size = transform.scale * transform.fontSize;
-
-        transform.hide = size < minSize;
-
-        fullLayout[minKey] = fullLayout[minKey] || Infinity;
-        if(!transform.hide) {
-            fullLayout[minKey] = Math.min(
-                fullLayout[minKey],
-                Math.max(size, minSize)
-            );
-        }
-    }
 }
 
 function getRotateFromAngle(angle) {
     return (angle === 'auto') ? 0 : angle;
 }
 
+function getRotatedTextSize(textBB, rotate) {
+    var a = Math.PI / 180 * rotate;
+    var absSin = Math.abs(Math.sin(a));
+    var absCos = Math.abs(Math.cos(a));
+
+    return {
+        x: textBB.width * absCos + textBB.height * absSin,
+        y: textBB.width * absSin + textBB.height * absCos
+    };
+}
+
 function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
-    var anchor = opts.anchor || 0;
+    var anchor = opts.anchor || 'end';
+    var isEnd = anchor === 'end';
+    var isStart = anchor === 'start';
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
     var lx = Math.abs(x1 - x0);
     var ly = Math.abs(y1 - y0);
 
+    // compute remaining space
     var textpad = (
         lx > (2 * TEXTPAD) &&
         ly > (2 * TEXTPAD)
@@ -458,67 +457,64 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     lx -= 2 * textpad;
     ly -= 2 * textpad;
 
-    var autoRotate = (angle === 'auto');
-    var isAutoRotated = false;
-    if(autoRotate &&
+    var rotate = getRotateFromAngle(angle);
+    if((angle === 'auto') &&
         !(textWidth <= lx && textHeight <= ly) &&
         (textWidth > lx || textHeight > ly) && (
         !(textWidth > ly || textHeight > lx) ||
         ((textWidth < textHeight) !== (lx < ly))
     )) {
-        isAutoRotated = true;
+        rotate += 90;
     }
 
-    if(isAutoRotated) {
-        // don't rotate yet only swap bar width with height
-        var tmp = ly;
-        ly = lx;
-        lx = tmp;
+    var t = getRotatedTextSize(textBB, rotate);
+
+    var scale = 1;
+    if(constrained) {
+        scale = Math.min(
+            1,
+            lx / t.x,
+            ly / t.y
+        );
     }
-
-    var rotate = getRotateFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
-
-    // compute and apply text padding
-    var dx = Math.max(lx * absCos, ly * absSin);
-    var dy = Math.max(lx * absSin, ly * absCos);
-
-    var scale = (constrained) ?
-        Math.min(dx / textWidth, dy / textHeight) :
-        Math.max(absCos, absSin);
-
-    scale = Math.min(1, scale);
 
     // compute text and target positions
-    var targetX = (x0 + x1) / 2;
-    var targetY = (y0 + y1) / 2;
-
-    if(anchor !== 'middle') { // case of 'start' or 'end'
-        var targetWidth = scale * (isHorizontal !== isAutoRotated ? textHeight : textWidth);
-        var targetHeight = scale * (isHorizontal !== isAutoRotated ? textWidth : textHeight);
-        textpad += 0.5 * (targetWidth * absSin + targetHeight * absCos);
-
-        if(isHorizontal) {
-            textpad *= dirSign(x0, x1);
-            targetX = (anchor === 'start') ? x0 + textpad : x1 - textpad;
-        } else {
-            textpad *= dirSign(y0, y1);
-            targetY = (anchor === 'start') ? y0 + textpad : y1 - textpad;
-        }
-    }
-
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
+    var anchorX = 0;
+    var anchorY = 0;
+    if(isStart || isEnd) {
+        var extrapad = (isHorizontal ? t.x : t.y) / 2;
+        var dir = isHorizontal ? dirSign(x0, x1) : dirSign(y0, y1);
 
-    // lastly apply auto rotation
-    if(isAutoRotated) rotate += 90;
+        if(isHorizontal) {
+            if(isStart) {
+                targetX = x0 + dir * textpad;
+                anchorX = -dir * extrapad;
+            } else {
+                targetX = x1 - dir * textpad;
+                anchorX = dir * extrapad;
+            }
+        } else {
+            if(isStart) {
+                targetY = y0 + dir * textpad;
+                anchorY = -dir * extrapad;
+            } else {
+                targetY = y1 - dir * textpad;
+                anchorY = dir * extrapad;
+            }
+        }
+    }
 
     return {
         textX: textX,
         textY: textY,
         targetX: targetX,
         targetY: targetY,
+        anchorX: anchorX,
+        anchorY: anchorY,
         scale: scale,
         rotate: rotate
     };
@@ -552,31 +548,33 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     }
 
     var rotate = getRotateFromAngle(angle);
-    var absSin = Math.abs(Math.sin(Math.PI / 180 * rotate));
-    var absCos = Math.abs(Math.cos(Math.PI / 180 * rotate));
+    var t = getRotatedTextSize(textBB, rotate);
 
     // compute text and target positions
-    var targetWidth = scale * (isHorizontal ? textHeight : textWidth);
-    var targetHeight = scale * (isHorizontal ? textWidth : textHeight);
-    textpad += 0.5 * (targetWidth * absSin + targetHeight * absCos);
-
-    var targetX = (x0 + x1) / 2;
-    var targetY = (y0 + y1) / 2;
-
-    if(isHorizontal) {
-        targetX = x1 - textpad * dirSign(x1, x0);
-    } else {
-        targetY = y1 + textpad * dirSign(y0, y1);
-    }
-
+    var extrapad = (isHorizontal ? t.x : t.y) / 2;
     var textX = (textBB.left + textBB.right) / 2;
     var textY = (textBB.top + textBB.bottom) / 2;
+    var targetX = (x0 + x1) / 2;
+    var targetY = (y0 + y1) / 2;
+    var anchorX = 0;
+    var anchorY = 0;
+
+    var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+    if(isHorizontal) {
+        targetX = x1 - dir * textpad;
+        anchorX = dir * extrapad;
+    } else {
+        targetY = y1 + dir * textpad;
+        anchorY = -dir * extrapad;
+    }
 
     return {
         textX: textX,
         textY: textY,
         targetX: targetX,
         targetY: targetY,
+        anchorX: anchorX,
+        anchorY: anchorY,
         scale: scale,
         rotate: rotate
     };
@@ -749,6 +747,5 @@ function calcTextinfo(cd, index, xa, ya) {
 
 module.exports = {
     plot: plot,
-    toMoveInsideBar: toMoveInsideBar,
-    recordMinTextSize: recordMinTextSize
+    toMoveInsideBar: toMoveInsideBar
 };

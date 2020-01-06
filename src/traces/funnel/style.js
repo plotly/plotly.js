@@ -14,7 +14,7 @@ var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 var barStyle = require('../bar/style');
-var resizeText = barStyle.resizeText;
+var resizeText = require('../bar/uniform_text').resizeText;
 var styleTextPoints = barStyle.styleTextPoints;
 
 function style(gd, cd, sel) {

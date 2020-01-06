@@ -1802,7 +1802,7 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 9', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
@@ -1810,15 +1810,15 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using minsize: 32', {
             fontsizes: [32, 32, 32, 32, 32, 32, 32, 32],
-            scales: [0, 0.26, 0, 0, 0, 0, 0, 0],
+            scales: [0, 1, 0, 0, 0, 0, 0, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
             return Plotly.react(gd, fig);
         })
-        .then(assertTextSizes('using minsize: 13', {
+        .then(assertTextSizes('using minsize: 16', {
             fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
-            scales: [0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0],
         }))
         .then(function() {
             fig.layout.uniformtext.mode = 'show';
@@ -1826,7 +1826,15 @@ describe('funnelarea uniformtext', function() {
         })
         .then(assertTextSizes('using mode: "show"', {
             fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
-            scales: [0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64, 0.64],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.69],
         }))
         .catch(failTest)
         .then(done);

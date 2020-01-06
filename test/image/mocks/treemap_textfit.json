@@ -6,6 +6,11 @@
                 "packing": "squarify",
                 "pad": 2
             },
+            "pathbar": {
+                "textfont": {
+                    "size": 12
+                }
+            },
             "textfont": {
                 "size": 256
             },

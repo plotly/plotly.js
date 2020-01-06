@@ -1188,8 +1188,10 @@ lib.isHidden = function(gd) {
  *  @param {object} transform
  *  - targetX: desired position on the x-axis
  *  - targetY: desired position on the y-axis
- *  - textX: width of text
- *  - textY: height of text
+ *  - textX: text middle position on the x-axis
+ *  - textY: text middle position on the y-axis
+ *  - anchorX: (optional) text anchor position on the x-axis (computed from textX), zero for middle anchor
+ *  - anchorY: (optional) text anchor position on the y-axis (computed from textY), zero for middle anchor
  *  - scale: (optional) scale applied after translate
  *  - rotate: (optional) rotation applied after scale
  *  - noCenter: when defined no extra arguments needed in rotation
@@ -1200,6 +1202,8 @@ lib.getTextTransform = function(transform) {
     var textY = transform.textY;
     var targetX = transform.targetX;
     var targetY = transform.targetY;
+    var anchorX = transform.anchorX || 0;
+    var anchorY = transform.anchorY || 0;
     var rotate = transform.rotate;
     var scale = transform.scale;
     if(!scale) scale = 0;
@@ -1207,8 +1211,8 @@ lib.getTextTransform = function(transform) {
 
     return (
         'translate(' +
-            (targetX - scale * textX) + ',' +
-            (targetY - scale * textY) +
+            (targetX - scale * (textX + anchorX)) + ',' +
+            (targetY - scale * (textY + anchorY)) +
         ')' +
         (scale < 1 ?
             'scale(' + scale + ')' : ''

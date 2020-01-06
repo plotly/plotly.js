@@ -12,7 +12,7 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
 var helpers = require('../sunburst/helpers');
-var resizeText = require('../bar/style').resizeText;
+var resizeText = require('../bar/uniform_text').resizeText;
 
 function style(gd) {
     var s = gd._fullLayout._treemaplayer.selectAll('.trace');

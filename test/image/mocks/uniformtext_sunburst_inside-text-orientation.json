@@ -91,7 +91,7 @@
                     "azure"
                 ]
             },
-            "textinfo": "label+value",
+            "textinfo": "label",
             "domain": {
                 "x": [
                     0.5,
@@ -165,7 +165,7 @@
                 "Yankee",
                 "Zulu"
             ],
-            "textinfo": "label+value",
+            "textinfo": "label",
             "domain": {
                 "x": [
                     0.5,
@@ -239,7 +239,7 @@
                 "Yankee",
                 "Zulu"
             ],
-            "textinfo": "label+value",
+            "textinfo": "label",
             "domain": {
                 "x": [
                     0,
@@ -313,7 +313,7 @@
                 "Yankee",
                 "Zulu"
             ],
-            "textinfo": "label+value",
+            "textinfo": "label",
             "domain": {
                 "x": [
                     0,

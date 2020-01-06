@@ -251,7 +251,7 @@ describe('Test treemap defaults:', function() {
         ]);
 
         expect(fullData[0].pathbar.textfont.family).toBe('"Open Sans", verdana, arial, sans-serif');
-        expect(fullData[0].pathbar.textfont.color).toBe('#444');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(12);
         expect(fullData[0].pathbar.thickness).toBe(18);
         expect(fullData[0].pathbar.side).toBe('top');
@@ -266,7 +266,7 @@ describe('Test treemap defaults:', function() {
         });
 
         expect(fullData[0].pathbar.textfont.family).toBe('Times New Romans');
-        expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(24);
         expect(fullData[0].pathbar.thickness).toBe(30);
     });
@@ -1810,6 +1810,80 @@ describe('treemap uniformtext', function() {
         .then(assertTextSizes('using mode: "show"', {
             fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should uniform text scales after transition', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'treemap',
+                tiling: { packing: 'dice'},
+                pathbar: { visible: false },
+                parents: [
+                    '',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform'
+                ],
+                labels: [
+                    'Oscar',
+                    'Papa',
+                    'Quebec',
+                    'Romeo and Juliet',
+                    'Sierra',
+                    'Tango',
+                    'Uniform',
+                    'ViKtor Korchnoi - Anatoly Karpov',
+                    'Whiskey',
+                    'X ray',
+                    'Yankee',
+                    'Zulu'
+                ],
+                textinfo: 'label'
+            }],
+            layout: {
+                width: 850,
+                height: 350,
+                uniformtext: {
+                    mode: 'hide',
+                    minsize: 12
+                }
+            }
+        })
+        .then(assertTextSizes('before click', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 2)) // click on Uniform
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click child', {
+            fontsizes: [12, 12, 12, 12, 12, 12],
+            scales: [1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 1)) // click on Oscar
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click parent', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
         .catch(failTest)
         .then(done);
