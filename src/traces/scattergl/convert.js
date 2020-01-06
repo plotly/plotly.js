@@ -59,7 +59,7 @@ function convertStyle(gd, trace) {
         opts.markerSel = convertMarkerSelection(trace, trace.selected);
         opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
 
-        if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
+        if(!trace.unselected && Lib.isArrayOrTypedArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
             opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
@@ -187,15 +187,18 @@ function convertTextStyle(gd, trace) {
         optsOut.color = tfc;
     }
 
-    if(Array.isArray(tfs) || Array.isArray(tff)) {
+    if(Lib.isArrayOrTypedArray(tfs) || Array.isArray(tff)) {
         // if any textfont param is array - make render a batch
         optsOut.font = new Array(count);
         for(i = 0; i < count; i++) {
             var fonti = optsOut.font[i] = {};
 
-            fonti.size = Array.isArray(tfs) ?
-                (isNumeric(tfs[i]) ? tfs[i] : 0) :
-                tfs;
+            fonti.size = (
+                Lib.isTypedArray(tfs) ? tfs[i] :
+                Array.isArray(tfs) ? (
+                    isNumeric(tfs[i]) ? tfs[i] : 0
+                ) : tfs
+            );
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
         }
@@ -214,7 +217,7 @@ function convertMarkerStyle(trace) {
     var optsOut = {};
     var i;
 
-    var multiSymbol = Array.isArray(optsIn.symbol);
+    var multiSymbol = Lib.isArrayOrTypedArray(optsIn.symbol);
     var multiColor = Lib.isArrayOrTypedArray(optsIn.color);
     var multiLineColor = Lib.isArrayOrTypedArray(optsIn.line.color);
     var multiOpacity = Lib.isArrayOrTypedArray(optsIn.opacity);
