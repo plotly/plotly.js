@@ -33,7 +33,7 @@ loggers.log = function() {
         apply(console.trace || console.log, messages);
     }
 
-    if(dfltConfig.onGraphLogging > 1) {
+    if(dfltConfig.notifyOnLogging > 1) {
         var lines = [];
         for(i = 0; i < arguments.length; i++) {
             lines.push(arguments[i]);
@@ -53,7 +53,7 @@ loggers.warn = function() {
         apply(console.trace || console.log, messages);
     }
 
-    if(dfltConfig.onGraphLogging > 0) {
+    if(dfltConfig.notifyOnLogging > 0) {
         var lines = [];
         for(i = 0; i < arguments.length; i++) {
             lines.push(arguments[i]);
@@ -73,7 +73,7 @@ loggers.error = function() {
         apply(console.error, messages);
     }
 
-    if(dfltConfig.onGraphLogging > 0) {
+    if(dfltConfig.notifyOnLogging > 0) {
         var lines = [];
         for(i = 0; i < arguments.length; i++) {
             lines.push(arguments[i]);

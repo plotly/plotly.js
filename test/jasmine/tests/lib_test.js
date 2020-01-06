@@ -1704,13 +1704,13 @@ describe('Test lib.js:', function() {
         beforeEach(function() {
             stashConsole = window.console;
             stashLogLevel = config.logging;
-            stashOnGraphLogLevel = config.onGraphLogging;
+            stashOnGraphLogLevel = config.notifyOnLogging;
         });
 
         afterEach(function() {
             window.console = stashConsole;
             config.logging = stashLogLevel;
-            config.onGraphLogging = stashOnGraphLogLevel;
+            config.notifyOnLogging = stashOnGraphLogLevel;
         });
 
         it('emits one console message if apply is available', function() {
@@ -1811,7 +1811,7 @@ describe('Test lib.js:', function() {
             ]);
         });
 
-        describe('should log message in notifier div in accordance onGraphLogging config option', function() {
+        describe('should log message in notifier div in accordance notifyOnLogging config option', function() {
             var query = '.notifier-note';
 
             beforeEach(function(done) {
@@ -1840,17 +1840,17 @@ describe('Test lib.js:', function() {
             }
 
             it('with level 2', function() {
-                config.onGraphLogging = 2;
+                config.notifyOnLogging = 2;
                 _run(['log', 'warn', 'error!']);
             });
 
             it('with level 1', function() {
-                config.onGraphLogging = 1;
+                config.notifyOnLogging = 1;
                 _run(['warn', 'error!']);
             });
 
             it('with level 0', function() {
-                config.onGraphLogging = 0;
+                config.notifyOnLogging = 0;
                 _run([]);
             });
         });

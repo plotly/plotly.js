@@ -390,7 +390,7 @@ var configAttributes = {
         ].join(' ')
     },
 
-    onGraphLogging: {
+    notifyOnLogging: {
         valType: 'integer',
         min: 0,
         max: 2,
