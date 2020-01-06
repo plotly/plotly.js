@@ -21,6 +21,7 @@ var formatColor = require('../../lib/gl_format_color').formatColor;
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
+var helpers = require('./helpers');
 var constants = require('./constants');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
@@ -225,7 +226,7 @@ function convertMarkerStyle(trace) {
     var multiLineWidth = Lib.isArrayOrTypedArray(optsIn.line.width);
 
     var isOpen;
-    if(!multiSymbol) isOpen = constants.OPEN_RE.test(optsIn.symbol);
+    if(!multiSymbol) isOpen = helpers.isOpenSymbol(optsIn.symbol);
 
     // prepare colors
     if(multiSymbol || multiColor || multiLineColor || multiOpacity) {
@@ -256,7 +257,7 @@ function convertMarkerStyle(trace) {
         for(i = 0; i < count; i++) {
             if(multiSymbol) {
                 var symbol = optsIn.symbol[i];
-                isOpen = constants.OPEN_RE.test(symbol);
+                isOpen = helpers.isOpenSymbol(symbol);
             }
             if(isOpen) {
                 borderColors[i] = colors[i].slice();
@@ -401,7 +402,7 @@ function getSymbolSdf(symbol) {
     var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
     var symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
 
-    var isDot = constants.DOT_RE.test(symbol);
+    var isDot = helpers.isDotSymbol(symbol);
 
     // get symbol sdf from cache or generate it
     if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
