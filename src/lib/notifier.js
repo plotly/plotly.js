@@ -72,7 +72,7 @@ module.exports = function(text, displayLength) {
 
             if(displayLength === 'stick') {
                 note.transition()
-                        .duration(700)
+                        .duration(350)
                         .style('opacity', 1);
             } else {
                 note.transition()
