@@ -299,16 +299,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         var y1 = pt.y1;
         var textBB = pt.textBB;
 
-        if(x0 === x1) {
-            x0 -= TEXTPAD;
-            x1 += TEXTPAD;
-        }
-
-        if(y0 === y1) {
-            y0 -= TEXTPAD;
-            y1 += TEXTPAD;
-        }
-
         var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
 
         var hasBottom = hasFlag('bottom');
@@ -321,14 +311,9 @@ function plotOne(gd, cd, element, transitionOpts) {
         var hasRight = hasFlag('right');
         var hasLeft = hasFlag('left') || opts.onPathbar;
 
-        var offsetDir =
-            hasLeft ? 'left' :
-            hasRight ? 'right' : 'center';
-
-        if(opts.onPathbar || !opts.isHeader) {
-            x0 += hasLeft ? TEXTPAD : 0;
-            x1 -= hasRight ? TEXTPAD : 0;
-        }
+        var leftToRight =
+            hasLeft ? -1 :
+            hasRight ? 1 : 0;
 
         var pad = trace.marker.pad;
         if(opts.isHeader) {
@@ -336,8 +321,8 @@ function plotOne(gd, cd, element, transitionOpts) {
             x1 -= pad.r - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
-                x0 = mid - TEXTPAD;
-                x1 = mid + TEXTPAD;
+                x0 = mid;
+                x1 = mid;
             }
 
             // limit the drawing area for headers
@@ -356,33 +341,29 @@ function plotOne(gd, cd, element, transitionOpts) {
             isHorizontal: false,
             constrained: true,
             angle: 0,
-            anchor: anchor
+            anchor: anchor,
+            leftToRight: leftToRight
         });
         transform.fontSize = opts.fontSize;
 
-        if(offsetDir !== 'center') {
-            var deltaX = (x1 - x0) / 2 - transform.scale * (textBB.right - textBB.left) / 2;
-            if(opts.isHeader) deltaX -= TEXTPAD;
-
-            if(offsetDir === 'left') transform.targetX -= deltaX;
-            else if(offsetDir === 'right') transform.targetX += deltaX;
-        }
-
-        transform.targetX = viewMapX(transform.targetX - transform.anchorX * transform.scale);
-        transform.targetY = viewMapY(transform.targetY - transform.anchorY * transform.scale);
-        transform.anchorX = 0;
-        transform.anchorY = 0;
+        transform.targetX = viewMapX(transform.targetX);
+        transform.targetY = viewMapY(transform.targetY);
 
         if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
             return {};
         }
 
-        recordMinTextSize(trace.type, transform, fullLayout);
+        if(x0 !== x1 && y0 !== y1) {
+            recordMinTextSize(trace.type, transform, fullLayout);
+        }
+
         return {
             scale: transform.scale,
             rotate: transform.rotate,
             textX: transform.textX,
             textY: transform.textY,
+            anchorX: transform.anchorX,
+            anchorY: transform.anchorY,
             targetX: transform.targetX,
             targetY: transform.targetY
         };
@@ -495,13 +476,18 @@ function plotOne(gd, cd, element, transitionOpts) {
         }
 
         var transform = pt.transform;
-        recordMinTextSize(trace.type, transform, fullLayout);
+        if(pt.x0 !== pt.x1 && pt.y0 !== pt.y1) {
+            recordMinTextSize(trace.type, transform, fullLayout);
+        }
+
         return d3.interpolate(prev, {
             transform: {
                 scale: transform.scale,
                 rotate: transform.rotate,
                 textX: transform.textX,
                 textY: transform.textY,
+                anchorX: transform.anchorX,
+                anchorY: transform.anchorY,
                 targetX: transform.targetX,
                 targetY: transform.targetY
             }
@@ -534,11 +520,16 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     var strTransform = function(d) {
         var transform = d.transform;
-        recordMinTextSize(trace.type, transform, fullLayout);
+
+        if(d.x0 !== d.x1 && d.y0 !== d.y1) {
+            recordMinTextSize(trace.type, transform, fullLayout);
+        }
 
         return Lib.getTextTransform({
             textX: transform.textX,
             textY: transform.textY,
+            anchorX: transform.anchorX,
+            anchorY: transform.anchorY,
             targetX: transform.targetX,
             targetY: transform.targetY,
             scale: transform.scale,
@@ -561,6 +552,8 @@ function plotOne(gd, cd, element, transitionOpts) {
                 prevLookupPathbar[getKey(pt)].transform = {
                     textX: pt.transform.textX,
                     textY: pt.transform.textY,
+                    anchorX: pt.transform.anchorX,
+                    anchorY: pt.transform.anchorY,
                     targetX: pt.transform.targetX,
                     targetY: pt.transform.targetY,
                     scale: pt.transform.scale,
@@ -581,6 +574,8 @@ function plotOne(gd, cd, element, transitionOpts) {
                 prevLookupSlices[getKey(pt)].transform = {
                     textX: pt.transform.textX,
                     textY: pt.transform.textY,
+                    anchorX: pt.transform.anchorX,
+                    anchorY: pt.transform.anchorY,
                     targetX: pt.transform.targetX,
                     targetY: pt.transform.targetY,
                     scale: pt.transform.scale,
