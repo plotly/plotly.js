@@ -1,0 +1,32 @@
+{
+    "data": [
+        {
+            "y": [
+                0,
+                0,
+                0
+            ],
+            "type": "scattergl",
+            "marker": {
+                "size": 24,
+                "symbol": "diamond-open-dot"
+            }
+        },
+        {
+            "y": [
+                1,
+                1,
+                1
+            ],
+            "type": "scattergl",
+            "marker": {
+                "size": 24,
+                "symbol": 302
+            }
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 400
+    }
+}

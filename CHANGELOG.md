@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.51.3] -- 2019-12-16
+
+### Fixed
+- Fix `Plotly.Plots.resize` edge cases ensuring now that
+  its promises always resolve [#4392]
+- Fix position of link hover labels in vertical `sankey` [#4404]
+- Fix `box` autorange for traces with "inverted" notched [#4388]
+
+
 ## [1.51.2] -- 2019-11-25
 
 ### Fixed

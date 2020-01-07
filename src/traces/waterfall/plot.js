@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,12 +11,15 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var barPlot = require('../bar/plot').plot;
+var barPlot = require('../bar/plot');
+var clearMinTextSize = require('../bar/uniform_text').clearMinTextSize;
 
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var fullLayout = gd._fullLayout;
 
-    barPlot(gd, plotinfo, cdModule, traceLayer, {
+    clearMinTextSize('waterfall', fullLayout);
+
+    barPlot.plot(gd, plotinfo, cdModule, traceLayer, {
         mode: fullLayout.waterfallmode,
         norm: fullLayout.waterfallmode,
         gap: fullLayout.waterfallgap,

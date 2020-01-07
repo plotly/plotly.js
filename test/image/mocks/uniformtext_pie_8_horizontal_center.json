@@ -1,0 +1,200 @@
+{
+    "data": [
+        {
+            "rotation": -360,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.05,
+                    0.25
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "rotation": -360,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.3,
+                    0.5
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "rotation": 180,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.05,
+                    0.25
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        },
+        {
+            "rotation": 180,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.3,
+                    0.5
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        },
+        {
+            "rotation": -270,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.55,
+                    0.75
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "rotation": -270,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.8,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "rotation": 270,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.55,
+                    0.75
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        },
+        {
+            "rotation": 270,
+            "values": [
+                4,
+                1,
+                0.25
+            ],
+            "type": "pie",
+            "insidetextorientation": "horizontal",
+            "textposition": "auto",
+            "hole": 0.5,
+            "domain": {
+                "x": [
+                    0.8,
+                    1
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 500,
+        "margin": {
+            "t": 10,
+            "b": 10,
+            "l": 10,
+            "r": 10
+        },
+        "legend": {
+            "orientation": "h",
+            "title": {
+                "text": "<b>pie uniform text</b><br>with <i>horizontal</i> orientation<br>minsize=8"
+            }
+        },
+        "uniformtext": {
+            "mode": "hide",
+            "minsize": 8
+        }
+    }
+}

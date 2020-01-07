@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,10 +14,14 @@ var d3Hierarchy = require('d3-hierarchy');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-
-var transformInsideText = require('../pie/plot').transformInsideText;
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
+var piePlot = require('../pie/plot');
+var computeTransform = piePlot.computeTransform;
+var transformInsideText = piePlot.transformInsideText;
 var styleOne = require('./style').styleOne;
-
+var resizeText = require('../bar/style').resizeText;
 var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
@@ -30,7 +34,9 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
+
+    clearMinTextSize('sunburst', fullLayout);
 
     join = layer.selectAll('g.trace.sunburst')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
@@ -68,6 +74,10 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
         join.each(function(cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
+
+        if(fullLayout.uniformtext.mode) {
+            resizeText(gd, fullLayout._sunburstlayer.selectAll('.trace'), 'sunburst');
+        }
     }
 
     if(isFullReplot) {
@@ -77,7 +87,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
 function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     var gTrace = d3.select(element);
     var slices = gTrace.selectAll('g.slice');
@@ -148,8 +158,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     // slice path generation fn
     var pathSlice = function(d) { return Lib.pathAnnulus(d.rpx0, d.rpx1, d.x0, d.x1, cx, cy); };
     // slice text translate x/y
-    var transTextX = function(d) { return cx + d.pxmid[0] * d.transform.rCenter + (d.transform.x || 0); };
-    var transTextY = function(d) { return cy + d.pxmid[1] * d.transform.rCenter + (d.transform.y || 0); };
+
+    var getTargetX = function(d) { return cx + getTextXY(d)[0] * (d.transform.rCenter || 0) + (d.transform.x || 0); };
+    var getTargetY = function(d) { return cy + getTextXY(d)[1] * (d.transform.rCenter || 0) + (d.transform.y || 0); };
 
     slices = slices.data(sliceData, helpers.getPtId);
 
@@ -214,6 +225,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         pt.xmid = (pt.x0 + pt.x1) / 2;
         pt.pxmid = rx2px(pt.rpx1, pt.xmid);
         pt.midangle = -(pt.xmid - Math.PI / 2);
+        pt.startangle = -(pt.x0 - Math.PI / 2);
+        pt.stopangle = -(pt.x1 - Math.PI / 2);
         pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1) || Math.PI, Math.PI);
         pt.ring = 1 - (pt.rpx0 / pt.rpx1);
         pt.rInscribed = getInscribedRadiusFraction(pt, trace);
@@ -248,26 +261,28 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.attr('data-notex', 1);
         });
 
+        var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
+
         sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
-            .call(Drawing.font, helpers.determineTextFont(trace, pt, fullLayout.font))
+            .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
         // position the text relative to the slice
         var textBB = Drawing.bBox(sliceText.node());
         pt.transform = transformInsideText(textBB, pt, cd0);
-        pt.translateX = transTextX(pt);
-        pt.translateY = transTextY(pt);
+        pt.transform.targetX = getTargetX(pt);
+        pt.transform.targetY = getTargetY(pt);
 
         var strTransform = function(d, textBB) {
-            return 'translate(' + d.translateX + ',' + d.translateY + ')' +
-                (d.transform.scale < 1 ? ('scale(' + d.transform.scale + ')') : '') +
-                (d.transform.rotate ? ('rotate(' + d.transform.rotate + ')') : '') +
-                'translate(' +
-                    (-(textBB.left + textBB.right) / 2) + ',' +
-                    (-(textBB.top + textBB.bottom) / 2) +
-                ')';
+            var transform = d.transform;
+            computeTransform(transform, textBB);
+
+            transform.fontSize = font.size;
+            recordMinTextSize(trace.type, transform, fullLayout);
+
+            return Lib.getTextTransform(transform);
         };
 
         if(hasTransition) {
@@ -370,6 +385,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             prev = {
                 rpx1: pt.rpx1,
                 transform: {
+                    textPosAngle: transform.textPosAngle,
                     scale: 0,
                     rotate: transform.rotate,
                     rCenter: transform.rCenter,
@@ -402,6 +418,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
+        var textPosAngleFn = d3.interpolate(prev.transform.textPosAngle, pt.transform.textPosAngle);
         var rpx1Fn = d3.interpolate(prev.rpx1, pt.rpx1);
         var x0Fn = d3.interpolate(prev.x0, pt.x0);
         var x1Fn = d3.interpolate(prev.x1, pt.x1);
@@ -421,28 +438,30 @@ function plotOne(gd, cd, element, transitionOpts) {
             var x0 = x0Fn(t);
             var x1 = x1Fn(t);
             var rCenter = rCenterFn(t);
+            var pxmid = rx2px(rpx1, (x0 + x1) / 2);
+            var textPosAngle = textPosAngleFn(t);
 
             var d = {
-                pxmid: rx2px(rpx1, (x0 + x1) / 2),
+                pxmid: pxmid,
+                rpx1: rpx1,
                 transform: {
+                    textPosAngle: textPosAngle,
                     rCenter: rCenter,
                     x: transform.x,
                     y: transform.y
                 }
             };
 
-            var out = {
-                rpx1: rpx1Fn(t),
-                translateX: transTextX(d),
-                translateY: transTextY(d),
+            recordMinTextSize(trace.type, transform, fullLayout);
+            return {
                 transform: {
+                    targetX: getTargetX(d),
+                    targetY: getTargetY(d),
                     scale: scaleFn(t),
                     rotate: rotateFn(t),
                     rCenter: rCenter
                 }
             };
-
-            return out;
         };
     }
 
@@ -599,4 +618,12 @@ function getInscribedRadiusFraction(pt) {
             pt.ring / 2
         ));
     }
+}
+
+function getTextXY(d) {
+    return getCoords(d.rpx1, d.transform.textPosAngle);
+}
+
+function getCoords(r, angle) {
+    return [r * Math.sin(angle), -r * Math.cos(angle)];
 }

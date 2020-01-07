@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,34 +11,50 @@
 var Lib = require('../../lib');
 var colorscaleCalc = require('../../components/colorscale/calc');
 
-module.exports = function calc(gd, trace) {
-    var i, j, k;
+function calc(gd, trace) {
+    trace._len = Math.min(
+        trace.u.length,
+        trace.v.length,
+        trace.w.length,
+        trace.x.length,
+        trace.y.length,
+        trace.z.length
+    );
 
-    var u = trace.u;
-    var v = trace.v;
-    var w = trace.w;
-    var x = trace.x;
-    var y = trace.y;
-    var z = trace.z;
-    var len = Math.min(x.length, y.length, z.length, u.length, v.length, w.length);
+    trace._u = filter(trace.u, trace._len);
+    trace._v = filter(trace.v, trace._len);
+    trace._w = filter(trace.w, trace._len);
+    trace._x = filter(trace.x, trace._len);
+    trace._y = filter(trace.y, trace._len);
+    trace._z = filter(trace.z, trace._len);
+
+    var grid = processGrid(trace);
+    trace._gridFill = grid.fill;
+    trace._Xs = grid.Xs;
+    trace._Ys = grid.Ys;
+    trace._Zs = grid.Zs;
+    trace._len = grid.len;
 
     var slen = 0;
     var startx, starty, startz;
     if(trace.starts) {
-        startx = trace.starts.x || [];
-        starty = trace.starts.y || [];
-        startz = trace.starts.z || [];
+        startx = filter(trace.starts.x || []);
+        starty = filter(trace.starts.y || []);
+        startz = filter(trace.starts.z || []);
         slen = Math.min(startx.length, starty.length, startz.length);
     }
+    trace._startsX = startx || [];
+    trace._startsY = starty || [];
+    trace._startsZ = startz || [];
 
     var normMax = 0;
     var normMin = Infinity;
-
-    for(i = 0; i < len; i++) {
-        var uu = u[i];
-        var vv = v[i];
-        var ww = w[i];
-        var norm = Math.sqrt(uu * uu + vv * vv + ww * ww);
+    var i;
+    for(i = 0; i < trace._len; i++) {
+        var u = trace._u[i];
+        var v = trace._v[i];
+        var w = trace._w[i];
+        var norm = Math.sqrt(u * u + v * v + w * w);
 
         normMax = Math.max(normMax, norm);
         normMin = Math.min(normMin, norm);
@@ -49,6 +65,35 @@ module.exports = function calc(gd, trace) {
         containerStr: '',
         cLetter: 'c'
     });
+
+    for(i = 0; i < slen; i++) {
+        var sx = startx[i];
+        grid.xMax = Math.max(grid.xMax, sx);
+        grid.xMin = Math.min(grid.xMin, sx);
+
+        var sy = starty[i];
+        grid.yMax = Math.max(grid.yMax, sy);
+        grid.yMin = Math.min(grid.yMin, sy);
+
+        var sz = startz[i];
+        grid.zMax = Math.max(grid.zMax, sz);
+        grid.zMin = Math.min(grid.zMin, sz);
+    }
+
+    trace._slen = slen;
+    trace._normMax = normMax;
+    trace._xbnds = [grid.xMin, grid.xMax];
+    trace._ybnds = [grid.yMin, grid.yMax];
+    trace._zbnds = [grid.zMin, grid.zMax];
+}
+
+function processGrid(trace) {
+    var x = trace._x;
+    var y = trace._y;
+    var z = trace._z;
+    var len = trace._len;
+
+    var i, j, k;
 
     var xMax = -Infinity;
     var xMin = Infinity;
@@ -61,13 +106,18 @@ module.exports = function calc(gd, trace) {
     var filledX;
     var filledY;
     var filledZ;
-    var firstX;
-    var firstY;
-    var firstZ;
+    var firstX, lastX;
+    var firstY, lastY;
+    var firstZ, lastZ;
     if(len) {
         firstX = x[0];
         firstY = y[0];
         firstZ = z[0];
+    }
+    if(len > 1) {
+        lastX = x[len - 1];
+        lastY = y[len - 1];
+        lastZ = z[len - 1];
     }
 
     for(i = 0; i < len; i++) {
@@ -98,13 +148,13 @@ module.exports = function calc(gd, trace) {
     if(!filledY) gridFill += 'y';
     if(!filledZ) gridFill += 'z';
 
-    var Xs = distinctVals(trace.x.slice(0, len));
-    var Ys = distinctVals(trace.y.slice(0, len));
-    var Zs = distinctVals(trace.z.slice(0, len));
+    var Xs = distinctVals(trace._x);
+    var Ys = distinctVals(trace._y);
+    var Zs = distinctVals(trace._z);
 
-    gridFill = gridFill.replace('x', (x[0] > x[len - 1] ? '-' : '+') + 'x');
-    gridFill = gridFill.replace('y', (y[0] > y[len - 1] ? '-' : '+') + 'y');
-    gridFill = gridFill.replace('z', (z[0] > z[len - 1] ? '-' : '+') + 'z');
+    gridFill = gridFill.replace('x', (firstX > lastX ? '-' : '+') + 'x');
+    gridFill = gridFill.replace('y', (firstY > lastY ? '-' : '+') + 'y');
+    gridFill = gridFill.replace('z', (firstZ > lastZ ? '-' : '+') + 'z');
 
     var empty = function() {
         len = 0;
@@ -118,7 +168,7 @@ module.exports = function calc(gd, trace) {
 
     var getArray = function(c) { return c === 'x' ? x : c === 'y' ? y : z; };
     var getVals = function(c) { return c === 'x' ? Xs : c === 'y' ? Ys : Zs; };
-    var getDir = function(c) { return (c[len - 1] < c[0]) ? -1 : 1; };
+    var getDir = function(c) { return c[len - 1] < c[0] ? -1 : 1; };
 
     var arrK = getArray(gridFill[1]);
     var arrJ = getArray(gridFill[3]);
@@ -165,32 +215,40 @@ module.exports = function calc(gd, trace) {
         empty();
     }
 
-    for(i = 0; i < slen; i++) {
-        var sx = startx[i];
-        xMax = Math.max(xMax, sx);
-        xMin = Math.min(xMin, sx);
-
-        var sy = starty[i];
-        yMax = Math.max(yMax, sy);
-        yMin = Math.min(yMin, sy);
-
-        var sz = startz[i];
-        zMax = Math.max(zMax, sz);
-        zMin = Math.min(zMin, sz);
-    }
-
-    trace._len = len;
-    trace._slen = slen;
-    trace._normMax = normMax;
-    trace._xbnds = [xMin, xMax];
-    trace._ybnds = [yMin, yMax];
-    trace._zbnds = [zMin, zMax];
-    trace._Xs = Xs;
-    trace._Ys = Ys;
-    trace._Zs = Zs;
-    trace._gridFill = gridFill;
-};
+    return {
+        xMin: xMin,
+        yMin: yMin,
+        zMin: zMin,
+        xMax: xMax,
+        yMax: yMax,
+        zMax: zMax,
+        Xs: Xs,
+        Ys: Ys,
+        Zs: Zs,
+        len: len,
+        fill: gridFill
+    };
+}
 
 function distinctVals(col) {
     return Lib.distinctVals(col).vals;
 }
+
+function filter(arr, len) {
+    if(len === undefined) len = arr.length;
+
+    // no need for casting typed arrays to numbers
+    if(Lib.isTypedArray(arr)) return arr.subarray(0, len);
+
+    var values = [];
+    for(var i = 0; i < len; i++) {
+        values[i] = +arr[i];
+    }
+    return values;
+}
+
+module.exports = {
+    calc: calc,
+    filter: filter,
+    processGrid: processGrid
+};

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,13 +10,16 @@
 
 var d3 = require('d3');
 
-var hasTransition = require('../sunburst/helpers').hasTransition;
 var helpers = require('../sunburst/helpers');
 
 var Lib = require('../../lib');
 var TEXTPAD = require('../bar/constants').TEXTPAD;
-var toMoveInsideBar = require('../bar/plot').toMoveInsideBar;
-
+var barPlot = require('../bar/plot');
+var toMoveInsideBar = barPlot.toMoveInsideBar;
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
+var resizeText = require('../bar/style').resizeText;
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
 var drawAncestors = require('./draw_ancestors');
@@ -30,6 +33,8 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     // updated are removed.
     var isFullReplot = !transitionOpts;
 
+    clearMinTextSize('treemap', fullLayout);
+
     join = layer.selectAll('g.trace.treemap')
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
 
@@ -39,7 +44,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
 
     join.order();
 
-    if(hasTransition(transitionOpts)) {
+    if(!fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts)) {
         if(makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
@@ -64,6 +69,10 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
         join.each(function(cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
+
+        if(fullLayout.uniformtext.mode) {
+            resizeText(gd, fullLayout._treemaplayer.selectAll('.trace'), 'treemap');
+        }
     }
 
     if(isFullReplot) {
@@ -95,7 +104,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     }
 
     var isRoot = helpers.isHierarchyRoot(entry);
-    var hasTransition = helpers.hasTransition(transitionOpts);
+    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
@@ -349,6 +358,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             angle: 0,
             anchor: anchor
         });
+        transform.fontSize = opts.fontSize;
 
         if(offsetDir !== 'center') {
             var deltaX = (x1 - x0) / 2 - transform.scale * (textBB.right - textBB.left) / 2;
@@ -358,13 +368,16 @@ function plotOne(gd, cd, element, transitionOpts) {
             else if(offsetDir === 'right') transform.targetX += deltaX;
         }
 
-        transform.targetX = viewMapX(transform.targetX);
-        transform.targetY = viewMapY(transform.targetY);
+        transform.targetX = viewMapX(transform.targetX - transform.anchorX * transform.scale);
+        transform.targetY = viewMapY(transform.targetY - transform.anchorY * transform.scale);
+        transform.anchorX = 0;
+        transform.anchorY = 0;
 
         if(isNaN(transform.targetX) || isNaN(transform.targetY)) {
             return {};
         }
 
+        recordMinTextSize(trace.type, transform, fullLayout);
         return {
             scale: transform.scale,
             rotate: transform.rotate,
@@ -481,14 +494,16 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
+        var transform = pt.transform;
+        recordMinTextSize(trace.type, transform, fullLayout);
         return d3.interpolate(prev, {
             transform: {
-                scale: pt.transform.scale,
-                rotate: pt.transform.rotate,
-                textX: pt.transform.textX,
-                textY: pt.transform.textY,
-                targetX: pt.transform.targetX,
-                targetY: pt.transform.targetY
+                scale: transform.scale,
+                rotate: transform.rotate,
+                textX: transform.textX,
+                textY: transform.textY,
+                targetX: transform.targetX,
+                targetY: transform.targetY
             }
         });
     };
@@ -518,13 +533,16 @@ function plotOne(gd, cd, element, transitionOpts) {
     };
 
     var strTransform = function(d) {
+        var transform = d.transform;
+        recordMinTextSize(trace.type, transform, fullLayout);
+
         return Lib.getTextTransform({
-            textX: d.transform.textX,
-            textY: d.transform.textY,
-            targetX: d.transform.targetX,
-            targetY: d.transform.targetY,
-            scale: d.transform.scale,
-            rotate: d.transform.rotate
+            textX: transform.textX,
+            textY: transform.textY,
+            targetX: transform.targetX,
+            targetY: transform.targetY,
+            scale: transform.scale,
+            rotate: transform.rotate
         });
     };
 

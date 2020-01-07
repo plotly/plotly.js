@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57,8 +57,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
+    var hasPathbar = coerce('pathbar.visible');
+
     var textposition = 'auto';
     handleText(traceIn, traceOut, layout, coerce, textposition, {
+        hasPathbar: hasPathbar,
         moduleHasSelected: false,
         moduleHasUnselected: false,
         moduleHasConstrain: false,
@@ -73,7 +76,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
     var colors = coerce('marker.colors');
-    var withColorscale = traceOut._hasColorscale = hasColorscale(traceIn, 'marker', 'colors');
+    var withColorscale = traceOut._hasColorscale = (
+        hasColorscale(traceIn, 'marker', 'colors') ||
+        (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
+    );
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     } else {
@@ -100,10 +106,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     };
 
-    var hasPathbar = coerce('pathbar.visible');
     if(hasPathbar) {
-        Lib.coerceFont(coerce, 'pathbar.textfont', layout.font);
-
         // This works even for multi-line labels as treemap pathbar trim out line breaks
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 

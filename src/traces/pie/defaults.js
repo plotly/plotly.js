@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -100,6 +100,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         var hasOutside = hasBoth || textposition === 'outside';
         if(hasOutside) {
             coerce('automargin');
+        }
+
+        if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
+            coerce('insidetextorientation');
         }
     }
 

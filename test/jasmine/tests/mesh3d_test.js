@@ -132,7 +132,7 @@ describe('Test mesh3d', function() {
             expect(traceOut.contour.width).toBeUndefined();
         });
 
-        it('should coerce colorscale and colorbar attributes when intensity is present', function() {
+        it('should coerce colorscale and colorbar attributes as well as intensitymode when intensity is present', function() {
             traceIn = {
                 x: [0, 1, 0, 1, 0, 1, 0, 1],
                 y: [0, 0, 1, 1, 0, 0, 1, 1],
@@ -158,9 +158,10 @@ describe('Test mesh3d', function() {
             expect(traceOut.reversescale).toBe(false);
             expect(traceOut.showscale).toBe(true);
             expect(traceOut.colorbar).toBeDefined();
+            expect(traceOut.intensitymode).toBe('vertex');
         });
 
-        it('should not coerce colorscale and colorbar attributes when intensity is not present', function() {
+        it('should not coerce colorscale and colorbar attributes as well as intensitymode when intensity is not present', function() {
             traceIn = {
                 x: [0, 1, 0, 1, 0, 1, 0, 1],
                 y: [0, 0, 1, 1, 0, 0, 1, 1],
@@ -178,6 +179,7 @@ describe('Test mesh3d', function() {
             expect(traceOut.reversescale).toBeUndefined();
             expect(traceOut.showscale).toBe(false);
             expect(traceOut.colorbar).toBeUndefined();
+            expect(traceOut.intensitymode).toBeUndefined();
         });
 
         it('should inherit layout.calendar', function() {

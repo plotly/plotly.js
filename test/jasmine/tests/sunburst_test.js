@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
 var d3 = require('d3');
@@ -15,6 +16,8 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+
+var SLICES_TEXT_SELECTOR = '.sunburstlayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -808,11 +811,16 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined();
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth');
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth');
             } else {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length) {
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined();
+                expect(trackers.click[0].points[0].label).toBe('Seth');
+                expect(trackers.click[0].nextLevel).not.toBeDefined();
+            } else {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -885,16 +893,6 @@ describe('Test sunburst clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        // should be same before and after 2nd click
-        function _assertCommon(msg) {
-            if(trackers.click.length) {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        }
-
         Plotly.plot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
@@ -904,27 +902,49 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .then(click(gd, 4))
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_sunburstclick twice, but not additional
-            // plotly_click nor plotly_animating
+            // should trigger plotly_sunburstclick and plotly_click twice,
+            // but not plotly_animating
 
             if(trackers.sunburstclick.length === 2) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Awan', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 2) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .catch(failTest)
         .then(done);
@@ -944,10 +964,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-            } else {
+            if(trackers.click.length !== 0) {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -1066,7 +1083,7 @@ describe('Test sunburst restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *textinfo*', function(done) {
+    it('should be able to restyle *textinfo* with various *insidetextorientation*', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1120,6 +1137,27 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'horizontal'
+        .then(_restyle({insidetextorientation: 'horizontal'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'tangential'
+        .then(_restyle({insidetextorientation: 'tangential'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'radial'
+        .then(_restyle({insidetextorientation: 'radial'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
         .catch(failTest)
         .then(done);
     });
@@ -1163,25 +1201,25 @@ describe('Test sunburst tweening:', function() {
         return s.replace(/\s/g, '');
     }
 
-    function _assert(msg, attrName, id, exp) {
+    function _assert(msg, attrName, id, exp, tolerance) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
         // asserting at the mid point *should be* representative enough
         var t = 0.5;
         var actual = trim(fn(t));
+        var msg2 = msg + ' | node ' + id + ' @t=' + t;
 
-        // do not assert textBB translate piece,
-        // which isn't tweened and has OS-dependent results
         if(attrName === 'transform') {
-            actual = actual.split('translate').slice(0, 2).join('translate');
-        }
-
+            var fake = {attr: function() { return actual; }};
+            var xy = Drawing.getTranslate(fake);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
+        } else {
         // we could maybe to bring in:
         // https://github.com/hughsk/svg-path-parser
         // to make these assertions more readable
-
-        expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
+            expect(actual).toBe(trim(exp), msg2);
+        }
     }
 
     it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
@@ -1211,12 +1249,8 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(313.45694251914836,271.54305748085164)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [313.45, 275.54]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
@@ -1250,12 +1284,8 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(316.8522926358638,268.1477073641362)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [316.85, 272.14]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
@@ -1288,12 +1318,8 @@ describe('Test sunburst tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M350,133.75 L350,100 A135,1350,0,0350,370 L350,336.25 A101.25,101.250,0,1350,133.75Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(303.0160689531907,281.9839310468093)'
-            );
-            _assert('enter b text to new position', 'transform', 'b',
-                'translate(248.75,235)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [303.01, 285.98]);
+            _assert('enter b text to new position', 'transform', 'b', [248.75, 239]);
         })
         .catch(failTest)
         .then(done);
@@ -1362,6 +1388,178 @@ describe('Test sunburst tweening:', function() {
         .then(done);
     });
     */
+
+    it('should update text position during transition using *auto* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'auto'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [309.3085305481173, 202.66937078300114]);
+            _assert('move O text to new position', 'transform', 'O', [337.158534264498, 162.57550532369754], 5);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [455.10235209157037, 177.717459723826], 5);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.2952497427013]);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [457.21539566810236, 178.44157384259557]);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.3617907020963]);
+            _assert('move U text to new position', 'transform', 'U', [387.0665312800944, 146.39132446549587]);
+            _assert('move V text to new position', 'transform', 'V', [467.5637172232141, 214.71357776223093]);
+            _assert('move W text to new position', 'transform', 'W', [453.6883022471187, 176.23118240799604]);
+            _assert('move X text to new position', 'transform', 'X', [428.32070483274055, 145.007590714263]);
+            _assert('move Y text to new position', 'transform', 'Y', [393.6173101979463, 123.958130483835]);
+            _assert('move Z text to new position', 'transform', 'Z', [359.52567880729003, 116.05583257124167]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [298.18238454231454, 239]);
+            _assert('move O text to new position', 'transform', 'O', [299.00421744782363, 183.7721980352468]);
+            _assert('move U text to new position', 'transform', 'U', [418.6530444037927, 162.19895218157865]);
+            _assert('move V text to new position', 'transform', 'V', [471.8671910181962, 218.0219264868202]);
+            _assert('move W text to new position', 'transform', 'W', [459.0093083790858, 178.21113754411613]);
+            _assert('move X text to new position', 'transform', 'X', [433.74669513154777, 144.8536840385141]);
+            _assert('move Y text to new position', 'transform', 'Y', [398.67767996405655, 121.9940236084775]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.00770212095256, 116.19286557341015]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [317.71031126211744, 202.23522389350774]);
+            _assert('move V text to new position', 'transform', 'V', [444.88381073744586, 191.14358863479603]);
+            _assert('move W text to new position', 'transform', 'W', [365.5485731154604, 134.6827081871288]);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [247.47466543373307, 255.288278237516]);
+            _assert('move Z text to new position', 'transform', 'Z', [300.75324430542196, 332.0135787956955]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [441.011030377721, 188.63633201157208]);
+            _assert('move W text to new position', 'transform', 'W', [382.1346244328249, 135.0126788235936], 5);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
+            _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [445.2341347726318, 190.47976534033592]);
+            _assert('move W text to new position', 'transform', 'W', [366.3829959511747, 133.44080859889465]);
+            _assert('move X text to new position', 'transform', 'X', [274.43577526068776, 163.42796276068773]);
+            _assert('move Y text to new position', 'transform', 'Y', [244.44862109889465, 255.71893345117468]);
+            _assert('move Z text to new position', 'transform', 'Z', [301.6438278403359, 334.2263222726318]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test sunburst interactions edge cases', function() {
@@ -1692,4 +1890,291 @@ describe('Test sunburst texttemplate with *remainder* `values` should work when 
         ['%{percentEntry} of %{entry}', ['100% of Seth', '42% of Seth', '8% of Seth']],
         ['%{percentParent} of %{parent}', ['20% of Eve', '42% of Seth', '8% of Seth']],
     ], /* skipEtra */ true);
+});
+
+describe('sunburst inside text orientation', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextRotations(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['rotations'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('rotate(');
+                var rotate = 0;
+                if(pos0 !== -1) {
+                    pos0 += 'rotate('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    rotate = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.rotations[i]).toBeCloseTo(rotate, -1, 'rotation for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react to new insidetextorientation option', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', ''],
+                labels: [64, 32, 16, 8],
+                values: [64, 32, 16, 8],
+                sort: false,
+
+                text: [
+                    'very long label',
+                    'label',
+                    'long label',
+                    '+'
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                showlegend: false
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextRotations('using default "auto"', {
+            rotations: [-0.6, 0, 48, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'horizontal';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "horizontal"', {
+            rotations: [0, 0, 0, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'radial';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "radial"', {
+            rotations: [84, -60, 48, 12]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'tangential';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "tangential"', {
+            rotations: [0, 0, -42, -78]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'auto';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('back to "auto"', {
+            rotations: [-0.6, 0, 48, 0]
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('sunburst uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', '', '', '', '', '', '', ''],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '+',
+                    '=',
+                    '$',
+                    'very long lablel'
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should uniform text scales after transition', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                parents: [
+                    '',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform'
+                ],
+                labels: [
+                    'Oscar',
+                    'Papa',
+                    'Quebec',
+                    'Romeo and Juliet',
+                    'Sierra',
+                    'Tango',
+                    'Uniform',
+                    'ViKtor Korchnoi - Anatoly Karpov',
+                    'Whiskey',
+                    'X ray',
+                    'Yankee',
+                    'Zulu'
+                ],
+                textinfo: 'label'
+            }],
+            layout: {
+                width: 500,
+                height: 500,
+                uniformtext: {
+                    mode: 'hide',
+                    minsize: 12
+                }
+            }
+        })
+        .then(assertTextSizes('before click', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 2)) // click on Uniform
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click child', {
+            fontsizes: [12, 12, 12, 12, 12, 12],
+            scales: [1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 1)) // click on Oscar
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click parent', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
 });
