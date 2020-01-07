@@ -55,6 +55,49 @@ describe('Pie defaults', function() {
         expect(out.visible).toBe(false);
     });
 
+    it('skip negatives and non-JSON values and avoid zero total', function() {
+        [
+            -1, '-1',
+            0, '0',
+            false, 'false',
+            true, 'true',
+            null, 'null',
+            NaN, 'NaN',
+            -Infinity, '-Infinity',
+            Infinity, 'Infinity',
+            undefined, 'undefined',
+            '', [], {}
+        ].forEach(function(e) {
+            var out;
+
+            out = _supply({type: 'pie', values: [1, e, 3]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(3, e);
+
+            out = _supply({type: 'pie', values: [1, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+
+            out = _supply({type: 'pie', values: [e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+        });
+    });
+
+    it('convert positive numbers in string format', function() {
+        ['1', '+1', '1e1'].forEach(function(e) {
+            var out;
+
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+        });
+    });
+
     it('is marked invisible if either labels or values is empty', function() {
         var out = _supply({type: 'pie', labels: [], values: [1, 2]});
         expect(out.visible).toBe(false);
