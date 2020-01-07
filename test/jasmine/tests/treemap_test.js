@@ -1445,7 +1445,7 @@ describe('Test treemap tweening:', function() {
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
             _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
-            _assert('enter b text to new position', 'transform', 'b', [286.63, 196.35]);
+            _assert('enter b text to new position', 'transform', 'b', [287.625, 192]);
         })
         .catch(failTest)
         .then(done);

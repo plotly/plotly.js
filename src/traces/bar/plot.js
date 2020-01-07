@@ -442,6 +442,9 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchor = opts.anchor || 'end';
     var isEnd = anchor === 'end';
     var isStart = anchor === 'start';
+    var leftToRight = opts.leftToRight || 0; // left: -1, center: 0, right: 1
+    var toRight = (leftToRight + 1) / 2;
+    var toLeft = 1 - toRight;
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
@@ -479,9 +482,15 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     }
 
     // compute text and target positions
-    var textX = (textBB.left + textBB.right) / 2;
+    var textX = (
+        textBB.left * toLeft +
+        textBB.right * toRight
+    );
     var textY = (textBB.top + textBB.bottom) / 2;
-    var targetX = (x0 + x1) / 2;
+    var targetX = (
+        (x0 + TEXTPAD) * toLeft +
+        (x1 - TEXTPAD) * toRight
+    );
     var targetY = (y0 + y1) / 2;
     var anchorX = 0;
     var anchorY = 0;
