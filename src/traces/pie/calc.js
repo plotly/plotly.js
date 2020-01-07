@@ -30,7 +30,7 @@ function calc(gd, trace) {
     var i, pt;
 
     if(trace.dlabel) {
-        labels = [];
+        labels = new Array(len);
         for(i = 0; i < len; i++) {
             labels[i] = String(trace.label0 + i * trace.dlabel);
         }

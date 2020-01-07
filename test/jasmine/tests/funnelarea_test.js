@@ -71,10 +71,21 @@ describe('Funnelarea defaults', function() {
         expect(out.visible).toBe(false);
     });
 
-    it('allows falsy json values to skip but does not allow bad values and zero sum', function() {
-        var out;
+    it('skip negatives and non-JSON values and avoid zero total', function() {
+        [
+            -1, '-1',
+            0, '0',
+            false, 'false',
+            true, 'true',
+            null, 'null',
+            NaN, 'NaN',
+            -Infinity, '-Infinity',
+            Infinity, 'Infinity',
+            undefined, 'undefined',
+            '', [], {}
+        ].forEach(function(e) {
+            var out;
 
-        [null, 0, '', false].forEach(function(e) {
             out = _supply({type: 'pie', values: [1, e, 3]});
             expect(out.visible).toBe(true, e);
             expect(out._length).toBe(3, e);
@@ -91,18 +102,12 @@ describe('Funnelarea defaults', function() {
             expect(out.visible).toBe(false, e);
             expect(out._length).toBe(undefined, e);
         });
+    });
 
-        ['not a positive value', '-1', -1, NaN, undefined].forEach(function(e) {
-            out = _supply({type: 'pie', values: [0, e]});
-            expect(out.visible).toBe(false, e);
-            expect(out._length).toBe(undefined, e);
-
-            out = _supply({type: 'pie', values: [1, e]});
-            expect(out.visible).toBe(false, e);
-            expect(out._length).toBe(undefined, e);
-        });
-
+    it('convert positive numbers in string format', function() {
         ['1', '+1', '1e1'].forEach(function(e) {
+            var out;
+
             out = _supply({type: 'pie', values: [0, e]});
             expect(out.visible).toBe(true, e);
             expect(out._length).toBe(2, e);

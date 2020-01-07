@@ -8,6 +8,7 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
@@ -24,16 +25,15 @@ function handleLabelsAndValues(labels, values) {
     if(!isFinite(len)) len = 0;
 
     if(len && hasValues) {
-        var sum = 0;
+        var hasPositive;
         for(var i = 0; i < len; i++) {
-            var v = +values[i];
-            if(v < 0) {
-                sum = 0;
+            var v = values[i];
+            if(isNumeric(v) && v > 0) {
+                hasPositive = true;
                 break;
             }
-            sum += v;
         }
-        if(!sum) len = 0;
+        if(!hasPositive) len = 0;
     }
 
     return {
