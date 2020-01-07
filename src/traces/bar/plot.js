@@ -483,8 +483,8 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
 
     // compute text and target positions
     var textX = (
-        (textBB.left + 0 * TEXTPAD) * toLeft +
-        (textBB.right - 0 * TEXTPAD) * toRight
+        textBB.left * toLeft +
+        textBB.right * toRight
     );
     var textY = (textBB.top + textBB.bottom) / 2;
     var targetX = (
