@@ -10,7 +10,7 @@
 
 module.exports = {
     attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
+    supplyDefaults: require('./defaults').supplyDefaults,
     colorbar: {
         min: 'cmin',
         max: 'cmax'
