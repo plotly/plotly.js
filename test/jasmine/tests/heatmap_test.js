@@ -881,14 +881,14 @@ describe('heatmap hover', function() {
         it('should find closest point (case 1) and should', function() {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
-            expect(pt.index).toEqual([1, 0], 'have correct index');
+            expect(pt.index).toBe(1, 'have correct index');
             assertLabels(pt, 1, 1, 4);
         });
 
         it('should find closest point (case 2) and should', function() {
             var pt = _hover(gd, 1.5, 0.5)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
+            expect(pt.index).toBe(0, 'have correct index');
             assertLabels(pt, 2, 0.2, 6);
         });
     });
@@ -931,13 +931,13 @@ describe('heatmap hover', function() {
         it('should find closest point and should', function(done) {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
+            expect(pt.index).toBe(0, 'have correct index');
             assertLabels(pt, 1, 1, 10, 'a');
 
             Plotly.relayout(gd, 'xaxis.range', [1, 2]).then(function() {
                 var pt2 = _hover(gd, 1.5, 0.5)[0];
 
-                expect(pt2.index).toEqual([0, 1], 'have correct index');
+                expect(pt2.index).toBe(1, 'have correct index');
                 assertLabels(pt2, 2, 1, 4, 'b');
             })
             .then(done);
