@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "type": "parcats",
+      "line": {
+        "color": [ 0, 1, 1, 0, 1 ],
+        "showscale": true
+      },
+      "dimensions": [
+        {
+          "label": "Hair",
+          "values": [ "Black", "Black", "Black", "Brown", "Brown", "Brown", "Red", "Brown" ]
+        },
+        {
+          "label": "Eye",
+          "values": [ "Brown", "Brown", "Brown", "Brown", "Brown", "Blue", "Blue", "Blue" ]
+        },
+        {
+          "label": "Sex",
+          "values": [ "Female", "Female", "Female", "Male", "Female", "Male", "Male", "Male" ]
+        }
+      ]
+    }
+  ],
+  "layout": {
+    "template": {
+      "data": {
+        "parcats": [
+          {
+            "line": {
+              "colorscale": [[0, "red"], [1, "blue"]],
+              "colorbar": {
+                "ypad": 100
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
