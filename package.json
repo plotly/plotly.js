@@ -160,7 +160,7 @@
     "requirejs": "^2.3.6",
     "run-series": "^1.1.8",
     "through2": "^3.0.1",
-    "true-case-path": "^1.0.3",
+    "true-case-path": "^2.2.1",
     "watchify": "^3.11.1"
   }
 }
