@@ -619,6 +619,13 @@ describe('contour hover', function() {
         return hoverData;
     }
 
+    function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
+        expect(hoverPoint.xLabelVal).toBe(xLabel, 'have correct x label');
+        expect(hoverPoint.yLabelVal).toBe(yLabel, 'have correct y label');
+        expect(hoverPoint.zLabelVal).toBe(zLabel, 'have correct z label');
+        expect(hoverPoint.text).toBe(text, 'have correct text label');
+    }
+
     describe('missing data', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
@@ -646,6 +653,31 @@ describe('contour hover', function() {
 
             expect(hoverData).toEqual(undefined);
             expect(pt).toEqual(undefined);
+        });
+    });
+
+    describe('for xyz-column traces', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'contour',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                z: [10, 4, 20],
+                text: ['a', 'b', 'c'],
+                hoverinfo: 'text'
+            }])
+            .then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point and should', function() {
+            var pt = _hover(gd, 2, 3)[0];
+
+            expect(pt.index).toBe(1, 'have correct index');
+            assertLabels(pt, 2, 3, 4, 'b');
         });
     });
 });

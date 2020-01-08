@@ -112,7 +112,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
 
     return [Lib.extendFlat(pointData, {
-        index: [ny, nx],
+        index: trace._after2before ? trace._after2before[ny][nx] : [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: pointData.maxHoverDistance,
         spikeDistance: pointData.maxSpikeDistance,
