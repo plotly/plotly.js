@@ -61,6 +61,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         newTemplate.showocean = false;
         newTemplate.showrivers = false;
         newTemplate.showsubunits = false;
+        if(newTemplate.lonaxis) newTemplate.lonaxis.showgrid = false;
+        if(newTemplate.lataxis) newTemplate.lataxis.showgrid = false;
 
         // set ref to copy
         geoLayoutOut._template = newTemplate;

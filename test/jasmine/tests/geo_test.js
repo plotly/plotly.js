@@ -662,7 +662,9 @@ describe('Test Geo layout defaults', function() {
                             showlakes: true,
                             showocean: true,
                             showrivers: true,
-                            showsubunits: true
+                            showsubunits: true,
+                            lonaxis: { showgrid: true },
+                            lataxis: { showgrid: true }
                         }
                     }
                 },
