@@ -1446,6 +1446,29 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     var template = layoutIn.template;
     if(Lib.isPlainObject(template)) {
+        if( // geo.visible false should override template.layout.geo.show* - see issue 4482
+            layoutIn.geo &&
+            layoutIn.geo.visible === false &&
+            template.layout &&
+            template.layout.geo
+        ) {
+            // make a copy
+            var newTemplate = Lib.extendDeep({}, template);
+
+            // override show*
+            newTemplate.layout.geo.showcoastlines = false;
+            newTemplate.layout.geo.showcountries = false;
+            newTemplate.layout.geo.showframe = false;
+            newTemplate.layout.geo.showlakes = false;
+            newTemplate.layout.geo.showland = false;
+            newTemplate.layout.geo.showocean = false;
+            newTemplate.layout.geo.showrivers = false;
+            newTemplate.layout.geo.showsubunits = false;
+
+            // set ref to copy
+            template = newTemplate;
+        }
+
         layoutOut.template = template;
         layoutOut._template = template.layout;
         layoutOut._dataTemplate = template.data;

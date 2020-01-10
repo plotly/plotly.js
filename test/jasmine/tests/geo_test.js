@@ -688,6 +688,51 @@ describe('Test Geo layout defaults', function() {
     });
 });
 
+describe('geo visible false', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('should override template.layout.geo.show*', function(done) {
+        var keys = [
+            'showcoastlines',
+            'showcountries',
+            'showframe',
+            'showland',
+            'showlakes',
+            'showocean',
+            'showrivers',
+            'showsubunits'
+        ];
+
+        var layout = {
+            geo: { visible: false },
+            template: {
+                layout: {
+                    geo: {}
+                }
+            }
+        };
+
+        keys.forEach(function(k) {
+            layout.template.layout.geo[k] = true;
+        });
+
+        var data = [{ lon: [0], lat: [0], type: 'scattergeo' }];
+
+        Plotly.plot(gd, data, layout)
+        .then(function() {
+            keys.forEach(function(k) {
+                expect(gd._fullLayout.template.layout.geo[k]).toBe(false, k);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('geojson / topojson utils', function() {
     function _locationToFeature(topojson, loc, locationmode) {
         var trace = { locationmode: locationmode };
