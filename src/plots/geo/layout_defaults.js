@@ -46,6 +46,26 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
     var visible = coerce('visible');
+    if(visible === false) {
+        // should override template.layout.geo.show* - see issue 4482
+
+        // make a copy
+        var newTemplate = Lib.extendDeep({}, geoLayoutOut._template);
+
+        // override show*
+        newTemplate.showcoastlines = false;
+        newTemplate.showcountries = false;
+        newTemplate.showframe = false;
+        newTemplate.showlakes = false;
+        newTemplate.showland = false;
+        newTemplate.showocean = false;
+        newTemplate.showrivers = false;
+        newTemplate.showsubunits = false;
+
+        // set ref to copy
+        geoLayoutOut._template = newTemplate;
+    }
+
     var show;
 
     for(var i = 0; i < axesNames.length; i++) {
