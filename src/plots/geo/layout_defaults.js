@@ -46,7 +46,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
     var visible = coerce('visible');
-    if(visible === false) {
+    if(geoLayoutIn.visible === false) {
+        visible = geoLayoutOut.visible = true;
         // should override template.layout.geo.show* - see issue 4482
 
         // make a copy

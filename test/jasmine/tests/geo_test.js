@@ -650,55 +650,93 @@ describe('Test Geo layout defaults', function() {
             });
         }
 
-        it('- base case', function() {
-            layoutIn = {
-                template: {
-                    layout: {
-                        geo: {
-                            showcoastlines: true,
-                            showcountries: true,
-                            showframe: true,
-                            showland: true,
-                            showlakes: true,
-                            showocean: true,
-                            showrivers: true,
-                            showsubunits: true,
-                            lonaxis: { showgrid: true },
-                            lataxis: { showgrid: true }
+        [true, false, undefined].forEach(function(q) {
+            it('- base case | ' + q, function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
                         }
-                    }
-                },
-                geo: { visible: false }
-            };
+                    },
+                    geo: { visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showsubunits: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showsubunits: undefined
+                });
             });
         });
 
-        it('- scoped case', function() {
-            layoutIn = {
-                geo: { scope: 'europe', visible: false }
-            };
+        [true, false, undefined].forEach(function(q) {
+            it('- scoped case', function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
+                        }
+                    },
+                    geo: { scope: 'europe', visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showframe: undefined,
-                showsubunits: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showframe: undefined,
+                    showsubunits: undefined
+                });
             });
         });
 
-        it('- scope:usa case', function() {
-            layoutIn = {
-                geo: { scope: 'usa', visible: false }
-            };
+        [true, false, undefined].forEach(function(q) {
+            it('- scope:usa case', function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
+                        }
+                    },
+                    geo: { scope: 'usa', visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showframe: undefined,
-                showcoastlines: undefined,
-                showocean: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showframe: undefined,
+                    showcoastlines: undefined,
+                    showocean: undefined
+                });
             });
         });
     });
