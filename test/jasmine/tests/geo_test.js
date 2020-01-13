@@ -740,56 +740,6 @@ describe('Test Geo layout defaults', function() {
             });
         });
     });
-
-    describe([
-        'geo.visible should honor template.layout.geo.show* defaults',
-        'when template.layout.geo.visible is set to false,',
-        'and does NOT set layout.geo.visible template'
-    ].join(' '), function() {
-        var keys = [
-            'lonaxis.showgrid',
-            'lataxis.showgrid',
-            'showcoastlines',
-            'showocean',
-            'showland',
-            'showlakes',
-            'showrivers',
-            'showcountries',
-            'showsubunits',
-            'showframe'
-        ];
-
-        function _assert(extra) {
-            var geo = layoutOut.geo;
-            keys.forEach(function(k) {
-                var actual = Lib.nestedProperty(geo, k).get();
-                if(extra && k in extra) {
-                    expect(actual).toBe(extra[k], k);
-                } else {
-                    expect(actual).toBe(false, k);
-                }
-            });
-        }
-
-        it('- disable geo.visible via template', function() {
-            layoutIn = {
-                template: {
-                    layout: {
-                        geo: {
-                            visible: false
-                        }
-                    }
-                }
-            };
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showcoastlines: true,
-                showframe: true,
-                showsubunits: undefined
-            });
-        });
-    });
 });
 
 describe('geojson / topojson utils', function() {
@@ -1665,6 +1615,94 @@ describe('Test geo interactions', function() {
                 'projection.scale': 1,
                 'projection.rotation.lon': 0
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it([
+        'geo.visible should honor template.layout.geo.show* defaults',
+        'when template.layout.geo.visible is set to false,',
+        'and does NOT set layout.geo.visible template'
+    ].join(' '), function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.react(gd, [{
+            type: 'scattergeo',
+            lat: [0],
+            lon: [0],
+            marker: { size: 100 }
+        }], {
+            template: {
+                layout: {
+                    geo: {
+                        visible: false,
+                        showcoastlines: true,
+                        showcountries: true,
+                        showframe: true,
+                        showland: true,
+                        showlakes: true,
+                        showocean: true,
+                        showrivers: true,
+                        showsubunits: true,
+                        lonaxis: { showgrid: true },
+                        lataxis: { showgrid: true }
+                    }
+                }
+            },
+            geo: {}
+        })
+        .then(function() {
+            expect(gd._fullLayout.geo.showcoastlines).toBe(true);
+            expect(gd._fullLayout.geo.showcountries).toBe(true);
+            expect(gd._fullLayout.geo.showframe).toBe(true);
+            expect(gd._fullLayout.geo.showland).toBe(true);
+            expect(gd._fullLayout.geo.showlakes).toBe(true);
+            expect(gd._fullLayout.geo.showocean).toBe(true);
+            expect(gd._fullLayout.geo.showrivers).toBe(true);
+            expect(gd._fullLayout.geo.showsubunits).toBe(undefined);
+            expect(gd._fullLayout.geo.lonaxis.showgrid).toBe(true);
+            expect(gd._fullLayout.geo.lataxis.showgrid).toBe(true);
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'scattergeo',
+                lat: [0],
+                lon: [0],
+                marker: {size: 100}
+            }], {
+                template: {
+                    layout: {
+                        geo: {
+                            showcoastlines: true,
+                            showcountries: true,
+                            showframe: true,
+                            showland: true,
+                            showlakes: true,
+                            showocean: true,
+                            showrivers: true,
+                            showsubunits: true,
+                            lonaxis: { showgrid: true },
+                            lataxis: { showgrid: true }
+                        }
+                    }
+                },
+                geo: {
+                    visible: false
+                }
+            });
+        })
+        .then(function() {
+            expect(gd._fullLayout.geo.showcoastlines).toBe(false);
+            expect(gd._fullLayout.geo.showcountries).toBe(false);
+            expect(gd._fullLayout.geo.showframe).toBe(false);
+            expect(gd._fullLayout.geo.showland).toBe(false);
+            expect(gd._fullLayout.geo.showlakes).toBe(false);
+            expect(gd._fullLayout.geo.showocean).toBe(false);
+            expect(gd._fullLayout.geo.showrivers).toBe(false);
+            expect(gd._fullLayout.geo.showsubunits).toBe(undefined);
+            expect(gd._fullLayout.geo.lonaxis.showgrid).toBe(false);
+            expect(gd._fullLayout.geo.lataxis.showgrid).toBe(false);
         })
         .catch(failTest)
         .then(done);
