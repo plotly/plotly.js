@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.52.1] -- 2020-01-13
+
+### Fixed
+- Fix handling of `geo.visible` false edge case in order to
+  override `template.layout.geo.show*` attributes [#4483]
+
+
 ## [1.52.0] -- 2020-01-08
 
 ### Added
