@@ -624,7 +624,7 @@ describe('Test Geo layout defaults', function() {
         });
     });
 
-    describe('geo.visible should override show* defaults', function() {
+    describe('geo.visible should override show* defaults even with template any show* is true', function() {
         var keys = [
             'lonaxis.showgrid',
             'lataxis.showgrid',
@@ -650,39 +650,93 @@ describe('Test Geo layout defaults', function() {
             });
         }
 
-        it('- base case', function() {
-            layoutIn = {
-                geo: { visible: false }
-            };
+        [true, false, undefined].forEach(function(q) {
+            it('- base case | ' + q, function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
+                        }
+                    },
+                    geo: { visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showsubunits: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showsubunits: undefined
+                });
             });
         });
 
-        it('- scoped case', function() {
-            layoutIn = {
-                geo: { scope: 'europe', visible: false }
-            };
+        [true, false, undefined].forEach(function(q) {
+            it('- scoped case', function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
+                        }
+                    },
+                    geo: { scope: 'europe', visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showframe: undefined,
-                showsubunits: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showframe: undefined,
+                    showsubunits: undefined
+                });
             });
         });
 
-        it('- scope:usa case', function() {
-            layoutIn = {
-                geo: { scope: 'usa', visible: false }
-            };
+        [true, false, undefined].forEach(function(q) {
+            it('- scope:usa case', function() {
+                layoutIn = {
+                    template: {
+                        layout: {
+                            geo: {
+                                showcoastlines: q,
+                                showcountries: q,
+                                showframe: q,
+                                showland: q,
+                                showlakes: q,
+                                showocean: q,
+                                showrivers: q,
+                                showsubunits: q,
+                                lonaxis: { showgrid: q },
+                                lataxis: { showgrid: q }
+                            }
+                        }
+                    },
+                    geo: { scope: 'usa', visible: false }
+                };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            _assert({
-                showframe: undefined,
-                showcoastlines: undefined,
-                showocean: undefined
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                _assert({
+                    showframe: undefined,
+                    showcoastlines: undefined,
+                    showocean: undefined
+                });
             });
         });
     });
@@ -1561,6 +1615,94 @@ describe('Test geo interactions', function() {
                 'projection.scale': 1,
                 'projection.rotation.lon': 0
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it([
+        'geo.visible should honor template.layout.geo.show* defaults',
+        'when template.layout.geo.visible is set to false,',
+        'and does NOT set layout.geo.visible template'
+    ].join(' '), function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.react(gd, [{
+            type: 'scattergeo',
+            lat: [0],
+            lon: [0],
+            marker: { size: 100 }
+        }], {
+            template: {
+                layout: {
+                    geo: {
+                        visible: false,
+                        showcoastlines: true,
+                        showcountries: true,
+                        showframe: true,
+                        showland: true,
+                        showlakes: true,
+                        showocean: true,
+                        showrivers: true,
+                        showsubunits: true,
+                        lonaxis: { showgrid: true },
+                        lataxis: { showgrid: true }
+                    }
+                }
+            },
+            geo: {}
+        })
+        .then(function() {
+            expect(gd._fullLayout.geo.showcoastlines).toBe(true);
+            expect(gd._fullLayout.geo.showcountries).toBe(true);
+            expect(gd._fullLayout.geo.showframe).toBe(true);
+            expect(gd._fullLayout.geo.showland).toBe(true);
+            expect(gd._fullLayout.geo.showlakes).toBe(true);
+            expect(gd._fullLayout.geo.showocean).toBe(true);
+            expect(gd._fullLayout.geo.showrivers).toBe(true);
+            expect(gd._fullLayout.geo.showsubunits).toBe(undefined);
+            expect(gd._fullLayout.geo.lonaxis.showgrid).toBe(true);
+            expect(gd._fullLayout.geo.lataxis.showgrid).toBe(true);
+        })
+        .then(function() {
+            return Plotly.react(gd, [{
+                type: 'scattergeo',
+                lat: [0],
+                lon: [0],
+                marker: {size: 100}
+            }], {
+                template: {
+                    layout: {
+                        geo: {
+                            showcoastlines: true,
+                            showcountries: true,
+                            showframe: true,
+                            showland: true,
+                            showlakes: true,
+                            showocean: true,
+                            showrivers: true,
+                            showsubunits: true,
+                            lonaxis: { showgrid: true },
+                            lataxis: { showgrid: true }
+                        }
+                    }
+                },
+                geo: {
+                    visible: false
+                }
+            });
+        })
+        .then(function() {
+            expect(gd._fullLayout.geo.showcoastlines).toBe(false);
+            expect(gd._fullLayout.geo.showcountries).toBe(false);
+            expect(gd._fullLayout.geo.showframe).toBe(false);
+            expect(gd._fullLayout.geo.showland).toBe(false);
+            expect(gd._fullLayout.geo.showlakes).toBe(false);
+            expect(gd._fullLayout.geo.showocean).toBe(false);
+            expect(gd._fullLayout.geo.showrivers).toBe(false);
+            expect(gd._fullLayout.geo.showsubunits).toBe(undefined);
+            expect(gd._fullLayout.geo.lonaxis.showgrid).toBe(false);
+            expect(gd._fullLayout.geo.lataxis.showgrid).toBe(false);
         })
         .catch(failTest)
         .then(done);
