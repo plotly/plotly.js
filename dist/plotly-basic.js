@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.52.0
+* plotly.js (basic) v1.52.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34317,7 +34317,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.52.0';
+exports.version = '1.52.1';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
