@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,6 +22,7 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var DASH_PATTERNS = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 
+var Axes = require('../../plots/cartesian/axes');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var calculateError = require('./calc_errors');
@@ -241,19 +242,35 @@ function convertPlotlyOptions(scene, data) {
         for(i = 0; i < len; i++) text[i] = data.text;
     }
 
+    function formatter(axName, val) {
+        var ax = sceneLayout[axName];
+        return Axes.tickText(ax, ax.d2l(val), true).text;
+    }
+
     // check texttemplate
     var texttemplate = data.texttemplate;
     if(texttemplate) {
+        var fullLayout = scene.fullLayout;
+        var d3locale = fullLayout._d3locale;
         var isArray = Array.isArray(texttemplate);
         var N = isArray ? Math.min(texttemplate.length, len) : len;
-        var txt = isArray ? function(i) {return texttemplate[i];} : function() { return texttemplate;};
-        var d3locale = scene.fullLayout._d3locale;
+        var txt = isArray ?
+            function(i) { return texttemplate[i]; } :
+            function() { return texttemplate; };
+
         text = new Array(N);
+
         for(i = 0; i < N; i++) {
-            var pt = {};
-            pt.text = text[i];
-            appendArrayPointValue(pt, data, i);
-            text[i] = Lib.texttemplateString(txt(i), pt, d3locale, pt, data._meta || {});
+            var d = {x: x[i], y: y[i], z: z[i]};
+            var labels = {
+                xLabel: formatter('xaxis', x[i]),
+                yLabel: formatter('yaxis', y[i]),
+                zLabel: formatter('zaxis', z[i])
+            };
+            var pointValues = {};
+            appendArrayPointValue(pointValues, data, i);
+            var meta = data._meta || {};
+            text[i] = Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,6 @@
 'use strict';
 
 var Fx = require('../../components/fx');
-var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var getTraceColor = require('../scatter/get_trace_color');
@@ -63,9 +62,11 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.lon = lonlat[0];
     pointData.lat = lonlat[1];
 
-    var ax = geo.mockAxis;
-    pointData.lonLabel = Axes.tickText(ax, ax.c2l(pointData.lon), 'hover').text;
-    pointData.latLabel = Axes.tickText(ax, ax.c2l(pointData.lat), 'hover').text;
+    var fullLayout = {};
+    fullLayout[trace.geo] = {_subplot: geo};
+    var labels = trace._module.formatLabels(di, trace, fullLayout);
+    pointData.lonLabel = labels.lonLabel;
+    pointData.latLabel = labels.latLabel;
 
     pointData.color = getTraceColor(trace, di);
     pointData.extraText = getExtraText(trace, di, pointData, cd[0].t.labels);

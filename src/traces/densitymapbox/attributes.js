@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var scatterMapboxAttrs = require('../scattermapbox/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -81,10 +81,11 @@ module.exports = extendFlat({
     text: scatterMapboxAttrs.text,
     hovertext: scatterMapboxAttrs.hovertext,
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'z', 'text', 'name']
     }),
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
     colorScaleAttrs('', {
         cLetter: 'z',

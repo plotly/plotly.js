@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,26 +8,57 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function handleLabelsAndValues(labels, values) {
+    var hasLabels = Array.isArray(labels);
+    var hasValues = Lib.isArrayOrTypedArray(values);
+    var len = Math.min(
+        hasLabels ? labels.length : Infinity,
+        hasValues ? values.length : Infinity
+    );
+
+    if(!isFinite(len)) len = 0;
+
+    if(len && hasValues) {
+        var hasPositive;
+        for(var i = 0; i < len; i++) {
+            var v = values[i];
+            if(isNumeric(v) && v > 0) {
+                hasPositive = true;
+                break;
+            }
+        }
+        if(!hasPositive) len = 0;
+    }
+
+    return {
+        hasLabels: hasLabels,
+        hasValues: hasValues,
+        len: len
+    };
+}
+
+function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len;
-    var vals = coerce('values');
-    var hasVals = Lib.isArrayOrTypedArray(vals);
     var labels = coerce('labels');
-    if(Array.isArray(labels)) {
-        len = labels.length;
-        if(hasVals) len = Math.min(len, vals.length);
-    } else if(hasVals) {
-        len = vals.length;
+    var values = coerce('values');
 
+    var res = handleLabelsAndValues(labels, values);
+    var len = res.len;
+    traceOut._hasLabels = res.hasLabels;
+    traceOut._hasValues = res.hasValues;
+
+    if(!traceOut._hasLabels &&
+        traceOut._hasValues
+    ) {
         coerce('label0');
         coerce('dlabel');
     }
@@ -70,6 +101,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(hasOutside) {
             coerce('automargin');
         }
+
+        if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
+            coerce('insidetextorientation');
+        }
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
@@ -86,4 +121,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('direction');
     coerce('rotation');
     coerce('pull');
+}
+
+module.exports = {
+    handleLabelsAndValues: handleLabelsAndValues,
+    supplyDefaults: supplyDefaults
 };

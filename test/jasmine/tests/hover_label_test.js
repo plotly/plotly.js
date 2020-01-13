@@ -1019,6 +1019,51 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should display correct label - x/y/z heatmap|contour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                x: [1, 1, 2, 2],
+                y: [1, 2, 1, 2],
+                z: [1, 2, 3, 4],
+                customdata: ['a', 'b', 'c', 'd'],
+                ids: ['A', 'B', 'C', 'D'],
+                hovertemplate: '%{customdata} | %{id}<extra>%{data.type}: %{pointNumber}</extra>'
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: 'b | B',
+                    name: 'heatmap: 1'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'c | C',
+                    name: 'heatmap: 2'
+                });
+            })
+            .then(function() { return Plotly.restyle(gd, 'type', 'contour'); })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: 'b | B',
+                    name: 'contour: 1'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'c | C',
+                    name: 'contour: 2'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('hover info for negative data on a log axis', function() {
@@ -2544,7 +2589,7 @@ describe('hover on fill', function() {
             assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
 
             // hover on the cartesian trace in the corner
-            assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
+            assertLabelsCorrect([363, 122], [367, 122], 'trace 38');
         })
         .catch(failTest)
         .then(done);

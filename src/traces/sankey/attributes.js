@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
@@ -23,7 +23,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var attrs = module.exports = overrideAll({
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: [],
         arrayOk: false,
         description: [

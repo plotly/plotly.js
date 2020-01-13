@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64,6 +64,12 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.y0 = yc - rad;
     pointData.y1 = yc + rad;
 
+    var fullLayout = {};
+    fullLayout[trace.subplot] = {_subplot: subplot};
+    var labels = trace._module.formatLabels(di, trace, fullLayout);
+    pointData.lonLabel = labels.lonLabel;
+    pointData.latLabel = labels.latLabel;
+
     pointData.color = getTraceColor(trace, di);
     pointData.extraText = getExtraText(trace, di, cd[0].t.labels);
     pointData.hovertemplate = trace.hovertemplate;
@@ -72,9 +78,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function getExtraText(trace, di, labels) {
-    if(trace.hovertemplate) {
-        return;
-    }
+    if(trace.hovertemplate) return;
 
     var hoverinfo = di.hi || trace.hoverinfo;
     var parts = hoverinfo.split('+');

@@ -1,0 +1,211 @@
+{
+  "data": [
+    {
+      "type": "box",
+      "name": "[V] just q1/median/q3",
+      "offsetgroup": "1",
+      "q1": [ 1, "2", 1 ],
+      "median": [ 2, 3, "2" ],
+      "q3": [ "3", 4, 3 ]
+    },
+    {
+      "type": "box",
+      "name": "[V] q1/median/q3/lowerfence/upperfence",
+      "offsetgroup": "2",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ 0, "1", 0 ],
+      "upperfence": [ 4, 5, "4" ]
+    },
+    {
+      "type": "box",
+      "name": "[V] all pre-computed stats",
+      "offsetgroup": "3",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ 0, 1, 0 ],
+      "upperfence": [ 4, 5, 4 ],
+      "mean": [ 2.2, 2.8, "2.2" ],
+      "sd": [ "0.4", 0.4, 0.4 ],
+      "notchspan": [ 0.2, "0.1", 0.2 ]
+    },
+    {
+      "type": "box",
+      "name": "[V] set q1/median/q3 computed lowerfence/upperfence",
+      "offsetgroup": "1",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "y": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "box",
+      "name": "[V] set q1/median/q3/lowerfence/upperfence computed mean",
+      "offsetgroup": "2",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ -1, 0, -1 ],
+      "upperfence": [ 5, 6, 5 ],
+      "boxmean": true,
+      "y": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5, 8 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "box",
+      "name": "[V] set q1/median/q3 computed lowerfence/upperfence/mean/sd/notches",
+      "offsetgroup": "3",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "y": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "boxmean": "sd",
+      "notched": true,
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "box",
+      "name": "[H] just q1/median/q3",
+      "offsetgroup": "1",
+      "y0": 1,
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "box",
+      "name": "[H] q1/median/q3/lowerfence/upperfence",
+      "offsetgroup": "2",
+      "y0": 1,
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ 0, 1, 0 ],
+      "upperfence": [ 4, 5, 4 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "box",
+      "name": "[H] all pre-computed stats",
+      "offsetgroup": "3",
+      "y0": 1,
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ 0, 1, 0 ],
+      "upperfence": [ 4, 5, 4 ],
+      "mean": [ 2.2, 2.8, 2.2 ],
+      "sd": [ 0.4, 0.4, 0.4 ],
+      "notchspan": [ 0.2, 0.1, 0.2 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "box",
+      "name": "[H] set q1/median/q3 computed lowerfence/upperfence",
+      "offsetgroup": "1",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "x": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "box",
+      "name": "[H] set q1/median/q3/lowerfence/upperfence computed mean",
+      "offsetgroup": "2",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "lowerfence": [ -1, 0, -1 ],
+      "upperfence": [ 5, 6, 5 ],
+      "boxmean": true,
+      "x": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5, 8 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "box",
+      "name": "[H] set q1/median/q3 computed lowerfence/upperfence/mean/sd/notches",
+      "offsetgroup": "3",
+      "q1": [ 1, 2, 1 ],
+      "median": [ 2, 3, 2 ],
+      "q3": [ 3, 4, 3 ],
+      "x": [
+        [ 0, 1, 2, 3, 4 ],
+        [ 1, 2, 3, 4, 5 ],
+        [ 0, 1, 2, 3, 4 ]
+      ],
+      "boxmean": "sd",
+      "notched": true,
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "boxmode": "group",
+    "yaxis": {
+      "domain": [ 0.78, 1 ]
+    },
+    "xaxis2": {
+      "anchor": "y2"
+    },
+    "yaxis2": {
+      "domain": [ 0.51, 0.72 ],
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain": [ 0, 0.5 ],
+      "anchor": "y3"
+    },
+    "yaxis3": {
+      "domain": [ 0, 0.48 ],
+      "anchor": "x3"
+    },
+    "xaxis4": {
+      "domain": [ 0.5, 1 ],
+      "anchor": "y4"
+    },
+    "yaxis4": {
+      "domain": [ 0, 0.48 ],
+      "anchor": "x4"
+    },
+    "margin": { "l": 20, "t": 40, "b": 20, "r": 20 },
+    "title": {
+      "text": "box traces with pre-computed stats",
+      "x": 0
+    },
+    "hovermode": "closest"
+  }
+}

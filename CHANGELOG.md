@@ -10,6 +10,97 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.52.1] -- 2020-01-13
+
+### Fixed
+- Fix handling of `geo.visible` false edge case in order to
+  override `template.layout.geo.show*` attributes [#4483]
+
+
+## [1.52.0] -- 2020-01-08
+
+### Added
+- Add `uniformtext` behavior to `bar`, `funnel`, `waterfall`, `pie`, `funnelarea`,
+ `sunburst` and `treemap` traces [#4420, #4444, #4469]
+- Add "pre-computed" q1/median/q3 input signature for `box` traces [#4432]
+- Add support for legend titles [#4386]
+- Add legend items for `choropleth`, `choroplethmapbox`, `cone`, `densitymapbox`,
+  `heatmap`, `histogram2d`, `isosurface`, `mesh3d`, `streamtube`,
+  `surface`, `volume` traces [#4386, #4441]
+- Add "auto-fitting" behavior to geo subplots via `geo.fitbounds` attribute [#4419]
+- Add support for custom geojson geometries in `choropleth`
+  and `scattergeo` traces [#4419]
+- Add "exclusive" and "inclusive" quartile-computing algorithm to `box` traces
+  via `quartilemethod` attribute [#4432]
+- Add `insidetextorientation` attribute to `pie` and `sunburst` traces [#4420]
+- Add `intensitymode` to allow cell intensity values in `mesh3d` traces [#4446]
+- Add `featureidkey` attribute to `choroplethmapbox`, `choropleth`
+  and `scattergeo` traces [#4419]
+- Add `geo.visible` shortcut attribute [#4419]
+- Add coordinates of mapbox subplot view as a derived property in `plotly_relayout`
+  event data [#4413]
+- Add modebar buttons `zoomInMapbox` and `zoomOutMapbox` [#4398]
+- Add support for typed array in `groupby` transforms `groups` [#4410]
+- Add `notifyOnLogging` config option that allows log/warn/error messages
+  to show up in notifiers pop-ups [#4464]
+- Enable loading locale bundles before plotly.js bundles [#4453]
+- Add Korean `ko` locale [#4315]
+
+### Changed
+- Skip mapbox subplot map position updates while panning/zooming removing
+  potential stuttering [#4418]
+- Optimize mapbox `raster` layout layer updates [#4418]
+- Improve `sunburst` and `treemap` click events behavior [#4454]
+- Improve attribute description of sunburst/treemap `outsidetextfont` [#4463]
+- Update source and dist file headers to 2020 [#4457]
+
+### Fixed
+- Fix `streamtube` traces with numeric string coordinates
+  (bug introduced in 1.51.0) [#4431]
+- Correctly handle different data orders in `isosurface` and `volume` traces [#4431]
+- Fix symbol numbers in `scattergl` and `splom` traces [#4465]
+- Fix `coloraxis` colorbars for `sunburst` and `treemap` with
+  values colorscales [#4444]
+- Fix inside text fitting for `bar`, `funnel` and `waterfall` traces with
+  set `textangle` [#4444]
+- Fix handling of invalid values and zero totals for `pie` and `funnelarea` [#4416]
+- Fix colorbar of `reversescale` colorscales of heatmap-coloring contours [#4437]
+- Fix colorbar templating for "non-root" colorscales [#4470]
+- Fix event data and some hover templates for x/y/z heatmap + contour [#4472]
+- Fix "toggleothers" behavior for graphs with traces not in legend [#4406]
+- Fix `histogram` bingroup logic when `calendars` module is not registered [#4439]
+- Fix "almost equal" `branchvalue: 'total'` partial sum cases [#4442]
+- Fix handling of `treemap` `pathbar.textfont` [#4444]
+
+
+## [1.51.3] -- 2019-12-16
+
+### Fixed
+- Fix `Plotly.Plots.resize` edge cases ensuring now that
+  its promises always resolve [#4392]
+- Fix position of link hover labels in vertical `sankey` [#4404]
+- Fix `box` autorange for traces with "inverted" notched [#4388]
+
+
+## [1.51.2] -- 2019-11-25
+
+### Fixed
+- Fix `texttemplate`formatting on axes that define
+  tick prefixes and suffixes [#4380, #4384]
+- Fix `cmin` and `cmax` computations during color
+  value updates on shared color axes [#4366]
+- Fix `contour` and `histogram2dcontour` legend item
+  rendering when `reversescale` is turned on [#4356]
+- Fix `contour` and `histogram2dcontour` legend item
+  rendering when set to a shared color axis [#4356]
+- Handle missing `vertexcolor` and `facecolor` during `mesh3d` rendering [#4353]
+- No longer coerce `contour` and `colorscale` attributes for `mesh3d`
+  when not needed [#4346]
+- Remove a duplicate function call in `parcoords` code [#4357]
+- Include `opacity` in the `surface` trace plot schema [#4344]
+- Mention `legend.bgcolor` default in attribute description [#4362]
+
+
 ## [1.51.1] -- 2019-11-04
 
 ### Fixed

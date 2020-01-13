@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
@@ -174,7 +174,7 @@ module.exports = {
     }),
 
     hovertext: pieAttrs.hovertext,
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: [
             'label',
             'text',
@@ -192,8 +192,17 @@ module.exports = {
     }),
 
     textfont: pieAttrs.textfont,
+    insidetextorientation: pieAttrs.insidetextorientation,
     insidetextfont: pieAttrs.insidetextfont,
-    outsidetextfont: pieAttrs.outsidetextfont,
+    outsidetextfont: extendFlat({}, pieAttrs.outsidetextfont, {
+        description: [
+            'Sets the font used for `textinfo` lying outside the sector.',
+            'This option refers to the root of the hierarchy',
+            'presented at the center of a sunburst graph.',
+            'Please note that if a hierarchy has multiple root nodes,',
+            'this option won\'t have any effect and `insidetextfont` would be used.'
+        ].join(' ')
+    }),
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };

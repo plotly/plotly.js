@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,6 +20,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     crossTraceDefaults: require('../scatter/cross_trace_defaults'),
     colorbar: require('../scatter/marker_colorbar'),
+    formatLabels: require('./format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     hoverPoints: hover.hoverPoints,

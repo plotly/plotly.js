@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
@@ -158,7 +158,7 @@ module.exports = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
     hovertemplate: hovertemplateAttrs({}, {
@@ -181,6 +181,21 @@ module.exports = {
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
+    insidetextorientation: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['horizontal', 'radial', 'tangential', 'auto'],
+        dflt: 'auto',
+        editType: 'plot',
+        description: [
+            'Determines the orientation of text inside slices.',
+            'With *auto* the texts may automatically be',
+            'rotated to fit with the maximum size inside the slice.',
+            'Using *horizontal* option forces text to be horizontal.',
+            'Using *radial* option forces text to be radial.',
+            'Using *tangential* option forces text to be tangential.'
+        ].join(' ')
+    },
     insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the sector.'
     }),

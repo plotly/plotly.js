@@ -2692,6 +2692,55 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
+    it('@flaky should work for box traces (q1/median/q3 case)', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                pointpos: 0,
+            }],
+            layout: {
+                width: 500,
+                height: 500,
+                dragmode: 'lasso'
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
+                function() {
+                    assertPoints([ [0, 1, undefined], [0, 2, undefined] ]);
+                    assertSelectedPoints({ 0: [[0, 1], [0, 2]] });
+                },
+                null, LASSOEVENTS, 'box lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 300]],
+                function() {
+                    assertPoints([ [0, 2, undefined] ]);
+                    assertSelectedPoints({ 0: [[0, 2]] });
+                },
+                null, BOXEVENTS, 'box select'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@flaky should work for violin traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
         var assertSelectedPoints = makeAssertSelectedPoints();

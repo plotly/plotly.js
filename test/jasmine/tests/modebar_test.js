@@ -484,7 +484,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 
@@ -502,7 +502,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 

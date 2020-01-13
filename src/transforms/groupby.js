@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -172,7 +172,7 @@ function transformOne(trace, state) {
     var groups = trace.transforms[transformIndex].groups;
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
-    if(!(Array.isArray(groups)) || groups.length === 0) {
+    if(!(Lib.isArrayOrTypedArray(groups)) || groups.length === 0) {
         return [trace];
     }
 

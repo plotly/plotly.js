@@ -1112,28 +1112,6 @@ describe('A bar plot', function() {
         };
     }
 
-    checkTextTemplate([{
-        type: 'bar',
-        y: [1, 5, 3, 2],
-        text: ['A', 'B', 'C', 'D'],
-        textposition: 'inside',
-        hovertemplate: '%{text}'
-    }], 'text.bartext', [
-      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
-      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
-    ]);
-
-    checkTextTemplate([{
-        type: 'bar',
-        textposition: 'outside',
-        x: ['2019-01-01', '2019-02-01'],
-        y: [1, 2],
-        hovertemplate: '%{x}',
-        texttemplate: '%{x}'
-    }], 'text.bartext', [
-      ['%{x}', ['2019-01-01', '2019-02-01']]
-    ]);
-
     it('should show bar texts (inside case)', function(done) {
         var data = [{
             y: [10, 20, 30],
@@ -2347,6 +2325,50 @@ describe('bar hover', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should allow both x/y tokens and label/value tokens', function(done) {
+            gd = createGraphDiv();
+
+            function _hover(xpx, ypx) {
+                return function() {
+                    Fx.hover(gd, {xpx: xpx, ypx: ypx}, 'xy');
+                    Lib.clearThrottle();
+                };
+            }
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'bar',
+                    x: ['a', 'b'],
+                    y: ['1000', '1200'],
+                    hovertemplate: ['%{x} is %{y}', '%{label} is %{value}']
+                }],
+                layout: {
+                    xaxis: { tickprefix: '*', ticksuffix: '*' },
+                    yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'},
+                    width: 400,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    hovermode: 'closest'
+                }
+            })
+            .then(_hover(100, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*a* is $1000.00 !',
+                    name: 'trace 0'
+                });
+            })
+            .then(_hover(300, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*b* is $1200.00 !',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('with special width/offset combinations', function() {
@@ -2494,6 +2516,46 @@ describe('bar hover', function() {
             });
         });
     });
+});
+
+describe('Text templates on bar traces:', function() {
+    checkTextTemplate([{
+        type: 'bar',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{text} - %{value}', ['A - 1', 'B - 5', 'C - 3', 'D - 2']],
+      [['%{y}', '%{value}', '%{text}'], ['1', '5', 'C']]
+    ]);
+
+    checkTextTemplate([{
+        type: 'bar',
+        textposition: 'outside',
+        x: ['2019-01-01', '2019-02-01'],
+        y: [1, 2],
+        hovertemplate: '%{x}',
+        texttemplate: '%{x}'
+    }], 'text.bartext', [
+      ['%{x}', ['Jan 1, 2019', 'Feb 1, 2019']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'bar',
+            textposition: 'inside',
+            x: ['a', 'b'],
+            y: ['1000', '1200'],
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        },
+    }, 'text.bartext', [
+        ['%{x} is %{y}', ['*a* is $1000.00 !', '*b* is $1200.00 !']],
+        ['%{label} is %{value}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
 });
 
 describe('event data', function() {
@@ -2723,5 +2785,133 @@ describe('bar tweening', function() {
         checkTransition(gd, _mock, nextFrame, transitionOpts, tests)
             .catch(failTest)
             .then(done);
+    });
+});
+
+describe('bar uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'bar',
+                orientation: 'h',
+                x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+
+                // no text element would be created for null and empty string
+                text: [
+                    'long lablel',
+                    '$',
+                    '=',
+                    '|',
+                    '.',
+                    ' ',
+                    '',
+                    null,
+                    '<br>',
+                    0
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                textangle: 0
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 0.48, 0.48, 0.48, 0.48, 0.48, 0.48],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 0, 0, 0, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 14; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 14', {
+            fontsizes: [14, 14, 14, 14, 14, 14, 14],
+            scales: [0, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [14, 14, 14, 14, 14, 14, 14],
+            scales: [1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 1, 1, 1, 1, 1, 1],
+        }))
+        .catch(failTest)
+        .then(done);
     });
 });

@@ -295,7 +295,7 @@ describe('mapbox credentials', function() {
             }]);
         }).toThrow(new Error(constants.missingStyleErrorMsg));
 
-        expect(Lib.error).toHaveBeenCalledTimes(0);
+        expect(Lib.error).toHaveBeenCalledWith(constants.missingStyleErrorMsg);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should throw error when setting a Mapbox style w/o a registered token', function() {
@@ -410,7 +410,7 @@ describe('mapbox credentials', function() {
         }], {
             mapbox: {
                 accesstoken: MAPBOX_ACCESS_TOKEN,
-                style: 'mapbox://styles/etpinard/cip93fm98000sbmnuednknloo'
+                style: 'mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m'
             }
         }).catch(function() {
             cnt++;
@@ -582,6 +582,53 @@ describe('@noCI, mapbox plots', function() {
         })
         .catch(failTest)
         .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not update center while dragging', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setCenter').and.callThrough();
+
+        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lon: 13.5, lat: -19.5}});
+        }).then(function() {
+            // First relayout on mapbox.center results in setCenter call
+            expect(map.setCenter).toHaveBeenCalledWith([13.5, -19.5]);
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            return _mouseEvent('mousedown', pointPos, noop);
+        }).then(function() {
+            return _mouseEvent('mousemove', p1, noop);
+        }).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lat: 0, lon: 0}});
+        }).then(function() {
+            return _mouseEvent('mouseup', p1, noop);
+        }).then(function() {
+            // Second relayout on mapbox.center does not result in a setCenter
+            // call since map drag is underway
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not update zoom while scroll wheeling', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setZoom').and.callThrough();
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.zoom': 5});
+        }).then(function() {
+            // First relayout on mapbox.zoom results in setZoom call
+            expect(map.setZoom).toHaveBeenCalledWith(5);
+            expect(map.setZoom).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
+            return Plotly.relayout(gd, {'mapbox.zoom': 2}).then(function() {
+                // Second relayout on mapbox.zoom does not result in setZoom
+                // call since a scroll wheel zoom is underway
+                expect(map.setZoom).toHaveBeenCalledTimes(1);
+            });
+        }).then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle', function(done) {
@@ -883,6 +930,57 @@ describe('@noCI, mapbox plots', function() {
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should be able to update layer image', function(done) {
+        var coords = [
+            [-80.425, 46.437],
+            [-71.516, 46.437],
+            [-71.516, 37.936],
+            [-80.425, 37.936]
+        ];
+        function makeFigure(source) {
+            return {
+                data: [{type: 'scattermapbox'}],
+                layout: {
+                    mapbox: {
+                        layers: [{
+                            'sourcetype': 'image',
+                            'coordinates': coords,
+                            'source': source
+                        }]
+                    }
+                }
+            };
+        }
+
+        var map = null;
+        var layerSource = null;
+
+        // Single pixel PNGs generated with http://png-pixel.com/
+        var prefix = 'data:image/png;base64,';
+        var redImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'P8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+        var greenImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'Nk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==';
+
+        Plotly.react(gd, makeFigure(redImage)).then(function() {
+            var mapbox = gd._fullLayout.mapbox._subplot;
+            map = mapbox.map;
+            layerSource = map.getSource(mapbox.layerList[0].idSource);
+
+            spyOn(layerSource, 'updateImage').and.callThrough();
+            spyOn(map, 'removeSource').and.callThrough();
+            return Plotly.react(gd, makeFigure(greenImage));
+        })
+        .then(function() {
+            expect(layerSource.updateImage).toHaveBeenCalledWith(
+                {url: greenImage, coordinates: coords}
+            );
+            expect(map.removeSource).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);
@@ -1226,11 +1324,18 @@ describe('@noCI, mapbox plots', function() {
             expect(layout.zoom).toBeCloseTo(zoom);
         }
 
-        function _assert(center, zoom) {
+        function _assert(center, zoom, lon0, lat0, lon1, lat1) {
             _assertLayout(center, zoom);
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
+            expect(Object.keys(evtData['mapbox._derived'])).toEqual(['coordinates']);
+            expect(evtData['mapbox._derived'].coordinates).toBeCloseTo2DArray([
+                [lon0, lat1],
+                [lon1, lat1],
+                [lon1, lat0],
+                [lon0, lat0]
+            ], -0.1);
         }
 
         _assertLayout([-4.710, 19.475], 1.234);
@@ -1241,7 +1346,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(1, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(0, 'double click cnt');
-            _assert([-19.651, 13.751], 1.234);
+            _assert([-19.651, 13.751], 1.234,
+                -155.15981291032617, -25.560300274373148,
+                115.85734493011842, 47.573988219006424);
 
             return _doubleClick(p1);
         })
@@ -1249,7 +1356,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(2, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
-            _assert([-4.710, 19.475], 1.234);
+            _assert([-4.710, 19.475], 1.234,
+                -140.21950652441467, -20.054298691163496,
+                130.79765131602989, 51.4513888208798);
 
             return _scroll(pointPos);
         })

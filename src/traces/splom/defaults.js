@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ var attributes = require('./attributes');
 var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var mergeLength = require('../parcoords/merge_length');
-var OPEN_RE = /-open/;
+var isOpenSymbol = require('../scattergl/helpers').isOpenSymbol;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -44,7 +44,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
-    var isOpen = OPEN_RE.test(traceOut.marker.symbol);
+    var isOpen = isOpenSymbol(traceOut.marker.symbol);
     var isBubble = subTypes.isBubble(traceOut);
     coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
 

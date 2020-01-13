@@ -10,7 +10,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:10.9.0
+      - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -39,7 +39,7 @@ jobs:
   test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:10.9.0-browsers
+      - image: circleci/node:12.13.0-browsers
     parallelism: 2
     working_directory: ~/plotly.js
     steps:
@@ -52,7 +52,7 @@ jobs:
   test-jasmine2:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:10.9.0-browsers
+      - image: circleci/node:12.13.0-browsers
     parallelism: 3
     working_directory: ~/plotly.js
     steps:
@@ -65,7 +65,7 @@ jobs:
   test-jasmine3:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:10.9.0-browsers
+      - image: circleci/node:12.13.0-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -115,7 +115,7 @@ jobs:
 
   test-syntax:
     docker:
-      - image: circleci/node:10.9.0
+      - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -127,7 +127,7 @@ jobs:
   test-bundle:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:10.9.0-browsers
+      - image: circleci/node:12.13.0-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -138,7 +138,7 @@ jobs:
 
   publish:
     docker:
-      - image: circleci/node:10.9.0
+      - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:

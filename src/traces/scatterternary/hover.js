@@ -1,17 +1,14 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var scatterHover = require('../scatter/hover');
-var Axes = require('../../plots/cartesian/axes');
-
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
@@ -40,6 +37,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     var cdi = newPointData.cd[newPointData.index];
+    var trace = newPointData.trace;
+    var subplot = newPointData.subplot;
 
     newPointData.a = cdi.a;
     newPointData.b = cdi.b;
@@ -48,12 +47,13 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
 
-    var ternary = newPointData.subplot;
-    newPointData.aLabel = Axes.tickText(ternary.aaxis, cdi.a, 'hover').text;
-    newPointData.bLabel = Axes.tickText(ternary.baxis, cdi.b, 'hover').text;
-    newPointData.cLabel = Axes.tickText(ternary.caxis, cdi.c, 'hover').text;
+    var fullLayout = {};
+    fullLayout[trace.subplot] = {_subplot: subplot};
+    var labels = trace._module.formatLabels(cdi, trace, fullLayout);
+    newPointData.aLabel = labels.aLabel;
+    newPointData.bLabel = labels.bLabel;
+    newPointData.cLabel = labels.cLabel;
 
-    var trace = newPointData.trace;
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];
     function textPart(ax, val) {
@@ -62,9 +62,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(!trace.hovertemplate) {
         var parts = hoverinfo.split('+');
         if(parts.indexOf('all') !== -1) parts = ['a', 'b', 'c'];
-        if(parts.indexOf('a') !== -1) textPart(ternary.aaxis, newPointData.aLabel);
-        if(parts.indexOf('b') !== -1) textPart(ternary.baxis, newPointData.bLabel);
-        if(parts.indexOf('c') !== -1) textPart(ternary.caxis, newPointData.cLabel);
+        if(parts.indexOf('a') !== -1) textPart(subplot.aaxis, newPointData.aLabel);
+        if(parts.indexOf('b') !== -1) textPart(subplot.baxis, newPointData.bLabel);
+        if(parts.indexOf('c') !== -1) textPart(subplot.caxis, newPointData.cLabel);
     }
     newPointData.extraText = text.join('<br>');
     newPointData.hovertemplate = trace.hovertemplate;

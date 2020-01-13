@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,8 +9,6 @@
 'use strict';
 
 var scatterHover = require('../scatter/hover');
-var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
@@ -42,12 +40,11 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
 
-    var rVal = radialAxis.c2l(cdi.r);
-    pointData.rLabel = Axes.tickText(radialAxis, rVal, 'hover').text;
-
-    // N.B here the ° sign is part of the formatted value for thetaunit:'degrees'
-    var thetaVal = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(cdi.theta) : cdi.theta;
-    pointData.thetaLabel = Axes.tickText(angularAxis, thetaVal, 'hover').text;
+    var fullLayout = {};
+    fullLayout[trace.subplot] = {_subplot: subplot};
+    var labels = trace._module.formatLabels(cdi, trace, fullLayout);
+    pointData.rLabel = labels.rLabel;
+    pointData.thetaLabel = labels.thetaLabel;
 
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var text = [];

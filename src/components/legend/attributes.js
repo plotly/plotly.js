@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,7 +17,10 @@ module.exports = {
         valType: 'color',
         role: 'style',
         editType: 'legend',
-        description: 'Sets the legend background color.'
+        description: [
+            'Sets the legend background color.',
+            'Defaults to `layout.paper_bgcolor`.'
+        ].join(' ')
     },
     bordercolor: {
         valType: 'color',
@@ -190,5 +193,38 @@ module.exports = {
             'Sets the vertical alignment of the symbols with respect to their associated text.',
         ].join(' ')
     },
+    title: {
+        text: {
+            valType: 'string',
+            dflt: '',
+            role: 'info',
+            editType: 'legend',
+            description: [
+                'Sets the title of the legend.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'legend',
+            description: [
+                'Sets this legend\'s title font.'
+            ].join(' '),
+        }),
+        side: {
+            valType: 'enumerated',
+            values: ['top', 'left', 'top left'],
+            role: 'style',
+            editType: 'legend',
+            description: [
+                'Determines the location of legend\'s title',
+                'with respect to the legend items.',
+                'Defaulted to *top* with `orientation` is *h*.',
+                'Defaulted to *left* with `orientation` is *v*.',
+                'The *top left* options could be used to expand',
+                'legend area in both x and y sides.'
+            ].join(' ')
+        },
+        editType: 'legend',
+    },
+
     editType: 'legend'
 };

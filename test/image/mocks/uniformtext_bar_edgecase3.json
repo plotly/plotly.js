@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "y": [
+                999,
+                4999,
+                8999,
+                12999,
+                16999,
+                20999,
+                24999,
+                28999,
+                32999,
+                36999,
+                40999,
+                44999
+            ],
+            "texttemplate": "%{y}",
+            "textposition": "auto",
+            "textangle": 0,
+            "textfont": {
+                "size": 16
+            }
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 600,
+        "uniformtext": {
+            "mode": "hide"
+        }
+    }
+}

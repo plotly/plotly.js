@@ -17,6 +17,8 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
+var SLICES_TEXT_SELECTOR = '.treemaplayer text.slicetext';
+
 function _mouseEvent(type, gd, v) {
     return function() {
         if(Array.isArray(v)) {
@@ -249,7 +251,7 @@ describe('Test treemap defaults:', function() {
         ]);
 
         expect(fullData[0].pathbar.textfont.family).toBe('"Open Sans", verdana, arial, sans-serif');
-        expect(fullData[0].pathbar.textfont.color).toBe('#444');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(12);
         expect(fullData[0].pathbar.thickness).toBe(18);
         expect(fullData[0].pathbar.side).toBe('top');
@@ -264,7 +266,7 @@ describe('Test treemap defaults:', function() {
         });
 
         expect(fullData[0].pathbar.textfont.family).toBe('Times New Romans');
-        expect(fullData[0].pathbar.textfont.color).toBe('#ABC');
+        expect(fullData[0].pathbar.textfont.color).toBe(undefined);
         expect(fullData[0].pathbar.textfont.size).toBe(24);
         expect(fullData[0].pathbar.thickness).toBe(30);
     });
@@ -1040,11 +1042,16 @@ describe('Test treemap clicks:', function() {
             if(trackers.treemapclick.length === 1) {
                 expect(trackers.treemapclick[0].event).toBeDefined();
                 expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
+                expect(trackers.treemapclick[0].nextLevel).toBe('Seth');
             } else {
                 fail('incorrect plotly_treemapclick triggering');
             }
 
-            if(trackers.click.length) {
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined();
+                expect(trackers.click[0].points[0].label).toBe('Seth');
+                expect(trackers.click[0].nextLevel).not.toBeDefined();
+            } else {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -1082,16 +1089,6 @@ describe('Test treemap clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        // should be same before and after 2nd click
-        function _assertCommon(msg) {
-            if(trackers.click.length) {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        }
-
         Plotly.plot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
@@ -1101,27 +1098,50 @@ describe('Test treemap clicks:', function() {
             if(trackers.treemapclick.length === 1) {
                 expect(trackers.treemapclick[0].event).toBeDefined(msg);
                 expect(trackers.treemapclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.treemapclick[0].nextLevel).toBe('Seth', msg);
             } else {
                 fail('incorrect plotly_treemapclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .then(click(gd, 4))
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_treemapclick twice, but not additional
-            // plotly_click nor plotly_animating
+            // should trigger plotly_treemapclick and plotly_click twice,
+            // but not plotly_animating
 
             if(trackers.treemapclick.length === 2) {
                 expect(trackers.treemapclick[0].event).toBeDefined(msg);
                 expect(trackers.treemapclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.treemapclick[0].nextLevel).toBe('Awan', msg);
             } else {
                 fail('incorrect plotly_treemapclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 2) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .catch(failTest)
         .then(done);
@@ -1141,10 +1161,7 @@ describe('Test treemap clicks:', function() {
                 fail('incorrect plotly_treemapclick triggering');
             }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-            } else {
+            if(trackers.click.length !== 0) {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -1318,7 +1335,7 @@ describe('Test treemap tweening:', function() {
     }
 
 
-    function _assert(msg, attrName, id, exp) {
+    function _assert(msg, attrName, id, exp, tolerance) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
@@ -1330,7 +1347,7 @@ describe('Test treemap tweening:', function() {
         if(attrName === 'transform') {
             var fake = {attr: function() { return actual; }};
             var xy = Drawing.getTranslate(fake);
-            expect([xy.x, xy.y]).toBeWithinArray(exp, 2, msg2);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
         } else {
             // we could maybe to bring in:
             // https://github.com/hughsk/svg-path-parser
@@ -1363,8 +1380,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
-            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
         .catch(failTest)
         .then(done);
@@ -1395,8 +1412,8 @@ describe('Test treemap tweening:', function() {
             _assert('update b to new position', 'd', 'b',
                 'M221.75,136L611,136L611,361L221.75,361Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [221.75126, 0]);
-            _assert('move b text to new position', 'transform', 'b', [224.75150, 0]);
+            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
         .catch(failTest)
         .then(done);
@@ -1427,11 +1444,8 @@ describe('Test treemap tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
             );
-            _assert('move B text to new position', 'transform', 'B', [220.25126, 0]);
-
-            // TODO this node gets cleared out of viewport to some
-            // machine-dependent position - skip for now
-            // _assert('enter b text to new position', 'transform', 'b', [286.16071428571433, 35714285714286]);
+            _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
+            _assert('enter b text to new position', 'transform', 'b', [287.625, 192]);
         })
         .catch(failTest)
         .then(done);
@@ -1690,4 +1704,188 @@ describe('Test treemap texttemplate with *remainder* `values` should work:', fun
         ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
         ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
     ], /* skipEtra */ true);
+});
+
+describe('treemap uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'treemap', tiling: { packing: 'slice' },
+                parents: ['', '', '', '', '', '', '', '', '', ''],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '|',
+                    '=',
+                    'longest word in German',
+                    'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 13', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should uniform text scales after transition', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'treemap',
+                tiling: { packing: 'dice'},
+                pathbar: { visible: false },
+                parents: [
+                    '',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform'
+                ],
+                labels: [
+                    'Oscar',
+                    'Papa',
+                    'Quebec',
+                    'Romeo and Juliet',
+                    'Sierra',
+                    'Tango',
+                    'Uniform',
+                    'ViKtor Korchnoi - Anatoly Karpov',
+                    'Whiskey',
+                    'X ray',
+                    'Yankee',
+                    'Zulu'
+                ],
+                textinfo: 'label'
+            }],
+            layout: {
+                width: 850,
+                height: 350,
+                uniformtext: {
+                    mode: 'hide',
+                    minsize: 12
+                }
+            }
+        })
+        .then(assertTextSizes('before click', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 2)) // click on Uniform
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click child', {
+            fontsizes: [12, 12, 12, 12, 12, 12],
+            scales: [1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 1)) // click on Oscar
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click parent', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
 });

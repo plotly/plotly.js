@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@ module.exports = {
     arraysToCalcdata: require('./arrays_to_calcdata'),
     plot: require('./plot'),
     colorbar: require('./marker_colorbar'),
+    formatLabels: require('./format_labels'),
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover'),

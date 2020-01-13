@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83,11 +83,16 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
     };
 }
 
-function determineInsideTextFont(trace, pt, layoutFont, cont) {
+function determineInsideTextFont(trace, pt, layoutFont, opts) {
+    var onPathbar = (opts || {}).onPathbar;
+
     var cdi = pt.data.data;
     var ptNumber = cdi.i;
 
-    var customColor = Lib.castOption(trace, ptNumber, 'insidetextfont.color');
+    var customColor = Lib.castOption(trace, ptNumber,
+        (onPathbar ? 'pathbar.textfont' : 'insidetextfont') + '.color'
+    );
+
     if(!customColor && trace._input.textfont) {
         // Why not simply using trace.textfont? Because if not set, it
         // defaults to layout.font which has a default color. But if
@@ -98,16 +103,18 @@ function determineInsideTextFont(trace, pt, layoutFont, cont) {
 
     return {
         color: customColor || Color.contrast(cdi.color),
-        family: exports.getInsideTextFontKey('family', cont || trace, pt, layoutFont),
-        size: exports.getInsideTextFontKey('size', cont || trace, pt, layoutFont)
+        family: exports.getInsideTextFontKey('family', trace, pt, layoutFont, opts),
+        size: exports.getInsideTextFontKey('size', trace, pt, layoutFont, opts)
     };
 }
 
-exports.getInsideTextFontKey = function(keyStr, trace, pt, layoutFont) {
+exports.getInsideTextFontKey = function(keyStr, trace, pt, layoutFont, opts) {
+    var onPathbar = (opts || {}).onPathbar;
+    var cont = onPathbar ? 'pathbar.textfont' : 'insidetextfont';
     var ptNumber = pt.data.data.i;
 
     return (
-        Lib.castOption(trace, ptNumber, 'insidetextfont.' + keyStr) ||
+        Lib.castOption(trace, ptNumber, cont + '.' + keyStr) ||
         Lib.castOption(trace, ptNumber, 'textfont.' + keyStr) ||
         layoutFont.size
     );
@@ -127,10 +134,10 @@ exports.isOutsideText = function(trace, pt) {
     return !trace._hasColorscale && exports.isHierarchyRoot(pt);
 };
 
-exports.determineTextFont = function(trace, pt, layoutFont, cont) {
+exports.determineTextFont = function(trace, pt, layoutFont, opts) {
     return exports.isOutsideText(trace, pt) ?
         determineOutsideTextFont(trace, pt, layoutFont) :
-        determineInsideTextFont(trace, pt, layoutFont, cont);
+        determineInsideTextFont(trace, pt, layoutFont, opts);
 };
 
 exports.hasTransition = function(transitionOpts) {

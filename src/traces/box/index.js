@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -29,18 +29,31 @@ module.exports = {
     categories: ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'boxLayout', 'zoomScale'],
     meta: {
         description: [
-            'In vertical (horizontal) box plots,',
-            'statistics are computed using `y` (`x`) values.',
-            'By supplying an `x` (`y`) array, one box per distinct x (y) value',
-            'is drawn',
-            'If no `x` (`y`) {array} is provided, a single box is drawn.',
-            'That box position is then positioned with',
-            'with `name` or with `x0` (`y0`) if provided.',
             'Each box spans from quartile 1 (Q1) to quartile 3 (Q3).',
-            'The second quartile (Q2) is marked by a line inside the box.',
-            'By default, the whiskers correspond to the box\' edges',
-            '+/- 1.5 times the interquartile range (IQR: Q3-Q1),',
-            'see *boxpoints* for other options.'
+            'The second quartile (Q2, i.e. the median) is marked by a line inside the box.',
+            'The fences grow outward from the boxes\' edges,',
+            'by default they span +/- 1.5 times the interquartile range (IQR: Q3-Q1),',
+            'The sample mean and standard deviation as well as notches and',
+            'the sample, outlier and suspected outliers points can be optionally',
+            'added to the box plot.',
+
+            'The values and positions corresponding to each boxes can be input',
+            'using two signatures.',
+
+            'The first signature expects users to supply the sample values in the `y`',
+            'data array for vertical boxes (`x` for horizontal boxes).',
+            'By supplying an `x` (`y`) array, one box per distinct `x` (`y`) value is drawn',
+            'If no `x` (`y`) {array} is provided, a single box is drawn.',
+            'In this case, the box is positioned with the trace `name` or with `x0` (`y0`) if provided.',
+
+            'The second signature expects users to supply the boxes corresponding Q1, median and Q3',
+            'statistics in the `q1`, `median` and `q3` data arrays respectively.',
+            'Other box features relying on statistics namely `lowerfence`, `upperfence`, `notchspan`',
+            'can be set directly by the users.',
+            'To have plotly compute them or to show sample points besides the boxes,',
+            'users can set the `y` data array for vertical boxes (`x` for horizontal boxes)',
+            'to a 2D array with the outer length corresponding',
+            'to the number of boxes in the traces and the inner length corresponding the sample size.'
         ].join(' ')
     }
 };

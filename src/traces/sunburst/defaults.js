@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,7 +44,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
     coerce('marker.colors');
-    var withColorscale = traceOut._hasColorscale = hasColorscale(traceIn, 'marker', 'colors');
+    var withColorscale = traceOut._hasColorscale = (
+        hasColorscale(traceIn, 'marker', 'colors') ||
+        (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
+    );
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
@@ -67,6 +70,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         moduleHasTextangle: false,
         moduleHasInsideanchor: false
     });
+
+    coerce('insidetextorientation');
 
     handleDomainDefaults(traceOut, layout, coerce);
 

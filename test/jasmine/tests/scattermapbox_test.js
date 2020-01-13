@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Axes = require('@src/plots/cartesian/axes');
 
 var ScatterMapbox = require('@src/traces/scattermapbox');
 var convert = require('@src/traces/scattermapbox/convert');
@@ -139,7 +140,15 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
-        return convert({_fullLayout: {_d3locale: false}}, calcTrace);
+
+        var mockAxis = {type: 'linear'};
+        Axes.setConvert(mockAxis, gd._fullLayout);
+
+        gd._fullLayout.mapbox._subplot = {
+            mockAxis: mockAxis
+        };
+
+        return convert(gd, calcTrace);
     }
 
     function assertVisibility(opts, expectations) {
@@ -536,9 +545,9 @@ describe('scattermapbox convert', function() {
         });
 
         expect(actualText).toEqual([
-            'Montreal (-73.57, 45.5): 1.8M',
-            'Toronto (-79.24, 43.4): 2.9M',
-            'Vancouver (-123.06, 49.13): 680k'
+            'Montreal (−73.57, 45.5): 1.8M',
+            'Toronto (−79.24, 43.4): 2.9M',
+            'Vancouver (−123.06, 49.13): 680k'
         ]);
     });
 

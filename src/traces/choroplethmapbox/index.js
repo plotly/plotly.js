@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52,7 +52,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'choroplethmapbox',
     basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl', 'noOpacity'],
+    categories: ['mapbox', 'gl', 'noOpacity', 'showLegend'],
     meta: {
         hr_name: 'choropleth_mapbox',
         description: [

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49,13 +49,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = newPointData.trace;
     var carpet = trace._carpet;
 
-    var ij = carpet.ab2ij([cdi.a, cdi.b]);
-    var i0 = Math.floor(ij[0]);
-    var ti = ij[0] - i0;
-    var j0 = Math.floor(ij[1]);
-    var tj = ij[1] - j0;
-    var xy = carpet.evalxy([], i0, j0, ti, tj);
-    newPointData.yLabel = xy[1].toFixed(3);
+    var labels = trace._module.formatLabels(cdi, trace);
+    newPointData.yLabel = labels.yLabel;
 
     delete newPointData.text;
     var text = [];

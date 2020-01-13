@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,7 @@
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var defaultLine = require('../../components/color/attributes').defaultLine;
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -33,6 +33,21 @@ module.exports = extendFlat({
         editType: 'calc',
         description: 'Sets the color values.'
     },
+    geojson: extendFlat({}, scatterGeoAttrs.geojson, {
+        description: [
+            'Sets optional GeoJSON data associated with this trace.',
+            'If not given, the features on the base map are used.',
+
+            'It can be set as a valid GeoJSON object or as a URL string.',
+            'Note that we only accept GeoJSONs of type *FeatureCollection* or *Feature*',
+            'with geometries of type *Polygon* or *MultiPolygon*.'
+
+            // TODO add topojson support with additional 'topojsonobject' attr?
+            // https://github.com/topojson/topojson-specification/blob/master/README.md
+        ].join(' ')
+    }),
+    featureidkey: scatterGeoAttrs.featureidkey,
+
     text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),
@@ -73,11 +88,12 @@ module.exports = extendFlat({
         editType: 'plot'
     },
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
     }),
     hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
 
     colorScaleAttrs('', {

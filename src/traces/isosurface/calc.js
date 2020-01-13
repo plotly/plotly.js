@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,22 +9,39 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
+var processGrid = require('../streamtube/calc').processGrid;
+var filter = require('../streamtube/calc').filter;
 
 module.exports = function calc(gd, trace) {
-    trace._len = Math.min(trace.x.length, trace.y.length, trace.z.length, trace.value.length);
+    trace._len = Math.min(
+        trace.x.length,
+        trace.y.length,
+        trace.z.length,
+        trace.value.length
+    );
+
+    trace._x = filter(trace.x, trace._len);
+    trace._y = filter(trace.y, trace._len);
+    trace._z = filter(trace.z, trace._len);
+    trace._value = filter(trace.value, trace._len);
+
+    var grid = processGrid(trace);
+    trace._gridFill = grid.fill;
+    trace._Xs = grid.Xs;
+    trace._Ys = grid.Ys;
+    trace._Zs = grid.Zs;
+    trace._len = grid.len;
 
     var min = Infinity;
     var max = -Infinity;
-    var len = trace.value.length;
-    for(var i = 0; i < len; i++) {
-        var v = trace.value[i];
+    for(var i = 0; i < trace._len; i++) {
+        var v = trace._value[i];
         min = Math.min(min, v);
         max = Math.max(max, v);
     }
 
     trace._minValues = min;
     trace._maxValues = max;
-
     trace._vMin = (trace.isomin === undefined || trace.isomin === null) ? min : trace.isomin;
     trace._vMax = (trace.isomax === undefined || trace.isomin === null) ? max : trace.isomax;
 
