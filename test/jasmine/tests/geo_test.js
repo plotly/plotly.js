@@ -740,6 +740,56 @@ describe('Test Geo layout defaults', function() {
             });
         });
     });
+
+    describe([
+        'geo.visible should honor template.layout.geo.show* defaults',
+        'when template.layout.geo.visible is set to false,',
+        'and does NOT set layout.geo.visible template'
+    ].join(' '), function() {
+        var keys = [
+            'lonaxis.showgrid',
+            'lataxis.showgrid',
+            'showcoastlines',
+            'showocean',
+            'showland',
+            'showlakes',
+            'showrivers',
+            'showcountries',
+            'showsubunits',
+            'showframe'
+        ];
+
+        function _assert(extra) {
+            var geo = layoutOut.geo;
+            keys.forEach(function(k) {
+                var actual = Lib.nestedProperty(geo, k).get();
+                if(extra && k in extra) {
+                    expect(actual).toBe(extra[k], k);
+                } else {
+                    expect(actual).toBe(false, k);
+                }
+            });
+        }
+
+        it('- disable geo.visible via template', function() {
+            layoutIn = {
+                template: {
+                    layout: {
+                        geo: {
+                            visible: false
+                        }
+                    }
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _assert({
+                showcoastlines: true,
+                showframe: true,
+                showsubunits: undefined
+            });
+        });
+    });
 });
 
 describe('geojson / topojson utils', function() {
