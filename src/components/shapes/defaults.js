@@ -36,9 +36,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('layer');
     coerce('opacity');
     coerce('fillcolor');
-    coerce('line.color');
-    coerce('line.width');
-    coerce('line.dash');
+    var lineWidth = coerce('line.width');
+    if(lineWidth) {
+        coerce('line.color');
+        coerce('line.dash');
+    }
 
     var dfltType = shapeIn.path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
