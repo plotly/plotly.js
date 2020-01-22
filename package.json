@@ -98,7 +98,7 @@
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",
-    "ndarray": "^1.0.19",
+    "ndarray": "^1.0.18",
     "ndarray-fill": "^1.0.2",
     "ndarray-homography": "^1.0.0",
     "point-cluster": "^3.1.8",
