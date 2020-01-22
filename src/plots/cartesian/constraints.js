@@ -19,6 +19,7 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 
 exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, opts) {
     var allAxisIds = opts.allAxisIds;
+    var layoutIn = opts.layoutIn;
     var layoutOut = opts.layoutOut;
     var scaleanchorDflt = opts.scaleanchorDflt;
     var constrainDflt = opts.constrainDflt;
@@ -44,8 +45,30 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
     var matches, matchOpts;
 
     if((containerIn.matches || splomStash.matches) && !containerOut.fixedrange) {
+        var copyContainerIn = containerIn; // deep copy may not be needed
+        if(!splomStash.matches) {
+            var m = copyContainerIn.matches;
+            if(allAxisIds.indexOf(m) === -1) {
+                // in case e.g. x was not listed in allAxisIds
+                // attempt linking x2, x3 to each other if both were linked to x
+                // see https://github.com/plotly/plotly.js/issues/4501
+
+                for(var q = 0; q < allAxisIds.length - 1; q++) {
+                    var idQ = allAxisIds[q];
+                    var nameQ = id2name(idQ);
+                    if(m === layoutIn[nameQ].matches) {
+                        // now make a deep copy to avoid mutate input data
+                        copyContainerIn = Lib.extendDeep({}, containerIn);
+
+                        copyContainerIn.matches = idQ;
+                        break;
+                    }
+                }
+            }
+        }
+
         matchOpts = getConstraintOpts(matchGroups, thisID, allAxisIds, layoutOut);
-        matches = Lib.coerce(containerIn, containerOut, {
+        matches = Lib.coerce(copyContainerIn, containerOut, {
             matches: {
                 valType: 'enumerated',
                 values: matchOpts.linkableAxes || [],

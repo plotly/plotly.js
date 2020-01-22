@@ -314,6 +314,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
             allAxisIds: allAxisIds,
+            layoutIn: layoutIn,
             layoutOut: layoutOut,
             scaleanchorDflt: scaleanchorDflt,
             constrainDflt: constrainDflt

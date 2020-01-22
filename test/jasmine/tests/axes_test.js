@@ -1253,6 +1253,86 @@ describe('Test axes', function() {
         });
     });
 
+    describe('find matching axes', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should match groups even with temp reference', function(done) {
+            // see https://github.com/plotly/plotly.js/issues/4501
+
+            var x = [1, 2, 3];
+            var y = [1, 3, 2];
+
+            Plotly.plot(gd, {
+                data: [
+                    {
+                        xaxis: 'x2',
+                        yaxis: 'y2',
+
+                        type: 'bar',
+                        name: 'x2.y2',
+                        x: x,
+                        y: y
+                    },
+                    {
+                        xaxis: 'x3',
+                        yaxis: 'y3',
+
+                        type: 'bar',
+                        name: 'x3.y3',
+                        x: x,
+                        y: y
+                    }
+                ],
+                layout: {
+                    title: {
+                        text: 'Should pan together since x and y are referenced in the layout.'
+                    },
+                    xaxis: {
+                        domain: [0, 0.48]
+                    },
+                    xaxis2: {
+                        matches: 'x',
+                        anchor: 'y2',
+                        domain: [0.52, 1]
+                    },
+                    xaxis3: {
+                        matches: 'x',
+                        anchor: 'y3',
+                        domain: [0, 0.48]
+                    },
+                    yaxis: {
+                        domain: [0, 0.48]
+                    },
+                    yaxis2: {
+                        matches: 'y',
+                        anchor: 'x2',
+                        domain: [0.52, 1]
+                    },
+                    yaxis3: {
+                        matches: 'y',
+                        anchor: 'x3',
+                        domain: [0.52, 1]
+                    }
+                }
+            })
+            .then(function() {
+                expect(gd._fullLayout.xaxis3.matches).toBe('x2'); // not x
+                expect(gd._fullLayout.yaxis3.matches).toBe('y2'); // not x
+                expect(gd._fullLayout._axisMatchGroups.length).toBe(2);
+                expect(gd._fullLayout._axisMatchGroups).toContain({x2: 1, x3: 1});
+                expect(gd._fullLayout._axisMatchGroups).toContain({y2: 1, y3: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     describe('matching axes relayout calls', function() {
         var gd;
 
