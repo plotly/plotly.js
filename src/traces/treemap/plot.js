@@ -103,6 +103,10 @@ function plotOne(gd, cd, element, transitionOpts) {
         return;
     }
 
+    if(!trace.pathbar.visible) {
+        selAncestors.remove();
+    }
+
     var isRoot = helpers.isHierarchyRoot(entry);
     var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
