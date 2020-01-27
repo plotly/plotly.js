@@ -33,16 +33,28 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
         traceOut.isomax = null;
     }
 
+    var value = coerce('value');
+    traceOut._hasValue = value && value.length;
+    var hasUVW = false;
+    if(!traceOut._hasValue) {
+        var u = coerce('u');
+        var v = coerce('v');
+        var w = coerce('w');
+        hasUVW = !(
+            !u || !u.length ||
+            !v || !v.length ||
+            !w || !w.length
+        );
+    }
+
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
-    var value = coerce('value');
-
     if(
         !x || !x.length ||
         !y || !y.length ||
         !z || !z.length ||
-        !value || !value.length
+        !(traceOut._hasValue || hasUVW)
     ) {
         traceOut.visible = false;
         return;

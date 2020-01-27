@@ -16,6 +16,9 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var attrs = module.exports = overrideAll(extendFlat({
+    u: isosurfaceAttrs.u,
+    v: isosurfaceAttrs.v,
+    w: isosurfaceAttrs.w,
     x: isosurfaceAttrs.x,
     y: isosurfaceAttrs.y,
     z: isosurfaceAttrs.z,

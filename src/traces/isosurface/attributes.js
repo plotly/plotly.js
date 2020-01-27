@@ -108,9 +108,39 @@ var attrs = module.exports = overrideAll(extendFlat({
         valType: 'data_array',
         role: 'info',
         description: [
-            'Sets the 4th dimension (value) of the vertices.'
+            'Sets the 4th dimension (value) of the vertices.',
+            'You can also pass `u`, `v` and `w` components,',
+            'if instead of having the scalar `value` you have',
+            'the 3D vector e.g. in visualizing wind data from',
+            'a CFD (computational fluid dynamics) simulation.'
         ].join(' ')
     },
+
+    u: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: [
+            'Can be used to set the x components of the vector field,',
+            'if `values` array is not present.'
+        ].join(' ')
+    },
+    v: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: [
+            'Can be used to set the y components of the vector field,',
+            'if `values` array is not present.'
+        ].join(' ')
+    },
+    w: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: [
+            'Can be used to set the z components of the vector field,',
+            'if `values` array is not present.'
+        ].join(' ')
+    },
+
     isomin: {
         valType: 'number',
         role: 'info',

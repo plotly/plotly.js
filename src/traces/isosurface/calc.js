@@ -17,13 +17,21 @@ module.exports = function calc(gd, trace) {
         trace.x.length,
         trace.y.length,
         trace.z.length,
-        trace.value.length
+        trace._hasValue ? trace.value.length : Math.min(
+            trace.u.length,
+            trace.v.length,
+            trace.w.length
+        )
     );
 
     trace._x = filter(trace.x, trace._len);
     trace._y = filter(trace.y, trace._len);
     trace._z = filter(trace.z, trace._len);
-    trace._value = filter(trace.value, trace._len);
+    trace._value = trace._hasValue ? filter(trace.value, trace._len) : computeValue(
+        filter(trace.u, trace._len),
+        filter(trace.v, trace._len),
+        filter(trace.w, trace._len)
+    );
 
     var grid = processGrid(trace);
     trace._gridFill = grid.fill;
@@ -51,3 +59,15 @@ module.exports = function calc(gd, trace) {
         cLetter: 'c'
     });
 };
+
+function computeValue(allU, allV, allW) {
+    var len = allU.length;
+    var value = new Array(len);
+    for(var i = 0; i < len; i++) {
+        var u = allU[i];
+        var v = allV[i];
+        var w = allW[i];
+        value[i] = Math.sqrt(u * u + v * v + w * w);
+    }
+    return value;
+}
