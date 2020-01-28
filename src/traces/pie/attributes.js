@@ -187,7 +187,6 @@ module.exports = {
         values: ['horizontal', 'radial', 'tangential', 'auto'],
         dflt: 'auto',
         editType: 'plot',
-            
         description: [
             'The `insidetextorientation` attribute controls the',
             'orientation of the text inside chart sectors.',
