@@ -2257,6 +2257,14 @@ describe('Test lib.js:', function() {
             expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
         });
 
+        it('should work with the number *0*', function() {
+            expect(Lib.hovertemplateString('%{group}', {}, locale, {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
+        });
+
         it('subtitutes multiple matches', function() {
             expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
         });
