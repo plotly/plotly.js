@@ -147,6 +147,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 !isNumeric(y0) ||
                 !isNumeric(y1)
             );
+
             // display zeros if line.width > 0
             if(isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di) && (isHorizontal ? x1 - x0 === 0 : y1 - y0 === 0)) {
                 isBlank = false;
@@ -190,7 +191,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
-            function expandToVisible(v, vc) {
+            function expandToVisible(v, vc, hideZeroHeight) {
+                if(hideZeroHeight && v === vc) return v;
+
                 // if it's not in danger of disappearing entirely,
                 // round more precisely
                 return Math.abs(v - vc) >= 2 ? roundWithLine(v) :
@@ -210,10 +213,11 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
                 var op = Color.opacity(mc);
                 var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
-                x0 = fixpx(x0, x1);
-                x1 = fixpx(x1, x0);
-                y0 = fixpx(y0, y1);
-                y1 = fixpx(y1, y0);
+
+                x0 = fixpx(x0, x1, isHorizontal);
+                x1 = fixpx(x1, x0, isHorizontal);
+                y0 = fixpx(y0, y1, !isHorizontal);
+                y1 = fixpx(y1, y0, !isHorizontal);
             }
 
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);

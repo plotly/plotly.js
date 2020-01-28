@@ -2025,6 +2025,40 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should not show up null and zero bars as thin bars', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
+
+        function getArea(path) {
+            var pos = path
+                .substr(1, path.length - 2)
+                .replace('V', ',')
+                .replace('H', ',')
+                .replace('V', ',')
+                .split(',');
+            var dx = +pos[0];
+            var dy = +pos[1];
+            dy -= +pos[2];
+            dx -= +pos[3];
+
+            return dx * dy;
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            var nodes = gd.querySelectorAll('g.point > path');
+            expect(nodes.length).toBe(12, '# of bars');
+
+            [
+                0, 1, 3, 4, 6, 7, 9, 10
+            ].forEach(function(i) {
+                var d = nodes[i].getAttribute('d');
+                expect(getArea(d)).toBe(0, 'item:' + i);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar visibility toggling:', function() {
