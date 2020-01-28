@@ -2229,6 +2229,14 @@ describe('Test lib.js:', function() {
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
+
+        it('should work with the number *0*', function() {
+            expect(Lib.templateString('%{group}', {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+        });
     });
 
     describe('hovertemplateString', function() {
