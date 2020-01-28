@@ -191,8 +191,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
-            function expandToVisible(v, vc, hideZeroHeight) {
-                if(hideZeroHeight && v === vc) return v;
+            function expandToVisible(v, vc, hideZeroSpan) {
+                if(hideZeroSpan && v === vc) return v;
 
                 // if it's not in danger of disappearing entirely,
                 // round more precisely
