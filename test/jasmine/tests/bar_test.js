@@ -2041,19 +2041,36 @@ describe('A bar plot', function() {
             dy -= +pos[2];
             dx -= +pos[3];
 
-            return dx * dy;
+            return Math.abs(dx * dy);
         }
 
         Plotly.plot(gd, mock)
         .then(function() {
             var nodes = gd.querySelectorAll('g.point > path');
-            expect(nodes.length).toBe(12, '# of bars');
+            expect(nodes.length).toBe(16, '# of bars');
 
             [
-                0, 1, 3, 4, 6, 7, 9, 10
-            ].forEach(function(i) {
+                [0, false],
+                [1, false],
+                [2, true],
+                [3, true],
+                [4, false],
+                [5, false],
+                [6, true],
+                [7, true],
+                [8, false],
+                [9, false],
+                [10, true],
+                [11, true],
+                [12, false],
+                [13, false],
+                [14, true],
+                [15, true]
+            ].forEach(function(e) {
+                var i = e[0];
                 var d = nodes[i].getAttribute('d');
-                expect(getArea(d)).toBe(0, 'item:' + i);
+                var visible = e[1];
+                expect(getArea(d) > 0).toBe(visible, 'item:' + i);
             });
         })
         .catch(failTest)

@@ -5,16 +5,19 @@
             "x": [
                 "A",
                 "B",
-                "C"
+                "C",
+                "D"
             ],
             "y": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "text": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "textposition": "auto",
@@ -26,16 +29,19 @@
             "x": [
                 "A",
                 "B",
-                "C"
+                "C",
+                "D"
             ],
             "y": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "text": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "textposition": "auto",
@@ -50,16 +56,19 @@
             "x": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "y": [
                 "A",
                 "B",
-                "C"
+                "C",
+                "D"
             ],
             "text": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "textposition": "auto",
@@ -74,16 +83,19 @@
             "x": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "y": [
                 "A",
                 "B",
-                "C"
+                "C",
+                "D"
             ],
             "text": [
                 0,
                 null,
+                0.001,
                 1
             ],
             "textposition": "auto",
@@ -94,7 +106,7 @@
         }
     ],
     "layout": {
-        "showlegend": true,
+        "showlegend": false,
         "width": 800,
         "height": 800,
         "dragmode": "pan",
