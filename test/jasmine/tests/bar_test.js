@@ -2025,6 +2025,57 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should not show up null and zero bars as thin bars', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
+
+        function getArea(path) {
+            var pos = path
+                .substr(1, path.length - 2)
+                .replace('V', ',')
+                .replace('H', ',')
+                .replace('V', ',')
+                .split(',');
+            var dx = +pos[0];
+            var dy = +pos[1];
+            dy -= +pos[2];
+            dx -= +pos[3];
+
+            return Math.abs(dx * dy);
+        }
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            var nodes = gd.querySelectorAll('g.point > path');
+            expect(nodes.length).toBe(16, '# of bars');
+
+            [
+                [0, false],
+                [1, false],
+                [2, true],
+                [3, true],
+                [4, false],
+                [5, false],
+                [6, true],
+                [7, true],
+                [8, false],
+                [9, false],
+                [10, true],
+                [11, true],
+                [12, false],
+                [13, false],
+                [14, true],
+                [15, true]
+            ].forEach(function(e) {
+                var i = e[0];
+                var d = nodes[i].getAttribute('d');
+                var visible = e[1];
+                expect(getArea(d) > 0).toBe(visible, 'item:' + i);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('bar visibility toggling:', function() {
