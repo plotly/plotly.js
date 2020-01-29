@@ -188,8 +188,7 @@ module.exports = {
         dflt: 'auto',
         editType: 'plot',
         description: [
-            'The `insidetextorientation` attribute controls the',
-            'orientation of the text inside chart sectors.',
+            'Controls the orientation of the text inside chart sectors.',
             'When set to *auto*, text may be oriented in any direction in order',
             'to be as big as possible in the middle of a sector.',
             'The *horizontal* option orients text to be parallel with the bottom',
