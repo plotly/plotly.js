@@ -157,6 +157,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             if(isBlank && isHorizontal) x1 = x0;
             if(isBlank && !isHorizontal) y1 = y0;
 
+            var spansHorizontal = isHorizontal && (x0 !== x1);
+            var spansVertical = !isHorizontal && (y0 !== y1);
+
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel && !isBlank) {
                 if(isHorizontal) {
@@ -191,9 +194,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     d3.round(Math.round(v) - offset, 2) : v;
             }
 
-            function expandToVisible(v, vc, hideZeroSpan) {
-                if(hideZeroSpan && v === vc) return v;
-
+            function expandToVisible(v, vc) {
                 // if it's not in danger of disappearing entirely,
                 // round more precisely
                 return Math.abs(v - vc) >= 2 ? roundWithLine(v) :
@@ -214,10 +215,14 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 var op = Color.opacity(mc);
                 var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
 
-                x0 = fixpx(x0, x1, isHorizontal);
-                x1 = fixpx(x1, x0, isHorizontal);
-                y0 = fixpx(y0, y1, !isHorizontal);
-                y1 = fixpx(y1, y0, !isHorizontal);
+                if(spansHorizontal) {
+                    x0 = fixpx(x0, x1);
+                    x1 = fixpx(x1, x0);
+                }
+                if(spansVertical) {
+                    y0 = fixpx(y0, y1);
+                    y1 = fixpx(y1, y0);
+                }
             }
 
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
