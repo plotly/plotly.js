@@ -640,4 +640,27 @@ describe('Plotly.validate', function() {
         }]);
         expect(out).toBeUndefined();
     });
+
+    it('should not attempt to crawl into nested objects of valType: \'any\' attributes', function() {
+        var out = Plotly.validate([{
+            mode: 'markers',
+            x: ['a', 'b', 'c', 'a', 'b', 'c'],
+            y: [1, 2, 3, 4, 5, 6],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'b', 'c'],
+                styles: [{
+                    target: 'a',
+                    value: {marker: {color: 'blue'}}
+                }, {
+                    target: 'b',
+                    value: {marker: {color: 'red'}}
+                }, {
+                    target: 'c',
+                    value: {marker: {color: 'black'}}
+                }]
+            }]
+        }]);
+        expect(out).toBeUndefined();
+    });
 });

@@ -2229,6 +2229,14 @@ describe('Test lib.js:', function() {
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
+
+        it('should work with the number *0*', function() {
+            expect(Lib.templateString('%{group}', {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+        });
     });
 
     describe('hovertemplateString', function() {
@@ -2247,6 +2255,14 @@ describe('Test lib.js:', function() {
 
         it('evaluates array nested properties', function() {
             expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('should work with the number *0*', function() {
+            expect(Lib.hovertemplateString('%{group}', {}, locale, {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
         });
 
         it('subtitutes multiple matches', function() {
