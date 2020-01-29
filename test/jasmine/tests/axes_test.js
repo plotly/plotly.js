@@ -830,6 +830,68 @@ describe('Test axes', function() {
             expect(layoutOut._axisMatchGroups).toContain({y: 1, y2: 1, y3: 1});
         });
 
+        it('should find matching group even when matching a *missing* axis', function() {
+            layoutIn = {
+                // N.B. xaxis isn't set
+                xaxis2: {matches: 'x'},
+                xaxis3: {matches: 'x'},
+                xaxis4: {matches: 'x'},
+                // N.B. yaxis isn't set
+                yaxis2: {matches: 'y'},
+                yaxis3: {matches: 'y2'},
+                yaxis4: {matches: 'y3'},
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(2);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
+            expect(layoutOut._axisMatchGroups).toContain({y: 1, y2: 1, y3: 1, y4: 1});
+
+            // should coerce the 'missing' axes
+            expect(layoutIn.xaxis).toBeDefined();
+            expect(layoutIn.yaxis).toBeDefined();
+            expect(layoutOut.xaxis).toBeDefined();
+            expect(layoutOut.yaxis).toBeDefined();
+        });
+
+        it('should find matching group even when matching a *missing* axis (nested case)', function() {
+            layoutIn = {
+                // N.B. xaxis isn't set
+                // N.B. xaxis2 is set, but does not correspond to a subplot
+                xaxis2: {matches: 'x'},
+                xaxis3: {matches: 'x2'},
+                xaxis4: {matches: 'x3'},
+                // N.B. yaxis isn't set
+                // N.B yaxis2 does not correspond to a subplot and is useless here
+                yaxis2: {matches: 'y'},
+                yaxis3: {matches: 'y'},
+                yaxis4: {matches: 'y3'}
+            };
+            layoutOut._subplots.cartesian.push('x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x3', 'x4');
+            layoutOut._subplots.yaxis.push('y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(2);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
+            expect(layoutOut._axisMatchGroups).toContain({y: 1, y3: 1, y4: 1});
+
+            // should coerce the 'missing' axes
+            expect(layoutIn.xaxis).toBeDefined();
+            expect(layoutIn.yaxis).toBeDefined();
+            expect(layoutOut.xaxis).toBeDefined();
+            expect(layoutOut.yaxis).toBeDefined();
+
+            // should coerce useless axes
+            expect(layoutIn.yaxis2).toEqual({matches: 'y'});
+            expect(layoutOut.yaxis2).toBeUndefined();
+        });
+
         it('should match set axis range value for matching axes', function() {
             layoutIn = {
                 // autorange case
@@ -869,6 +931,51 @@ describe('Test axes', function() {
             _assertMatchingAxes(['yaxis', 'yaxis2'], false, [0, 1]);
             _assertMatchingAxes(['xaxis3', 'yaxis3'], true, [-1, 6]);
             _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
+        });
+
+        it('should match set axis range value for matching axes even when matching a *missing* axis', function() {
+            layoutIn = {
+                // N.B. xaxis is set, but does not correspond to a subplot
+                xaxis: {range: [0, 1]},
+                xaxis2: {matches: 'x'},
+                xaxis4: {matches: 'x'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x4y4');
+            layoutOut._subplots.xaxis.push('x2', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(1);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x4: 1});
+
+            expect(layoutOut.xaxis.range).withContext('xaxis.range').toEqual([0, 1]);
+            expect(layoutOut.xaxis2.range).withContext('xaxis2.range').toEqual([0, 1]);
+            expect(layoutOut.xaxis4.range).withContext('xaxis4.range').toEqual([0, 1]);
+        });
+
+        it('should match set axis range value for matching axes even when matching a *missing* axis (nested case)', function() {
+            layoutIn = {
+                // N.B. xaxis is set, but does not correspond to a subplot
+                xaxis: {range: [0, 1]},
+                // N.B. xaxis2 is set, but does not correspond to a subplot
+                xaxis2: {matches: 'x'},
+                xaxis3: {matches: 'x2'},
+                xaxis4: {matches: 'x3'}
+            };
+            layoutOut._subplots.cartesian.push('x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x3', 'x4');
+            layoutOut._subplots.yaxis.push('y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(1);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
+
+            expect(layoutOut.xaxis.range).withContext('xaxis.range').toEqual([0, 1]);
+            expect(layoutOut.xaxis2.range).withContext('xaxis2.range').toEqual([0, 1]);
+            expect(layoutOut.xaxis2.range).withContext('xaxis3.range').toEqual([0, 1]);
+            expect(layoutOut.xaxis4.range).withContext('xaxis4.range').toEqual([0, 1]);
         });
 
         it('should adapt default axis ranges to *rangemode*', function() {
