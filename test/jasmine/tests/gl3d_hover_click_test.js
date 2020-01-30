@@ -466,7 +466,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_click)
         .then(delay(20))
         .then(function() {
-            assertEventData(134.03, -163.59, -163.59, 0, 3);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
         .then(done);
     });
@@ -501,21 +501,21 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_hover)
         .then(delay(20))
         .then(function() {
-            assertHoverText('x: 4', 'y: 5', 'z: 3.5', 'ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'x+y');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('(4, 5)');
+            assertHoverText('(3, 4)');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'text', 'yo!');
@@ -531,14 +531,14 @@ describe('Test gl3d trace click/hover:', function() {
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, 'ts: 4\nhz: 5\nftt:3.5 !!');
+            assertHoverText(null, null, null, 'ts: 3\nhz: 4\nftt:5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, '4-5-3.5');
+            assertHoverText(null, null, null, '3-4-5');
         })
         .catch(failTest)
         .then(done);
