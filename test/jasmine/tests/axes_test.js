@@ -978,6 +978,27 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis4.range).withContext('xaxis4.range').toEqual([0, 1]);
         });
 
+        it('should propagate axis type into *missing* axes', function() {
+            layoutIn = {
+                xaxis2: {type: 'date', matches: 'x'},
+                yaxis: {type: 'category', matches: 'y2'}
+            };
+            layoutOut._subplots.cartesian = ['x2y'];
+            layoutOut._subplots.xaxis = ['x2'];
+            layoutOut._subplots.yaxis = ['y'];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(2);
+            expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1});
+            expect(layoutOut._axisMatchGroups).toContain({y: 1, y2: 1});
+
+            expect(layoutOut.xaxis.type).withContext('xaxis.type').toBe('date');
+            expect(layoutOut.xaxis2.type).withContext('xaxis2.type').toBe('date');
+            expect(layoutOut.yaxis.type).withContext('yaxis.type').toBe('category');
+            expect(layoutOut.yaxis2.type).withContext('yaxis2.type').toBe('category');
+        });
+
         it('should adapt default axis ranges to *rangemode*', function() {
             layoutIn = {
                 xaxis: {rangemode: 'tozero'},

@@ -189,15 +189,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
     // list of all x AND y axis ids
     var allAxisIds = counterAxes.x.concat(counterAxes.y);
-    // list of axis ids that axes in axNames have a reference to,
+    // lookup and list of axis ids that axes in axNames have a reference to,
     // even though they are missing from allAxisIds
+    var missingMatchedAxisIdsLookup = {};
     var missingMatchedAxisIds = [];
 
-    // fill in 'missing' axis list when an axis is set to match an axis
-    // not part of the allAxisIds list
-    function addMissingMatchedAxis(matchesIn) {
+    // fill in 'missing' axis lookup when an axis is set to match an axis
+    // not part of the allAxisIds list, save axis type so that we can propagate
+    // it to the missing axes
+    function addMissingMatchedAxis() {
+        var matchesIn = axLayoutIn.matches;
         if(AX_ID_PATTERN.test(matchesIn) && allAxisIds.indexOf(matchesIn) === -1) {
-            Lib.pushUnique(missingMatchedAxisIds, matchesIn);
+            missingMatchedAxisIdsLookup[matchesIn] = axLayoutIn.type;
+            missingMatchedAxisIds = Object.keys(missingMatchedAxisIdsLookup);
         }
     }
 
@@ -269,7 +273,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         coerce('title.standoff');
 
-        addMissingMatchedAxis(axLayoutIn.matches);
+        addMissingMatchedAxis();
 
         axLayoutOut._input = axLayoutIn;
     }
@@ -305,7 +309,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         coerce('uirevision', layoutOut.uirevision);
 
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions2);
+        axLayoutOut.type = missingMatchedAxisIdsLookup[axId] || 'linear';
+
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions2, layoutOut);
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
@@ -317,7 +322,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         coerce('fixedrange');
 
-        addMissingMatchedAxis(axLayoutIn.matches);
+        addMissingMatchedAxis();
 
         axLayoutOut._input = axLayoutIn;
     }
