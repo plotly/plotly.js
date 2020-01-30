@@ -841,9 +841,9 @@ describe('Test axes', function() {
                 yaxis3: {matches: 'y2'},
                 yaxis4: {matches: 'y3'},
             };
-            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
-            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
-            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
+            layoutOut._subplots.cartesian = ['x2y2', 'x3y3', 'x4y4'];
+            layoutOut._subplots.xaxis = ['x2', 'x3', 'x4'];
+            layoutOut._subplots.yaxis = ['y2', 'y3', 'y4'];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -871,9 +871,9 @@ describe('Test axes', function() {
                 yaxis3: {matches: 'y'},
                 yaxis4: {matches: 'y3'}
             };
-            layoutOut._subplots.cartesian.push('x3y3', 'x4y4');
-            layoutOut._subplots.xaxis.push('x3', 'x4');
-            layoutOut._subplots.yaxis.push('y3', 'y4');
+            layoutOut._subplots.cartesian = ['x3y3', 'x4y4'];
+            layoutOut._subplots.xaxis = ['x3', 'x4'];
+            layoutOut._subplots.yaxis = ['y3', 'y4'];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -940,9 +940,9 @@ describe('Test axes', function() {
                 xaxis2: {matches: 'x'},
                 xaxis4: {matches: 'x'}
             };
-            layoutOut._subplots.cartesian.push('x2y2', 'x4y4');
-            layoutOut._subplots.xaxis.push('x2', 'x4');
-            layoutOut._subplots.yaxis.push('y2', 'y4');
+            layoutOut._subplots.cartesian = ['x2y2', 'x4y4'];
+            layoutOut._subplots.xaxis = ['x2', 'x4'];
+            layoutOut._subplots.yaxis = ['y2', 'y4'];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -963,9 +963,9 @@ describe('Test axes', function() {
                 xaxis3: {matches: 'x2'},
                 xaxis4: {matches: 'x3'}
             };
-            layoutOut._subplots.cartesian.push('x3y3', 'x4y4');
-            layoutOut._subplots.xaxis.push('x3', 'x4');
-            layoutOut._subplots.yaxis.push('y3', 'y4');
+            layoutOut._subplots.cartesian = ['x3y3', 'x4y4'];
+            layoutOut._subplots.xaxis = ['x3', 'x4'];
+            layoutOut._subplots.yaxis = ['y3', 'y4'];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
