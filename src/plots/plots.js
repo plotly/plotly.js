@@ -3167,7 +3167,7 @@ function setupAxisCategories(axList, fullData, fullLayout) {
     }
 
     // look into match groups for 'missing' axes
-    var matchGroups = fullLayout._axisMatchGroups;
+    var matchGroups = fullLayout._axisMatchGroups || [];
     for(i = 0; i < matchGroups.length; i++) {
         for(axId in matchGroups[i]) {
             if(!axLookup[axId]) {
