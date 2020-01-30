@@ -2937,7 +2937,7 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
-    setupAxisCategories(axList, fullData);
+    setupAxisCategories(axList, fullData, fullLayout);
 
     // 'transform' loop - must calc container traces first
     // so that if their dependent traces can get transform properly
@@ -2945,7 +2945,7 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) transformCalci(i);
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData);
+    if(hasCalcTransform) setupAxisCategories(axList, fullData, fullLayout);
 
     // 'regular' loop - make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
@@ -3150,12 +3150,30 @@ function sortAxisCategoriesByValue(axList, gd) {
     return affectedTraces;
 }
 
-function setupAxisCategories(axList, fullData) {
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
+function setupAxisCategories(axList, fullData, fullLayout) {
+    var axLookup = {};
+    var i, ax, axId;
+
+    for(i = 0; i < axList.length; i++) {
+        ax = axList[i];
+        axId = ax._id;
+
         ax.clearCalc();
         if(ax.type === 'multicategory') {
             ax.setupMultiCategory(fullData);
+        }
+
+        axLookup[ax._id] = 1;
+    }
+
+    // look into match groups for 'missing' axes
+    var matchGroups = fullLayout._axisMatchGroups;
+    for(i = 0; i < matchGroups.length; i++) {
+        for(axId in matchGroups[i]) {
+            if(!axLookup[axId]) {
+                ax = fullLayout[axisIDs.id2name(axId)];
+                ax.clearCalc();
+            }
         }
     }
 }
