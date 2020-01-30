@@ -315,6 +315,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             grid: layoutOut.grid
         });
 
+        coerce('fixedrange');
+
         addMissingMatchedAxis(axLayoutIn.matches);
 
         axLayoutOut._input = axLayoutIn;
