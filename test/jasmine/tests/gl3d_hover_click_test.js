@@ -13,6 +13,7 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var mock = require('@mocks/gl3d_marker-arrays.json');
+var mesh3dcoloringMock = require('@mocks/gl3d_mesh3d_coloring.json');
 var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
 // lines, markers, text, error bars and surfaces each
@@ -539,6 +540,59 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertHoverText(null, null, null, '3-4-5');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face colors', function(done) {
+        var fig = mesh3dcoloringMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 200, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 0',
+                'z: 1',
+                'face color: #0F0',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'face color: #0FF',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'face color: #00F',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 200, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 0',
+                'face color: #000',
+                'face color'
+            );
         })
         .catch(failTest)
         .then(done);
