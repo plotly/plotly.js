@@ -269,7 +269,7 @@ module.exports = {
         role: 'style',
         dflt: colorAttrs.background,
         editType: 'plot',
-        description: 'Sets the color of paper where the graph is drawn.'
+        description: 'Sets the background color of the paper where the graph is drawn.'
     },
     plot_bgcolor: {
         // defined here, but set in cartesian.supplyLayoutDefaults
@@ -279,7 +279,7 @@ module.exports = {
         dflt: colorAttrs.background,
         editType: 'layoutstyle',
         description: [
-            'Sets the color of plotting area in-between x and y axes.'
+            'Sets the background color of the plotting area in-between x and y axes.'
         ].join(' ')
     },
     separators: {
