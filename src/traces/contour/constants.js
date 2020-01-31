@@ -72,5 +72,8 @@ module.exports = {
         INITIALSEARCHPOINTS: 10,
         // number of binary search iterations after the initial wide search
         ITERATIONS: 5
-    }
+    },
+
+    // number of px around labels text clip out of contour lines below
+    LABEL_LINE_CLIP_PAD: 2
 };
