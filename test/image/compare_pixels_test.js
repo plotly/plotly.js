@@ -101,9 +101,8 @@ if(allMock || argv.filter) {
 }
 
 var FLAKY_LIST = [
-    'treemap_coffee',
     'treemap_textposition',
-    'treemap_with-without_values_template',
+    'treemap_with-without_values',
     'trace_metatext',
     'gl3d_directions-streamtube1'
 ];

@@ -1535,6 +1535,59 @@ describe('axis zoom/pan and main plot zoom', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('panning a matching axes with references to *missing* axes', function(done) {
+            var data = [
+                // N.B. no traces on subplot xy
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x2', yaxis: 'y2'},
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x3', yaxis: 'y3'},
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x4', yaxis: 'y4'}
+            ];
+
+            var layout = {
+                xaxis: {domain: [0, 0.48]},
+                xaxis2: {anchor: 'y2', domain: [0.52, 1], matches: 'x'},
+                xaxis3: {anchor: 'y3', domain: [0, 0.48], matches: 'x'},
+                xaxis4: {anchor: 'y4', domain: [0.52, 1], matches: 'x'},
+                yaxis: {domain: [0, 0.48]},
+                yaxis2: {anchor: 'x2', domain: [0.52, 1], matches: 'y'},
+                yaxis3: {anchor: 'x3', domain: [0.52, 1], matches: 'y'},
+                yaxis4: {anchor: 'x4', domain: [0, 0.48], matches: 'y'},
+                width: 400,
+                height: 400,
+                margin: {t: 50, l: 50, b: 50, r: 50},
+                showlegend: false,
+                dragmode: 'pan'
+            };
+
+            makePlot(data, layout).then(function() {
+                assertRanges('base', [
+                    [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179]],
+                    [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896]]
+                ]);
+            })
+            .then(function() {
+                var drag = makeDragFns('x2y2', 'nsew', 30, 30);
+                return drag.start().then(function() {
+                    assertRanges('during drag', [
+                        [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.329, 2.687], {skipInput: true}],
+                        [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [1.156, 2.335], {skipInput: true}]
+                    ]);
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag on x2y2 subplot', [
+                [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.329, 2.687], {dragged: true}],
+                [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [1.156, 2.335], {dragged: true}]
+            ]))
+            .then(doDblClick('x3y3', 'nsew'))
+            .then(_assert('after double-click on x3y3 subplot', [
+                [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179], {autorange: true}],
+                [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896], {autorange: true}]
+            ]))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('redrag behavior', function() {
