@@ -394,21 +394,21 @@ exports.labelFormatter = function(gd, cd0) {
     var trace = cd0.trace;
     var contours = trace.contours;
 
+    var formatAxis = {
+        type: 'linear',
+        _id: 'ycontour',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+
     if(contours.labelformat) {
-        return fullLayout._d3locale.numberFormat(contours.labelformat);
+        formatAxis.tickformat = contours.labelformat;
+        setConvert(formatAxis, fullLayout);
     } else {
-        var formatAxis;
         var cOpts = Colorscale.extractOpts(trace);
         if(cOpts && cOpts.colorbar && cOpts.colorbar._axis) {
             formatAxis = cOpts.colorbar._axis;
         } else {
-            formatAxis = {
-                type: 'linear',
-                _id: 'ycontour',
-                showexponent: 'all',
-                exponentformat: 'B'
-            };
-
             if(contours.type === 'constraint') {
                 var value = contours.value;
                 if(Array.isArray(value)) {
@@ -429,10 +429,9 @@ exports.labelFormatter = function(gd, cd0) {
             formatAxis._tmin = null;
             formatAxis._tmax = null;
         }
-        return function(v) {
-            return Axes.tickText(formatAxis, v).text;
-        };
     }
+
+    return function(v) { return Axes.tickText(formatAxis, v).text; };
 };
 
 exports.calcTextOpts = function(level, contourFormat, dummyText, gd) {
