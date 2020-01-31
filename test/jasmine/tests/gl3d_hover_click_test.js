@@ -14,6 +14,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var mock = require('@mocks/gl3d_marker-arrays.json');
 var mesh3dcoloringMock = require('@mocks/gl3d_mesh3d_coloring.json');
+var mesh3dcellIntensityMock = require('@mocks/gl3d_mesh3d_cell-intensity.json');
 var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
 // lines, markers, text, error bars and surfaces each
@@ -554,10 +555,10 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertHoverText(
-                'x: 1',
-                'y: 0',
+                'x: 0.6666667',
+                'y: 0.3333333',
                 'z: 1',
-                'face color: #0F0',
+                'face color: #00F',
                 'face color'
             );
         })
@@ -566,8 +567,8 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(
                 'x: 1',
-                'y: 1',
-                'z: 1',
+                'y: 0.3333333',
+                'z: 0.6666667',
                 'face color: #0FF',
                 'face color'
             );
@@ -577,9 +578,9 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(
                 'x: 1',
-                'y: 1',
-                'z: 0',
-                'face color: #00F',
+                'y: 0.6666667',
+                'z: 0.3333333',
+                'face color: #0FF',
                 'face color'
             );
         })
@@ -587,11 +588,42 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertHoverText(
-                'x: 0',
+                'x: 0.6666667',
                 'y: 0',
-                'z: 0',
-                'face color: #000',
+                'z: 0.3333333',
+                'face color: #F00',
                 'face color'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities', function(done) {
+        var fig = mesh3dcellIntensityMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 200, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.4666667',
+                'y: 0.4333333',
+                'z: 0.01583333',
+                'cell intensity: 0.16',
+                'trace 0'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 200, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.7666667',
+                'y: 0.1333333',
+                'z: −0.3305',
+                'cell intensity: 3.04',
+                'trace 0'
             );
         })
         .catch(failTest)
