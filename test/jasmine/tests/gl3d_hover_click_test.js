@@ -13,6 +13,7 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var mock = require('@mocks/gl3d_marker-arrays.json');
+var mesh3dcoloringMock = require('@mocks/gl3d_mesh3d_coloring.json');
 var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
 // lines, markers, text, error bars and surfaces each
@@ -466,7 +467,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_click)
         .then(delay(20))
         .then(function() {
-            assertEventData(134.03, -163.59, -163.59, 0, 3);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
         .then(done);
     });
@@ -501,21 +502,21 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_hover)
         .then(delay(20))
         .then(function() {
-            assertHoverText('x: 4', 'y: 5', 'z: 3.5', 'ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'x+y');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('(4, 5)');
+            assertHoverText('(3, 4)');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'text', 'yo!');
@@ -531,14 +532,67 @@ describe('Test gl3d trace click/hover:', function() {
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, 'ts: 4\nhz: 5\nftt:3.5 !!');
+            assertHoverText(null, null, null, 'ts: 3\nhz: 4\nftt:5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, '4-5-3.5');
+            assertHoverText(null, null, null, '3-4-5');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face colors', function(done) {
+        var fig = mesh3dcoloringMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 200, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 0',
+                'z: 1',
+                'face color: #0F0',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'face color: #0FF',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'face color: #00F',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 200, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 0',
+                'face color: #000',
+                'face color'
+            );
         })
         .catch(failTest)
         .then(done);
