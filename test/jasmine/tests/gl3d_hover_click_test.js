@@ -15,6 +15,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var mock = require('@mocks/gl3d_marker-arrays.json');
 var mesh3dcoloringMock = require('@mocks/gl3d_mesh3d_coloring.json');
 var mesh3dcellIntensityMock = require('@mocks/gl3d_mesh3d_cell-intensity.json');
+var mesh3dbunnyMock = require('@mocks/gl3d_bunny_cell-area.json');
 var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
 // lines, markers, text, error bars and surfaces each
@@ -599,7 +600,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities', function(done) {
+    it('@gl should display correct face intensities (uniform grid)', function(done) {
         var fig = mesh3dcellIntensityMock;
 
         Plotly.newPlot(gd, fig)
@@ -623,6 +624,125 @@ describe('Test gl3d trace click/hover:', function() {
                 'y: 0.1333333',
                 'z: −0.3305',
                 'cell intensity: 3.04',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+        var fig = mesh3dbunnyMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: −0.02154988',
+                'y: −0.1181136',
+                'z: 0.9471037',
+                'cell intensity: 8',
+                'trace 0'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 400, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: −0.3543044',
+                'y: 0.4389607',
+                'z: 0.6468034',
+                'cell intensity: 8',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
+        var fig = {
+            data: [{
+                type: 'mesh3d',
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}',
+                intensitymode: 'cell',
+                intensity: [1, 2, 3, 4, 5, 6],
+                x: [0, 0.5, 1, 1, 1, 0.5, 0, 0],
+                y: [0, 0, 0, 0.5, 1, 1, 1, 0.5],
+                z: [0, 0, 0, 0, 0, 0, 0, 0],
+                alphahull: true
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 0.5,
+                            y: 0.5,
+                            z: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 450, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.1666667',
+                'y: 0.8333333',
+                'z: 0',
+                'cell intensity: 5',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities *delaunay* case', function(done) {
+        var fig = {
+            data: [{
+                type: 'mesh3d',
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}',
+                intensitymode: 'cell',
+                intensity: [1, 2, 3, 4, 5, 6],
+                x: [0, 0.5, 1, 1, 1, 0.5, 0, 0],
+                y: [0, 0, 0, 0.5, 1, 1, 1, 0.5],
+                z: [0, 0, 0, 0, 0, 0, 0, 0],
+                delaunayaxis: 'z'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 0.5,
+                            y: 0.5,
+                            z: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 450, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.1666667',
+                'y: 0.8333333',
+                'z: 0',
+                'cell intensity: 5',
                 'trace 0'
             );
         })
