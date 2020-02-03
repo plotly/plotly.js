@@ -34,11 +34,16 @@ var isMobile = require('is-mobile');
 var tablet = isTablet();
 
 function isTablet() {
-    var navigator = window.navigator;
-    var userAgent = navigator.userAgent;
+    var ua;
+    // same interface as applied by is-mobile module
+    if(!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+    if(ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+        ua = ua.headers['user-agent'];
+    }
+    if(typeof ua !== 'string') return false;
 
     var result = isMobile({
-        ua: userAgent,
+        ua: ua,
         tablet: true
     });
 
@@ -46,8 +51,8 @@ function isTablet() {
     // see https://github.com/plotly/plotly.js/issues/4502
     if(
         result === false &&
-        userAgent.indexOf('Macintosh') !== -1 &&
-        userAgent.indexOf('Safari') !== -1 &&
+        ua.indexOf('Macintosh') !== -1 &&
+        ua.indexOf('Safari') !== -1 &&
         navigator.maxTouchPoints > 1
     ) {
         result = true;
