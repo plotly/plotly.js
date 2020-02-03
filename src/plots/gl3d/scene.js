@@ -15,7 +15,6 @@ var createPlot = glPlot3d.createScene;
 
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
-var isMobile = require('is-mobile')({ tablet: true });
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -30,6 +29,32 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
+
+var isMobile = require('is-mobile');
+var tablet = isTablet();
+
+function isTablet() {
+    var navigator = window.navigator;
+    var userAgent = navigator.userAgent;
+
+    var result = isMobile({
+        ua: userAgent,
+        tablet: true
+    });
+
+    // handle iPad pro or iPad with iOs 13 using Safari
+    // see https://github.com/plotly/plotly.js/issues/4502
+    if(
+        result === false &&
+        userAgent.indexOf('Macintosh') !== -1 &&
+        userAgent.indexOf('Safari') !== -1 &&
+        navigator.maxTouchPoints > 1
+    ) {
+        result = true;
+    }
+
+    return result;
+}
 
 
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -96,7 +121,7 @@ proto.tryCreatePlot = function() {
         canvas: scene.canvas,
         gl: scene.gl,
         glOptions: {
-            preserveDrawingBuffer: isMobile,
+            preserveDrawingBuffer: tablet,
             premultipliedAlpha: true,
             antialias: true
         },
