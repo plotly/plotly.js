@@ -34,6 +34,8 @@ var isMobile = require('is-mobile');
 var tablet = isTablet();
 
 function isTablet() {
+    if(!navigator) return false;
+
     var ua;
     // same interface as applied by is-mobile module
     if(!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
