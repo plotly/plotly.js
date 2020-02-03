@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.52.1
+* plotly.js (gl3d) v1.52.2
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29358,6 +29358,7 @@ function SimplicialMesh(gl
   this.contourColor      = [0,0,0]
   this.contourEnable     = true
 
+  this.pickVertex        = true;
   this.pickId            = 1
   this.bounds            = [
     [ Infinity, Infinity, Infinity],
@@ -29437,21 +29438,6 @@ function genColormap(param, opacityscale) {
   }
 
   return ndarray(result, [256,256,4], [4,0,1])
-}
-
-function unpackIntensity(cells, numVerts, cellIntensity) {
-  var result = new Array(numVerts)
-  for(var i=0; i<numVerts; ++i) {
-    result[i] = 0
-  }
-  var numCells = cells.length
-  for(var i=0; i<numCells; ++i) {
-    var c = cells[i]
-    for(var j=0; j<c.length; ++j) {
-      result[c[j]] = cellIntensity[i]
-    }
-  }
-  return result
 }
 
 function takeZComponent(array) {
@@ -29644,10 +29630,12 @@ proto.update = function(params) {
   if(vertexIntensity) {
     this.intensity = vertexIntensity
   } else if(cellIntensity) {
-    this.intensity = unpackIntensity(cells, positions.length, cellIntensity)
+    this.intensity = cellIntensity
   } else {
     this.intensity = takeZComponent(positions)
   }
+
+  this.pickVertex = !(cellIntensity || cellColors)
 
   //Point size
   var pointSizes      = params.pointSizes
@@ -30090,9 +30078,34 @@ proto.pick = function(pickData) {
     simplex[i] = positions[cell[i]]
   }
 
+  var x = pickData.coord[0];
+  var y = pickData.coord[1];
+
+  if(!this.pickVertex) {
+    var A = this.positions[cell[0]];
+    var B = this.positions[cell[1]];
+    var C = this.positions[cell[2]];
+
+    var dataCoordinate = [
+      (A[0] + B[0] + C[0]) / 3,
+      (A[1] + B[1] + C[1]) / 3,
+      (A[2] + B[2] + C[2]) / 3
+    ]
+
+    return {
+      _cellCenter : true,
+      position: [x, y],
+      index:    cellId,
+      cell:     cell,
+      cellId:   cellId,
+      intensity:  this.intensity[cellId],
+      dataCoordinate: dataCoordinate
+    }
+  }
+
   var data = closestPoint(
     simplex,
-    [pickData.coord[0], this._resolution[1]-pickData.coord[1]],
+    [x * this.pixelRatio, this._resolution[1] - y * this.pixelRatio],
     this._model,
     this._view,
     this._projection,
@@ -30727,6 +30740,10 @@ function createScene(options) {
 
   var gl = options.gl
   if(!gl) {
+    if(options.glOptions) {
+      isMobile = !!options.glOptions.preserveDrawingBuffer
+    }
+
     gl = getContext(canvas,
       options.glOptions || {
         premultipliedAlpha: true,
@@ -30746,7 +30763,7 @@ function createScene(options) {
 
   //Accumulation buffer
   var accumBuffer = createFBO(gl,
-    [gl.drawingBufferWidth, gl.drawingBufferHeight], {
+    gl.drawingBufferWidth, gl.drawingBufferHeight, {
       preferFloat: !isMobile
     })
 
@@ -30794,7 +30811,7 @@ function createScene(options) {
     view:         null,
     projection:   projection,
     model:        model,
-    _ortho:        false
+    _ortho:       false
   }
 
   var pickDirty = true
@@ -30849,6 +30866,29 @@ function createScene(options) {
       this.aspect[0] = aspectratio.x
       this.aspect[1] = aspectratio.y
       this.aspect[2] = aspectratio.z
+    },
+
+    setBounds: function(axisIndex, range) {
+      this.bounds[0][axisIndex] = range.min
+      this.bounds[1][axisIndex] = range.max
+    },
+
+    setClearColor: function(clearColor) {
+      this.clearColor = clearColor
+    },
+
+    clearRGBA: function() {
+      this.gl.clearColor(
+        this.clearColor[0],
+        this.clearColor[1],
+        this.clearColor[2],
+        this.clearColor[3]
+      )
+
+      this.gl.clear(
+        this.gl.COLOR_BUFFER_BIT |
+        this.gl.DEPTH_BUFFER_BIT
+      )
     }
   }
 
@@ -31247,48 +31287,7 @@ function createScene(options) {
     pickShape[1] = Math.max(height/scene.pixelRatio, 1)|0
 
     //Compute camera parameters
-
-    if(isOrtho) {
-      ortho(projection,
-        -width/height,
-        width/height,
-        -1,
-        1,
-        scene.zNear,
-        scene.zFar
-      )
-      cameraParams._ortho = true
-    } else {
-      perspective(projection,
-        scene.fovy,
-        width/height,
-        scene.zNear,
-        scene.zFar
-      )
-      cameraParams._ortho = false
-    }
-
-    //Compute model matrix
-    for(var i=0; i<16; ++i) {
-      model[i] = 0
-    }
-    model[15] = 1
-
-    var maxS = 0
-    for(var i=0; i<3; ++i) {
-      maxS = Math.max(maxS, bounds[1][i] - bounds[0][i])
-    }
-
-    for(var i=0; i<3; ++i) {
-      if(scene.autoScale) {
-        model[5*i] = scene.aspect[i] / (bounds[1][i] - bounds[0][i])
-      } else {
-        model[5*i] = 1  / maxS
-      }
-      if(scene.autoCenter) {
-        model[12+i] = -model[5*i] * 0.5 * (bounds[0][i] + bounds[1][i])
-      }
-    }
+    calcCameraParams(scene, isOrtho)
 
     //Apply axes/clip bounds
     for(var i=0; i<numObjs; ++i) {
@@ -31336,9 +31335,8 @@ function createScene(options) {
     //  3. composite final scene
 
     //Clear FBO
-    var clearColor = scene.clearColor
-    gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    scene.clearRGBA()
+
     gl.depthMask(true)
     gl.colorMask(true, true, true, true)
     gl.enable(gl.DEPTH_TEST)
@@ -31456,6 +31454,63 @@ function createScene(options) {
   }
 
   return scene
+}
+
+function calcCameraParams(scene, isOrtho) {
+  var bounds = scene.bounds
+  var cameraParams = scene.cameraParams
+  var projection = cameraParams.projection
+  var model = cameraParams.model
+
+  var width = scene.gl.drawingBufferWidth
+  var height = scene.gl.drawingBufferHeight
+  var zNear = scene.zNear
+  var zFar = scene.zFar
+  var fovy = scene.fovy
+
+  var r = width / height
+
+  if(isOrtho) {
+    ortho(projection,
+      -r,
+      r,
+      -1,
+      1,
+      zNear,
+      zFar
+    )
+    cameraParams._ortho = true
+  } else {
+    perspective(projection,
+      fovy,
+      r,
+      zNear,
+      zFar
+    )
+    cameraParams._ortho = false
+  }
+
+  //Compute model matrix
+  for(var i=0; i<16; ++i) {
+    model[i] = 0
+  }
+  model[15] = 1
+
+  var maxS = 0
+  for(var i=0; i<3; ++i) {
+    maxS = Math.max(maxS, bounds[1][i] - bounds[0][i])
+  }
+
+  for(var i=0; i<3; ++i) {
+    if(scene.autoScale) {
+      model[5*i] = scene.aspect[i] / (bounds[1][i] - bounds[0][i])
+    } else {
+      model[5*i] = 1 / maxS
+    }
+    if(scene.autoCenter) {
+      model[12+i] = -model[5*i] * 0.5 * (bounds[0][i] + bounds[1][i])
+    }
+  }
 }
 
 },{"./camera.js":141,"./lib/shader":142,"a-big-triangle":12,"gl-axes3d":96,"gl-axes3d/properties":103,"gl-fbo":112,"gl-mat4/ortho":128,"gl-mat4/perspective":129,"gl-select-static":149,"gl-spikes3d":158,"is-mobile":260,"mouse-change":271}],144:[function(_dereq_,module,exports){
@@ -32686,8 +32741,11 @@ proto.dispose = function() {
 }
 
 function createSelectBuffer(gl, shape) {
-  var fbo = createFBO(gl, shape)
-  var buffer = pool.mallocUint8(shape[0]*shape[1]*4)
+  var width = shape[0]
+  var height = shape[1]
+  var options = {}
+  var fbo = createFBO(gl, width, height, options)
+  var buffer = pool.mallocUint8(width*height*4)
   return new SelectBuffer(gl, fbo, buffer)
 }
 
@@ -73176,7 +73234,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.52.1';
+exports.version = '1.52.2';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
@@ -76867,11 +76925,14 @@ lib.templateString = function(string, obj) {
     var getterCache = {};
 
     return string.replace(lib.TEMPLATE_STRING_REGEX, function(dummy, key) {
+        var v;
         if(SIMPLE_PROPERTY_REGEX.test(key)) {
-            return obj[key] || '';
+            v = obj[key];
+        } else {
+            getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
+            v = getterCache[key]();
         }
-        getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-        return getterCache[key]() || '';
+        return lib.isValidTextValue(v) ? v : '';
     });
 };
 
@@ -87142,6 +87203,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     var fullLayout = gd._fullLayout;
     var axList = Axes.list(gd, '', true);
     var matchGroups = fullLayout._axisMatchGroups || [];
+    var axLookup = {};
     var ax;
     var axRng;
 
@@ -87149,6 +87211,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
         ax = axList[i];
         cleanAxisConstraints(gd, ax);
         doAutoRange(gd, ax);
+        axLookup[ax._id] = 1;
     }
 
     enforceAxisConstraints(gd);
@@ -87161,6 +87224,10 @@ exports.doAutoRangeAndConstraints = function(gd) {
 
         for(id in group) {
             ax = Axes.getFromId(gd, id);
+
+            // skip over 'missing' axes which do not pass through doAutoRange
+            if(!axLookup[ax._id]) continue;
+            // if one axis has autorange false, we're done
             if(ax.autorange === false) continue groupLoop;
 
             axRng = Lib.simpleMap(ax.range, ax.r2l);
@@ -88038,13 +88105,14 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var valOut = objOut[k];
 
         var nestedSchema = getNestedSchema(schema, k);
-        var isInfoArray = (nestedSchema || {}).valType === 'info_array';
-        var isColorscale = (nestedSchema || {}).valType === 'colorscale';
+        var nestedValType = (nestedSchema || {}).valType;
+        var isInfoArray = nestedValType === 'info_array';
+        var isColorscale = nestedValType === 'colorscale';
         var items = (nestedSchema || {}).items;
 
         if(!isInSchema(schema, k)) {
             list.push(format('schema', base, p));
-        } else if(isPlainObject(valIn) && isPlainObject(valOut)) {
+        } else if(isPlainObject(valIn) && isPlainObject(valOut) && nestedValType !== 'any') {
             crawl(valIn, valOut, nestedSchema, list, base, p);
         } else if(isInfoArray && isArray(valIn)) {
             if(valIn.length > valOut.length) {
@@ -90849,10 +90917,14 @@ axes.drawOne = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
+    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+
+    // this happens when updating matched group with 'missing' axes
+    if(!mainPlotinfo) return;
+
+    var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
-    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
-    var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
 
     var vals = ax._vals = axes.calcTicks(ax);
 
@@ -92811,11 +92883,10 @@ exports.tick0 = function(tick0, axType, calendar, dtick) {
 */
 
 'use strict';
+
 var counterRegex = _dereq_('../../lib/regex').counter;
 
-
 module.exports = {
-
     idRegex: {
         x: counterRegex('x'),
         y: counterRegex('y')
@@ -96005,6 +96076,8 @@ var axisIds = _dereq_('./axis_ids');
 var id2name = axisIds.id2name;
 var name2id = axisIds.name2id;
 
+var AX_ID_PATTERN = _dereq_('./constants').AX_ID_PATTERN;
+
 var Registry = _dereq_('../../registry');
 var traceIs = Registry.traceIs;
 var getComponentMethod = Registry.getComponentMethod;
@@ -96114,7 +96187,28 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var bgColor = Color.combine(plotBgColor, layoutOut.paper_bgcolor);
 
-    var axName, axLetter, axLayoutIn, axLayoutOut;
+    // name of single axis (e.g. 'xaxis', 'yaxis2')
+    var axName;
+    // id of single axis (e.g. 'y', 'x5')
+    var axId;
+    // 'x' or 'y'
+    var axLetter;
+    // input layout axis container
+    var axLayoutIn;
+    // full layout axis container
+    var axLayoutOut;
+
+    function newAxLayoutOut() {
+        var traces = ax2traces[axName] || [];
+        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._annIndices = [];
+        axLayoutOut._shapeIndices = [];
+        axLayoutOut._imgIndices = [];
+        axLayoutOut._subplotsWith = [];
+        axLayoutOut._counterAxes = [];
+        axLayoutOut._name = axLayoutOut._attr = axName;
+        axLayoutOut._id = axId;
+    }
 
     function coerce(attr, dflt) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
@@ -96127,9 +96221,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function getCounterAxes(axLetter) {
         return (axLetter === 'x') ? yIds : xIds;
     }
-
-    var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
-    var allAxisIds = counterAxes.x.concat(counterAxes.y);
 
     function getOverlayableAxes(axLetter, axName) {
         var list = (axLetter === 'x') ? xNames : yNames;
@@ -96146,9 +96237,30 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return out;
     }
 
+    // list of available counter axis names
+    var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
+    // list of all x AND y axis ids
+    var allAxisIds = counterAxes.x.concat(counterAxes.y);
+    // lookup and list of axis ids that axes in axNames have a reference to,
+    // even though they are missing from allAxisIds
+    var missingMatchedAxisIdsLookup = {};
+    var missingMatchedAxisIds = [];
+
+    // fill in 'missing' axis lookup when an axis is set to match an axis
+    // not part of the allAxisIds list, save axis type so that we can propagate
+    // it to the missing axes
+    function addMissingMatchedAxis() {
+        var matchesIn = axLayoutIn.matches;
+        if(AX_ID_PATTERN.test(matchesIn) && allAxisIds.indexOf(matchesIn) === -1) {
+            missingMatchedAxisIdsLookup[matchesIn] = axLayoutIn.type;
+            missingMatchedAxisIds = Object.keys(missingMatchedAxisIdsLookup);
+        }
+    }
+
     // first pass creates the containers, determines types, and handles most of the settings
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
+        axId = name2id(axName);
         axLetter = axName.charAt(0);
 
         if(!Lib.isPlainObject(layoutIn[axName])) {
@@ -96157,20 +96269,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         axLayoutIn = layoutIn[axName];
         axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
-
-        var traces = ax2traces[axName] || [];
-        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
-        axLayoutOut._annIndices = [];
-        axLayoutOut._shapeIndices = [];
-        axLayoutOut._imgIndices = [];
-        axLayoutOut._subplotsWith = [];
-        axLayoutOut._counterAxes = [];
-
-        // set up some private properties
-        axLayoutOut._name = axLayoutOut._attr = axName;
-        var id = axLayoutOut._id = name2id(axName);
-
-        var overlayableAxes = getOverlayableAxes(axLetter, axName);
+        newAxLayoutOut();
 
         var visibleDflt =
             (axLetter === 'x' && !xaMustDisplay[axName] && xaMayHide[axName]) ||
@@ -96188,13 +96287,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
             showGrid: !noGrids[axName],
-            data: traces,
+            data: ax2traces[axName] || [],
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
             visibleDflt: visibleDflt,
             reverseDflt: reverseDflt,
-            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[id]
+            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId]
         };
 
         coerce('uirevision', layoutOut.uirevision);
@@ -96220,11 +96319,62 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
-            overlayableAxes: overlayableAxes,
+            overlayableAxes: getOverlayableAxes(axLetter, axName),
             grid: layoutOut.grid
         });
 
         coerce('title.standoff');
+
+        addMissingMatchedAxis();
+
+        axLayoutOut._input = axLayoutIn;
+    }
+
+    // coerce the 'missing' axes
+    i = 0;
+    while(i < missingMatchedAxisIds.length) {
+        axId = missingMatchedAxisIds[i++];
+        axName = id2name(axId);
+        axLetter = axName.charAt(0);
+
+        if(!Lib.isPlainObject(layoutIn[axName])) {
+            layoutIn[axName] = {};
+        }
+
+        axLayoutIn = layoutIn[axName];
+        axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
+        newAxLayoutOut();
+
+        var defaultOptions2 = {
+            letter: axLetter,
+            font: layoutOut.font,
+            outerTicks: outerTicks[axName],
+            showGrid: !noGrids[axName],
+            data: [],
+            bgColor: bgColor,
+            calendar: layoutOut.calendar,
+            automargin: true,
+            visibleDflt: false,
+            reverseDflt: false,
+            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId]
+        };
+
+        coerce('uirevision', layoutOut.uirevision);
+
+        axLayoutOut.type = missingMatchedAxisIdsLookup[axId] || 'linear';
+
+        handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions2, layoutOut);
+
+        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
+            letter: axLetter,
+            counterAxes: counterAxes[axLetter],
+            overlayableAxes: getOverlayableAxes(axLetter, axName),
+            grid: layoutOut.grid
+        });
+
+        coerce('fixedrange');
+
+        addMissingMatchedAxis();
 
         axLayoutOut._input = axLayoutIn;
     }
@@ -96276,9 +96426,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var constraintGroups = layoutOut._axisConstraintGroups = [];
     // similar to _axisConstraintGroups, but for matching axes
     var matchGroups = layoutOut._axisMatchGroups = [];
+    // make sure to include 'missing' axes here
+    var allAxisIdsIncludingMissing = allAxisIds.concat(missingMatchedAxisIds);
+    var axNamesIncludingMissing = axNames.concat(Lib.simpleMap(missingMatchedAxisIds, id2name));
 
-    for(i = 0; i < axNames.length; i++) {
-        axName = axNames[i];
+    for(i = 0; i < axNamesIncludingMissing.length; i++) {
+        axName = axNamesIncludingMissing[i];
         axLetter = axName.charAt(0);
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
@@ -96286,15 +96439,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var scaleanchorDflt;
         if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && axHasImage[axName]) {
             scaleanchorDflt = axLayoutOut.anchor;
-        } else {scaleanchorDflt = undefined;}
+        } else {
+            scaleanchorDflt = undefined;
+        }
 
         var constrainDflt;
         if(!axLayoutIn.hasOwnProperty('constrain') && axHasImage[axName]) {
             constrainDflt = 'domain';
-        } else {constrainDflt = undefined;}
+        } else {
+            constrainDflt = undefined;
+        }
 
         handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
-            allAxisIds: allAxisIds,
+            allAxisIds: allAxisIdsIncludingMissing,
             layoutOut: layoutOut,
             scaleanchorDflt: scaleanchorDflt,
             constrainDflt: constrainDflt
@@ -96305,7 +96462,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var group = matchGroups[i];
         var rng = null;
         var autorange = null;
-        var axId;
 
         // find 'matching' range attrs
         for(axId in group) {
@@ -96358,7 +96514,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../components/color":376,"../../lib":496,"../../plot_api/plot_template":532,"../../registry":594,"../layout_attributes":583,"./axis_defaults":544,"./axis_ids":545,"./constraints":549,"./layout_attributes":554,"./position_defaults":557,"./type_defaults":565}],556:[function(_dereq_,module,exports){
+},{"../../components/color":376,"../../lib":496,"../../plot_api/plot_template":532,"../../registry":594,"../layout_attributes":583,"./axis_defaults":544,"./axis_ids":545,"./constants":548,"./constraints":549,"./layout_attributes":554,"./position_defaults":557,"./type_defaults":565}],556:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
@@ -100400,10 +100556,269 @@ var createAxesOptions = _dereq_('./layout/convert');
 var createSpikeOptions = _dereq_('./layout/spikes');
 var computeTickMarks = _dereq_('./layout/tick_marks');
 
+var isMobile = _dereq_('is-mobile');
+var tablet = isTablet();
+
+function isTablet() {
+    if(!navigator) return false;
+
+    var ua;
+    // same interface as applied by is-mobile module
+    if(!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+    if(ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+        ua = ua.headers['user-agent'];
+    }
+    if(typeof ua !== 'string') return false;
+
+    var result = isMobile({
+        ua: ua,
+        tablet: true
+    });
+
+    // handle iPad pro or iPad with iOs 13 using Safari
+    // see https://github.com/plotly/plotly.js/issues/4502
+    if(
+        result === false &&
+        ua.indexOf('Macintosh') !== -1 &&
+        ua.indexOf('Safari') !== -1 &&
+        navigator.maxTouchPoints > 1
+    ) {
+        result = true;
+    }
+
+    return result;
+}
+
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
-function render(scene) {
+function Scene(options, fullLayout) {
+    // create sub container for plot
+    var sceneContainer = document.createElement('div');
+    var plotContainer = options.container;
+
+    // keep a ref to the graph div to fire hover+click events
+    this.graphDiv = options.graphDiv;
+
+    // create SVG container for hover text
+    var svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top = svgContainer.style.left = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = 20;
+    svgContainer.style['pointer-events'] = 'none';
+    sceneContainer.appendChild(svgContainer);
+    this.svgContainer = svgContainer;
+
+    // Tag the container with the sceneID
+    sceneContainer.id = options.id;
+    sceneContainer.style.position = 'absolute';
+    sceneContainer.style.top = sceneContainer.style.left = '0px';
+    sceneContainer.style.width = sceneContainer.style.height = '100%';
+    plotContainer.appendChild(sceneContainer);
+
+    this.fullLayout = fullLayout;
+    this.id = options.id || 'scene';
+    this.fullSceneLayout = fullLayout[this.id];
+
+    // Saved from last call to plot()
+    this.plotArgs = [ [], {}, {} ];
+
+    /*
+     * Move this to calc step? Why does it work here?
+     */
+    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
+    this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
+    this.container = sceneContainer;
+    this.staticMode = !!options.staticPlot;
+    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
+
+    // Coordinate rescaling
+    this.dataScale = [1, 1, 1];
+
+    this.contourLevels = [ [], [], [] ];
+
+    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
+    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
+
+    this.initializeGLPlot();
+}
+
+var proto = Scene.prototype;
+
+proto.tryCreatePlot = function() {
+    var scene = this;
+    var opts = {
+        canvas: scene.canvas,
+        gl: scene.gl,
+        glOptions: {
+            preserveDrawingBuffer: tablet,
+            premultipliedAlpha: true,
+            antialias: true
+        },
+        container: scene.container,
+        axes: scene.axesOptions,
+        spikes: scene.spikeOptions,
+        pickRadius: 10,
+        snapToData: true,
+        autoScale: true,
+        autoBounds: false,
+        cameraObject: scene.camera,
+        pixelRatio: scene.pixelRatio
+    };
+
+    // for static plots, we reuse the WebGL context
+    //  as WebKit doesn't collect them reliably
+    if(scene.staticMode) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            STATIC_CONTEXT = getContext({
+                canvas: STATIC_CANVAS,
+                preserveDrawingBuffer: true,
+                premultipliedAlpha: true,
+                antialias: true
+            });
+            if(!STATIC_CONTEXT) {
+                throw new Error('error creating static canvas/context for image server');
+            }
+        }
+
+        opts.gl = STATIC_CONTEXT;
+        opts.canvas = STATIC_CANVAS;
+    }
+
+    var failed = 0;
+
+    try {
+        scene.glplot = createPlot(opts);
+    } catch(e) {
+        failed++;
+        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
+            scene.glplot = createPlot(opts);
+        } catch(e) {
+            failed++;
+        }
+    }
+
+    return failed < 2;
+};
+
+proto.initializeGLCamera = function() {
+    var scene = this;
+    var cameraData = scene.fullSceneLayout.camera;
+    var isOrtho = (cameraData.projection.type === 'orthographic');
+
+    scene.camera = createCamera(scene.container, {
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+        _ortho: isOrtho,
+        zoomMin: 0.01,
+        zoomMax: 100,
+        mode: 'orbit'
+    });
+};
+
+proto.initializeGLPlot = function() {
+    var scene = this;
+
+    scene.initializeGLCamera();
+
+    var success = scene.tryCreatePlot();
+    /*
+    * createPlot will throw when webgl is not enabled in the client.
+    * Lets return an instance of the module with all functions noop'd.
+    * The destroy method - which will remove the container from the DOM
+    * is overridden with a function that removes the container only.
+    */
+    if(!success) return showNoWebGlMsg(scene);
+
+    // List of scene objects
+    scene.traces = {};
+
+    scene.make4thDimension();
+
+    var gd = scene.graphDiv;
+    var layout = gd.layout;
+
+    var makeUpdate = function() {
+        var update = {};
+
+        if(scene.isCameraChanged(layout)) {
+            // camera updates
+            update[scene.id + '.camera'] = scene.getCamera();
+        }
+
+        if(scene.isAspectChanged(layout)) {
+            // scene updates
+            update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
+        }
+
+        return update;
+    };
+
+    var relayoutCallback = function(scene) {
+        if(scene.fullSceneLayout.dragmode === false) return;
+
+        var update = makeUpdate();
+        scene.saveLayout(layout);
+        scene.graphDiv.emit('plotly_relayout', update);
+    };
+
+    scene.glplot.canvas.addEventListener('mouseup', function() {
+        relayoutCallback(scene);
+    });
+
+    scene.glplot.canvas.addEventListener('wheel', function(e) {
+        if(gd._context._scrollZoom.gl3d) {
+            if(scene.camera._ortho) {
+                var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
+                var o = scene.glplot.getAspectratio();
+                scene.glplot.setAspectratio({
+                    x: s * o.x,
+                    y: s * o.y,
+                    z: s * o.z
+                });
+            }
+
+            relayoutCallback(scene);
+        }
+    }, passiveSupported ? {passive: false} : false);
+
+    scene.glplot.canvas.addEventListener('mousemove', function() {
+        if(scene.fullSceneLayout.dragmode === false) return;
+        if(scene.camera.mouseListener.buttons === 0) return;
+
+        var update = makeUpdate();
+        scene.graphDiv.emit('plotly_relayouting', update);
+    });
+
+    if(!scene.staticMode) {
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
+            if(gd && gd.emit) {
+                gd.emit('plotly_webglcontextlost', {
+                    event: event,
+                    layer: scene.id
+                });
+            }
+        }, false);
+    }
+
+    scene.glplot.oncontextloss = function() {
+        scene.recoverContext();
+    };
+
+    scene.glplot.onrender = function() {
+        scene.render();
+    };
+
+    return true;
+};
+
+proto.render = function() {
+    var scene = this;
     var gd = scene.graphDiv;
     var trace;
 
@@ -100498,7 +100913,7 @@ function render(scene) {
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface' || trace.type === 'volume') {
-            labels.valueLabel = Axes.tickText(scene.mockAxis, scene.mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            labels.valueLabel = Axes.tickText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
             vectorTx.push('value: ' + labels.valueLabel);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
@@ -100565,242 +100980,25 @@ function render(scene) {
     }
 
     scene.drawAnnotations(scene);
-}
-
-function tryCreatePlot(scene, cameraObject, pixelRatio, canvas, gl) {
-    var glplotOptions = {
-        canvas: canvas,
-        gl: gl,
-        container: scene.container,
-        axes: scene.axesOptions,
-        spikes: scene.spikeOptions,
-        pickRadius: 10,
-        snapToData: true,
-        autoScale: true,
-        autoBounds: false,
-        cameraObject: cameraObject,
-        pixelRatio: pixelRatio
-    };
-
-    // for static plots, we reuse the WebGL context
-    //  as WebKit doesn't collect them reliably
-    if(scene.staticMode) {
-        if(!STATIC_CONTEXT) {
-            STATIC_CANVAS = document.createElement('canvas');
-            STATIC_CONTEXT = getContext({
-                canvas: STATIC_CANVAS,
-                preserveDrawingBuffer: true,
-                premultipliedAlpha: true,
-                antialias: true
-            });
-            if(!STATIC_CONTEXT) {
-                throw new Error('error creating static canvas/context for image server');
-            }
-        }
-        glplotOptions.pixelRatio = scene.pixelRatio;
-        glplotOptions.gl = STATIC_CONTEXT;
-        glplotOptions.canvas = STATIC_CANVAS;
-    }
-
-    var failed = 0;
-
-    try {
-        scene.glplot = createPlot(glplotOptions);
-    } catch(e) {
-        failed++;
-        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
-            scene.glplot = createPlot(glplotOptions);
-        } catch(e) {
-            failed++;
-        }
-    }
-
-    return failed < 2;
-}
-
-function initializeGLPlot(scene, canvas, gl) {
-    scene.initializeGLCamera();
-
-    var success = tryCreatePlot(scene, scene.camera, scene.pixelRatio, canvas, gl);
-    /*
-    * createPlot will throw when webgl is not enabled in the client.
-    * Lets return an instance of the module with all functions noop'd.
-    * The destroy method - which will remove the container from the DOM
-    * is overridden with a function that removes the container only.
-    */
-    if(!success) return showNoWebGlMsg(scene);
-
-    var gd = scene.graphDiv;
-    var layout = gd.layout;
-
-    var makeUpdate = function() {
-        var update = {};
-
-        if(scene.isCameraChanged(layout)) {
-            // camera updates
-            update[scene.id + '.camera'] = scene.getCamera();
-        }
-
-        if(scene.isAspectChanged(layout)) {
-            // scene updates
-            update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
-        }
-
-        return update;
-    };
-
-    var relayoutCallback = function(scene) {
-        if(scene.fullSceneLayout.dragmode === false) return;
-
-        var update = makeUpdate();
-        scene.saveLayout(layout);
-        scene.graphDiv.emit('plotly_relayout', update);
-    };
-
-    scene.glplot.canvas.addEventListener('mouseup', function() {
-        relayoutCallback(scene);
-    });
-
-    scene.glplot.canvas.addEventListener('wheel', function(e) {
-        if(gd._context._scrollZoom.gl3d) {
-            if(scene.glplot.camera._ortho) {
-                var s = (e.deltaX > e.deltaY) ? 1.1 : 1.0 / 1.1;
-                var o = scene.glplot.getAspectratio();
-                scene.glplot.setAspectratio({
-                    x: s * o.x,
-                    y: s * o.y,
-                    z: s * o.z
-                });
-            }
-
-            relayoutCallback(scene);
-        }
-    }, passiveSupported ? {passive: false} : false);
-
-    scene.glplot.canvas.addEventListener('mousemove', function() {
-        if(scene.fullSceneLayout.dragmode === false) return;
-        if(scene.camera.mouseListener.buttons === 0) return;
-
-        var update = makeUpdate();
-        scene.graphDiv.emit('plotly_relayouting', update);
-    });
-
-    if(!scene.staticMode) {
-        scene.glplot.canvas.addEventListener('webglcontextlost', function(event) {
-            if(gd && gd.emit) {
-                gd.emit('plotly_webglcontextlost', {
-                    event: event,
-                    layer: scene.id
-                });
-            }
-        }, false);
-    }
-
-    scene.glplot.camera = scene.camera;
-
-    scene.glplot.oncontextloss = function() {
-        scene.recoverContext();
-    };
-
-    scene.glplot.onrender = render.bind(null, scene);
-
-    // List of scene objects
-    scene.traces = {};
-
-    scene.make4thDimension();
-
-    return true;
-}
-
-function Scene(options, fullLayout) {
-    // create sub container for plot
-    var sceneContainer = document.createElement('div');
-    var plotContainer = options.container;
-
-    // keep a ref to the graph div to fire hover+click events
-    this.graphDiv = options.graphDiv;
-
-    // create SVG container for hover text
-    var svgContainer = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'svg');
-    svgContainer.style.position = 'absolute';
-    svgContainer.style.top = svgContainer.style.left = '0px';
-    svgContainer.style.width = svgContainer.style.height = '100%';
-    svgContainer.style['z-index'] = 20;
-    svgContainer.style['pointer-events'] = 'none';
-    sceneContainer.appendChild(svgContainer);
-    this.svgContainer = svgContainer;
-
-    // Tag the container with the sceneID
-    sceneContainer.id = options.id;
-    sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top = sceneContainer.style.left = '0px';
-    sceneContainer.style.width = sceneContainer.style.height = '100%';
-    plotContainer.appendChild(sceneContainer);
-
-    this.fullLayout = fullLayout;
-    this.id = options.id || 'scene';
-    this.fullSceneLayout = fullLayout[this.id];
-
-    // Saved from last call to plot()
-    this.plotArgs = [ [], {}, {} ];
-
-    /*
-     * Move this to calc step? Why does it work here?
-     */
-    this.axesOptions = createAxesOptions(fullLayout, fullLayout[this.id]);
-    this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
-    this.container = sceneContainer;
-    this.staticMode = !!options.staticPlot;
-    this.pixelRatio = this.pixelRatio || options.plotGlPixelRatio || 2;
-
-    // Coordinate rescaling
-    this.dataScale = [1, 1, 1];
-
-    this.contourLevels = [ [], [], [] ];
-
-    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
-    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
-
-    initializeGLPlot(this);
-}
-
-var proto = Scene.prototype;
-
-proto.initializeGLCamera = function() {
-    var cameraData = this.fullSceneLayout.camera;
-    var isOrtho = (cameraData.projection.type === 'orthographic');
-
-    this.camera = createCamera(this.container, {
-        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-        eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-        up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-        _ortho: isOrtho,
-        zoomMin: 0.01,
-        zoomMax: 100,
-        mode: 'orbit'
-    });
 };
 
 proto.recoverContext = function() {
     var scene = this;
-    var gl = this.glplot.gl;
-    var canvas = this.glplot.canvas;
 
-    this.glplot.dispose();
+    scene.glplot.dispose();
 
-    function tryRecover() {
-        if(gl.isContextLost()) {
+    var tryRecover = function() {
+        if(scene.glplot.gl.isContextLost()) {
             requestAnimationFrame(tryRecover);
             return;
         }
-        if(!initializeGLPlot(scene, canvas, gl)) {
+        if(!scene.initializeGLPlot()) {
             Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
         scene.plot.apply(scene, scene.plotArgs);
-    }
+    };
+
     requestAnimationFrame(tryRecover);
 };
 
@@ -100868,39 +101066,35 @@ function computeAnnotationBounds(scene, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-    // Save parameters
-    this.plotArgs = [sceneData, fullLayout, layout];
+    var scene = this;
 
-    if(this.glplot.contextLost) return;
+    // Save parameters
+    scene.plotArgs = [sceneData, fullLayout, layout];
+
+    if(scene.glplot.contextLost) return;
 
     var data, trace;
     var i, j, axis, axisType;
-    var fullSceneLayout = fullLayout[this.id];
-    var sceneLayout = layout[this.id];
-
-    if(fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
-    else this.glplot.clearColor = [0, 0, 0, 0];
-
-    this.glplot.snapToData = true;
+    var fullSceneLayout = fullLayout[scene.id];
+    var sceneLayout = layout[scene.id];
 
     // Update layout
-    this.fullLayout = fullLayout;
-    this.fullSceneLayout = fullSceneLayout;
+    scene.fullLayout = fullLayout;
+    scene.fullSceneLayout = fullSceneLayout;
 
-    this.glplotLayout = fullSceneLayout;
-    this.axesOptions.merge(fullLayout, fullSceneLayout);
-    this.spikeOptions.merge(fullSceneLayout);
+    scene.axesOptions.merge(fullLayout, fullSceneLayout);
+    scene.spikeOptions.merge(fullSceneLayout);
 
     // Update camera and camera mode
-    this.setViewport(fullSceneLayout);
-    this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
-    this.camera.enableWheel = this.graphDiv._context._scrollZoom.gl3d;
+    scene.setViewport(fullSceneLayout);
+    scene.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
+    scene.camera.enableWheel = scene.graphDiv._context._scrollZoom.gl3d;
 
-    // Update scene
-    this.glplot.update({});
+    // Update scene background
+    scene.glplot.setClearColor(str2RGBAarray(fullSceneLayout.bgcolor));
 
     // Update axes functions BEFORE updating traces
-    this.setConvert(axis);
+    scene.setConvert(axis);
 
     // Convert scene data
     if(!sceneData) sceneData = [];
@@ -100930,10 +101124,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     // Save scale
-    this.dataScale = dataScale;
+    scene.dataScale = dataScale;
 
     // after computeTraceBounds where ax._categories are filled in
-    this.convertAnnotations(this);
+    scene.convertAnnotations(this);
 
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
@@ -100941,24 +101135,24 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(data.visible !== true || data._length === 0) {
             continue;
         }
-        trace = this.traces[data.uid];
+        trace = scene.traces[data.uid];
         if(trace) {
             if(trace.data.type === data.type) {
                 trace.update(data);
             } else {
                 trace.dispose();
                 trace = data._module.plot(this, data);
-                this.traces[data.uid] = trace;
+                scene.traces[data.uid] = trace;
             }
         } else {
             trace = data._module.plot(this, data);
-            this.traces[data.uid] = trace;
+            scene.traces[data.uid] = trace;
         }
         trace.name = data.name;
     }
 
     // Remove empty traces
-    var traceIds = Object.keys(this.traces);
+    var traceIds = Object.keys(scene.traces);
 
     traceIdLoop:
     for(i = 0; i < traceIds.length; ++i) {
@@ -100968,13 +101162,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 continue traceIdLoop;
             }
         }
-        trace = this.traces[traceIds[i]];
+        trace = scene.traces[traceIds[i]];
         trace.dispose();
-        delete this.traces[traceIds[i]];
+        delete scene.traces[traceIds[i]];
     }
 
     // order object per trace index
-    this.glplot.objects.sort(function(a, b) {
+    scene.glplot.objects.sort(function(a, b) {
         return a._trace.data.index - b._trace.data.index;
     });
 
@@ -101001,8 +101195,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
 
-            var objects = this.glplot.objects;
-            var annotations = this.fullSceneLayout.annotations || [];
+            var objects = scene.glplot.objects;
+            var annotations = scene.fullSceneLayout.annotations || [];
             var axLetter = axis._name.charAt(0);
 
             for(j = 0; j < objects.length; j++) {
@@ -101060,8 +101254,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
         // Update plot bounds
-        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
-        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
+        scene.glplot.setBounds(i, {
+            min: sceneBounds[0][i] * dataScale[i],
+            max: sceneBounds[1][i] * dataScale[i]
+        });
     }
 
     var axesScaleRatio = [1, 1, 1];
@@ -101116,11 +101312,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
      * Finally assign the computed aspecratio to the glplot module. This will have an effect
      * on the next render cycle.
      */
-    this.glplot.setAspectratio(fullSceneLayout.aspectratio);
+    scene.glplot.setAspectratio(fullSceneLayout.aspectratio);
 
     // save 'initial' camera view settings for modebar button
-    if(!this.viewInitial.aspectratio) {
-        this.viewInitial.aspectratio = {
+    if(!scene.viewInitial.aspectratio) {
+        scene.viewInitial.aspectratio = {
             x: fullSceneLayout.aspectratio.x,
             y: fullSceneLayout.aspectratio.y,
             z: fullSceneLayout.aspectratio.z
@@ -101132,7 +101328,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var size = fullLayout._size || null;
 
     if(domain && size) {
-        var containerStyle = this.container.style;
+        var containerStyle = scene.container.style;
         containerStyle.position = 'absolute';
         containerStyle.left = (size.l + domain.x[0] * size.w) + 'px';
         containerStyle.top = (size.t + (1 - domain.y[1]) * size.h) + 'px';
@@ -101141,18 +101337,19 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     // force redraw so that promise is returned when rendering is completed
-    this.glplot.redraw();
+    scene.glplot.redraw();
 };
 
 proto.destroy = function() {
-    if(!this.glplot) return;
+    var scene = this;
 
-    this.camera.mouseListener.enabled = false;
-    this.container.removeEventListener('wheel', this.camera.wheelListener);
-    this.camera = this.glplot.camera = null;
-    this.glplot.dispose();
-    this.container.parentNode.removeChild(this.container);
-    this.glplot = null;
+    if(!scene.glplot) return;
+    scene.camera.mouseListener.enabled = false;
+    scene.container.removeEventListener('wheel', scene.camera.wheelListener);
+    scene.camera = null;
+    scene.glplot.dispose();
+    scene.container.parentNode.removeChild(scene.container);
+    scene.glplot = null;
 };
 
 // getCameraArrays :: plotly_coords -> gl-plot3d_coords
@@ -101178,42 +101375,34 @@ function getLayoutCamera(camera) {
 
 // get camera position in plotly coords from 'gl-plot3d' coords
 proto.getCamera = function() {
-    this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return getLayoutCamera(this.glplot.camera);
+    var scene = this;
+    scene.camera.view.recalcMatrix(scene.camera.view.lastT());
+    return getLayoutCamera(scene.camera);
 };
 
 // set gl-plot3d camera position and scene aspects with a set of plotly coords
 proto.setViewport = function(sceneLayout) {
+    var scene = this;
     var cameraData = sceneLayout.camera;
 
-    this.glplot.camera.lookAt.apply(this, getCameraArrays(cameraData));
-    this.glplot.setAspectratio(sceneLayout.aspectratio);
+    scene.camera.lookAt.apply(this, getCameraArrays(cameraData));
+    scene.glplot.setAspectratio(sceneLayout.aspectratio);
 
     var newOrtho = (cameraData.projection.type === 'orthographic');
-    var oldOrtho = this.glplot.camera._ortho;
+    var oldOrtho = scene.camera._ortho;
 
     if(newOrtho !== oldOrtho) {
-        this.glplot.redraw();
-
-        var RGBA = this.glplot.clearColor;
-        this.glplot.gl.clearColor(
-            RGBA[0], RGBA[1], RGBA[2], RGBA[3]
-        );
-        this.glplot.gl.clear(
-            this.glplot.gl.DEPTH_BUFFER_BIT |
-            this.glplot.gl.COLOR_BUFFER_BIT
-        );
-
-        this.glplot.dispose();
-
-        initializeGLPlot(this);
-        this.glplot.camera._ortho = newOrtho;
+        scene.glplot.redraw(); // TODO: figure out why we need to redraw here?
+        scene.glplot.clearRGBA();
+        scene.glplot.dispose();
+        scene.initializeGLPlot();
     }
 };
 
 proto.isCameraChanged = function(layout) {
-    var cameraData = this.getCamera();
-    var cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+    var scene = this;
+    var cameraData = scene.getCamera();
+    var cameraNestedProp = Lib.nestedProperty(layout, scene.id + '.camera');
     var cameraDataLastSave = cameraNestedProp.get();
 
     function same(x, y, i, j) {
@@ -101246,8 +101435,9 @@ proto.isCameraChanged = function(layout) {
 };
 
 proto.isAspectChanged = function(layout) {
-    var aspectData = this.glplot.getAspectratio();
-    var aspectNestedProp = Lib.nestedProperty(layout, this.id + '.aspectratio');
+    var scene = this;
+    var aspectData = scene.glplot.getAspectratio();
+    var aspectNestedProp = Lib.nestedProperty(layout, scene.id + '.aspectratio');
     var aspectDataLastSave = aspectNestedProp.get();
 
     return (
@@ -101260,7 +101450,8 @@ proto.isAspectChanged = function(layout) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveLayout = function(layout) {
-    var fullLayout = this.fullLayout;
+    var scene = this;
+    var fullLayout = scene.fullLayout;
 
     var cameraData;
     var cameraNestedProp;
@@ -101270,42 +101461,42 @@ proto.saveLayout = function(layout) {
     var aspectNestedProp;
     var aspectDataLastSave;
 
-    var cameraChanged = this.isCameraChanged(layout);
-    var aspectChanged = this.isAspectChanged(layout);
+    var cameraChanged = scene.isCameraChanged(layout);
+    var aspectChanged = scene.isAspectChanged(layout);
 
     var hasChanged = cameraChanged || aspectChanged;
     if(hasChanged) {
         var preGUI = {};
         if(cameraChanged) {
-            cameraData = this.getCamera();
-            cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera');
+            cameraData = scene.getCamera();
+            cameraNestedProp = Lib.nestedProperty(layout, scene.id + '.camera');
             cameraDataLastSave = cameraNestedProp.get();
 
-            preGUI[this.id + '.camera'] = cameraDataLastSave;
+            preGUI[scene.id + '.camera'] = cameraDataLastSave;
         }
         if(aspectChanged) {
-            aspectData = this.glplot.getAspectratio();
-            aspectNestedProp = Lib.nestedProperty(layout, this.id + '.aspectratio');
+            aspectData = scene.glplot.getAspectratio();
+            aspectNestedProp = Lib.nestedProperty(layout, scene.id + '.aspectratio');
             aspectDataLastSave = aspectNestedProp.get();
 
-            preGUI[this.id + '.aspectratio'] = aspectDataLastSave;
+            preGUI[scene.id + '.aspectratio'] = aspectDataLastSave;
         }
         Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
 
         if(cameraChanged) {
             cameraNestedProp.set(cameraData);
 
-            var cameraFullNP = Lib.nestedProperty(fullLayout, this.id + '.camera');
+            var cameraFullNP = Lib.nestedProperty(fullLayout, scene.id + '.camera');
             cameraFullNP.set(cameraData);
         }
 
         if(aspectChanged) {
             aspectNestedProp.set(aspectData);
 
-            var aspectFullNP = Lib.nestedProperty(fullLayout, this.id + '.aspectratio');
+            var aspectFullNP = Lib.nestedProperty(fullLayout, scene.id + '.aspectratio');
             aspectFullNP.set(aspectData);
 
-            this.glplot.redraw();
+            scene.glplot.redraw();
         }
     }
 
@@ -101313,7 +101504,8 @@ proto.saveLayout = function(layout) {
 };
 
 proto.updateFx = function(dragmode, hovermode) {
-    var camera = this.camera;
+    var scene = this;
+    var camera = scene.camera;
     if(camera) {
         // rotate and orbital are synonymous
         if(dragmode === 'orbit') {
@@ -101327,15 +101519,15 @@ proto.updateFx = function(dragmode, hovermode) {
             // The setter for camera.mode animates the transition to z-up,
             // but only if we *don't* explicitly set z-up earlier via the
             // relayout. So push `up` back to layout & fullLayout manually now.
-            var gd = this.graphDiv;
+            var gd = scene.graphDiv;
             var fullLayout = gd._fullLayout;
-            var fullCamera = this.fullSceneLayout.camera;
+            var fullCamera = scene.fullSceneLayout.camera;
             var x = fullCamera.up.x;
             var y = fullCamera.up.y;
             var z = fullCamera.up.z;
             // only push `up` back to (full)layout if it's going to change
             if(z / Math.sqrt(x * x + y * y + z * z) < 0.999) {
-                var attr = this.id + '.camera.up';
+                var attr = scene.id + '.camera.up';
                 var zUp = {x: 0, y: 0, z: 1};
                 var edits = {};
                 edits[attr] = zUp;
@@ -101351,19 +101543,20 @@ proto.updateFx = function(dragmode, hovermode) {
     }
 
     // to put dragmode and hovermode on the same grounds from relayout
-    this.fullSceneLayout.hovermode = hovermode;
+    scene.fullSceneLayout.hovermode = hovermode;
 };
 
 proto.toImage = function(format) {
-    if(!format) format = 'png';
+    var scene = this;
 
-    if(this.staticMode) this.container.appendChild(STATIC_CANVAS);
+    if(!format) format = 'png';
+    if(scene.staticMode) scene.container.appendChild(STATIC_CANVAS);
 
     // Force redraw
-    this.glplot.redraw();
+    scene.glplot.redraw();
 
     // Grab context and yank out pixels
-    var gl = this.glplot.gl;
+    var gl = scene.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
 
@@ -101404,36 +101597,37 @@ proto.toImage = function(format) {
             dataURL = canvas.toDataURL('image/png');
     }
 
-    if(this.staticMode) this.container.removeChild(STATIC_CANVAS);
+    if(scene.staticMode) scene.container.removeChild(STATIC_CANVAS);
 
     return dataURL;
 };
 
 proto.setConvert = function() {
+    var scene = this;
     for(var i = 0; i < 3; i++) {
-        var ax = this.fullSceneLayout[axisProperties[i]];
-        Axes.setConvert(ax, this.fullLayout);
+        var ax = scene.fullSceneLayout[axisProperties[i]];
+        Axes.setConvert(ax, scene.fullLayout);
         ax.setScale = Lib.noop;
     }
 };
 
 proto.make4thDimension = function() {
-    var _this = this;
-    var gd = _this.graphDiv;
+    var scene = this;
+    var gd = scene.graphDiv;
     var fullLayout = gd._fullLayout;
 
     // mock axis for hover formatting
-    _this.mockAxis = {
+    scene._mockAxis = {
         type: 'linear',
         showexponent: 'all',
         exponentformat: 'B'
     };
-    Axes.setConvert(_this.mockAxis, fullLayout);
+    Axes.setConvert(scene._mockAxis, fullLayout);
 };
 
 module.exports = Scene;
 
-},{"../../components/fx":414,"../../lib":496,"../../lib/show_no_webgl_msg":516,"../../lib/str2rgbarray":518,"../../plots/cartesian/axes":542,"../../registry":594,"./layout/convert":575,"./layout/spikes":578,"./layout/tick_marks":579,"./project":580,"gl-plot3d":143,"has-passive-events":252,"webgl-context":357}],582:[function(_dereq_,module,exports){
+},{"../../components/fx":414,"../../lib":496,"../../lib/show_no_webgl_msg":516,"../../lib/str2rgbarray":518,"../../plots/cartesian/axes":542,"../../registry":594,"./layout/convert":575,"./layout/spikes":578,"./layout/tick_marks":579,"./project":580,"gl-plot3d":143,"has-passive-events":252,"is-mobile":260,"webgl-context":357}],582:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
@@ -103107,10 +103301,13 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             var subplots = layout._subplots;
             var subplotId = '';
 
-            // TODO - currently if we draw an empty gl2d subplot, it draws
-            // nothing then gets stuck and you can't get it back without newPlot
-            // sort this out in the regl refactor? but for now just drop empty gl2d subplots
-            if(basePlotModule.name !== 'gl2d' || visible) {
+            if(
+                visible ||
+                basePlotModule.name !== 'gl2d' // for now just drop empty gl2d subplots
+                // TODO - currently if we draw an empty gl2d subplot, it draws
+                // nothing then gets stuck and you can't get it back without newPlot
+                // sort this out in the regl refactor?
+            ) {
                 if(Array.isArray(subplotAttr)) {
                     for(i = 0; i < subplotAttr.length; i++) {
                         var attri = subplotAttr[i];
@@ -104769,7 +104966,7 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
-    setupAxisCategories(axList, fullData);
+    setupAxisCategories(axList, fullData, fullLayout);
 
     // 'transform' loop - must calc container traces first
     // so that if their dependent traces can get transform properly
@@ -104777,7 +104974,7 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) transformCalci(i);
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData);
+    if(hasCalcTransform) setupAxisCategories(axList, fullData, fullLayout);
 
     // 'regular' loop - make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
@@ -104982,12 +105179,30 @@ function sortAxisCategoriesByValue(axList, gd) {
     return affectedTraces;
 }
 
-function setupAxisCategories(axList, fullData) {
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
+function setupAxisCategories(axList, fullData, fullLayout) {
+    var axLookup = {};
+    var i, ax, axId;
+
+    for(i = 0; i < axList.length; i++) {
+        ax = axList[i];
+        axId = ax._id;
+
         ax.clearCalc();
         if(ax.type === 'multicategory') {
             ax.setupMultiCategory(fullData);
+        }
+
+        axLookup[ax._id] = 1;
+    }
+
+    // look into match groups for 'missing' axes
+    var matchGroups = fullLayout._axisMatchGroups || [];
+    for(i = 0; i < matchGroups.length; i++) {
+        for(axId in matchGroups[i]) {
+            if(!axLookup[axId]) {
+                ax = fullLayout[axisIDs.id2name(axId)];
+                ax.clearCalc();
+            }
         }
     }
 }
@@ -110696,11 +110911,15 @@ proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
 
-        selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex]
-        ];
+        if(selection.data._cellCenter) {
+            selection.traceCoordinate = selection.data.dataCoordinate;
+        } else {
+            selection.traceCoordinate = [
+                this.data.x[selectIndex],
+                this.data.y[selectIndex],
+                this.data.z[selectIndex]
+            ];
+        }
 
         var text = this.data.hovertext || this.data.text;
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
