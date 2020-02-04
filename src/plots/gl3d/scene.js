@@ -149,12 +149,9 @@ proto.tryCreatePlot = function() {
         if(scene.staticMode) {
             success = false;
         } else { // try second time
-            // make fresh object for options
-            opts = scene.prepareOptions();
-
             try {
                 // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
-                opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+                isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
 
                 scene.glplot = createPlot(opts);
             } catch(e) {
