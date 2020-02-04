@@ -30,38 +30,7 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var isMobile = require('is-mobile');
-var tablet = isTablet();
-
-function isTablet() {
-    if(!navigator) return false;
-
-    var ua;
-    // same interface as applied by is-mobile module
-    if(!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
-    if(ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
-        ua = ua.headers['user-agent'];
-    }
-    if(typeof ua !== 'string') return false;
-
-    var result = isMobile({
-        ua: ua,
-        tablet: true
-    });
-
-    // handle iPad pro or iPad with iOs 13 using Safari
-    // see https://github.com/plotly/plotly.js/issues/4502
-    if(
-        result === false &&
-        ua.indexOf('Macintosh') !== -1 &&
-        ua.indexOf('Safari') !== -1 &&
-        navigator.maxTouchPoints > 1
-    ) {
-        result = true;
-    }
-
-    return result;
-}
+var isMobile = require('is-mobile')({ tablet: true, featureDetect: true });
 
 
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -128,7 +97,7 @@ proto.tryCreatePlot = function() {
         canvas: scene.canvas,
         gl: scene.gl,
         glOptions: {
-            preserveDrawingBuffer: tablet,
+            preserveDrawingBuffer: isMobile,
             premultipliedAlpha: true,
             antialias: true
         },
