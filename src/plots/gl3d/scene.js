@@ -91,8 +91,9 @@ function Scene(options, fullLayout) {
 
 var proto = Scene.prototype;
 
-proto.tryCreatePlot = function() {
+proto.prepareOptions = function() {
     var scene = this;
+
     var opts = {
         canvas: scene.canvas,
         gl: scene.gl,
@@ -132,20 +133,37 @@ proto.tryCreatePlot = function() {
         opts.canvas = STATIC_CANVAS;
     }
 
-    var failed = 0;
+    return opts;
+};
+
+proto.tryCreatePlot = function() {
+    var scene = this;
+
+    var opts = scene.prepareOptions();
+
+    var success = true;
 
     try {
         scene.glplot = createPlot(opts);
     } catch(e) {
-        failed++;
-        try { // try second time to fix issue with Chrome 77 https://github.com/plotly/plotly.js/issues/4233
-            scene.glplot = createPlot(opts);
-        } catch(e) {
-            failed++;
+        if(scene.staticMode) {
+            success = false;
+        } else { // try second time
+            // make fresh object for options
+            opts = scene.prepareOptions();
+
+            try {
+                // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
+                opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+
+                scene.glplot = createPlot(opts);
+            } catch(e) {
+                success = false;
+            }
         }
     }
 
-    return failed < 2;
+    return success;
 };
 
 proto.initializeGLCamera = function() {
