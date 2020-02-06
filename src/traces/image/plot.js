@@ -30,100 +30,150 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var dx = trace.dx;
         var dy = trace.dy;
 
-        var left, right, temp, top, bottom, i;
-        // in case of log of a negative
-        i = 0;
-        while(left === undefined && i < w) {
-            left = xa.c2p(x0 + i * dx);
-            i++;
-        }
-        i = w;
-        while(right === undefined && i > 0) {
-            right = xa.c2p(x0 + i * dx);
-            i--;
-        }
-        i = 0;
-        while(top === undefined && i < h) {
-            top = ya.c2p(y0 + i * dy);
-            i++;
-        }
-        i = h;
-        while(bottom === undefined && i > 0) {
-            bottom = ya.c2p(y0 + i * dy);
-            i--;
-        }
-
-        if(right < left) {
-            temp = right;
-            right = left;
-            left = temp;
-        }
-
-        if(bottom < top) {
-            temp = top;
-            top = bottom;
-            bottom = temp;
-        }
-
-        // Reduce image size when zoomed in to save memory
-        var extra = 0.5; // half the axis size
-        left = Math.max(-extra * xa._length, left);
-        right = Math.min((1 + extra) * xa._length, right);
-        top = Math.max(-extra * ya._length, top);
-        bottom = Math.min((1 + extra) * ya._length, bottom);
-        var imageWidth = Math.round(right - left);
-        var imageHeight = Math.round(bottom - top);
-
-        // if image is entirely off-screen, don't even draw it
-        var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
-        if(isOffScreen) {
-            var noImage = plotGroup.selectAll('image').data([]);
-            noImage.exit().remove();
-            return;
-        }
-
-        // Draw each pixel
-        var canvas = document.createElement('canvas');
-        canvas.width = imageWidth;
-        canvas.height = imageHeight;
-        var context = canvas.getContext('2d');
-
-        var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
-        var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
-
-        var fmt = constants.colormodel[trace.colormodel].fmt;
-        var c;
-        for(i = 0; i < cd0.w; i++) {
-            var ipx0 = ipx(i); var ipx1 = ipx(i + 1);
-            if(ipx1 === ipx0 || isNaN(ipx1) || isNaN(ipx0)) continue;
-            for(var j = 0; j < cd0.h; j++) {
-                var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
-                if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
-                c = trace._scaler(z[j][i]);
-                if(c) {
-                    context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
-                } else {
-                    // Return a transparent pixel
-                    context.fillStyle = 'rgba(0,0,0,0)';
-                }
-                context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
-            }
-        }
-
         var image3 = plotGroup.selectAll('image')
             .data(cd);
 
-        image3.enter().append('svg:image').attr({
-            xmlns: xmlnsNamespaces.svg,
-            preserveAspectRatio: 'none'
-        });
+        var safe = false;
+        if(safe) {
+            var left, right, temp, top, bottom, i;
+            // in case of log of a negative
+            i = 0;
+            while(left === undefined && i < w) {
+                left = xa.c2p(x0 + i * dx);
+                i++;
+            }
+            i = w;
+            while(right === undefined && i > 0) {
+                right = xa.c2p(x0 + i * dx);
+                i--;
+            }
+            i = 0;
+            while(top === undefined && i < h) {
+                top = ya.c2p(y0 + i * dy);
+                i++;
+            }
+            i = h;
+            while(bottom === undefined && i > 0) {
+                bottom = ya.c2p(y0 + i * dy);
+                i--;
+            }
 
-        image3.attr({
-            height: imageHeight,
-            width: imageWidth,
-            x: left,
-            y: top,
-            'xlink:href': canvas.toDataURL('image/png')
-        });
+            if(right < left) {
+                temp = right;
+                right = left;
+                left = temp;
+            }
+
+            if(bottom < top) {
+                temp = top;
+                top = bottom;
+                bottom = temp;
+            }
+
+            // Reduce image size when zoomed in to save memory
+            var extra = 0.5; // half the axis size
+            left = Math.max(-extra * xa._length, left);
+            right = Math.min((1 + extra) * xa._length, right);
+            top = Math.max(-extra * ya._length, top);
+            bottom = Math.min((1 + extra) * ya._length, bottom);
+            var imageWidth = Math.round(right - left);
+            var imageHeight = Math.round(bottom - top);
+
+            // if image is entirely off-screen, don't even draw it
+            var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+            if(isOffScreen) {
+                var noImage = plotGroup.selectAll('image').data([]);
+                noImage.exit().remove();
+                return;
+            }
+
+            // Draw each pixel
+            var canvas = document.createElement('canvas');
+            canvas.width = imageWidth;
+            canvas.height = imageHeight;
+            var context = canvas.getContext('2d');
+
+            var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
+            var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
+
+            var fmt = constants.colormodel[trace.colormodel].fmt;
+            var c;
+            for(i = 0; i < cd0.w; i++) {
+                var ipx0 = ipx(i); var ipx1 = ipx(i + 1);
+                if(ipx1 === ipx0 || isNaN(ipx1) || isNaN(ipx0)) continue;
+                for(var j = 0; j < cd0.h; j++) {
+                    var jpx0 = jpx(j); var jpx1 = jpx(j + 1);
+                    if(jpx1 === jpx0 || isNaN(jpx1) || isNaN(jpx0) || !z[j][i]) continue;
+                    c = trace._scaler(z[j][i]);
+                    if(c) {
+                        context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                    } else {
+                        // Return a transparent pixel
+                        context.fillStyle = 'rgba(0,0,0,0)';
+                    }
+                    context.fillRect(ipx0, jpx0, ipx1 - ipx0, jpx1 - jpx0);
+                }
+            }
+
+            image3.enter().append('svg:image').attr({
+                xmlns: xmlnsNamespaces.svg,
+                preserveAspectRatio: 'none'
+            });
+
+            image3.attr({
+                height: imageHeight,
+                width: imageWidth,
+                x: left,
+                y: top,
+                'xlink:href': canvas.toDataURL('image/png')
+            });
+        } else {
+            var left = xa.c2p(x0);
+            var right = xa.c2p(x0 + w);
+            var top = ya.c2p(y0);
+            var bottom = ya.c2p(y0 + h);
+
+            if(bottom < top) {
+                temp = top;
+                top = bottom;
+                bottom = temp;
+            }
+
+            var imageWidth = Math.round(right - left);
+            var imageHeight = Math.round(top - bottom);
+
+            var canvas = document.createElement('canvas');
+            canvas.width = cd0.w;
+            canvas.height = cd0.h;
+            var context = canvas.getContext('2d');
+
+            var fmt = constants.colormodel[trace.colormodel].fmt;
+            var c;
+            for(var i = 0; i < cd0.w; i++) {
+                for(var j = 0; j < cd0.h; j++) {
+                    c = trace._scaler(z[j][i]);
+                    context.fillStyle = trace.colormodel + '(' + fmt(c).join(',') + ')';
+                    context.fillRect(i, j, 1, 1);
+                }
+            }
+
+            image3.enter().append('svg:image').attr({
+                xmlns: xmlnsNamespaces.svg,
+                preserveAspectRatio: 'none'
+            });
+
+            image3.attr({
+                height: -imageHeight,
+                width: imageWidth,
+                x: left,
+                y: top,
+                'xlink:href': canvas.toDataURL('image/png')
+            });
+            // TODO: support additional smoothing options
+            // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
+            // http://phrogz.net/tmp/canvas_image_zoom.html
+            image3
+              .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
+        }
     });
 };
