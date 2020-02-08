@@ -750,6 +750,161 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
+    function scroll(target, amt) {
+        return new Promise(function(resolve) {
+            target.dispatchEvent(new WheelEvent('wheel', {deltaY: amt || 1, cancelable: true}));
+            setTimeout(resolve, 0);
+        });
+    }
+
+    var _scroll = function() {
+        var sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
+        return scroll(sceneTarget, -1);
+    };
+
+    it('@gl should pick correct points after orthographic scroll zoom - mesh3d case', function(done) {
+        var fig = {
+            data: [{
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                vertexcolor: ['#000', '#00F', '#0F0', '#0FF', '#F00', '#F0F', '#FF0', '#FFF'],
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>vertex color: %{vertexcolor}',
+                flatshading: true,
+                type: 'mesh3d',
+                name: 'vertex color'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: { type: 'orthographic' },
+                        eye: { x: 1, y: 1, z: 1 }
+                    }
+                }
+            },
+            config: {
+                scrollZoom: 'gl3d'
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'vertex color: #FFF',
+                'vertex color'
+            );
+        })
+        .then(_scroll)
+        .then(_scroll)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 100); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 1',
+                'vertex color: #F00',
+                'vertex color'
+            );
+        })
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'vertex color: #0FF',
+                'vertex color'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should pick correct points after orthographic scroll zoom - scatter3d case', function(done) {
+        var fig = {
+            data: [{
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                marker: { color: ['#000', '#00F', '#0F0', '#0FF', '#F00', '#F0F', '#FF0', '#FFF'] },
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>marker color: %{marker.color}',
+                type: 'scatter3d',
+                mode: 'marker',
+                name: 'marker color'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: { type: 'orthographic' },
+                        eye: { x: 1, y: 1, z: 1 }
+                    }
+                }
+            },
+            config: {
+                scrollZoom: 'gl3d'
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'marker color: #FFF',
+                'marker color'
+            );
+        })
+        .then(_scroll)
+        .then(_scroll)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 100); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 1',
+                'marker color: #F00',
+                'marker color'
+            );
+        })
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'marker color: #0FF',
+                'marker color'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should pick latest & closest points on hover if two points overlap', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
 
