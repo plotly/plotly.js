@@ -1012,9 +1012,11 @@ proto.toImage = function(format) {
     for(var j = 0, k = h - 1; j < k; ++j, --k) {
         for(var i = 0; i < w; ++i) {
             for(var l = 0; l < 4; ++l) {
-                var tmp = pixels[4 * (w * j + i) + l];
-                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
-                pixels[4 * (w * k + i) + l] = tmp;
+                var a = 4 * (w * j + i) + l;
+                var b = 4 * (w * k + i) + l;
+                var tmp = pixels[a];
+                pixels[a] = pixels[b];
+                pixels[b] = tmp;
             }
         }
     }
