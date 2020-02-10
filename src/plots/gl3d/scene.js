@@ -990,11 +990,11 @@ proto.updateFx = function(dragmode, hovermode) {
 };
 
 function flipPixels(pixels, w, h) {
-    for(var j = 0, k = h - 1; j < k; ++j, --k) {
-        for(var i = 0; i < w; ++i) {
-            for(var l = 0; l < 4; ++l) {
-                var a = 4 * (w * j + i) + l;
-                var b = 4 * (w * k + i) + l;
+    for(var i = 0, q = h - 1; i < q; ++i, --q) {
+        for(var j = 0; j < w; ++j) {
+            for(var k = 0; k < 4; ++k) {
+                var a = 4 * (w * i + j) + k;
+                var b = 4 * (w * q + j) + k;
                 var tmp = pixels[a];
                 pixels[a] = pixels[b];
                 pixels[b] = tmp;
