@@ -1003,6 +1003,23 @@ function flipPixels(pixels, w, h) {
     }
 }
 
+function correctRGB(pixels, w, h) {
+    for(var i = 0; i < h; ++i) {
+        for(var j = 0; j < w; ++j) {
+            var k = 4 * (w * i + j);
+
+            var a = pixels[k + 3]; // alpha
+            if(a > 0) {
+                var q = 255 / a;
+
+                for(var l = 0; l < 3; ++l) { // RGB
+                    pixels[k + l] = Math.min(q * pixels[k + l], 255);
+                }
+            }
+        }
+    }
+}
+
 proto.toImage = function(format) {
     var scene = this;
 
@@ -1022,6 +1039,7 @@ proto.toImage = function(format) {
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     flipPixels(pixels, w, h);
+    correctRGB(pixels, w, h);
 
     var canvas = document.createElement('canvas');
     canvas.width = w;
