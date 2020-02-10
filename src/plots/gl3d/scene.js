@@ -989,6 +989,20 @@ proto.updateFx = function(dragmode, hovermode) {
     scene.fullSceneLayout.hovermode = hovermode;
 };
 
+function flipPixels(pixels, w, h) {
+    for(var j = 0, k = h - 1; j < k; ++j, --k) {
+        for(var i = 0; i < w; ++i) {
+            for(var l = 0; l < 4; ++l) {
+                var a = 4 * (w * j + i) + l;
+                var b = 4 * (w * k + i) + l;
+                var tmp = pixels[a];
+                pixels[a] = pixels[b];
+                pixels[b] = tmp;
+            }
+        }
+    }
+}
+
 proto.toImage = function(format) {
     var scene = this;
 
@@ -1007,19 +1021,7 @@ proto.toImage = function(format) {
 
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-    // Flip pixels
-    for(var j = 0, k = h - 1; j < k; ++j, --k) {
-        for(var i = 0; i < w; ++i) {
-            for(var l = 0; l < 4; ++l) {
-                var a = 4 * (w * j + i) + l;
-                var b = 4 * (w * k + i) + l;
-                var tmp = pixels[a];
-                pixels[a] = pixels[b];
-                pixels[b] = tmp;
-            }
-        }
-    }
+    flipPixels(pixels, w, h);
 
     var canvas = document.createElement('canvas');
     canvas.width = w;
