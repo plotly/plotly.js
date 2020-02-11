@@ -140,25 +140,29 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var y0 = xy[1][0];
             var y1 = xy[1][1];
 
-            var isBlank = (
-                x0 === x1 ||
-                y0 === y1 ||
-                !isNumeric(x0) ||
-                !isNumeric(x1) ||
-                !isNumeric(y0) ||
-                !isNumeric(y1)
-            );
+            // empty bars
+            var isBlank = (isHorizontal ? x1 - x0 : y1 - y0) === 0;
 
             // display zeros if line.width > 0
-            if(isBlank && shouldDisplayZeros &&
-                helpers.getLineWidth(trace, di) &&
-                (isHorizontal ? x0 === x1 : y0 === y1)) {
+            if(isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di)) {
                 isBlank = false;
             }
+
+            // skip nulls
+            if(!isBlank) {
+                isBlank = (
+                    !isNumeric(x0) ||
+                    !isNumeric(x1) ||
+                    !isNumeric(y0) ||
+                    !isNumeric(y1)
+                );
+            }
+
+            // record isBlank
             di.isBlank = isBlank;
 
-            // for empty bars, ensure start and end positions are equal when having transition
-            if(isBlank && withTransition) {
+            // for blank bars, ensure start and end positions are equal - important for smooth transitions
+            if(isBlank) {
                 if(isHorizontal) {
                     x1 = x0;
                 } else {
