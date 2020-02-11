@@ -191,7 +191,13 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             function expandToVisible(v, vc, hideZeroSpan) {
-                if(hideZeroSpan && v === vc) return v;
+                if(hideZeroSpan && v === vc) {
+                    // should not expand zero span bars
+                    // when start and end positions are identical
+                    // i.e. for vertical when y0 === y1
+                    // and for horizontal when x0 === x1
+                    return v;
+                }
 
                 // if it's not in danger of disappearing entirely,
                 // round more precisely
