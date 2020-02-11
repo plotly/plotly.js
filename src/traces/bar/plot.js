@@ -114,6 +114,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         }
 
         var isHorizontal = (trace.orientation === 'h');
+        var withTransition = hasTransition(opts);
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
@@ -155,6 +156,14 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 isBlank = false;
             }
             di.isBlank = isBlank;
+
+            if(isBlank && withTransition) {
+                if(isHorizontal) {
+                    x1 = x0;
+                } else {
+                    y1 = y0;
+                }
+            }
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
             if(adjustPixel && !isBlank) {
@@ -231,7 +240,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 .attr('d', 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            if(!fullLayout.uniformtext.mode && hasTransition(opts)) {
+            if(!fullLayout.uniformtext.mode && withTransition) {
                 var styleFns = Drawing.makePointStyleFns(trace);
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
