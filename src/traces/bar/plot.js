@@ -157,6 +157,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
             di.isBlank = isBlank;
 
+            // for empty bars, ensure start and end positions are equal when having transition
             if(isBlank && withTransition) {
                 if(isHorizontal) {
                     x1 = x0;
