@@ -87,6 +87,24 @@ module.exports = overrideAll({
                 'are only available for *circle* symbols.'
             ].join(' ')
         },
+        angle: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            arrayOk: true,
+            description: [
+                'Sets the marker angle.'
+            ].join(' ')
+        },
+        allowoverlap: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'style',
+            arrayOk: false,
+            description: [
+                'Flag to allow symbols to overlap'
+            ].join(' ')
+        },
         opacity: markerAttrs.opacity,
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,

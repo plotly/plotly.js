@@ -104,6 +104,22 @@ module.exports = function convert(gd, calcTrace) {
                 'icon-size': trace.marker.size / 10
             });
 
+            if('angle' in trace.marker) {
+                Lib.extendFlat(symbol.layout,{
+                'icon-rotation-alignment': 'map',
+                'icon-rotate': {
+                    type: 'identity', property: 'angle'
+                // unfortunately cant use {angle} do to this issue:
+                // https://github.com/mapbox/mapbox-gl-js/issues/873
+                }})
+            }
+
+            if('allowoverlap' in trace.marker) {
+                Lib.extendFlat(symbol.layout,
+                {'icon-allow-overlap': trace.marker.allowoverlap})
+            }
+
+
             Lib.extendFlat(symbol.paint, {
                 'icon-opacity': trace.opacity * trace.marker.opacity,
 
@@ -239,14 +255,20 @@ function makeSymbolGeoJSON(calcTrace, gd) {
 
     var marker = trace.marker || {};
     var symbol = marker.symbol;
+    var angle = marker.angle;
 
     var fillSymbol = (symbol !== 'circle') ?
         getFillFunc(symbol) :
         blankFillFunc;
 
+    var fillAngle = (angle) ?
+        getFillFunc(angle):
+        blankFillFunc;
+
     var fillText = subTypes.hasText(trace) ?
         getFillFunc(trace.text) :
         blankFillFunc;
+
 
     var features = [];
 
@@ -266,7 +288,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             var meta = trace._meta || {};
             text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
         } else {
-            text = fillText(calcPt.tx);
+            text = fillText(i);
         }
 
         if(text) {
@@ -280,7 +302,8 @@ function makeSymbolGeoJSON(calcTrace, gd) {
                 coordinates: calcPt.lonlat
             },
             properties: {
-                symbol: fillSymbol(calcPt.mx),
+                symbol: fillSymbol(i),
+                angle: fillAngle(i),
                 text: text
             }
         });
@@ -294,9 +317,9 @@ function makeSymbolGeoJSON(calcTrace, gd) {
 
 function getFillFunc(attr) {
     if(Lib.isArrayOrTypedArray(attr)) {
-        return function(v) { return v; };
+        return function(i) { return attr[i]; };
     } else if(attr) {
-        return function() { return attr; };
+        return function(i) { return attr; };
     } else {
         return blankFillFunc;
     }
