@@ -2026,74 +2026,23 @@ describe('A bar plot', function() {
         .then(done);
     });
 
-    it('should show up narrow bars as thin bars', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_show_narrow.json'));
+    function getArea(path) {
+        var pos = path
+            .substr(1, path.length - 2)
+            .replace('V', ',')
+            .replace('H', ',')
+            .replace('V', ',')
+            .split(',');
+        var dx = +pos[0];
+        var dy = +pos[1];
+        dy -= +pos[2];
+        dx -= +pos[3];
 
-        function getArea(path) {
-            var pos = path
-                .substr(1, path.length - 2)
-                .replace('V', ',')
-                .replace('H', ',')
-                .replace('V', ',')
-                .split(',');
-            var dx = +pos[0];
-            var dy = +pos[1];
-            dy -= +pos[2];
-            dx -= +pos[3];
-
-            return Math.abs(dx * dy);
-        }
-
-        Plotly.plot(gd, mock)
-        .then(function() {
-            var nodes = gd.querySelectorAll('g.point > path');
-            expect(nodes.length).toBe(16, '# of bars');
-
-            [
-                [0, true],
-                [1, true],
-                [2, true],
-                [3, true],
-                [4, true],
-                [5, true],
-                [6, true],
-                [7, true],
-                [8, true],
-                [9, true],
-                [10, true],
-                [11, true],
-                [12, true],
-                [13, true],
-                [14, true],
-                [15, true]
-            ].forEach(function(e) {
-                var i = e[0];
-                var d = nodes[i].getAttribute('d');
-                var visible = e[1];
-                expect(getArea(d) > 0).toBe(visible, 'item:' + i);
-            });
-        })
-        .catch(failTest)
-        .then(done);
-    });
+        return Math.abs(dx * dy);
+    }
 
     it('should not show up null and zero bars as thin bars', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
-
-        function getArea(path) {
-            var pos = path
-                .substr(1, path.length - 2)
-                .replace('V', ',')
-                .replace('H', ',')
-                .replace('V', ',')
-                .split(',');
-            var dx = +pos[0];
-            var dy = +pos[1];
-            dy -= +pos[2];
-            dx -= +pos[3];
-
-            return Math.abs(dx * dy);
-        }
 
         Plotly.plot(gd, mock)
         .then(function() {
@@ -2126,6 +2075,39 @@ describe('A bar plot', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('show narrow bars', function() {
+        ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
+            it(zoomStr, function(done) {
+                var mock = Lib.extendDeep({}, require('@mocks/bar_show_narrow.json'));
+
+                if(zoomStr === 'after zoom out') {
+                    mock.layout.xaxis.range = [-14.9, 17.9];
+                    mock.layout.xaxis2.range = [17.9, -14.9];
+                    mock.layout.xaxis3.range = [-3.9, 4.9];
+                    mock.layout.xaxis4.range = [4.9, -3.9];
+
+                    mock.layout.yaxis.range = [-3.9, 4.9];
+                    mock.layout.yaxis2.range = [4.9, -3.9];
+                    mock.layout.yaxis3.range = [-14.9, 17.9];
+                    mock.layout.yaxis4.range = [17.9, -14.9];
+                }
+
+                Plotly.plot(gd, mock)
+                .then(function() {
+                    var nodes = gd.querySelectorAll('g.point > path');
+                    expect(nodes.length).toBe(16, '# of bars');
+
+                    for(var i = 0; i < 16; i++) {
+                        var d = nodes[i].getAttribute('d');
+                        expect(getArea(d) > 0).toBe(true, 'item:' + i);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });
 
