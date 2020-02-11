@@ -2870,6 +2870,67 @@ describe('bar tweening', function() {
             .catch(failTest)
             .then(done);
     });
+
+    it('blank vertical bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                x: ['A', 'B', 'C'],
+                y: [null, 5, 3],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M8,120V120H72V120Z', 'M88,120V6H152V120Z', 'M168,120V52H232V120Z']],
+            [300, '.point path', 'attr', 'd', ['M8,120V52H72V120Z', 'M88,120V74H152V120Z', 'M168,120V65H232V120Z']],
+            [600, '.point path', 'attr', 'd', ['M8,120V6H72V120Z', 'M88,120V120H152V120Z', 'M168,120V74H232V120Z']]
+        ];
+        var animateOpts = {data: [{y: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('blank horizontal bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['A', 'B', 'C'],
+                x: [null, 5, 3],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,116V84H0V116Z', 'M0,76V44H228V76Z', 'M0,36V4H137V36Z']],
+            [300, '.point path', 'attr', 'd', ['M0,116V84H137V116Z', 'M0,76V44H91V76Z', 'M0,36V4H109V36Z']],
+            [600, '.point path', 'attr', 'd', ['M0,116V84H228V116Z', 'M0,76V44H0V76Z', 'M0,36V4H91V36Z']]
+        ];
+        var animateOpts = {data: [{x: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
 });
 
 describe('bar uniformtext', function() {
