@@ -748,18 +748,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(aspectmode === 'data') {
             aspectRatio = axesScaleRatio;
         } else { // i.e. 'auto' option
-            var axisAutoScaleFactor = 4;
-
-            if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-                /*
-                * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
-                */
-
+            if(
+                Math.max.apply(null, axesScaleRatio) /
+                Math.min.apply(null, axesScaleRatio) <= 4
+            ) {
+                // USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
                 aspectRatio = axesScaleRatio;
             } else {
-                /*
-                * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
-                */
+                // USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
                 aspectRatio = [1, 1, 1];
             }
         }
