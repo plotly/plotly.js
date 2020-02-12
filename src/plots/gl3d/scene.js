@@ -246,6 +246,7 @@ proto.initializeGLPlot = function() {
                     y: s * o.y,
                     z: s * o.z
                 });
+                scene._aspectmode = 'manual';
             }
 
             relayoutCallback(scene);
@@ -729,7 +730,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
      * Dynamically set the aspect ratio depending on the users aspect settings
      */
     var aspectRatio;
-    var aspectmode = fullSceneLayout.aspectmode;
+    var aspectmode = scene._aspectmode || fullSceneLayout.aspectmode;
     if(aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
     } else if(aspectmode === 'manual') {
@@ -762,6 +763,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
+    scene._aspectmode = aspectmode;
 
     /*
      * Write aspect Ratio back to user data and fullLayout so that it is modifies as user
