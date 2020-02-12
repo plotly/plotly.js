@@ -725,6 +725,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
         });
     }
 
+    var aspectmode = fullSceneLayout.aspectmode;
+
     var axesScaleRatio = [1, 1, 1];
 
     // Compute axis scale per category
@@ -741,7 +743,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var axisAutoScaleFactor = 4;
     var aspectRatio;
 
-    if(fullSceneLayout.aspectmode === 'auto') {
+    if(aspectmode === 'auto') {
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
@@ -754,11 +756,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
              */
             aspectRatio = [1, 1, 1];
         }
-    } else if(fullSceneLayout.aspectmode === 'cube') {
+    } else if(aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
-    } else if(fullSceneLayout.aspectmode === 'data') {
+    } else if(aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-    } else if(fullSceneLayout.aspectmode === 'manual') {
+    } else if(aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
     } else {
