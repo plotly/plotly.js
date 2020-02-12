@@ -2026,23 +2026,23 @@ describe('A bar plot', function() {
         .then(done);
     });
 
+    function getArea(path) {
+        var pos = path
+            .substr(1, path.length - 2)
+            .replace('V', ',')
+            .replace('H', ',')
+            .replace('V', ',')
+            .split(',');
+        var dx = +pos[0];
+        var dy = +pos[1];
+        dy -= +pos[2];
+        dx -= +pos[3];
+
+        return Math.abs(dx * dy);
+    }
+
     it('should not show up null and zero bars as thin bars', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
-
-        function getArea(path) {
-            var pos = path
-                .substr(1, path.length - 2)
-                .replace('V', ',')
-                .replace('H', ',')
-                .replace('V', ',')
-                .split(',');
-            var dx = +pos[0];
-            var dy = +pos[1];
-            dy -= +pos[2];
-            dx -= +pos[3];
-
-            return Math.abs(dx * dy);
-        }
 
         Plotly.plot(gd, mock)
         .then(function() {
@@ -2075,6 +2075,39 @@ describe('A bar plot', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    describe('show narrow bars', function() {
+        ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
+            it(zoomStr, function(done) {
+                var mock = Lib.extendDeep({}, require('@mocks/bar_show_narrow.json'));
+
+                if(zoomStr === 'after zoom out') {
+                    mock.layout.xaxis.range = [-14.9, 17.9];
+                    mock.layout.xaxis2.range = [17.9, -14.9];
+                    mock.layout.xaxis3.range = [-3.9, 4.9];
+                    mock.layout.xaxis4.range = [4.9, -3.9];
+
+                    mock.layout.yaxis.range = [-3.9, 4.9];
+                    mock.layout.yaxis2.range = [4.9, -3.9];
+                    mock.layout.yaxis3.range = [-14.9, 17.9];
+                    mock.layout.yaxis4.range = [17.9, -14.9];
+                }
+
+                Plotly.plot(gd, mock)
+                .then(function() {
+                    var nodes = gd.querySelectorAll('g.point > path');
+                    expect(nodes.length).toBe(16, '# of bars');
+
+                    for(var i = 0; i < 16; i++) {
+                        var d = nodes[i].getAttribute('d');
+                        expect(getArea(d) > 0).toBe(true, 'item:' + i);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });
 
@@ -2836,6 +2869,67 @@ describe('bar tweening', function() {
         checkTransition(gd, _mock, nextFrame, transitionOpts, tests)
             .catch(failTest)
             .then(done);
+    });
+
+    it('blank vertical bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                x: ['A', 'B', 'C'],
+                y: [null, 5, 3],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M8,120V120H72V120Z', 'M88,120V6H152V120Z', 'M168,120V52H232V120Z']],
+            [300, '.point path', 'attr', 'd', ['M8,120V52H72V120Z', 'M88,120V74H152V120Z', 'M168,120V65H232V120Z']],
+            [600, '.point path', 'attr', 'd', ['M8,120V6H72V120Z', 'M88,120V120H152V120Z', 'M168,120V74H232V120Z']]
+        ];
+        var animateOpts = {data: [{y: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('blank horizontal bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['A', 'B', 'C'],
+                x: [null, 5, 3],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,116V84H0V116Z', 'M0,76V44H228V76Z', 'M0,36V4H137V36Z']],
+            [300, '.point path', 'attr', 'd', ['M0,116V84H137V116Z', 'M0,76V44H91V76Z', 'M0,36V4H109V36Z']],
+            [600, '.point path', 'attr', 'd', ['M0,116V84H228V116Z', 'M0,76V44H0V76Z', 'M0,36V4H91V36Z']]
+        ];
+        var animateOpts = {data: [{x: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
     });
 });
 

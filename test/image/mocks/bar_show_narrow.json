@@ -1,0 +1,166 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "width": 0.001,
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "y": [
+                0.001,
+                0.01,
+                0.1,
+                1
+            ]
+        },
+        {
+            "type": "bar",
+            "width": 0.001,
+            "x": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "y": [
+                0.001,
+                0.01,
+                0.1,
+                1
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "bar",
+            "width": 0.001,
+            "orientation": "h",
+            "x": [
+                0.001,
+                0.01,
+                0.1,
+                1
+            ],
+            "y": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "text": [
+                0,
+                null,
+                0.001,
+                1
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "bar",
+            "width": 0.001,
+            "orientation": "h",
+            "x": [
+                0.001,
+                0.01,
+                0.1,
+                1
+            ],
+            "y": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "showlegend": false,
+        "width": 800,
+        "height": 800,
+        "dragmode": "pan",
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "autorange": "reversed",
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "xaxis3": {
+            "range": [
+                -0.01,
+                1
+            ],
+            "zeroline": false,
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "range": [
+                -0.01,
+                1
+            ],
+            "zeroline": false,
+            "autorange": "reversed",
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "range": [
+                -0.01,
+                1
+            ],
+            "zeroline": false,
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "range": [
+                -0.01,
+                1
+            ],
+            "zeroline": false,
+            "autorange": "reversed",
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis4": {
+            "autorange": "reversed",
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}
