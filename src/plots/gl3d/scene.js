@@ -151,6 +151,13 @@ proto.tryCreatePlot = function() {
         } else { // try second time
             try {
                 // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
+                Lib.warn([
+                    'webgl setup failed possibly due to',
+                    isMobile ? 'disabling' : 'enabling',
+                    'preserveDrawingBuffer config.',
+                    'The device may not be supported by isMobile module!',
+                    'Inverting preserveDrawingBuffer option in second attempt to create webgl scene.'
+                ].join(' '));
                 isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
 
                 scene.glplot = createPlot(opts);
