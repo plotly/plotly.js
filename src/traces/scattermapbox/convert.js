@@ -105,18 +105,19 @@ module.exports = function convert(gd, calcTrace) {
             });
 
             if('angle' in trace.marker) {
-                Lib.extendFlat(symbol.layout,{
-                'icon-rotation-alignment': 'map',
-                'icon-rotate': {
-                    type: 'identity', property: 'angle'
+                Lib.extendFlat(symbol.layout, {
                 // unfortunately cant use {angle} do to this issue:
                 // https://github.com/mapbox/mapbox-gl-js/issues/873
-                }})
+                    'icon-rotate': {
+                        type: 'identity', property: 'angle'
+                    },
+                    'icon-rotation-alignment': 'map'
+                });
             }
 
             if('allowoverlap' in trace.marker) {
                 Lib.extendFlat(symbol.layout,
-                {'icon-allow-overlap': trace.marker.allowoverlap})
+                {'icon-allow-overlap': trace.marker.allowoverlap});
             }
 
 
@@ -262,7 +263,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
         blankFillFunc;
 
     var fillAngle = (angle) ?
-        getFillFunc(angle):
+        getFillFunc(angle) :
         blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
@@ -319,7 +320,7 @@ function getFillFunc(attr) {
     if(Lib.isArrayOrTypedArray(attr)) {
         return function(i) { return attr[i]; };
     } else if(attr) {
-        return function(i) { return attr; };
+        return function() { return attr; };
     } else {
         return blankFillFunc;
     }
