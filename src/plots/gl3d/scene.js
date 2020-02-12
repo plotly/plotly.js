@@ -730,10 +730,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
      */
     var aspectRatio;
     var aspectmode = fullSceneLayout.aspectmode;
-    var axesScaleRatio;
-    if(aspectmode === 'auto' || aspectmode === 'data') {
-        axesScaleRatio = [1, 1, 1];
-
+    if(aspectmode === 'cube') {
+        aspectRatio = [1, 1, 1];
+    } else if(aspectmode === 'manual') {
+        var userRatio = fullSceneLayout.aspectratio;
+        aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
+    } else if(aspectmode === 'auto' || aspectmode === 'data') {
+        var axesScaleRatio = [1, 1, 1];
         // Compute axis scale per category
         for(i = 0; i < 3; ++i) {
             axis = fullSceneLayout[axisProperties[i]];
@@ -741,30 +744,25 @@ proto.plot = function(sceneData, fullLayout, layout) {
             var axisRatio = axisTypeRatios[axisType];
             axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0 / axisRatio.count) / dataScale[i];
         }
-    }
 
-    if(aspectmode === 'cube') {
-        aspectRatio = [1, 1, 1];
-    } else if(aspectmode === 'manual') {
-        var userRatio = fullSceneLayout.aspectratio;
-        aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
-    } else if(aspectmode === 'auto') {
-        var axisAutoScaleFactor = 4;
-
-        if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
-            /*
-             * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
-             */
-
+        if(aspectmode === 'data') {
             aspectRatio = axesScaleRatio;
-        } else {
-            /*
-             * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
-             */
-            aspectRatio = [1, 1, 1];
+        } else { // i.e. 'auto' option
+            var axisAutoScaleFactor = 4;
+
+            if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
+                /*
+                * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
+                */
+
+                aspectRatio = axesScaleRatio;
+            } else {
+                /*
+                * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
+                */
+                aspectRatio = [1, 1, 1];
+            }
         }
-    } else if(aspectmode === 'data') {
-        aspectRatio = axesScaleRatio;
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
