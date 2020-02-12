@@ -1384,6 +1384,98 @@ describe('Test gl3d drag and wheel interactions', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should preserve aspectratio values when orthographic scroll zoom i.e. after restyle', function(done) {
+        var coords = {
+            x: [1, 2, 10, 4, 5],
+            y: [10, 2, 4, 4, 2],
+            z: [10, 2, 4, 8, 16],
+        };
+
+        var mock = {
+            data: [{
+                type: 'scatter3d',
+                x: coords.x,
+                y: coords.y,
+                z: coords.z,
+                mode: 'markers',
+                marker: {
+                    color: 'red',
+                    size: 16,
+                }
+            }, {
+                type: 'scatter3d',
+                x: [coords.x[0]],
+                y: [coords.y[0]],
+                z: [coords.z[0]],
+                mode: 'markers',
+                marker: {
+                    color: 'blue',
+                    size: 32,
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'orthographic'
+                        }
+                    },
+                }
+            }
+        };
+
+        var sceneTarget;
+        var relayoutEvent;
+        var relayoutCnt = 0;
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+
+            sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
+        })
+        .then(function() {
+            var aspectratio = gd._fullLayout.scene.aspectratio;
+            expect(aspectratio.x).toBeCloseTo(0.898, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.798, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.396, 3, 'aspectratio.z');
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            expect(relayoutCnt).toEqual(1);
+
+            var aspectratio = relayoutEvent['scene.aspectratio'];
+            expect(aspectratio.x).toBeCloseTo(0.816, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
+        })
+        .then(function() {
+            // select a point
+            var i = 2;
+
+            return Plotly.restyle(gd, {
+                x: [[coords.x[i]]],
+                y: [[coords.y[i]]],
+                z: [[coords.z[i]]],
+            }, 1);
+        })
+        .then(function() {
+            var aspectratio = gd._fullLayout.scene.aspectratio;
+            expect(aspectratio.x).toBeCloseTo(0.816, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl3d relayout calls', function() {
