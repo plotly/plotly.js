@@ -471,12 +471,12 @@ proto.recoverContext = function() {
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 function computeTraceBounds(scene, trace, bounds) {
-    var sceneLayout = scene.fullSceneLayout;
+    var fullSceneLayout = scene.fullSceneLayout;
 
     for(var d = 0; d < 3; d++) {
         var axisName = axisProperties[d];
         var axLetter = axisName.charAt(0);
-        var ax = sceneLayout[axisName];
+        var ax = fullSceneLayout[axisName];
         var coords = trace[axLetter];
         var calendar = trace[axLetter + 'calendar'];
         var len = trace['_' + axLetter + 'length'];
@@ -509,13 +509,13 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 function computeAnnotationBounds(scene, bounds) {
-    var sceneLayout = scene.fullSceneLayout;
-    var annotations = sceneLayout.annotations || [];
+    var fullSceneLayout = scene.fullSceneLayout;
+    var annotations = fullSceneLayout.annotations || [];
 
     for(var d = 0; d < 3; d++) {
         var axisName = axisProperties[d];
         var axLetter = axisName.charAt(0);
-        var ax = sceneLayout[axisName];
+        var ax = fullSceneLayout[axisName];
 
         for(var j = 0; j < annotations.length; j++) {
             var ann = annotations[j];
