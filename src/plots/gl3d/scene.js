@@ -725,6 +725,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
         });
     }
 
+    /*
+     * Dynamically set the aspect ratio depending on the users aspect settings
+     */
+    var aspectRatio;
     var aspectmode = fullSceneLayout.aspectmode;
     var axesScaleRatio;
     if(aspectmode === 'auto' || aspectmode === 'data') {
@@ -739,11 +743,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
     }
 
-    /*
-     * Dynamically set the aspect ratio depending on the users aspect settings
-     */
-    var aspectRatio;
-    if(aspectmode === 'auto') {
+    if(aspectmode === 'cube') {
+        aspectRatio = [1, 1, 1];
+    } else if(aspectmode === 'manual') {
+        var userRatio = fullSceneLayout.aspectratio;
+        aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
+    } else if(aspectmode === 'auto') {
         var axisAutoScaleFactor = 4;
 
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
@@ -758,13 +763,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
              */
             aspectRatio = [1, 1, 1];
         }
-    } else if(aspectmode === 'cube') {
-        aspectRatio = [1, 1, 1];
     } else if(aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
-    } else if(aspectmode === 'manual') {
-        var userRatio = fullSceneLayout.aspectratio;
-        aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
     } else {
         throw new Error('scene.js aspectRatio was not one of the enumerated types');
     }
