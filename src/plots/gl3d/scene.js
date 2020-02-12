@@ -726,24 +726,26 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     var aspectmode = fullSceneLayout.aspectmode;
+    var axesScaleRatio;
+    if(aspectmode === 'auto' || aspectmode === 'data') {
+        axesScaleRatio = [1, 1, 1];
 
-    var axesScaleRatio = [1, 1, 1];
-
-    // Compute axis scale per category
-    for(i = 0; i < 3; ++i) {
-        axis = fullSceneLayout[axisProperties[i]];
-        axisType = axis.type;
-        var axisRatio = axisTypeRatios[axisType];
-        axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0 / axisRatio.count) / dataScale[i];
+        // Compute axis scale per category
+        for(i = 0; i < 3; ++i) {
+            axis = fullSceneLayout[axisProperties[i]];
+            axisType = axis.type;
+            var axisRatio = axisTypeRatios[axisType];
+            axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0 / axisRatio.count) / dataScale[i];
+        }
     }
 
     /*
      * Dynamically set the aspect ratio depending on the users aspect settings
      */
-    var axisAutoScaleFactor = 4;
     var aspectRatio;
-
     if(aspectmode === 'auto') {
+        var axisAutoScaleFactor = 4;
+
         if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
