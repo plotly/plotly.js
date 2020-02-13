@@ -790,6 +790,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
             y: fullSceneLayout.aspectratio.y,
             z: fullSceneLayout.aspectratio.z
         };
+
+        // also keep track of aspectmode here
+        scene.viewInitial.aspectmode = fullSceneLayout.aspectmode;
     }
 
     // Update frame position for multi plots
