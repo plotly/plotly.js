@@ -559,18 +559,21 @@ function prerenderTitles(cdModule, gd) {
 }
 
 function transformInsideText(textBB, pt, cd0) {
-    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+    var r = cd0.r || pt.rpx1;
+    var rInscribed = pt.rInscribed;
+
+    var ring = pt.ring;
+    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
+
     var halfAngle = pt.halfangle;
     var midAngle = pt.midangle;
-    var ring = pt.ring;
-    var rInscribed = pt.rInscribed;
-    var r = cd0.r || pt.rpx1;
+
     var orientation = cd0.trace.insidetextorientation;
     var isHorizontal = orientation === 'horizontal';
     var isTangential = orientation === 'tangential';
     var isRadial = orientation === 'radial';
     var isAuto = orientation === 'auto';
-    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
+
     var allTransforms = [];
     var newT;
 
@@ -616,6 +619,8 @@ function transformInsideText(textBB, pt, cd0) {
         // this inscribes the text rectangle in a circle, which is then inscribed
         // in the slice, so it will be an underestimate, which some day we may want
         // to improve so this case can get more use
+        var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+
         newT = {
             scale: rInscribed * r * 2 / textDiameter,
 
