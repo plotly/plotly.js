@@ -1218,6 +1218,8 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.x).toBeCloseTo(0.909, 3, 'aspectratio.x');
             expect(aspectratio.y).toBeCloseTo(0.909, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene.aspectmode']).toBe('manual');
         })
         .then(function() {
             return scroll(sceneTarget2);
@@ -1229,6 +1231,8 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.x).toBeCloseTo(2.727, 3, 'aspectratio.x');
             expect(aspectratio.y).toBeCloseTo(1.818, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene.aspectmode']).not.toBe('manual');
         })
         .catch(failTest)
         .then(done);
@@ -1279,6 +1283,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
                 expect(key).not.toBe('scene.aspectratio');
+                expect(key).not.toBe('scene.aspectmode');
             });
         })
         .catch(failTest)
@@ -1329,6 +1334,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
                 expect(key).not.toBe('scene.aspectratio');
+                expect(key).not.toBe('scene.aspectmode');
             });
         })
         .catch(failTest)
@@ -1456,6 +1462,8 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.x).toBeCloseTo(0.816, 3, 'aspectratio.x');
             expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene.aspectmode']).toBe('manual');
         })
         .then(function() {
             // select a point
