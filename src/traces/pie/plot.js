@@ -562,6 +562,16 @@ function transformInsideText(textBB, pt, cd0) {
     var r = cd0.r || pt.rpx1;
     var rInscribed = pt.rInscribed;
 
+    var isEmpty = pt.startangle === pt.stopangle;
+    if(isEmpty) {
+        return {
+            rCenter: 1 - rInscribed,
+            scale: 0,
+            rotate: 0,
+            textPosAngle: 0
+        };
+    }
+
     var ring = pt.ring;
     var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
 
