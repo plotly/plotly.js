@@ -1,0 +1,48 @@
+{
+    "data": [
+        {
+            "ids": [
+                "A/a1",
+                "A/a0",
+                "B/b1",
+                "B/b0",
+                "A",
+                "B"
+            ],
+            "labels": [
+                "a",
+                "!a?",
+                "b",
+                "!b?",
+                "A",
+                "B"
+            ],
+            "parents": [
+                "A",
+                "A",
+                "B",
+                "B",
+                "",
+                ""
+            ],
+            "type": "sunburst",
+            "insidetextorientation": "horizontal",
+            "branchvalues": "total",
+            "values": [
+                2,
+                0,
+                1,
+                0,
+                2,
+                1
+            ]
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 400,
+        "font": {
+            "size": 20
+        }
+    }
+}
