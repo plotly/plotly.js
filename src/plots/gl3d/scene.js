@@ -783,15 +783,15 @@ proto.plot = function(sceneData, fullLayout, layout) {
      */
     scene.glplot.setAspectratio(fullSceneLayout.aspectratio);
 
-    // save 'initial' camera view settings for modebar button
+    // save 'initial' aspectratio & aspectmode view settings for modebar buttons
     if(!scene.viewInitial.aspectratio) {
         scene.viewInitial.aspectratio = {
             x: fullSceneLayout.aspectratio.x,
             y: fullSceneLayout.aspectratio.y,
             z: fullSceneLayout.aspectratio.z
         };
-
-        // also keep track of aspectmode here
+    }
+    if(!scene.viewInitial.aspectmode) {
         scene.viewInitial.aspectmode = fullSceneLayout.aspectmode;
     }
 
