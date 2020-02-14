@@ -100,7 +100,6 @@ module.exports = overrideAll({
             valType: 'boolean',
             dflt: false,
             role: 'style',
-            arrayOk: false,
             description: [
                 'Flag to allow symbols to overlap'
             ].join(' ')
