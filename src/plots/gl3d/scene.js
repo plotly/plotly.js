@@ -155,7 +155,7 @@ proto.tryCreatePlot = function() {
                     'webgl setup failed possibly due to',
                     isMobile ? 'disabling' : 'enabling',
                     'preserveDrawingBuffer config.',
-                    'The device may not be supported by isMobile module!',
+                    'The device may not be supported by is-mobile module!',
                     'Inverting preserveDrawingBuffer option in second attempt to create webgl scene.'
                 ].join(' '));
                 isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
@@ -219,6 +219,12 @@ proto.initializeGLPlot = function() {
         if(scene.isAspectChanged(layout)) {
             // scene updates
             update[scene.id + '.aspectratio'] = scene.glplot.getAspectratio();
+
+            if(layout[scene.id].aspectmode !== 'manual') {
+                scene.fullSceneLayout.aspectmode =
+                layout[scene.id].aspectmode =
+                update[scene.id + '.aspectmode'] = 'manual';
+            }
         }
 
         return update;
@@ -246,7 +252,6 @@ proto.initializeGLPlot = function() {
                     y: s * o.y,
                     z: s * o.z
                 });
-                scene.fullSceneLayout.aspectmode = layout[scene.id].aspectmode = 'manual';
             }
 
             relayoutCallback(scene);
@@ -778,13 +783,16 @@ proto.plot = function(sceneData, fullLayout, layout) {
      */
     scene.glplot.setAspectratio(fullSceneLayout.aspectratio);
 
-    // save 'initial' camera view settings for modebar button
+    // save 'initial' aspectratio & aspectmode view settings for modebar buttons
     if(!scene.viewInitial.aspectratio) {
         scene.viewInitial.aspectratio = {
             x: fullSceneLayout.aspectratio.x,
             y: fullSceneLayout.aspectratio.y,
             z: fullSceneLayout.aspectratio.z
         };
+    }
+    if(!scene.viewInitial.aspectmode) {
+        scene.viewInitial.aspectmode = fullSceneLayout.aspectmode;
     }
 
     // Update frame position for multi plots
