@@ -17,6 +17,7 @@ var Registry = require('../../registry');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
+var clearSelect = require('../cartesian/select').clearSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
 
 var constants = require('./constants');
@@ -506,9 +507,7 @@ proto.initFx = function(calcData, fullLayout) {
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
-    self.clearSelect = function() {
-        gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
-    };
+    self.clearSelect = clearSelect;
 
     /**
      * Returns a click handler function that is supposed
