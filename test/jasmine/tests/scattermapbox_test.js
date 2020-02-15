@@ -483,7 +483,9 @@ describe('scattermapbox convert', function() {
         var expected = [0, 90, 45, undefined, undefined];
         expect(symbolAngle).toEqual(expected, 'geojson properties');
 
-        expect(opts.symbol.layout['icon-allow-overlap']).toEqual(true, 'symbol layout');
+
+        expect(opts.symbol.layout['icon-rotate'].property).toEqual('angle', 'symbol.layout.icon-rotate');
+        expect(opts.symbol.layout['icon-allow-overlap']).toEqual(true, 'symbol.layout.icon-allow-overlap');
     });
 
 
