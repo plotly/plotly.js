@@ -465,6 +465,28 @@ describe('scattermapbox convert', function() {
         expect(symbolProps).toEqual(expected, 'geojson properties');
     });
 
+
+    it('should allow symbols to be rotated and overlapped', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'markers',
+            marker: {
+                symbol: ['monument', 'music', 'harbor'],
+                angle: [0, 90, 45],
+                allowoverlap: true
+            },
+        }));
+
+        var symbolAngle = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.angle;
+        });
+
+        var expected = [0, 90, 45, undefined, undefined];
+        expect(symbolAngle).toEqual(expected, 'geojson properties');
+
+        expect(opts.symbol.layout['icon-allow-overlap']).toEqual(true, 'symbol layout');
+    });
+
+
     it('should generate correct output for text + lines traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'lines+text',
