@@ -190,12 +190,48 @@ describe('Visible rangesliders', function() {
             return slide(start, sliderY, end, sliderY);
         })
         .then(function() {
-            var maskMax = getRangeSliderChild(3);
-            var handleMax = getRangeSliderChild(6);
+            var maskMin = getRangeSliderChild(3);
+            var handleMin = getRangeSliderChild(6);
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
-            expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-            testTranslate1D(handleMax, dataMaxStart + diff);
+            expect(+maskMin.getAttribute('width')).toBeCloseTo(-diff);
+            testTranslate1D(handleMin, dataMaxStart + diff);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not exceed slider bounds left to right', function(done) {
+        var start = 940;
+        var end = 990;
+
+        plotMock().then(function() {
+            gd._fullLayout.xaxis.d2p(49);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not exceed slider bounds right to left', function(done) {
+        var start = 0;
+        var end = -50;
+
+        plotMock().then(function() {
+            gd._fullLayout.xaxis.d2p(-49);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
         })
         .catch(failTest)
         .then(done);
