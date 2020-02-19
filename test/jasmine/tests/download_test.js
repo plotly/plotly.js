@@ -53,6 +53,12 @@ describe('Plotly.downloadImage', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
+        downloadTest(gd, 'full-json')
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
             if(supported) {
                 downloadTest(gd, 'webp')

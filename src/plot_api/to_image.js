@@ -11,6 +11,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var plotApi = require('./plot_api');
+var plots = require('../plots/plots');
 var Lib = require('../lib');
 
 var helpers = require('../snapshot/helpers');
@@ -20,7 +21,7 @@ var svgToImg = require('../snapshot/svgtoimg');
 var attrs = {
     format: {
         valType: 'enumerated',
-        values: ['png', 'jpeg', 'webp', 'svg'],
+        values: ['png', 'jpeg', 'webp', 'svg', 'full-json'],
         dflt: 'png',
         description: 'Sets the format of exported image.'
     },
@@ -169,6 +170,15 @@ function toImage(gd, opts) {
             var svg = toSVG(clonedGd, format, scale);
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
+
+            if(format === 'full-json') {
+                var json = plots.graphJson(clonedGd, false, 'keepdata', false, true);
+                if(imageDataOnly) {
+                    return resolve(json);
+                } else {
+                    return resolve(helpers.encodeJSON(json));
+                }
+            }
 
             plotApi.purge(clonedGd);
             document.body.removeChild(clonedGd);
