@@ -2037,9 +2037,10 @@ plots.didMarginChange = function(margin0, margin1) {
  *      keepall: keep data and src
  * @param {String} output If you specify 'object', the result will not be stringified
  * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+ * @param {Boolean} includeConfig If truthy, include _context
  * @returns {Object|String}
  */
-plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
+plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfig) {
     // if the defaults aren't supplied yet, we need to do that...
     if((useDefaults && dataonly && !gd._fullData) ||
             (useDefaults && !dataonly && !gd._fullLayout)) {
@@ -2050,9 +2051,9 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     var layout = (useDefaults) ? gd._fullLayout : gd.layout;
     var frames = (gd._transitionData || {})._frames;
 
-    function stripObj(d) {
+    function stripObj(d, keepFunction) {
         if(typeof d === 'function') {
-            return null;
+            return keepFunction ? '_function_' : null;
         }
         if(Lib.isPlainObject(d)) {
             var o = {};
@@ -2060,8 +2061,11 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
             for(v in d) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
-                if(typeof d[v] === 'function' ||
-                        ['_', '['].indexOf(v.charAt(0)) !== -1) {
+                if(['_', '['].indexOf(v.charAt(0)) !== -1) continue;
+
+                // if a function, add if necessary then move on
+                if(typeof d[v] === 'function') {
+                    if(keepFunction) o[v] = '_function';
                     continue;
                 }
 
@@ -2091,13 +2095,13 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
                 }
 
                 // OK, we're including this... recurse into it
-                o[v] = stripObj(d[v]);
+                o[v] = stripObj(d[v], keepFunction);
             }
             return o;
         }
 
         if(Array.isArray(d)) {
-            return d.map(stripObj);
+            return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
         if(Lib.isTypedArray(d)) {
@@ -2125,6 +2129,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
+
+    if(includeConfig) obj.config = stripObj(gd._context, true);
 
     return (output === 'object') ? obj : JSON.stringify(obj);
 };

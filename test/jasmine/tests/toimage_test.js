@@ -266,12 +266,23 @@ describe('Plotly.toImage', function() {
 
     describe('with format `full-json`', function() {
         var imgOpts = {format: 'full-json', imageDataOnly: true};
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
         it('export a graph div', function(done) {
             Plotly.plot(gd, [{y: [1, 2, 3]}])
-            .then(function() { return Plotly.toImage('graph', imgOpts);})
+            .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
             .then(function(fig) {
                 fig = JSON.parse(fig);
+                ['data', 'layout', 'config'].forEach(function(key) {
+                    expect(fig.hasOwnProperty(key)).toBeTruthy('is missing key: ' + key);
+                });
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
+                expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
             .catch(failTest)
             .then(done);
@@ -281,7 +292,11 @@ describe('Plotly.toImage', function() {
             Plotly.toImage({data: [{y: [1, 2, 3]}]}, imgOpts)
             .then(function(fig) {
                 fig = JSON.parse(fig);
+                ['data', 'layout', 'config'].forEach(function(key) {
+                    expect(fig.hasOwnProperty(key)).toBeTruthy('is missing key: ' + key);
+                });
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
+                expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
             .catch(failTest)
             .then(done);

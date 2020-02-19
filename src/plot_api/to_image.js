@@ -17,6 +17,7 @@ var Lib = require('../lib');
 var helpers = require('../snapshot/helpers');
 var toSVG = require('../snapshot/tosvg');
 var svgToImg = require('../snapshot/svgtoimg');
+var version = require('../core').version;
 
 var attrs = {
     format: {
@@ -171,8 +172,16 @@ function toImage(gd, opts) {
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
+            function cleanup() {
+                plotApi.purge(clonedGd);
+                document.body.removeChild(clonedGd);
+            }
+
             if(format === 'full-json') {
-                var json = plots.graphJson(clonedGd, false, 'keepdata', false, true);
+                var json = plots.graphJson(clonedGd, false, 'keepdata', 'object', true, true);
+                json.version = version;
+                json = JSON.stringify(json);
+                cleanup();
                 if(imageDataOnly) {
                     return resolve(json);
                 } else {
@@ -180,8 +189,7 @@ function toImage(gd, opts) {
                 }
             }
 
-            plotApi.purge(clonedGd);
-            document.body.removeChild(clonedGd);
+            cleanup();
 
             if(format === 'svg') {
                 if(imageDataOnly) {
