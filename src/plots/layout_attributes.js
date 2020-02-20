@@ -460,7 +460,15 @@ module.exports = {
             '%{meta[key]}.'
         ].join(' ')
     },
-
+    uid: {
+        valType: 'string',
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Assign an id to this layout,',
+            'Use this to provide deterministic identifiers within that figure.'
+        ].join(' ')
+    },
     transition: extendFlat({}, animationAttrs.transition, {
         description: [
             'Sets transition options used during Plotly.react updates.'

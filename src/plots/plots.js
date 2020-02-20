@@ -1524,6 +1524,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('modebar.uirevision', uirevision);
 
     coerce('meta');
+    coerce('uid');
 
     // do not include defaults in fullLayout when users do not set transition
     if(Lib.isPlainObject(layoutIn.transition)) {
