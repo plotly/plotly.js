@@ -1837,4 +1837,45 @@ describe('Test splom select:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to select and then clear using API', function(done) {
+        function _assert(msg, exp) {
+            return function() {
+                var uid = gd._fullData[0].uid;
+                var scene = gd._fullLayout._splomScenes[uid];
+                expect(scene.selectBatch).withContext(msg + ' selectBatch').toEqual(exp.selectBatch);
+                expect(scene.unselectBatch).withContext(msg + ' unselectBatch').toEqual(exp.unselectBatch);
+            };
+        }
+
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{
+                values: [1, 2, 3]
+            }, {
+                values: [2, 3, 0]
+            }]
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            dragmode: 'select'
+        })
+        .then(_assert('base', {
+            selectBatch: [],
+            unselectBatch: []
+        }))
+        .then(function() { return _select([[50, 50], [195, 195]]); })
+        .then(_assert('after selection', {
+            selectBatch: [1],
+            unselectBatch: [0, 2]
+        }))
+        .then(function() { return Plotly.restyle(gd, 'selectedpoints', null); })
+        .then(_assert('after API clear', {
+            selectBatch: [],
+            unselectBatch: []
+        }))
+        .catch(failTest)
+        .then(done);
+    });
 });
