@@ -8,9 +8,5 @@
 
 'use strict';
 
-var saneTopojson = require('sane-topojson');
-
-
-exports.version = require('../version').version;
-
-exports.topojson = saneTopojson;
+// package version injected by `npm run preprocess`
+exports.version = '1.52.2';

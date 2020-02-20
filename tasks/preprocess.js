@@ -9,8 +9,7 @@ var updateVersion = require('./util/update_version');
 // main
 makeBuildCSS();
 copyTopojsonFiles();
-updateVersion(constants.pathToPlotlyCore);
-updateVersion(constants.pathToPlotlyGeoAssetsSrc);
+updateVersion(constants.pathToPlotlyVersion);
 
 // convert scss to css to js
 function makeBuildCSS() {

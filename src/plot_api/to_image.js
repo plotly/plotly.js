@@ -17,7 +17,7 @@ var Lib = require('../lib');
 var helpers = require('../snapshot/helpers');
 var toSVG = require('../snapshot/tosvg');
 var svgToImg = require('../snapshot/svgtoimg');
-var version = require('../core').version;
+var version = require('../version').version;
 
 var attrs = {
     format: {
