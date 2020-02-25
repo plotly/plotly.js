@@ -78,7 +78,7 @@
     "gl-contour2d": "^1.1.6",
     "gl-error3d": "^1.0.15",
     "gl-heatmap2d": "^1.0.5",
-    "gl-line3d": "git://github.com/gl-vis/gl-line3d.git#1514fbaf898e5929c77b03dfb5ec6d08edbcd80a",
+    "gl-line3d": "1.2.0",
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "^2.3.0",
     "gl-plot2d": "^1.4.3",
