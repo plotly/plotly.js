@@ -22,6 +22,10 @@ var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
+var ONEDAY = numConstants.ONEDAY;
+var ONEHOUR = numConstants.ONEHOUR;
+var ONEMIN = numConstants.ONEMIN;
+var ONESEC = numConstants.ONESEC;
 
 var constants = require('./constants');
 var axisIds = require('./axis_ids');
@@ -170,14 +174,73 @@ module.exports = function setConvert(ax, fullLayout) {
         if(isNumeric(v)) return +v;
     }
 
-    function l2p(v) {
+    // include 2 fractional digits on pixel, for PDF zooming etc
+    function _l2p(v, m, b) { return d3.round(b + m * v, 2); }
+
+    function _p2l(px, m, b) { return (px - b) / m; }
+
+    var l2p = function l2p(v) {
         if(!isNumeric(v)) return BADNUM;
+        return _l2p(v, ax._m, ax._b);
+    };
 
-        // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(ax._b + ax._m * v, 2);
+    var p2l = function(px) {
+        return _p2l(px, ax._m, ax._b);
+    };
+
+    if(ax.breaks) {
+        if(axLetter === 'y') {
+            l2p = function(v) {
+                if(!isNumeric(v)) return BADNUM;
+                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    var brk = ax._breaks[i];
+                    if(v <= brk.min) b = ax._B[i + 1];
+                    else if(v > brk.max) break;
+                }
+                return _l2p(v, -ax._m2, b);
+            };
+            p2l = function(px) {
+                if(!isNumeric(px)) return BADNUM;
+                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    var brk = ax._breaks[i];
+                    if(px >= brk.pmin) b = ax._B[i + 1];
+                    else if(px < brk.pmax) break;
+                }
+                return _p2l(px, -ax._m2, b);
+            };
+        } else {
+            l2p = function(v) {
+                if(!isNumeric(v)) return BADNUM;
+                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    var brk = ax._breaks[i];
+                    if(v >= brk.max) b = ax._B[i + 1];
+                    else if(v < brk.min) break;
+                }
+                return _l2p(v, ax._m2, b);
+            };
+            p2l = function(px) {
+                if(!isNumeric(px)) return BADNUM;
+                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    var brk = ax._breaks[i];
+                    if(px >= brk.pmax) b = ax._B[i + 1];
+                    else if(px < brk.pmin) break;
+                }
+                return _p2l(px, ax._m2, b);
+            };
+        }
     }
-
-    function p2l(px) { return (px - ax._b) / ax._m; }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
     ax.c2l = (ax.type === 'log') ? toLog : ensureNumber;
@@ -486,6 +549,51 @@ module.exports = function setConvert(ax, fullLayout) {
             ax._b = -ax._m * rl0;
         }
 
+        // set of "N" disjoint breaks inside the range
+        ax._breaks = [];
+        // length of these breaks in value space
+        ax._lBreaks = 0;
+        // l2p slope (same for all intervals)
+        ax._m2 = 0;
+        // set of l2p offsets (one for each of the (N+1) piecewise intervals)
+        ax._B = [];
+
+        if(ax.breaks) {
+            var i, brk;
+
+            ax._breaks = ax.locateBreaks(rl0, rl1);
+
+            if(ax._breaks.length) {
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    ax._lBreaks += (brk.max - brk.min);
+                }
+
+                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks);
+
+                if(axLetter === 'y') {
+                    ax._breaks.reverse();
+                    // N.B. top to bottom (negative coord, positive px direction)
+                    ax._B.push(ax._m2 * rl1);
+                } else {
+                    ax._B.push(-ax._m2 * rl0);
+                }
+
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min));
+                }
+
+                // fill pixel (i.e. 'p') min/max here,
+                // to not have to loop through the _breaks twice during `p2l`
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    brk.pmin = l2p(brk.min);
+                    brk.pmax = l2p(brk.max);
+                }
+            }
+        }
+
         if(!isFinite(ax._m) || !isFinite(ax._b) || ax._length < 0) {
             fullLayout._replotting = false;
             throw new Error('Something went wrong with axis scaling');
@@ -565,6 +673,141 @@ module.exports = function setConvert(ax, fullLayout) {
         }
         return v;
     };
+
+    ax.locateBreaks = function(r0, r1) {
+        var i, bnds, b0, b1;
+
+        var breaksOut = [];
+        if(!ax.breaks) return breaksOut;
+
+        var breaksIn;
+        if(ax.type === 'date') {
+            breaksIn = ax.breaks.slice().sort(function(a, b) {
+                if(a.pattern === '%w' && b.pattern === '%H') return -1;
+                else if(b.pattern === '%w' && a.pattern === '%H') return 1;
+                return 0;
+            });
+        } else {
+            breaksIn = ax.breaks;
+        }
+
+        var addBreak = function(min, max) {
+            min = Lib.constrain(min, r0, r1);
+            max = Lib.constrain(max, r0, r1);
+            if(min === max) return;
+
+            var isNewBreak = true;
+            for(var j = 0; j < breaksOut.length; j++) {
+                var brkj = breaksOut[j];
+                if(min > brkj.max || max < brkj.min) {
+                    // potentially a new break
+                } else {
+                    if(min < brkj.min) {
+                        brkj.min = min;
+                    }
+                    if(max > brkj.max) {
+                        brkj.max = max;
+                    }
+                    isNewBreak = false;
+                }
+            }
+            if(isNewBreak) {
+                breaksOut.push({min: min, max: max});
+            }
+        };
+
+        for(i = 0; i < breaksIn.length; i++) {
+            var brk = breaksIn[i];
+
+            if(brk.enabled) {
+                var op = brk.operation;
+                var op0 = op.charAt(0);
+                var op1 = op.charAt(1);
+
+                if(brk.bounds) {
+                    if(brk.pattern) {
+                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                        if(bnds[0] === bnds[1] && op === '()') continue;
+
+                        // r0 value as date
+                        var r0Date = new Date(r0);
+                        // r0 value for break pattern
+                        var r0Pattern;
+                        // delta between r0 and first break in break pattern values
+                        var r0PatternDelta;
+                        // delta between break bounds in ms
+                        var bndDelta;
+                        // step in ms between breaks
+                        var step;
+                        // tracker to position bounds
+                        var t;
+
+                        switch(brk.pattern) {
+                            case '%w':
+                                b0 = bnds[0] + (op0 === '(' ? 1 : 0);
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCDay();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
+                                if(op1 === ']') bndDelta += ONEDAY;
+                                step = 7 * ONEDAY;
+
+                                t = r0 + r0PatternDelta * ONEDAY -
+                                    r0Date.getUTCHours() * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
+                                break;
+                            case '%H':
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCHours();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
+                                step = ONEDAY;
+
+                                t = r0 + r0PatternDelta * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
+                                break;
+                        }
+
+                        while(t <= r1) {
+                            // TODO we need to remove decimal (most often found
+                            // in auto ranges) for this to work correctly,
+                            // should this be Math.floor, Math.ceil or
+                            // Math.round ??
+                            addBreak(Math.floor(t), Math.floor(t + bndDelta));
+                            t += step;
+                        }
+                    } else {
+                        bnds = Lib.simpleMap(brk.bounds, ax.r2l);
+                        if(bnds[0] <= bnds[1]) {
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                        } else {
+                            b0 = bnds[1];
+                            b1 = bnds[0];
+                        }
+                        addBreak(b0, b1);
+                    }
+                } else {
+                    var vals = Lib.simpleMap(brk.values, ax.d2c);
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        addBreak(b0, b1);
+                    }
+                }
+            }
+        }
+
+        breaksOut.sort(function(a, b) { return a.min - b.min; });
+
+        return breaksOut;
+    };
+
     // makeCalcdata: takes an x or y array and converts it
     // to a position on the axis object "ax"
     // inputs:

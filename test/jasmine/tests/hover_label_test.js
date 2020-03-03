@@ -2682,6 +2682,133 @@ describe('Hover on multicategory axes', function() {
     });
 });
 
+describe('Hover on axes with breaks', function() {
+    var gd;
+    var eventData;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    function _assert(msg, exp) {
+        assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
+        expect(eventData.x).toBe(exp.x, 'event data x');
+        expect(eventData.y).toBe(exp.y, 'event data y');
+    }
+
+    it('should work when breaks are present on x-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            x: [0, 10, 50, 90, 95, 100, 150, 190, 200]
+        }], {
+            xaxis: {
+                breaks: [
+                    {bounds: [11, 89]},
+                    {bounds: [101, 189]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(11, 11); })
+        .then(function() {
+            _assert('leftmost interval', {
+                nums: '0',
+                axis: '0',
+                x: 0,
+                y: 0
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: '95',
+                x: 95,
+                y: 4
+            });
+        })
+        .then(function() { _hover(388, 388); })
+        .then(function() {
+            _assert('rightmost interval', {
+                nums: '8',
+                axis: '200',
+                x: 200,
+                y: 8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when breaks are present on y-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            y: [0, 10, 50, 90, 95, 100, 150, 190, 200]
+        }], {
+            yaxis: {
+                breaks: [
+                    {bounds: [11, 89]},
+                    {bounds: [101, 189]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'y'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(388, 30); })
+        .then(function() {
+            _assert('topmost interval', {
+                nums: '8',
+                axis: '200',
+                x: 8,
+                y: 200
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: '95',
+                x: 4,
+                y: 95
+            });
+        })
+        .then(function() { _hover(11, 370); })
+        .then(function() {
+            _assert('bottom interval', {
+                nums: '0',
+                axis: '0',
+                x: 0,
+                y: 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('hover updates', function() {
     'use strict';
 
