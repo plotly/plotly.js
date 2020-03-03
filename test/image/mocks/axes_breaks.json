@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "y": [ 0, 10, 50, 90, 100, 150, 190, 200 ],
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "y": [ 0, 10, 50, 90, 100, 150, 190, 200 ],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "x": [ 0, 10, 50, 90, 100, 150, 190, 200 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "x": [ 0, 10, 50, 90, 100, 150, 190, 200 ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "grid": { "rows": 2, "columns": 2, "pattern": "independent" },
+    "yaxis": {
+      "breaks": [
+        { "bounds": [ 11, 89 ] },
+        { "bounds": [ 101, 189 ] }
+      ]
+    },
+    "xaxis3": {
+      "breaks": [
+        { "bounds": [ 11, 89 ] },
+        { "bounds": [ 101, 189 ] }
+      ]
+    },
+    "shapes": [
+      {
+        "type": "rect",
+        "y0": 11, "y1": 89, "yref": "y2",
+        "x0": 0.56, "x1": 1, "xref": "paper"
+      },
+      {
+        "type": "rect",
+        "y0": 101, "y1": 189, "yref": "y2",
+        "x0": 0.56, "x1": 1, "xref": "paper"
+      },
+      {
+        "type": "rect",
+        "x0": 11, "x1": 89, "xref": "x4",
+        "y0": 0, "y1": 0.5, "yref": "paper"
+      },
+      {
+        "type": "rect",
+        "x0": 101, "x1": 189, "xref": "x4",
+        "y0": 0, "y1": 0.5, "yref": "paper"
+      }
+    ],
+    "showlegend": false,
+    "hovermode": "closest",
+    "width": 700,
+    "height": 600
+  }
+}

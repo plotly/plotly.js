@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "x": [ -20, 0, 10, 50, 90, 100, 150, 190, 200 ]
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "breaks": [
+        { "bounds": [ -1, 90 ] },
+        { "bounds": [ 101, 189 ] }
+      ],
+      "tickvals": [ -20, -10, 0, 10, 50, 90, 100, 150, 190, 200 ],
+      "ticktext": [ "<b>(-20)</b>", "<b>(10)</b>", "<b>(0)</b>" ],
+      "zeroline": true
+    },
+    "title": {
+      "text": "Should not show x-axis zeroline<br>Should mask tickvals inside breaks<br>Should fill in ticktext correctly",
+      "font": {"size": 12},
+      "x": 0,
+      "xref": "paper"
+    }
+  }
+}
