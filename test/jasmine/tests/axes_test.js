@@ -1017,6 +1017,115 @@ describe('Test axes', function() {
             expect(layoutOut.yaxis.range).withContext('yaxis range').toEqual([0, 4]);
             expect(layoutOut.yaxis2.range).withContext('yaxis2 range').toEqual([0, 4]);
         });
+
+        it('should coerce *breaks* container only when it is a non-empty array', function() {
+            layoutIn = {
+                xaxis: {breaks: [{bounds: [0, 1]}]},
+                xaxis2: {breaks: []},
+                xaxis3: {breaks: false},
+                xaxis4: {}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(Array.isArray(layoutOut.xaxis.breaks) && layoutOut.xaxis.breaks.length)
+                .toBe(1, 'xaxis.breaks is array of length 1');
+            expect(layoutOut.xaxis2.breaks).toBeUndefined();
+            expect(layoutOut.xaxis3.breaks).toBeUndefined();
+            expect(layoutOut.xaxis4.breaks).toBeUndefined();
+        });
+
+        it('should set *breaks* to *enabled:false* when *bounds* have less than 2 items', function() {
+            layoutIn = {
+                xaxis: {breaks: [{bounds: [0]}]},
+                xaxis2: {breaks: [{bounds: [0], values: [1]}]},
+                xaxis3: {breaks: [{bounds: [0], values: {}}]},
+                xaxis4: {breaks: [{bounds: [0, 1, 2]}]}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.breaks[0].enabled).toBe(false, 'invalid *bounds*');
+            expect(layoutOut.xaxis2.breaks[0].enabled).toBe(true, 'invalid *bounds*, valid *values*');
+            expect(layoutOut.xaxis3.breaks[0].enabled).toBe(false, 'invalid *bounds*, invalid *values*');
+            expect(layoutOut.xaxis4.breaks[0].enabled && layoutOut.xaxis4.breaks[0].bounds)
+                .withContext('valid *bounds*, sliced to length=2').toEqual([0, 1]);
+        });
+
+        it('if *breaks* *bounds* are bigger than the set *range*, disable break', function() {
+            layoutIn = {
+                xaxis: {range: [0, 4], breaks: [{bounds: [1, 2]}]},
+                xaxis2: {range: [1, 2], breaks: [{bounds: [0, 4]}]},
+                xaxis3: {range: [4, 0], breaks: [{bounds: [2, 1]}]},
+                xaxis4: {range: [2, 1], breaks: [{bounds: [4, 0]}]}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.breaks[0].enabled).toBe(true, '*bounds* within set range');
+            expect(layoutOut.xaxis2.breaks[0].enabled).toBe(false, '*bounds* bigger than set range');
+            expect(layoutOut.xaxis3.breaks[0].enabled).toBe(true, '*bounds* within set range (reversed)');
+            expect(layoutOut.xaxis4.breaks[0].enabled).toBe(false, '*bounds* bigger than set range (reversed)');
+        });
+
+        it('should coerce *breaks* *bounds* over *values*/*dvalue* if both are present', function() {
+            layoutIn = {
+                xaxis: {breaks: [{bounds: [0, 1]}]},
+                xaxis2: {breaks: [{values: [0, 2, 4], dvalue: 2}]},
+                xaxis3: {breaks: [{bounds: [0, 1], values: [0, 2, 4], dvalue: 2}]},
+                xaxis4: {breaks: [{bounds: false, values: [0, 2, 4], dvalue: 2}]},
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            var xaBreak = layoutOut.xaxis.breaks[0];
+            expect(xaBreak.bounds).withContext('valid *bounds*').toEqual([0, 1]);
+            expect(xaBreak.values).toBe(undefined, 'not coerced');
+            expect(xaBreak.dvalue).toBe(undefined, 'not coerced');
+
+            xaBreak = layoutOut.xaxis2.breaks[0];
+            expect(xaBreak.bounds).toBe(undefined, 'not set, not coerced');
+            expect(xaBreak.values).withContext('valid *values*').toEqual([0, 2, 4]);
+            expect(xaBreak.dvalue).toBe(2, 'valid *dvalue*');
+
+            xaBreak = layoutOut.xaxis3.breaks[0];
+            expect(xaBreak.bounds).withContext('set to valid, coerced').toEqual([0, 1]);
+            expect(xaBreak.values).toBe(undefined, 'not coerced');
+            expect(xaBreak.dvalue).toBe(undefined, 'not coerced');
+
+            xaBreak = layoutOut.xaxis4.breaks[0];
+            expect(xaBreak.bounds).toBe(undefined, 'set but invalid, not coerced');
+            expect(xaBreak.values).withContext('valid *values*').toEqual([0, 2, 4]);
+            expect(xaBreak.dvalue).toBe(2, 'valid *dvalue*');
+        });
+
+        it('should only coerce breaks *pattern* on date axes with *bounds*', function() {
+            layoutIn = {
+                xaxis: {type: 'linear', breaks: [{bounds: [0, 1], pattern: 'not-gonna-work'}]},
+                xaxis2: {type: 'date', breaks: [{bounds: ['2020-01-04', '2020-01-05']}]},
+                xaxis3: {type: 'date', breaks: [{bounds: [6, 0], pattern: '%w'}]},
+                xaxis4: {type: 'date', breaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.breaks[0].pattern).toBe(undefined, 'not coerced, on linear axis');
+            expect(layoutOut.xaxis2.breaks[0].pattern).toBe('', 'coerced to dflt value');
+            expect(layoutOut.xaxis3.breaks[0].pattern).toBe('%w', 'coerced');
+            expect(layoutOut.xaxis4.breaks[0].pattern).toBe(undefined, 'not coerce, using *values*');
+        });
+
+        it('should only coerce *dvalue* with correct smart dflt', function() {
+            layoutIn = {
+                xaxis: {type: 'linear', breaks: [{values: [1]}]},
+                xaxis2: {type: 'date', breaks: [{values: ['2020-01-04']}]},
+            };
+            layoutOut._subplots.xaxis.push('x2');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.breaks[0].dvalue).toBe(1, 'type:linear dflt');
+            expect(layoutOut.xaxis2.breaks[0].dvalue).toBe(24 * 60 * 60 * 1000, 'type:date dflt');
+        });
     });
 
     describe('constraints relayout', function() {

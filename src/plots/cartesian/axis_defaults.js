@@ -11,6 +11,8 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
+var handleArrayContainerDefaults = require('../array_container_defaults');
+
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
 var handleTickMarkDefaults = require('./tick_mark_defaults');
@@ -18,6 +20,8 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
+
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 
 /**
  * options: object containing:
@@ -117,5 +121,68 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    // TODO
+    // - does this make sense for 'log', 'category' and 'multicategory' axis types ??
+
+    var breaks = containerIn.breaks;
+    if(Array.isArray(breaks) && breaks.length) {
+        handleArrayContainerDefaults(containerIn, containerOut, {
+            name: 'breaks',
+            inclusionAttr: 'enabled',
+            handleItemDefaults: breaksDefaults
+        });
+        setConvert(containerOut, layoutOut);
+    }
+
     return containerOut;
 };
+
+function breaksDefaults(itemIn, itemOut, containerOut) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(itemIn, itemOut, layoutAttributes.breaks, attr, dflt);
+    }
+
+    var enabled = coerce('enabled');
+
+    if(enabled) {
+        var isDateAxis = containerOut.type === 'date';
+
+        var bnds = coerce('bounds');
+
+        if(bnds && bnds.length >= 2) {
+            if(bnds.length > 2) {
+                itemOut.bounds = itemOut.bounds.slice(0, 2);
+            }
+
+            if(containerOut.autorange === false) {
+                var rng = containerOut.range;
+
+                // if bounds are bigger than the (set) range, disable break
+                if(rng[0] < rng[1]) {
+                    if(bnds[0] < rng[0] && bnds[1] > rng[1]) {
+                        itemOut.enabled = false;
+                        return;
+                    }
+                } else if(bnds[0] > rng[0] && bnds[1] < rng[1]) {
+                    itemOut.enabled = false;
+                    return;
+                }
+            }
+
+            if(isDateAxis) {
+                coerce('pattern');
+            }
+        } else {
+            var values = coerce('values');
+
+            if(values && values.length) {
+                coerce('dvalue', isDateAxis ? ONEDAY : 1);
+            } else {
+                itemOut.enabled = false;
+                return;
+            }
+        }
+
+        coerce('operation');
+    }
+}
