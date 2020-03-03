@@ -11,9 +11,9 @@
 var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
-var Lib = require('../../lib');
 var Icons = require('../../fonts/ploticon');
-
+var eraseActiveShape = require('../../plots/cartesian/handle_outline').eraseActiveShape;
+var Lib = require('../../lib');
 var _ = Lib._;
 
 var modeBarButtons = module.exports = {};
@@ -132,6 +132,58 @@ modeBarButtons.lasso2d = {
     val: 'lasso',
     icon: Icons.lasso,
     click: handleCartesian
+};
+
+modeBarButtons.closedfreedraw = {
+    name: 'closedfreedraw',
+    title: function(gd) { return _(gd, 'Draw Closed Freeform'); },
+    attr: 'dragmode',
+    val: 'closedfreedraw',
+    icon: Icons.closedfreedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.openfreedraw = {
+    name: 'openfreedraw',
+    title: function(gd) { return _(gd, 'Draw Open Freeform'); },
+    attr: 'dragmode',
+    val: 'openfreedraw',
+    icon: Icons.openfreedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.linedraw = {
+    name: 'linedraw',
+    title: function(gd) { return _(gd, 'Draw Line'); },
+    attr: 'dragmode',
+    val: 'linedraw',
+    icon: Icons.linedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.rectdraw = {
+    name: 'rectdraw',
+    title: function(gd) { return _(gd, 'Draw Rectangle'); },
+    attr: 'dragmode',
+    val: 'rectdraw',
+    icon: Icons.rectdraw,
+    click: handleCartesian
+};
+
+modeBarButtons.ellipsedraw = {
+    name: 'ellipsedraw',
+    title: function(gd) { return _(gd, 'Draw Ellipse'); },
+    attr: 'dragmode',
+    val: 'ellipsedraw',
+    icon: Icons.ellipsedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.eraseshape = {
+    name: 'eraseshape',
+    title: function(gd) { return _(gd, 'Erase Active Shape'); },
+    icon: Icons.eraseshape,
+    click: eraseActiveShape
 };
 
 modeBarButtons.zoomIn2d = {
