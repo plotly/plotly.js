@@ -4640,6 +4640,55 @@ describe('Test axes', function() {
                 .then(done);
             });
         });
+
+        describe('during calcTicks', function() {
+            var gd;
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            afterEach(destroyGraphDiv);
+
+            function _assert(msg, exp) {
+                var fullLayout = gd._fullLayout;
+                var xa = fullLayout.xaxis;
+
+                expect(xa._vals.map(function(d) { return d.x; }))
+                    .withContext(msg).toEqual(exp.tickVals);
+            }
+
+            it('should not include ticks that fall within breaks', function(done) {
+                Plotly.plot(gd, [{
+                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                }], {
+                    xaxis: {},
+                    width: 500,
+                    height: 400
+                })
+                .then(function() {
+                    _assert('base', {
+                        tickVals: [0, 50, 100, 150, 200]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis = {
+                        breaks: [
+                            {bounds: [11, 89]},
+                            {bounds: [101, 189]}
+                        ]
+                    };
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('with two breaks', {
+                        tickVals: [0, 10, 100, 200]
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });
 

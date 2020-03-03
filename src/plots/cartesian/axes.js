@@ -526,7 +526,8 @@ axes.prepTicks = function(ax) {
         // have explicit tickvals without tick text
         if(ax.tickmode === 'array') nt *= 100;
 
-        axes.autoTicks(ax, Math.abs(rng[1] - rng[0]) / nt);
+        axes.autoTicks(ax, (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt);
+
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
             ax.dtick = ax._minDtick;
@@ -608,6 +609,19 @@ axes.calcTicks = function calcTicks(ax) {
         tickVals.pop();
     }
 
+    if(ax.breaks) {
+        // remove ticks falling inside breaks
+        tickVals = tickVals.filter(function(d) {
+            return ax.maskBreaks(d.value) !== BADNUM;
+        });
+
+        // TODO what to do with "overlapping" ticks?
+        var tf2 = ax.tickfont ? 1.5 * ax.tickfont.size : 0;
+        tickVals = tickVals.filter(function(d, i, self) {
+            return !(i && Math.abs(ax.c2p(d.value) - ax.c2p(self[i - 1].value)) < tf2);
+        });
+    }
+
     // save the last tick as well as first, so we can
     // show the exponent only on the last one
     ax._tmax = (tickVals[tickVals.length - 1] || {}).value;
@@ -669,6 +683,13 @@ function arrayTicks(ax) {
     }
 
     if(j < vals.length) ticksOut.splice(j, vals.length - j);
+
+    if(ax.breaks) {
+        // remove ticks falling inside breaks
+        ticksOut = ticksOut.filter(function(d) {
+            return ax.maskBreaks(d.x) !== BADNUM;
+        });
+    }
 
     return ticksOut;
 }
@@ -966,7 +987,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
-        var minDiff = Math.abs(rng[1] - rng[0]) / 10000;
+        var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
 
         for(i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
