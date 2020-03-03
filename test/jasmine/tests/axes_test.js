@@ -4214,6 +4214,74 @@ describe('Test axes', function() {
             });
         });
 
+        describe('during doAutorange', function() {
+            var gd;
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            afterEach(destroyGraphDiv);
+
+            function _assert(msg, exp) {
+                expect(gd._fullLayout.xaxis.range).toEqual(exp.xrng, msg + '| x range');
+                expect(gd._fullLayout.xaxis._lBreaks).toBe(exp.lBreaks, msg + '| lBreaks');
+            }
+
+            it('should adapt padding about axis breaks length', function(done) {
+                Plotly.plot(gd, [{
+                    mode: 'markers',
+                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                }], {
+                    xaxis: {
+                        breaks: [
+                            {bounds: [11, 89]},
+                            {bounds: [101, 189]}
+                        ]
+                    }
+                })
+                .then(function() {
+                    _assert('mode:markers (i.e. with padding)', {
+                        xrng: [-2.1849529780564265, 202.18495297805643],
+                        lBreaks: 166
+                    });
+                })
+                .then(function() {
+                    gd.data[0].mode = 'lines';
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('mode:lines (i.e. no padding)', {
+                        xrng: [0, 200],
+                        lBreaks: 166
+                    });
+                })
+                .then(function() {
+                    gd.data[0].mode = 'markers';
+                    gd.layout.xaxis.breaks[0].enabled = false;
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('mode:markers | one of two breaks enabled', {
+                        xrng: [-7.197492163009405, 207.1974921630094],
+                        lBreaks: 88
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks[1].enabled = false;
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('mode:markers | no breaks enabled', {
+                        xrng: [-12.852664576802507, 212.8526645768025],
+                        lBreaks: 0
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
         describe('during setConvert (once range is available)', function() {
             var gd;
 
