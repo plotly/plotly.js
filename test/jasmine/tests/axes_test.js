@@ -13,6 +13,7 @@ var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
 var BADNUM = require('@src/constants/numerical').BADNUM;
+var ONEDAY = require('@src/constants/numerical').ONEDAY;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -4009,6 +4010,208 @@ describe('Test axes', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+    });
+
+    describe('*breaks*', function() {
+        describe('during doCalcdata', function() {
+            var gd;
+
+            function _calc(trace, layout) {
+                gd = {data: [trace], layout: layout};
+                supplyDefaults(gd);
+                Plots.doCalcdata(gd);
+            }
+
+            function _assert(msg, exp) {
+                var cd = gd.calcdata[0];
+                var xc = cd.map(function(cdi) { return cdi.x; });
+                expect(xc).withContext(msg).toEqual(exp);
+            }
+
+            it('should discard coords within break bounds', function() {
+                _calc({
+                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {'operation': '()', bounds: [10, 90]},
+                            {'operation': '()', bounds: [100, 190]}
+                        ]
+                    }
+                });
+                _assert('with operation:()', [0, 10, BADNUM, 90, 100, BADNUM, 190, 200]);
+
+                _calc({
+                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {operation: '[]', bounds: [10, 90]},
+                            {operation: '[]', bounds: [100, 190]}
+                        ]
+                    }
+                });
+                _assert('with operation:[]', [0, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, 200]);
+
+                _calc({
+                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {operation: '[)', bounds: [10, 90]},
+                            {operation: '(]', bounds: [100, 190]}
+                        ]
+                    }
+                });
+                _assert('with mixed operation values', [0, BADNUM, BADNUM, 90, 100, BADNUM, BADNUM, 200]);
+            });
+
+            it('should discard coords within break bounds - date %w case', function() {
+                var x = [
+                    // Thursday
+                    '2020-01-02 08:00', '2020-01-02 16:00',
+                    // Friday
+                    '2020-01-03 08:00', '2020-01-03 16:00',
+                    // Saturday
+                    '2020-01-04 08:00', '2020-01-04 16:00',
+                    // Sunday
+                    '2020-01-05 08:00', '2020-01-05 16:00',
+                    // Monday
+                    '2020-01-06 08:00', '2020-01-06 16:00',
+                    // Tuesday
+                    '2020-01-07 08:00', '2020-01-07 16:00'
+                ];
+
+                var noWeekend = [
+                    1577952000000, 1577980800000,
+                    1578038400000, 1578067200000,
+                    BADNUM, BADNUM,
+                    BADNUM, BADNUM,
+                    1578297600000, 1578326400000,
+                    1578384000000, 1578412800000
+                ];
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%w', bounds: [6, 0], operation: '[]'}
+                        ]
+                    }
+                });
+                _assert('[6,0]', noWeekend);
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%w', bounds: [5, 1], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('(5,1)', noWeekend);
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%w', bounds: [6, 1], operation: '[)'}
+                        ]
+                    }
+                });
+                _assert('[6,1)', noWeekend);
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%w', bounds: [5, 0], operation: '(]'}
+                        ]
+                    }
+                });
+                _assert('(5,0]', noWeekend);
+            });
+
+            it('should discard coords within break bounds - date %H case', function() {
+                _calc({
+                    x: [
+                        '2020-01-02 08:00', '2020-01-02 20:00',
+                        '2020-01-03 08:00', '2020-01-03 20:00',
+                        '2020-01-04 08:00', '2020-01-04 20:00',
+                        '2020-01-05 08:00', '2020-01-05 20:00',
+                        '2020-01-06 08:00', '2020-01-06 20:00',
+                        '2020-01-07 08:00', '2020-01-07 20:00'
+                    ]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%H', bounds: [17, 8]}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    1577952000000, BADNUM,
+                    1578038400000, BADNUM,
+                    1578124800000, BADNUM,
+                    1578211200000, BADNUM,
+                    1578297600000, BADNUM,
+                    1578384000000, BADNUM
+                ]);
+            });
+
+            it('should discard coords within [values[i], values[i] + dvalue] bounds', function() {
+                var x = [
+                    // Thursday
+                    '2020-01-02 08:00', '2020-01-02 16:00',
+                    // Friday
+                    '2020-01-03 08:00', '2020-01-03 16:00',
+                    // Saturday
+                    '2020-01-04 08:00', '2020-01-04 16:00',
+                    // Sunday
+                    '2020-01-05 08:00', '2020-01-05 16:00',
+                    // Monday
+                    '2020-01-06 08:00', '2020-01-06 16:00',
+                    // Tuesday
+                    '2020-01-07 08:00', '2020-01-07 16:00'
+                ];
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [{values: ['2020-01-04', '2020-01-05'], dvalue: ONEDAY}],
+                    }
+                });
+                _assert('two values', [
+                    1577952000000, 1577980800000,
+                    1578038400000, 1578067200000,
+                    BADNUM, BADNUM,
+                    BADNUM, BADNUM,
+                    1578297600000, 1578326400000,
+                    1578384000000, 1578412800000
+                ]);
+            });
+
+            it('should discard coords equal to two consecutive open values bounds', function() {
+                _calc({
+                    x: [1, 2, 3, 4, 5]
+                }, {
+                    xaxis: {
+                        breaks: [{ values: [2, 3], dvalue: 1, operation: '()' }]
+                    }
+                });
+                _assert('', [1, 2, BADNUM, 4, 5]);
+            });
+
+            it('should adapt coords generated from x0/dx about breaks', function() {
+                _calc({
+                    x0: 1,
+                    dx: 0.5,
+                    y: [1, 3, 5, 2, 4]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {bounds: [2, 3]}
+                        ]
+                    }
+                });
+                _assert('generated x=2.5 gets masked', [1, 1.5, 2, BADNUM, 3]);
+            });
         });
     });
 });

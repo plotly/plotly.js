@@ -492,6 +492,79 @@ module.exports = function setConvert(ax, fullLayout) {
         }
     };
 
+    ax.maskBreaks = function(v) {
+        var breaksIn = ax.breaks || [];
+        var bnds, b0, b1, vb;
+
+        for(var i = 0; i < breaksIn.length; i++) {
+            var brk = breaksIn[i];
+
+            if(brk.enabled) {
+                var op = brk.operation;
+                var op0 = op.charAt(0);
+                var op1 = op.charAt(1);
+
+                if(brk.bounds) {
+                    var doesCrossPeriod = false;
+
+                    switch(brk.pattern) {
+                        case '%w':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                            vb = (new Date(v)).getUTCDay();
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        case '%H':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                            vb = (new Date(v)).getUTCHours();
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        default:
+                            bnds = Lib.simpleMap(brk.bounds, ax.d2c);
+                            if(bnds[0] <= bnds[1]) {
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                            } else {
+                                b0 = bnds[1];
+                                b1 = bnds[0];
+                            }
+                            vb = v;
+                    }
+
+                    if(doesCrossPeriod) {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) ||
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    } else {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) &&
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    }
+                } else {
+                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var onOpenBound = false;
+
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        if(
+                            (op0 === '(' ? v > b0 : v >= b0) &&
+                            (op1 === ')' ? v < b1 : v <= b1)
+                        ) return BADNUM;
+
+                        if(onOpenBound && op0 === '(' && v === b0) return BADNUM;
+                        onOpenBound = op1 === ')' && v === b1;
+                    }
+                }
+            }
+        }
+        return v;
+    };
     // makeCalcdata: takes an x or y array and converts it
     // to a position on the axis object "ax"
     // inputs:
@@ -538,6 +611,13 @@ module.exports = function setConvert(ax, fullLayout) {
 
             for(i = 0; i < len; i++) {
                 arrayOut[i] = v0 + i * dv;
+            }
+        }
+
+        // mask (i.e. set to BADNUM) coords that fall inside breaks
+        if(ax.breaks) {
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = ax.maskBreaks(arrayOut[i]);
             }
         }
 
