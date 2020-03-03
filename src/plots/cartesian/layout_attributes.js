@@ -248,6 +248,135 @@ module.exports = {
             'Moreover, note that matching axes must have the same `type`.'
         ].join(' ')
     },
+
+    breaks: templatedArray('break', {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'calc',
+            description: [
+                'Determines whether this axis break is enabled or disabled.'
+            ].join(' ')
+        },
+
+        bounds: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'any', editType: 'calc'},
+                {valType: 'any', editType: 'calc'}
+            ],
+            editType: 'calc',
+            description: [
+                'Sets the lower and upper bounds of this axis break.',
+                'Can be used with `operation` to determine the behavior at the bounds.',
+                'On *date* axes, it can be used `pattern`.'
+            ].join(' ')
+        },
+
+        pattern: {
+            valType: 'enumerated',
+            // TODO could add '%H:%M:%S'
+            values: ['%w', '%H', ''],
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Only coerced on *date* axes.',
+                'Determines a pattern on the time line that generates breaks.',
+                'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
+                'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
+                'These are the same directive as in `tickformat`, see',
+                'https://github.com/d3/d3-time-format#locale_format',
+                'for more info.',
+                'Examples:',
+                '- { pattern: \'%w\', bounds: [6, 0], operation: \'[]\' }',
+                '  breaks from Saturday to Monday (i.e. skips the weekends).',
+                '- { pattern: \'%H\', bounds: [17, 8] }',
+                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
+            ].join(' ')
+        },
+
+        values: {
+            valType: 'info_array',
+            freeLength: true,
+            role: 'info',
+            editType: 'calc',
+            items: {
+                valType: 'any',
+                editType: 'calc'
+            },
+            description: [
+                'Sets the coordinate values corresponding to the breaks.',
+                'An alternative to `bounds`.',
+                'Use `dvalue` to set the spread of the values along the axis.'
+            ].join(' ')
+        },
+        dvalue: {
+            // TODO could become 'any' to add support for 'months', 'years'
+            valType: 'number',
+            role: 'info',
+            editType: 'calc',
+            min: 0,
+            description: [
+                'Sets the spread of each `values` item.',
+                'For *linear* axes, the default is *1*.',
+                'For *date* axes, the default is one day in milliseconds.'
+            ].join(' ')
+        },
+
+        operation: {
+            valType: 'enumerated',
+            values: ['[]', '()', '[)', '(]'],
+            dflt: '()',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Determines if we include or not the bound values within the break.',
+                'Closed interval bounds (i.e. starting with *[* or ending with *]*)',
+                'include the bound value within the break and thus make coordinates',
+                'equal to the bound disappear.',
+                'Open interval bounds (i.e. starting with *(* or ending with *)*)',
+                'does not include the bound value within the break and thus keep coordinates',
+                'equal to the bound on the axis.'
+            ].join(' ')
+        },
+
+        /*
+        gap: {
+            valType: 'number',
+            min: 0,
+            dflt: 0, // for *date* axes, maybe something else for *linear*
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Sets the gap distance between the start and the end of this break.',
+                'Use with `gapmode` to set the unit of measurement.'
+            ].join(' ')
+        },
+        gapmode: {
+            valType: 'enumerated',
+            values: ['pixels', 'fraction'],
+            dflt: 'pixels',
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Determines if the `gap` value corresponds to a pixel length',
+                'or a fraction of the plot area.'
+            ].join(' ')
+        },
+        */
+
+        // To complete https://github.com/plotly/plotly.js/issues/4210
+        // we additionally need `gap` and make this work on *linear*, and
+        // possibly all other cartesian axis types. We possibly would also need
+        // some style attributes controlling the zig-zag on the corresponding
+        // axis.
+
+        editType: 'calc'
+    }),
+
     // ticks
     tickmode: {
         valType: 'enumerated',
