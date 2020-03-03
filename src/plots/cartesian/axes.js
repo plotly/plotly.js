@@ -739,6 +739,8 @@ axes.autoTicks = function(ax, roughDTick) {
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
 
+        // TODO find way to have 'better' first tick on axes with breaks
+
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
@@ -797,6 +799,9 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         base = getBase(10);
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
+
+        // TODO having tick0 = 0 being insider a breaks does not seem
+        // to matter ...
     }
 
     // prevent infinite loops
