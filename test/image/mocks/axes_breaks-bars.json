@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "y": [ 0, 2 ],
+      "x": [ 1, 2 ],
+      "orientation": "h",
+      "marker": {
+        "color": ["purple", "orange"],
+        "opacity": [1, 0.5]
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Bars centered on open breaks bounds<br>should show bars even though pos -/+ dPos falls within break",
+      "x": 0,
+      "xref": "paper",
+      "font": {"size": 12}
+    },
+    "yaxis": {
+      "breaks": [
+        {
+          "bounds": [ 0, 2 ],
+          "operation": "()"
+        }
+      ]
+    }
+  }
+}

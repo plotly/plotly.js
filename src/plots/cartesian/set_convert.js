@@ -198,7 +198,12 @@ module.exports = function setConvert(ax, fullLayout) {
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
                     if(v <= brk.min) b = ax._B[i + 1];
-                    else if(v > brk.max) break;
+                    else if(v > brk.min && v < brk.max) {
+                        // when v falls into break, pick offset 'closest' to it
+                        if(v - brk.min <= brk.max - v) b = ax._B[i + 1];
+                        else b = ax._B[i];
+                        break;
+                    } else if(v > brk.max) break;
                 }
                 return _l2p(v, -ax._m2, b);
             };
@@ -223,7 +228,12 @@ module.exports = function setConvert(ax, fullLayout) {
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
                     if(v >= brk.max) b = ax._B[i + 1];
-                    else if(v < brk.min) break;
+                    else if(v > brk.min && v < brk.max) {
+                        // when v falls into break, pick offset 'closest' to it
+                        if(v - brk.min <= brk.max - v) b = ax._B[i];
+                        else b = ax._B[i + 1];
+                        break;
+                    } else if(v < brk.min) break;
                 }
                 return _l2p(v, ax._m2, b);
             };
