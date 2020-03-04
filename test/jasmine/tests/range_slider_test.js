@@ -201,6 +201,40 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
+    it('should update correctly when moving slider on an axis with breaks', function(done) {
+        var start = 250;
+        var end = 300;
+
+        Plotly.plot(gd, [{
+            mode: 'lines',
+            x: [0, 10, 50, 90, 100, 150, 190, 200]
+        }], {
+            xaxis: {
+                breaks: [
+                    {bounds: [11, 89]},
+                    {bounds: [101, 189]}
+                ],
+                rangeslider: {visible: true}
+            },
+            width: 800,
+            hieght: 500
+        })
+        .then(function() {
+            var bb = getRangeSlider().getBoundingClientRect();
+            sliderY = bb.top + bb.height / 2;
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).withContext('base xrng').toEqual([0, 200]);
+        })
+        .then(function() { return slide(start, sliderY, end, sliderY); })
+        .then(function() {
+            // x range would be ~ [15.625, 200] w/o breaks
+            expect(gd._fullLayout.xaxis.range).withContext('after xrng').toEqual([2.65625, 200]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should resize the main plot when rangeslider has moved', function(done) {
         var start = 300;
         var end = 400;
