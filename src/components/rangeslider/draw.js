@@ -148,6 +148,8 @@ module.exports = function(gd) {
                     lBreaks += (brk.max - brk.min);
                 }
 
+                // TODO fix for reversed-range axes !!!
+
                 // compute slope and piecewise offsets
                 var m2 = opts._width / (rl1 - rl0 - lBreaks);
                 var _B = [-m2 * rl0];

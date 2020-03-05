@@ -571,7 +571,11 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.breaks) {
             var i, brk;
 
-            ax._breaks = ax.locateBreaks(rl0, rl1);
+            ax._breaks = ax.locateBreaks(
+                Math.min(rl0, rl1),
+                Math.max(rl0, rl1)
+            );
+            var signAx = rl0 > rl1 ? -1 : 1;
 
             if(ax._breaks.length) {
                 for(i = 0; i < ax._breaks.length; i++) {
@@ -579,7 +583,7 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._lBreaks += (brk.max - brk.min);
                 }
 
-                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks);
+                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
 
                 if(axLetter === 'y') {
                     ax._breaks.reverse();
@@ -591,7 +595,11 @@ module.exports = function setConvert(ax, fullLayout) {
 
                 for(i = 0; i < ax._breaks.length; i++) {
                     brk = ax._breaks[i];
-                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min));
+                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
+                }
+
+                if(signAx === -1) {
+                    ax._B.reverse();
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
@@ -651,6 +659,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                 b0 = bnds[1];
                                 b1 = bnds[0];
                             }
+                            // TODO should work with reversed-range axes
                             vb = v;
                             break;
                     }
