@@ -271,7 +271,7 @@ module.exports = {
             description: [
                 'Sets the lower and upper bounds of this axis break.',
                 'Can be used with `operation` to determine the behavior at the bounds.',
-                'On *date* axes, it can be used `pattern`.'
+                'On *date* axes, it can be used with `pattern`.'
             ].join(' ')
         },
 
