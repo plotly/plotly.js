@@ -207,12 +207,27 @@ describe('Visible rangesliders', function() {
 
         Plotly.plot(gd, [{
             mode: 'lines',
-            x: [0, 10, 50, 90, 100, 150, 190, 200]
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
         }], {
             xaxis: {
                 breaks: [
-                    {bounds: [11, 89]},
-                    {bounds: [101, 189]}
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
                 ],
                 rangeslider: {visible: true}
             },
@@ -224,12 +239,18 @@ describe('Visible rangesliders', function() {
             sliderY = bb.top + bb.height / 2;
         })
         .then(function() {
-            expect(gd._fullLayout.xaxis.range).withContext('base xrng').toEqual([0, 200]);
+            expect(gd._fullLayout.xaxis.range).withContext('base xrng').toEqual([
+                '1970-01-01',
+                '1970-01-01 00:00:00.2'
+            ]);
         })
         .then(function() { return slide(start, sliderY, end, sliderY); })
         .then(function() {
             // x range would be ~ [15.625, 200] w/o breaks
-            expect(gd._fullLayout.xaxis.range).withContext('after xrng').toEqual([2.65625, 200]);
+            expect(gd._fullLayout.xaxis.range).withContext('after xrng').toEqual([
+                '1970-01-01 00:00:00.0027',
+                '1970-01-01 00:00:00.2'
+            ]);
         })
         .catch(failTest)
         .then(done);

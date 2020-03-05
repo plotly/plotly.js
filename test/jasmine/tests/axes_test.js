@@ -1019,12 +1019,34 @@ describe('Test axes', function() {
             expect(layoutOut.yaxis2.range).withContext('yaxis2 range').toEqual([0, 4]);
         });
 
+        it('should coerce *breaks* container only on a date axis', function() {
+            var bounds = ['2020-01-10', '2020-01-11'];
+            layoutIn = {
+                xaxis: {breaks: [{bounds: bounds}], type: 'date'},
+                xaxis2: {breaks: [{bounds: bounds}], type: '-'},
+                xaxis3: {breaks: [{bounds: bounds}], type: 'linear'},
+                xaxis4: {breaks: [{bounds: bounds}], type: 'log'},
+                xaxis5: {breaks: [{bounds: bounds}], type: 'category'},
+                xaxis6: {breaks: [{bounds: bounds}], type: 'multicategory'}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(Array.isArray(layoutOut.xaxis.breaks) && layoutOut.xaxis.breaks.length)
+                .toBe(1, 'xaxis.breaks is array of length 1');
+            expect(layoutOut.xaxis2.breaks).toBeUndefined();
+            expect(layoutOut.xaxis3.breaks).toBeUndefined();
+            expect(layoutOut.xaxis4.breaks).toBeUndefined();
+            expect(layoutOut.xaxis5.breaks).toBeUndefined();
+            expect(layoutOut.xaxis6.breaks).toBeUndefined();
+        });
+
         it('should coerce *breaks* container only when it is a non-empty array', function() {
             layoutIn = {
-                xaxis: {breaks: [{bounds: [0, 1]}]},
-                xaxis2: {breaks: []},
-                xaxis3: {breaks: false},
-                xaxis4: {}
+                xaxis: {type: 'date', breaks: [{bounds: ['2020-01-10', '2020-01-11']}]},
+                xaxis2: {type: 'date', breaks: []},
+                xaxis3: {type: 'date', breaks: false},
+                xaxis4: {type: 'date'}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -1038,10 +1060,10 @@ describe('Test axes', function() {
 
         it('should set *breaks* to *enabled:false* when *bounds* have less than 2 items', function() {
             layoutIn = {
-                xaxis: {breaks: [{bounds: [0]}]},
-                xaxis2: {breaks: [{bounds: [0], values: [1]}]},
-                xaxis3: {breaks: [{bounds: [0], values: {}}]},
-                xaxis4: {breaks: [{bounds: [0, 1, 2]}]}
+                xaxis: {type: 'date', breaks: [{bounds: ['2020-01-10']}]},
+                xaxis2: {type: 'date', breaks: [{bounds: ['2020-01-10'], values: ['2020-01-11']}]},
+                xaxis3: {type: 'date', breaks: [{bounds: ['2020-01-10'], values: {}}]},
+                xaxis4: {type: 'date', breaks: [{bounds: ['2020-01-10', '2020-01-11', '2020-01-12']}]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -1050,15 +1072,15 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis2.breaks[0].enabled).toBe(true, 'invalid *bounds*, valid *values*');
             expect(layoutOut.xaxis3.breaks[0].enabled).toBe(false, 'invalid *bounds*, invalid *values*');
             expect(layoutOut.xaxis4.breaks[0].enabled && layoutOut.xaxis4.breaks[0].bounds)
-                .withContext('valid *bounds*, sliced to length=2').toEqual([0, 1]);
+                .withContext('valid *bounds*, sliced to length=2').toEqual(['2020-01-10', '2020-01-11']);
         });
 
         it('if *breaks* *bounds* are bigger than the set *range*, disable break', function() {
             layoutIn = {
-                xaxis: {range: [0, 4], breaks: [{bounds: [1, 2]}]},
-                xaxis2: {range: [1, 2], breaks: [{bounds: [0, 4]}]},
-                xaxis3: {range: [4, 0], breaks: [{bounds: [2, 1]}]},
-                xaxis4: {range: [2, 1], breaks: [{bounds: [4, 0]}]}
+                xaxis: {type: 'date', range: ['2020-01-10', '2020-01-14'], breaks: [{bounds: ['2020-01-11', '2020-01-12']}]},
+                xaxis2: {type: 'date', range: ['2020-01-11', '2020-01-12'], breaks: [{bounds: ['2020-01-10', '2020-01-14']}]},
+                xaxis3: {type: 'date', range: ['2020-01-14', '2020-01-10'], breaks: [{bounds: ['2020-01-12', '2020-01-11']}]},
+                xaxis4: {type: 'date', range: ['2020-01-12', '2020-01-11'], breaks: [{bounds: ['2020-01-14', '2020-01-10']}]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -1071,61 +1093,47 @@ describe('Test axes', function() {
 
         it('should coerce *breaks* *bounds* over *values*/*dvalue* if both are present', function() {
             layoutIn = {
-                xaxis: {breaks: [{bounds: [0, 1]}]},
-                xaxis2: {breaks: [{values: [0, 2, 4], dvalue: 2}]},
-                xaxis3: {breaks: [{bounds: [0, 1], values: [0, 2, 4], dvalue: 2}]},
-                xaxis4: {breaks: [{bounds: false, values: [0, 2, 4], dvalue: 2}]},
+                xaxis: {type: 'date', breaks: [{bounds: ['2020-01-10', '2020-01-11']}]},
+                xaxis2: {type: 'date', breaks: [{values: ['2020-01-10', '2020-01-12', '2020-01-14'], dvalue: 2}]},
+                xaxis3: {type: 'date', breaks: [{bounds: ['2020-01-10', '2020-01-11'], values: ['2020-01-10', '2020-01-12', '2020-01-14'], dvalue: 2}]},
+                xaxis4: {type: 'date', breaks: [{bounds: false, values: ['2020-01-10', '2020-01-12', '2020-01-14'], dvalue: 2}]},
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
             var xaBreak = layoutOut.xaxis.breaks[0];
-            expect(xaBreak.bounds).withContext('valid *bounds*').toEqual([0, 1]);
+            expect(xaBreak.bounds).withContext('valid *bounds*').toEqual(['2020-01-10', '2020-01-11']);
             expect(xaBreak.values).toBe(undefined, 'not coerced');
             expect(xaBreak.dvalue).toBe(undefined, 'not coerced');
 
             xaBreak = layoutOut.xaxis2.breaks[0];
             expect(xaBreak.bounds).toBe(undefined, 'not set, not coerced');
-            expect(xaBreak.values).withContext('valid *values*').toEqual([0, 2, 4]);
+            expect(xaBreak.values).withContext('valid *values*').toEqual(['2020-01-10', '2020-01-12', '2020-01-14']);
             expect(xaBreak.dvalue).toBe(2, 'valid *dvalue*');
 
             xaBreak = layoutOut.xaxis3.breaks[0];
-            expect(xaBreak.bounds).withContext('set to valid, coerced').toEqual([0, 1]);
+            expect(xaBreak.bounds).withContext('set to valid, coerced').toEqual(['2020-01-10', '2020-01-11']);
             expect(xaBreak.values).toBe(undefined, 'not coerced');
             expect(xaBreak.dvalue).toBe(undefined, 'not coerced');
 
             xaBreak = layoutOut.xaxis4.breaks[0];
             expect(xaBreak.bounds).toBe(undefined, 'set but invalid, not coerced');
-            expect(xaBreak.values).withContext('valid *values*').toEqual([0, 2, 4]);
+            expect(xaBreak.values).withContext('valid *values*').toEqual(['2020-01-10', '2020-01-12', '2020-01-14']);
             expect(xaBreak.dvalue).toBe(2, 'valid *dvalue*');
         });
 
-        it('should only coerce breaks *pattern* on date axes with *bounds*', function() {
+        it('should only coerce breaks *pattern* with *bounds*', function() {
             layoutIn = {
-                xaxis: {type: 'linear', breaks: [{bounds: [0, 1], pattern: 'not-gonna-work'}]},
-                xaxis2: {type: 'date', breaks: [{bounds: ['2020-01-04', '2020-01-05']}]},
-                xaxis3: {type: 'date', breaks: [{bounds: [6, 0], pattern: '%w'}]},
-                xaxis4: {type: 'date', breaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
+                xaxis: {type: 'date', breaks: [{bounds: ['2020-01-04', '2020-01-05']}]},
+                xaxis2: {type: 'date', breaks: [{bounds: [6, 0], pattern: '%w'}]},
+                xaxis3: {type: 'date', breaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
             };
-            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.xaxis.push('x2', 'x3');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-            expect(layoutOut.xaxis.breaks[0].pattern).toBe(undefined, 'not coerced, on linear axis');
-            expect(layoutOut.xaxis2.breaks[0].pattern).toBe('', 'coerced to dflt value');
-            expect(layoutOut.xaxis3.breaks[0].pattern).toBe('%w', 'coerced');
-            expect(layoutOut.xaxis4.breaks[0].pattern).toBe(undefined, 'not coerce, using *values*');
-        });
-
-        it('should only coerce *dvalue* with correct smart dflt', function() {
-            layoutIn = {
-                xaxis: {type: 'linear', breaks: [{values: [1]}]},
-                xaxis2: {type: 'date', breaks: [{values: ['2020-01-04']}]},
-            };
-            layoutOut._subplots.xaxis.push('x2');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-
-            expect(layoutOut.xaxis.breaks[0].dvalue).toBe(1, 'type:linear dflt');
-            expect(layoutOut.xaxis2.breaks[0].dvalue).toBe(24 * 60 * 60 * 1000, 'type:date dflt');
+            expect(layoutOut.xaxis.breaks[0].pattern).toBe('', 'coerced to dflt value');
+            expect(layoutOut.xaxis2.breaks[0].pattern).toBe('%w', 'coerced');
+            expect(layoutOut.xaxis3.breaks[0].pattern).toBe(undefined, 'not coerce, using *values*');
         });
     });
 
@@ -4014,6 +4022,8 @@ describe('Test axes', function() {
     });
 
     describe('*breaks*', function() {
+        // TODO adapt `type: 'date'` requirement !!
+
         describe('during doCalcdata', function() {
             var gd;
 
@@ -4030,37 +4040,66 @@ describe('Test axes', function() {
             }
 
             it('should discard coords within break bounds', function() {
+                var x = [
+                    '1970-01-01 00:00:00.000',
+                    '1970-01-01 00:00:00.010',
+                    '1970-01-01 00:00:00.050',
+                    '1970-01-01 00:00:00.090',
+                    '1970-01-01 00:00:00.100',
+                    '1970-01-01 00:00:00.150',
+                    '1970-01-01 00:00:00.190',
+                    '1970-01-01 00:00:00.200'
+                ];
+
                 _calc({
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: x
                 }, {
                     xaxis: {
                         breaks: [
-                            {'operation': '()', bounds: [10, 90]},
-                            {'operation': '()', bounds: [100, 190]}
+                            {'operation': '()', bounds: [
+                                '1970-01-01 00:00:00.010',
+                                '1970-01-01 00:00:00.090'
+                            ]},
+                            {'operation': '()', bounds: [
+                                '1970-01-01 00:00:00.100',
+                                '1970-01-01 00:00:00.190'
+                            ]}
                         ]
                     }
                 });
                 _assert('with operation:()', [0, 10, BADNUM, 90, 100, BADNUM, 190, 200]);
 
                 _calc({
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: x
                 }, {
                     xaxis: {
                         breaks: [
-                            {operation: '[]', bounds: [10, 90]},
-                            {operation: '[]', bounds: [100, 190]}
+                            {'operation': '[]', bounds: [
+                                '1970-01-01 00:00:00.010',
+                                '1970-01-01 00:00:00.090'
+                            ]},
+                            {'operation': '[]', bounds: [
+                                '1970-01-01 00:00:00.100',
+                                '1970-01-01 00:00:00.190'
+                            ]}
                         ]
                     }
                 });
                 _assert('with operation:[]', [0, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, 200]);
 
                 _calc({
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: x
                 }, {
                     xaxis: {
                         breaks: [
-                            {operation: '[)', bounds: [10, 90]},
-                            {operation: '(]', bounds: [100, 190]}
+                            {'operation': '[)', bounds: [
+                                '1970-01-01 00:00:00.010',
+                                '1970-01-01 00:00:00.090'
+                            ]},
+                            {'operation': '(]', bounds: [
+                                '1970-01-01 00:00:00.100',
+                                '1970-01-01 00:00:00.190'
+                            ]}
                         ]
                     }
                 });
@@ -4189,10 +4228,19 @@ describe('Test axes', function() {
 
             it('should discard coords equal to two consecutive open values bounds', function() {
                 _calc({
-                    x: [1, 2, 3, 4, 5]
+                    x: [
+                        '1970-01-01 00:00:00.001',
+                        '1970-01-01 00:00:00.002',
+                        '1970-01-01 00:00:00.003',
+                        '1970-01-01 00:00:00.004',
+                        '1970-01-01 00:00:00.005'
+                    ]
                 }, {
                     xaxis: {
-                        breaks: [{ values: [2, 3], dvalue: 1, operation: '()' }]
+                        breaks: [{ values: [
+                            '1970-01-01 00:00:00.002',
+                            '1970-01-01 00:00:00.003'
+                        ], dvalue: 1, operation: '()' }]
                     }
                 });
                 _assert('', [1, 2, BADNUM, 4, 5]);
@@ -4200,13 +4248,16 @@ describe('Test axes', function() {
 
             it('should adapt coords generated from x0/dx about breaks', function() {
                 _calc({
-                    x0: 1,
+                    x0: '1970-01-01 00:00:00.001',
                     dx: 0.5,
                     y: [1, 3, 5, 2, 4]
                 }, {
                     xaxis: {
                         breaks: [
-                            {bounds: [2, 3]}
+                            {bounds: [
+                                '1970-01-01 00:00:00.002',
+                                '1970-01-01 00:00:00.003'
+                            ]}
                         ]
                     }
                 });
@@ -4231,18 +4282,33 @@ describe('Test axes', function() {
             it('should adapt padding about axis breaks length', function(done) {
                 Plotly.plot(gd, [{
                     mode: 'markers',
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: [
+                        '1970-01-01 00:00:00.000',
+                        '1970-01-01 00:00:00.010',
+                        '1970-01-01 00:00:00.050',
+                        '1970-01-01 00:00:00.090',
+                        '1970-01-01 00:00:00.100',
+                        '1970-01-01 00:00:00.150',
+                        '1970-01-01 00:00:00.190',
+                        '1970-01-01 00:00:00.200'
+                    ]
                 }], {
                     xaxis: {
                         breaks: [
-                            {bounds: [11, 89]},
-                            {bounds: [101, 189]}
+                            {bounds: [
+                                '1970-01-01 00:00:00.011',
+                                '1970-01-01 00:00:00.089'
+                            ]},
+                            {bounds: [
+                                '1970-01-01 00:00:00.101',
+                                '1970-01-01 00:00:00.189'
+                            ]}
                         ]
                     }
                 })
                 .then(function() {
                     _assert('mode:markers (i.e. with padding)', {
-                        xrng: [-2.1849529780564265, 202.18495297805643],
+                        xrng: ['1969-12-31 23:59:59.9978', '1970-01-01 00:00:00.2022'],
                         lBreaks: 166
                     });
                 })
@@ -4252,7 +4318,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('mode:lines (i.e. no padding)', {
-                        xrng: [0, 200],
+                        xrng: ['1970-01-01', '1970-01-01 00:00:00.2'],
                         lBreaks: 166
                     });
                 })
@@ -4263,7 +4329,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('mode:markers | one of two breaks enabled', {
-                        xrng: [-7.197492163009405, 207.1974921630094],
+                        xrng: ['1969-12-31 23:59:59.9928', '1970-01-01 00:00:00.2072'],
                         lBreaks: 88
                     });
                 })
@@ -4273,7 +4339,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('mode:markers | no breaks enabled', {
-                        xrng: [-12.852664576802507, 212.8526645768025],
+                        xrng: ['1969-12-31 23:59:59.9871', '1970-01-01 00:00:00.2129'],
                         lBreaks: 0
                     });
                 })
@@ -4312,7 +4378,16 @@ describe('Test axes', function() {
 
             it('should locate breaks & compute l <-> p parameters - x-axis case', function(done) {
                 Plotly.plot(gd, [{
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: [
+                        '1970-01-01 00:00:00.000',
+                        '1970-01-01 00:00:00.010',
+                        '1970-01-01 00:00:00.050',
+                        '1970-01-01 00:00:00.090',
+                        '1970-01-01 00:00:00.100',
+                        '1970-01-01 00:00:00.150',
+                        '1970-01-01 00:00:00.190',
+                        '1970-01-01 00:00:00.200'
+                    ]
                 }], {
                     xaxis: {}
                 })
@@ -4321,72 +4396,102 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {bounds: [11, 89]},
-                        {bounds: [101, 189]}
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('2 disjoint breaks within range', 'x', {
                         breaks: [[11, 89], [101, 189]],
-                        m2: 14.073529411764703,
-                        B: [30.749, -1066.985, -2305.455]
+                        m2: 14.062499999998405,
+                        B: [30.937, -1065.937, -2303.437]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {bounds: [11, 89]},
-                        {bounds: [70, 189]}
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.070',
+                            '1970-01-01 00:00:00.189'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('2 overlapping breaks within range', 'x', {
                         breaks: [[11, 189]],
-                        m2: 21.749999999999986,
-                        B: [30.749, -3840.749]
+                        m2: 21.7741935483922,
+                        B: [30.483, -3845.322]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {bounds: [-10, 89]},
-                        {bounds: [101, 189]}
+                        {bounds: [
+                            '1969-12-31 23:59:59.990',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('break beyond xaxis.range[0]', 'x', {
-                        breaks: [[88.58620689655173, 89], [101, 189]],
-                        m2: 22.118644067796602,
-                        B: [-1959.406, -1968.559, -3914.999]
+                        breaks: [[88.6, 89], [101, 189]],
+                        m2: 22.1311475409836,
+                        B: [-1960.819, -1969.672, -3917.213]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {bounds: [11, 89]},
-                        {bounds: [101, 300]}
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.300'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('break beyond xaxis.range[1]', 'x', {
-                        breaks: [[11, 89], [101, 101.41379310344827]],
-                        m2: 22.118644067796616,
-                        B: [31.271, -1693.983, -1703.135]
+                        breaks: [[11, 89], [101, 101.4]],
+                        m2: 22.131147540988888,
+                        B: [30.983, -1695.245, -1704.098]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {bounds: [-11, 90]},
-                        {bounds: [101, 300]}
+                        {bounds: [
+                            '1969-12-31 23:59:59.989',
+                            '1970-01-01 00:00:00.090'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.300'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('both breaks beyond xaxis.range', 'x', {
-                        breaks: [[89.35736677115987, 90]],
-                        m2: 50.73932253313696,
-                        B: [-4533.9322, -4566.539]
+                        breaks: [[89.4, 90]],
+                        m2: 50.943396226415125,
+                        B: [-4554.339622641512, -4584.9056603773615]
                     });
                 })
                 .catch(failTest)
@@ -4395,7 +4500,16 @@ describe('Test axes', function() {
 
             it('should locate breaks & compute l <-> p parameters - y-axis case', function(done) {
                 Plotly.plot(gd, [{
-                    y: [0, 10, 50, 90, 100, 150, 190, 200]
+                    y: [
+                        '1970-01-01 00:00:00.000',
+                        '1970-01-01 00:00:00.010',
+                        '1970-01-01 00:00:00.050',
+                        '1970-01-01 00:00:00.090',
+                        '1970-01-01 00:00:00.100',
+                        '1970-01-01 00:00:00.150',
+                        '1970-01-01 00:00:00.190',
+                        '1970-01-01 00:00:00.200'
+                    ]
                 }], {
                     yaxis: {}
                 })
@@ -4404,30 +4518,42 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.yaxis.breaks = [
-                        {bounds: [11, 89]},
-                        {bounds: [101, 189]}
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('2 disjoint breaks within range', 'y', {
                         breaks: [[101, 189], [11, 89]],
-                        m2: 6.926470588235295,
-                        B: [1402.544, 793.0147, 252.75]
+                        m2: 6.923076923076923,
+                        B: [1401.923, 792.692, 252.692]
                     });
                 })
                 .then(function() {
                     gd.layout.yaxis.breaks = [
-                        {bounds: [11, 89]},
-                        {bounds: [70, 189]}
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.070',
+                            '1970-01-01 00:00:00.189'
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
                     _assert('2 overlapping breaks within range', 'y', {
                         breaks: [[11, 189]],
-                        m2: 10.70454545454546,
-                        B: [2158.1590, 252.75]
+                        m2: 10.714285714283243,
+                        B: [2160, 252.857]
                     });
                 })
                 .catch(failTest)
@@ -4660,7 +4786,16 @@ describe('Test axes', function() {
 
             it('should not include ticks that fall within breaks', function(done) {
                 Plotly.plot(gd, [{
-                    x: [0, 10, 50, 90, 100, 150, 190, 200]
+                    x: [
+                        '1970-01-01 00:00:00.000',
+                        '1970-01-01 00:00:00.010',
+                        '1970-01-01 00:00:00.050',
+                        '1970-01-01 00:00:00.090',
+                        '1970-01-01 00:00:00.100',
+                        '1970-01-01 00:00:00.150',
+                        '1970-01-01 00:00:00.190',
+                        '1970-01-01 00:00:00.200'
+                    ]
                 }], {
                     xaxis: {},
                     width: 500,
@@ -4674,8 +4809,14 @@ describe('Test axes', function() {
                 .then(function() {
                     gd.layout.xaxis = {
                         breaks: [
-                            {bounds: [11, 89]},
-                            {bounds: [101, 189]}
+                            {bounds: [
+                                '1970-01-01 00:00:00.011',
+                                '1970-01-01 00:00:00.089'
+                            ]},
+                            {bounds: [
+                                '1970-01-01 00:00:00.101',
+                                '1970-01-01 00:00:00.189'
+                            ]}
                         ]
                     };
                     return Plotly.react(gd, gd.data, gd.layout);

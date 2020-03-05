@@ -640,7 +640,9 @@ module.exports = function setConvert(ax, fullLayout) {
                             vb = (new Date(v)).getUTCHours();
                             if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
-                        default:
+                        case '':
+                            // N.B. should work on date axes as well!
+                            // e.g. { bounds: ['2020-01-04', '2020-01-05 23:59'] }
                             bnds = Lib.simpleMap(brk.bounds, ax.d2c);
                             if(bnds[0] <= bnds[1]) {
                                 b0 = bnds[0];
@@ -650,6 +652,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                 b1 = bnds[0];
                             }
                             vb = v;
+                            break;
                     }
 
                     if(doesCrossPeriod) {

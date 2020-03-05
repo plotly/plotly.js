@@ -2707,12 +2707,28 @@ describe('Hover on axes with breaks', function() {
     it('should work when breaks are present on x-axis', function(done) {
         Plotly.plot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
-            x: [0, 10, 50, 90, 95, 100, 150, 190, 200]
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
         }], {
             xaxis: {
                 breaks: [
-                    {bounds: [11, 89]},
-                    {bounds: [101, 189]}
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
                 ]
             },
             width: 400,
@@ -2729,8 +2745,8 @@ describe('Hover on axes with breaks', function() {
         .then(function() {
             _assert('leftmost interval', {
                 nums: '0',
-                axis: '0',
-                x: 0,
+                axis: 'Jan 1, 1970',
+                x: '1970-01-01',
                 y: 0
             });
         })
@@ -2738,8 +2754,8 @@ describe('Hover on axes with breaks', function() {
         .then(function() {
             _assert('middle interval', {
                 nums: '4',
-                axis: '95',
-                x: 95,
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: '1970-01-01 00:00:00.095',
                 y: 4
             });
         })
@@ -2747,8 +2763,8 @@ describe('Hover on axes with breaks', function() {
         .then(function() {
             _assert('rightmost interval', {
                 nums: '8',
-                axis: '200',
-                x: 200,
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: '1970-01-01 00:00:00.2',
                 y: 8
             });
         })
@@ -2759,12 +2775,28 @@ describe('Hover on axes with breaks', function() {
     it('should work when breaks are present on y-axis', function(done) {
         Plotly.plot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
-            y: [0, 10, 50, 90, 95, 100, 150, 190, 200]
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
         }], {
             yaxis: {
                 breaks: [
-                    {bounds: [11, 89]},
-                    {bounds: [101, 189]}
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
                 ]
             },
             width: 400,
@@ -2781,27 +2813,27 @@ describe('Hover on axes with breaks', function() {
         .then(function() {
             _assert('topmost interval', {
                 nums: '8',
-                axis: '200',
+                axis: 'Jan 1, 1970, 00:00:00.2',
                 x: 8,
-                y: 200
+                y: '1970-01-01 00:00:00.2'
             });
         })
         .then(function() { _hover(200, 200); })
         .then(function() {
             _assert('middle interval', {
                 nums: '4',
-                axis: '95',
+                axis: 'Jan 1, 1970, 00:00:00.095',
                 x: 4,
-                y: 95
+                y: '1970-01-01 00:00:00.095'
             });
         })
         .then(function() { _hover(11, 370); })
         .then(function() {
             _assert('bottom interval', {
                 nums: '0',
-                axis: '0',
+                axis: 'Jan 1, 1970',
                 x: 0,
-                y: 0
+                y: '1970-01-01'
             });
         })
         .catch(failTest)

@@ -16,7 +16,7 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
-
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
 
 module.exports = {
@@ -256,7 +256,8 @@ module.exports = {
             dflt: true,
             editType: 'calc',
             description: [
-                'Determines whether this axis break is enabled or disabled.'
+                'Determines whether this axis break is enabled or disabled.',
+                'Please note that `breaks` only work for *date* axis type.'
             ].join(' ')
         },
 
@@ -271,7 +272,7 @@ module.exports = {
             description: [
                 'Sets the lower and upper bounds of this axis break.',
                 'Can be used with `operation` to determine the behavior at the bounds.',
-                'On *date* axes, it can be used with `pattern`.'
+                'Can be used with `pattern`.'
             ].join(' ')
         },
 
@@ -283,7 +284,6 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'Only coerced on *date* axes.',
                 'Determines a pattern on the time line that generates breaks.',
                 'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
                 'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
@@ -319,10 +319,10 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             min: 0,
+            dflt: ONEDAY,
             description: [
                 'Sets the spread of each `values` item.',
-                'For *linear* axes, the default is *1*.',
-                'For *date* axes, the default is one day in milliseconds.'
+                'The default is one day in milliseconds.'
             ].join(' ')
         },
 
