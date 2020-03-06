@@ -388,6 +388,7 @@ describe('legend getLegendData', function() {
             }}]
         ];
         opts = {
+            _main: true,
             traceorder: 'normal'
         };
 

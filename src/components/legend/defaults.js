@@ -17,7 +17,7 @@ var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
 
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData, fullLayout) {
     var containerIn = layoutIn.legend || {};
 
     var legendTraceCount = 0;
@@ -82,10 +82,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     if(showLegend === false) return;
 
-    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bgcolor', (fullLayout || layoutOut).paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
+    Lib.coerceFont(coerce, 'font', (fullLayout || layoutOut).font);
 
     var orientation = coerce('orientation');
     var defaultX, defaultY, defaultYAnchor;
@@ -127,6 +127,6 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var titleText = coerce('title.text');
     if(titleText) {
         coerce('title.side', orientation === 'h' ? 'left' : 'top');
-        Lib.coerceFont(coerce, 'title.font', layoutOut.font);
+        Lib.coerceFont(coerce, 'title.font', (fullLayout || layoutOut).font);
     }
 };
