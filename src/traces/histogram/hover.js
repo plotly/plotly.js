@@ -27,7 +27,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.ph0, di.ph1);
     }
 
-    if(trace.hovermplate) pointData.hovertemplate = trace.hovertemplate;
+    if(trace.hovertemplate) pointData.hovertemplate = trace.hovertemplate;
 
     return pts;
 };
