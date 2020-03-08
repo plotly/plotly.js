@@ -75,5 +75,5 @@ module.exports = {
     },
 
     // number of px around labels text clip out of contour lines below
-    LABEL_LINE_CLIP_PAD: 2
+    LABEL_LINE_CLIP_PAD_X: 2
 };
