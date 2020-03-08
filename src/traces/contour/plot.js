@@ -544,8 +544,8 @@ function locationCost(loc, textOpts, labelData, bounds) {
 }
 
 exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
-    var halfWidth = textOpts.width / 2 + LABEL_LINE_CLIP_PAD_X;
-    var halfHeight = textOpts.height / 2;
+    var w = textOpts.width + 2 * LABEL_LINE_CLIP_PAD_X;
+    var h = textOpts.height;
 
     var x = loc.x;
     var y = loc.y;
@@ -553,10 +553,11 @@ exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
 
     var sin = Math.sin(theta);
     var cos = Math.cos(theta);
-    var dxw = halfWidth * cos;
-    var dxh = halfHeight * sin;
-    var dyw = halfWidth * sin;
-    var dyh = -halfHeight * cos;
+    var dxw = cos * w / 2;
+    var dxh = sin * h / 2;
+    var dyw = sin * w / 2;
+    var dyh = -cos * h / 2;
+
     var bBoxPts = [
         [x - dxw - dxh, y - dyw - dyh],
         [x + dxw - dxh, y + dyw - dyh],
