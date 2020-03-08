@@ -26,7 +26,6 @@ var convertToConstraints = require('./convert_to_constraints');
 var closeBoundaries = require('./close_boundaries');
 var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
-var LABEL_LINE_CLIP_PAD_X = constants.LABEL_LINE_CLIP_PAD_X;
 
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
     var xa = plotinfo.xaxis;
@@ -544,8 +543,8 @@ function locationCost(loc, textOpts, labelData, bounds) {
 }
 
 exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
-    var w = textOpts.width + 2 * LABEL_LINE_CLIP_PAD_X;
-    var h = textOpts.height;
+    var w = textOpts.width + 4;
+    var h = Math.max(0, textOpts.height - 4);
 
     var x = loc.x;
     var y = loc.y;
@@ -575,8 +574,8 @@ exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
         dy: textOpts.dy,
         theta: theta,
         level: textOpts.level,
-        width: textOpts.width,
-        height: textOpts.height
+        width: w,
+        height: h
     });
 
     labelClipPathData.push(bBoxPts);
