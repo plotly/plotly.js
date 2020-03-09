@@ -3684,6 +3684,13 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
+    function assertStyle(color) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var bg = hover.select('rect.bg');
+        expect(bg.node().style.fill).toBe(color);
+    }
+
     it('set smart defaults for spikeline in x unified', function(done) {
         Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
             .then(function(gd) {
@@ -3757,6 +3764,20 @@ describe('hovermode: (x|y)unified', function() {
                     'trace 2 : 2',
                     'trace 5 : 2'
                 ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('label should have color of paper_bgcolor', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        var bgcolor = 'rgb(15, 200, 85)';
+        mockCopy.layout.paper_bgcolor = bgcolor;
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertStyle(bgcolor);
             })
             .catch(failTest)
             .then(done);
