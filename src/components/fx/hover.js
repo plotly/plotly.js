@@ -937,7 +937,8 @@ function createHoverText(hoverData, opts, gd) {
                 title: {text: t0},
                 bgcolor: fullLayout.paper_bgcolor,
                 borderwidth: 1,
-                tracegroupgap: 7
+                tracegroupgap: 7,
+                orientation: 'v'
             }
         };
         var mockLayoutOut = {};
@@ -989,7 +990,7 @@ function createHoverText(hoverData, opts, gd) {
         var canFit = txHeight <= outerHeight;
         if(canFit) {
             if(overflowTop) {
-                ly = tbb.top - outerTop + 2 * HOVERTEXTPAD;
+                ly = ya._offset + 2 * HOVERTEXTPAD;
             } else if(overflowBottom) {
                 ly = outerHeight - txHeight;
             }
