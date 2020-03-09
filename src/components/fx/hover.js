@@ -962,6 +962,9 @@ function createHoverText(hoverData, opts, gd) {
         }
         legendOpts.layer = container;
 
+        // Return early if nothing is hovered on
+        if(legendOpts.entries.length === 0) return;
+
         // Draw unified hover label
         legend.draw(gd, legendOpts);
 
