@@ -950,8 +950,13 @@ function createHoverText(hoverData, opts, gd) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            hoverData[j].text = name + ' : ' + text;
             hoverData[j].name = name;
+            if(name) {
+                hoverData[j].text = name + ' : ' + text;
+            } else {
+                hoverData[j].text = text;
+            }
+
             legendOpts.entries.push([hoverData[j]]);
         }
         legendOpts.layer = container;

@@ -3795,6 +3795,16 @@ describe('hovermode: (x|y)unified', function() {
                     'trace 0 : hovertemplate: 4.00',
                     'name : 3.00 8.00'
                 ]});
+
+                return Plotly.restyle(gd, 'hovertemplate', '<extra></extra>%{y:0.2f}');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    '4.00',
+                    '8.00'
+                ]});
             })
             .catch(failTest)
             .then(done);
