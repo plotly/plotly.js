@@ -693,16 +693,11 @@ module.exports = function setConvert(ax, fullLayout) {
         var breaksOut = [];
         if(!ax.breaks) return breaksOut;
 
-        var breaksIn;
-        if(ax.type === 'date') {
-            breaksIn = ax.breaks.slice().sort(function(a, b) {
-                if(a.pattern === '%w' && b.pattern === '%H') return -1;
-                else if(b.pattern === '%w' && a.pattern === '%H') return 1;
-                return 0;
-            });
-        } else {
-            breaksIn = ax.breaks;
-        }
+        var breaksIn = ax.breaks.slice().sort(function(a, b) {
+            if(a.pattern === '%w' && b.pattern === '%H') return -1;
+            else if(b.pattern === '%w' && a.pattern === '%H') return 1;
+            return 0;
+        });
 
         var addBreak = function(min, max) {
             min = Lib.constrain(min, r0, r1);
