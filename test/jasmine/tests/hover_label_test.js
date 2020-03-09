@@ -3769,6 +3769,23 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
+    it('should for finance traces', function(done) {
+        var mockOhlc = require('@mocks/finance_multicategory.json');
+        var mockCopy = Lib.extendDeep({}, mockOhlc);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {curveNumber: 0, pointNumber: 0});
+
+                assertLabel({title: 'Group 2 - b', items: [
+                    'ohlc : open: 12high: 17low: 9close: 13  ▲',
+                    'candlestick : open: 22high: 27low: 19close: 23  ▲'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
     it('label should have color of paper_bgcolor', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         var bgcolor = 'rgb(15, 200, 85)';
