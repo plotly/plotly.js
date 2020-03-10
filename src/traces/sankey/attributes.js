@@ -84,6 +84,9 @@ var attrs = module.exports = overrideAll({
         description: 'Sets the font for node labels'
     }),
 
+    // Remove top-level customdata
+    customdata: undefined,
+
     node: {
         label: {
             valType: 'data_array',
