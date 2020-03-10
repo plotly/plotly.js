@@ -3688,11 +3688,26 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
-    function assertStyle(color) {
+    function assertBgcolor(color) {
         var hoverLayer = d3.select('g.hoverlayer');
         var hover = hoverLayer.select('g.legend');
         var bg = hover.select('rect.bg');
         expect(bg.node().style.fill).toBe(color);
+    }
+
+    function assertSymbol(exp) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var traces = hover.selectAll('g.traces');
+        traces.each(function(d, i) {
+            var pts = d3.select(this).selectAll('g.legendpoints path');
+            pts.each(function() {
+                var node = d3.select(this).node();
+                expect(node.style.fill).toBe(exp[i][0], 'wrong fill for point ' + i);
+                expect(node.style.strokeWidth).toBe(exp[i][1], 'wrong stroke-width for point ' + i);
+                expect(node.style.stroke).toBe(exp[i][2], 'wrong stroke for point ' + i);
+            });
+        });
     }
 
     it('set smart defaults for spikeline in x unified', function(done) {
@@ -3773,7 +3788,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
-    it('should for finance traces', function(done) {
+    it('should work for finance traces', function(done) {
         var mockOhlc = require('@mocks/finance_multicategory.json');
         var mockCopy = Lib.extendDeep({}, mockOhlc);
         mockCopy.layout.hovermode = 'x unified';
@@ -3790,6 +3805,66 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
+    it('should style scatter symbols accordingly', function(done) {
+        var mock = require('@mocks/marker_colorscale_template.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                assertLabel({title: '1', items: ['2']});
+                assertSymbol([['rgb(33, 145, 140)', '0px', '']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 2});
+                assertLabel({title: '2', items: ['3']});
+                assertSymbol([['rgb(253, 231, 37)', '0px', '']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style bar symbols accordingly', function(done) {
+        var mock = require('@mocks/bar-marker-line-colorscales.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 10});
+                assertLabel({title: '10', items: ['10']});
+                assertSymbol([['rgb(94, 216, 43)', '4px', 'rgb(197, 232, 190)']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 20});
+                assertLabel({title: '20', items: ['20']});
+                assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style funnel symbols accordingly', function(done) {
+        var mock = require('@mocks/funnel_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                // assertLabel({title: 'B', items: ['asdf', 'asdf']});
+                assertSymbol([
+                  ['rgb(0, 255, 0)', '0px', ''],
+                  ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
+                ]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 4});
+                // assertLabel({title: 'E', items: ['asdf', 'asdf']});
+                // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
     it('label should have color of paper_bgcolor', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         var bgcolor = 'rgb(15, 200, 85)';
@@ -3798,7 +3873,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertStyle(bgcolor);
+                assertBgcolor(bgcolor);
             })
             .catch(failTest)
             .then(done);

@@ -953,14 +953,27 @@ function createHoverText(hoverData, opts, gd) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            hoverData[j].name = name;
+            var pt = hoverData[j];
+            pt.name = name;
             if(name !== '') {
-                hoverData[j].text = name + ' : ' + text;
+                pt.text = name + ' : ' + text;
             } else {
-                hoverData[j].text = text;
+                pt.text = text;
             }
 
-            legendOpts.entries.push([hoverData[j]]);
+            // pass through marker's calcdata to style legend items
+            var cd = pt.cd[pt.index];
+            if(cd) {
+                if(cd.mc) pt.mc = cd.mc;
+                if(cd.mcc) pt.mc = cd.mcc;
+                if(cd.mlc) pt.mlc = cd.mlc;
+                if(cd.mlcc) pt.mlc = cd.mlcc;
+                if(cd.mlw) pt.mlw = cd.mlw;
+                if(cd.mrc) pt.mrc = cd.mrc;
+            }
+            pt._distinct = true;
+
+            legendOpts.entries.push([pt]);
         }
         legendOpts.layer = container;
 
