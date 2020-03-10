@@ -19,6 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;
 var clearMinTextSize = uniformText.clearMinTextSize;
+var TEXTPAD = require('../bar/constants').TEXTPAD;
 
 var helpers = require('./helpers');
 var eventData = require('./event_data');
@@ -684,6 +685,8 @@ function isCrossing(pt, angle) {
 }
 
 function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
+    r = Math.max(0, r - 2 * TEXTPAD);
+
     // max size if text is rotated radially
     var a = textBB.width / textBB.height;
     var s = calcMaxHalfSize(a, halfAngle, r, ring);
@@ -695,6 +698,8 @@ function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
 }
 
 function calcTanTransform(textBB, r, ring, halfAngle, midAngle) {
+    r = Math.max(0, r - 2 * TEXTPAD);
+
     // max size if text is rotated tangentially
     var a = textBB.height / textBB.width;
     var s = calcMaxHalfSize(a, halfAngle, r, ring);
@@ -1148,11 +1153,7 @@ function computeTransform(
     transform,  // inout
     textBB      // in
 ) {
-    var rotate = transform.rotate;
-    var scale = transform.scale;
-    if(scale > 1) scale = 1;
-
-    var a = rotate * Math.PI / 180;
+    var a = transform.rotate * Math.PI / 180;
     var cosA = Math.cos(a);
     var sinA = Math.sin(a);
     var midX = (textBB.left + textBB.right) / 2;
