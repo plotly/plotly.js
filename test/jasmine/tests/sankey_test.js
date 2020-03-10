@@ -816,6 +816,7 @@ describe('sankey tests', function() {
         it('should show the correct hover labels when hovertemplate is specified', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].node.customdata = [0, 0, 0, 0, '15']
 
             Plotly.plot(gd, mockCopy).then(function() {
                 _hover(404, 302);
@@ -836,7 +837,7 @@ describe('sankey tests', function() {
             // Test (node|link).hovertemplate
             .then(function() {
                 return Plotly.restyle(gd, {
-                    'node.hovertemplate': 'hovertemplate<br>%{value}<br>%{value:0.2f}<extra>%{fullData.name}</extra>',
+                    'node.hovertemplate': 'hovertemplate<br>%{value}<br>%{value:0.2f}<br>%{customdata}<extra>%{fullData.name}</extra>',
                     'link.hovertemplate': 'hovertemplate<br>source: %{source.label}<br>target: %{target.label}<br>size: %{value:0.0f}TWh<extra>%{fullData.name}</extra>'
                 });
             })
@@ -844,7 +845,7 @@ describe('sankey tests', function() {
                 _hover(404, 302);
 
                 assertLabel(
-                    [ 'hovertemplate', '447TWh', '447.48', 'trace 0'],
+                    [ 'hovertemplate', '447TWh', '447.48', '15', 'trace 0'],
                     ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
             })

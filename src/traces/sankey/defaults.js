@@ -50,6 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('color', nodeOut.label.map(function(d, i) {
         return Color.addOpacity(defaultNodePalette(i), 0.8);
     }));
+    coerceNode('customdata');
 
     // link attributes
     var linkIn = traceIn.link || {};

@@ -116,6 +116,7 @@ function convertToD3Sankey(trace) {
     // Process nodes
     var totalCount = nodeCount + groups.length;
     var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
+    var hasNodeCustomdataArray = isArrayOrTypedArray(nodeSpec.customdata);
     var nodes = [];
     for(i = 0; i < totalCount; i++) {
         if(!linkedNodes[i]) continue;
@@ -126,7 +127,8 @@ function convertToD3Sankey(trace) {
             childrenNodes: [],
             pointNumber: i,
             label: l,
-            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color,
+            customdata: hasNodeCustomdataArray ? nodeSpec.customdata[i] : nodeSpec.customdata
         });
     }
 

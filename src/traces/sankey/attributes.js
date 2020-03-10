@@ -128,6 +128,13 @@ var attrs = module.exports = overrideAll({
                 'what is beneath the node.'
             ].join(' ')
         },
+        customdata: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Assigns extra data each node.'
+            ].join(' ')
+        },
         line: {
             color: {
                 valType: 'color',
