@@ -135,7 +135,7 @@ var attrs = module.exports = overrideAll({
             valType: 'data_array',
             editType: 'calc',
             description: [
-                'Assigns extra data each node.'
+                'Assigns extra data to each node.'
             ].join(' ')
         },
         line: {
@@ -214,7 +214,7 @@ var attrs = module.exports = overrideAll({
             valType: 'data_array',
             editType: 'calc',
             description: [
-                'Assigns extra data each link.'
+                'Assigns extra data to each link.'
             ].join(' ')
         },
         line: {
