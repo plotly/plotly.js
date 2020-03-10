@@ -954,7 +954,7 @@ function createHoverText(hoverData, opts, gd) {
             var text = texts[0];
             var name = texts[1];
             hoverData[j].name = name;
-            if(name) {
+            if(name !== '') {
                 hoverData[j].text = name + ' : ' + text;
             } else {
                 hoverData[j].text = text;
