@@ -25,7 +25,8 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 var constants = require('./constants');
 
-var legend = require('../legend');
+var legendSupplyDefaults = require('../legend/defaults');
+var legendDraw = require('../legend/draw');
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
@@ -934,7 +935,8 @@ function createHoverText(hoverData, opts, gd) {
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0},
+                title: {text: t0, font: fullLayout.title.font},
+                font: fullLayout.font,
                 bgcolor: fullLayout.paper_bgcolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
@@ -942,7 +944,7 @@ function createHoverText(hoverData, opts, gd) {
             }
         };
         var mockLayoutOut = {};
-        legend.supplyLayoutDefaults(mockLayoutIn, mockLayoutOut, gd._fullData, fullLayout);
+        legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
         var legendOpts = mockLayoutOut.legend;
 
         // prepare items for the legend
@@ -966,7 +968,7 @@ function createHoverText(hoverData, opts, gd) {
         if(legendOpts.entries.length === 0) return;
 
         // Draw unified hover label
-        legend.draw(gd, legendOpts);
+        legendDraw(gd, legendOpts);
 
         // Position the hover
         var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
