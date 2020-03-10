@@ -4195,6 +4195,35 @@ describe('Test axes', function() {
                 ]);
             });
 
+            it('should discard coords within break bounds - date %H / high precision case', function() {
+                _calc({
+                    x: [
+                        '2020-01-03 17:00',
+                        '2020-01-03 17:15',
+                        '2020-01-03 17:30',
+                        '2020-01-06 7:45',
+                        '2020-01-06 8:00',
+                        '2020-01-06 8:15',
+                        '2020-01-06 8:30'
+                    ]
+                }, {
+                    xaxis: {
+                        breaks: [
+                            {pattern: '%H', bounds: [17, 8]}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-03 17:00'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-06 8:00'),
+                    Lib.dateTime2ms('2020-01-06 8:15'),
+                    Lib.dateTime2ms('2020-01-06 8:30')
+                ]);
+            });
+
             it('should discard coords within [values[i], values[i] + dvalue] bounds', function() {
                 var x = [
                     // Thursday

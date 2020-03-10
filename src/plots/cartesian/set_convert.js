@@ -645,7 +645,12 @@ module.exports = function setConvert(ax, fullLayout) {
                             bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                             b0 = bnds[0];
                             b1 = bnds[1];
-                            vb = (new Date(v)).getUTCHours();
+                            var vDate = new Date(v);
+                            vb = vDate.getUTCHours() + (
+                                vDate.getUTCMinutes() * ONEMIN +
+                                vDate.getUTCSeconds() * ONESEC +
+                                vDate.getUTCMilliseconds()
+                            ) / ONEDAY;
                             if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
                         case '':
