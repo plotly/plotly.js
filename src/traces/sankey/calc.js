@@ -22,6 +22,7 @@ function convertToD3Sankey(trace) {
 
     var links = [];
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
+    var hasLinkCustomdataArray = isArrayOrTypedArray(linkSpec.customdata);
     var linkedNodes = {};
 
     var components = {};
@@ -103,6 +104,7 @@ function convertToD3Sankey(trace) {
             pointNumber: i,
             label: label,
             color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
+            customdata: hasLinkCustomdataArray ? linkSpec.customdata[i] : linkSpec.customdata,
             concentrationscale: concentrationscale,
             source: source,
             target: target,

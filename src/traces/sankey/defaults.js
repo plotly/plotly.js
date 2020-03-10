@@ -74,6 +74,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 'rgba(0, 0, 0, 0.2)';
 
     coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
+    coerceLink('customdata');
 
     handleArrayContainerDefaults(linkIn, linkOut, {
         name: 'colorscales',

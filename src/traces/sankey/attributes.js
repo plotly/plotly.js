@@ -207,6 +207,13 @@ var attrs = module.exports = overrideAll({
                 'If `link.color` is omitted, then by default, a translucent grey link will be used.'
             ].join(' ')
         },
+        customdata: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Assigns extra data each link.'
+            ].join(' ')
+        },
         line: {
             color: {
                 valType: 'color',
