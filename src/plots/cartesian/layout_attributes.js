@@ -310,7 +310,7 @@ module.exports = {
             description: [
                 'Sets the coordinate values corresponding to the breaks.',
                 'An alternative to `bounds`.',
-                'Use `dvalue` to set the spread of the values along the axis.'
+                'Use `dvalue` to set the size of the values along the axis.'
             ].join(' ')
         },
         dvalue: {
@@ -321,7 +321,7 @@ module.exports = {
             min: 0,
             dflt: ONEDAY,
             description: [
-                'Sets the spread of each `values` item.',
+                'Sets the size of each `values` item.',
                 'The default is one day in milliseconds.'
             ].join(' ')
         },
