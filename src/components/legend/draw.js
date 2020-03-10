@@ -494,6 +494,7 @@ function setupTraceToggle(g, gd) {
 }
 
 function textLayout(s, g, gd, opts) {
+    if(!opts._main) s.attr('data-notex', true); // do not process MathJax if not main
     svgTextUtils.convertToTspans(s, gd, function() {
         computeTextDimensions(g, gd, opts);
     });
