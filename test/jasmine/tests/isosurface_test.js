@@ -324,16 +324,27 @@ describe('Test isosurface', function() {
 
             function _hover1() {
                 mouseEvent('mouseover', 200, 200);
+                return delay(20)();
             }
 
             function _hover2() {
                 mouseEvent('mouseover', 100, 100);
+                return delay(20)();
+            }
+
+            function _hover3() {
+                mouseEvent('mouseover', 300, 150);
+                return delay(20)();
+            }
+
+            function _hover4() {
+                mouseEvent('mouseover', 150, 300);
+                return delay(20)();
             }
 
             Plotly.plot(gd, fig)
             .then(delay(20))
             .then(_hover1)
-            .then(delay(20))
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
@@ -346,14 +357,37 @@ describe('Test isosurface', function() {
             })
             .then(delay(20))
             .then(_hover2)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.3',
+                        'y: 0.001',
+                        'z: −16',
+                        'value: −0.27'
+                    ].join('\n')
+                });
+            })
             .then(delay(20))
+            .then(_hover3)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.2',
+                        'y: 100μ',
+                        'z: −16',
+                        'value: −1.12'
+                    ].join('\n')
+                });
+            })
+            .then(delay(20))
+            .then(_hover4)
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −8',
-                        'value: −1.28'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3'
                     ].join('\n')
                 });
             })
@@ -363,29 +397,20 @@ describe('Test isosurface', function() {
                 ]);
             })
             .then(delay(20))
-            .then(_hover2)
+            .then(_hover4)
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −8',
-                        'value: −1.28',
-                        '!! -1.28 !!'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3',
+                        '!! -1.3 !!'
                     ].join('\n')
                 });
             })
             .then(function() {
                 return Plotly.restyle(gd, 'hovertemplate', '%{value}<br>(%{x},%{y},%{z})<extra>!!</extra>');
-            })
-            .then(delay(20))
-            .then(_hover2)
-            .then(delay(20))
-            .then(function() {
-                assertHoverLabelContent({
-                    nums: '−1.28\n(0.4,0.001,−8)',
-                    name: '!!'
-                });
             })
             .catch(failTest)
             .then(done);

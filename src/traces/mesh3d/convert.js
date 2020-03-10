@@ -34,11 +34,15 @@ proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
 
-        selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex]
-        ];
+        if(selection.data._cellCenter) {
+            selection.traceCoordinate = selection.data.dataCoordinate;
+        } else {
+            selection.traceCoordinate = [
+                this.data.x[selectIndex],
+                this.data.y[selectIndex],
+                this.data.z[selectIndex]
+            ];
+        }
 
         var text = this.data.hovertext || this.data.text;
         if(Array.isArray(text) && text[selectIndex] !== undefined) {

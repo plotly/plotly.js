@@ -91,7 +91,12 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
         var s = di[sizeLetter];
 
         if(isWaterfall) {
-            s += Math.abs(di.rawS || 0);
+            var rawS = Math.abs(di.rawS) || 0;
+            if(v > 0) {
+                s += rawS;
+            } else if(v < 0) {
+                s -= rawS;
+            }
         }
 
         // add a gradient so hovering near the end of a

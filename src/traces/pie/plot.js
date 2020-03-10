@@ -19,6 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;
 var clearMinTextSize = uniformText.clearMinTextSize;
+var TEXTPAD = require('../bar/constants').TEXTPAD;
 
 var helpers = require('./helpers');
 var eventData = require('./event_data');
@@ -559,18 +560,31 @@ function prerenderTitles(cdModule, gd) {
 }
 
 function transformInsideText(textBB, pt, cd0) {
-    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+    var r = cd0.r || pt.rpx1;
+    var rInscribed = pt.rInscribed;
+
+    var isEmpty = pt.startangle === pt.stopangle;
+    if(isEmpty) {
+        return {
+            rCenter: 1 - rInscribed,
+            scale: 0,
+            rotate: 0,
+            textPosAngle: 0
+        };
+    }
+
+    var ring = pt.ring;
+    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
+
     var halfAngle = pt.halfangle;
     var midAngle = pt.midangle;
-    var ring = pt.ring;
-    var rInscribed = pt.rInscribed;
-    var r = cd0.r || pt.rpx1;
+
     var orientation = cd0.trace.insidetextorientation;
     var isHorizontal = orientation === 'horizontal';
     var isTangential = orientation === 'tangential';
     var isRadial = orientation === 'radial';
     var isAuto = orientation === 'auto';
-    var isCircle = (ring === 1) && (Math.abs(pt.startangle - pt.stopangle) === Math.PI * 2);
+
     var allTransforms = [];
     var newT;
 
@@ -616,6 +630,8 @@ function transformInsideText(textBB, pt, cd0) {
         // this inscribes the text rectangle in a circle, which is then inscribed
         // in the slice, so it will be an underestimate, which some day we may want
         // to improve so this case can get more use
+        var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+
         newT = {
             scale: rInscribed * r * 2 / textDiameter,
 
@@ -669,6 +685,8 @@ function isCrossing(pt, angle) {
 }
 
 function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
+    r = Math.max(0, r - 2 * TEXTPAD);
+
     // max size if text is rotated radially
     var a = textBB.width / textBB.height;
     var s = calcMaxHalfSize(a, halfAngle, r, ring);
@@ -680,6 +698,8 @@ function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
 }
 
 function calcTanTransform(textBB, r, ring, halfAngle, midAngle) {
+    r = Math.max(0, r - 2 * TEXTPAD);
+
     // max size if text is rotated tangentially
     var a = textBB.height / textBB.width;
     var s = calcMaxHalfSize(a, halfAngle, r, ring);
@@ -1133,11 +1153,7 @@ function computeTransform(
     transform,  // inout
     textBB      // in
 ) {
-    var rotate = transform.rotate;
-    var scale = transform.scale;
-    if(scale > 1) scale = 1;
-
-    var a = rotate * Math.PI / 180;
+    var a = transform.rotate * Math.PI / 180;
     var cosA = Math.cos(a);
     var sinA = Math.sin(a);
     var midX = (textBB.left + textBB.right) / 2;

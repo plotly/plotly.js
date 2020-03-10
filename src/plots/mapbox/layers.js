@@ -246,7 +246,8 @@ function convertOpts(opts) {
             break;
         case 'raster':
             Lib.extendFlat(paint, {
-                'raster-fade-duration': 0
+                'raster-fade-duration': 0,
+                'raster-opacity': opts.opacity
             });
             break;
     }

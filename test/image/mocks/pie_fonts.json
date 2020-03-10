@@ -9,6 +9,7 @@
         "inherit from<br><b>global...</b>",
         "font"
       ],
+      "textposition": ["outside", "inside"],
       "type": "pie",
       "domain": {
         "x": [0, 0.4],

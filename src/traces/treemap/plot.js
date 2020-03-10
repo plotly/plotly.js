@@ -627,5 +627,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             hasTransition: hasTransition,
             strTransform: strTransform
         });
+    } else {
+        selAncestors.remove();
     }
 }

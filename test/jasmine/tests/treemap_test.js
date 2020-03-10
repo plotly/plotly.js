@@ -17,6 +17,7 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
+var SLICES_SELECTOR = '.treemaplayer path.surface';
 var SLICES_TEXT_SELECTOR = '.treemaplayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
@@ -1885,6 +1886,54 @@ describe('treemap uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('treemap pathbar react', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should show and hide pathbar', function(done) {
+        var fig = {
+            data: [{
+                type: 'treemap',
+                parents: ['', 'A', 'B', 'C'],
+                labels: ['A', 'B', 'C', 'D'],
+                level: 'C'
+            }],
+            layout: {}
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var selection = d3.selectAll(SLICES_SELECTOR);
+                var size = selection.size();
+
+                expect(size).toBe(exp, msg);
+            };
+        }
+
+        Plotly.plot(gd, fig)
+        .then(_assert('default pathbar.visible: true', 4))
+        .then(function() {
+            fig.data[0].pathbar = {visible: false};
+            return Plotly.react(gd, fig);
+        })
+        .then(_assert('disable pathbar', 2))
+        .then(function() {
+            fig.data[0].pathbar = {visible: true};
+            return Plotly.react(gd, fig);
+        })
+        .then(_assert('enable pathbar', 4))
         .catch(failTest)
         .then(done);
     });

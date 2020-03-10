@@ -6,7 +6,7 @@ var glob = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
 var eslint = require('eslint');
-var trueCasePath = require('true-case-path');
+var trueCasePath = require('true-case-path').trueCasePathSync;
 
 var common = require('./util/common');
 var isJasmineTestIt = common.isJasmineTestIt;
