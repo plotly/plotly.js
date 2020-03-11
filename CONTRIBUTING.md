@@ -243,22 +243,24 @@ All traces modules set:
 
 - `_module.name`: name of the trace module as used by the trace `type` attribute.
 - `_module.basePlotModule`: base plot (or subplot) module corresponding to the
-  trace type (e.g. `scatter` links up the `Cartesian` base plot module, `scatter3d` links up `gl3d`).
+  trace type (e.g. `scatter` links to the `Cartesian` base plot module, `scatter3d` links to `gl3d`).
 - `_module.attributes`: JSON-serializable object of attribute declarations.
   This object is used to generate the plot-schema JSON.
 - `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
   under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
-  Note that the `suppyDefaults` method performance should scale with the number of attributes (**not** the
-  number of data points).
+  Note that the `supplyDefaults` method performance should scale with the number of attributes (**not** the
+  number of data points - so it should not loop over any data arrays).
 - `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
   the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
   scale with the number of data points and is in general more costly than `supplyDefaults`.
-  Please note that some edit pathways skip `Plots.doCalcdata`.
+  Please note that some edit pathways skip `Plots.doCalcdata` (as determined by the
+  `editType` flags in the attributes files).
 - `_module.plot`: Draws the trace on screen. This one is called by the defined `basePlotModule`.
 
 Other methods used by some trace modules:
 
-- `_module.categories`: list of string identifiers used to group traces by behavior
+- `_module.categories`: list of string identifiers used to group traces by behavior. Traces that
+   have a given category can then be detected using [`Registry.traceIs`](https://github.com/plotly/plotly.js/blob/8f049fddbac0ca0382816984b8526857e9714fe6/src/registry.js#L129-L155)
 - `_module.layoutAttributes`: JSON-serializable object of attribute declarations
   coerced in the layout (e.g. `barmode` for `bar` traces)
 - `_module.supplyLayoutDefaults`: Defaults logic for layout attributes.
