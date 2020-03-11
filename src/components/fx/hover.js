@@ -931,6 +931,9 @@ function createHoverText(hoverData, opts, gd) {
         // similarly to compare mode, we remove the "close but not quite together" points
         if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
+        // Return early if nothing is hovered on
+        if(hoverData.length === 0) return;
+
         // mock legend
         var mockLayoutIn = {
             showlegend: true,
@@ -978,9 +981,6 @@ function createHoverText(hoverData, opts, gd) {
             legendOpts.entries.push([pt]);
         }
         legendOpts.layer = container;
-
-        // Return early if nothing is hovered on
-        if(legendOpts.entries.length === 0) return;
 
         // Draw unified hover label
         legendDraw(gd, legendOpts);
