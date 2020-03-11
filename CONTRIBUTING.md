@@ -220,13 +220,12 @@ This will produce the following plot, and say you want to simulate a selection p
 
 - Distributed files are in `dist/`
 - CommonJS require-able modules are in `lib/`
-- Sources files are in `src/`, including the index
+- Sources files are in `src/`
 - Build and repo management scripts are in `tasks/`
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are `test/`, they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
-
+- Built files are in `build/` (the files in here are git-ignored, except for `plotcss.js`)
 
 ## Coding style
 
