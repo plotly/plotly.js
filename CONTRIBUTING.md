@@ -227,6 +227,55 @@ This will produce the following plot, and say you want to simulate a selection p
 - Test dashboard and image viewer code is in `devtools/`
 - Built files are in `build/` (the files in here are git-ignored, except for `plotcss.js`)
 
+## Trace module design
+
+The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
+are defined as plain objects with functions and constants attached to them in an index file
+(e.g. `src/traces/scatter/index.js`). The trace modules are "registered" undo the `Registry` object
+(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
+`Plotly.register` (as done in the index files in `dist/`).
+
+The trace module methods are meant to be called as part of loops during subplot-specific
+(e.g. in `plots/cartesian/index.js`) and figure-wide (e.g. in `plots/plots.js`) subroutines.
+That way, the subroutines work no matter which trace modules got registered.
+
+All traces modules defined:
+
+- `_module.name`: name of the trace module as used by the trace `type` attribute.
+- `_module.basePlotModule`: base plot (or subplot) module corresponding to the
+  trace type (e.g. `scatter` links up the `Cartesian` base plot module, `scatter3d` links up `gl3d`).
+- `_module.attributes`: JSON-serializable object of attribute declarations.
+  This object is used to generate the plot-schema JSON.
+- `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
+  under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
+  Note that the `suppyDefaults` method performance should scale with the number of attribute **not** the
+  number of data points.
+- `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
+  the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
+  scale with the number of data points and is in general more costly than `supplyDefaults`.
+  Please note that some edit pathways skip `Plots.doCalcdata`.
+- `_module.plot`: Draws the trace on screen. This one is called by the defined `basePlotModule`.
+
+Other methods used by some trace modules:
+
+- `_module.categories`: list of string identifies used to grouped traces by behavior
+- `_module.layoutAttributes`: JSON-serializable object of attribute declarations
+  in the layout (e.g. `barmode` for `bar` traces)
+- `_module.supplyLayoutDefaults`: Default logic for layout attributes.
+- `_module.crossTraceDefaults`: Default logic that depends on input setting of multiple traces.
+- `_module.crossTraceCalc`: Computations that depend on the data of multiple traces.
+- `_module.colorbar`: Defines the colorbar appearance when the trace supports it.
+- `_module.hoverPoints`: Point-picking logic called during hover.
+- `_module.selectPoints`: Polygon-containing logic called during selections.
+- `_module.style`: Sometimes split from `_module.plot` where `_module.plot` only
+  draws the elements and `_module.style` styles them.
+- `_module.styleOnSelect`: Optimization of `_module.style` called during
+  selections.
+- `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
+  plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
+  `mapbox-gl` from `mapbox` traces. This split can also make the logic easier to
+  test.
+
 ## Coding style
 
 Check if ok, with `npm run lint`
