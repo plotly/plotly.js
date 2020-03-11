@@ -4858,6 +4858,48 @@ describe('Test axes', function() {
                 .catch(failTest)
                 .then(done);
             });
+
+            it('should increase dtick when too many (auto) ticks fall into breaks', function(done) {
+                var fig = Lib.extendDeep({}, require('@mocks/axes_breaks-finance.json'));
+                // break over weekend
+                fig.layout.xaxis.breaks[0].enabled = false;
+                // break on a single holiday
+                fig.layout.xaxis.breaks[1].enabled = false;
+
+                Plotly.plot(gd, fig)
+                .then(function() {
+                    _assert('base', {
+                        tickVals: [1483833600000, 1485043200000, 1486252800000]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks[0].enabled = true;
+                    gd.layout.xaxis.breaks[1].enabled = true;
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('with breaks enabled on x-axis', {
+                        tickVals: [
+                            1483531200000, 1484136000000, 1484740800000, 1485345600000,
+                            1485950400000, 1486555200000, 1487160000000
+                        ]
+                    });
+                })
+                .then(function() {
+                    // a Saturday
+                    gd.layout.xaxis.tick0 = '2017-01-02';
+                    // one week
+                    gd.layout.xaxis.dtick = 7 + 24 * 60 * 60 * 1000;
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('honor set tick0/dtick even though they result in few visible ticks', {
+                        tickVals: [1483488000014]
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 });
