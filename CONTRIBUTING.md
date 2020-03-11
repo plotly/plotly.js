@@ -97,6 +97,13 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
+#### Alternative to test dashboard
+
+Use the [`plotly-mock-viewer`](https://github.com/rreusser/plotly-mock-viewer)
+which has live-reloading and a bunch of other cool features.
+An online version of `plotly-mock-viewer` is available at https://rreusser.github.io/plotly-mock-viewer/
+which uses the https://cdn.plot.ly/plotly-latest.min.js
+
 #### Other npm scripts
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
