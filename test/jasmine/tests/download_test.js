@@ -53,6 +53,12 @@ describe('Plotly.downloadImage', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
+        downloadTest(gd, 'full-json')
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
             if(supported) {
                 downloadTest(gd, 'webp')
@@ -203,7 +209,7 @@ function downloadTest(gd, format) {
         var linkdeleted = domchanges[domchanges.length - 1].removedNodes[0];
 
         expect(linkadded.getAttribute('href').split(':')[0]).toBe('blob');
-        expect(filename).toBe('plotly_download.' + format);
+        expect(filename).toBe('plotly_download.' + format.replace('-', '.'));
         expect(linkadded).toBe(linkdeleted);
     });
 }
