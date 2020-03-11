@@ -404,6 +404,33 @@ describe('spikeline hover', function() {
         .then(done);
     });
 
+    it('correctly responds to setting the spikedistance to -1 by increasing ' +
+        'the range of search for points to draw the spikelines to Infinity in a bar trace', function(done) {
+        var _mock = {
+            data: [{type: 'bar', y: [5, 6, 8, 10]}],
+            layout: {xaxis: {showspikes: true}}
+        };
+
+        Plotly.plot(gd, _mock).then(function() {
+            _hover({xval: 0, yval: 2});
+            _assert(
+                [[147.5, 370, 147.5, 241.75]],
+                []
+            );
+
+            _setSpikedistance(-1);
+        })
+        .then(function() {
+            _hover({xval: 0, yval: 2});
+            _assert(
+                [[147.5, 370, 147.5, 241.75]],
+                []
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('correctly responds to setting the spikedistance to 0 by disabling ' +
         'the search for points to draw the spikelines', function(done) {
         var _mock = makeMock('toaxis', 'closest');
