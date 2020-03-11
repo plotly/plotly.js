@@ -102,7 +102,7 @@ image mocks based on their file name and trace type.
 Use the [`plotly-mock-viewer`](https://github.com/rreusser/plotly-mock-viewer)
 which has live-reloading and a bunch of other cool features.
 An online version of `plotly-mock-viewer` is available at https://rreusser.github.io/plotly-mock-viewer/
-which uses the https://cdn.plot.ly/plotly-latest.min.js
+which uses https://cdn.plot.ly/plotly-latest.min.js
 
 #### Other npm scripts
 
@@ -239,7 +239,7 @@ The trace module methods are meant to be called as part of loops during subplot-
 (e.g. in `plots/cartesian/index.js`) and figure-wide (e.g. in `plots/plots.js`) subroutines.
 That way, the subroutines work no matter which trace modules got registered.
 
-All traces modules defined:
+All traces modules set:
 
 - `_module.name`: name of the trace module as used by the trace `type` attribute.
 - `_module.basePlotModule`: base plot (or subplot) module corresponding to the
@@ -248,8 +248,8 @@ All traces modules defined:
   This object is used to generate the plot-schema JSON.
 - `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
   under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
-  Note that the `suppyDefaults` method performance should scale with the number of attribute **not** the
-  number of data points.
+  Note that the `suppyDefaults` method performance should scale with the number of attributes (**not** the
+  number of data points).
 - `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
   the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
   scale with the number of data points and is in general more costly than `supplyDefaults`.
@@ -258,13 +258,13 @@ All traces modules defined:
 
 Other methods used by some trace modules:
 
-- `_module.categories`: list of string identifies used to grouped traces by behavior
+- `_module.categories`: list of string identifiers used to group traces by behavior
 - `_module.layoutAttributes`: JSON-serializable object of attribute declarations
-  in the layout (e.g. `barmode` for `bar` traces)
-- `_module.supplyLayoutDefaults`: Default logic for layout attributes.
-- `_module.crossTraceDefaults`: Default logic that depends on input setting of multiple traces.
+  coerced in the layout (e.g. `barmode` for `bar` traces)
+- `_module.supplyLayoutDefaults`: Defaults logic for layout attributes.
+- `_module.crossTraceDefaults`: Defaults logic that depends on input setting of multiple traces.
 - `_module.crossTraceCalc`: Computations that depend on the data of multiple traces.
-- `_module.colorbar`: Defines the colorbar appearance when the trace supports it.
+- `_module.colorbar`: Defines the colorbar appearance for traces that support it.
 - `_module.hoverPoints`: Point-picking logic called during hover.
 - `_module.selectPoints`: Polygon-containing logic called during selections.
 - `_module.style`: Sometimes split from `_module.plot` where `_module.plot` only
@@ -273,8 +273,7 @@ Other methods used by some trace modules:
   selections.
 - `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
   plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
-  `mapbox-gl` from `mapbox` traces. This split can also make the logic easier to
-  test.
+  `mapbox-gl` from `mapbox` traces. This split can make the logic easier to test.
 
 ## Coding style
 
