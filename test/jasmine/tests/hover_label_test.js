@@ -3699,6 +3699,8 @@ describe('hovermode: (x|y)unified', function() {
         var hoverLayer = d3.select('g.hoverlayer');
         var hover = hoverLayer.select('g.legend');
         var traces = hover.selectAll('g.traces');
+        expect(traces.size()).toBe(exp.length);
+
         traces.each(function(d, i) {
             var pts = d3.select(this).selectAll('g.legendpoints path');
             pts.each(function() {
@@ -3918,6 +3920,31 @@ describe('hovermode: (x|y)unified', function() {
                 _hover(gd, {xval: 4});
                 // assertLabel({title: 'E', items: ['asdf', 'asdf']});
                 // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style waterfall symbols correctly', function(done) {
+        var mock = require('@mocks/waterfall_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '0px', '']
+                ]);
+                return Plotly.restyle(gd, {
+                    'decreasing.marker.line.width': 5,
+                    'decreasing.marker.line.color': 'violet'
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '5px', 'rgb(238, 130, 238)']
+                ]);
             })
             .catch(failTest)
             .then(done);
