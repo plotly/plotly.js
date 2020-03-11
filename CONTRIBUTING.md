@@ -183,7 +183,18 @@ which shows the baseline image, the generated image, the diff and the json mocks
 
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
 
-### Writing interaction tests
+### Using the developer console in karma to write/debug jasmine tests
+
+- Click on the `DEBUG` button
+- In the `DEBUG RUNNER` window, open the console (e.g. with `<ctrl-shift-j>`)
+- Find test file (e.g. with `<ctrl-o>` + typing the name of the file), look out
+  for "bundled" files with the same name.
+- Set `debugger` on relevant line(s)
+- Rerun the test suite by refreshing the page (e.g. with `<crtl-r>`)
+
+![Peek 2020-03-11 10-45](https://user-images.githubusercontent.com/6675409/76438118-f2502300-6390-11ea-88d2-17a553c3b4e8.gif)
+
+### Writing jasmine interaction tests
 
 Keep in mind that the interaction coordinates are relative to the top-left corner of the plot, including the margins. To produce a reliable interaction test, 
 it may be necessary to fix the width, height, margins, X axis range and Y axis range of the plot. For example:
@@ -204,7 +215,6 @@ Plotly.newPlot(gd, [{
 This will produce the following plot, and say you want to simulate a selection path of (175, 175) to (225, 225):
 
 <img src="https://user-images.githubusercontent.com/31989842/38890553-0bc6190c-4282-11e8-8efc-077bf05ca565.png">
-
 
 ## Repo organization
 
