@@ -3839,13 +3839,13 @@ describe('hovermode: (x|y)unified', function() {
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
-                _hover(gd, {xpx: 400, ypx: 400});
+                _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 09:51:36', items: [
-                    'Outdoor (wun... : 63',
-                    '1st Floor (N... : (Apr 13, 2014, 09:51:34, 69.5)',
-                    '2nd Floor (R... : (Apr 13, 2014, 09:51:33, 69.125)',
-                    'Attic (Ardui... : (Apr 13, 2014, 09:51:37, 68.68)'
+                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                    'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
+                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
+                    '2nd Floor (R... : 73.625',
+                    'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })
             .catch(failTest)
