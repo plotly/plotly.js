@@ -980,6 +980,7 @@ function createHoverText(hoverData, opts, gd) {
 
             legendOpts.entries.push([pt]);
         }
+        legendOpts.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
         legendOpts.layer = container;
 
         // Draw unified hover label

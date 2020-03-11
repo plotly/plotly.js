@@ -3779,11 +3779,11 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '3', items: [
                     'trace 0 : 2',
-                    'trace 3 : 2',
                     'trace 1 : median: 1',
-                    'trace 4 : 1',
+                    'trace 3 : 2',
                     'trace 2 : 2',
-                    'trace 5 : 2'
+                    'trace 5 : 2',
+                    'trace 4 : 1'
                 ]});
             })
             .catch(failTest)
@@ -3812,7 +3812,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
-    it('should order items in the same way as the legend', function(done) {
+    it('should have the same traceorder as the legend', function(done) {
         var mock = require('@mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
@@ -3828,6 +3828,25 @@ describe('hovermode: (x|y)unified', function() {
                 _hover(gd, { xval: 3 });
 
                 assertLabel({title: '3', items: expectation.reverse()});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should order items based on trace index as in the legend', function(done) {
+        var mock = require('@mocks/29.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xpx: 400, ypx: 400});
+
+                assertLabel({title: 'Apr 13, 2014, 09:51:36', items: [
+                    'Outdoor (wun... : 63',
+                    '1st Floor (N... : (Apr 13, 2014, 09:51:34, 69.5)',
+                    '2nd Floor (R... : (Apr 13, 2014, 09:51:33, 69.125)',
+                    'Attic (Ardui... : (Apr 13, 2014, 09:51:37, 68.68)'
+                ]});
             })
             .catch(failTest)
             .then(done);
