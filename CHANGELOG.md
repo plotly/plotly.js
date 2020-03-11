@@ -10,6 +10,21 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.52.3] -- 2020-03-02
+
+## Fixed
+- Make identical bundles on different nodes [#4601]
+- Fix (regression introduced in 1.52.1) and improve interactive display of narrow points of `bar`-like traces [#4568]
+- Ensure text fits inside `sunburst` sectors with zero values [#4580]
+- Reset `splom` selectBatch and unselectBatch on updates [#4595]
+- Retry different mobile/tablet config to render gl3d subplots on various devices & browsers e.g. Brave [#4549]
+- Bump `is-mobile` to handle iPad Pro & iPad 7th + iOs v13 + Safari [#4548]
+- Fix `orthographic` hover after scroll zoom [#4562]
+- Preserve gl3d `scene aspectratio` after `orthographic` scroll zoom [#4578]
+- Include gl3d `scene.aspectmode` changes in relayout updates [#4579]
+- Apply utf-8 charset in test_dashboard [#4554]
+
+
 ## [1.52.2] -- 2020-02-03
 
 ## Fixed

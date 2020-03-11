@@ -19,18 +19,18 @@ Lasso Select                                           // components/modebar/but
 Orbital rotation                                       // components/modebar/buttons.js:286
 Pan                                                    // components/modebar/buttons.js:112
 Produced with Plotly                                   // components/modebar/modebar.js:304
-Reset                                                  // components/modebar/buttons.js:448
+Reset                                                  // components/modebar/buttons.js:450
 Reset axes                                             // components/modebar/buttons.js:166
 Reset camera to default                                // components/modebar/buttons.js:324
 Reset camera to last save                              // components/modebar/buttons.js:332
-Reset view                                             // components/modebar/buttons.js:529
-Reset views                                            // components/modebar/buttons.js:567
+Reset view                                             // components/modebar/buttons.js:531
+Reset views                                            // components/modebar/buttons.js:569
 Show closest data on hover                             // components/modebar/buttons.js:175
 Snapshot succeeded                                     // components/modebar/buttons.js:75
 Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:78
 Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:60
-Toggle Spike Lines                                     // components/modebar/buttons.js:586
-Toggle show closest data on hover                      // components/modebar/buttons.js:376
+Toggle Spike Lines                                     // components/modebar/buttons.js:588
+Toggle show closest data on hover                      // components/modebar/buttons.js:378
 Turntable rotation                                     // components/modebar/buttons.js:295
 Zoom                                                   // components/modebar/buttons.js:103
 Zoom in                                                // components/modebar/buttons.js:139

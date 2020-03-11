@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.52.2
+* plotly.js (mapbox) v1.52.3
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29925,6 +29925,7 @@ function handleCamera3d(gd, ev) {
         var sceneId = sceneIds[i];
         var camera = sceneId + '.camera';
         var aspectratio = sceneId + '.aspectratio';
+        var aspectmode = sceneId + '.aspectmode';
         var scene = fullLayout[sceneId]._scene;
         var didUpdate;
 
@@ -29944,6 +29945,7 @@ function handleCamera3d(gd, ev) {
             aobj[aspectratio + '.x'] = scene.viewInitial.aspectratio.x;
             aobj[aspectratio + '.y'] = scene.viewInitial.aspectratio.y;
             aobj[aspectratio + '.z'] = scene.viewInitial.aspectratio.z;
+            aobj[aspectmode] = scene.viewInitial.aspectmode;
         }
     }
 
@@ -36691,7 +36693,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.52.2';
+exports.version = '1.52.3';
 
 // inject promise polyfill
 _dereq_('es6-promise').polyfill();
