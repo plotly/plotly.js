@@ -2057,23 +2057,23 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         }
         if(Lib.isPlainObject(d)) {
             var o = {};
-            var v, src;
-            for(v in d) {
+            var src;
+            Object.keys(d).sort().forEach(function(v) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
-                if(['_', '['].indexOf(v.charAt(0)) !== -1) continue;
+                if(['_', '['].indexOf(v.charAt(0)) !== -1) return;
 
                 // if a function, add if necessary then move on
                 if(typeof d[v] === 'function') {
                     if(keepFunction) o[v] = '_function';
-                    continue;
+                    return;
                 }
 
                 // look for src/data matches and remove the appropriate one
                 if(mode === 'keepdata') {
                     // keepdata: remove all ...src tags
                     if(v.substr(v.length - 3) === 'src') {
-                        continue;
+                        return;
                     }
                 } else if(mode === 'keepstream') {
                     // keep sourced data if it's being streamed.
@@ -2082,7 +2082,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                     src = d[v + 'src'];
                     if(typeof src === 'string' && src.indexOf(':') > 0) {
                         if(!Lib.isPlainObject(d.stream)) {
-                            continue;
+                            return;
                         }
                     }
                 } else if(mode !== 'keepall') {
@@ -2090,13 +2090,13 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                     // if the source tag is well-formed
                     src = d[v + 'src'];
                     if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        continue;
+                        return;
                     }
                 }
 
                 // OK, we're including this... recurse into it
                 o[v] = stripObj(d[v], keepFunction);
-            }
+            });
             return o;
         }
 
