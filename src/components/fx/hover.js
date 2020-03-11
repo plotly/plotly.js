@@ -971,6 +971,7 @@ function createHoverText(hoverData, opts, gd) {
                 if(cd.mlcc) pt.mlc = cd.mlcc;
                 if(cd.mlw) pt.mlw = cd.mlw;
                 if(cd.mrc) pt.mrc = cd.mrc;
+                if(cd.dir) pt.dir = cd.dir;
             }
             pt._distinct = true;
 

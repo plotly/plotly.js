@@ -291,6 +291,14 @@ module.exports = function style(s, gd, legend) {
     function styleWaterfalls(d) {
         var trace = d[0].trace;
 
+        if(d[0]._distinct && d[0].trace[d[0].dir]) {
+            var cont = d[0].trace[d[0].dir].marker;
+            d[0].mc = cont.color;
+            d[0].mlw = cont.line.width;
+            d[0].mlc = cont.line.color;
+            return styleBarLike(d, this, 'waterfall');
+        }
+
         var ptsData = [];
         if(trace.visible && trace.type === 'waterfall') {
             ptsData = d[0].hasTotals ?
