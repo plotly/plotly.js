@@ -3666,8 +3666,8 @@ describe('hovermode: (x|y)unified', function() {
         Lib.clearThrottle();
     }
 
-    function assertElementCount(className, size) {
-        var g = d3.selectAll('g.' + className);
+    function assertElementCount(selector, size) {
+        var g = d3.selectAll(selector);
         expect(g.size()).toBe(size);
     }
 
@@ -3788,6 +3788,28 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
+    it('shares filtering logic with compare mode x', function(done) {
+        var mock = require('@mocks/27.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: '2002' });
+                assertElementCount('g.hovertext', 2);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function() {
+                _hover(gd, { xval: '2002' });
+                assertLabel({title: '2002.042', items: [
+                    'Market income : 0.5537845',
+                    'Market incom... : 0.4420997'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
     it('should order items in the same way as the legend', function(done) {
         var mock = require('@mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
@@ -3821,6 +3843,21 @@ describe('hovermode: (x|y)unified', function() {
                     'ohlc : open: 12high: 17low: 9close: 13  ▲',
                     'candlestick : open: 22high: 27low: 19close: 23  ▲'
                 ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work for "legend_horizontal_autowrap"', function(done) {
+        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+
+                assertElementCount('g.hoverlayer g.legend', 1);
+                assertElementCount('g.hoverlayer g.traces', 20);
             })
             .catch(failTest)
             .then(done);
@@ -3934,16 +3971,16 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertElementCount('hovertext', 2);
-                assertElementCount('legend', 0);
+                assertElementCount('g.hovertext', 2);
+                assertElementCount('g.legend', 0);
 
                 return Plotly.relayout(gd, 'hovermode', 'x unified');
             })
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertElementCount('hovertext', 0);
-                assertElementCount('legend', 1);
+                assertElementCount('g.hovertext', 0);
+                assertElementCount('g.legend', 1);
             })
             .catch(failTest)
             .then(done);

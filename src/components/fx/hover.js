@@ -929,7 +929,7 @@ function createHoverText(hoverData, opts, gd) {
         container.selectAll('g.hovertext').remove();
 
         // similarly to compare mode, we remove the "close but not quite together" points
-        hoverData = filterClosePoints(hoverData);
+        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
         // mock legend
         var mockLayoutIn = {
