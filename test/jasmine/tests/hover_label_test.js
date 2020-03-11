@@ -3788,6 +3788,27 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
+    it('should order items in the same way as the legend', function(done) {
+        var mock = require('@mocks/stacked_area.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        var expectation = ['top : 1', 'middle : 6', 'bottom : 0'];
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation});
+                return Plotly.relayout(gd, 'legend.traceorder', 'normal');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation.reverse()});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
     it('should work for finance traces', function(done) {
         var mockOhlc = require('@mocks/finance_multicategory.json');
         var mockCopy = Lib.extendDeep({}, mockOhlc);

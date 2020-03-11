@@ -940,6 +940,7 @@ function createHoverText(hoverData, opts, gd) {
                 bgcolor: fullLayout.paper_bgcolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
+                traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
                 orientation: 'v'
             }
         };
