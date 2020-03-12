@@ -276,6 +276,7 @@ Other methods used by some trace modules:
 - `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
   plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
   `mapbox-gl` from `mapbox` traces. This split can make the logic easier to test.
+  If you make a `convert`, you should call it from either `calc` or `plot`.
 
 ## Coding style
 
