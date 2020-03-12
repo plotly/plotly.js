@@ -1018,6 +1018,37 @@ proto.updateFx = function(dragmode, hovermode) {
     scene.fullSceneLayout.hovermode = hovermode;
 };
 
+function flipPixels(pixels, w, h) {
+    for(var i = 0, q = h - 1; i < q; ++i, --q) {
+        for(var j = 0; j < w; ++j) {
+            for(var k = 0; k < 4; ++k) {
+                var a = 4 * (w * i + j) + k;
+                var b = 4 * (w * q + j) + k;
+                var tmp = pixels[a];
+                pixels[a] = pixels[b];
+                pixels[b] = tmp;
+            }
+        }
+    }
+}
+
+function correctRGB(pixels, w, h) {
+    for(var i = 0; i < h; ++i) {
+        for(var j = 0; j < w; ++j) {
+            var k = 4 * (w * i + j);
+
+            var a = pixels[k + 3]; // alpha
+            if(a > 0) {
+                var q = 255 / a;
+
+                for(var l = 0; l < 3; ++l) { // RGB
+                    pixels[k + l] = Math.min(q * pixels[k + l], 255);
+                }
+            }
+        }
+    }
+}
+
 proto.toImage = function(format) {
     var scene = this;
 
@@ -1036,17 +1067,8 @@ proto.toImage = function(format) {
 
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-    // Flip pixels
-    for(var j = 0, k = h - 1; j < k; ++j, --k) {
-        for(var i = 0; i < w; ++i) {
-            for(var l = 0; l < 4; ++l) {
-                var tmp = pixels[4 * (w * j + i) + l];
-                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
-                pixels[4 * (w * k + i) + l] = tmp;
-            }
-        }
-    }
+    flipPixels(pixels, w, h);
+    correctRGB(pixels, w, h);
 
     var canvas = document.createElement('canvas');
     canvas.width = w;

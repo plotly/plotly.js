@@ -2037,9 +2037,10 @@ plots.didMarginChange = function(margin0, margin1) {
  *      keepall: keep data and src
  * @param {String} output If you specify 'object', the result will not be stringified
  * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+ * @param {Boolean} includeConfig If truthy, include _context
  * @returns {Object|String}
  */
-plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
+plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfig) {
     // if the defaults aren't supplied yet, we need to do that...
     if((useDefaults && dataonly && !gd._fullData) ||
             (useDefaults && !dataonly && !gd._fullLayout)) {
@@ -2050,26 +2051,29 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     var layout = (useDefaults) ? gd._fullLayout : gd.layout;
     var frames = (gd._transitionData || {})._frames;
 
-    function stripObj(d) {
+    function stripObj(d, keepFunction) {
         if(typeof d === 'function') {
-            return null;
+            return keepFunction ? '_function_' : null;
         }
         if(Lib.isPlainObject(d)) {
             var o = {};
-            var v, src;
-            for(v in d) {
+            var src;
+            Object.keys(d).sort().forEach(function(v) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
-                if(typeof d[v] === 'function' ||
-                        ['_', '['].indexOf(v.charAt(0)) !== -1) {
-                    continue;
+                if(['_', '['].indexOf(v.charAt(0)) !== -1) return;
+
+                // if a function, add if necessary then move on
+                if(typeof d[v] === 'function') {
+                    if(keepFunction) o[v] = '_function';
+                    return;
                 }
 
                 // look for src/data matches and remove the appropriate one
                 if(mode === 'keepdata') {
                     // keepdata: remove all ...src tags
                     if(v.substr(v.length - 3) === 'src') {
-                        continue;
+                        return;
                     }
                 } else if(mode === 'keepstream') {
                     // keep sourced data if it's being streamed.
@@ -2078,7 +2082,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
                     src = d[v + 'src'];
                     if(typeof src === 'string' && src.indexOf(':') > 0) {
                         if(!Lib.isPlainObject(d.stream)) {
-                            continue;
+                            return;
                         }
                     }
                 } else if(mode !== 'keepall') {
@@ -2086,18 +2090,18 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
                     // if the source tag is well-formed
                     src = d[v + 'src'];
                     if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        continue;
+                        return;
                     }
                 }
 
                 // OK, we're including this... recurse into it
-                o[v] = stripObj(d[v]);
-            }
+                o[v] = stripObj(d[v], keepFunction);
+            });
             return o;
         }
 
         if(Array.isArray(d)) {
-            return d.map(stripObj);
+            return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
         if(Lib.isTypedArray(d)) {
@@ -2125,6 +2129,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
+
+    if(includeConfig) obj.config = stripObj(gd._context, true);
 
     return (output === 'object') ? obj : JSON.stringify(obj);
 };

@@ -2010,7 +2010,7 @@ describe('pie uniformtext', function() {
         Plotly.plot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 0.58],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
         .then(function() {
             fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
@@ -2018,7 +2018,7 @@ describe('pie uniformtext', function() {
         })
         .then(assertTextSizes('using mode: "hide"', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+            scales: [0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
@@ -2058,7 +2058,7 @@ describe('pie uniformtext', function() {
         })
         .then(assertTextSizes('clear uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 0.58],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
         .catch(failTest)
         .then(done);

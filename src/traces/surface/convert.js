@@ -532,6 +532,7 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
+        opacityscale: data.opacityscale,
         opacity: data.opacity
     };
 

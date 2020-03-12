@@ -2876,7 +2876,7 @@ describe('bar tweening', function() {
             data: [{
                 type: 'bar',
                 x: ['A', 'B', 'C'],
-                y: [null, 5, 3],
+                y: [null, 5, 3, 4],
                 marker: {
                     line: {
                         width: 10
@@ -2926,6 +2926,87 @@ describe('bar tweening', function() {
             [600, '.point path', 'attr', 'd', ['M0,116V84H228V116Z', 'M0,76V44H0V76Z', 'M0,36V4H91V36Z']]
         ];
         var animateOpts = {data: [{x: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('handle NaN positions on vertical bars', function(done) {
+        var y1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        var y2 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var mockCopy = {
+            data: [
+                {
+                    type: 'bar',
+                    x: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9
+                    ],
+                    y: y1
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M2,120V109H22V120Z', 'M26,120V97H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V6H238V120Z']],
+            [300, '.point path', 'attr', 'd', ['M2,120V47H22V120Z', 'M26,120V49H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V68H238V120Z']],
+            [600, '.point path', 'attr', 'd', ['M2,120V6H22V120Z', 'M26,120V17H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V109H238V120Z']]
+        ];
+        var animateOpts = {data: [{y: y2}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('handle NaN positions on horizontal bars', function(done) {
+        var x1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        var x2 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var mockCopy = {
+            data: [
+                {
+                    type: 'bar',
+                    orientation: 'h',
+                    y: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9
+                    ],
+                    x: x1
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,119V109H23V119Z', 'M0,107V97H46V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H228V11Z']],
+            [300, '.point path', 'attr', 'd', ['M0,119V109H146V119Z', 'M0,107V97H141V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H105V11Z']],
+            [600, '.point path', 'attr', 'd', ['M0,119V109H228V119Z', 'M0,107V97H205V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H23V11Z']]
+        ];
+        var animateOpts = {data: [{x: x2}]};
 
         checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
           .catch(failTest)

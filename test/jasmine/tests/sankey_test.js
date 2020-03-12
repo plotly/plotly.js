@@ -816,6 +816,10 @@ describe('sankey tests', function() {
         it('should show the correct hover labels when hovertemplate is specified', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].node.customdata = [];
+            mockCopy.data[0].node.customdata[4] = ['nodeCustomdata0', 'nodeCustomdata1'];
+            mockCopy.data[0].link.customdata = [];
+            mockCopy.data[0].link.customdata[61] = ['linkCustomdata0', 'linkCustomdata1'];
 
             Plotly.plot(gd, mockCopy).then(function() {
                 _hover(404, 302);
@@ -836,15 +840,15 @@ describe('sankey tests', function() {
             // Test (node|link).hovertemplate
             .then(function() {
                 return Plotly.restyle(gd, {
-                    'node.hovertemplate': 'hovertemplate<br>%{value}<br>%{value:0.2f}<extra>%{fullData.name}</extra>',
-                    'link.hovertemplate': 'hovertemplate<br>source: %{source.label}<br>target: %{target.label}<br>size: %{value:0.0f}TWh<extra>%{fullData.name}</extra>'
+                    'node.hovertemplate': 'hovertemplate<br>%{value}<br>%{value:0.2f}<br>%{customdata[0]}/%{customdata[1]}<extra>%{fullData.name}</extra>',
+                    'link.hovertemplate': 'hovertemplate<br>source: %{source.label}<br>target: %{target.label}<br>size: %{value:0.0f}TWh<br>%{customdata[1]}<extra>%{fullData.name}</extra>'
                 });
             })
             .then(function() {
                 _hover(404, 302);
 
                 assertLabel(
-                    [ 'hovertemplate', '447TWh', '447.48', 'trace 0'],
+                    [ 'hovertemplate', '447TWh', '447.48', 'nodeCustomdata0/nodeCustomdata1', 'trace 0'],
                     ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
             })
@@ -852,7 +856,7 @@ describe('sankey tests', function() {
                 _hover(450, 300);
 
                 assertLabel(
-                    ['hovertemplate', 'source: Solid', 'target: Industry', 'size: 46TWh', 'trace 0'],
+                    ['hovertemplate', 'source: Solid', 'target: Industry', 'size: 46TWh', 'linkCustomdata1', 'trace 0'],
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
             })
