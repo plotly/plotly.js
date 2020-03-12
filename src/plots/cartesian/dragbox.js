@@ -1014,9 +1014,15 @@ function dragAxList(axList, pix) {
         var axi = axList[i];
         if(!axi.fixedrange) {
             if(axi.breaks) {
+                var p0 = 0;
+                var p1 = axi._length;
+                var d0 = axi.p2l(p0 + pix) - axi.p2l(p0);
+                var d1 = axi.p2l(p1 + pix) - axi.p2l(p1);
+                var delta = (d0 + d1) / 2;
+
                 axi.range = [
-                    axi.l2r(axi._rl[0] - (axi.p2l(pix) - axi.p2l(0))),
-                    axi.l2r(axi._rl[1] - (axi.p2l(axi._length + pix) - axi.p2l(axi._length)))
+                    axi.l2r(axi._rl[0] - delta),
+                    axi.l2r(axi._rl[1] - delta)
                 ];
             } else {
                 axi.range = [
