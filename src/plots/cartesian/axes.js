@@ -526,7 +526,9 @@ axes.prepTicks = function(ax) {
         // have explicit tickvals without tick text
         if(ax.tickmode === 'array') nt *= 100;
 
-        axes.autoTicks(ax, (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt);
+
+        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt;
+        axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -620,7 +622,8 @@ axes.calcTicks = function calcTicks(ax) {
         // increase dtick to generate more ticks,
         // so that some hopefully fall between breaks
         if(ax.tickmode === 'auto' && tickVals.length < nTicksBefore / 6) {
-            ax.dtick /= 2;
+            axes.autoTicks(ax, ax._roughDTick / 3);
+            autoTickRound(ax);
             ax._tmin = axes.tickFirst(ax);
             generateTicks();
             tickVals = tickVals.filter(function(d) {
