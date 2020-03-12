@@ -2029,6 +2029,140 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('with axis breaks', function() {
+        it('should compute correct range updates - x-axis case', function(done) {
+            function _assert(msg, xrng) {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(xrng, 2, 'xrng - ' + msg);
+            }
+
+            Plotly.plot(gd, [{
+                mode: 'lines',
+                x: [
+                    '1970-01-01 00:00:00.000',
+                    '1970-01-01 00:00:00.010',
+                    '1970-01-01 00:00:00.050',
+                    '1970-01-01 00:00:00.090',
+                    '1970-01-01 00:00:00.100',
+                    '1970-01-01 00:00:00.150',
+                    '1970-01-01 00:00:00.190',
+                    '1970-01-01 00:00:00.200'
+                ]
+            }], {
+                xaxis: {
+                    breaks: [
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
+                    ]
+                },
+                dragmode: 'zoom'
+            })
+            .then(function() {
+                _assert('base', [
+                    '1970-01-01',
+                    '1970-01-01 00:00:00.2'
+                ]);
+            })
+            .then(doDrag('xy', 'nsew', 50, 0))
+            // x range would be ~ [100, 118] w/o breaks
+            .then(function() {
+                _assert('after x-only zoombox', [
+                    '1970-01-01 00:00:00.095',
+                    '1970-01-01 00:00:00.0981'
+                ]);
+            })
+            .then(doDblClick('xy', 'nsew'))
+            .then(function() {
+                _assert('back to base', [
+                    '1970-01-01',
+                    '1970-01-01 00:00:00.2'
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+            .then(doDrag('xy', 'nsew', 50, 0))
+            // x range would be ~ [-18, 181] w/o breaks
+            .then(function() {
+                _assert('after x-only pan', [
+                    '1969-12-31 23:59:59.9969',
+                    '1970-01-01 00:00:00.1969'
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should compute correct range updates - y-axis case', function(done) {
+            function _assert(msg, yrng) {
+                expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
+            }
+
+            Plotly.plot(gd, [{
+                mode: 'lines',
+                y: [
+                    '1970-01-01 00:00:00.000',
+                    '1970-01-01 00:00:00.010',
+                    '1970-01-01 00:00:00.050',
+                    '1970-01-01 00:00:00.090',
+                    '1970-01-01 00:00:00.100',
+                    '1970-01-01 00:00:00.150',
+                    '1970-01-01 00:00:00.190',
+                    '1970-01-01 00:00:00.200'
+                ]
+            }], {
+                yaxis: {
+                    breaks: [
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
+                    ]
+                },
+                dragmode: 'zoom'
+            })
+            .then(function() {
+                _assert('base', [
+                    '1969-12-31 23:59:59.9981',
+                    '1970-01-01 00:00:00.2019'
+                ]);
+            })
+            .then(doDrag('xy', 'nsew', 0, 50))
+            // y range would be ~ [62, 100] w/o breaks
+            .then(function() {
+                _assert('after y-only zoombox', [
+                    '1970-01-01 00:00:00.01',
+                    '1970-01-01 00:00:00.095'
+                ]);
+            })
+            .then(doDblClick('xy', 'nsew'))
+            .then(function() {
+                _assert('back to base', [
+                    '1969-12-31 23:59:59.9981',
+                    '1970-01-01 00:00:00.2019'
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+            .then(doDrag('xy', 'nsew', 0, 50))
+            // y range would be ~ [35, 239] w/o breaks
+            .then(function() {
+                _assert('after y-only pan', [
+                    '1970-01-01 00:00:00.0051',
+                    '1970-01-01 00:00:00.2089'
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('Event data:', function() {
