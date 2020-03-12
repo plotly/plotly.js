@@ -4901,6 +4901,38 @@ describe('Test axes', function() {
                 .then(done);
             });
         });
+
+        it('should set visible:false in scattergl traces on axis with breaks', function(done) {
+            var gd = createGraphDiv();
+
+            spyOn(Lib, 'warn');
+
+            Plotly.plot(gd, [{
+                type: 'scattergl',
+                x: [
+                    '2020-01-02 08:00', '2020-01-02 17:00',
+                    '2020-01-03 08:00', '2020-01-03 17:00',
+                    '2020-01-04 08:00', '2020-01-04 17:00',
+                    '2020-01-05 08:00', '2020-01-05 17:00',
+                    '2020-01-06 08:00', '2020-01-06 17:00',
+                    '2020-01-07 08:00', '2020-01-07 17:00'
+                ]
+            }], {
+                xaxis: {
+                    breaks: [{pattern: '%H', bounds: [17, 8]}]
+                }
+            })
+            .then(function() {
+                expect(gd._fullData[0].visible).toBe(false, 'sets visible:false');
+                expect(Lib.warn).toHaveBeenCalledTimes(1);
+                expect(Lib.warn).toHaveBeenCalledWith('scattergl traces do not work on axes with breaks. Setting trace 0 to `visible: false`.');
+            })
+            .catch(failTest)
+            .then(function() {
+                destroyGraphDiv();
+                done();
+            });
+        });
     });
 });
 
