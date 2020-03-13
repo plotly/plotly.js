@@ -189,67 +189,58 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     if(ax.breaks) {
-        if(axLetter === 'y') {
-            l2p = function(v) {
-                if(!isNumeric(v)) return BADNUM;
-                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+        l2p = function(v) {
+            if(!isNumeric(v)) return BADNUM;
+            var len = ax._breaks.length;
+            if(!len) return _l2p(v, ax._m, ax._b);
 
-                var b = ax._B[0];
-                for(var i = 0; i < ax._breaks.length; i++) {
-                    var brk = ax._breaks[i];
-                    if(v <= brk.min) b = ax._B[i + 1];
-                    else if(v > brk.min && v < brk.max) {
-                        // when v falls into break, pick offset 'closest' to it
-                        if(v - brk.min <= brk.max - v) b = ax._B[i + 1];
-                        else b = ax._B[i];
-                        break;
-                    } else if(v > brk.max) break;
-                }
-                return _l2p(v, -ax._m2, b);
-            };
-            p2l = function(px) {
-                if(!isNumeric(px)) return BADNUM;
-                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+            var isY = axLetter === 'y';
+            var pos = isY ? -v : v;
 
-                var b = ax._B[0];
-                for(var i = 0; i < ax._breaks.length; i++) {
-                    var brk = ax._breaks[i];
-                    if(px >= brk.pmin) b = ax._B[i + 1];
-                    else if(px < brk.pmax) break;
-                }
-                return _p2l(px, -ax._m2, b);
-            };
-        } else {
-            l2p = function(v) {
-                if(!isNumeric(v)) return BADNUM;
-                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                var nextI = i + 1;
+                var brk = ax._breaks[i];
 
-                var b = ax._B[0];
-                for(var i = 0; i < ax._breaks.length; i++) {
-                    var brk = ax._breaks[i];
-                    if(v >= brk.max) b = ax._B[i + 1];
-                    else if(v > brk.min && v < brk.max) {
-                        // when v falls into break, pick offset 'closest' to it
-                        if(v - brk.min <= brk.max - v) b = ax._B[i];
-                        else b = ax._B[i + 1];
-                        break;
-                    } else if(v < brk.min) break;
-                }
-                return _l2p(v, ax._m2, b);
-            };
-            p2l = function(px) {
-                if(!isNumeric(px)) return BADNUM;
-                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+                var min = isY ? -brk.max : brk.min;
+                var max = isY ? -brk.min : brk.max;
 
-                var b = ax._B[0];
-                for(var i = 0; i < ax._breaks.length; i++) {
-                    var brk = ax._breaks[i];
-                    if(px >= brk.pmax) b = ax._B[i + 1];
-                    else if(px < brk.pmin) break;
+                if(pos < min) break;
+                if(pos > max) q = nextI;
+                else {
+                    // when falls into break, pick 'closest' offset
+                    q = pos > (min + max) / 2 ? nextI : i;
+                    break;
                 }
-                return _p2l(px, ax._m2, b);
-            };
-        }
+            }
+            return _l2p(v, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+        };
+
+        p2l = function(px) {
+            if(!isNumeric(px)) return BADNUM;
+            var len = ax._breaks.length;
+            if(!len) return _p2l(px, ax._m, ax._b);
+
+            var isY = axLetter === 'y';
+            var pos = isY ? -px : px;
+
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                var nextI = i + 1;
+                var brk = ax._breaks[i];
+
+                var min = isY ? -brk.pmax : brk.pmin;
+                var max = isY ? -brk.pmin : brk.pmax;
+
+                if(pos < min) break;
+                if(pos > max) q = nextI;
+                else {
+                    q = i;
+                    break;
+                }
+            }
+            return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+        };
     }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
@@ -561,7 +552,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         // set of "N" disjoint breaks inside the range
         ax._breaks = [];
-        // length of these breaks in value space
+        // length of these breaks in value space - negative on reversed axes
         ax._lBreaks = 0;
         // l2p slope (same for all intervals)
         ax._m2 = 0;
@@ -575,12 +566,13 @@ module.exports = function setConvert(ax, fullLayout) {
                 Math.min(rl0, rl1),
                 Math.max(rl0, rl1)
             );
-            var signAx = rl0 > rl1 ? -1 : 1;
+            var axReverse = rl0 > rl1;
+            var signAx = axReverse ? -1 : 1;
 
             if(ax._breaks.length) {
                 for(i = 0; i < ax._breaks.length; i++) {
                     brk = ax._breaks[i];
-                    ax._lBreaks += (brk.max - brk.min);
+                    ax._lBreaks += brk.max - brk.min;
                 }
 
                 ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
@@ -597,8 +589,7 @@ module.exports = function setConvert(ax, fullLayout) {
                     brk = ax._breaks[i];
                     ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
                 }
-
-                if(signAx === -1) {
+                if(axReverse) {
                     ax._B.reverse();
                 }
 
@@ -606,8 +597,8 @@ module.exports = function setConvert(ax, fullLayout) {
                 // to not have to loop through the _breaks twice during `p2l`
                 for(i = 0; i < ax._breaks.length; i++) {
                     brk = ax._breaks[i];
-                    brk.pmin = l2p(brk.min);
-                    brk.pmax = l2p(brk.max);
+                    brk.pmin = l2p(axReverse ? brk.max : brk.min);
+                    brk.pmax = l2p(axReverse ? brk.min : brk.max);
                 }
             }
         }
