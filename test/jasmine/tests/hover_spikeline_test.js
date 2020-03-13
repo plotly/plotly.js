@@ -404,6 +404,29 @@ describe('spikeline hover', function() {
         .then(done);
     });
 
+    it('correctly select the closest bar even when setting spikedistance to -1', function(done) {
+        var mock = require('@mocks/bar_stack-with-gaps');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.xaxis.showspikes = true;
+        mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.spikedistance = -1;
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function() {
+            _hover({xpx: 600, ypx: 400});
+            var lines = d3.selectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+
+            _hover({xpx: 600, ypx: 200});
+            lines = d3.selectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('correctly responds to setting the spikedistance to 0 by disabling ' +
         'the search for points to draw the spikelines', function(done) {
         var _mock = makeMock('toaxis', 'closest');
