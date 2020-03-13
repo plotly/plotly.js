@@ -54,7 +54,7 @@ exports.p2c = function p2c(axArray, v) {
 
 exports.getDistanceFunction = function getDistanceFunction(mode, dx, dy, dxy) {
     if(mode === 'closest') return dxy || exports.quadrature(dx, dy);
-    return mode === 'x' ? dx : dy;
+    return mode.charAt(0) === 'x' ? dx : dy;
 };
 
 exports.getClosest = function getClosest(cd, distfn, pointData) {

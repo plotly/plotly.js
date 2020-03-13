@@ -351,8 +351,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.4',
                         'y: 100μ',
-                        'z: −8',
-                        'value: −1.31'
+                        'z: −16',
+                        'value: −1.32'
                     ].join('\n')
                 });
             })
@@ -361,10 +361,10 @@ describe('Test volume', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.4',
+                        'x: 0.3',
                         'y: 0.001',
                         'z: −16',
-                        'value: −0.32'
+                        'value: −0.27'
                     ].join('\n')
                 });
             })
@@ -375,8 +375,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.3',
                         'y: 100μ',
-                        'z: −8',
-                        'value: −1.19'
+                        'z: −16',
+                        'value: −1.2'
                     ].join('\n')
                 });
             })
@@ -386,9 +386,9 @@ describe('Test volume', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −2',
-                        'value: −1.26'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3'
                     ].join('\n')
                 });
             })
@@ -403,10 +403,10 @@ describe('Test volume', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −2',
-                        'value: −1.26',
-                        '!! -1.26 !!'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3',
+                        '!! -1.3 !!'
                     ].join('\n')
                 });
             })

@@ -2025,6 +2025,90 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    function getArea(path) {
+        var pos = path
+            .substr(1, path.length - 2)
+            .replace('V', ',')
+            .replace('H', ',')
+            .replace('V', ',')
+            .split(',');
+        var dx = +pos[0];
+        var dy = +pos[1];
+        dy -= +pos[2];
+        dx -= +pos[3];
+
+        return Math.abs(dx * dy);
+    }
+
+    it('should not show up null and zero bars as thin bars', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            var nodes = gd.querySelectorAll('g.point > path');
+            expect(nodes.length).toBe(16, '# of bars');
+
+            [
+                [0, false],
+                [1, false],
+                [2, true],
+                [3, true],
+                [4, false],
+                [5, false],
+                [6, true],
+                [7, true],
+                [8, false],
+                [9, false],
+                [10, true],
+                [11, true],
+                [12, false],
+                [13, false],
+                [14, true],
+                [15, true]
+            ].forEach(function(e) {
+                var i = e[0];
+                var d = nodes[i].getAttribute('d');
+                var visible = e[1];
+                expect(getArea(d) > 0).toBe(visible, 'item:' + i);
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    describe('show narrow bars', function() {
+        ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
+            it(zoomStr, function(done) {
+                var mock = Lib.extendDeep({}, require('@mocks/bar_show_narrow.json'));
+
+                if(zoomStr === 'after zoom out') {
+                    mock.layout.xaxis.range = [-14.9, 17.9];
+                    mock.layout.xaxis2.range = [17.9, -14.9];
+                    mock.layout.xaxis3.range = [-3.9, 4.9];
+                    mock.layout.xaxis4.range = [4.9, -3.9];
+
+                    mock.layout.yaxis.range = [-3.9, 4.9];
+                    mock.layout.yaxis2.range = [4.9, -3.9];
+                    mock.layout.yaxis3.range = [-14.9, 17.9];
+                    mock.layout.yaxis4.range = [17.9, -14.9];
+                }
+
+                Plotly.plot(gd, mock)
+                .then(function() {
+                    var nodes = gd.querySelectorAll('g.point > path');
+                    expect(nodes.length).toBe(16, '# of bars');
+
+                    for(var i = 0; i < 16; i++) {
+                        var d = nodes[i].getAttribute('d');
+                        expect(getArea(d) > 0).toBe(true, 'item:' + i);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
 });
 
 describe('bar visibility toggling:', function() {
@@ -2785,6 +2869,148 @@ describe('bar tweening', function() {
         checkTransition(gd, _mock, nextFrame, transitionOpts, tests)
             .catch(failTest)
             .then(done);
+    });
+
+    it('blank vertical bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                x: ['A', 'B', 'C'],
+                y: [null, 5, 3, 4],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M8,120V120H72V120Z', 'M88,120V6H152V120Z', 'M168,120V52H232V120Z']],
+            [300, '.point path', 'attr', 'd', ['M8,120V52H72V120Z', 'M88,120V74H152V120Z', 'M168,120V65H232V120Z']],
+            [600, '.point path', 'attr', 'd', ['M8,120V6H72V120Z', 'M88,120V120H152V120Z', 'M168,120V74H232V120Z']]
+        ];
+        var animateOpts = {data: [{y: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('blank horizontal bars', function(done) {
+        var mockCopy = {
+            data: [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['A', 'B', 'C'],
+                x: [null, 5, 3],
+                marker: {
+                    line: {
+                        width: 10
+                    }
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,116V84H0V116Z', 'M0,76V44H228V76Z', 'M0,36V4H137V36Z']],
+            [300, '.point path', 'attr', 'd', ['M0,116V84H137V116Z', 'M0,76V44H91V76Z', 'M0,36V4H109V36Z']],
+            [600, '.point path', 'attr', 'd', ['M0,116V84H228V116Z', 'M0,76V44H0V76Z', 'M0,36V4H91V36Z']]
+        ];
+        var animateOpts = {data: [{x: [5, null, 2]}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('handle NaN positions on vertical bars', function(done) {
+        var y1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        var y2 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var mockCopy = {
+            data: [
+                {
+                    type: 'bar',
+                    x: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9
+                    ],
+                    y: y1
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M2,120V109H22V120Z', 'M26,120V97H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V6H238V120Z']],
+            [300, '.point path', 'attr', 'd', ['M2,120V47H22V120Z', 'M26,120V49H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V68H238V120Z']],
+            [600, '.point path', 'attr', 'd', ['M2,120V6H22V120Z', 'M26,120V17H46V120Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M218,120V109H238V120Z']]
+        ];
+        var animateOpts = {data: [{y: y2}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('handle NaN positions on horizontal bars', function(done) {
+        var x1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        var x2 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var mockCopy = {
+            data: [
+                {
+                    type: 'bar',
+                    orientation: 'h',
+                    y: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9
+                    ],
+                    x: x1
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var tests = [
+            [0, '.point path', 'attr', 'd', ['M0,119V109H23V119Z', 'M0,107V97H46V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H228V11Z']],
+            [300, '.point path', 'attr', 'd', ['M0,119V109H146V119Z', 'M0,107V97H141V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H105V11Z']],
+            [600, '.point path', 'attr', 'd', ['M0,119V109H228V119Z', 'M0,107V97H205V107Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,11V1H23V11Z']]
+        ];
+        var animateOpts = {data: [{x: x2}]};
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, tests)
+          .catch(failTest)
+          .then(done);
     });
 });
 

@@ -13,6 +13,9 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var mock = require('@mocks/gl3d_marker-arrays.json');
+var mesh3dcoloringMock = require('@mocks/gl3d_mesh3d_coloring.json');
+var mesh3dcellIntensityMock = require('@mocks/gl3d_mesh3d_cell-intensity.json');
+var mesh3dbunnyMock = require('@mocks/gl3d_bunny_cell-area.json');
 var multipleScatter3dMock = require('@mocks/gl3d_multiple-scatter3d-traces.json');
 
 // lines, markers, text, error bars and surfaces each
@@ -466,7 +469,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_click)
         .then(delay(20))
         .then(function() {
-            assertEventData(134.03, -163.59, -163.59, 0, 3);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
         .then(done);
     });
@@ -501,21 +504,21 @@ describe('Test gl3d trace click/hover:', function() {
         .then(_hover)
         .then(delay(20))
         .then(function() {
-            assertHoverText('x: 4', 'y: 5', 'z: 3.5', 'ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'x+y');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('(4, 5)');
+            assertHoverText('(3, 4)');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hoverinfo', 'text');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText('ts: 4\nhz: 5\nftt:3.5');
+            assertHoverText('ts: 3\nhz: 4\nftt:5');
         })
         .then(function() {
             return Plotly.restyle(gd, 'text', 'yo!');
@@ -531,14 +534,372 @@ describe('Test gl3d trace click/hover:', function() {
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, 'ts: 4\nhz: 5\nftt:3.5 !!');
+            assertHoverText(null, null, null, 'ts: 3\nhz: 4\nftt:5 !!');
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{x}-%{y}-%{z}<extra></extra>');
         })
         .then(delay(20))
         .then(function() {
-            assertHoverText(null, null, null, '4-5-3.5');
+            assertHoverText(null, null, null, '3-4-5');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face colors', function(done) {
+        var fig = mesh3dcoloringMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 200, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.6666667',
+                'y: 0.3333333',
+                'z: 1',
+                'face color: #00F',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 0.3333333',
+                'z: 0.6666667',
+                'face color: #0FF',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 0.6666667',
+                'z: 0.3333333',
+                'face color: #0FF',
+                'face color'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 200, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.6666667',
+                'y: 0',
+                'z: 0.3333333',
+                'face color: #F00',
+                'face color'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities (uniform grid)', function(done) {
+        var fig = mesh3dcellIntensityMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 200, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.4666667',
+                'y: 0.4333333',
+                'z: 0.01583333',
+                'cell intensity: 0.16',
+                'trace 0'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 200, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.7666667',
+                'y: 0.1333333',
+                'z: −0.3305',
+                'cell intensity: 3.04',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+        var fig = mesh3dbunnyMock;
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: −0.02154988',
+                'y: −0.1181136',
+                'z: 0.9471037',
+                'cell intensity: 8',
+                'trace 0'
+            );
+        })
+        .then(function() { mouseEvent('mouseover', 400, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: −0.3543044',
+                'y: 0.4389607',
+                'z: 0.6468034',
+                'cell intensity: 8',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
+        var fig = {
+            data: [{
+                type: 'mesh3d',
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}',
+                intensitymode: 'cell',
+                intensity: [1, 2, 3, 4, 5, 6],
+                x: [0, 0.5, 1, 1, 1, 0.5, 0, 0],
+                y: [0, 0, 0, 0.5, 1, 1, 1, 0.5],
+                z: [0, 0, 0, 0, 0, 0, 0, 0],
+                alphahull: true
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 0.5,
+                            y: 0.5,
+                            z: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 450, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.1666667',
+                'y: 0.8333333',
+                'z: 0',
+                'cell intensity: 5',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should display correct face intensities *delaunay* case', function(done) {
+        var fig = {
+            data: [{
+                type: 'mesh3d',
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}',
+                intensitymode: 'cell',
+                intensity: [1, 2, 3, 4, 5, 6],
+                x: [0, 0.5, 1, 1, 1, 0.5, 0, 0],
+                y: [0, 0, 0, 0.5, 1, 1, 1, 0.5],
+                z: [0, 0, 0, 0, 0, 0, 0, 0],
+                delaunayaxis: 'z'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        eye: {
+                            x: 0.5,
+                            y: 0.5,
+                            z: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 450, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0.1666667',
+                'y: 0.8333333',
+                'z: 0',
+                'cell intensity: 5',
+                'trace 0'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    function scroll(target, amt) {
+        return new Promise(function(resolve) {
+            target.dispatchEvent(new WheelEvent('wheel', {deltaY: amt || 1, cancelable: true}));
+            setTimeout(resolve, 0);
+        });
+    }
+
+    var _scroll = function() {
+        var sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
+        return scroll(sceneTarget, -1);
+    };
+
+    it('@gl should pick correct points after orthographic scroll zoom - mesh3d case', function(done) {
+        var fig = {
+            data: [{
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                vertexcolor: ['#000', '#00F', '#0F0', '#0FF', '#F00', '#F0F', '#FF0', '#FFF'],
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>vertex color: %{vertexcolor}',
+                flatshading: true,
+                type: 'mesh3d',
+                name: 'vertex color'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: { type: 'orthographic' },
+                        eye: { x: 1, y: 1, z: 1 }
+                    }
+                }
+            },
+            config: {
+                scrollZoom: 'gl3d'
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'vertex color: #FFF',
+                'vertex color'
+            );
+        })
+        .then(_scroll)
+        .then(_scroll)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 100); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 1',
+                'vertex color: #F00',
+                'vertex color'
+            );
+        })
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'vertex color: #0FF',
+                'vertex color'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should pick correct points after orthographic scroll zoom - scatter3d case', function(done) {
+        var fig = {
+            data: [{
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                marker: { color: ['#000', '#00F', '#0F0', '#0FF', '#F00', '#F0F', '#FF0', '#FFF'] },
+                hovertemplate: 'x: %{x}<br>y: %{y}<br>z: %{z}<br>marker color: %{marker.color}',
+                type: 'scatter3d',
+                mode: 'marker',
+                name: 'marker color'
+            }],
+            layout: {
+                width: 600,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: { type: 'orthographic' },
+                        eye: { x: 1, y: 1, z: 1 }
+                    }
+                }
+            },
+            config: {
+                scrollZoom: 'gl3d'
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 1',
+                'marker color: #FFF',
+                'marker color'
+            );
+        })
+        .then(_scroll)
+        .then(_scroll)
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 100); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 0',
+                'y: 0',
+                'z: 1',
+                'marker color: #F00',
+                'marker color'
+            );
+        })
+        .then(delay(20))
+        .then(function() { mouseEvent('mouseover', 300, 300); })
+        .then(delay(20))
+        .then(function() {
+            assertHoverText(
+                'x: 1',
+                'y: 1',
+                'z: 0',
+                'marker color: #0FF',
+                'marker color'
+            );
         })
         .catch(failTest)
         .then(done);

@@ -2020,6 +2020,7 @@
             "lighting": {
                 "facenormalsepsilon": 0
             },
+            "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}",
             "type": "mesh3d"
         }
     ],

@@ -10,6 +10,42 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.52.3] -- 2020-03-02
+
+## Fixed
+- Make identical bundles on different nodes [#4601]
+- Fix (regression introduced in 1.52.1) and improve interactive display of narrow points of `bar`-like traces [#4568]
+- Ensure text fits inside `sunburst` sectors with zero values [#4580]
+- Reset `splom` selectBatch and unselectBatch on updates [#4595]
+- Retry different mobile/tablet config to render gl3d subplots on various devices & browsers e.g. Brave [#4549]
+- Bump `is-mobile` to handle iPad Pro & iPad 7th + iOs v13 + Safari [#4548]
+- Fix `orthographic` hover after scroll zoom [#4562]
+- Preserve gl3d `scene aspectratio` after `orthographic` scroll zoom [#4578]
+- Include gl3d `scene.aspectmode` changes in relayout updates [#4579]
+- Apply utf-8 charset in test_dashboard [#4554]
+
+
+## [1.52.2] -- 2020-02-03
+
+## Fixed
+- Handle 'missing' matching axes [#4529]
+- Fix hover for `mesh3d`, `isosurface` and `volume`
+  when using `plotGlPixelRatio > 1` (bug introduced in 1.45.0) [#4534]
+- Fix hover of `mesh3d` traces with `facecolor` and `intensitymode: 'cell'` [#4539]
+- Fix gl3d rendering on iPad Pro & iPad 7th + iOs v13 + Safari [#4360, #4546]
+- Fix pixel-rounding logic for blank bars [#4522]
+- Fix `pathbar.visible` updates in `treemap` traces [#4516]
+- Fix `waterfall` `'closest'` hover when cursor is below the size axis [#4537]
+- Fix mapbox layout layer opacity for raster types [#4525]
+- Allow `0` in `grouby` transform `nameformat` templates [#4526]
+- Fix `Plotly.validate` for `valType:'any'` attributes [#4526]
+- Bump `d3-interpolate` to v1.4.0 [#4475]
+- Bump `d3-hierarchy` to v1.1.9 [#4475]
+- Fix typo in annotation `align` attribute description [#4528]
+- Fix `plot_bgcolor` and `paper_bgcolor` attribute description [#4536]
+- Fix `insidetextorientation` description for pie and sunburst traces [#4523]
+
+
 ## [1.52.1] -- 2020-01-13
 
 ### Fixed

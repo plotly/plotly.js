@@ -1975,7 +1975,7 @@ describe('sunburst inside text orientation', function() {
             return Plotly.react(gd, fig);
         })
         .then(assertTextRotations('using "tangential"', {
-            rotations: [0, 0, -42, -78]
+            rotations: [0, 30, -42, -78]
         }))
         .then(function() {
             fig.data[0].insidetextorientation = 'auto';
@@ -2060,7 +2060,7 @@ describe('sunburst uniformtext', function() {
         Plotly.plot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
         .then(function() {
             fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
@@ -2068,7 +2068,7 @@ describe('sunburst uniformtext', function() {
         })
         .then(assertTextSizes('using mode: "hide"', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+            scales: [0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52],
         }))
         .then(function() {
             fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
@@ -2108,7 +2108,7 @@ describe('sunburst uniformtext', function() {
         })
         .then(assertTextSizes('clear uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.58],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
         .catch(failTest)
         .then(done);

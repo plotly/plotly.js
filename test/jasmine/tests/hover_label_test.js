@@ -2682,6 +2682,165 @@ describe('Hover on multicategory axes', function() {
     });
 });
 
+describe('Hover on axes with breaks', function() {
+    var gd;
+    var eventData;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    function _assert(msg, exp) {
+        assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
+        expect(eventData.x).toBe(exp.x, 'event data x');
+        expect(eventData.y).toBe(exp.y, 'event data y');
+    }
+
+    it('should work when breaks are present on x-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            xaxis: {
+                breaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(11, 11); })
+        .then(function() {
+            _assert('leftmost interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: '1970-01-01',
+                y: 0
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: '1970-01-01 00:00:00.095',
+                y: 4
+            });
+        })
+        .then(function() { _hover(388, 388); })
+        .then(function() {
+            _assert('rightmost interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: '1970-01-01 00:00:00.2',
+                y: 8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when breaks are present on y-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            yaxis: {
+                breaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'y'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(388, 30); })
+        .then(function() {
+            _assert('topmost interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: 8,
+                y: '1970-01-01 00:00:00.2'
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: 4,
+                y: '1970-01-01 00:00:00.095'
+            });
+        })
+        .then(function() { _hover(11, 370); })
+        .then(function() {
+            _assert('bottom interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: 0,
+                y: '1970-01-01'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('hover updates', function() {
     'use strict';
 
@@ -3641,6 +3800,392 @@ describe('dragmode: false', function() {
             .then(delay(HOVERMINTIME * 1.1))
             .then(function() {
                 expect(hoverHandler).toHaveBeenCalled();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
+
+describe('hovermode: (x|y)unified', function() {
+    var gd;
+    var mock = {
+        'data': [
+          {'y': [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
+          {'y': [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
+        ], 'layout': {'showlegend': false, 'hovermode': 'x unified'}};
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        Lib.clearThrottle();
+    }
+
+    function assertElementCount(selector, size) {
+        var g = d3.selectAll(selector);
+        expect(g.size()).toBe(size);
+    }
+
+    function assertLabel(expectation) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var title = hover.select('text.legendtitletext');
+        var traces = hover.selectAll('g.traces');
+
+        if(expectation.title) {
+            expect(title.text()).toBe(expectation.title);
+        }
+
+        expect(traces.size()).toBe(expectation.items.length, 'has the incorrect number of items');
+        traces.each(function(_, i) {
+            var e = d3.select(this);
+            expect(e.select('text').text()).toBe(expectation.items[i]);
+        });
+    }
+
+    function assertBgcolor(color) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var bg = hover.select('rect.bg');
+        expect(bg.node().style.fill).toBe(color);
+    }
+
+    function assertSymbol(exp) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var traces = hover.selectAll('g.traces');
+        expect(traces.size()).toBe(exp.length);
+
+        traces.each(function(d, i) {
+            var pts = d3.select(this).selectAll('g.legendpoints path');
+            pts.each(function() {
+                var node = d3.select(this).node();
+                expect(node.style.fill).toBe(exp[i][0], 'wrong fill for point ' + i);
+                expect(node.style.strokeWidth).toBe(exp[i][1], 'wrong stroke-width for point ' + i);
+                expect(node.style.stroke).toBe(exp[i][2], 'wrong stroke for point ' + i);
+            });
+        });
+    }
+
+    it('set smart defaults for spikeline in x unified', function(done) {
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
+            .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('x unified');
+                var ax = gd._fullLayout.xaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('red');
+                expect(gd._fullLayout.yaxis.showspike).toBeFalse;
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('set smart defaults for spikeline in y unified', function(done) {
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'y unified', 'yaxis': {'color': 'red'}})
+            .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('y unified');
+                var ax = gd._fullLayout.yaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('red');
+                expect(gd._fullLayout.yaxis.showspike).toBeFalse;
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('x unified should work for x/y cartesian traces', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: ['trace 0 : 4', 'trace 1 : 8']});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('y unified should work for x/y cartesian traces', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'y unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { yval: 6 });
+
+                assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('x unified should work for x/y cartesian traces with legendgroup', function(done) {
+        var mockLegendGroup = require('@mocks/legendgroup.json');
+        var mockCopy = Lib.extendDeep({}, mockLegendGroup);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    'trace 0 : 2',
+                    'trace 1 : median: 1',
+                    'trace 3 : 2',
+                    'trace 2 : 2',
+                    'trace 5 : 2',
+                    'trace 4 : 1'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('shares filtering logic with compare mode x', function(done) {
+        var mock = require('@mocks/27.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: '2002' });
+                assertElementCount('g.hovertext', 2);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function() {
+                _hover(gd, { xval: '2002' });
+                assertLabel({title: '2002.042', items: [
+                    'Market income : 0.5537845',
+                    'Market incom... : 0.4420997'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should have the same traceorder as the legend', function(done) {
+        var mock = require('@mocks/stacked_area.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        var expectation = ['top : 1', 'middle : 6', 'bottom : 0'];
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation});
+                return Plotly.relayout(gd, 'legend.traceorder', 'normal');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation.reverse()});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should order items based on trace index as in the legend', function(done) {
+        var mock = require('@mocks/29.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {curveNumber: 0});
+
+                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                    'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
+                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
+                    '2nd Floor (R... : 73.625',
+                    'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work for finance traces', function(done) {
+        var mockOhlc = require('@mocks/finance_multicategory.json');
+        var mockCopy = Lib.extendDeep({}, mockOhlc);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {curveNumber: 0, pointNumber: 0});
+
+                assertLabel({title: 'Group 2 - b', items: [
+                    'ohlc : open: 12high: 17low: 9close: 13  ▲',
+                    'candlestick : open: 22high: 27low: 19close: 23  ▲'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work for "legend_horizontal_autowrap"', function(done) {
+        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+
+                assertElementCount('g.hoverlayer g.legend', 1);
+                assertElementCount('g.hoverlayer g.traces', 20);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style scatter symbols accordingly', function(done) {
+        var mock = require('@mocks/marker_colorscale_template.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                assertLabel({title: '1', items: ['2']});
+                assertSymbol([['rgb(33, 145, 140)', '0px', '']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 2});
+                assertLabel({title: '2', items: ['3']});
+                assertSymbol([['rgb(253, 231, 37)', '0px', '']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style bar symbols accordingly', function(done) {
+        var mock = require('@mocks/bar-marker-line-colorscales.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 10});
+                assertLabel({title: '10', items: ['10']});
+                assertSymbol([['rgb(94, 216, 43)', '4px', 'rgb(197, 232, 190)']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 20});
+                assertLabel({title: '20', items: ['20']});
+                assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style funnel symbols accordingly', function(done) {
+        var mock = require('@mocks/funnel_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                // assertLabel({title: 'B', items: ['asdf', 'asdf']});
+                assertSymbol([
+                  ['rgb(0, 255, 0)', '0px', ''],
+                  ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
+                ]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 4});
+                // assertLabel({title: 'E', items: ['asdf', 'asdf']});
+                // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style waterfall symbols correctly', function(done) {
+        var mock = require('@mocks/waterfall_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '0px', '']
+                ]);
+                return Plotly.restyle(gd, {
+                    'decreasing.marker.line.width': 5,
+                    'decreasing.marker.line.color': 'violet'
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '5px', 'rgb(238, 130, 238)']
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('label should have color of paper_bgcolor', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        var bgcolor = 'rgb(15, 200, 85)';
+        mockCopy.layout.paper_bgcolor = bgcolor;
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor(bgcolor);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work with hovertemplate', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].hovertemplate = 'hovertemplate: %{y:0.2f}';
+        mockCopy.data[1].hovertemplate = '<extra>name</extra>%{x:0.2f} %{y:0.2f}';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    'trace 0 : hovertemplate: 4.00',
+                    'name : 3.00 8.00'
+                ]});
+
+                return Plotly.restyle(gd, 'hovertemplate', '<extra></extra>%{y:0.2f}');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    '4.00',
+                    '8.00'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('on relayout, it deletes existing hover', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertElementCount('g.hovertext', 2);
+                assertElementCount('g.legend', 0);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertElementCount('g.hovertext', 0);
+                assertElementCount('g.legend', 1);
             })
             .catch(failTest)
             .then(done);
