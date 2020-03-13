@@ -39,7 +39,6 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     var isClosest = (hovermode === 'closest');
     var isWaterfall = (trace.type === 'waterfall');
     var maxHoverDistance = pointData.maxHoverDistance;
-    var maxSpikeDistance = pointData.maxSpikeDistance;
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
@@ -161,7 +160,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal']);
 
     // spikelines always want "closest" distance regardless of hovermode
-    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 + maxSpikeDistance - maxHoverDistance;
+    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 - maxHoverDistance;
     // they also want to point to the data value, regardless of where the label goes
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);

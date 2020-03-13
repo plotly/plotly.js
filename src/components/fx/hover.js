@@ -543,7 +543,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var thisSpikeDistance;
         for(var i = 0; i < pointsData.length; i++) {
             thisSpikeDistance = pointsData[i].spikeDistance;
-            if(thisSpikeDistance < minDistance && thisSpikeDistance <= spikedistance) {
+            if(thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
                 resultPoint = pointsData[i];
                 minDistance = thisSpikeDistance;
             }
