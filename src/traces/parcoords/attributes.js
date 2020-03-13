@@ -141,18 +141,20 @@ module.exports = {
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     }),
 
-    bgline: {
-        color: {
-            valType: 'color',
-            dflt: '#777',
-            role: 'style',
-            editType: 'plot',
-            description: [
-                'Sets the color of lines in the background',
-                'i.e. unselected lines.'
-            ].join(' ')
+    unselected: {
+        line: {
+            color: {
+                valType: 'color',
+                dflt: '#777',
+                role: 'style',
+                editType: 'plot',
+                description: [
+                    'Sets the color of lines in the background',
+                    'i.e. unselected lines.'
+                ].join(' ')
+            },
+            editType: 'calc'
         },
-
         editType: 'calc'
     },
 
