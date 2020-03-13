@@ -438,12 +438,15 @@ exports.calcTextOpts = function(level, contourFormat, dummyText, gd) {
     var text = contourFormat(level);
     dummyText.text(text)
         .call(svgTextUtils.convertToTspans, gd);
-    var bBox = Drawing.bBox(dummyText.node(), true);
+
+    var el = dummyText.node();
+    var bBox = Drawing.bBox(el, true);
 
     return {
         text: text,
         width: bBox.width,
         height: bBox.height,
+        fontSize: +(el.style['font-size'].replace('px', '')),
         level: level,
         dy: (bBox.top + bBox.bottom) / 2
     };
@@ -543,8 +546,9 @@ function locationCost(loc, textOpts, labelData, bounds) {
 }
 
 exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
-    var w = textOpts.width + 4;
-    var h = Math.max(0, textOpts.height - 4);
+    var fontSize = textOpts.fontSize;
+    var w = textOpts.width + fontSize / 3;
+    var h = Math.max(0, textOpts.height - fontSize / 3);
 
     var x = loc.x;
     var y = loc.y;
