@@ -101,10 +101,11 @@ function getAutoRange(gd, ax) {
         if(ax.breaks) {
             var breaksOut = ax.locateBreaks(v0, v1);
             for(var i = 0; i < breaksOut.length; i++) {
-                lBreaks += (breaksOut[i].max - breaksOut[i].min);
+                var brk = breaksOut[i];
+                lBreaks += brk.max - brk.min;
             }
         }
-        return lBreaks;
+        return (axReverse ? -1 : 1) * lBreaks;
     };
 
     var mbest = 0;
