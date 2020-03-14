@@ -141,6 +141,23 @@ module.exports = {
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     }),
 
+    unselected: {
+        line: {
+            color: {
+                valType: 'color',
+                dflt: '#777',
+                role: 'style',
+                editType: 'plot',
+                description: [
+                    'Sets the color of lines in the background',
+                    'i.e. unselected lines.'
+                ].join(' ')
+            },
+            editType: 'plot'
+        },
+        editType: 'plot'
+    },
+
     line: extendFlat({editType: 'calc'},
         colorScaleAttrs('line', {
             // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
