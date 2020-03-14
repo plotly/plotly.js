@@ -153,9 +153,9 @@ module.exports = {
                     'i.e. unselected lines.'
                 ].join(' ')
             },
-            editType: 'calc'
+            editType: 'plot'
         },
-        editType: 'calc'
+        editType: 'plot'
     },
 
     line: extendFlat({editType: 'calc'},
