@@ -95,13 +95,13 @@ function getAutoRange(gd, ax) {
     // don't allow padding to reduce the data to < 10% of the length
     var minSpan = axLen / 10;
 
-    // find axis breaks in [v0,v1] and compute its length in value space
+    // find axis rangebreaks in [v0,v1] and compute its length in value space
     var calcBreaksLength = function(v0, v1) {
         var lBreaks = 0;
-        if(ax.breaks) {
-            var breaksOut = ax.locateBreaks(v0, v1);
-            for(var i = 0; i < breaksOut.length; i++) {
-                var brk = breaksOut[i];
+        if(ax.rangebreaks) {
+            var rangebreaksOut = ax.locateBreaks(v0, v1);
+            for(var i = 0; i < rangebreaksOut.length; i++) {
+                var brk = rangebreaksOut[i];
                 lBreaks += brk.max - brk.min;
             }
         }

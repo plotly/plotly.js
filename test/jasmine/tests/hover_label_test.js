@@ -2682,7 +2682,7 @@ describe('Hover on multicategory axes', function() {
     });
 });
 
-describe('Hover on axes with breaks', function() {
+describe('Hover on axes with rangebreaks', function() {
     var gd;
     var eventData;
 
@@ -2704,7 +2704,7 @@ describe('Hover on axes with breaks', function() {
         expect(eventData.y).toBe(exp.y, 'event data y');
     }
 
-    it('should work when breaks are present on x-axis', function(done) {
+    it('should work when rangebreaks are present on x-axis', function(done) {
         Plotly.plot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             x: [
@@ -2720,7 +2720,7 @@ describe('Hover on axes with breaks', function() {
             ]
         }], {
             xaxis: {
-                breaks: [
+                rangebreaks: [
                     {bounds: [
                         '1970-01-01 00:00:00.011',
                         '1970-01-01 00:00:00.089'
@@ -2772,7 +2772,7 @@ describe('Hover on axes with breaks', function() {
         .then(done);
     });
 
-    it('should work when breaks are present on y-axis', function(done) {
+    it('should work when rangebreaks are present on y-axis', function(done) {
         Plotly.plot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             y: [
@@ -2788,7 +2788,7 @@ describe('Hover on axes with breaks', function() {
             ]
         }], {
             yaxis: {
-                breaks: [
+                rangebreaks: [
                     {bounds: [
                         '1970-01-01 00:00:00.011',
                         '1970-01-01 00:00:00.089'

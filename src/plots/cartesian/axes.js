@@ -610,17 +610,17 @@ axes.calcTicks = function calcTicks(ax) {
 
     generateTicks();
 
-    if(ax.breaks) {
+    if(ax.rangebreaks) {
         var nTicksBefore = tickVals.length;
 
-        // remove ticks falling inside breaks
+        // remove ticks falling inside rangebreaks
         tickVals = tickVals.filter(function(d) {
             return ax.maskBreaks(d.value) !== BADNUM;
         });
 
-        // if 'numerous' ticks get placed into breaks,
+        // if 'numerous' ticks get placed into rangebreaks,
         // increase dtick to generate more ticks,
-        // so that some hopefully fall between breaks
+        // so that some hopefully fall between rangebreaks
         if(ax.tickmode === 'auto' && tickVals.length < nTicksBefore / 6) {
             axes.autoTicks(ax, ax._roughDTick / 3);
             autoTickRound(ax);
@@ -706,8 +706,8 @@ function arrayTicks(ax) {
 
     if(j < vals.length) ticksOut.splice(j, vals.length - j);
 
-    if(ax.breaks) {
-        // remove ticks falling inside breaks
+    if(ax.rangebreaks) {
+        // remove ticks falling inside rangebreaks
         ticksOut = ticksOut.filter(function(d) {
             return ax.maskBreaks(d.x) !== BADNUM;
         });
@@ -2871,7 +2871,7 @@ axes.shouldShowZeroLine = function(gd, ax, counterAxis) {
         (rng[0] * rng[1] <= 0) &&
         ax.zeroline &&
         (ax.type === 'linear' || ax.type === '-') &&
-        !(ax.breaks && ax.maskBreaks(0) === BADNUM) &&
+        !(ax.rangebreaks && ax.maskBreaks(0) === BADNUM) &&
         (
             clipEnds(ax, 0) ||
             !anyCounterAxLineAtZero(gd, ax, counterAxis, rng) ||

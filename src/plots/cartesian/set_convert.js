@@ -188,10 +188,10 @@ module.exports = function setConvert(ax, fullLayout) {
         return _p2l(px, ax._m, ax._b);
     };
 
-    if(ax.breaks) {
+    if(ax.rangebreaks) {
         l2p = function(v) {
             if(!isNumeric(v)) return BADNUM;
-            var len = ax._breaks.length;
+            var len = ax._rangebreaks.length;
             if(!len) return _l2p(v, ax._m, ax._b);
 
             var isY = axLetter === 'y';
@@ -200,7 +200,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var q = 0;
             for(var i = 0; i < len; i++) {
                 var nextI = i + 1;
-                var brk = ax._breaks[i];
+                var brk = ax._rangebreaks[i];
 
                 var min = isY ? -brk.max : brk.min;
                 var max = isY ? -brk.min : brk.max;
@@ -218,7 +218,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         p2l = function(px) {
             if(!isNumeric(px)) return BADNUM;
-            var len = ax._breaks.length;
+            var len = ax._rangebreaks.length;
             if(!len) return _p2l(px, ax._m, ax._b);
 
             var isY = axLetter === 'y';
@@ -227,7 +227,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var q = 0;
             for(var i = 0; i < len; i++) {
                 var nextI = i + 1;
-                var brk = ax._breaks[i];
+                var brk = ax._rangebreaks[i];
 
                 var min = isY ? -brk.pmax : brk.pmin;
                 var max = isY ? -brk.pmin : brk.pmax;
@@ -550,43 +550,43 @@ module.exports = function setConvert(ax, fullLayout) {
             ax._b = -ax._m * rl0;
         }
 
-        // set of "N" disjoint breaks inside the range
-        ax._breaks = [];
-        // length of these breaks in value space - negative on reversed axes
+        // set of "N" disjoint rangebreaks inside the range
+        ax._rangebreaks = [];
+        // length of these rangebreaks in value space - negative on reversed axes
         ax._lBreaks = 0;
         // l2p slope (same for all intervals)
         ax._m2 = 0;
         // set of l2p offsets (one for each of the (N+1) piecewise intervals)
         ax._B = [];
 
-        if(ax.breaks) {
+        if(ax.rangebreaks) {
             var i, brk;
 
-            ax._breaks = ax.locateBreaks(
+            ax._rangebreaks = ax.locateBreaks(
                 Math.min(rl0, rl1),
                 Math.max(rl0, rl1)
             );
             var axReverse = rl0 > rl1;
             var signAx = axReverse ? -1 : 1;
 
-            if(ax._breaks.length) {
-                for(i = 0; i < ax._breaks.length; i++) {
-                    brk = ax._breaks[i];
+            if(ax._rangebreaks.length) {
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
                     ax._lBreaks += brk.max - brk.min;
                 }
 
                 ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
 
                 if(axLetter === 'y') {
-                    ax._breaks.reverse();
+                    ax._rangebreaks.reverse();
                     // N.B. top to bottom (negative coord, positive px direction)
                     ax._B.push(ax._m2 * rl1);
                 } else {
                     ax._B.push(-ax._m2 * rl0);
                 }
 
-                for(i = 0; i < ax._breaks.length; i++) {
-                    brk = ax._breaks[i];
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
                     ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
                 }
                 if(axReverse) {
@@ -594,9 +594,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
-                // to not have to loop through the _breaks twice during `p2l`
-                for(i = 0; i < ax._breaks.length; i++) {
-                    brk = ax._breaks[i];
+                // to not have to loop through the _rangebreaks twice during `p2l`
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
                     brk.pmin = l2p(axReverse ? brk.max : brk.min);
                     brk.pmax = l2p(axReverse ? brk.min : brk.max);
                 }
@@ -610,11 +610,11 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.maskBreaks = function(v) {
-        var breaksIn = ax.breaks || [];
+        var rangebreaksIn = ax.rangebreaks || [];
         var bnds, b0, b1, vb;
 
-        for(var i = 0; i < breaksIn.length; i++) {
-            var brk = breaksIn[i];
+        for(var i = 0; i < rangebreaksIn.length; i++) {
+            var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
                 var op = brk.operation;
@@ -695,10 +695,10 @@ module.exports = function setConvert(ax, fullLayout) {
     ax.locateBreaks = function(r0, r1) {
         var i, bnds, b0, b1;
 
-        var breaksOut = [];
-        if(!ax.breaks) return breaksOut;
+        var rangebreaksOut = [];
+        if(!ax.rangebreaks) return rangebreaksOut;
 
-        var breaksIn = ax.breaks.slice().sort(function(a, b) {
+        var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
             if(a.pattern === '%w' && b.pattern === '%H') return -1;
             else if(b.pattern === '%w' && a.pattern === '%H') return 1;
             return 0;
@@ -710,8 +710,8 @@ module.exports = function setConvert(ax, fullLayout) {
             if(min === max) return;
 
             var isNewBreak = true;
-            for(var j = 0; j < breaksOut.length; j++) {
-                var brkj = breaksOut[j];
+            for(var j = 0; j < rangebreaksOut.length; j++) {
+                var brkj = rangebreaksOut[j];
                 if(min > brkj.max || max < brkj.min) {
                     // potentially a new break
                 } else {
@@ -725,12 +725,12 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
             if(isNewBreak) {
-                breaksOut.push({min: min, max: max});
+                rangebreaksOut.push({min: min, max: max});
             }
         };
 
-        for(i = 0; i < breaksIn.length; i++) {
-            var brk = breaksIn[i];
+        for(i = 0; i < rangebreaksIn.length; i++) {
+            var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
                 var op = brk.operation;
@@ -750,7 +750,7 @@ module.exports = function setConvert(ax, fullLayout) {
                         var r0PatternDelta;
                         // delta between break bounds in ms
                         var bndDelta;
-                        // step in ms between breaks
+                        // step in ms between rangebreaks
                         var step;
                         // tracker to position bounds
                         var t;
@@ -816,9 +816,9 @@ module.exports = function setConvert(ax, fullLayout) {
             }
         }
 
-        breaksOut.sort(function(a, b) { return a.min - b.min; });
+        rangebreaksOut.sort(function(a, b) { return a.min - b.min; });
 
-        return breaksOut;
+        return rangebreaksOut;
     };
 
     // makeCalcdata: takes an x or y array and converts it
@@ -870,8 +870,8 @@ module.exports = function setConvert(ax, fullLayout) {
             }
         }
 
-        // mask (i.e. set to BADNUM) coords that fall inside breaks
-        if(ax.breaks) {
+        // mask (i.e. set to BADNUM) coords that fall inside rangebreaks
+        if(ax.rangebreaks) {
             for(i = 0; i < len; i++) {
                 arrayOut[i] = ax.maskBreaks(arrayOut[i]);
             }

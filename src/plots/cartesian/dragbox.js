@@ -986,7 +986,7 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
         var axi = axList[i];
         if(axi.fixedrange) continue;
 
-        if(axi.breaks) {
+        if(axi.rangebreaks) {
             var isY = axi._id.charAt(0) === 'y';
             var r0F = isY ? (1 - r0Fraction) : r0Fraction;
             var r1F = isY ? (1 - r1Fraction) : r1Fraction;
@@ -1012,7 +1012,7 @@ function dragAxList(axList, pix) {
     for(var i = 0; i < axList.length; i++) {
         var axi = axList[i];
         if(!axi.fixedrange) {
-            if(axi.breaks) {
+            if(axi.rangebreaks) {
                 var p0 = 0;
                 var p1 = axi._length;
                 var d0 = axi.p2l(p0 + pix) - axi.p2l(p0);

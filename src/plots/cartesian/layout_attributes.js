@@ -249,15 +249,15 @@ module.exports = {
         ].join(' ')
     },
 
-    breaks: templatedArray('break', {
+    rangebreaks: templatedArray('rangebreak', {
         enabled: {
             valType: 'boolean',
             role: 'info',
             dflt: true,
             editType: 'calc',
             description: [
-                'Determines whether this axis break is enabled or disabled.',
-                'Please note that `breaks` only work for *date* axis type.'
+                'Determines whether this axis rangebreak is enabled or disabled.',
+                'Please note that `rangebreaks` only work for *date* axis type.'
             ].join(' ')
         },
 
@@ -270,7 +270,7 @@ module.exports = {
             ],
             editType: 'calc',
             description: [
-                'Sets the lower and upper bounds of this axis break.',
+                'Sets the lower and upper bounds of this axis rangebreak.',
                 'Can be used with `operation` to determine the behavior at the bounds.',
                 'Can be used with `pattern`.'
             ].join(' ')
@@ -308,7 +308,7 @@ module.exports = {
                 editType: 'calc'
             },
             description: [
-                'Sets the coordinate values corresponding to the breaks.',
+                'Sets the coordinate values corresponding to the rangebreaks.',
                 'An alternative to `bounds`.',
                 'Use `dvalue` to set the size of the values along the axis.'
             ].join(' ')
@@ -333,12 +333,12 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'Determines if we include or not the bound values within the break.',
+                'Determines if we include or not the bound values within the rangebreak.',
                 'Closed interval bounds (i.e. starting with *[* or ending with *]*)',
-                'include the bound value within the break and thus make coordinates',
+                'include the bound value within the rangebreak and thus make coordinates',
                 'equal to the bound disappear.',
                 'Open interval bounds (i.e. starting with *(* or ending with *)*)',
-                'does not include the bound value within the break and thus keep coordinates',
+                'does not include the bound value within the rangebreak and thus keep coordinates',
                 'equal to the bound on the axis.'
             ].join(' ')
         },
@@ -351,7 +351,7 @@ module.exports = {
             editType: 'calc',
             role: 'info',
             description: [
-                'Sets the gap distance between the start and the end of this break.',
+                'Sets the gap distance between the start and the end of this rangebreak.',
                 'Use with `gapmode` to set the unit of measurement.'
             ].join(' ')
         },

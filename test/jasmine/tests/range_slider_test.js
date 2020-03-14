@@ -201,7 +201,7 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
-    it('should update correctly when moving slider on an axis with breaks', function(done) {
+    it('should update correctly when moving slider on an axis with rangebreaks', function(done) {
         var start = 250;
         var end = 300;
 
@@ -219,7 +219,7 @@ describe('Visible rangesliders', function() {
             ]
         }], {
             xaxis: {
-                breaks: [
+                rangebreaks: [
                     {bounds: [
                         '1970-01-01 00:00:00.011',
                         '1970-01-01 00:00:00.089'
@@ -246,7 +246,7 @@ describe('Visible rangesliders', function() {
         })
         .then(function() { return slide(start, sliderY, end, sliderY); })
         .then(function() {
-            // x range would be ~ [15.625, 200] w/o breaks
+            // x range would be ~ [15.625, 200] w/o rangebreaks
             expect(gd._fullLayout.xaxis.range).withContext('after xrng').toEqual([
                 '1970-01-01 00:00:00.0027',
                 '1970-01-01 00:00:00.2'

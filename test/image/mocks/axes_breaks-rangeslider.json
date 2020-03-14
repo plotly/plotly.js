@@ -2652,7 +2652,7 @@
     "xaxis": {
       "tickformat": "%d %b %H:%M",
       "tickfont": {"size": 8},
-      "breaks": [
+      "rangebreaks": [
         {
           "pattern": "%w",
           "bounds": [6, 0],
