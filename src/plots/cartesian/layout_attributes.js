@@ -284,7 +284,7 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'Determines a pattern on the time line that generates rangebreaks.',
+                'Determines a pattern on the time line that generates breaks.',
                 'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
                 'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
                 'These are the same directive as in `tickformat`, see',
@@ -292,9 +292,9 @@ module.exports = {
                 'for more info.',
                 'Examples:',
                 '- { pattern: \'%w\', bounds: [6, 0], operation: \'[]\' }',
-                '  rangebreaks from Saturday to Monday (i.e. skips the weekends).',
+                '  breaks from Saturday to Monday (i.e. skips the weekends).',
                 '- { pattern: \'%H\', bounds: [17, 8] }',
-                '  rangebreaks from 5pm to 8am (i.e. skips non-work hours).'
+                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
 
