@@ -361,7 +361,7 @@
     "showlegend": false,
     "xaxis": {
       "rangeslider": { "visible": true },
-      "breaks": [
+      "rangebreaks": [
         {
           "pattern": "%w",
           "bounds": [ 6, 0 ],
@@ -374,7 +374,7 @@
     },
     "xaxis2": {
       "rangeslider": { "visible": true },
-      "breaks": [
+      "rangebreaks": [
         {
           "pattern": "%w",
           "bounds": [ 6, 0 ],

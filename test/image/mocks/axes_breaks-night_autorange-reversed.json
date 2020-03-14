@@ -190,7 +190,7 @@
         "width": 800,
         "height": 800,
         "xaxis": {
-            "breaks": [
+            "rangebreaks": [
                 {
                     "pattern": "%H",
                     "bounds": [
@@ -206,7 +206,7 @@
             ]
         },
         "xaxis2": {
-            "breaks": [
+            "rangebreaks": [
                 {
                     "pattern": "%H",
                     "bounds": [
@@ -251,7 +251,7 @@
             ]
         },
         "yaxis3": {
-            "breaks": [
+            "rangebreaks": [
                 {
                     "pattern": "%H",
                     "bounds": [
@@ -268,7 +268,7 @@
             ]
         },
         "yaxis4": {
-            "breaks": [
+            "rangebreaks": [
                 {
                     "pattern": "%H",
                     "bounds": [

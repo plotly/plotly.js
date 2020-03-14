@@ -120,12 +120,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(containerOut.type === 'date') {
-        var breaks = containerIn.breaks;
-        if(Array.isArray(breaks) && breaks.length) {
+        var rangebreaks = containerIn.rangebreaks;
+        if(Array.isArray(rangebreaks) && rangebreaks.length) {
             handleArrayContainerDefaults(containerIn, containerOut, {
-                name: 'breaks',
+                name: 'rangebreaks',
                 inclusionAttr: 'enabled',
-                handleItemDefaults: breaksDefaults
+                handleItemDefaults: rangebreaksDefaults
             });
             setConvert(containerOut, layoutOut);
 
@@ -135,7 +135,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
                     if(trace.type === 'scattergl' || trace.type === 'splom') {
                         trace.visible = false;
                         Lib.warn(trace.type +
-                            ' traces do not work on axes with breaks.' +
+                            ' traces do not work on axes with rangebreaks.' +
                             ' Setting trace ' + trace.index + ' to `visible: false`.');
                     }
                 }
@@ -146,9 +146,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     return containerOut;
 };
 
-function breaksDefaults(itemIn, itemOut, containerOut) {
+function rangebreaksDefaults(itemIn, itemOut, containerOut) {
     function coerce(attr, dflt) {
-        return Lib.coerce(itemIn, itemOut, layoutAttributes.breaks, attr, dflt);
+        return Lib.coerce(itemIn, itemOut, layoutAttributes.rangebreaks, attr, dflt);
     }
 
     var enabled = coerce('enabled');

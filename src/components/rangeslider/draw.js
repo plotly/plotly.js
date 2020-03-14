@@ -136,7 +136,7 @@ module.exports = function(gd) {
             return (v - rl0) / drl * opts._width;
         };
 
-        if(axisOpts.breaks) {
+        if(axisOpts.rangebreaks) {
             var rsBreaks = axisOpts.locateBreaks(rl0, rl1);
 
             if(rsBreaks.length) {
@@ -169,7 +169,7 @@ module.exports = function(gd) {
                 };
 
                 // fill pixel (i.e. 'p') min/max here,
-                // to not have to loop through the _breaks twice during `p2d`
+                // to not have to loop through the _rangebreaks twice during `p2d`
                 for(j = 0; j < rsBreaks.length; j++) {
                     brk = rsBreaks[j];
                     brk.pmin = opts.d2p(brk.min);
@@ -455,8 +455,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             _context: gd._context
         };
 
-        if(axisOpts.breaks) {
-            mockFigure.layout.xaxis.breaks = axisOpts.breaks;
+        if(axisOpts.rangebreaks) {
+            mockFigure.layout.xaxis.rangebreaks = axisOpts.rangebreaks;
         }
 
         mockFigure.layout[oppAxisName] = {
@@ -466,8 +466,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             calendar: oppAxisOpts.calendar
         };
 
-        if(oppAxisOpts.breaks) {
-            mockFigure.layout[oppAxisName].breaks = oppAxisOpts.breaks;
+        if(oppAxisOpts.rangebreaks) {
+            mockFigure.layout[oppAxisName].rangebreaks = oppAxisOpts.rangebreaks;
         }
 
         Plots.supplyDefaults(mockFigure);

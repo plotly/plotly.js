@@ -13,7 +13,7 @@
   ],
   "layout": {
     "xaxis": {
-      "breaks": [
+      "rangebreaks": [
         { "values": [ "2020-01-04", "2020-01-05" ] }
       ]
     }
