@@ -4022,8 +4022,6 @@ describe('Test axes', function() {
     });
 
     describe('*rangebreaks*', function() {
-        // TODO adapt `type: 'date'` requirement !!
-
         describe('during doCalcdata', function() {
             var gd;
 
