@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,11 +8,14 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
-var domainAttrs = require('../../plots/domain').attributes;
-var pieAtts = require('../pie/attributes');
+var baseAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
+var colorScaleAttrs = require('../../components/colorscale/attributes');
+var domainAttrs = require('../../plots/domain').attributes;
+var pieAttrs = require('../pie/attributes');
+var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
@@ -20,14 +23,14 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the labels of each of the sunburst sectors.'
+            'Sets the labels of each of the sectors.'
         ].join(' ')
     },
     parents: {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the parent sectors for each of the sunburst sectors.',
+            'Sets the parent sectors for each of the sectors.',
             'Empty string items \'\' are understood to reference',
             'the root node in the hierarchy.',
             'If `ids` is filled, `parents` items are understood to be "ids" themselves.',
@@ -40,7 +43,7 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the values associated with each of the sunburst sectors.',
+            'Sets the values associated with each of the sectors.',
             'Use with `branchvalues` to determine how the values are summed.'
         ].join(' ')
     },
@@ -57,6 +60,20 @@ module.exports = {
             'are taken to be the extra part not part of the sum of the values at their leaves.'
         ].join(' ')
     },
+    count: {
+        valType: 'flaglist',
+        flags: [
+            'branches',
+            'leaves'
+        ],
+        dflt: 'leaves',
+        editType: 'calc',
+        role: 'info',
+        description: [
+            'Determines default for `values` when it is not provided,',
+            'by inferring a 1 for each of the *leaves* and/or *branches*, otherwise 0.'
+        ].join(' ')
+    },
 
     level: {
         valType: 'any',
@@ -64,8 +81,8 @@ module.exports = {
         anim: true,
         role: 'info',
         description: [
-            'Sets the level from which this sunburst trace hierarchy is rendered.',
-            'Set `level` to `\'\'` to start the sunburst from the root node in the hierarchy.',
+            'Sets the level from which this trace hierarchy is rendered.',
+            'Set `level` to `\'\'` to start from the root node in the hierarchy.',
             'Must be an "id" if `ids` is filled in, otherwise plotly attempts to find a matching',
             'item in `labels`.'
         ].join(' ')
@@ -76,17 +93,17 @@ module.exports = {
         role: 'info',
         dflt: -1,
         description: [
-            'Sets the number of rendered sunburst rings from any given `level`.',
+            'Sets the number of rendered sectors from any given `level`.',
             'Set `maxdepth` to *-1* to render all the levels in the hierarchy.'
         ].join(' ')
     },
 
-    marker: {
+    marker: extendFlat({
         colors: {
             valType: 'data_array',
             editType: 'calc',
             description: [
-                'Sets the color of each sector of this sunburst chart.',
+                'Sets the color of each sector of this trace.',
                 'If not specified, the default trace color set is used',
                 'to pick the sector colors.'
             ].join(' ')
@@ -98,18 +115,23 @@ module.exports = {
         // },
 
         line: {
-            color: extendFlat({}, pieAtts.marker.line.color, {
+            color: extendFlat({}, pieAttrs.marker.line.color, {
                 dflt: null,
                 description: [
                     'Sets the color of the line enclosing each sector.',
                     'Defaults to the `paper_bgcolor` value.'
                 ].join(' ')
             }),
-            width: extendFlat({}, pieAtts.marker.line.width, {dflt: 1}),
+            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
             editType: 'calc'
         },
         editType: 'calc'
     },
+        colorScaleAttrs('marker', {
+            colorAttr: 'colors',
+            anim: false // TODO: set to anim: true?
+        })
+    ),
 
     leaf: {
         opacity: {
@@ -118,27 +140,69 @@ module.exports = {
             role: 'style',
             min: 0,
             max: 1,
-            dflt: 0.7,
-            description: 'Sets the opacity of the leaves.'
+            description: [
+                'Sets the opacity of the leaves. With colorscale',
+                'it is defaulted to 1; otherwise it is defaulted to 0.7'
+            ].join(' ')
         },
         editType: 'plot'
     },
 
-    text: pieAtts.text,
-    textinfo: extendFlat({}, pieAtts.textinfo, {
+    text: pieAttrs.text,
+    textinfo: {
+        valType: 'flaglist',
+        role: 'info',
+        flags: [
+            'label',
+            'text',
+            'value',
+            'current path',
+            'percent root',
+            'percent entry',
+            'percent parent'
+        ],
+        extras: ['none'],
         editType: 'plot',
-        flags: ['label', 'text', 'value']
-    }),
-    textfont: pieAtts.textfont,
+        description: [
+            'Determines which trace information appear on the graph.'
+        ].join(' ')
+    },
 
-    hovertext: pieAtts.hovertext,
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'name']
+    // TODO: incorporate `label` and `value` in the eventData
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: constants.eventDataKeys.concat(['label', 'value'])
     }),
-    hovertemplate: hovertemplateAttrs(),
 
-    insidetextfont: pieAtts.insidetextfont,
-    outsidetextfont: pieAtts.outsidetextfont,
+    hovertext: pieAttrs.hovertext,
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
+        flags: [
+            'label',
+            'text',
+            'value',
+            'name',
+            'current path',
+            'percent root',
+            'percent entry',
+            'percent parent'
+        ],
+        dflt: 'label+text+value+name'
+    }),
+    hovertemplate: hovertemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
+
+    textfont: pieAttrs.textfont,
+    insidetextorientation: pieAttrs.insidetextorientation,
+    insidetextfont: pieAttrs.insidetextfont,
+    outsidetextfont: extendFlat({}, pieAttrs.outsidetextfont, {
+        description: [
+            'Sets the font used for `textinfo` lying outside the sector.',
+            'This option refers to the root of the hierarchy',
+            'presented at the center of a sunburst graph.',
+            'Please note that if a hierarchy has multiple root nodes,',
+            'this option won\'t have any effect and `insidetextfont` would be used.'
+        ].join(' ')
+    }),
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };

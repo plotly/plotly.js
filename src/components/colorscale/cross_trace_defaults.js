@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,7 +20,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         }
     }
 
-    function relinkColorAtts(outerCont, cbOpt) {
+    function relinkColorAttrs(outerCont, cbOpt) {
         var cont = cbOpt.container ?
             Lib.nestedProperty(outerCont, cbOpt.container).get() :
             outerCont;
@@ -53,15 +53,15 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         if(cbOpts) {
             if(Array.isArray(cbOpts)) {
                 for(var j = 0; j < cbOpts.length; j++) {
-                    relinkColorAtts(trace, cbOpts[j]);
+                    relinkColorAttrs(trace, cbOpts[j]);
                 }
             } else {
-                relinkColorAtts(trace, cbOpts);
+                relinkColorAttrs(trace, cbOpts);
             }
         }
 
         if(hasColorscale(trace, 'marker.line')) {
-            relinkColorAtts(trace, {
+            relinkColorAttrs(trace, {
                 container: 'marker.line',
                 min: 'cmin',
                 max: 'cmax'
@@ -70,6 +70,6 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 
     for(var k in fullLayout._colorAxes) {
-        relinkColorAtts(fullLayout[k], {min: 'cmin', max: 'cmax'});
+        relinkColorAttrs(fullLayout[k], {min: 'cmin', max: 'cmax'});
     }
 };

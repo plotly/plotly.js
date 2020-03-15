@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,11 +9,11 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
@@ -23,7 +23,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var attrs = module.exports = overrideAll({
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: [],
         arrayOk: false,
         description: [
@@ -84,6 +84,9 @@ var attrs = module.exports = overrideAll({
         description: 'Sets the font for node labels'
     }),
 
+    // Remove top-level customdata
+    customdata: undefined,
+
     node: {
         label: {
             valType: 'data_array',
@@ -126,6 +129,13 @@ var attrs = module.exports = overrideAll({
                 'If `node.color` is omitted, then the default `Plotly` color palette will be cycled through',
                 'to have a variety of colors. These defaults are not fully opaque, to allow some visibility of',
                 'what is beneath the node.'
+            ].join(' ')
+        },
+        customdata: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Assigns extra data to each node.'
             ].join(' ')
         },
         line: {
@@ -198,6 +208,13 @@ var attrs = module.exports = overrideAll({
             description: [
                 'Sets the `link` color. It can be a single value, or an array for specifying color for each `link`.',
                 'If `link.color` is omitted, then by default, a translucent grey link will be used.'
+            ].join(' ')
+        },
+        customdata: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Assigns extra data to each link.'
             ].join(' ')
         },
         line: {

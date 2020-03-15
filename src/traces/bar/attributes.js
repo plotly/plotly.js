@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,10 +9,11 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
-var constants = require('./constants.js');
+var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -59,6 +60,9 @@ module.exports = {
     dy: scatterAttrs.dy,
 
     text: scatterAttrs.text,
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: constants.eventDataKeys
+    }),
     hovertext: scatterAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, {
         keys: constants.eventDataKeys

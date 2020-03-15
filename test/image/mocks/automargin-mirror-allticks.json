@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "x": [1, 2, 3],
+      "y": [4, 5, 6]
+    },
+    {
+      "x": [20, 30, 40],
+      "y": [50, 60, 70],
+      "xaxis": "x2"
+    },
+    {
+      "x": [1, 2, 3],
+      "y": [4, 5, 6],
+      "yaxis": "y2"
+    },
+    {
+      "x": [20, 30, 40],
+      "y": [50, 60, 70],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "xaxis": {
+      "automargin": true,
+      "ticks": "outside",
+      "showline": true,
+      "mirror": "all"
+    },
+    "xaxis2": {
+      "automargin": true,
+      "ticks": "outside", "ticklen": 10,
+      "showline": true,
+      "mirror": "allticks"
+    },
+    "yaxis": {
+      "automargin": true,
+      "ticks": "outside",
+      "showline": true,
+      "zeroline": false,
+      "mirror": "all"
+    },
+    "yaxis2": {
+      "automargin": true,
+      "ticks": "outside", "ticklen": 5,
+      "showline": true, "linewidth": 5,
+      "zeroline": false,
+      "mirror": "allticks"
+    },
+    "margin": {"l": 0, "b": 0, "t": 0, "r": 0},
+    "width": 500,
+    "height": 400
+  }
+}

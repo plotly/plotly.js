@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,12 +22,14 @@ module.exports = {
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
     hoverPoints: require('./hover').hoverPoints,
+    eventData: require('./event_data'),
     selectPoints: require('./select'),
 
     moduleType: 'trace',
     name: 'bar',
     basePlotModule: require('../../plots/cartesian'),
     categories: ['bar-like', 'cartesian', 'svg', 'bar', 'oriented', 'errorBarsOK', 'showLegend', 'zoomScale'],
+    animatable: true,
     meta: {
         description: [
             'The data visualized by the span of the bars is set in `y`',

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -140,6 +140,23 @@ module.exports = {
         editType: 'calc',
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     }),
+
+    unselected: {
+        line: {
+            color: {
+                valType: 'color',
+                dflt: '#777',
+                role: 'style',
+                editType: 'plot',
+                description: [
+                    'Sets the color of lines in the background',
+                    'i.e. unselected lines.'
+                ].join(' ')
+            },
+            editType: 'plot'
+        },
+        editType: 'plot'
+    },
 
     line: extendFlat({editType: 'calc'},
         colorScaleAttrs('line', {

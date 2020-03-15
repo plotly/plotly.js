@@ -9,6 +9,7 @@ var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('Test scatterpolar trace defaults:', function() {
     var traceOut;
@@ -197,4 +198,35 @@ describe('Test scatterpolar hover:', function() {
             run(specs).catch(failTest).then(done);
         });
     });
+});
+
+describe('Test scatterpolar texttemplate:', function() {
+    checkTextTemplate([{
+        'type': 'scatterpolar',
+        'mode': 'markers+text',
+        'text': ['A', 'B', 'C'],
+        'textposition': 'top center',
+        'r': [1, 0.5, 1],
+        'theta': [0, 90, 180],
+    }], 'g.textpoint', [
+        ['%{text}: (%{r:0.2f}, %{theta:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
+        [['', 'b%{theta:0.2f}', '%{theta:0.2f}'], ['', 'b90.00', '180.00']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scatterpolar',
+            mode: 'text',
+            theta: ['a', 'b'],
+            r: ['1000', '1200']
+        }],
+        layout: {
+            polar: {
+                radialaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'},
+                angularaxis: { tickprefix: '*', ticksuffix: '*' }
+            }
+        }
+    }, '.textpoint', [
+        ['%{theta} is %{r}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
 });

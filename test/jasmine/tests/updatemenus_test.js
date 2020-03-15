@@ -601,6 +601,50 @@ describe('update menus interactions', function() {
         .then(done);
     });
 
+    it('should apply update on button click (toggle via args2 case)', function(done) {
+        var menuOpts = {
+            type: 'buttons',
+            buttons: [{
+                label: 'toggle',
+                method: 'restyle',
+                args: ['line.color', 'blue'],
+                args2: ['line.color', 'red']
+            }]
+        };
+
+        var btn;
+
+        function assertLineColor(msg, lineColor) {
+            expect(gd.data[2].line.color).toBe(lineColor, 'gd.data line.color| ' + msg);
+            expect(gd._fullData[2].line.color).toBe(lineColor, 'gd._fullData line.color| ' + msg);
+        }
+
+        Plotly.relayout(gd, 'updatemenus', null)
+        .then(function() { return Plotly.relayout(gd, 'updatemenus[0]', menuOpts); })
+        .then(function() {
+            btn = selectButton(0, {type: 'buttons'});
+            assertItemColor(btn, activeColor);
+            assertLineColor('base', 'blue');
+            return click(btn);
+        })
+        .then(function() {
+            assertItemColor(btn, bgColor);
+            assertLineColor('base', 'red');
+            return click(btn);
+        })
+        .then(function() {
+            assertItemColor(btn, activeColor);
+            assertLineColor('base', 'blue');
+            return click(btn);
+        })
+        .then(function() {
+            assertItemColor(btn, bgColor);
+            assertLineColor('base', 'red');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should update correctly on failed binding comparisons', function(done) {
         // See https://github.com/plotly/plotly.js/issues/1169
         // for more info.
@@ -871,8 +915,10 @@ describe('update menus interactions', function() {
         return header;
     }
 
-    function selectButton(buttonIndex) {
-        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName);
+    function selectButton(buttonIndex, opts) {
+        opts = opts || {};
+        var k = opts.type === 'buttons' ? 'buttonClassName' : 'dropdownButtonClassName';
+        var buttons = d3.selectAll('.' + constants[k]);
         var button = d3.select(buttons[0][buttonIndex]);
         return button;
     }
@@ -999,11 +1045,13 @@ describe('update menus interaction with scrollbox:', function() {
         }
     };
 
+    Lib.seedPseudoRandom();
+
     for(var i = 0, n = 20; i < n; i++) {
         var j;
 
         var y;
-        for(j = 0, y = []; j < 10; j++) y.push(Math.random);
+        for(j = 0, y = []; j < 10; j++) y.push(Lib.pseudoRandom());
 
         mock.data.push({
             y: y,

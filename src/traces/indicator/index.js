@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,7 +24,11 @@ module.exports = {
 
     meta: {
         description: [
-            'TODO: add description'
+            'An indicator is used to visualize a single `value` along with some',
+            'contextual information such as `steps` or a `threshold`, using a',
+            'combination of three visual elements: a number, a delta, and/or a gauge.',
+            'Deltas are taken with respect to a `reference`.',
+            'Gauges can be either angular or bullet (aka linear) gauges.'
         ].join(' ')
     }
 };

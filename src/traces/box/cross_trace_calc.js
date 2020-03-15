@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60,7 +60,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
         for(j = 0; j < calcTrace.length; j++) {
-            pointList.push(calcTrace[j].pos);
+            pointList.push(posAxis.c2l(calcTrace[j].pos, true));
             shownPts += (calcTrace[j].pts2 || []).length;
         }
     }
@@ -213,6 +213,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             padded: padded,
             vpadminus: vpadminus,
             vpadplus: vpadplus,
+            vpadLinearized: true,
             // N.B. SVG px-space positive/negative
             ppadminus: {x: ppadminus, y: ppadplus}[axLetter],
             ppadplus: {x: ppadplus, y: ppadminus}[axLetter],

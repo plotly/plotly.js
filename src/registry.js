@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -276,7 +276,7 @@ function registerTraceModule(_module) {
     if(bpmName === 'mapbox') {
         var styleRules = basePlotModule.constants.styleRules;
         for(var k in styleRules) {
-            addStyleRule('.mapboxgl-' + k, styleRules[k]);
+            addStyleRule('.js-plotly-plot .plotly .mapboxgl-' + k, styleRules[k]);
         }
     }
 

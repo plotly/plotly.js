@@ -3,6 +3,8 @@ var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
+
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
 
@@ -14,6 +16,7 @@ var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var failTest = require('../assets/fail_test');
 var touchEvent = require('../assets/touch_event');
+var negateIf = require('../assets/negate_if');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -35,6 +38,41 @@ function touch(path, options) {
     touchEvent('touchend', path[len - 1][0], path[len - 1][1], options);
     return;
 }
+
+describe('Fx.hover:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('should warn when passing subplot ids that are not part of the graph', function(done) {
+        spyOn(Lib, 'warn');
+
+        var data = [
+            {y: [1], hoverinfo: 'y'}
+        ];
+
+        var layout = {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {anchor: 'y2', domain: [0.5, 1]},
+            yaxis2: {anchor: 'x2'},
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        Plotly.plot(gd, data, layout)
+        .then(function() {
+            Fx.hover(gd, {xpx: 300, ypx: 100}, 'x2y2');
+            expect(gd._hoverdata).toBe(undefined, 'did not generate hoverdata');
+            expect(Lib.warn).toHaveBeenCalledWith('Unrecognized subplot: x2y2');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
 
 describe('hover info', function() {
     'use strict';
@@ -981,6 +1019,51 @@ describe('hover info', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should display correct label - x/y/z heatmap|contour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                x: [1, 1, 2, 2],
+                y: [1, 2, 1, 2],
+                z: [1, 2, 3, 4],
+                customdata: ['a', 'b', 'c', 'd'],
+                ids: ['A', 'B', 'C', 'D'],
+                hovertemplate: '%{customdata} | %{id}<extra>%{data.type}: %{pointNumber}</extra>'
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: 'b | B',
+                    name: 'heatmap: 1'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'c | C',
+                    name: 'heatmap: 2'
+                });
+            })
+            .then(function() { return Plotly.restyle(gd, 'type', 'contour'); })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: 'b | B',
+                    name: 'contour: 1'
+                });
+
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'c | C',
+                    name: 'contour: 2'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('hover info for negative data on a log axis', function() {
@@ -1665,6 +1748,122 @@ describe('hover info', function() {
         });
     });
 
+    describe('constraints info graph viewport', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        it('hovermode:x common label should fit in the graph div width', function(done) {
+            function _assert(msg, exp) {
+                return function() {
+                    var label = d3.select('g.axistext');
+                    if(label.node()) {
+                        expect(label.text()).toBe(exp.txt, 'common label text| ' + msg);
+                        expect(Drawing.getTranslate(label).x)
+                            .toBeWithin(exp.lx, 5, 'common label translate-x| ' + msg);
+
+                        var startOfPath = label.select('path').attr('d').split('L')[0];
+                        expect(startOfPath).not.toBe('M0,0', 'offset start of label path| ' + msg);
+                    } else {
+                        fail('fail to generate common hover label');
+                    }
+                };
+            }
+
+            function _hoverLeft() { return _hover(gd, 30, 300); }
+
+            function _hoverRight() { return _hover(gd, 370, 300); }
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: ['2019-01-01', '2019-06-01', '2020-01-01'],
+                y: [2, 5, 10]
+            }], {
+                xaxis: {range: ['2019-02-06', '2019-12-01']},
+                margin: {l: 0, r: 0},
+                width: 400,
+                height: 400
+            })
+            .then(_hoverLeft)
+            .then(_assert('left-edge hover', {txt: 'Jan 1, 2019', lx: 37}))
+            .then(_hoverRight)
+            .then(_assert('right-edge hover', {txt: 'Jan 1, 2020', lx: 362}))
+            .then(function() { return Plotly.relayout(gd, 'xaxis.side', 'top'); })
+            .then(_hoverLeft)
+            .then(_assert('left-edge hover (side:top)', {txt: 'Jan 1, 2019', lx: 37}))
+            .then(_hoverRight)
+            .then(_assert('right-edge hover (side:top)', {txt: 'Jan 1, 2020', lx: 362}))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('hovermode:y common label should shift and clip text start into graph div', function(done) {
+            function _assert(msg, exp) {
+                return function() {
+                    var label = d3.select('g.axistext');
+                    if(label.node()) {
+                        var ltext = label.select('text');
+                        expect(ltext.text()).toBe(exp.txt, 'common label text| ' + msg);
+                        expect(ltext.attr('x')).toBeWithin(exp.ltx, 5, 'common label text x| ' + msg);
+
+                        negateIf(exp.clip, expect(ltext.attr('clip-path'))).toBe(null, 'text clip url| ' + msg);
+
+                        var fullLayout = gd._fullLayout;
+                        var clipId = 'clip' + fullLayout._uid + 'commonlabely';
+                        var clipPath = d3.select('#' + clipId);
+                        negateIf(exp.clip, expect(clipPath.node())).toBe(null, 'text clip path|' + msg);
+
+                        if(exp.tspanX) {
+                            var tspans = label.selectAll('tspan');
+                            if(tspans.size()) {
+                                tspans.each(function(d, i) {
+                                    var s = d3.select(this);
+                                    expect(s.attr('x')).toBeWithin(exp.tspanX[i], 5, i + '- tspan shift| ' + msg);
+                                });
+                            } else {
+                                fail('fail to generate tspans in hover label');
+                            }
+                        }
+                    } else {
+                        fail('fail to generate common hover label');
+                    }
+                };
+            }
+
+            function _hoverWayLong() { return _hover(gd, 135, 100); }
+
+            function _hoverA() { return _hover(gd, 135, 20); }
+
+            Plotly.plot(gd, [{
+                type: 'bar',
+                orientation: 'h',
+                y: ['Looong label', 'Loooooger label', 'Waay loooong label', 'a'],
+                x: [2, 5, 10, 2]
+            }], {
+                width: 400,
+                height: 400
+            })
+            .then(_hoverWayLong)
+            .then(_assert('on way long label', {txt: 'Waay loooong label', clip: true, ltx: 38}))
+            .then(_hoverA)
+            .then(_assert('on "a" label', {txt: 'a', clip: false, ltx: -9}))
+            .then(function() {
+                return Plotly.restyle(gd, {
+                    y: [['Looong label', 'Loooooger label', 'SHORT!<br>Waay loooong label', 'a']]
+                });
+            })
+            .then(_hoverWayLong)
+            .then(_assert('on way long label (multi-line case)', {
+                txt: 'SHORT!Waay loooong label',
+                clip: true,
+                ltx: 38,
+                tspanX: [-11, 38]
+            }))
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     describe('hovertemplate', function() {
         var mockCopy;
 
@@ -2150,7 +2349,6 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
-
 describe('hover on many lines+bars', function() {
     'use strict';
 
@@ -2391,7 +2589,7 @@ describe('hover on fill', function() {
             assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
 
             // hover on the cartesian trace in the corner
-            assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
+            assertLabelsCorrect([363, 122], [367, 122], 'trace 38');
         })
         .catch(failTest)
         .then(done);
@@ -2478,6 +2676,165 @@ describe('Hover on multicategory axes', function() {
                 name: 'w/ 2d z'
             });
             expect(eventData.x).toEqual(['2017', 'q3']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Hover on axes with rangebreaks', function() {
+    var gd;
+    var eventData;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    function _assert(msg, exp) {
+        assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
+        expect(eventData.x).toBe(exp.x, 'event data x');
+        expect(eventData.y).toBe(exp.y, 'event data y');
+    }
+
+    it('should work when rangebreaks are present on x-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            xaxis: {
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(11, 11); })
+        .then(function() {
+            _assert('leftmost interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: '1970-01-01',
+                y: 0
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: '1970-01-01 00:00:00.095',
+                y: 4
+            });
+        })
+        .then(function() { _hover(388, 388); })
+        .then(function() {
+            _assert('rightmost interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: '1970-01-01 00:00:00.2',
+                y: 8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when rangebreaks are present on y-axis', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            yaxis: {
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'y'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(388, 30); })
+        .then(function() {
+            _assert('topmost interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: 8,
+                y: '1970-01-01 00:00:00.2'
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: 4,
+                y: '1970-01-01 00:00:00.095'
+            });
+        })
+        .then(function() { _hover(11, 370); })
+        .then(function() {
+            _assert('bottom interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: 0,
+                y: '1970-01-01'
+            });
         })
         .catch(failTest)
         .then(done);
@@ -2605,6 +2962,56 @@ describe('hover updates', function() {
             expect(hoverCnt).toEqual(2);
             expect(unHoverCnt).toEqual(2);
         })
+        .then(done);
+    });
+
+    it('should not attempt to rehover over exiting subplots', function(done) {
+        spyOn(Fx, 'hover').and.callThrough();
+
+        var data = [
+            {y: [1], hoverinfo: 'y'},
+            {y: [2], hoverinfo: 'y', xaxis: 'x2', yaxis: 'y2'}
+        ];
+
+        var data2 = [
+            {y: [1], hoverinfo: 'y'}
+        ];
+
+        var layout = {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {anchor: 'y2', domain: [0.5, 1]},
+            yaxis2: {anchor: 'x2'},
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        var gd = createGraphDiv();
+        var onPt2 = [300, 100];
+        var offPt2 = [250, 100];
+
+        Plotly.react(gd, data, layout)
+        .then(function() {
+            assertLabelsCorrect(onPt2, [303, 100], '2', 'after 1st draw [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'after 1st draw [off-pt]');
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+        })
+        .then(function() {
+            var promise = Plotly.react(gd, data2, layout);
+            assertLabelsCorrect(onPt2, null, null, '2', 'before react() resolves [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'before react() resolves [off-pt]');
+            // N.B. no calls from Plots.rehover() as x2y2 subplot got removed!
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+            return promise;
+        })
+        .then(function() {
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+            assertLabelsCorrect(onPt2, null, null, '2', 'after react() resolves [on-pt]');
+            assertLabelsCorrect(offPt2, null, null, 'after react() resolves [off-pt]');
+            expect(Fx.hover).toHaveBeenCalledTimes(2);
+        })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -3393,6 +3800,392 @@ describe('dragmode: false', function() {
             .then(delay(HOVERMINTIME * 1.1))
             .then(function() {
                 expect(hoverHandler).toHaveBeenCalled();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
+
+describe('hovermode: (x|y)unified', function() {
+    var gd;
+    var mock = {
+        'data': [
+          {'y': [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
+          {'y': [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
+        ], 'layout': {'showlegend': false, 'hovermode': 'x unified'}};
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        Lib.clearThrottle();
+    }
+
+    function assertElementCount(selector, size) {
+        var g = d3.selectAll(selector);
+        expect(g.size()).toBe(size);
+    }
+
+    function assertLabel(expectation) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var title = hover.select('text.legendtitletext');
+        var traces = hover.selectAll('g.traces');
+
+        if(expectation.title) {
+            expect(title.text()).toBe(expectation.title);
+        }
+
+        expect(traces.size()).toBe(expectation.items.length, 'has the incorrect number of items');
+        traces.each(function(_, i) {
+            var e = d3.select(this);
+            expect(e.select('text').text()).toBe(expectation.items[i]);
+        });
+    }
+
+    function assertBgcolor(color) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var bg = hover.select('rect.bg');
+        expect(bg.node().style.fill).toBe(color);
+    }
+
+    function assertSymbol(exp) {
+        var hoverLayer = d3.select('g.hoverlayer');
+        var hover = hoverLayer.select('g.legend');
+        var traces = hover.selectAll('g.traces');
+        expect(traces.size()).toBe(exp.length);
+
+        traces.each(function(d, i) {
+            var pts = d3.select(this).selectAll('g.legendpoints path');
+            pts.each(function() {
+                var node = d3.select(this).node();
+                expect(node.style.fill).toBe(exp[i][0], 'wrong fill for point ' + i);
+                expect(node.style.strokeWidth).toBe(exp[i][1], 'wrong stroke-width for point ' + i);
+                expect(node.style.stroke).toBe(exp[i][2], 'wrong stroke for point ' + i);
+            });
+        });
+    }
+
+    it('set smart defaults for spikeline in x unified', function(done) {
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
+            .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('x unified');
+                var ax = gd._fullLayout.xaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('red');
+                expect(gd._fullLayout.yaxis.showspike).toBeFalse;
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('set smart defaults for spikeline in y unified', function(done) {
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'y unified', 'yaxis': {'color': 'red'}})
+            .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('y unified');
+                var ax = gd._fullLayout.yaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('red');
+                expect(gd._fullLayout.yaxis.showspike).toBeFalse;
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('x unified should work for x/y cartesian traces', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: ['trace 0 : 4', 'trace 1 : 8']});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('y unified should work for x/y cartesian traces', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'y unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { yval: 6 });
+
+                assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('x unified should work for x/y cartesian traces with legendgroup', function(done) {
+        var mockLegendGroup = require('@mocks/legendgroup.json');
+        var mockCopy = Lib.extendDeep({}, mockLegendGroup);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    'trace 0 : 2',
+                    'trace 1 : median: 1',
+                    'trace 3 : 2',
+                    'trace 2 : 2',
+                    'trace 5 : 2',
+                    'trace 4 : 1'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('shares filtering logic with compare mode x', function(done) {
+        var mock = require('@mocks/27.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: '2002' });
+                assertElementCount('g.hovertext', 2);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function() {
+                _hover(gd, { xval: '2002' });
+                assertLabel({title: '2002.042', items: [
+                    'Market income : 0.5537845',
+                    'Market incom... : 0.4420997'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should have the same traceorder as the legend', function(done) {
+        var mock = require('@mocks/stacked_area.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        var expectation = ['top : 1', 'middle : 6', 'bottom : 0'];
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation});
+                return Plotly.relayout(gd, 'legend.traceorder', 'normal');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: expectation.reverse()});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should order items based on trace index as in the legend', function(done) {
+        var mock = require('@mocks/29.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {curveNumber: 0});
+
+                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                    'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
+                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
+                    '2nd Floor (R... : 73.625',
+                    'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work for finance traces', function(done) {
+        var mockOhlc = require('@mocks/finance_multicategory.json');
+        var mockCopy = Lib.extendDeep({}, mockOhlc);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {curveNumber: 0, pointNumber: 0});
+
+                assertLabel({title: 'Group 2 - b', items: [
+                    'ohlc : open: 12high: 17low: 9close: 13  ▲',
+                    'candlestick : open: 22high: 27low: 19close: 23  ▲'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work for "legend_horizontal_autowrap"', function(done) {
+        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+
+                assertElementCount('g.hoverlayer g.legend', 1);
+                assertElementCount('g.hoverlayer g.traces', 20);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style scatter symbols accordingly', function(done) {
+        var mock = require('@mocks/marker_colorscale_template.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                assertLabel({title: '1', items: ['2']});
+                assertSymbol([['rgb(33, 145, 140)', '0px', '']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 2});
+                assertLabel({title: '2', items: ['3']});
+                assertSymbol([['rgb(253, 231, 37)', '0px', '']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style bar symbols accordingly', function(done) {
+        var mock = require('@mocks/bar-marker-line-colorscales.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 10});
+                assertLabel({title: '10', items: ['10']});
+                assertSymbol([['rgb(94, 216, 43)', '4px', 'rgb(197, 232, 190)']]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 20});
+                assertLabel({title: '20', items: ['20']});
+                assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style funnel symbols accordingly', function(done) {
+        var mock = require('@mocks/funnel_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 1});
+                // assertLabel({title: 'B', items: ['asdf', 'asdf']});
+                assertSymbol([
+                  ['rgb(0, 255, 0)', '0px', ''],
+                  ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
+                ]);
+            })
+            .then(function() {
+                _hover(gd, {xval: 4});
+                // assertLabel({title: 'E', items: ['asdf', 'asdf']});
+                // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should style waterfall symbols correctly', function(done) {
+        var mock = require('@mocks/waterfall_custom.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x unified';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '0px', '']
+                ]);
+                return Plotly.restyle(gd, {
+                    'decreasing.marker.line.width': 5,
+                    'decreasing.marker.line.color': 'violet'
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, {xval: 4});
+                assertSymbol([
+                  ['rgb(255, 65, 54)', '5px', 'rgb(238, 130, 238)']
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('label should have color of paper_bgcolor', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        var bgcolor = 'rgb(15, 200, 85)';
+        mockCopy.layout.paper_bgcolor = bgcolor;
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor(bgcolor);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should work with hovertemplate', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].hovertemplate = 'hovertemplate: %{y:0.2f}';
+        mockCopy.data[1].hovertemplate = '<extra>name</extra>%{x:0.2f} %{y:0.2f}';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    'trace 0 : hovertemplate: 4.00',
+                    'name : 3.00 8.00'
+                ]});
+
+                return Plotly.restyle(gd, 'hovertemplate', '<extra></extra>%{y:0.2f}');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertLabel({title: '3', items: [
+                    '4.00',
+                    '8.00'
+                ]});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('on relayout, it deletes existing hover', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x';
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertElementCount('g.hovertext', 2);
+                assertElementCount('g.legend', 0);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertElementCount('g.hovertext', 0);
+                assertElementCount('g.legend', 1);
             })
             .catch(failTest)
             .then(done);

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,10 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+
+var Colorscale = require('../../components/colorscale');
+var hasColorscale = Colorscale.hasColorscale;
+var colorscaleDefaults = Colorscale.handleDefaults;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -27,7 +31,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var vals = coerce('values');
-    if(vals && vals.length) coerce('branchvalues');
+    if(vals && vals.length) {
+        coerce('branchvalues');
+    } else {
+        coerce('count');
+    }
 
     coerce('level');
     coerce('maxdepth');
@@ -36,11 +44,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
     coerce('marker.colors');
+    var withColorscale = traceOut._hasColorscale = (
+        hasColorscale(traceIn, 'marker', 'colors') ||
+        (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
+    );
+    if(withColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+    }
 
-    coerce('leaf.opacity');
+    coerce('leaf.opacity', withColorscale ? 1 : 0.7);
 
     var text = coerce('text');
-    coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
+    coerce('texttemplate');
+    if(!traceOut.texttemplate) coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');
@@ -54,6 +70,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         moduleHasTextangle: false,
         moduleHasInsideanchor: false
     });
+
+    coerce('insidetextorientation');
 
     handleDomainDefaults(traceOut, layout, coerce);
 

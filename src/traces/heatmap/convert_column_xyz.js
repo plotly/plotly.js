@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -41,6 +41,8 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
         hovertext = Lib.init2dArray(col2vals.length, col1vals.length);
     }
 
+    var after2before = Lib.init2dArray(col2vals.length, col1vals.length);
+
     for(i = 0; i < colLen; i++) {
         if(col1[i] !== BADNUM && col2[i] !== BADNUM) {
             var i1 = Lib.findBin(col1[i] + col1dv.minDiff / 2, col1vals);
@@ -51,6 +53,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
                 var arrayVar = trace[arrayVarName];
                 var newArray = newArrays[j];
                 newArray[i2][i1] = arrayVar[i];
+                after2before[i2][i1] = i;
             }
 
             if(hasColumnText) text[i2][i1] = textCol[i];
@@ -73,4 +76,6 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(ax2 && ax2.type === 'category') {
         trace['_' + var2Name + 'CategoryMap'] = col2vals.map(function(v) { return ax2._categories[v];});
     }
+
+    trace._after2before = after2before;
 };

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53,15 +53,15 @@ function ptDist(pt1, pt2) {
 }
 
 function makePath(pi, loc, edgeflag, xtol, ytol) {
-    var startLocStr = loc.join(',');
-    var locStr = startLocStr;
+    var locStr = loc.join(',');
     var mi = pi.crossings[locStr];
-    var marchStep = startStep(mi, edgeflag, loc);
+    var marchStep = getStartStep(mi, edgeflag, loc);
     // start by going backward a half step and finding the crossing point
     var pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])];
-    var startStepStr = marchStep.join(',');
     var m = pi.z.length;
     var n = pi.z[0].length;
+    var startLoc = loc.slice();
+    var startStep = marchStep.slice();
     var cnt;
 
     // now follow the path
@@ -83,14 +83,16 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         pts.push(getInterpPx(pi, loc, marchStep));
         loc[0] += marchStep[0];
         loc[1] += marchStep[1];
+        locStr = loc.join(',');
 
         // don't include the same point multiple times
         if(equalPts(pts[pts.length - 1], pts[pts.length - 2], xtol, ytol)) pts.pop();
-        locStr = loc.join(',');
 
         var atEdge = (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
                 (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2));
-        var closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
+
+        var closedLoop = loc[0] === startLoc[0] && loc[1] === startLoc[1] &&
+                marchStep[0] === startStep[0] && marchStep[1] === startStep[1];
 
         // have we completed a loop, or reached an edge?
         if((closedLoop) || (edgeflag && atEdge)) break;
@@ -184,7 +186,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     } else {
         if(!edgeflag) {
             Lib.log('Unclosed interior contour?',
-                pi.level, startLocStr, pts.join('L'));
+                pi.level, startLoc.join(','), pts.join('L'));
         }
 
         // edge path - does it start where an existing edge path ends, or vice versa?
@@ -234,7 +236,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 
 // special function to get the marching step of the
 // first point in the path (leading to loc)
-function startStep(mi, edgeflag, loc) {
+function getStartStep(mi, edgeflag, loc) {
     var dx = 0;
     var dy = 0;
     if(mi > 20 && edgeflag) {

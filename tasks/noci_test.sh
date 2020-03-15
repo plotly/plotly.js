@@ -26,13 +26,11 @@ test_jasmine () {
 # since the update to mapbox-gl@0.44.0, we must use orca
 # as mapbox-gl versions >0.22.1 aren't supported on nw.js@0.12 used in the
 # 'old' image server
-#
-# cone traces don't render correctly in the imagetest container
 test_image () {
     $root/../orca/bin/orca.js graph \
         $root/test/image/mocks/mapbox_* \
         --plotly $root/build/plotly.js \
-        --mapbox-access-token "pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ" \
+        --mapbox-access-token "pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A" \
         --output-dir $root/test/image/baselines/ \
         --verbose || EXIT_STATE=$?
 }

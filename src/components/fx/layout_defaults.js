@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -35,8 +35,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var hoverMode = coerce('hovermode', hovermodeDflt);
     if(hoverMode) {
+        var dflt;
+        if(['x unified', 'y unified'].indexOf(hoverMode) !== -1) {
+            dflt = -1;
+        }
         coerce('hoverdistance');
-        coerce('spikedistance');
+        coerce('spikedistance', dflt);
     }
 
     // if only mapbox or geo subplots is present on graph,

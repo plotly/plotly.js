@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -114,8 +114,18 @@ var radialAxisAttrs = {
     },
 
 
-    title: overrideAll(axesAttrs.title, 'plot', 'from-root'),
-    // might need a 'titleside' and even 'titledirection' down the road
+    title: {
+        // radial title is not gui-editable at the moment,
+        // so it needs dflt: '', similar to carpet axes.
+        text: extendFlat({}, axesAttrs.title.text, {editType: 'plot', dflt: ''}),
+        font: extendFlat({}, axesAttrs.title.font, {editType: 'plot'}),
+
+        // TODO
+        // - might need a 'titleside' and even 'titledirection' down the road
+        // - what about standoff ??
+
+        editType: 'plot'
+    },
 
     hoverformat: axesAttrs.hoverformat,
 
@@ -137,9 +147,6 @@ var radialAxisAttrs = {
         titlefont: axesAttrs._deprecated.titlefont
     }
 };
-
-// radial title is not gui-editable, so it needs dflt: '', similar to carpet axes.
-radialAxisAttrs.title.text.dflt = '';
 
 extendFlat(
     radialAxisAttrs,

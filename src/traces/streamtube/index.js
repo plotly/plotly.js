@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'streamtube',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d'],
+    categories: ['gl3d', 'showLegend'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -20,7 +20,7 @@ module.exports = {
         min: 'cmin',
         max: 'cmax'
     },
-    calc: require('./calc'),
+    calc: require('./calc').calc,
     plot: require('./convert'),
     eventData: function(out, pt) {
         out.tubex = out.x;
@@ -53,7 +53,9 @@ module.exports = {
             'By default, the tubes\' starting positions will be cut from the vector field\'s',
             'x-z plane at its minimum y value.',
             'To specify your own starting position, use attributes `starts.x`, `starts.y`',
-            'and `starts.z`.'
+            'and `starts.z`.',
+            'The color is encoded by the norm of (u, v, w), and the local radius',
+            'by the divergence of (u, v, w).'
         ].join(' ')
     }
 };

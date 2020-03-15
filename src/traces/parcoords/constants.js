@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,6 @@ module.exports = {
     layers: ['contextLineLayer', 'focusLineLayer', 'pickLineLayer'],
     axisTitleOffset: 28,
     axisExtentOffset: 10,
-    deselectedLineColor: '#777',
     bar: {
         width: 4, // Visible width of the filter bar
         captureWidth: 10, // Mouse-sensitive width for interaction (Fitts law)

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
-
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
 
 module.exports = {
@@ -62,6 +62,21 @@ module.exports = {
                 'by the now deprecated `titlefont` attribute.'
             ].join(' ')
         }),
+        standoff: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            editType: 'ticks',
+            description: [
+                'Sets the standoff distance (in px) between the axis labels and the title text',
+                'The default value is a function of the axis tick labels, the title `font.size`',
+                'and the axis `linewidth`.',
+                'Note that the axis title position is always constrained within the margins,',
+                'so the actual standoff distance is always less than the set or default value.',
+                'By setting `standoff` and turning on `automargin`, plotly.js will push the',
+                'margins to fit the axis title at given standoff distance.'
+            ].join(' ')
+        },
         editType: 'ticks'
     },
     type: {
@@ -233,6 +248,135 @@ module.exports = {
             'Moreover, note that matching axes must have the same `type`.'
         ].join(' ')
     },
+
+    rangebreaks: templatedArray('rangebreak', {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'calc',
+            description: [
+                'Determines whether this axis rangebreak is enabled or disabled.',
+                'Please note that `rangebreaks` only work for *date* axis type.'
+            ].join(' ')
+        },
+
+        bounds: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'any', editType: 'calc'},
+                {valType: 'any', editType: 'calc'}
+            ],
+            editType: 'calc',
+            description: [
+                'Sets the lower and upper bounds of this axis rangebreak.',
+                'Can be used with `operation` to determine the behavior at the bounds.',
+                'Can be used with `pattern`.'
+            ].join(' ')
+        },
+
+        pattern: {
+            valType: 'enumerated',
+            // TODO could add '%H:%M:%S'
+            values: ['%w', '%H', ''],
+            dflt: '',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Determines a pattern on the time line that generates breaks.',
+                'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
+                'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
+                'These are the same directive as in `tickformat`, see',
+                'https://github.com/d3/d3-time-format#locale_format',
+                'for more info.',
+                'Examples:',
+                '- { pattern: \'%w\', bounds: [6, 0], operation: \'[]\' }',
+                '  breaks from Saturday to Monday (i.e. skips the weekends).',
+                '- { pattern: \'%H\', bounds: [17, 8] }',
+                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
+            ].join(' ')
+        },
+
+        values: {
+            valType: 'info_array',
+            freeLength: true,
+            role: 'info',
+            editType: 'calc',
+            items: {
+                valType: 'any',
+                editType: 'calc'
+            },
+            description: [
+                'Sets the coordinate values corresponding to the rangebreaks.',
+                'An alternative to `bounds`.',
+                'Use `dvalue` to set the size of the values along the axis.'
+            ].join(' ')
+        },
+        dvalue: {
+            // TODO could become 'any' to add support for 'months', 'years'
+            valType: 'number',
+            role: 'info',
+            editType: 'calc',
+            min: 0,
+            dflt: ONEDAY,
+            description: [
+                'Sets the size of each `values` item.',
+                'The default is one day in milliseconds.'
+            ].join(' ')
+        },
+
+        operation: {
+            valType: 'enumerated',
+            values: ['[]', '()', '[)', '(]'],
+            dflt: '()',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Determines if we include or not the bound values within the rangebreak.',
+                'Closed interval bounds (i.e. starting with *[* or ending with *]*)',
+                'include the bound value within the rangebreak and thus make coordinates',
+                'equal to the bound disappear.',
+                'Open interval bounds (i.e. starting with *(* or ending with *)*)',
+                'does not include the bound value within the rangebreak and thus keep coordinates',
+                'equal to the bound on the axis.'
+            ].join(' ')
+        },
+
+        /*
+        gap: {
+            valType: 'number',
+            min: 0,
+            dflt: 0, // for *date* axes, maybe something else for *linear*
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Sets the gap distance between the start and the end of this rangebreak.',
+                'Use with `gapmode` to set the unit of measurement.'
+            ].join(' ')
+        },
+        gapmode: {
+            valType: 'enumerated',
+            values: ['pixels', 'fraction'],
+            dflt: 'pixels',
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Determines if the `gap` value corresponds to a pixel length',
+                'or a fraction of the plot area.'
+            ].join(' ')
+        },
+        */
+
+        // To complete https://github.com/plotly/plotly.js/issues/4210
+        // we additionally need `gap` and make this work on *linear*, and
+        // possibly all other cartesian axis types. We possibly would also need
+        // some style attributes controlling the zig-zag on the corresponding
+        // axis.
+
+        editType: 'calc'
+    }),
+
     // ticks
     tickmode: {
         valType: 'enumerated',

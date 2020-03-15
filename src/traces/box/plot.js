@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86,14 +86,14 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     paths.each(function(d) {
         if(d.empty) return 'M0,0Z';
 
-        var pos = d.pos;
-        var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
-        var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
-        var pos1 = posAxis.c2p(pos + bPos + bdPos1, true) + bPosPxOffset;
-        var posw0 = posAxis.c2p(pos + bPos - wdPos, true) + bPosPxOffset;
-        var posw1 = posAxis.c2p(pos + bPos + wdPos, true) + bPosPxOffset;
-        var posm0 = posAxis.c2p(pos + bPos - bdPos0 * nw, true) + bPosPxOffset;
-        var posm1 = posAxis.c2p(pos + bPos + bdPos1 * nw, true) + bPosPxOffset;
+        var lcenter = posAxis.c2l(d.pos + bPos, true);
+        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+        var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
+        var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
+        var posw0 = posAxis.l2p(lcenter - wdPos) + bPosPxOffset;
+        var posw1 = posAxis.l2p(lcenter + wdPos) + bPosPxOffset;
+        var posm0 = posAxis.l2p(lcenter - bdPos0 * nw) + bPosPxOffset;
+        var posm1 = posAxis.l2p(lcenter + bdPos1 * nw) + bPosPxOffset;
         var q1 = valAxis.c2p(d.q1, true);
         var q3 = valAxis.c2p(d.q3, true);
         // make sure median isn't identical to either of the
@@ -288,9 +288,10 @@ function plotBoxMean(sel, axes, trace, t) {
     paths.exit().remove();
 
     paths.each(function(d) {
-        var posc = posAxis.c2p(d.pos + bPos, true) + bPosPxOffset;
-        var pos0 = posAxis.c2p(d.pos + bPos - bdPos0, true) + bPosPxOffset;
-        var pos1 = posAxis.c2p(d.pos + bPos + bdPos1, true) + bPosPxOffset;
+        var lcenter = posAxis.c2l(d.pos + bPos, true);
+        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+        var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
+        var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
         var m = valAxis.c2p(d.mean, true);
         var sl = valAxis.c2p(d.mean - d.sd, true);
         var sh = valAxis.c2p(d.mean + d.sd, true);

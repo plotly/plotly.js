@@ -64,6 +64,28 @@ describe('contour defaults', function() {
         expect(traceOut.autocontour).toBe(true);
     });
 
+    it('should default connectgaps to false if `z` is not a one dimensional array', function() {
+        traceIn = {
+            type: 'contour',
+            z: [[0, null], [1, 2]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
+    it('should default connectgaps to true if `z` is a one dimensional array', function() {
+        traceIn = {
+            type: 'contour',
+            x: [0, 1, 0, 1],
+            y: [0, 0, 1, 1],
+            z: [0, null, 1, 2]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(true);
+    });
+
     it('should inherit layout.calendar', function() {
         traceIn = {
             x: [1, 2],
@@ -567,5 +589,95 @@ describe('contour plotting and editing', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+describe('contour hover', function() {
+    'use strict';
+
+    var gd;
+
+    function _hover(gd, xval, yval) {
+        var fullLayout = gd._fullLayout;
+        var calcData = gd.calcdata;
+        var hoverData = [];
+
+        for(var i = 0; i < calcData.length; i++) {
+            var pointData = {
+                index: false,
+                distance: 20,
+                cd: calcData[i],
+                trace: calcData[i][0].trace,
+                xa: fullLayout.xaxis,
+                ya: fullLayout.yaxis
+            };
+
+            var hoverPoint = Contour.hoverPoints(pointData, xval, yval);
+            if(hoverPoint) hoverData.push(hoverPoint[0]);
+        }
+
+        return hoverData;
+    }
+
+    function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
+        expect(hoverPoint.xLabelVal).toBe(xLabel, 'have correct x label');
+        expect(hoverPoint.yLabelVal).toBe(yLabel, 'have correct y label');
+        expect(hoverPoint.zLabelVal).toBe(zLabel, 'have correct z label');
+        expect(hoverPoint.text).toBe(text, 'have correct text label');
+    }
+
+    describe('missing data', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'contour',
+                    x: [10, 11, 10, 11],
+                    y: [100, 100, 101, 101],
+                    z: [null, 1, 2, 3],
+                    connectgaps: false,
+                    hoverongaps: false
+                }]
+            }).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should not display hover on missing data and hoverongaps is disabled', function() {
+            var pt = _hover(gd, 10, 100)[0];
+
+            var hoverData;
+            gd.on('plotly_hover', function(data) {
+                hoverData = data;
+            });
+
+            expect(hoverData).toEqual(undefined);
+            expect(pt).toEqual(undefined);
+        });
+    });
+
+    describe('for xyz-column traces', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'contour',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                z: [10, 4, 20],
+                text: ['a', 'b', 'c'],
+                hoverinfo: 'text'
+            }])
+            .then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point and should', function() {
+            var pt = _hover(gd, 2, 3)[0];
+
+            expect(pt.index).toBe(1, 'have correct index');
+            assertLabels(pt, 2, 3, 4, 'b');
+        });
     });
 });

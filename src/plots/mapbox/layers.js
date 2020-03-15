@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -38,6 +38,8 @@ proto.update = function update(opts) {
         // IMPORTANT: must create source before layer to not cause errors
         this.updateSource(opts);
         this.updateLayer(opts);
+    } else if(this.needsNewImage(opts)) {
+        this.updateImage(opts);
     } else if(this.needsNewSource(opts)) {
         // IMPORTANT: must delete layer before source to not cause errors
         this.removeLayer();
@@ -50,6 +52,18 @@ proto.update = function update(opts) {
     }
 
     this.visible = isVisible(opts);
+};
+
+proto.needsNewImage = function(opts) {
+    var map = this.subplot.map;
+    return (
+        map.getSource(this.idSource) &&
+        this.sourceType === 'image' &&
+        opts.sourcetype === 'image' &&
+        (this.source !== opts.source ||
+            JSON.stringify(this.coordinates) !==
+            JSON.stringify(opts.coordinates))
+    );
 };
 
 proto.needsNewSource = function(opts) {
@@ -68,6 +82,13 @@ proto.needsNewLayer = function(opts) {
         this.layerType !== opts.type ||
         this.below !== this.subplot.belowLookup['layout-' + this.index]
     );
+};
+
+proto.updateImage = function(opts) {
+    var map = this.subplot.map;
+    map.getSource(this.idSource).updateImage({
+        url: opts.source, coordinates: opts.coordinates
+    });
 };
 
 proto.updateSource = function(opts) {
@@ -145,17 +166,26 @@ proto.removeLayer = function() {
 
 proto.dispose = function() {
     var map = this.subplot.map;
-    map.removeLayer(this.idLayer);
-    map.removeSource(this.idSource);
+    if(map.getLayer(this.idLayer)) map.removeLayer(this.idLayer);
+    if(map.getSource(this.idSource)) map.removeSource(this.idSource);
 };
 
 function isVisible(opts) {
+    if(!opts.visible) return false;
+
     var source = opts.source;
 
-    return opts.visible && (
-        Lib.isPlainObject(source) ||
-        ((typeof source === 'string' || Array.isArray(source)) && source.length > 0)
-    );
+    if(Array.isArray(source) && source.length > 0) {
+        for(var i = 0; i < source.length; i++) {
+            if(typeof source[i] !== 'string' || source[i].length === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    return Lib.isPlainObject(source) ||
+        (typeof source === 'string' && source.length > 0);
 }
 
 function convertOpts(opts) {
@@ -214,6 +244,12 @@ function convertOpts(opts) {
                 'text-opacity': opts.opacity
             });
             break;
+        case 'raster':
+            Lib.extendFlat(paint, {
+                'raster-fade-duration': 0,
+                'raster-opacity': opts.opacity
+            });
+            break;
     }
 
     return {
@@ -241,6 +277,8 @@ function convertSourceOpts(opts) {
     }
 
     sourceOpts[field] = source;
+
+    if(opts.sourceattribution) sourceOpts.attribution = opts.sourceattribution;
 
     return sourceOpts;
 }

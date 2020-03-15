@@ -93,8 +93,11 @@ For example,
 # Run one test (e.g. the 'contour_nolines' test):
 $ npm run test-image -- contour_nolines
 
-# Run all gl3d image test in batch:
+# Run all gl3d image tests in batch:
 $ npm run test-image -- gl3d_*
+
+# Run all image tests that are not gl3d in batch:
+npm run test-image --  "\!\(gl3d_\)*"
 ```
 
 Developers on weak hardware might encounter batch timeout issue. These are most

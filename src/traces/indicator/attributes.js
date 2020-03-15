@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -92,7 +92,7 @@ var rangeAttr = {
     ].join(' ')
 };
 
-var stepsAttrs = templatedArray('steps', extendDeep({}, gaugeBarAttrs, {
+var stepsAttrs = templatedArray('step', extendDeep({}, gaugeBarAttrs, {
     range: rangeAttr
 }));
 

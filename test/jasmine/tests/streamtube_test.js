@@ -85,19 +85,19 @@ describe('Test streamtube autorange', function() {
 
         Plotly.plot(gd, fig).then(function() {
             _assertAxisRanges('base',
-                [-5.36, 5.525], [-3.73, 5.44], [-3.55, 3.78]
+                [-5.36, 5.55], [-6.36, 3.90], [-3.58, 3.95]
             );
             return Plotly.restyle(gd, 'sizeref', 10);
         })
         .then(function() {
             _assertAxisRanges('with large sizeref',
-                [-9.86, 10.02], [-8.23, 9.935], [-8.045, 8.28]
+                [-9.86, 10.05], [-10.86, 8.39], [-8.08, 8.45]
             );
             return Plotly.restyle(gd, 'sizeref', 0.1);
         })
         .then(function() {
             _assertAxisRanges('with small sizeref',
-                [-5.32, 5.48], [-3.69, 5.39], [-3.50, 3.73]
+                [-5.32, 5.51], [-6.32, 3.85], [-3.54, 3.91]
             );
         })
         .catch(failTest)
@@ -147,6 +147,24 @@ describe('Test streamtube starting positions defaults:', function() {
         expect(exp.cellsLength).toBe(obj.cells.length, 'cells length');
     }
 
+    it('@gl should ignore starts if one (x | y | z) dimension missing', function(done) {
+        var mock = makeFigure(4, 4, 4);
+        mock.data[0].starts = {
+            x: [0, 1, 2, 3],
+            // missing y
+            z: [0, 1, 2, 3]
+        };
+
+        Plotly.plot(gd, mock).then(function() {
+            _assert({
+                positionsLength: 6288,
+                cellsLength: 2096
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
         Plotly.plot(gd, makeFigure(3, 3, 3)).then(function() {
             _assert({
@@ -161,8 +179,8 @@ describe('Test streamtube starting positions defaults:', function() {
     it('@gl should take middle pt if mesh vector has length 2', function(done) {
         Plotly.plot(gd, makeFigure(3, 3, 2)).then(function() {
             _assert({
-                positionsLength: 1200,
-                cellsLength: 400
+                positionsLength: 1296,
+                cellsLength: 432
             });
         })
         .catch(failTest)
@@ -223,6 +241,152 @@ describe('Test streamtube interactions', function() {
                 positionsLength: 1536,
                 cellsLength: 512
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    [ // list of directions
+        'number',
+        'string',
+        'typedArray'
+    ].forEach(function(format) {
+        [ // list of directions
+            [-1, -1, -1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1],
+            [1, 1, -1],
+            [1, -1, 1],
+            [-1, 1, 1],
+            [1, 1, 1]
+        ].forEach(function(dir) {
+            it('@gl should work with grid steps: ' + dir + ' and values in ' + format + ' format.', function(done) {
+                var x = [];
+                var y = [];
+                var z = [];
+                var u = [];
+                var v = [];
+                var w = [];
+
+                for(var i = 0; i < 3; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        for(var k = 0; k < 5; k++) {
+                            var newU = 1;
+                            var newV = 1;
+                            var newW = 1;
+                            var newX = i * dir[0];
+                            var newY = j * dir[1];
+                            var newZ = k * dir[2];
+
+                            if(format === 'string') {
+                                newU = String(newU);
+                                newV = String(newV);
+                                newW = String(newW);
+                                newX = String(newX);
+                                newY = String(newY);
+                                newZ = String(newZ);
+                            }
+
+                            u.push(newU);
+                            v.push(newV);
+                            w.push(newW);
+                            x.push(newX);
+                            y.push(newY);
+                            z.push(newZ);
+                        }
+                    }
+                }
+
+                if(format === 'typedArray') {
+                    u = new Int16Array(u);
+                    v = new Int32Array(v);
+                    w = new Int32Array(w);
+                    x = new Float32Array(x);
+                    y = new Float32Array(y);
+                    z = new Float64Array(z);
+                }
+
+                var fig = {
+                    data: [{
+                        type: 'streamtube',
+                        x: x,
+                        y: y,
+                        z: z,
+                        u: u,
+                        v: v,
+                        w: w
+                    }]
+                };
+
+                function _assert(msg, exp) {
+                    var scene = gd._fullLayout.scene._scene;
+                    var objs = scene.glplot.objects;
+                    expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+                    expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+                    expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+                }
+
+                Plotly.plot(gd, fig).then(function() {
+                    _assert('lengths', {
+                        positionsLength: 6336,
+                        cellsLength: 2112
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    it('@gl should return blank mesh grid if encountered arbitrary coordinates', function(done) {
+        var x = [];
+        var y = [];
+        var z = [];
+        var u = [];
+        var v = [];
+        var w = [];
+
+        Lib.seedPseudoRandom();
+
+        for(var n = 0; n < 1000; n++) {
+            x.push((10 * Lib.pseudoRandom()) | 0);
+            y.push((10 * Lib.pseudoRandom()) | 0);
+            z.push((10 * Lib.pseudoRandom()) | 0);
+            u.push(1);
+            v.push(1);
+            w.push(1);
+        }
+
+        var fig = {
+            data: [{
+                type: 'streamtube',
+                x: x,
+                y: y,
+                z: z,
+                u: u,
+                v: v,
+                w: w
+            }]
+        };
+
+        function _assert(msg, exp) {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+        }
+
+        spyOn(Lib, 'warn');
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('arbitrary coordinates', {
+                positionsLength: 0,
+                cellsLength: 0
+            });
+        }).then(function() {
+            expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
         })
         .catch(failTest)
         .then(done);
@@ -325,10 +489,10 @@ describe('Test streamtube hover', function() {
         .then(function() {
             assertHoverLabelContent({
                 nums: [
-                    'x: 2.250878',
-                    'y: 0.5866609',
-                    'z: 1.091627',
-                    'norm: 2.06'
+                    'x: 2.191782',
+                    'y: 0.5538867',
+                    'z: 1.057623',
+                    'norm: 2.11'
                 ].join('\n')
             });
 
@@ -340,9 +504,9 @@ describe('Test streamtube hover', function() {
         .then(function() {
             assertHoverLabelContent({
                 nums: [
-                    'u: 1.847686',
-                    'v: 0.7303133',
-                    'w: 0.1693927'
+                    'u: 1.909297',
+                    'v: 0.7453796',
+                    'w: 0.09330833'
                 ].join('\n')
             });
             return Plotly.restyle(gd, 'hoverinfo', 'divergence');
@@ -351,7 +515,7 @@ describe('Test streamtube hover', function() {
         .then(_hover)
         .then(delay(20))
         .then(function() {
-            assertHoverLabelContent({nums: 'divergence: 0.465'});
+            assertHoverLabelContent({nums: 'divergence: 0.467'});
             return Plotly.restyle(gd, {
                 hoverinfo: 'text',
                 text: '!SCALAR TX!'
@@ -398,10 +562,10 @@ describe('Test streamtube hover', function() {
         .then(function() {
             assertHoverLabelContent({
                 nums: [
-                    'x: 2.059149',
-                    'y: 0.5083682',
-                    'z: 1.074042',
-                    'norm: 2.07'
+                    'x: 2.063244',
+                    'y: 0.502517',
+                    'z: 1.051367',
+                    'norm: 2.12'
                 ].join('\n'),
                 name: 'TUBE!'
             });
@@ -410,7 +574,7 @@ describe('Test streamtube hover', function() {
         })
         .then(function() {
             assertHoverLabelContent({
-                nums: '∇·F = 0.465',
+                nums: '∇·F = 0.467',
                 name: 'TUBE'
             });
         })
@@ -443,15 +607,15 @@ describe('Test streamtube hover', function() {
             if(ptData) {
                 expect(Object.keys(ptData).length).toBe(12, 'key cnt');
 
-                expect(ptData.tubex).toBeCloseTo(2.25, TOL, 'tubex');
-                expect(ptData.tubey).toBeCloseTo(0.59, TOL, 'tubey');
-                expect(ptData.tubez).toBeCloseTo(1.09, TOL, 'tubez');
+                expect(ptData.tubex).toBeCloseTo(2.19, TOL, 'tubex');
+                expect(ptData.tubey).toBeCloseTo(0.55, TOL, 'tubey');
+                expect(ptData.tubez).toBeCloseTo(1.06, TOL, 'tubez');
 
-                expect(ptData.tubeu).toBeCloseTo(1.85, TOL, 'tubeu');
-                expect(ptData.tubev).toBeCloseTo(0.73, TOL, 'tubev');
-                expect(ptData.tubew).toBeCloseTo(0.17, TOL, 'tubew');
+                expect(ptData.tubeu).toBeCloseTo(1.91, TOL, 'tubeu');
+                expect(ptData.tubev).toBeCloseTo(0.74, TOL, 'tubev');
+                expect(ptData.tubew).toBeCloseTo(0.09, TOL, 'tubew');
 
-                expect(ptData.norm).toBeCloseTo(2.06, TOL, 'norm');
+                expect(ptData.norm).toBeCloseTo(2.11, TOL, 'norm');
                 expect(ptData.divergence).toBeCloseTo(0.47, TOL, 'divergence');
 
                 expect(ptData.curveNumber).toBe(0, 'curve number');

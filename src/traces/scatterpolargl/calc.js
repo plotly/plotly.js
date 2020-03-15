@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,8 +19,8 @@ module.exports = function calc(gd, trace) {
     var subplotId = trace.subplot;
     var radialAxis = fullLayout[subplotId].radialaxis;
     var angularAxis = fullLayout[subplotId].angularaxis;
-    var rArray = radialAxis.makeCalcdata(trace, 'r');
-    var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
+    var rArray = trace._r = radialAxis.makeCalcdata(trace, 'r');
+    var thetaArray = trace._theta = angularAxis.makeCalcdata(trace, 'theta');
     var len = trace._length;
     var stash = {};
 

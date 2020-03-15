@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 module.exports = {
     mode: scatterPolarAttrs.mode,
@@ -22,6 +23,9 @@ module.exports = {
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['r', 'theta', 'text']
+    }),
     hovertext: scatterPolarAttrs.hovertext,
     hovertemplate: scatterPolarAttrs.hovertemplate,
 

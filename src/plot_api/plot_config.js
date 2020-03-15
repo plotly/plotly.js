@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -170,6 +170,18 @@ var configAttributes = {
             'If *reset+autosize*, the odd double clicks resets the axis ranges',
             'to their initial values and even double clicks set the axis ranges',
             'to their autorange values.'
+        ].join(' ')
+    },
+    doubleClickDelay: {
+        valType: 'number',
+        dflt: 300,
+        min: 0,
+        description: [
+            'Sets the delay for registering a double-click in ms.',
+            'This is the time interval (in ms) between first mousedown and',
+            '2nd mouseup to constitute a double-click.',
+            'This setting propagates to all on-subplot double clicks',
+            '(except for geo and mapbox) and on-legend double clicks.'
         ].join(' ')
     },
 
@@ -364,13 +376,30 @@ var configAttributes = {
     },
 
     logging: {
-        valType: 'boolean',
+        valType: 'integer',
+        min: 0,
+        max: 2,
         dflt: 1,
         description: [
             'Turn all console logging on or off (errors will be thrown)',
             'This should ONLY be set via Plotly.setPlotConfig',
             'Available levels:',
             '0: no logs',
+            '1: warnings and errors, but not informational messages',
+            '2: verbose logs'
+        ].join(' ')
+    },
+
+    notifyOnLogging: {
+        valType: 'integer',
+        min: 0,
+        max: 2,
+        dflt: 0,
+        description: [
+            'Set on-graph logging (notifier) level',
+            'This should ONLY be set via Plotly.setPlotConfig',
+            'Available levels:',
+            '0: no on-graph logs',
             '1: warnings and errors, but not informational messages',
             '2: verbose logs'
         ].join(' ')

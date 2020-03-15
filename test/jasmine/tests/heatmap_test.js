@@ -128,6 +128,42 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.ygap).toBe(undefined);
     });
 
+    it('should default connectgaps to false if `z` is not a one dimensional array', function() {
+        traceIn = {
+            type: 'heatmap',
+            z: [[0, null], [1, 2]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
+    it('should default connectgaps to true if `z` is a one dimensional array and `zsmooth` is not false', function() {
+        traceIn = {
+            zsmooth: 'fast',
+            type: 'heatmap',
+            x: [1, 1, 2, 2, 2],
+            y: [1, 2, 1, 2, 3],
+            z: [1, null, 4, 5, 6]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(true);
+    });
+
+    it('should default connectgaps to false if `zsmooth` is false', function() {
+        traceIn = {
+            zsmooth: false,
+            type: 'heatmap',
+            x: [1, 1, 2, 2, 2],
+            y: [1, 2, 1, 2, 3],
+            z: [1, null, 4, 5, 6]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.connectgaps).toBe(false);
+    });
+
     it('should inherit layout.calendar', function() {
         traceIn = {
             x: [1, 2],
@@ -845,14 +881,14 @@ describe('heatmap hover', function() {
         it('should find closest point (case 1) and should', function() {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
-            expect(pt.index).toEqual([1, 0], 'have correct index');
+            expect(pt.index).toBe(1, 'have correct index');
             assertLabels(pt, 1, 1, 4);
         });
 
         it('should find closest point (case 2) and should', function() {
             var pt = _hover(gd, 1.5, 0.5)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
+            expect(pt.index).toBe(0, 'have correct index');
             assertLabels(pt, 2, 0.2, 6);
         });
     });
@@ -895,13 +931,13 @@ describe('heatmap hover', function() {
         it('should find closest point and should', function(done) {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
-            expect(pt.index).toEqual([0, 0], 'have correct index');
+            expect(pt.index).toBe(0, 'have correct index');
             assertLabels(pt, 1, 1, 10, 'a');
 
             Plotly.relayout(gd, 'xaxis.range', [1, 2]).then(function() {
                 var pt2 = _hover(gd, 1.5, 0.5)[0];
 
-                expect(pt2.index).toEqual([0, 1], 'have correct index');
+                expect(pt2.index).toBe(1, 'have correct index');
                 assertLabels(pt2, 2, 1, 4, 'b');
             })
             .then(done);
@@ -938,6 +974,36 @@ describe('heatmap hover', function() {
             .then(checkData)
             .catch(failTest)
             .then(done);
+        });
+    });
+
+    describe('missing data', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'heatmap',
+                    x: [10, 11, 10, 11],
+                    y: [100, 100, 101, 101],
+                    z: [null, 1, 2, 3],
+                    connectgaps: false,
+                    hoverongaps: false
+                }]
+            }).then(done);
+        });
+        afterAll(destroyGraphDiv);
+
+        it('should not display hover on missing data and hoverongaps is disabled', function() {
+            var pt = _hover(gd, 10, 100)[0];
+
+            var hoverData;
+            gd.on('plotly_hover', function(data) {
+                hoverData = data;
+            });
+
+            expect(hoverData).toEqual(undefined);
+            expect(pt).toEqual(undefined);
         });
     });
 });

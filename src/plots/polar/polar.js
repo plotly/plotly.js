@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -299,13 +299,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 };
 
 proto.mockAxis = function(fullLayout, polarLayout, axLayout, opts) {
-    var commonOpts = {
-        // to get _boundingBox computation right when showticklabels is false
-        anchor: 'free',
-        position: 0
-    };
-
-    var ax = Lib.extendFlat(commonOpts, axLayout, opts);
+    var ax = Lib.extendFlat({}, axLayout, opts);
     setConvertPolar(ax, polarLayout, fullLayout);
     return ax;
 };

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,8 +9,9 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var plotAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var baseAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -26,7 +27,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
-            '`scattercontour` traces can specify a carpet plot on which',
+            '`contourcarpet` traces can specify a carpet plot on which',
             'they lie'
         ].join(' ')
     },
@@ -51,6 +52,9 @@ module.exports = {
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
+    }),
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+        keys: ['a', 'b', 'text']
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
@@ -114,7 +118,7 @@ module.exports = {
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected,
 
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,

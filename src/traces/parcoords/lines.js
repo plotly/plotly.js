@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -225,9 +225,11 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
 
 function expandedPixelRange(bounds) {
     var dh = maskHeight - 1;
+    var a = Math.max(0, Math.floor(bounds[0] * dh), 0);
+    var b = Math.min(dh, Math.ceil(bounds[1] * dh), dh);
     return [
-        Math.max(0, Math.floor(bounds[0] * dh), 0),
-        Math.min(dh, Math.ceil(bounds[1] * dh), dh)
+        Math.min(a, b),
+        Math.max(a, b)
     ];
 }
 

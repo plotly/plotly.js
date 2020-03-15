@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,5 +10,17 @@
 
 module.exports = {
     CLICK_TRANSITION_TIME: 750,
-    CLICK_TRANSITION_EASING: 'linear'
+    CLICK_TRANSITION_EASING: 'linear',
+    eventDataKeys: [
+        // string
+        'currentPath',
+        'root',
+        'entry',
+        // no need to add 'parent' here
+
+        // percentages i.e. ratios
+        'percentRoot',
+        'percentEntry',
+        'percentParent'
+    ]
 };

@@ -1,0 +1,206 @@
+{
+    "data": [
+        {
+            "y": [
+                4,
+                1,
+                0.5
+            ],
+            "text": [
+                "very <br>L<br>O<br>N<br>G<br> text",
+                "text",
+                "invisible"
+            ],
+            "type": "bar",
+            "textinfo": "text",
+            "textposition": "auto",
+            "xaxis": "x1",
+            "yaxis": "y1"
+        },
+        {
+            "y": [
+                4,
+                1,
+                0.5
+            ],
+            "text": [
+                "very L O N G text",
+                "text",
+                "visible"
+            ],
+            "type": "bar",
+            "textinfo": "text",
+            "textposition": "auto",
+            "xaxis": "x1",
+            "yaxis": "y1"
+        },
+        {
+            "y": [
+                4,
+                1,
+                0.5
+            ],
+            "text": [
+                "very <br>L<br>O<br>N<br>G<br> text",
+                "text",
+                "invisible"
+            ],
+            "type": "bar",
+            "textinfo": "text",
+            "textposition": "inside",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "y": [
+                4,
+                1,
+                0.5
+            ],
+            "text": [
+                "very L O N G text",
+                "text",
+                "invisible"
+            ],
+            "type": "bar",
+            "textinfo": "text",
+            "textposition": "inside",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "y": [
+                5,
+                1,
+                0.5
+            ],
+            "text": [
+                "very <br>L<br>O<br>N<br>G<br> text",
+                "text",
+                "invisible"
+            ],
+            "type": "funnel",
+            "textinfo": "text",
+            "textposition": "inside",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "y": [
+                3,
+                1,
+                0.5
+            ],
+            "text": [
+                "very L O N G text",
+                "text",
+                "invisible"
+            ],
+            "type": "funnel",
+            "textinfo": "text",
+            "textposition": "inside",
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "y": [
+                4,
+                -0.5,
+                0.25,
+                null
+            ],
+            "measure": [
+                "",
+                "",
+                "",
+                "total"
+            ],
+            "text": [
+                "very L O N G text",
+                "text",
+                "invisible",
+                "very <br>L<br>O<br>N<br>G<br> text"
+            ],
+            "type": "waterfall",
+            "textinfo": "text",
+            "textposition": "inside",
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 500,
+        "margin": {
+            "t": 20,
+            "b": 20,
+            "l": 20,
+            "r": 20
+        },
+        "legend": {
+            "orientation": "h",
+            "title": {
+                "text": "<b>bar, funnel & waterfall uniform text</b><br>with <i>auto</i> orientation<br>minsize=8"
+            }
+        },
+        "uniformtext": {
+            "mode": "hide",
+            "minsize": 10
+        },
+        "barmode": "stack",
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}

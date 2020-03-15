@@ -55,6 +55,8 @@ and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = 
 
 and use the `Plotly` object in the window scope.
 
+Fastly supports Plotly.js with free CDN service. Read more at https://www.fastly.com/open-source
+
 ### Download the latest release
 
 [Latest Release on GitHub](https://github.com/plotly/plotly.js/releases/)
@@ -156,7 +158,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ### Active
 
-|   | Github | Twitter |
+|   | GitHub | Twitter |
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
@@ -165,7 +167,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ### Hall of Fame
 
-|   | Github | Twitter |
+|   | GitHub | Twitter |
 |---|--------|---------|
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
@@ -182,7 +184,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 
 ## Copyright and license
 
-Code and documentation copyright 2019 Plotly, Inc.
+Code and documentation copyright 2020 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 

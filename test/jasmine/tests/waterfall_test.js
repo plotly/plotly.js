@@ -16,6 +16,7 @@ var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -1208,6 +1209,18 @@ describe('A waterfall plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    checkTextTemplate([{
+        type: 'waterfall',
+        y: [1, 5, 3, 2],
+        text: ['A', 'B', 'C', 'D'],
+        textposition: 'inside',
+        hovertemplate: '%{text}'
+    }], 'text.bartext', [
+      ['%{value}', ['1', '6', '9', '11']],
+      ['%{initial} %{delta} %{final}', ['0 1 1', '1 5 6', '6 3 9', '9 2 11']],
+      [['%{y}', '%{value}', '%{text}', '%{label}'], ['1', '6', 'C', '3']]
+    ]);
 });
 
 describe('waterfall visibility toggling:', function() {
@@ -1343,6 +1356,13 @@ describe('waterfall hover', function() {
 
             expect(out.style).toBeCloseToArray([1, '#FF4136', 1, -9.47]);
             assertPos(out.pos, [137, 181, 266, 266]);
+        });
+
+        it('should return the correct hover point data (case closest - decreasing case, below y=0)', function() {
+            var out = _hover(gd, 1.8, -5, 'closest');
+
+            expect(out.style).toBeCloseToArray([2, '#3D9970', 2, 16.59]);
+            assertPos(out.pos, [260, 304, 21, 21]);
         });
     });
 
@@ -1720,3 +1740,130 @@ function assertTraceField(calcData, prop, expectation) {
 
     expect(values).toBeCloseToArray(expectation, undefined, '(field ' + prop + ')');
 }
+
+describe('waterfall uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'waterfall',
+                orientation: 'h',
+                x: [-1, 2, -3, 4, -5, 6, -7, 8, -9, 10],
+
+                text: [
+                    'long lablel',
+                    '$',
+                    '=',
+                    '|',
+                    '.',
+                    ' ',
+                    '',
+                    null,
+                    '<br>',
+                    0
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                textangle: 0
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 0.48, 0.48, 0.48, 0.48, 0.48, 0.48],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 0, 0, 0, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 14; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 14', {
+            fontsizes: [14, 14, 14, 14, 14, 14, 14],
+            scales: [0, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [14, 14, 14, 14, 14, 14, 14],
+            scales: [1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12],
+            scales: [0.48, 1, 1, 1, 1, 1, 1],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});

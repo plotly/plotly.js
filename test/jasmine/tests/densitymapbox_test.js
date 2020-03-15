@@ -497,4 +497,30 @@ describe('@noCI Test densitymapbox interactions:', function() {
         .catch(failTest)
         .then(done);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('@gl should be able to restyle from and to *scattermapbox*', function(done) {
+        function _assert(msg, exp) {
+            var traceHash = gd._fullLayout.mapbox._subplot.traceHash;
+            expect(Object.keys(traceHash).length).toBe(1, 'one visible trace| ' + msg);
+            for(var k in traceHash) {
+                expect(traceHash[k].type).toBe(exp, 'trace type| ' + msg);
+            }
+        }
+
+        Plotly.plot(gd, [{
+            type: 'densitymapbox',
+            lon: [10, 20, 30],
+            lat: [15, 25, 35],
+            z: [1, 20, 5]
+        }], {}, {
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        })
+        .then(function() { _assert('after first', 'densitymapbox'); })
+        .then(function() { return Plotly.restyle(gd, 'type', 'scattermapbox'); })
+        .then(function() { _assert('after restyle to scattermapbox', 'scattermapbox'); })
+        .then(function() { return Plotly.restyle(gd, 'type', 'densitymapbox'); })
+        .then(function() { _assert('back to densitymapbox', 'densitymapbox'); })
+        .catch(failTest)
+        .then(done);
+    }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

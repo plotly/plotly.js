@@ -1,0 +1,18 @@
+{
+  "data": [
+    { "y": [ 1 ], "name": "AAAAAAAAAAAAaaaaaaa" },
+    { "y": [ 2 ], "name": "BB" },
+    { "y": [ 3 ], "name": "C" },
+    { "y": [ 4 ], "name": "D" },
+    { "y": [ 5 ], "name": "E" },
+    { "y": [ 6 ], "name": "F" },
+    { "y": [ 7 ], "name": "G" }
+  ],
+  "layout": {
+    "legend": {
+      "bgcolor": "red",
+      "orientation": "h"
+    },
+    "width": 600
+  }
+}

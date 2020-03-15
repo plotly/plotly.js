@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -38,8 +38,17 @@ module.exports = extendFlat({
     ytype: heatmapAttrs.ytype,
     zhoverformat: heatmapAttrs.zhoverformat,
     hovertemplate: heatmapAttrs.hovertemplate,
-
-    connectgaps: heatmapAttrs.connectgaps,
+    hoverongaps: heatmapAttrs.hoverongaps,
+    connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.',
+            'It is defaulted to true if `z` is a',
+            'one dimensional array',
+            'otherwise it is defaulted to false.'
+        ].join(' ')
+    }),
 
     fillcolor: {
         valType: 'color',
@@ -239,9 +248,17 @@ module.exports = extendFlat({
                 'Has no effect if `contours.coloring` is set to *lines*.'
             ].join(' ')
         }),
-        width: extendFlat({}, scatterLineAttrs.width, {
-            editType: 'style+colorbars'
-        }),
+        width: {
+            valType: 'number',
+            min: 0,
+            role: 'style',
+            editType: 'style+colorbars',
+            description: [
+                'Sets the contour line width in (in px)',
+                'Defaults to *0.5* when `contours.type` is *levels*.',
+                'Defaults to *2* when `contour.type` is *constraint*.'
+            ].join(' ')
+        },
         dash: dash,
         smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
             description: [

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,7 +20,11 @@ module.exports = function sceneUpdate(gd, trace) {
     var splomScenes = fullLayout._splomScenes;
     if(!splomScenes) splomScenes = fullLayout._splomScenes = {};
 
-    var reset = {dirty: true};
+    var reset = {
+        dirty: true,
+        selectBatch: [],
+        unselectBatch: []
+    };
 
     var first = {
         matrix: false,

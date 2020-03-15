@@ -1,0 +1,453 @@
+{
+    "data": [
+        {
+            "type": "treemap",
+            "textinfo": "label",
+            "textfont": {
+                "size": 10
+            },
+            "pathbar": {
+                "visible": true
+            },
+            "tiling": {
+                "packing": "slice-dice",
+                "pad": 0
+            },
+            "marker": {
+                "depthfade": "reversed",
+                "pad": {
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
+                }
+            },
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "",
+                "",
+                "Bravo",
+                "Bravo",
+                "Bravo",
+                "Echo",
+                "Echo",
+                "Echo",
+                "Hotel",
+                "Hotel",
+                "Hotel",
+                "Kilo",
+                "Kilo",
+                "Kilo",
+                "November",
+                "November",
+                "November",
+                "Quebec",
+                "Quebec",
+                "Quebec",
+                "Tango",
+                "Tango",
+                "Tango",
+                "Whiskey",
+                "Whiskey"
+            ],
+            "domain": {
+                "x": [
+                    0.02,
+                    0.48
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "type": "treemap",
+            "textinfo": "label",
+            "textfont": {
+                "size": 10
+            },
+            "pathbar": {
+                "visible": true
+            },
+            "tiling": {
+                "packing": "slice-dice",
+                "flip": "y",
+                "pad": 0
+            },
+            "marker": {
+                "depthfade": "reversed",
+                "pad": {
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
+                }
+            },
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "",
+                "",
+                "Bravo",
+                "Bravo",
+                "Bravo",
+                "Echo",
+                "Echo",
+                "Echo",
+                "Hotel",
+                "Hotel",
+                "Hotel",
+                "Kilo",
+                "Kilo",
+                "Kilo",
+                "November",
+                "November",
+                "November",
+                "Quebec",
+                "Quebec",
+                "Quebec",
+                "Tango",
+                "Tango",
+                "Tango",
+                "Whiskey",
+                "Whiskey"
+            ],
+            "domain": {
+                "x": [
+                    0.02,
+                    0.48
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        },
+        {
+            "type": "treemap",
+            "textinfo": "label",
+            "textfont": {
+                "size": 10
+            },
+            "pathbar": {
+                "visible": true
+            },
+            "tiling": {
+                "packing": "slice-dice",
+                "flip": "x",
+                "pad": 0
+            },
+            "marker": {
+                "pad": {
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
+                }
+            },
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "",
+                "",
+                "Bravo",
+                "Bravo",
+                "Bravo",
+                "Echo",
+                "Echo",
+                "Echo",
+                "Hotel",
+                "Hotel",
+                "Hotel",
+                "Kilo",
+                "Kilo",
+                "Kilo",
+                "November",
+                "November",
+                "November",
+                "Quebec",
+                "Quebec",
+                "Quebec",
+                "Tango",
+                "Tango",
+                "Tango",
+                "Whiskey",
+                "Whiskey"
+            ],
+            "domain": {
+                "x": [
+                    0.52,
+                    0.98
+                ],
+                "y": [
+                    0,
+                    0.45
+                ]
+            }
+        },
+        {
+            "type": "treemap",
+            "textinfo": "label",
+            "textfont": {
+                "size": 10
+            },
+            "pathbar": {
+                "visible": true
+            },
+            "tiling": {
+                "packing": "slice-dice",
+                "flip": "x+y",
+                "pad": 0
+            },
+            "marker": {
+                "pad": {
+                    "t": 16,
+                    "l": 8,
+                    "r": 4,
+                    "b": 2
+                }
+            },
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "",
+                "",
+                "Bravo",
+                "Bravo",
+                "Bravo",
+                "Echo",
+                "Echo",
+                "Echo",
+                "Hotel",
+                "Hotel",
+                "Hotel",
+                "Kilo",
+                "Kilo",
+                "Kilo",
+                "November",
+                "November",
+                "November",
+                "Quebec",
+                "Quebec",
+                "Quebec",
+                "Tango",
+                "Tango",
+                "Tango",
+                "Whiskey",
+                "Whiskey"
+            ],
+            "domain": {
+                "x": [
+                    0.52,
+                    0.98
+                ],
+                "y": [
+                    0.5,
+                    0.95
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "width": 1200,
+        "height": 800,
+        "shapes": [
+            {
+                "type": "circle",
+                "layer": "below",
+                "x0": 0.075,
+                "x1": 0.925,
+                "y0": 0.0,
+                "y1": 0.8
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.02,
+                "x1": 0.48,
+                "y0": 0,
+                "y1": 0.45
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.02,
+                "x1": 0.48,
+                "y0": 0.5,
+                "y1": 0.95
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.52,
+                "x1": 0.98,
+                "y0": 0,
+                "y1": 0.45
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.52,
+                "x1": 0.98,
+                "y0": 0.5,
+                "y1": 0.95
+            }
+        ],
+        "annotations": [
+            {
+                "showarrow": false,
+                "text": "base<br>depthfade: 'reversed'",
+                "font": {
+                    "size": 16
+                },
+                "x": 0.25,
+                "xanchor": "center",
+                "y": 0,
+                "yanchor": "top"
+            },
+            {
+                "showarrow": false,
+                "text": "flip y axis<br>depthfade: 'reversed'",
+                "font": {
+                    "size": 16
+                },
+                "x": 0.25,
+                "xanchor": "center",
+                "y": 1,
+                "yanchor": "bottom"
+            },
+            {
+                "showarrow": false,
+                "text": "flip x axis",
+                "font": {
+                    "size": 16
+                },
+                "x": 0.75,
+                "xanchor": "center",
+                "y": 0,
+                "yanchor": "top"
+            },
+            {
+                "showarrow": false,
+                "text": "flip both axes",
+                "font": {
+                    "size": 16
+                },
+                "x": 0.75,
+                "xanchor": "center",
+                "y": 1,
+                "yanchor": "bottom"
+            }
+        ]
+    }
+}

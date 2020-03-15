@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -129,6 +129,7 @@ module.exports = function plot(gd, calcData) {
 
     // stash initial view
     for(var i = 0; i < gd._fullData.length; i++) {
+        if(!gd._fullData[i].visible) continue;
         if(gd._fullData[i].type !== cn.sankey) continue;
         if(!gd._fullData[i]._viewInitial) {
             var node = gd._fullData[i].node;
@@ -177,13 +178,17 @@ module.exports = function plot(gd, calcData) {
         function hoverCenterPosition(link) {
             var hoverCenterX, hoverCenterY;
             if(link.circular) {
-                hoverCenterX = (link.circularPathData.leftInnerExtent + link.circularPathData.rightInnerExtent) / 2 + d.parent.translateX;
-                hoverCenterY = link.circularPathData.verticalFullExtent + d.parent.translateY;
+                hoverCenterX = (link.circularPathData.leftInnerExtent + link.circularPathData.rightInnerExtent) / 2;
+                hoverCenterY = link.circularPathData.verticalFullExtent;
             } else {
-                hoverCenterX = (link.source.x1 + link.target.x0) / 2 + d.parent.translateX;
-                hoverCenterY = (link.y0 + link.y1) / 2 + d.parent.translateY;
+                hoverCenterX = (link.source.x1 + link.target.x0) / 2;
+                hoverCenterY = (link.y0 + link.y1) / 2;
             }
-            return [hoverCenterX, hoverCenterY];
+            var center = [hoverCenterX, hoverCenterY];
+            if(link.trace.orientation === 'v') center.reverse();
+            center[0] += d.parent.translateX;
+            center[1] += d.parent.translateY;
+            return center;
         }
 
         // For each related links, create a hoverItem

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,8 +19,12 @@ var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
-module.exports = function convert(calcTrace) {
+var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;
+var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
+
+module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
     var isVisible = (trace.visible === true && trace._length !== 0);
@@ -87,7 +91,7 @@ module.exports = function convert(calcTrace) {
     }
 
     if(hasSymbols || hasText) {
-        symbol.geojson = makeSymbolGeoJSON(calcTrace);
+        symbol.geojson = makeSymbolGeoJSON(calcTrace, gd);
 
         Lib.extendFlat(symbol.layout, {
             visibility: 'visible',
@@ -229,19 +233,19 @@ function makeCircleOpts(calcTrace) {
     };
 }
 
-function makeSymbolGeoJSON(calcTrace) {
+function makeSymbolGeoJSON(calcTrace, gd) {
+    var fullLayout = gd._fullLayout;
     var trace = calcTrace[0].trace;
 
     var marker = trace.marker || {};
     var symbol = marker.symbol;
-    var text = trace.text;
 
     var fillSymbol = (symbol !== 'circle') ?
         getFillFunc(symbol) :
         blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-        getFillFunc(text) :
+        getFillFunc(trace.text) :
         blankFillFunc;
 
     var features = [];
@@ -251,6 +255,24 @@ function makeSymbolGeoJSON(calcTrace) {
 
         if(isBADNUM(calcPt.lonlat)) continue;
 
+        var texttemplate = trace.texttemplate;
+        var text;
+
+        if(texttemplate) {
+            var tt = Array.isArray(texttemplate) ? (texttemplate[i] || '') : texttemplate;
+            var labels = trace._module.formatLabels(calcPt, trace, fullLayout);
+            var pointValues = {};
+            appendArrayPointValue(pointValues, trace, calcPt.i);
+            var meta = trace._meta || {};
+            text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
+        } else {
+            text = fillText(calcPt.tx);
+        }
+
+        if(text) {
+            text = text.replace(NEWLINES, '').replace(BR_TAG_ALL, '\n');
+        }
+
         features.push({
             type: 'Feature',
             geometry: {
@@ -259,7 +281,7 @@ function makeSymbolGeoJSON(calcTrace) {
             },
             properties: {
                 symbol: fillSymbol(calcPt.mx),
-                text: fillText(calcPt.tx)
+                text: text
             }
         });
     }

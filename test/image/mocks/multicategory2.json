@@ -25,10 +25,12 @@
   ],
   "layout": {
     "xaxis": {
-      "title": "MULTI-CATEGORY ON TOP",
+      "title": {"text": "MULTI-CATEGORY ON TOP"},
       "side": "top",
-      "automargin": true,
-      "tickson": "labels"
+      "tickson": "labels",
+      "ticks": "outside",
+      "ticklen": 25,
+      "automargin": true
     },
     "showlegend": false,
     "width": 400,

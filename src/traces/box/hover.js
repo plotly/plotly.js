@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60,7 +60,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var boxDelta = t.bdPos;
     var boxDeltaPos, boxDeltaNeg;
     var posAcceptance = t.wHover;
-    var shiftPos = function(di) { return di.pos + t.bPos - pVal; };
+    var shiftPos = function(di) { return pAxis.c2l(di.pos) + t.bPos - pAxis.c2l(pVal); };
 
     if(isViolin && trace.side !== 'both') {
         if(trace.side === 'positive') {

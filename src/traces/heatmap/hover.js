@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -91,6 +91,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var zVal = z[ny][nx];
     if(zmask && !zmask[ny][nx]) zVal = undefined;
 
+    if(zVal === undefined && !trace.hoverongaps) return;
+
     var text;
     if(Array.isArray(cd0.hovertext) && Array.isArray(cd0.hovertext[ny])) {
         text = cd0.hovertext[ny][nx];
@@ -110,7 +112,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
 
     return [Lib.extendFlat(pointData, {
-        index: [ny, nx],
+        index: trace._after2before ? trace._after2before[ny][nx] : [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: pointData.maxHoverDistance,
         spikeDistance: pointData.maxSpikeDistance,

@@ -702,26 +702,26 @@ describe('Test splom interactions:', function() {
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assert([1198, 16678, 3358, 118]);
+            _assert([1198, 16558, 3358, 118]);
             return Plotly.restyle(gd, 'showupperhalf', false);
         })
         .then(function() {
-            _assert([1198, 8488, 1768, 4]);
+            _assert([1198, 8476, 1768, 4]);
             return Plotly.restyle(gd, 'diagonal.visible', false);
         })
         .then(function() {
-            _assert([1138, 7654, 1600]);
+            _assert([1138, 7534, 1600]);
             return Plotly.restyle(gd, {
                 showupperhalf: true,
                 showlowerhalf: false
             });
         })
         .then(function() {
-            _assert([8188, 112, 1588]);
+            _assert([7966, 112, 1588]);
             return Plotly.restyle(gd, 'diagonal.visible', true);
         })
         .then(function() {
-            _assert([58, 9022, 1756, 118]);
+            _assert([58, 8908, 1756, 118]);
             return Plotly.relayout(gd, {
                 'xaxis.gridcolor': null,
                 'xaxis.gridwidth': null,
@@ -732,7 +732,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             // one batch for all 'grid' lines
             // and another for all 'zeroline' lines
-            _assert([9082, 1876]);
+            _assert([8968, 1876]);
         })
         .catch(failTest)
         .then(done);
@@ -943,17 +943,24 @@ describe('Test splom interactions:', function() {
         .then(done);
     });
 
-    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+    it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        fig.layout.showlegend = false;
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w, msg);
-            expect(canvas.node().height).toBe(h, msg);
+            expect(canvas.node().width).toBe(w, msg + '| canvas width');
+            expect(canvas.node().height).toBe(h, msg + '| canvas height');
 
             var gl = canvas.data()[0].regl._gl;
-            expect(gl.drawingBufferWidth).toBe(w, msg);
-            expect(gl.drawingBufferHeight).toBe(h, msg);
+            if(/Chrome\/78/.test(window.navigator.userAgent)) {
+                // N.B. for some reason 4096 is the max dimension allowed by Chrome 78
+                expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
+            } else {
+                expect(gl.drawingBufferWidth).toBe(w, msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight).toBe(h, msg + '| drawingBufferHeight');
+            }
         }
 
         var methods = ['cleanPlot', 'supplyDefaults', 'doCalcdata'];
@@ -1827,6 +1834,47 @@ describe('Test splom select:', function() {
                 unselectBatch: []
             });
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to select and then clear using API', function(done) {
+        function _assert(msg, exp) {
+            return function() {
+                var uid = gd._fullData[0].uid;
+                var scene = gd._fullLayout._splomScenes[uid];
+                expect(scene.selectBatch).withContext(msg + ' selectBatch').toEqual(exp.selectBatch);
+                expect(scene.unselectBatch).withContext(msg + ' unselectBatch').toEqual(exp.unselectBatch);
+            };
+        }
+
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{
+                values: [1, 2, 3]
+            }, {
+                values: [2, 3, 0]
+            }]
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            dragmode: 'select'
+        })
+        .then(_assert('base', {
+            selectBatch: [],
+            unselectBatch: []
+        }))
+        .then(function() { return _select([[50, 50], [195, 195]]); })
+        .then(_assert('after selection', {
+            selectBatch: [1],
+            unselectBatch: [0, 2]
+        }))
+        .then(function() { return Plotly.restyle(gd, 'selectedpoints', null); })
+        .then(_assert('after API clear', {
+            selectBatch: [],
+            unselectBatch: []
+        }))
         .catch(failTest)
         .then(done);
     });

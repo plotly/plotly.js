@@ -47,11 +47,13 @@ var QUEUE_WAIT = 10;
  *  Run all gl3d image test in queue:
  *
  *      npm run test-image -- gl3d_* --queue
+ *
+ *
  */
 
-var argv = minimist(process.argv.slice(2), {boolean: ['queue', 'filter' ]});
-var isInQueue = argv.queue;
-var filter = argv.filter;
+var argv = minimist(process.argv.slice(2), {
+    boolean: ['queue', 'filter', 'skip-flaky', 'just-flaky']
+});
 
 var allMock = false;
 // If no pattern is provided, all mocks are compared
@@ -80,40 +82,43 @@ allMockList = allMockList.filter(unique);
 
 // filter out untestable mocks if no pattern is specified (ie. we're testing all mocks)
 // or if flag '--filter' is provided
-if(allMock || filter) {
+console.log('');
+if(allMock || argv.filter) {
     console.log('Filtering out untestable mocks:');
-    allMockList = allMockList.filter(untestableFilter);
-    console.log('\n');
+    // Test cases:
+    // - font-wishlist
+    // - all mapbox
+    // don't behave consistently from run-to-run and/or
+    // machine-to-machine; skip over them for now.
+    allMockList = allMockList.filter(function(mockName) {
+        var cond = !(
+            mockName === 'font-wishlist' ||
+            mockName.indexOf('mapbox_') !== -1
+        );
+        if(!cond) console.log(' -', mockName);
+        return cond;
+    });
 }
 
-sortGl2dMockList(allMockList);
+var FLAKY_LIST = [
+    'treemap_coffee',
+    'treemap_textposition',
+    'treemap_with-without_values',
+    'trace_metatext',
+    'gl3d_directions-streamtube1'
+];
 
-// main
-if(isInQueue) {
-    runInQueue(allMockList);
-} else {
-    runInBatch(allMockList);
-}
-
-/* Test cases:
- *
- * - font-wishlist
- * - all mapbox
- *
- * don't behave consistently from run-to-run and/or
- * machine-to-machine; skip over them for now.
- *
- */
-function untestableFilter(mockName) {
-    var cond =
-    !(
-        mockName === 'font-wishlist' ||
-        mockName.indexOf('mapbox_') !== -1
-    );
-
-    if(!cond) console.log(' -', mockName);
-
-    return cond;
+console.log('');
+if(argv['skip-flaky']) {
+    allMockList = allMockList.filter(function(mockName) {
+        var cond = FLAKY_LIST.indexOf(mockName) === -1;
+        if(!cond) console.log('Skipping flaky mock', mockName);
+        return cond;
+    });
+} else if(argv['just-flaky']) {
+    allMockList = allMockList.filter(function(mockName) {
+        return FLAKY_LIST.indexOf(mockName) !== -1;
+    });
 }
 
 /* gl2d pointcloud and other non-regl gl2d mock(s)
@@ -276,4 +281,14 @@ function comparePixels(mockName, cb) {
         .on('response', onResponse)
         .pipe(saveImageStream)
         .on('close', checkImage);
+}
+
+sortGl2dMockList(allMockList);
+console.log('');
+
+// main
+if(argv.queue) {
+    runInQueue(allMockList);
+} else {
+    runInBatch(allMockList);
 }

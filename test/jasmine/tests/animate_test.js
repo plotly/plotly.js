@@ -708,7 +708,6 @@ describe('Animate API details', function() {
 });
 
 describe('Animating multiple axes', function() {
-    'use strict';
     var gd;
 
     beforeEach(function() {
@@ -747,6 +746,123 @@ describe('Animating multiple axes', function() {
             expect(gd._fullLayout.yaxis.range).toEqual([2, 3]);
             expect(gd._fullLayout.yaxis2.range).toEqual([1, 2]);
         })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@flaky updates ranges of secondary axes (date + category case)', function(done) {
+        Plotly.plot(gd, [
+            {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
+            {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            grid: {rows: 1, columns: 2, pattern: 'independent'},
+            xaxis: {range: ['2018-01-01', '2020-01-01']},
+            yaxis: {range: [0, 4]},
+            xaxis2: {range: [0, 2]},
+            yaxis2: {range: [0, 4]}
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toEqual(['2018-01-01', '2020-01-01']);
+            expect(gd._fullLayout.xaxis2.range).toEqual([0, 2]);
+
+            var promise = Plotly.animate(gd, [{
+                layout: {
+                    'xaxis.range': ['2018-06-01', '2019-06-01'],
+                    'xaxis2.range': [0.5, 1.5]
+                }
+            }], {
+                frame: {redraw: false, duration: 60},
+                transition: {duration: 30}
+            });
+
+            setTimeout(function() {
+                var fullLayout = gd._fullLayout;
+
+                var xa = fullLayout.xaxis;
+                var xr = xa.range.slice();
+                expect(xa.r2l(xr[0])).toBeGreaterThan(xa.r2l('2018-01-01'));
+                expect(xa.r2l(xr[1])).toBeLessThan(xa.r2l('2020-01-01'));
+
+                var xa2 = fullLayout.xaxis2;
+                var xr2 = xa2.range.slice();
+                expect(xr2[0]).toBeGreaterThan(0);
+                expect(xr2[1]).toBeLessThan(2);
+            }, 15);
+
+            return promise;
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toEqual(['2018-06-01', '2019-06-01']);
+            expect(gd._fullLayout.xaxis2.range).toEqual([0.5, 1.5]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not leak axis update from subplot to subplot', function(done) {
+        function _animate(frameLayout) {
+            return function() {
+                return Plotly.animate(gd, {layout: frameLayout}, {
+                    frame: {redraw: false, duration: 10},
+                    transition: {duration: 10}
+                });
+            };
+        }
+
+        function _assert(msg, exp) {
+            return function() {
+                var fullLayout = gd._fullLayout;
+                for(var k in exp) {
+                    expect(fullLayout[k].range).toBeCloseToArray(exp[k], 2, msg + '| ' + k);
+                }
+            };
+        }
+
+        Plotly.plot(gd, [{
+            x: [0.1, 0.2, 0.3],
+            y: [0.4, 0.5, 0.6],
+        }, {
+            x: [0.2, 0.3, 0.4],
+            y: [0.5, 0.6, 0.7],
+            xaxis: 'x2',
+            yaxis: 'y2',
+        }, {
+            x: [0.3, 0.5, 0.7],
+            y: [0.7, 0.2, 0.2],
+            xaxis: 'x3',
+            yaxis: 'y3',
+        }], {
+            grid: {rows: 1, columns: 3, pattern: 'independent'},
+            showlegend: false
+        })
+        .then(_assert('base', {
+            xaxis: [0.0825, 0.3174], xaxis2: [0.1825, 0.417], xaxis3: [0.265, 0.7349],
+            yaxis: [0.385, 0.614], yaxis2: [0.485, 0.714], yaxis3: [0.163, 0.7366]
+        }))
+        .then(_animate({
+            xaxis: {range: [-10, 10]},
+            yaxis: {range: [-10, 10]}
+        }))
+        .then(_assert('after xy range animate', {
+            xaxis: [-10, 10], xaxis2: [0.1825, 0.417], xaxis3: [0.265, 0.7349],
+            yaxis: [-10, 10], yaxis2: [0.485, 0.714], yaxis3: [0.163, 0.7366]
+        }))
+        .then(_animate({
+            xaxis2: {range: [-20, 20]},
+            yaxis2: {range: [-20, 20]}
+        }))
+        .then(_assert('after x2y2 range animate', {
+            xaxis: [-10, 10], xaxis2: [-20, 20], xaxis3: [0.265, 0.7349],
+            yaxis: [-10, 10], yaxis2: [-20, 20], yaxis3: [0.163, 0.7366]
+        }))
+        .then(_animate({
+            xaxis3: {range: [-30, 30]},
+            yaxis3: {range: [-30, 30]}
+        }))
+        .then(_assert('after x3y3 range animate', {
+            xaxis: [-10, 10], xaxis2: [-20, 20], xaxis3: [-30, 30],
+            yaxis: [-10, 10], yaxis2: [-20, 20], yaxis3: [-30, 30]
+        }))
         .catch(failTest)
         .then(done);
     });

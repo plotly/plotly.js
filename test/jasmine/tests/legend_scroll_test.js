@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/components/legend/constants');
-var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var d3 = require('d3');
 var createGraph = require('../assets/create_graph_div');
@@ -9,6 +10,7 @@ var destroyGraph = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var getBBox = require('../assets/get_bbox');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 var mock = require('../../image/mocks/legend_scroll.json');
 
 describe('The legend', function() {
@@ -110,7 +112,7 @@ describe('The legend', function() {
                 'translate(0, ' + -finalDataScroll + ')');
         });
 
-        function dragScroll(element, rightClick) {
+        function dragScroll(element, rightClick, mainClick) {
             var scrollBar = getScrollBar();
             var scrollBarBB = scrollBar.getBoundingClientRect();
             var legendHeight = getLegendHeight(gd);
@@ -131,6 +133,10 @@ describe('The legend', function() {
             var x = elBB.left + elBB.width / 2;
 
             var opts = {element: element};
+            if(mainClick) {
+                opts.button = 0;
+                opts.buttons = 2;
+            }
             if(rightClick) {
                 opts.button = 2;
                 opts.buttons = 2;
@@ -155,14 +161,64 @@ describe('The legend', function() {
                 'translate(0, ' + -dataScroll + ')');
         });
 
-        it('should not scroll on dragging the scrollbox', function() {
+        it('should not scroll on dragging the scrollbox with a mouse', function() {
             var scrollBox = getScrollBox();
-            var finalDataScroll = dragScroll(scrollBox);
+            var finalDataScroll = dragScroll(scrollBox, false, true);
 
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
                 'translate(0, ' + -dataScroll + ')');
+        });
+
+        it('should handle touch events on scrollbox', function(done) {
+            var scrollBox = getScrollBox();
+            var x = 637;
+            var y0 = 140;
+            var y1 = 200;
+            var opts = {element: scrollBox};
+
+            spyOn(Drawing, 'setRect');
+
+            // N.B. sometimes the touch start/move/end don't trigger a drag for
+            // some obscure reason, for more details see
+            // https://github.com/plotly/plotly.js/pull/3873#issuecomment-519686050
+            for(var i = 0; i < 20; i++) {
+                touchEvent('touchstart', x, y0, opts);
+                touchEvent('touchmove', x, y0, opts);
+                touchEvent('touchmove', x, y1, opts);
+                touchEvent('touchend', x, y1, opts);
+            }
+
+            setTimeout(function() {
+                expect(Drawing.setRect).toHaveBeenCalled();
+                done();
+            }, 100);
+        });
+
+        it('should handle touch events on scrollbar', function(done) {
+            var scrollBox = getScrollBar();
+            var x = 691;
+            var y0 = 140;
+            var y1 = 200;
+            var opts = {element: scrollBox};
+
+            spyOn(Drawing, 'setRect');
+
+            // N.B. sometimes the touch start/move/end don't trigger a drag for
+            // some obscure reason, for more details see
+            // https://github.com/plotly/plotly.js/pull/3873#issuecomment-519686050
+            for(var i = 0; i < 20; i++) {
+                touchEvent('touchstart', x, y0, opts);
+                touchEvent('touchmove', x, y0, opts);
+                touchEvent('touchmove', x, y1, opts);
+                touchEvent('touchend', x, y1, opts);
+            }
+
+            setTimeout(function() {
+                expect(Drawing.setRect).toHaveBeenCalled();
+                done();
+            }, 100);
         });
 
         it('should not scroll on dragging the scrollbar with a right click', function() {

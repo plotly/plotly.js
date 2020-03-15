@@ -6,7 +6,7 @@ var glob = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
 var eslint = require('eslint');
-var trueCasePath = require('true-case-path');
+var trueCasePath = require('true-case-path').trueCasePathSync;
 
 var common = require('./util/common');
 var isJasmineTestIt = common.isJasmineTestIt;
@@ -140,12 +140,15 @@ function assertSrcContents() {
                     } else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
                     } else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        // add special case for sunburst where we use 'children'
+                        // add special case for sunburst and treemap where we use 'children'
                         // off the d3-hierarchy output
                         var dirParts = path.dirname(file).split(path.sep);
-                        var isSunburstFile = dirParts[dirParts.length - 1] === 'sunburst';
-                        var isLinkedToObject = ['pt', 'd', 'parent'].indexOf(parts[parts.length - 2]) !== -1;
-                        if(!(isSunburstFile && isLinkedToObject)) {
+                        var filename = dirParts[dirParts.length - 1];
+                        var isSunburstOrTreemap =
+                            filename === 'sunburst' ||
+                            filename === 'treemap';
+                        var isLinkedToObject = ['pt', 'd', 'parent', 'node'].indexOf(parts[parts.length - 2]) !== -1;
+                        if(!(isSunburstOrTreemap && isLinkedToObject)) {
                             logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
                         }
                     } else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {

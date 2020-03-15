@@ -2,12 +2,14 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var ScatterGl = require('@src/traces/scattergl');
+var TOO_MANY_POINTS = require('@src/traces/scattergl/constants').TOO_MANY_POINTS;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('end-to-end scattergl tests', function() {
     var gd;
@@ -103,6 +105,27 @@ describe('end-to-end scattergl tests', function() {
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(2);
         }).catch(failTest).then(done);
+    });
+
+    ['text', 'texttemplate'].forEach(function(attr) {
+        it('@gl should handle a plot with less ' + attr + ' labels than data points', function(done) {
+            expect(function() {
+                var mock = {
+                    'type': 'scattergl',
+                    'mode': 'markers+text',
+                    'x': [3, 2, 1, 0],
+                    'y': [0, 1, 4, 9],
+                    'textposition': 'top center'
+                };
+                mock[attr] = ['1', '2', '3'];
+                Plotly.plot(gd, [mock])
+                .then(function() {
+                    expect(mock[attr].length).toBe(3);
+                })
+                .catch(failTest);
+            }).not.toThrow();
+            done();
+        });
     });
 
     it('@gl should be able to toggle visibility', function(done) {
@@ -550,6 +573,50 @@ describe('end-to-end scattergl tests', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should reset the sanp to length after react and not to TOO_MANY_POINTS constant', function(done) {
+        Lib.seedPseudoRandom();
+
+        function fig(num) {
+            var x = [];
+            var y = [];
+            for(var i = 0; i < num; i++) {
+                x.push(Lib.pseudoRandom());
+                y.push(Lib.pseudoRandom());
+            }
+
+            return {
+                data: [{
+                    x: x, y: y,
+                    mode: 'lines+markers',
+                    type: 'scattergl',
+                    marker: {
+                        size: 20,
+                        color: 'rgba(0,0,255,0.5)'
+                    }
+                }]
+            };
+        }
+
+        var getSnap = function() {
+            return gd._fullLayout._plots.xy._scene.markerOptions[0].snap;
+        };
+
+        Plotly.newPlot(gd, fig(TOO_MANY_POINTS))
+        .then(function() {
+            expect(getSnap()).toEqual(TOO_MANY_POINTS);
+
+            return Plotly.react(gd, fig(20));
+        })
+        .then(function() {
+            expect(getSnap()).toEqual(20);
+
+            return Plotly.react(gd, fig(TOO_MANY_POINTS + 1));
+        })
+        .then(function() {
+            expect(getSnap()).toEqual(TOO_MANY_POINTS + 1);
+        }).catch(failTest).then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {
@@ -682,4 +749,46 @@ describe('Test scattergl autorange:', function() {
             .then(done);
         });
     });
+});
+
+describe('Test texttemplate for scattergl', function() {
+    checkTextTemplate([{
+        type: 'scattergl',
+        mode: 'text+lines',
+        x: [1, 2, 3, 4],
+        y: [2, 3, 4, 5],
+        text: ['A', 'B', 'C', 'D'],
+    }], '@gl', [
+        ['%{text}: %{x}, %{y}', ['A: 1, 2', 'B: 2, 3', 'C: 3, 4', 'D: 4, 5']],
+        [['%{x}', '%{x}', '%{text}', '%{y}'], ['1', '2', 'C', '5']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scattergl',
+            mode: 'text',
+            x: ['a', 'b'],
+            y: ['1000', '1200']
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        }
+    }, '@gl', [
+        ['%{x} is %{y}', ['*a* is $1000.00 !', '*b* is $1200.00 !']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scattergl',
+            mode: 'text',
+            y: ['1000', '1200']
+        }],
+        layout: {
+            xaxis: { tickprefix: '*', ticksuffix: '*' },
+            yaxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'}
+        }
+    }, '@gl', [
+        ['%{x} is %{y}', ['*0* is $1000.00 !', '*1* is $1200.00 !']]
+    ]);
 });

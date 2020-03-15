@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54,6 +54,7 @@ function handleLayerDefaults(layerIn, layerOut) {
         var mustBeRasterLayer = sourceType === 'raster' || sourceType === 'image';
 
         coerce('source');
+        coerce('sourceattribution');
 
         if(sourceType === 'vector') {
             coerce('sourcelayer');

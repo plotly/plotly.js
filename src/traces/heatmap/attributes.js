@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,8 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var baseAttrs = require('../../plots/attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
@@ -79,15 +80,28 @@ module.exports = extendFlat({
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
     },
+    hoverongaps: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        editType: 'none',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data have hover labels associated with them.'
+        ].join(' ')
+    },
     connectgaps: {
         valType: 'boolean',
-        dflt: false,
         role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
-            'in the `z` data are filled in.'
+            'in the `z` data are filled in.',
+            'It is defaulted to true if `z` is a',
+            'one dimensional array and `zsmooth` is not false;',
+            'otherwise it is defaulted to false.'
         ].join(' ')
     },
     xgap: {
@@ -117,7 +131,8 @@ module.exports = extendFlat({
             FORMAT_LINK
         ].join(' ')
     },
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 }, {
     transforms: undefined
 },

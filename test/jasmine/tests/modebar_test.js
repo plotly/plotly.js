@@ -484,7 +484,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 
@@ -502,7 +502,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 
@@ -1201,6 +1201,7 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
                 });
+
                 it('should makes spikelines visible', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1208,6 +1209,7 @@ describe('ModeBar', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
+
                 it('should not become disabled when hovermode is switched off closest', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1215,6 +1217,7 @@ describe('ModeBar', function() {
                     buttonCompare.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
                 });
+
                 it('should keep the state on changing the hovermode', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
@@ -1226,6 +1229,36 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
 
                     buttonClosest.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+
+                it('should work after clicking on "autoScale2d"', function() {
+                    var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonAutoScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+
+                it('should work after clicking on "resetScale2d"', function() {
+                    var buttonResetScale = selectButton(modeBar, 'resetScale2d');
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonResetScale.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+                    buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
             });
@@ -1339,6 +1372,56 @@ describe('ModeBar', function() {
                     _assert(10, 10, 8);
                     button.isActive(false);
                 })
+                .then(done);
+            });
+        });
+
+        describe('button toggleHover', function() {
+            it('ternary case', function(done) {
+                var gd = createGraphDiv();
+
+                function _run(msg) {
+                    expect(gd._fullLayout.hovermode).toBe('closest', msg + '| pre');
+                    selectButton(gd._fullLayout._modeBar, 'toggleHover').click();
+                    expect(gd._fullLayout.hovermode).toBe(false, msg + '| after first click');
+                    selectButton(gd._fullLayout._modeBar, 'toggleHover').click();
+                    expect(gd._fullLayout.hovermode).toBe('closest', msg + '| after 2nd click');
+                }
+
+                Plotly.plot(gd, [
+                    {type: 'scatterternary', a: [1], b: [2], c: [3]}
+                ])
+                .then(function() {
+                    _run('base');
+
+                    // mock for *cartesian* bundle
+                    delete gd._fullLayout._subplots.gl3d;
+
+                    _run('cartesian bundle');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        describe('button resetViews', function() {
+            it('ternary + geo case ', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, [
+                    {type: 'scatterternary', a: [1], b: [2], c: [3]},
+                    {type: 'scattergeo', lon: [10], lat: [20]}
+                ])
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'resetViews').click();
+
+                    // mock for custom geo + ternary bundle
+                    delete gd._fullLayout._subplots.gl3d;
+                    delete gd._fullLayout._subplots.mapbox;
+
+                    selectButton(gd._fullLayout._modeBar, 'resetViews').click();
+                })
+                .catch(failTest)
                 .then(done);
             });
         });

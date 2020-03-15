@@ -1,4 +1,5 @@
 var Plotly = require('@lib');
+var Lib = require('@src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -323,16 +324,27 @@ describe('Test isosurface', function() {
 
             function _hover1() {
                 mouseEvent('mouseover', 200, 200);
+                return delay(20)();
             }
 
             function _hover2() {
                 mouseEvent('mouseover', 100, 100);
+                return delay(20)();
+            }
+
+            function _hover3() {
+                mouseEvent('mouseover', 300, 150);
+                return delay(20)();
+            }
+
+            function _hover4() {
+                mouseEvent('mouseover', 150, 300);
+                return delay(20)();
             }
 
             Plotly.plot(gd, fig)
             .then(delay(20))
             .then(_hover1)
-            .then(delay(20))
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
@@ -345,14 +357,37 @@ describe('Test isosurface', function() {
             })
             .then(delay(20))
             .then(_hover2)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.3',
+                        'y: 0.001',
+                        'z: −16',
+                        'value: −0.27'
+                    ].join('\n')
+                });
+            })
             .then(delay(20))
+            .then(_hover3)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 0.2',
+                        'y: 100μ',
+                        'z: −16',
+                        'value: −1.12'
+                    ].join('\n')
+                });
+            })
+            .then(delay(20))
+            .then(_hover4)
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −8',
-                        'value: −1.28'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3'
                     ].join('\n')
                 });
             })
@@ -362,32 +397,168 @@ describe('Test isosurface', function() {
                 ]);
             })
             .then(delay(20))
-            .then(_hover2)
+            .then(_hover4)
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −8',
-                        'value: −1.28',
-                        '!! -1.28 !!'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3',
+                        '!! -1.3 !!'
                     ].join('\n')
                 });
             })
             .then(function() {
                 return Plotly.restyle(gd, 'hovertemplate', '%{value}<br>(%{x},%{y},%{z})<extra>!!</extra>');
             })
-            .then(delay(20))
-            .then(_hover2)
-            .then(delay(20))
-            .then(function() {
-                assertHoverLabelContent({
-                    nums: '−1.28\n(0.4,0.001,−8)',
-                    name: '!!'
-                });
-            })
             .catch(failTest)
             .then(done);
         });
+    });
+});
+
+describe('Test isosurface grid', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    [ // list of directions
+        'number',
+        'string',
+        'typedArray'
+    ].forEach(function(format) {
+        [ // list of directions
+            [-1, -1, -1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1],
+            [1, 1, -1],
+            [1, -1, 1],
+            [-1, 1, 1],
+            [1, 1, 1]
+        ].forEach(function(dir) {
+            it('@gl should work with grid steps: ' + dir + ' and values in ' + format + ' format.', function(done) {
+                var x = [];
+                var y = [];
+                var z = [];
+                var v = [];
+
+                for(var i = 0; i < 3; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        for(var k = 0; k < 5; k++) {
+                            var newX = i * dir[0];
+                            var newY = j * dir[1];
+                            var newZ = k * dir[2];
+                            var newV = (
+                                newX * newX +
+                                newY * newY +
+                                newZ * newZ
+                            );
+
+                            if(format === 'string') {
+                                newV = String(newV);
+                                newX = String(newX);
+                                newY = String(newY);
+                                newZ = String(newZ);
+                            }
+
+                            v.push(newV);
+                            x.push(newX);
+                            y.push(newY);
+                            z.push(newZ);
+                        }
+                    }
+                }
+
+                if(format === 'typedArray') {
+                    v = new Int32Array(v);
+                    x = new Float32Array(x);
+                    y = new Float32Array(y);
+                    z = new Float64Array(z);
+                }
+
+                var fig = {
+                    data: [{
+                        type: 'isosurface',
+                        x: x,
+                        y: y,
+                        z: z,
+                        value: v
+                    }]
+                };
+
+                function _assert(msg, exp) {
+                    var scene = gd._fullLayout.scene._scene;
+                    var objs = scene.glplot.objects;
+                    expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+                    expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+                    expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+                }
+
+                Plotly.plot(gd, fig).then(function() {
+                    _assert('lengths', {
+                        positionsLength: 372,
+                        cellsLength: 104
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    it('@gl should return blank mesh grid if encountered arbitrary coordinates', function(done) {
+        var x = [];
+        var y = [];
+        var z = [];
+        var v = [];
+
+        Lib.seedPseudoRandom();
+
+        for(var n = 0; n < 1000; n++) {
+            x.push((10 * Lib.pseudoRandom()) | 0);
+            y.push((10 * Lib.pseudoRandom()) | 0);
+            z.push((10 * Lib.pseudoRandom()) | 0);
+            v.push((10 * Lib.pseudoRandom()) | 0);
+        }
+
+        var fig = {
+            data: [{
+                type: 'isosurface',
+                x: x,
+                y: y,
+                z: z,
+                value: v
+            }]
+        };
+
+        function _assert(msg, exp) {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+        }
+
+        spyOn(Lib, 'warn');
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('arbitrary coordinates', {
+                positionsLength: 0,
+                cellsLength: 0
+            });
+        }).then(function() {
+            expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

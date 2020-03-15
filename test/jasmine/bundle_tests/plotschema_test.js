@@ -372,7 +372,7 @@ describe('plot schema', function() {
         var traces = Plotly.PlotSchema.get().traces;
 
         expect(traces.sankey.attributes.hoverinfo.flags.length).toBe(0);
-        expect(traces.choropleth.attributes.showlegend).toBe(undefined, 'no legend attrs for choropleth (for now)');
+        expect(traces.parcoords.attributes.showlegend).toBe(undefined, 'no legend attrs for parcoords (for now)');
         expect(traces.table.attributes.opacity).toBe(undefined, 'no opacity attr for table');
         expect(traces.parcoords.attributes.hoverinfo).toBe(undefined, 'no hover attrs for parcoords');
         expect(traces.scatter3d.attributes.selectedpoints).toBe(undefined, 'no selectedpoints for gl3d traces');

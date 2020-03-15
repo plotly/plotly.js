@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,7 +28,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
-            '`scattercontour` traces can specify a carpet plot on which',
+            '`contourcarpet` traces can specify a carpet plot on which',
             'they lie'
         ].join(' ')
     },

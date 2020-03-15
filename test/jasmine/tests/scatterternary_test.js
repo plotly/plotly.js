@@ -11,6 +11,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -553,4 +554,40 @@ describe('Test scatterternary *cliponaxis*', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test scatterternary texttemplate:', function() {
+    checkTextTemplate([{
+        'type': 'scatterternary',
+        'a': [3, 2, 5],
+        'b': [2, 5, 2],
+        'c': [5, 2, 2 ],
+        'mode': 'markers+text',
+        'text': ['A', 'B', 'C']
+    }], 'g.textpoint', [
+        ['%{text} (%{a:.1f}, %{b:.1f}, %{c:.1f})', ['A (3.0, 2.0, 5.0)', 'B (2.0, 5.0, 2.0)', 'C (5.0, 2.0, 2.0)']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scatterternary',
+            mode: 'text',
+            a: [3, 2, 5],
+            b: [2, 5, 2],
+            c: [5, 2, 2]
+        }],
+        layout: {
+            ternary: {
+                aaxis: { tickprefix: '*', ticksuffix: '*' },
+                baxis: { tickprefix: '$', ticksuffix: ' !', tickformat: '.2f'},
+                caxis: { tickprefix: '#', ticksuffix: '^'}
+            }
+        }
+    }, '.textpoint', [
+        ['%{a} is %{b} is %{c}', [
+            '*0.3* is $0.20 ! is #0.5^',
+            '*0.2222222* is $0.56 ! is #0.2222222^',
+            '*0.5555556* is $0.22 ! is #0.2222222^'
+        ]]
+    ]);
 });

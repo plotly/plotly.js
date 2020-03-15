@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Axes = require('@src/plots/cartesian/axes');
 
 var ScatterMapbox = require('@src/traces/scattermapbox');
 var convert = require('@src/traces/scattermapbox/convert');
@@ -139,7 +140,15 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
-        return convert(calcTrace);
+
+        var mockAxis = {type: 'linear'};
+        Axes.setConvert(mockAxis, gd._fullLayout);
+
+        gd._fullLayout.mapbox._subplot = {
+            mockAxis: mockAxis
+        };
+
+        return convert(gd, calcTrace);
     }
 
     function assertVisibility(opts, expectations) {
@@ -476,6 +485,70 @@ describe('scattermapbox convert', function() {
         });
 
         expect(actualText).toEqual(['A', 'B', 'C', 'F', undefined]);
+    });
+
+    it('should generate correct output for texttemplate without text', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'lines+text',
+            connectgaps: true,
+            textposition: 'outside',
+            texttemplate: ['A', 'B', 'C', 'D', 'E', 'F']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
+    });
+
+    it('should convert \\n to \'\' and <br> to \\n', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'text',
+            text: ['one\nline', 'two<br>lines', 'three<BR>lines<br />yep']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['oneline', 'two\nlines', 'three\nlines\nyep', undefined, undefined]);
+    });
+
+    it('should convert \\n to \'\' and <br> to \\n - texttemplate case', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'text',
+            texttemplate: ['%{lon}\none\nline', '%{lat}<br>two<br>lines', '%{lon}\n%{lat}<br>more<br>lines']
+        }));
+
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual(['10oneline', '20\ntwo\nlines', '3010\nmore\nlines', '', '']);
+    });
+
+    it('should generate correct output for texttemplate', function() {
+        var mock = {
+            'type': 'scattermapbox',
+            'mode': 'markers+text',
+            'lon': [-73.57, -79.24, -123.06],
+            'lat': [45.5, 43.4, 49.13],
+            'text': ['Montreal', 'Toronto', 'Vancouver'],
+            'texttemplate': '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
+            'textposition': 'top center',
+            'customdata': [1780000, 2930000, 675218]
+        };
+        var opts = _convert(mock);
+        var actualText = opts.symbol.geojson.features.map(function(f) {
+            return f.properties.text;
+        });
+
+        expect(actualText).toEqual([
+            'Montreal (−73.57, 45.5): 1.8M',
+            'Toronto (−79.24, 43.4): 2.9M',
+            'Vancouver (−123.06, 49.13): 680k'
+        ]);
     });
 
     it('should generate correct output for lines traces with trailing gaps', function() {

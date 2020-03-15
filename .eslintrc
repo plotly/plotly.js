@@ -71,6 +71,7 @@
     "no-console": [0],
     "no-unused-labels": [2],
     "no-useless-escape": [0],
-    "func-name-matching": ["error", "always"]
+    "func-name-matching": ["error", "always"],
+    "no-prototype-builtins": [0]
   }
 }

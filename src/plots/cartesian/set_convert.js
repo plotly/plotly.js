@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,6 +22,10 @@ var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
+var ONEDAY = numConstants.ONEDAY;
+var ONEHOUR = numConstants.ONEHOUR;
+var ONEMIN = numConstants.ONEMIN;
+var ONESEC = numConstants.ONESEC;
 
 var constants = require('./constants');
 var axisIds = require('./axis_ids');
@@ -170,14 +174,74 @@ module.exports = function setConvert(ax, fullLayout) {
         if(isNumeric(v)) return +v;
     }
 
-    function l2p(v) {
+    // include 2 fractional digits on pixel, for PDF zooming etc
+    function _l2p(v, m, b) { return d3.round(b + m * v, 2); }
+
+    function _p2l(px, m, b) { return (px - b) / m; }
+
+    var l2p = function l2p(v) {
         if(!isNumeric(v)) return BADNUM;
+        return _l2p(v, ax._m, ax._b);
+    };
 
-        // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(ax._b + ax._m * v, 2);
+    var p2l = function(px) {
+        return _p2l(px, ax._m, ax._b);
+    };
+
+    if(ax.rangebreaks) {
+        l2p = function(v) {
+            if(!isNumeric(v)) return BADNUM;
+            var len = ax._rangebreaks.length;
+            if(!len) return _l2p(v, ax._m, ax._b);
+
+            var isY = axLetter === 'y';
+            var pos = isY ? -v : v;
+
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                var nextI = i + 1;
+                var brk = ax._rangebreaks[i];
+
+                var min = isY ? -brk.max : brk.min;
+                var max = isY ? -brk.min : brk.max;
+
+                if(pos < min) break;
+                if(pos > max) q = nextI;
+                else {
+                    // when falls into break, pick 'closest' offset
+                    q = pos > (min + max) / 2 ? nextI : i;
+                    break;
+                }
+            }
+            return _l2p(v, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+        };
+
+        p2l = function(px) {
+            if(!isNumeric(px)) return BADNUM;
+            var len = ax._rangebreaks.length;
+            if(!len) return _p2l(px, ax._m, ax._b);
+
+            var isY = axLetter === 'y';
+            var pos = isY ? -px : px;
+
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                var nextI = i + 1;
+                var brk = ax._rangebreaks[i];
+
+                var min = isY ? -brk.pmax : brk.pmin;
+                var max = isY ? -brk.pmin : brk.pmax;
+
+                if(pos < min) break;
+                if(pos > max) q = nextI;
+                else {
+                    q = i;
+                    break;
+                }
+            }
+            return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+        };
     }
-
-    function p2l(px) { return (px - ax._b) / ax._m; }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
     ax.c2l = (ax.type === 'log') ? toLog : ensureNumber;
@@ -398,6 +462,10 @@ module.exports = function setConvert(ax, fullLayout) {
         // make sure we don't later mutate the defaults
         dflt = dflt.slice();
 
+        if(ax.rangemode === 'tozero' || ax.rangemode === 'nonnegative') {
+            dflt[0] = 0;
+        }
+
         if(!range || range.length !== 2) {
             Lib.nestedProperty(ax, rangeAttr).set(dflt);
             return;
@@ -459,7 +527,7 @@ module.exports = function setConvert(ax, fullLayout) {
             ax.domain = ax2.domain;
         }
 
-        // While transitions are occuring, occurring, we get a double-transform
+        // While transitions are occurring, we get a double-transform
         // issue if we transform the drawn layer *and* use the new axis range to
         // draw the data. This allows us to construct setConvert using the pre-
         // interaction values of the range:
@@ -482,10 +550,275 @@ module.exports = function setConvert(ax, fullLayout) {
             ax._b = -ax._m * rl0;
         }
 
+        // set of "N" disjoint rangebreaks inside the range
+        ax._rangebreaks = [];
+        // length of these rangebreaks in value space - negative on reversed axes
+        ax._lBreaks = 0;
+        // l2p slope (same for all intervals)
+        ax._m2 = 0;
+        // set of l2p offsets (one for each of the (N+1) piecewise intervals)
+        ax._B = [];
+
+        if(ax.rangebreaks) {
+            var i, brk;
+
+            ax._rangebreaks = ax.locateBreaks(
+                Math.min(rl0, rl1),
+                Math.max(rl0, rl1)
+            );
+            var axReverse = rl0 > rl1;
+            var signAx = axReverse ? -1 : 1;
+
+            if(ax._rangebreaks.length) {
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
+                    ax._lBreaks += brk.max - brk.min;
+                }
+
+                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
+
+                if(axLetter === 'y') {
+                    ax._rangebreaks.reverse();
+                    // N.B. top to bottom (negative coord, positive px direction)
+                    ax._B.push(ax._m2 * rl1);
+                } else {
+                    ax._B.push(-ax._m2 * rl0);
+                }
+
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
+                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
+                }
+                if(axReverse) {
+                    ax._B.reverse();
+                }
+
+                // fill pixel (i.e. 'p') min/max here,
+                // to not have to loop through the _rangebreaks twice during `p2l`
+                for(i = 0; i < ax._rangebreaks.length; i++) {
+                    brk = ax._rangebreaks[i];
+                    brk.pmin = l2p(axReverse ? brk.max : brk.min);
+                    brk.pmax = l2p(axReverse ? brk.min : brk.max);
+                }
+            }
+        }
+
         if(!isFinite(ax._m) || !isFinite(ax._b) || ax._length < 0) {
             fullLayout._replotting = false;
             throw new Error('Something went wrong with axis scaling');
         }
+    };
+
+    ax.maskBreaks = function(v) {
+        var rangebreaksIn = ax.rangebreaks || [];
+        var bnds, b0, b1, vb;
+
+        for(var i = 0; i < rangebreaksIn.length; i++) {
+            var brk = rangebreaksIn[i];
+
+            if(brk.enabled) {
+                var op = brk.operation;
+                var op0 = op.charAt(0);
+                var op1 = op.charAt(1);
+
+                if(brk.bounds) {
+                    var doesCrossPeriod = false;
+
+                    switch(brk.pattern) {
+                        case '%w':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                            vb = (new Date(v)).getUTCDay();
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        case '%H':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                            var vDate = new Date(v);
+                            vb = vDate.getUTCHours() + (
+                                vDate.getUTCMinutes() * ONEMIN +
+                                vDate.getUTCSeconds() * ONESEC +
+                                vDate.getUTCMilliseconds()
+                            ) / ONEDAY;
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        case '':
+                            // N.B. should work on date axes as well!
+                            // e.g. { bounds: ['2020-01-04', '2020-01-05 23:59'] }
+                            bnds = Lib.simpleMap(brk.bounds, ax.d2c);
+                            if(bnds[0] <= bnds[1]) {
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                            } else {
+                                b0 = bnds[1];
+                                b1 = bnds[0];
+                            }
+                            // TODO should work with reversed-range axes
+                            vb = v;
+                            break;
+                    }
+
+                    if(doesCrossPeriod) {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) ||
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    } else {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) &&
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    }
+                } else {
+                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var onOpenBound = false;
+
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        if(
+                            (op0 === '(' ? v > b0 : v >= b0) &&
+                            (op1 === ')' ? v < b1 : v <= b1)
+                        ) return BADNUM;
+
+                        if(onOpenBound && op0 === '(' && v === b0) return BADNUM;
+                        onOpenBound = op1 === ')' && v === b1;
+                    }
+                }
+            }
+        }
+        return v;
+    };
+
+    ax.locateBreaks = function(r0, r1) {
+        var i, bnds, b0, b1;
+
+        var rangebreaksOut = [];
+        if(!ax.rangebreaks) return rangebreaksOut;
+
+        var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
+            if(a.pattern === '%w' && b.pattern === '%H') return -1;
+            else if(b.pattern === '%w' && a.pattern === '%H') return 1;
+            return 0;
+        });
+
+        var addBreak = function(min, max) {
+            min = Lib.constrain(min, r0, r1);
+            max = Lib.constrain(max, r0, r1);
+            if(min === max) return;
+
+            var isNewBreak = true;
+            for(var j = 0; j < rangebreaksOut.length; j++) {
+                var brkj = rangebreaksOut[j];
+                if(min > brkj.max || max < brkj.min) {
+                    // potentially a new break
+                } else {
+                    if(min < brkj.min) {
+                        brkj.min = min;
+                    }
+                    if(max > brkj.max) {
+                        brkj.max = max;
+                    }
+                    isNewBreak = false;
+                }
+            }
+            if(isNewBreak) {
+                rangebreaksOut.push({min: min, max: max});
+            }
+        };
+
+        for(i = 0; i < rangebreaksIn.length; i++) {
+            var brk = rangebreaksIn[i];
+
+            if(brk.enabled) {
+                var op = brk.operation;
+                var op0 = op.charAt(0);
+                var op1 = op.charAt(1);
+
+                if(brk.bounds) {
+                    if(brk.pattern) {
+                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                        if(bnds[0] === bnds[1] && op === '()') continue;
+
+                        // r0 value as date
+                        var r0Date = new Date(r0);
+                        // r0 value for break pattern
+                        var r0Pattern;
+                        // delta between r0 and first break in break pattern values
+                        var r0PatternDelta;
+                        // delta between break bounds in ms
+                        var bndDelta;
+                        // step in ms between rangebreaks
+                        var step;
+                        // tracker to position bounds
+                        var t;
+
+                        switch(brk.pattern) {
+                            case '%w':
+                                b0 = bnds[0] + (op0 === '(' ? 1 : 0);
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCDay();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
+                                if(op1 === ']') bndDelta += ONEDAY;
+                                step = 7 * ONEDAY;
+
+                                t = r0 + r0PatternDelta * ONEDAY -
+                                    r0Date.getUTCHours() * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
+                                break;
+                            case '%H':
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCHours();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
+                                step = ONEDAY;
+
+                                t = r0 + r0PatternDelta * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
+                                break;
+                        }
+
+                        while(t <= r1) {
+                            // TODO we need to remove decimal (most often found
+                            // in auto ranges) for this to work correctly,
+                            // should this be Math.floor, Math.ceil or
+                            // Math.round ??
+                            addBreak(Math.floor(t), Math.floor(t + bndDelta));
+                            t += step;
+                        }
+                    } else {
+                        bnds = Lib.simpleMap(brk.bounds, ax.r2l);
+                        if(bnds[0] <= bnds[1]) {
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                        } else {
+                            b0 = bnds[1];
+                            b1 = bnds[0];
+                        }
+                        addBreak(b0, b1);
+                    }
+                } else {
+                    var vals = Lib.simpleMap(brk.values, ax.d2c);
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        addBreak(b0, b1);
+                    }
+                }
+            }
+        }
+
+        rangebreaksOut.sort(function(a, b) { return a.min - b.min; });
+
+        return rangebreaksOut;
     };
 
     // makeCalcdata: takes an x or y array and converts it
@@ -534,6 +867,13 @@ module.exports = function setConvert(ax, fullLayout) {
 
             for(i = 0; i < len; i++) {
                 arrayOut[i] = v0 + i * dv;
+            }
+        }
+
+        // mask (i.e. set to BADNUM) coords that fall inside rangebreaks
+        if(ax.rangebreaks) {
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = ax.maskBreaks(arrayOut[i]);
             }
         }
 

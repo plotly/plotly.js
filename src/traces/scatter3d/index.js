@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -29,7 +29,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'scatter3d',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', 'symbols', 'showLegend'],
+    categories: ['gl3d', 'symbols', 'showLegend', 'scatter-like'],
     meta: {
         hrName: 'scatter_3d',
         description: [

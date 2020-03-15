@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@ var convert = require('./convert');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function DensityMapbox(subplot, uid) {
+    this.type = 'densitymapbox';
     this.subplot = subplot;
     this.uid = uid;
 

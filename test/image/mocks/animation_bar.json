@@ -1,0 +1,24 @@
+{
+  "data": [{
+    "type": "bar",
+    "x": ["A", "B", "C"],
+    "y": [24, 5, 8],
+    "ids": ["A", "B", "C"],
+    "error_y": {"array": [3, 2, 1]}
+    }],
+  "layout": {
+    "width": 400,
+    "height": 400,
+    "yaxis": {"range": [0, 30]}
+  },
+  "frames": [
+      {"data": [{"y": [12, 15, 10]}]},
+      {"data": [{"error_y": {"array": [5, 4, 1]}}]},
+      {"data": [{"marker": {"color": ["red", "blue", "green"]}}]},
+      {"data": [{"width": 0.25}]},
+      {"data": [{"marker": {"line": {"width": 10}}}]},
+      {"data": [{"marker": {"line": {"color": ["orange", "yellow", "blue"]}}}]},
+      {"data": [{"ids": ["B", "C", "A"]}]},
+      {"layout": {"yaxis": {"range": [0, 20]}}}
+    ]
+}

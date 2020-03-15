@@ -1,15 +1,17 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var Lib = require('../../lib');
 var handleSubplotDefaults = require('../subplot_defaults');
+var getSubplotData = require('../get_data').getSubplotData;
+
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 
@@ -20,12 +22,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'geo',
         attributes: layoutAttributes,
         handleDefaults: handleGeoDefaults,
+        fullData: fullData,
         partition: 'y'
     });
 };
 
-function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
-    var show;
+function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
+    var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
+    var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
     var resolution = coerce('resolution');
     var scope = coerce('scope');
@@ -39,8 +43,32 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
 
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
     var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
-    geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
+    var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
+    if(geoLayoutIn.visible === false) {
+        // should override template.layout.geo.show* - see issue 4482
+
+        // make a copy
+        var newTemplate = Lib.extendDeep({}, geoLayoutOut._template);
+
+        // override show*
+        newTemplate.showcoastlines = false;
+        newTemplate.showcountries = false;
+        newTemplate.showframe = false;
+        newTemplate.showlakes = false;
+        newTemplate.showland = false;
+        newTemplate.showocean = false;
+        newTemplate.showrivers = false;
+        newTemplate.showsubunits = false;
+        if(newTemplate.lonaxis) newTemplate.lonaxis.showgrid = false;
+        if(newTemplate.lataxis) newTemplate.lataxis.showgrid = false;
+
+        // set ref to copy
+        geoLayoutOut._template = newTemplate;
+    }
+    var visible = coerce('visible');
+
+    var show;
     for(var i = 0; i < axesNames.length; i++) {
         var axisName = axesNames[i];
         var dtickDflt = [30, 10][i];
@@ -58,15 +86,29 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
             rangeDflt = [rot - hSpan, rot + hSpan];
         }
 
-        coerce(axisName + '.range', rangeDflt);
+        var range = coerce(axisName + '.range', rangeDflt);
         coerce(axisName + '.tick0');
         coerce(axisName + '.dtick', dtickDflt);
 
-        show = coerce(axisName + '.showgrid');
+        show = coerce(axisName + '.showgrid', !visible ? false : undefined);
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
         }
+
+        // mock axis for autorange computations
+        geoLayoutOut[axisName]._ax = {
+            type: 'linear',
+            _id: axisName.slice(0, 3),
+            _traceIndices: traceIndices,
+            setScale: Lib.identity,
+            c2l: Lib.identity,
+            r2l: Lib.identity,
+            autorange: true,
+            range: range.slice(),
+            _m: 1,
+            _input: {}
+        };
     }
 
     var lonRange = geoLayoutOut.lonaxis.range;
@@ -87,13 +129,13 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('projection.rotation.lat', dfltProjRotate[1]);
         coerce('projection.rotation.roll', dfltProjRotate[2]);
 
-        show = coerce('showcoastlines', !isScoped);
+        show = coerce('showcoastlines', !isScoped && visible);
         if(show) {
             coerce('coastlinecolor');
             coerce('coastlinewidth');
         }
 
-        show = coerce('showocean');
+        show = coerce('showocean', !visible ? false : undefined);
         if(show) coerce('oceancolor');
     }
 
@@ -121,19 +163,19 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
 
     coerce('projection.scale');
 
-    show = coerce('showland');
+    show = coerce('showland', !visible ? false : undefined);
     if(show) coerce('landcolor');
 
-    show = coerce('showlakes');
+    show = coerce('showlakes', !visible ? false : undefined);
     if(show) coerce('lakecolor');
 
-    show = coerce('showrivers');
+    show = coerce('showrivers', !visible ? false : undefined);
     if(show) {
         coerce('rivercolor');
         coerce('riverwidth');
     }
 
-    show = coerce('showcountries', isScoped && scope !== 'usa');
+    show = coerce('showcountries', isScoped && scope !== 'usa' && visible);
     if(show) {
         coerce('countrycolor');
         coerce('countrywidth');
@@ -143,14 +185,14 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
-        coerce('showsubunits', true);
+        coerce('showsubunits', visible);
         coerce('subunitcolor');
         coerce('subunitwidth');
     }
 
     if(!isScoped) {
         // Does not work in non-world scopes
-        show = coerce('showframe', true);
+        show = coerce('showframe', visible);
         if(show) {
             coerce('framecolor');
             coerce('framewidth');
@@ -158,4 +200,27 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     }
 
     coerce('bgcolor');
+
+    var fitBounds = coerce('fitbounds');
+
+    // clear attributes that will get auto-filled later
+    if(fitBounds) {
+        delete geoLayoutOut.projection.scale;
+
+        if(isScoped) {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+        } else if(isClipped) {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+            delete geoLayoutOut.projection.rotation.lon;
+            delete geoLayoutOut.projection.rotation.lat;
+            delete geoLayoutOut.lonaxis.range;
+            delete geoLayoutOut.lataxis.range;
+        } else {
+            delete geoLayoutOut.center.lon;
+            delete geoLayoutOut.center.lat;
+            delete geoLayoutOut.projection.rotation.lon;
+        }
+    }
 }

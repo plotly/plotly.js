@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,11 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var ternaryAxesAttrs = {
-    title: axesAttrs.title,
+    title: {
+        text: axesAttrs.title.text,
+        font: axesAttrs.title.font
+        // TODO does standoff here make sense?
+    },
     color: axesAttrs.color,
     // ticks
     tickmode: axesAttrs.tickmode,

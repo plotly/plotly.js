@@ -346,6 +346,36 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('@gl should not error when scattergl trace has missing points', function(done) {
+        var _mock = {
+            data: [{
+                type: 'scattergl',
+                mode: 'markers',
+                x: [1, 2, 3, 4],
+                y: [10, 15, null, 17],
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        Plotly.plot(gd, _mock)
+        .then(function() {
+            gd.on('plotly_hover', function() {
+                fail('should not trigger plotly_hover event');
+            });
+        })
+        .then(function() {
+            var xp = 300;
+            var yp = 250;
+            var interval = setInterval(function() { hover(xp--, yp--); }, 10);
+            return delay(100)().then(function() { clearInterval(interval); });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should show last point data for overlapped scattergl points with hovermode set to closest', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hovertext = 'text';

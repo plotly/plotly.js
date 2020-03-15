@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -124,8 +124,8 @@ function makeGridData(gd) {
         var sp = fullLayout._plots[k];
         var xa = sp.xaxis;
         var ya = sp.yaxis;
-        var xVals = xa._vals;
-        var yVals = ya._vals;
+        var xVals = xa._gridVals;
+        var yVals = ya._gridVals;
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
         var yOffset = gs.b + ya.domain[0] * gs.h;

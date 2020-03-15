@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46,7 +46,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         moduleHasInsideanchor: true
     });
 
-    if(traceOut.textposition !== 'none') {
+    if(traceOut.textposition !== 'none' && !traceOut.texttemplate) {
         coerce('textinfo', Array.isArray(text) ? 'text+value' : 'value');
     }
 

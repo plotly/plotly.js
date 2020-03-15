@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,11 +8,12 @@
 
 'use strict';
 
-var plotAttrs = require('../../plots/attributes');
+var baseAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
-var hovertemplateAttrs = require('../../components/fx/hovertemplate_attributes');
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -105,7 +106,7 @@ module.exports = {
 
     text: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets text elements associated with each sector.',
             'If trace `textinfo` contains a *text* flag, these elements will be seen',
@@ -157,10 +158,13 @@ module.exports = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
     hovertemplate: hovertemplateAttrs({}, {
+        keys: ['label', 'color', 'value', 'percent', 'text']
+    }),
+    texttemplate: texttemplateAttrs({editType: 'plot'}, {
         keys: ['label', 'color', 'value', 'percent', 'text']
     }),
     textposition: {
@@ -177,12 +181,37 @@ module.exports = {
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
+    insidetextorientation: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['horizontal', 'radial', 'tangential', 'auto'],
+        dflt: 'auto',
+        editType: 'plot',
+        description: [
+            'Controls the orientation of the text inside chart sectors.',
+            'When set to *auto*, text may be oriented in any direction in order',
+            'to be as big as possible in the middle of a sector.',
+            'The *horizontal* option orients text to be parallel with the bottom',
+            'of the chart, and may make text smaller in order to achieve that goal.',
+            'The *radial* option orients text along the radius of the sector.',
+            'The *tangential* option orients text perpendicular to the radius of the sector.'
+        ].join(' ')
+    },
     insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the sector.'
     }),
     outsidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the sector.'
     }),
+    automargin: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines whether outside text labels can push the margins.'
+        ].join(' ')
+    },
 
     title: {
         text: {

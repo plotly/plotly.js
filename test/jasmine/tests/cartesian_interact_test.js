@@ -65,7 +65,6 @@ describe('zoom box element', function() {
     });
 });
 
-
 describe('main plot pan', function() {
     var gd, modeBar, relayoutCallback;
 
@@ -893,7 +892,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         cnt++;
                         // called twice as many times on drag:
                         // - once per axis during mousemouve
-                        // - once per raxis on mouseup
+                        // - once per axis on mouseup
                         if(opts.dragged) cnt++;
                     }
                 });
@@ -1536,6 +1535,59 @@ describe('axis zoom/pan and main plot zoom', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('panning a matching axes with references to *missing* axes', function(done) {
+            var data = [
+                // N.B. no traces on subplot xy
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x2', yaxis: 'y2'},
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x3', yaxis: 'y3'},
+                { x: [1, 2, 3], y: [1, 2, 1], xaxis: 'x4', yaxis: 'y4'}
+            ];
+
+            var layout = {
+                xaxis: {domain: [0, 0.48]},
+                xaxis2: {anchor: 'y2', domain: [0.52, 1], matches: 'x'},
+                xaxis3: {anchor: 'y3', domain: [0, 0.48], matches: 'x'},
+                xaxis4: {anchor: 'y4', domain: [0.52, 1], matches: 'x'},
+                yaxis: {domain: [0, 0.48]},
+                yaxis2: {anchor: 'x2', domain: [0.52, 1], matches: 'y'},
+                yaxis3: {anchor: 'x3', domain: [0.52, 1], matches: 'y'},
+                yaxis4: {anchor: 'x4', domain: [0, 0.48], matches: 'y'},
+                width: 400,
+                height: 400,
+                margin: {t: 50, l: 50, b: 50, r: 50},
+                showlegend: false,
+                dragmode: 'pan'
+            };
+
+            makePlot(data, layout).then(function() {
+                assertRanges('base', [
+                    [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179]],
+                    [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896]]
+                ]);
+            })
+            .then(function() {
+                var drag = makeDragFns('x2y2', 'nsew', 30, 30);
+                return drag.start().then(function() {
+                    assertRanges('during drag', [
+                        [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.329, 2.687], {skipInput: true}],
+                        [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [1.156, 2.335], {skipInput: true}]
+                    ]);
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag on x2y2 subplot', [
+                [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.329, 2.687], {dragged: true}],
+                [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [1.156, 2.335], {dragged: true}]
+            ]))
+            .then(doDblClick('x3y3', 'nsew'))
+            .then(_assert('after double-click on x3y3 subplot', [
+                [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179], {autorange: true}],
+                [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896], {autorange: true}]
+            ]))
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('redrag behavior', function() {
@@ -1589,8 +1641,10 @@ describe('axis zoom/pan and main plot zoom', function() {
                 clipTranslate: [0, 0]
             }))
             .then(function() {
+                Lib.seedPseudoRandom();
+
                 interval = setInterval(function() {
-                    Plotly.extendTraces(gd, { y: [[Math.random()]] }, [0]);
+                    Plotly.extendTraces(gd, { y: [[Lib.pseudoRandom()]] }, [0]);
                 }, step);
             })
             .then(delay(1.5 * step))
@@ -1726,7 +1780,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             Plotly.plot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
             .then(function() {
-                // inspired by https://github.com/plotly/plotly.js/issues/2687<Paste>
+                // inspired by https://github.com/plotly/plotly.js/issues/2687
                 gd.on('plotly_relayout', function(d) {
                     relayoutTracker.unshift(d);
                     setTimeout(function() {
@@ -1911,6 +1965,200 @@ describe('axis zoom/pan and main plot zoom', function() {
                 selectedCnt: 1,
                 selectOutline: false
             }))
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    it('zoomboxes during small drag motions', function(done) {
+        var MINDRAG = constants.MINDRAG;
+        var eventData = {};
+
+        function _run(msg, dpos, exp) {
+            return function() {
+                var node = getDragger('xy', 'nsew');
+                var fns = drag.makeFns({node: node, pos0: [200, 200], dpos: dpos});
+
+                return fns.start().then(function() {
+                    var zl = d3.select(gd).select('g.zoomlayer');
+                    var d = zl.select('.zoombox-corners').attr('d');
+                    if(exp === 'nozoom') {
+                        expect(d).toBe('M0,0Z', 'blank path | ' + msg);
+                    } else {
+                        var actual = (d.match(/Z/g) || []).length;
+                        if(exp === 'x-zoom' || exp === 'y-zoom') {
+                            expect(actual).toBe(2, 'two corners | ' + msg);
+                        } else if(exp === 'xy-zoom') {
+                            expect(actual).toBe(4, 'four corners | ' + msg);
+                        } else {
+                            fail('wrong expectation str.');
+                        }
+                    }
+                })
+                .then(fns.end)
+                .then(function() {
+                    var keys = Object.keys(eventData);
+                    if(exp === 'nozoom') {
+                        expect(keys.length).toBe(0, 'no event data | ' + msg);
+                    } else if(exp === 'x-zoom') {
+                        expect(keys).withContext('relayout xaxis rng | ' + msg)
+                            .toEqual(['xaxis.range[0]', 'xaxis.range[1]']);
+                    } else if(exp === 'y-zoom') {
+                        expect(keys).withContext('relayout yaxis rng | ' + msg)
+                            .toEqual(['yaxis.range[0]', 'yaxis.range[1]']);
+                    } else if(exp === 'xy-zoom') {
+                        expect(keys.length).toBe(4, 'x and y relayout | ' + msg);
+                    } else {
+                        fail('wrong expectation str.');
+                    }
+                    eventData = {};
+                });
+            };
+        }
+
+        Plotly.plot(gd, [{y: [1, 2, 1]}], {width: 400, height: 400})
+        .then(function() {
+            gd.on('plotly_relayout', function(d) { eventData = d; });
+        })
+        .then(_run('dx < MINDRAG', [MINDRAG - 2, 0], 'nozoom'))
+        .then(_run('dx > MINDRAG', [MINDRAG + 2, 0], 'x-zoom'))
+        .then(_run('dy < MINDRAG', [0, MINDRAG - 2], 'nozoom'))
+        .then(_run('dy > MINDRAG', [0, MINDRAG + 2], 'y-zoom'))
+        .then(_run('(dx,dy) < MINDRAG', [MINDRAG - 2, MINDRAG - 2], 'nozoom'))
+        .then(_run('(dx,dy) > MINDRAG', [MINDRAG + 2, MINDRAG + 2], 'xy-zoom'))
+        .catch(failTest)
+        .then(done);
+    });
+
+    describe('with axis rangebreaks', function() {
+        it('should compute correct range updates - x-axis case', function(done) {
+            function _assert(msg, xrng) {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(xrng, 2, 'xrng - ' + msg);
+            }
+
+            Plotly.plot(gd, [{
+                mode: 'lines',
+                x: [
+                    '1970-01-01 00:00:00.000',
+                    '1970-01-01 00:00:00.010',
+                    '1970-01-01 00:00:00.050',
+                    '1970-01-01 00:00:00.090',
+                    '1970-01-01 00:00:00.100',
+                    '1970-01-01 00:00:00.150',
+                    '1970-01-01 00:00:00.190',
+                    '1970-01-01 00:00:00.200'
+                ]
+            }], {
+                xaxis: {
+                    rangebreaks: [
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
+                    ]
+                },
+                dragmode: 'zoom'
+            })
+            .then(function() {
+                _assert('base', [
+                    '1970-01-01',
+                    '1970-01-01 00:00:00.2'
+                ]);
+            })
+            .then(doDrag('xy', 'nsew', 50, 0))
+            // x range would be ~ [100, 118] w/o rangebreaks
+            .then(function() {
+                _assert('after x-only zoombox', [
+                    '1970-01-01 00:00:00.095',
+                    '1970-01-01 00:00:00.0981'
+                ]);
+            })
+            .then(doDblClick('xy', 'nsew'))
+            .then(function() {
+                _assert('back to base', [
+                    '1970-01-01',
+                    '1970-01-01 00:00:00.2'
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+            .then(doDrag('xy', 'nsew', 50, 0))
+            // x range would be ~ [-18, 181] w/o rangebreaks
+            .then(function() {
+                _assert('after x-only pan', [
+                    '1969-12-31 23:59:59.9969',
+                    '1970-01-01 00:00:00.1969'
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should compute correct range updates - y-axis case', function(done) {
+            function _assert(msg, yrng) {
+                expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
+            }
+
+            Plotly.plot(gd, [{
+                mode: 'lines',
+                y: [
+                    '1970-01-01 00:00:00.000',
+                    '1970-01-01 00:00:00.010',
+                    '1970-01-01 00:00:00.050',
+                    '1970-01-01 00:00:00.090',
+                    '1970-01-01 00:00:00.100',
+                    '1970-01-01 00:00:00.150',
+                    '1970-01-01 00:00:00.190',
+                    '1970-01-01 00:00:00.200'
+                ]
+            }], {
+                yaxis: {
+                    rangebreaks: [
+                        {bounds: [
+                            '1970-01-01 00:00:00.011',
+                            '1970-01-01 00:00:00.089'
+                        ]},
+                        {bounds: [
+                            '1970-01-01 00:00:00.101',
+                            '1970-01-01 00:00:00.189'
+                        ]}
+                    ]
+                },
+                dragmode: 'zoom'
+            })
+            .then(function() {
+                _assert('base', [
+                    '1969-12-31 23:59:59.9981',
+                    '1970-01-01 00:00:00.2019'
+                ]);
+            })
+            .then(doDrag('xy', 'nsew', 0, 50))
+            // y range would be ~ [62, 100] w/o rangebreaks
+            .then(function() {
+                _assert('after y-only zoombox', [
+                    '1970-01-01 00:00:00.01',
+                    '1970-01-01 00:00:00.095'
+                ]);
+            })
+            .then(doDblClick('xy', 'nsew'))
+            .then(function() {
+                _assert('back to base', [
+                    '1969-12-31 23:59:59.9981',
+                    '1970-01-01 00:00:00.2019'
+                ]);
+            })
+            .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+            .then(doDrag('xy', 'nsew', 0, 50))
+            // y range would be ~ [35, 239] w/o rangebreaks
+            .then(function() {
+                _assert('after y-only pan', [
+                    '1970-01-01 00:00:00.0051',
+                    '1970-01-01 00:00:00.2089'
+                ]);
+            })
             .catch(failTest)
             .then(done);
         });

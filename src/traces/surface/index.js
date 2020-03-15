@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 module.exports = {
     attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
+    supplyDefaults: require('./defaults').supplyDefaults,
     colorbar: {
         min: 'cmin',
         max: 'cmax'
@@ -21,7 +21,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'surface',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', '2dMap', 'noOpacity'],
+    categories: ['gl3d', '2dMap', 'showLegend'],
     meta: {
         description: [
             'The data the describes the coordinates of the surface is set in `z`.',

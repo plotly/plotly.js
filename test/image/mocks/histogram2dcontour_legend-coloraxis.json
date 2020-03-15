@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+           "showlegend": true,
+            "coloraxis": "coloraxis",
+            "x": [
+                "apples",
+                "apples",
+                "apples",
+                "apples",
+                "lemons",
+                "lemons"
+            ],
+            "y": [
+                "red",
+                "red",
+                "yellow",
+                "green",
+                "yellow",
+                "yellow"
+            ],
+            "z": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "histfunc": "sum",
+            "type": "histogram2dcontour",
+            "name": "histogram2dcontour"
+        }
+    ],
+    "layout": {
+        "coloraxis": {
+            "colorscale": [[0, "blue"], [1, "red"]],
+            "reversescale": true,
+            "showscale": false
+        },
+        "title": "<i>histogram2dcontour</i> legend with <b>coloraxis</b>",
+        "margin": {
+            "t": 125,
+            "b": 25
+        },
+        "width": 600,
+        "height": 400
+    }
+}

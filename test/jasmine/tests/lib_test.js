@@ -1671,8 +1671,9 @@ describe('Test lib.js:', function() {
     });
 
     describe('loggers', function() {
-        var stashConsole,
-            stashLogLevel;
+        var stashConsole;
+        var stashLogLevel;
+        var stashOnGraphLogLevel;
 
         function consoleFn(name, hasApply, messages) {
             var out = function() {
@@ -1703,11 +1704,13 @@ describe('Test lib.js:', function() {
         beforeEach(function() {
             stashConsole = window.console;
             stashLogLevel = config.logging;
+            stashOnGraphLogLevel = config.notifyOnLogging;
         });
 
         afterEach(function() {
             window.console = stashConsole;
             config.logging = stashLogLevel;
+            config.notifyOnLogging = stashOnGraphLogLevel;
         });
 
         it('emits one console message if apply is available', function() {
@@ -1806,6 +1809,50 @@ describe('Test lib.js:', function() {
                 ['log', ['who who... are you']],
                 ['log', [{a: 1, b: 2}]]
             ]);
+        });
+
+        describe('should log message in notifier div in accordance notifyOnLogging config option', function() {
+            var query = '.notifier-note';
+
+            beforeEach(function(done) {
+                d3.selectAll(query).each(function() {
+                    d3.select(this).select('button').node().click();
+                });
+                setTimeout(done, 1000);
+            });
+
+            function _run(exp) {
+                config.logging = 0;
+
+                Lib.log('log');
+                Lib.warn('warn');
+                Lib.error('error!');
+
+                var notes = d3.selectAll(query);
+
+                expect(notes.size()).toBe(exp.length, '# of notifier notes');
+
+                var actual = [];
+                notes.each(function() {
+                    actual.push(d3.select(this).select('p').text());
+                });
+                expect(actual).toEqual(exp);
+            }
+
+            it('with level 2', function() {
+                config.notifyOnLogging = 2;
+                _run(['log', 'warn', 'error!']);
+            });
+
+            it('with level 1', function() {
+                config.notifyOnLogging = 1;
+                _run(['warn', 'error!']);
+            });
+
+            it('with level 0', function() {
+                config.notifyOnLogging = 0;
+                _run([]);
+            });
         });
     });
 
@@ -2182,6 +2229,14 @@ describe('Test lib.js:', function() {
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
+
+        it('should work with the number *0*', function() {
+            expect(Lib.templateString('%{group}', {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+        });
     });
 
     describe('hovertemplateString', function() {
@@ -2200,6 +2255,14 @@ describe('Test lib.js:', function() {
 
         it('evaluates array nested properties', function() {
             expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('should work with the number *0*', function() {
+            expect(Lib.hovertemplateString('%{group}', {}, locale, {group: 0})).toEqual('0');
+        });
+
+        it('should work with the number *0* (nested case)', function() {
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
         });
 
         it('subtitutes multiple matches', function() {
@@ -2225,10 +2288,15 @@ describe('Test lib.js:', function() {
             expect(Lib.hovertemplateString('y: %{y}', {}, locale, {y: 0}, {y: 1})).toEqual('y: 0');
         });
 
-        it('formats value using d3 mini-language', function() {
+        it('formats numbers using d3-format mini-language when `:`', function() {
             expect(Lib.hovertemplateString('a: %{a:.0%}', {}, locale, {a: 0.123})).toEqual('a: 12%');
             expect(Lib.hovertemplateString('a: %{a:0.2%}', {}, locale, {a: 0.123})).toEqual('a: 12.30%');
             expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, locale, {b: 43})).toEqual('b: 43.00');
+        });
+
+        it('formats date using d3-time-format mini-language `|`', function() {
+            expect(Lib.hovertemplateString('a: %{a|%A}', {}, locale, {a: '2019-05-22'})).toEqual('a: Wednesday');
+            expect(Lib.hovertemplateString('%{x|%b %-d, %Y}', {}, locale, {x: '2019-01-01'})).toEqual('Jan 1, 2019');
         });
 
         it('looks for default label if no format is provided', function() {
@@ -2244,6 +2312,34 @@ describe('Test lib.js:', function() {
                 Lib.hovertemplateString('%{idontexist}', {});
             }
             expect(Lib.warn.calls.count()).toBe(10);
+        });
+
+        it('does not error out when arguments are undefined', function() {
+            expect(function() {
+                Lib.hovertemplateString('y: %{y}', undefined, locale, undefined);
+            }).not.toThrow();
+        });
+    });
+
+    describe('texttemplateString', function() {
+        var locale = false;
+        it('evaluates attributes', function() {
+            expect(Lib.texttemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('looks for default label if no format is provided', function() {
+            expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function() {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.texttemplateString('%{idontexist}', {});
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for(var i = 0; i < 15; i++) {
+                Lib.texttemplateString('%{idontexist}', {});
+            }
+            expect(Lib.warn.calls.count()).toBe(11);
         });
     });
 

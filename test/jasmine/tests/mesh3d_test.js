@@ -1,10 +1,224 @@
 var Plotly = require('@lib');
+var Lib = require('@src/lib');
+var supplyDefaults = require('@src/traces/mesh3d').supplyDefaults;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 
 describe('Test mesh3d', function() {
     'use strict';
+
+    describe('supplyDefaults', function() {
+        var defaultColor = '#444';
+        var layout = {_dfltTitle: {colorbar: 'cb'}};
+
+        var traceIn, traceOut;
+
+        beforeEach(function() {
+            traceOut = {};
+        });
+
+        it('should set \'visible\' to false if \'x\' isn\'t provided', function() {
+            traceIn = {
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set \'visible\' to false if \'y\' isn\'t provided', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set \'visible\' to false if \'z\' isn\'t provided', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set \'visible\' to false if \'i\' isn\'t provided', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set \'visible\' to false if \'j\' isn\'t provided', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set \'visible\' to false if \'k\' isn\'t provided', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should coerce contour style attributes if contour line is enabled', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                contour: {
+                    show: true
+                }
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.contour.color).toEqual('#444');
+            expect(traceOut.contour.width).toEqual(2);
+        });
+
+        it('should not coerce contour attributes when contour line is disabled', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                contour: {
+                    show: false
+                }
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.contour.color).toBeUndefined();
+            expect(traceOut.contour.width).toBeUndefined();
+        });
+
+        it('should coerce colorscale and colorbar attributes as well as intensitymode when intensity is present', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                intensity: [1, 2, 3, 4, 5, 6, 7, 8]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.cauto).toBe(true);
+            expect(traceOut.cmin).toBeUndefined();
+            expect(traceOut.cmax).toBeUndefined();
+            expect(traceOut.colorscale).toEqual([
+                [0, 'rgb(5,10,172)'],
+                [0.35, 'rgb(106,137,247)'],
+                [0.5, 'rgb(190,190,190)'],
+                [0.6, 'rgb(220,170,132)'],
+                [0.7, 'rgb(230,145,90)'],
+                [1, 'rgb(178,10,28)']
+            ]);
+            expect(traceOut.reversescale).toBe(false);
+            expect(traceOut.showscale).toBe(true);
+            expect(traceOut.colorbar).toBeDefined();
+            expect(traceOut.intensitymode).toBe('vertex');
+        });
+
+        it('should not coerce colorscale and colorbar attributes as well as intensitymode when intensity is not present', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.cauto).toBeUndefined();
+            expect(traceOut.cmin).toBeUndefined();
+            expect(traceOut.cmax).toBeUndefined();
+            expect(traceOut.colorscale).toBeUndefined();
+            expect(traceOut.reversescale).toBeUndefined();
+            expect(traceOut.showscale).toBe(false);
+            expect(traceOut.colorbar).toBeUndefined();
+            expect(traceOut.intensitymode).toBeUndefined();
+        });
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+            expect(traceOut.zcalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            var traceIn = {
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                i: [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+                j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+                k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian',
+                zcalendar: 'mayan'
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
+            expect(traceOut.zcalendar).toBe('mayan');
+        });
+    });
 
     describe('restyle', function() {
         afterEach(destroyGraphDiv);

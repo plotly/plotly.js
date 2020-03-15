@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,7 +28,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             connectGaps: true,
             baseTolerance: 0.75,
             shape: 'spline',
-            simplify: true
+            simplify: true,
+            linearized: true
         });
         return Drawing.smoothopen(segments[0], 1);
     }
@@ -64,8 +65,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             var pathSel = d3.select(this);
             var density = d.density;
             var len = density.length;
-            var posCenter = d.pos + bPos;
-            var posCenterPx = posAxis.c2p(posCenter);
+            var posCenter = posAxis.c2l(d.pos + bPos, true);
+            var posCenterPx = posAxis.l2p(posCenter);
 
             var scale;
             if(trace.width) {
@@ -85,7 +86,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                 for(i = 0; i < len; i++) {
                     pt = pts[i] = {};
                     pt[t.posLetter] = posCenter + (density[i].v / scale);
-                    pt[t.valLetter] = density[i].t;
+                    pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
                 pathPos = makePath(pts);
             }
@@ -95,7 +96,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                 for(k = 0, i = len - 1; k < len; k++, i--) {
                     pt = pts[k] = {};
                     pt[t.posLetter] = posCenter - (density[i].v / scale);
-                    pt[t.valLetter] = density[i].t;
+                    pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
                 pathNeg = makePath(pts);
             }
@@ -138,10 +139,10 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             bPosPxOffset = 0;
         } else if(hasPositiveSide) {
             bdPosScaled = [0, bdPos * boxWidth / 2];
-            bPosPxOffset = -boxLineWidth;
+            bPosPxOffset = boxLineWidth * {x: 1, y: -1}[t.posLetter];
         } else {
             bdPosScaled = [bdPos * boxWidth / 2, 0];
-            bPosPxOffset = boxLineWidth;
+            bPosPxOffset = boxLineWidth * {x: -1, y: 1}[t.posLetter];
         }
 
         // inner box

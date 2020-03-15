@@ -4,7 +4,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
-var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
+var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -439,15 +439,21 @@ describe('Click-to-select', function() {
           })
           .then(function() {
               assertSelectedPoints(35);
-              drag(LASSO_PATH);
-          })
-          .then(function() {
-              assertSelectedPoints(35);
               _clickPt(mock14Pts[35], { shiftKey: true });
               return deselectPromise;
           })
           .then(function() {
               assertSelectionCleared();
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(7);
+              drag([[110, 100], [300, 300]]);
+          })
+          .then(delay(100))
+          .then(function() {
+              // persist after zoombox
+              assertSelectedPoints(7);
           })
           .catch(failTest)
           .then(done);
@@ -2678,6 +2684,55 @@ describe('Test select box and lasso per trace:', function() {
                         2: [1, 4, 5]
                     });
                     assertRanges([[0.04235, 1.0546], [0.1875, 0.71]]);
+                },
+                null, BOXEVENTS, 'box select'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@flaky should work for box traces (q1/median/q3 case)', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = {
+            data: [{
+                type: 'box',
+                x0: 'A',
+                q1: [1],
+                median: [2],
+                q3: [3],
+                y: [[0, 1, 2, 3, 4]],
+                pointpos: 0,
+            }],
+            layout: {
+                width: 500,
+                height: 500,
+                dragmode: 'lasso'
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
+                function() {
+                    assertPoints([ [0, 1, undefined], [0, 2, undefined] ]);
+                    assertSelectedPoints({ 0: [[0, 1], [0, 2]] });
+                },
+                null, LASSOEVENTS, 'box lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 300]],
+                function() {
+                    assertPoints([ [0, 2, undefined] ]);
+                    assertSelectedPoints({ 0: [[0, 2]] });
                 },
                 null, BOXEVENTS, 'box select'
             );

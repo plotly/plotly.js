@@ -53,6 +53,20 @@ describe('groupby', function() {
             }]
         }];
 
+        var mockDataWithTypedArrayGroups = [{
+            mode: 'markers',
+            x: [20, 11, 12, 0, 1, 2, 3],
+            y: [1, 2, 3, 2, 5, 2, 0],
+            transforms: [{
+                type: 'groupby',
+                groups: new Uint8Array([2, 1, 2, 2, 2, 1, 1]),
+                styles: [
+                    {target: 1, value: {marker: {color: 'green'}}},
+                    {target: 2, value: {marker: {color: 'black'}}}
+                ]
+            }]
+        }];
+
         afterEach(destroyGraphDiv);
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -314,6 +328,22 @@ describe('groupby', function() {
                 return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
             }).then(function() {
                 assertDims([4, 3, 4, 3]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('Plotly.plot should group points properly using typed array', function(done) {
+            var data = Lib.extendDeep([], mockDataWithTypedArrayGroups);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd._fullData.length).toEqual(2);
+                expect(gd._fullData[0].x).toEqual([20, 12, 0, 1]);
+                expect(gd._fullData[0].y).toEqual([1, 3, 2, 5]);
+                expect(gd._fullData[1].x).toEqual([11, 2, 3]);
+                expect(gd._fullData[1].y).toEqual([2, 2, 0]);
             })
             .catch(failTest)
             .then(done);

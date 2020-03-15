@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var Colorscale = require('../../components/colorscale');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
@@ -63,8 +64,8 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
 
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
+            // N.B. this also mutates pathinfo
             fillPathinfo = convertToConstraints(pathinfo, contours._operation);
-            closeBoundaries(fillPathinfo, contours._operation, perimeter, trace);
         }
 
         // draw everything
@@ -88,10 +89,17 @@ function makeBackground(plotgroup, perimeter, contours) {
 }
 
 function makeFills(plotgroup, pathinfo, perimeter, contours) {
+    var hasFills = contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=');
+    var boundaryPath = 'M' + perimeter.join('L') + 'Z';
+
+    // fills prefixBoundary in pathinfo items
+    if(hasFills) {
+        closeBoundaries(pathinfo, contours);
+    }
+
     var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
 
-    var fillitems = fillgroup.selectAll('path')
-        .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=') ? pathinfo : []);
+    var fillitems = fillgroup.selectAll('path').data(hasFills ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {
@@ -100,30 +108,21 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(pi, perimeter);
+        var fullpath = (pi.prefixBoundary ? boundaryPath : '') +
+            joinAllPaths(pi, perimeter);
 
-        if(!fullpath) d3.select(this).remove();
-        else d3.select(this).attr('d', fullpath).style('stroke', 'none');
+        if(!fullpath) {
+            d3.select(this).remove();
+        } else {
+            d3.select(this)
+                .attr('d', fullpath)
+                .style('stroke', 'none');
+        }
     });
 }
 
-function initFullPath(pi, perimeter) {
-    var prefixBoundary = pi.prefixBoundary;
-    if(prefixBoundary === undefined) {
-        var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]);
-        prefixBoundary = (!pi.edgepaths.length && edgeVal2 > pi.level);
-    }
-
-    if(prefixBoundary) {
-        // TODO: why does ^^ not work for constraints?
-        // pi.prefixBoundary gets set by closeBoundaries
-        return 'M' + perimeter.join('L') + 'Z';
-    }
-    return '';
-}
-
 function joinAllPaths(pi, perimeter) {
-    var fullpath = initFullPath(pi, perimeter);
+    var fullpath = '';
     var i = 0;
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
     var newloop = true;
@@ -238,7 +237,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
         // invalidate the getTextLocation cache in case paths changed
         Lib.clearLocationCache();
 
-        var contourFormat = exports.labelFormatter(contours, cd0.t.cb, gd._fullLayout);
+        var contourFormat = exports.labelFormatter(gd, cd0);
 
         var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
@@ -390,21 +389,26 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, gd, uid) {
     return lineClip;
 };
 
-exports.labelFormatter = function(contours, colorbar, fullLayout) {
-    if(contours.labelformat) {
-        return fullLayout._d3locale.numberFormat(contours.labelformat);
-    } else {
-        var formatAxis;
-        if(colorbar) {
-            formatAxis = colorbar.axis;
-        } else {
-            formatAxis = {
-                type: 'linear',
-                _id: 'ycontour',
-                showexponent: 'all',
-                exponentformat: 'B'
-            };
+exports.labelFormatter = function(gd, cd0) {
+    var fullLayout = gd._fullLayout;
+    var trace = cd0.trace;
+    var contours = trace.contours;
 
+    var formatAxis = {
+        type: 'linear',
+        _id: 'ycontour',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+
+    if(contours.labelformat) {
+        formatAxis.tickformat = contours.labelformat;
+        setConvert(formatAxis, fullLayout);
+    } else {
+        var cOpts = Colorscale.extractOpts(trace);
+        if(cOpts && cOpts.colorbar && cOpts.colorbar._axis) {
+            formatAxis = cOpts.colorbar._axis;
+        } else {
             if(contours.type === 'constraint') {
                 var value = contours.value;
                 if(Array.isArray(value)) {
@@ -425,22 +429,24 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
             formatAxis._tmin = null;
             formatAxis._tmax = null;
         }
-        return function(v) {
-            return Axes.tickText(formatAxis, v).text;
-        };
     }
+
+    return function(v) { return Axes.tickText(formatAxis, v).text; };
 };
 
 exports.calcTextOpts = function(level, contourFormat, dummyText, gd) {
     var text = contourFormat(level);
     dummyText.text(text)
         .call(svgTextUtils.convertToTspans, gd);
-    var bBox = Drawing.bBox(dummyText.node(), true);
+
+    var el = dummyText.node();
+    var bBox = Drawing.bBox(el, true);
 
     return {
         text: text,
         width: bBox.width,
         height: bBox.height,
+        fontSize: +(el.style['font-size'].replace('px', '')),
         level: level,
         dy: (bBox.top + bBox.bottom) / 2
     };
@@ -540,8 +546,9 @@ function locationCost(loc, textOpts, labelData, bounds) {
 }
 
 exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
-    var halfWidth = textOpts.width / 2;
-    var halfHeight = textOpts.height / 2;
+    var fontSize = textOpts.fontSize;
+    var w = textOpts.width + fontSize / 3;
+    var h = Math.max(0, textOpts.height - fontSize / 3);
 
     var x = loc.x;
     var y = loc.y;
@@ -549,15 +556,19 @@ exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
 
     var sin = Math.sin(theta);
     var cos = Math.cos(theta);
-    var dxw = halfWidth * cos;
-    var dxh = halfHeight * sin;
-    var dyw = halfWidth * sin;
-    var dyh = -halfHeight * cos;
+
+    var rotateXY = function(dx, dy) {
+        return [
+            x + dx * cos - dy * sin,
+            y + dx * sin + dy * cos
+        ];
+    };
+
     var bBoxPts = [
-        [x - dxw - dxh, y - dyw - dyh],
-        [x + dxw - dxh, y + dyw - dyh],
-        [x + dxw + dxh, y + dyw + dyh],
-        [x - dxw + dxh, y - dyw + dyh],
+        rotateXY(-w / 2, -h / 2),
+        rotateXY(-w / 2, h / 2),
+        rotateXY(w / 2, h / 2),
+        rotateXY(w / 2, -h / 2)
     ];
 
     labelData.push({
@@ -567,8 +578,8 @@ exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
         dy: textOpts.dy,
         theta: theta,
         level: textOpts.level,
-        width: textOpts.width,
-        height: textOpts.height
+        width: w,
+        height: h
     });
 
     labelClipPathData.push(bBoxPts);
@@ -612,17 +623,18 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
 };
 
 function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
+    var trace = cd0.trace;
     var clips = gd._fullLayout._clips;
-    var clipId = 'clip' + cd0.trace.uid;
+    var clipId = 'clip' + trace.uid;
 
     var clipPath = clips.selectAll('#' + clipId)
-        .data(cd0.trace.connectgaps ? [] : [0]);
+        .data(trace.connectgaps ? [] : [0]);
     clipPath.enter().append('clipPath')
         .classed('contourclip', true)
         .attr('id', clipId);
     clipPath.exit().remove();
 
-    if(cd0.trace.connectgaps === false) {
+    if(trace.connectgaps === false) {
         var clipPathInfo = {
             // fraction of the way from missing to present point
             // to draw the boundary.
@@ -644,10 +656,13 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
 
         makeCrossings([clipPathInfo]);
         findAllPaths([clipPathInfo]);
-        var fullpath = joinAllPaths(clipPathInfo, perimeter);
+        closeBoundaries([clipPathInfo], {type: 'levels'});
 
         var path = Lib.ensureSingle(clipPath, 'path', '');
-        path.attr('d', fullpath);
+        path.attr('d',
+            (clipPathInfo.prefixBoundary ? 'M' + perimeter.join('L') + 'Z' : '') +
+            joinAllPaths(clipPathInfo, perimeter)
+        );
     } else clipId = null;
 
     Drawing.setClipUrl(plotGroup, clipId, gd);

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,18 +8,17 @@
 
 'use strict';
 
-/* global PlotlyGeoAssets:false */
-
 var mapboxgl = require('mapbox-gl');
-var d3 = require('d3');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var geoUtils = require('../../lib/geo_location_utils');
 var Registry = require('../../registry');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
+
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');
 
@@ -49,6 +48,8 @@ function Mapbox(gd, id) {
     this.traceHash = {};
     this.layerList = [];
     this.belowLookup = {};
+    this.dragging = false;
+    this.wheeling = false;
 }
 
 var proto = Mapbox.prototype;
@@ -105,8 +106,14 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         preserveDrawingBuffer: self.isStatic,
 
         doubleClickZoom: false,
-        boxZoom: false
-    });
+        boxZoom: false,
+
+        attributionControl: false
+    })
+    .addControl(new mapboxgl.AttributionControl({
+        compact: true
+    }));
+
 
     // make sure canvas does not inherit left and top css
     map._canvas.style.left = '0px';
@@ -124,7 +131,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         map.once('load', resolve);
     }));
 
-    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+    promises = promises.concat(geoUtils.fetchTraceGeoData(calcData));
 
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);
@@ -132,39 +139,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
     }).catch(reject);
-};
-
-proto.fetchMapData = function(calcData) {
-    var promises = [];
-
-    function fetch(url) {
-        return new Promise(function(resolve, reject) {
-            d3.json(url, function(err, d) {
-                if(err) {
-                    delete PlotlyGeoAssets[url];
-                    var msg = err.status === 404 ?
-                        ('GeoJSON at URL "' + url + '" does not exist.') :
-                        ('Unexpected error while fetching from ' + url);
-                    return reject(new Error(msg));
-                }
-
-                PlotlyGeoAssets[url] = d;
-                resolve(d);
-            });
-        });
-    }
-
-    for(var i = 0; i < calcData.length; i++) {
-        var trace = calcData[i][0].trace;
-        var url = trace.geojson;
-
-        if(typeof url === 'string' && !PlotlyGeoAssets[url]) {
-            PlotlyGeoAssets[url] = 'pending';
-            promises.push(fetch(url));
-        }
-    }
-
-    return promises;
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
@@ -190,7 +164,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         }));
     }
 
-    promises = promises.concat(self.fetchMapData(calcData, fullLayout));
+    promises = promises.concat(geoUtils.fetchTraceGeoData(calcData));
 
     Promise.all(promises).then(function() {
         self.fillBelowLookup(calcData, fullLayout);
@@ -309,9 +283,16 @@ proto.updateData = function(calcData) {
         trace = calcTrace[0].trace;
         traceObj = traceHash[trace.uid];
 
+        var didUpdate = false;
         if(traceObj) {
-            traceObj.update(calcTrace);
-        } else if(trace._module) {
+            if(traceObj.type === trace.type) {
+                traceObj.update(calcTrace);
+                didUpdate = true;
+            } else {
+                traceObj.dispose();
+            }
+        }
+        if(!didUpdate && trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
@@ -337,10 +318,12 @@ proto.updateLayout = function(fullLayout) {
     var map = this.map;
     var opts = fullLayout[this.id];
 
-    map.setCenter(convertCenter(opts.center));
-    map.setZoom(opts.zoom);
-    map.setBearing(opts.bearing);
-    map.setPitch(opts.pitch);
+    if(!this.dragging && !this.wheeling) {
+        map.setCenter(convertCenter(opts.center));
+        map.setZoom(opts.zoom);
+        map.setBearing(opts.bearing);
+        map.setPitch(opts.pitch);
+    }
 
     this.updateLayers(fullLayout);
     this.updateFramework(fullLayout);
@@ -361,7 +344,10 @@ proto.resolveOnRender = function(resolve) {
         if(map.loaded()) {
             map.off('render', onRender);
             // resolve at end of render loop
-            setTimeout(resolve, 0);
+            //
+            // Need a 10ms delay (0ms should suffice to skip a thread in the
+            // render loop) to workaround mapbox-gl bug introduced in v1.3.0
+            setTimeout(resolve, 10);
         }
     });
 };
@@ -414,8 +400,6 @@ proto.initFx = function(calcData, fullLayout) {
     var gd = self.gd;
     var map = self.map;
 
-    var wheeling = false;
-
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(evt) {
         if(!self.map) return;
@@ -430,7 +414,7 @@ proto.initFx = function(calcData, fullLayout) {
         // mouse target (filtering out API calls) to not
         // duplicate 'plotly_relayout' events.
 
-        if(evt.originalEvent || wheeling) {
+        if(evt.originalEvent || self.wheeling) {
             var optsNow = fullLayoutNow[self.id];
             Registry.call('_storeDirectGUIEdit', gd.layout, fullLayoutNow._preGUI, self.getViewEdits(optsNow));
 
@@ -439,10 +423,13 @@ proto.initFx = function(calcData, fullLayout) {
             optsNow._input.zoom = optsNow.zoom = viewNow.zoom;
             optsNow._input.bearing = optsNow.bearing = viewNow.bearing;
             optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
-
-            gd.emit('plotly_relayout', self.getViewEdits(viewNow));
+            gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
         }
-        wheeling = false;
+        if(evt.originalEvent && evt.originalEvent.type === 'mouseup') {
+            self.dragging = false;
+        } else if(self.wheeling) {
+            self.wheeling = false;
+        }
 
         if(fullLayoutNow._rehover) {
             fullLayoutNow._rehover();
@@ -450,7 +437,7 @@ proto.initFx = function(calcData, fullLayout) {
     });
 
     map.on('wheel', function() {
-        wheeling = true;
+        self.wheeling = true;
     });
 
     map.on('mousemove', function(evt) {
@@ -466,7 +453,7 @@ proto.initFx = function(calcData, fullLayout) {
         self.yaxis.p2c = function() { return evt.lngLat.lat; };
 
         gd._fullLayout._rehover = function() {
-            if(gd._fullLayout._hoversubplot === self.id) {
+            if(gd._fullLayout._hoversubplot === self.id && gd._fullLayout[self.id]) {
                 Fx.hover(gd, evt, self.id);
             }
         };
@@ -479,7 +466,10 @@ proto.initFx = function(calcData, fullLayout) {
         Fx.loneUnhover(fullLayout._hoverlayer);
     }
 
-    map.on('dragstart', unhover);
+    map.on('dragstart', function() {
+        self.dragging = true;
+        unhover();
+    });
     map.on('zoomstart', unhover);
 
     map.on('mouseout', function() {
@@ -488,7 +478,7 @@ proto.initFx = function(calcData, fullLayout) {
 
     function emitUpdate() {
         var viewNow = self.getView();
-        gd.emit('plotly_relayouting', self.getViewEdits(viewNow));
+        gd.emit('plotly_relayouting', self.getViewEditsWithDerived(viewNow));
     }
 
     map.on('drag', emitUpdate);
@@ -511,7 +501,7 @@ proto.initFx = function(calcData, fullLayout) {
         optsNow._input.pitch = optsNow.pitch = viewNow.pitch;
 
         gd.emit('plotly_doubleclick', null);
-        gd.emit('plotly_relayout', self.getViewEdits(viewNow));
+        gd.emit('plotly_relayout', self.getViewEditsWithDerived(viewNow));
     });
 
     // define event handlers on map creation, to keep one ref per map,
@@ -731,11 +721,22 @@ proto.getView = function() {
     var mapCenter = map.getCenter();
     var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
+    var canvas = map.getCanvas();
+    var w = canvas.width;
+    var h = canvas.height;
     return {
         center: center,
         zoom: map.getZoom(),
         bearing: map.getBearing(),
-        pitch: map.getPitch()
+        pitch: map.getPitch(),
+        _derived: {
+            coordinates: [
+                map.unproject([0, 0]).toArray(),
+                map.unproject([w, 0]).toArray(),
+                map.unproject([w, h]).toArray(),
+                map.unproject([0, h]).toArray()
+            ]
+        }
     };
 };
 
@@ -752,6 +753,13 @@ proto.getViewEdits = function(cont) {
     return obj;
 };
 
+proto.getViewEditsWithDerived = function(cont) {
+    var id = this.id;
+    var obj = this.getViewEdits(cont);
+    obj[id + '._derived'] = cont._derived;
+    return obj;
+};
+
 function getStyleObj(val) {
     var styleObj = {};
 
@@ -763,8 +771,8 @@ function getStyleObj(val) {
 
         if(constants.styleValuesMapbox.indexOf(val) !== -1) {
             styleObj.style = convertStyleVal(val);
-        } else if(val === constants.styleValueOSM) {
-            styleObj.style = constants.styleOSM;
+        } else if(constants.stylesNonMapbox[val]) {
+            styleObj.style = constants.stylesNonMapbox[val];
         } else {
             styleObj.style = val;
         }

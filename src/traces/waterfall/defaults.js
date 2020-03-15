@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62,7 +62,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 
     if(traceOut.textposition !== 'none') {
-        coerce('textinfo');
+        coerce('texttemplate');
+        if(!traceOut.texttemplate) coerce('textinfo');
     }
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);

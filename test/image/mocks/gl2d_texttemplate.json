@@ -1,0 +1,61 @@
+{
+  "data": [{
+      "type": "scattergl",
+      "mode": "markers+text",
+      "x": [0, 1, 2, 3],
+      "y": [0, 1, 4, 9],
+
+      "text": ["a", "b", "c", "d"],
+      "texttemplate": "%{text}: (%{x}, %{y})",
+      "textposition": "top center",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }, {
+        "type": "scattergl",
+        "mode": "markers+text",
+        "x": [3, 2, 1, 0],
+        "y": [0, 1, 4, 9],
+        "texttemplate": ["1", "2", "3"],
+        "textposition": "top center",
+        "xaxis": "x2",
+        "yaxis": "y2"
+    },{
+      "type": "scatterpolargl",
+      "mode": "markers+text",
+      "text": ["A", "B", "C", "D"],
+      "texttemplate": "%{text}: (%{r:0.2f},%{theta:0.2f})",
+      "textposition": "top center",
+      "r": [1, 0.5, 1, 1.5],
+      "theta": [0, 90, 180, 270],
+      "showgrid": false,
+      "subplot": "polar"
+  }
+  ],
+  "layout": {
+    "showlegend": false,
+    "width": 600,
+    "height": 300,
+    "margin": {
+      "t": 50,
+      "b": 50,
+      "l": 50,
+      "r": 50
+    },
+    "polar": {
+      "radialaxis": {
+        "showline": false,
+        "linewidth": 0,
+        "tickwidth": 2,
+        "gridcolor": "white",
+        "gridwidth": 0
+      }
+    },
+    "grid": {
+      "rows": 1,
+      "columns": 2,
+      "pattern": "independent",
+      "xgap": 5,
+      "ygap": 5
+    }
+  }
+}

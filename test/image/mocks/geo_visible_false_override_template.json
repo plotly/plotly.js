@@ -1,0 +1,84 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "marker": {
+                "opacity": 0.5,
+                "color": "green",
+                "size": 100
+            },
+            "lon": [
+                0
+            ],
+            "lat": [
+                0
+            ]
+        },
+        {
+            "geo": "geo2",
+            "type": "scattergeo",
+            "marker": {
+                "opacity": 0.5,
+                "color": "yellow",
+                "size": 100
+            },
+            "lon": [
+                0
+            ],
+            "lat": [
+                0
+            ]
+        },
+        {
+            "geo": "geo3",
+            "type": "scattergeo",
+            "marker": {
+                "opacity": 0.5,
+                "color": "red",
+                "size": 100
+            },
+            "lon": [
+                0
+            ],
+            "lat": [
+                0
+            ]
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 800,
+        "title": {
+            "text": "geo visible false should override template.layout.geo.show*"
+        },
+        "geo": {
+            "visible": true
+        },
+        "geo2": {
+            "visible": false
+        },
+        "geo3": {
+            "visible": true
+        },
+        "template": {
+            "layout": {
+                "geo": {
+                    "showcoastlines": true,
+                    "showcountries": true,
+                    "showframe": true,
+                    "showland": true,
+                    "showlakes": true,
+                    "showocean": true,
+                    "showrivers": true,
+                    "showsubunits": true,
+                    "lonaxis": {
+                        "showgrid": true
+                    },
+                    "lataxis": {
+                        "showgrid": true
+                    }
+                }
+            }
+        }
+    }
+}

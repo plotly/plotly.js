@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "y": [ 1, 2, 1 ],
+      "name": "country=Canada",
+      "legendgroup": "country=Canada"
+    },
+    {
+      "y": [ 2, 1, 2 ],
+      "name": "country=Mexico",
+      "legendgroup": "country=Mexico"
+    },
+    {
+      "y": [ 3, 0, 4 ],
+      "name": "country=United States",
+      "legendgroup": "country=United States"
+    }
+  ],
+  "layout": {
+    "legend": {
+      "bgcolor": "red",
+      "orientation": "h"
+    },
+    "width": 700
+  }
+}

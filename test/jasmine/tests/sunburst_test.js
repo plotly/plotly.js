@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
 var d3 = require('d3');
@@ -14,6 +15,9 @@ var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
+
+var SLICES_TEXT_SELECTOR = '.sunburstlayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -70,6 +74,18 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[2].visible).toBe(false, 'no labels');
     });
 
+    it('should only coerce *count* when the *values* array is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], values: []},
+            {labels: [1], parents: [''], values: [1]}
+        ]);
+
+        expect(fullData[0].count).toBe('leaves');
+        expect(fullData[1].count).toBe('leaves', 'has empty values');
+        expect(fullData[2].count).toBe(undefined, 'has values');
+    });
+
     it('should not coerce *branchvalues* when *values* is not set', function() {
         _supply([
             {labels: [1], parents: [''], values: [1]},
@@ -102,6 +118,16 @@ describe('Test sunburst defaults:', function() {
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
+    it('should default *leaf.opacity* depending on a *colorscale* being present or not', function() {
+        _supply([
+            {labels: [1], parents: ['']},
+            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
+        ]);
+
+        expect(fullData[0].leaf.opacity).toBe(0.7, 'without colorscale');
+        expect(fullData[1].leaf.opacity).toBe(1, 'with colorscale');
+    });
+
     it('should include "text" flag in *textinfo* when *text* is set', function() {
         _supply([
             {labels: [1], parents: [''], text: ['A']},
@@ -129,6 +155,31 @@ describe('Test sunburst defaults:', function() {
         });
         expect(gd._fullLayout.sunburstcolorway)
             .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
+    });
+
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
+        _supply([
+            {labels: [1], parents: ['']}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBe(undefined);
+    });
+
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
+        _supply([
+            {labels: [1], parents: [''], marker: {
+                colors: [0]
+            }}
+        ]);
+
+        expect(fullData[0].marker.colorscale).toBeCloseToArray([
+            [ 0, 'rgb(5,10,172)' ],
+            [ 0.35, 'rgb(106,137,247)' ],
+            [ 0.5, 'rgb(190,190,190)' ],
+            [ 0.6, 'rgb(220,170,132)' ],
+            [ 0.7, 'rgb(230,145,90)' ],
+            [ 1, 'rgb(178,10,28)' ]
+        ]);
     });
 });
 
@@ -162,7 +213,7 @@ describe('Test sunburst calc:', function() {
     function extractPt(k) {
         var out = gd.calcdata.map(function(cd) {
             return cd[0].hierarchy.descendants().map(function(pt) {
-                return pt[k];
+                return Lib.nestedProperty(pt, k).get();
             });
         });
         return out.length > 1 ? out : out[0];
@@ -212,7 +263,7 @@ describe('Test sunburst calc:', function() {
 
         expect(extract('id')).toEqual(['dummy', 'A', 'B', 'b']);
         expect(extract('pid')).toEqual(['', 'dummy', 'dummy', 'B']);
-        expect(extract('label')).toEqual([undefined, 'A', 'B', 'b']);
+        expect(extract('label')).toEqual(['', 'A', 'B', 'b']);
     });
 
     it('should compute hierarchy values', function() {
@@ -220,12 +271,16 @@ describe('Test sunburst calc:', function() {
         var parents = ['', 'Root', 'Root', 'B'];
 
         _calc([
-            {labels: labels, parents: parents},
+            {labels: labels, parents: parents, count: 'leaves+branches'},
+            {labels: labels, parents: parents, count: 'branches'},
+            {labels: labels, parents: parents}, // N.B. counts 'leaves' in this case
             {labels: labels, parents: parents, values: [0, 1, 2, 3]},
             {labels: labels, parents: parents, values: [30, 20, 10, 5], branchvalues: 'total'}
         ]);
 
         expect(extractPt('value')).toEqual([
+            [4, 2, 1, 1],
+            [2, 1, 0, 0],
             [2, 1, 1, 1],
             [6, 5, 1, 3],
             [30, 20, 10, 5]
@@ -244,8 +299,8 @@ describe('Test sunburst calc:', function() {
         expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
-        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children.');
-        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children.');
+        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
     });
 
     it('should warn labels/parents lead to ambiguous hierarchy', function() {
@@ -289,6 +344,156 @@ describe('Test sunburst calc:', function() {
 
         expect(extract('id')).toEqual(['true', '1', '2', '3', '4', '5', '6', '7', '8']);
         expect(extract('pid')).toEqual(['', 'true', 'true', '2', '2', 'true', 'true', '6', 'true']);
+    });
+
+    it('should compute correct sector *value* for generated implied root', function() {
+        _calc([{
+            labels: [ 'A', 'B', 'b'],
+            parents: ['Root', 'Root', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'remainder'
+        }, {
+            labels: [ 'A', 'B', 'b'],
+            parents: ['Root', 'Root', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'total'
+        }]);
+
+        expect(extractPt('data.data.id')).toEqual([
+            ['Root', 'B', 'A', 'b'],
+            ['Root', 'B', 'A', 'b']
+        ]);
+        expect(extractPt('value')).toEqual([
+            [4, 3, 1, 1],
+            [3, 2, 1, 1]
+        ]);
+    });
+
+    it('should compute correct sector *value* for generated "root of roots"', function() {
+        spyOn(Lib, 'randstr').and.callFake(function() { return 'dummy'; });
+
+        _calc([{
+            labels: [ 'A', 'B', 'b'],
+            parents: ['', '', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'remainder'
+        }, {
+            labels: [ 'A', 'B', 'b'],
+            parents: ['', '', 'B'],
+            values: [1, 2, 1],
+            branchvalues: 'total'
+        }]);
+
+        expect(extractPt('data.data.id')).toEqual([
+            ['dummy', 'B', 'A', 'b'],
+            ['dummy', 'B', 'A', 'b']
+        ]);
+        expect(extractPt('value')).toEqual([
+            [4, 3, 1, 1],
+            [3, 2, 1, 1]
+        ]);
+    });
+
+    it('should use *marker.colors*', function() {
+        _calc({
+            marker: { colors: ['pink', '#777', '#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#fff'] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgba(255, 192, 203, 1)');
+        expect(cd[1].color).toEqual('rgba(119, 119, 119, 1)');
+        expect(cd[2].color).toEqual('rgba(255, 0, 0, 1)');
+        expect(cd[3].color).toEqual('rgba(255, 255, 0, 1)');
+        expect(cd[4].color).toEqual('rgba(0, 255, 0, 1)');
+        expect(cd[5].color).toEqual('rgba(0, 255, 255, 1)');
+        expect(cd[6].color).toEqual('rgba(0, 0, 255, 1)');
+        expect(cd[7].color).toEqual('rgba(255, 0, 255, 1)');
+        expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
+    });
+
+    it('should use *marker.colors* numbers with default colorscale', function() {
+        _calc({
+            marker: { colors: [-4, -3, -2, -1, 0, 1, 2, 3, 4] },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(5, 10, 172)');
+        expect(cd[1].color).toEqual('rgb(41, 55, 199)');
+        expect(cd[2].color).toEqual('rgb(77, 101, 226)');
+        expect(cd[3].color).toEqual('rgb(120, 146, 238)');
+        expect(cd[4].color).toEqual('rgb(190, 190, 190)');
+        expect(cd[5].color).toEqual('rgb(223, 164, 122)');
+        expect(cd[6].color).toEqual('rgb(221, 123, 80)');
+        expect(cd[7].color).toEqual('rgb(200, 66, 54)');
+        expect(cd[8].color).toEqual('rgb(178, 10, 28)');
+    });
+
+    it('should use *marker.colors* numbers with desired colorscale', function() {
+        _calc({
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use *marker.colors* numbers not values with colorscale', function() {
+        _calc({
+            values: [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
+            marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
+    });
+
+    it('should use values with colorscale when *marker.colors* in empty', function() {
+        _calc({
+            values: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            marker: { colors: [], colorscale: 'Portland' },
+            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve']
+        });
+
+        var cd = gd.calcdata[0];
+        expect(cd.length).toEqual(9);
+        expect(cd[0].color).toEqual('rgb(12, 51, 131)');
+        expect(cd[1].color).toEqual('rgb(11, 94, 159)');
+        expect(cd[2].color).toEqual('rgb(10, 136, 186)');
+        expect(cd[3].color).toEqual('rgb(126, 174, 121)');
+        expect(cd[4].color).toEqual('rgb(242, 211, 56)');
+        expect(cd[5].color).toEqual('rgb(242, 177, 56)');
+        expect(cd[6].color).toEqual('rgb(242, 143, 56)');
+        expect(cd[7].color).toEqual('rgb(230, 87, 43)');
+        expect(cd[8].color).toEqual('rgb(217, 30, 30)');
     });
 });
 
@@ -377,7 +582,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel\n6',
+                nums: 'Abel\nEve/\n17% of Eve\n6',
                 name: 'trace 0'
             },
             ptData: {
@@ -396,7 +601,7 @@ describe('Test sunburst hover:', function() {
         pos: 4,
         exp: {
             label: {
-                nums: 'Abel',
+                nums: 'Abel\nEve/\n17% of Eve',
                 name: 't...'
             },
             ptData: {
@@ -606,11 +811,16 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined();
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth');
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth');
             } else {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length) {
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined();
+                expect(trackers.click[0].points[0].label).toBe('Seth');
+                expect(trackers.click[0].nextLevel).not.toBeDefined();
+            } else {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -683,16 +893,6 @@ describe('Test sunburst clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        // should be same before and after 2nd click
-        function _assertCommon(msg) {
-            if(trackers.click.length) {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        }
-
         Plotly.plot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
@@ -702,27 +902,49 @@ describe('Test sunburst clicks:', function() {
             if(trackers.sunburstclick.length === 1) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Seth', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 1) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .then(click(gd, 4))
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_sunburstclick twice, but not additional
-            // plotly_click nor plotly_animating
+            // should trigger plotly_sunburstclick and plotly_click twice,
+            // but not plotly_animating
 
             if(trackers.sunburstclick.length === 2) {
                 expect(trackers.sunburstclick[0].event).toBeDefined(msg);
                 expect(trackers.sunburstclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.sunburstclick[0].nextLevel).toBe('Awan', msg);
             } else {
                 fail('incorrect plotly_sunburstclick triggering - ' + msg);
             }
 
-            _assertCommon(msg);
+            if(trackers.click.length === 2) {
+                expect(trackers.click[0].event).toBeDefined(msg);
+                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+            } else {
+                fail('incorrect plotly_click triggering - ' + msg);
+            }
+
+            if(trackers.animating.length !== 1) {
+                fail('incorrect plotly_animating triggering - ' + msg);
+            }
         })
         .catch(failTest)
         .then(done);
@@ -742,10 +964,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_sunburstclick triggering');
             }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-            } else {
+            if(trackers.click.length !== 0) {
                 fail('incorrect plotly_click triggering');
             }
 
@@ -864,7 +1083,7 @@ describe('Test sunburst restyle:', function() {
         .then(done);
     });
 
-    it('should be able to restyle *textinfo*', function(done) {
+    it('should be able to restyle *textinfo* with various *insidetextorientation*', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -918,6 +1137,27 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'horizontal'
+        .then(_restyle({insidetextorientation: 'horizontal'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'tangential'
+        .then(_restyle({insidetextorientation: 'tangential'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        // now change insidetextorientation to 'radial'
+        .then(_restyle({insidetextorientation: 'radial'}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+        .then(_restyle({textinfo: 'none'}))
+        .then(_assert('no textinfo', ['', '', '', '']))
+        .then(_restyle({textinfo: null}))
+        .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
         .catch(failTest)
         .then(done);
     });
@@ -944,10 +1184,13 @@ describe('Test sunburst tweening:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function _run(gd, v) {
+    function _reset() {
         pathTweenFnLookup = {};
         textTweenFnLookup = {};
+    }
 
+    function _run(gd, v) {
+        _reset();
         click(gd, v)();
 
         // 1 second more than the click transition duration
@@ -958,28 +1201,28 @@ describe('Test sunburst tweening:', function() {
         return s.replace(/\s/g, '');
     }
 
-    function _assert(msg, attrName, id, exp) {
+    function _assert(msg, attrName, id, exp, tolerance) {
         var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
         // asserting at the mid point *should be* representative enough
         var t = 0.5;
         var actual = trim(fn(t));
+        var msg2 = msg + ' | node ' + id + ' @t=' + t;
 
-        // do not assert textBB translate piece,
-        // which isn't tweened and has OS-dependent results
         if(attrName === 'transform') {
-            actual = actual.split('translate').slice(0, 2).join('translate');
-        }
-
+            var fake = {attr: function() { return actual; }};
+            var xy = Drawing.getTranslate(fake);
+            expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
+        } else {
         // we could maybe to bring in:
         // https://github.com/hughsk/svg-path-parser
         // to make these assertions more readable
-
-        expect(actual).toBe(trim(exp), msg + ' | node ' + id + ' @t=' + t);
+            expect(actual).toBe(trim(exp), msg2);
+        }
     }
 
-    it('should tween sector exit/update (case: branch, no maxdepth)', function(done) {
+    it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1006,18 +1249,14 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(313.45694251914836,271.54305748085164)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [313.45, 275.54]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('should tween sector enter/update (case: entry, no maxdepth)', function(done) {
+    it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1045,18 +1284,14 @@ describe('Test sunburst tweening:', function() {
                 'M350,156.25 L350,100 A135,1350,1,0485,235.00000000000003 L428.75,235.00000000000003' +
                 'A78.75,78.750,1,1350,156.25Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(316.8522926358638,268.1477073641362)'
-            );
-            _assert('move b text to new position', 'transform', 'b',
-                'translate(274.4279627606877,310.57203723931224)'
-            );
+            _assert('move B text to new position', 'transform', 'B', [316.85, 272.14]);
+            _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
         .catch(failTest)
         .then(done);
     });
 
-    it('should tween sector enter/update/exit (case: entry, maxdepth=2)', function(done) {
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
         var mock = {
             data: [{
                 type: 'sunburst',
@@ -1083,12 +1318,244 @@ describe('Test sunburst tweening:', function() {
             _assert('enter b for parent position', 'd', 'b',
                 'M350,133.75 L350,100 A135,1350,0,0350,370 L350,336.25 A101.25,101.250,0,1350,133.75Z'
             );
-            _assert('move B text to new position', 'transform', 'B',
-                'translate(303.0160689531907,281.9839310468093)'
+            _assert('move B text to new position', 'transform', 'B', [303.01, 285.98]);
+            _assert('enter b text to new position', 'transform', 'b', [248.75, 239]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
+        var mock = {
+            data: [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b', 'bb'],
+                parents: ['', 'Root', 'Root', 'B', 'b'],
+                maxdepth: 2,
+                level: 'B'
+            }]
+        };
+
+        Plotly.plot(gd, mock)
+        .then(_run(gd, 1))
+        .then(function() {
+            _assert('exit b radially outward and to parent sector angle', 'd', 'b',
+                'M350,133.75L350,100A135,1350,1,0485,235.00000000000003' +
+                'L451.25,235.00000000000003A101.25,101.250,1,1350,133.75Z'
             );
-            _assert('enter b text to new position', 'transform', 'b',
-                'translate(248.75,235)'
+            _assert('enter new entry radially outward', 'd', 'Root',
+                'M350,235A0,00,1,0350,235A0,00,1,0350,235Z' +
+                'M383.75,235A33.75,33.750,1,1316.25,235A33.75,33.750,1,1383.75,235Z'
             );
+            _assert('enter A counterclockwise', 'd', 'A',
+                'M417.5,235L485,235A135,1350,0,0350,100L350,167.5A67.5,67.50,0,1417.5,235Z'
+            );
+            _assert('update B to new position', 'd', 'B',
+                'M350,201.25L350,133.75A101.25,101.250,1,0451.25,235.00000000000003' +
+                'L383.75,235A33.75,33.750,1,1350,201.25Z'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    /*
+    it('should tween in sectors from new traces', function(done) {
+        Plotly.plot(gd, [{type: 'sunburst'}])
+        .then(_reset)
+        .then(function() {
+            return Plotly.animate(gd, [{
+                type: 'sunburst',
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B']
+            }]);
+        })
+        .then(function() {
+            _assert('enter entry from theta=0', 'd', 'Root',
+                ''
+            );
+            // _assert('enter A from theta=0', 'd', 'A',
+            //     ''
+            // );
+            // _assert('enter B from theta=0', 'd', 'B',
+            //     ''
+            // );
+            // _assert('enter b from theta=0', 'd', 'b',
+            //     ''
+            // );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+    */
+
+    it('should update text position during transition using *auto* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'auto'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [309.3085305481173, 202.66937078300114]);
+            _assert('move O text to new position', 'transform', 'O', [337.158534264498, 162.57550532369754], 5);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [455.10235209157037, 177.717459723826], 5);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.2952497427013]);
+            _assert('move U text to new position', 'transform', 'U', [416.1153793700712, 163.4078137147134]);
+            _assert('move V text to new position', 'transform', 'V', [471.63745793297295, 218.00377184475153]);
+            _assert('move W text to new position', 'transform', 'W', [457.21539566810236, 178.44157384259557]);
+            _assert('move X text to new position', 'transform', 'X', [431.0320488371527, 145.88885474402548]);
+            _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [350, 185.9244172266002]);
+            _assert('move O text to new position', 'transform', 'O', [350.1640625, 162.3617907020963]);
+            _assert('move U text to new position', 'transform', 'U', [387.0665312800944, 146.39132446549587]);
+            _assert('move V text to new position', 'transform', 'V', [467.5637172232141, 214.71357776223093]);
+            _assert('move W text to new position', 'transform', 'W', [453.6883022471187, 176.23118240799604]);
+            _assert('move X text to new position', 'transform', 'X', [428.32070483274055, 145.007590714263]);
+            _assert('move Y text to new position', 'transform', 'Y', [393.6173101979463, 123.958130483835]);
+            _assert('move Z text to new position', 'transform', 'Z', [359.52567880729003, 116.05583257124167]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial'
+            }]
+        })
+        .then(_run(gd, 4))
+        .then(function() {
+            _assert('move J text to new position', 'transform', 'J', [298.18238454231454, 239]);
+            _assert('move O text to new position', 'transform', 'O', [299.00421744782363, 183.7721980352468]);
+            _assert('move U text to new position', 'transform', 'U', [418.6530444037927, 162.19895218157865]);
+            _assert('move V text to new position', 'transform', 'V', [471.8671910181962, 218.0219264868202]);
+            _assert('move W text to new position', 'transform', 'W', [459.0093083790858, 178.21113754411613]);
+            _assert('move X text to new position', 'transform', 'X', [433.74669513154777, 144.8536840385141]);
+            _assert('move Y text to new position', 'transform', 'Y', [398.67767996405655, 121.9940236084775]);
+            _assert('move Z text to new position', 'transform', 'Z', [354.00770212095256, 116.19286557341015]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'radial',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [317.71031126211744, 202.23522389350774]);
+            _assert('move V text to new position', 'transform', 'V', [444.88381073744586, 191.14358863479603]);
+            _assert('move W text to new position', 'transform', 'W', [365.5485731154604, 134.6827081871288]);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [247.47466543373307, 255.288278237516]);
+            _assert('move Z text to new position', 'transform', 'Z', [300.75324430542196, 332.0135787956955]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'tangential',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [441.011030377721, 188.63633201157208]);
+            _assert('move W text to new position', 'transform', 'W', [382.1346244328249, 135.0126788235936], 5);
+            _assert('move X text to new position', 'transform', 'X', [277.7815763779703, 162.7705278345142]);
+            _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
+            _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                textinfo: 'label',
+                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                parents: ['', 'A', 'A', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'J', 'J', 'J', 'J', 'J', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'U', 'U'],
+                insidetextorientation: 'horizontal',
+                level: 'O',
+            }]
+        })
+        .then(_run(gd, 2))
+        .then(function() {
+            _assert('move U text to new position', 'transform', 'U', [313.79288001914836, 202.45694251914836]);
+            _assert('move V text to new position', 'transform', 'V', [445.2341347726318, 190.47976534033592]);
+            _assert('move W text to new position', 'transform', 'W', [366.3829959511747, 133.44080859889465]);
+            _assert('move X text to new position', 'transform', 'X', [274.43577526068776, 163.42796276068773]);
+            _assert('move Y text to new position', 'transform', 'Y', [244.44862109889465, 255.71893345117468]);
+            _assert('move Z text to new position', 'transform', 'Z', [301.6438278403359, 334.2263222726318]);
         })
         .catch(failTest)
         .then(done);
@@ -1233,6 +1700,480 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
         })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Test sunburst texttemplate without `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: %{value}', // N.B. there is no `values` array
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '100% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate with *total* `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '9% of Eve',
+                '15% of Eve',
+                '3% of Eve',
+                '6% of Eve',
+                '17% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate with *remainder* `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '8% of Eve', '2% of Eve', '1% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '20% of Eve', '12% of Eve', '6% of Eve', '5% of Eve', '3% of Eve', '42% of Seth', '8% of Seth', '14% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '6% of Eve',
+                '5% of Eve',
+                '8% of Eve',
+                '2% of Eve',
+                '14% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test sunburst texttemplate without `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['33% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '50% of Seth', '50% of Seth']],
+        ['%{percentParent} of %{parent}', ['33% of Eve', '50% of Seth', '50% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *total* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #ff7f0e', 'color: #ff7f0e', 'color: #ff7f0e']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['18% of Eve', '15% of Eve', '3% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '83% of Seth', '17% of Seth']],
+        ['%{percentParent} of %{parent}', ['18% of Eve', '83% of Seth', '17% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('Test sunburst texttemplate with *remainder* `values` should work when *level* is set:', function() {
+    checkTextTemplate([{
+        type: 'sunburst',
+        level: 'Seth',
+        branchvalues: 'remainder',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: #1f77b4', 'color: #1f77b4', 'color: #1f77b4']],
+        ['label: %{label}', ['label: Seth', 'label: Enos', 'label: Noam']],
+        ['text: %{text}', ['text: twelve', 'text: ten', 'text: two']],
+        ['path: %{currentPath}', ['path: Eve/', 'path: Eve/Seth', 'path: Eve/Seth/']],
+        ['%{percentRoot} of %{root}', ['20% of Eve', '8% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Seth', '42% of Seth', '8% of Seth']],
+        ['%{percentParent} of %{parent}', ['20% of Eve', '42% of Seth', '8% of Seth']],
+    ], /* skipEtra */ true);
+});
+
+describe('sunburst inside text orientation', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextRotations(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['rotations'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('rotate(');
+                var rotate = 0;
+                if(pos0 !== -1) {
+                    pos0 += 'rotate('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    rotate = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.rotations[i]).toBeCloseTo(rotate, -1, 'rotation for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react to new insidetextorientation option', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', ''],
+                labels: [64, 32, 16, 8],
+                values: [64, 32, 16, 8],
+                sort: false,
+
+                text: [
+                    'very long label',
+                    'label',
+                    'long label',
+                    '+'
+                ],
+
+                textinfo: 'text',
+                textposition: 'inside',
+                showlegend: false
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextRotations('using default "auto"', {
+            rotations: [-0.6, 0, 48, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'horizontal';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "horizontal"', {
+            rotations: [0, 0, 0, 0]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'radial';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "radial"', {
+            rotations: [84, -60, 48, 12]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'tangential';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('using "tangential"', {
+            rotations: [0, 30, -42, -78]
+        }))
+        .then(function() {
+            fig.data[0].insidetextorientation = 'auto';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextRotations('back to "auto"', {
+            rotations: [-0.6, 0, 48, 0]
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('sunburst uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'sunburst',
+                parents: ['', '', '', '', '', '', '', '', '', ''],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '+',
+                    '=',
+                    '$',
+                    'very long lablel'
+                ],
+
+                textinfo: 'text'
+            }],
+            layout: {
+                width: 300,
+                height: 300
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 16; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
+        }))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should uniform text scales after transition', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                type: 'sunburst',
+                parents: [
+                    '',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Oscar',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform',
+                    'Uniform'
+                ],
+                labels: [
+                    'Oscar',
+                    'Papa',
+                    'Quebec',
+                    'Romeo and Juliet',
+                    'Sierra',
+                    'Tango',
+                    'Uniform',
+                    'ViKtor Korchnoi - Anatoly Karpov',
+                    'Whiskey',
+                    'X ray',
+                    'Yankee',
+                    'Zulu'
+                ],
+                textinfo: 'label'
+            }],
+            layout: {
+                width: 500,
+                height: 500,
+                uniformtext: {
+                    mode: 'hide',
+                    minsize: 12
+                }
+            }
+        })
+        .then(assertTextSizes('before click', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 2)) // click on Uniform
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click child', {
+            fontsizes: [12, 12, 12, 12, 12, 12],
+            scales: [1, 0, 1, 1, 1, 1],
+        }))
+        .then(click(gd, 1)) // click on Oscar
+        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+        .then(assertTextSizes('after click parent', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+        }))
         .catch(failTest)
         .then(done);
     });

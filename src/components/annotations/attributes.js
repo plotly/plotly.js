@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -92,7 +92,7 @@ module.exports = templatedArray('annotation', {
         editType: 'arraydraw',
         description: [
             'Sets the horizontal alignment of the `text` within the box.',
-            'Has an effect only if `text` spans more two or more lines',
+            'Has an effect only if `text` spans two or more lines',
             '(i.e. `text` contains one or more <br> HTML tags) or if an',
             'explicit width is set to override the text width.'
         ].join(' ')

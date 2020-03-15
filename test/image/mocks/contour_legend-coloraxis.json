@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "showlegend": true,
+            "coloraxis": "coloraxis",
+            "x": [0, 10, 12],
+            "y": [10, 12, 0],
+            "z": [1, 2, 3],
+            "contours": {"coloring": "heatmap"},
+            "line": {"color": "#fff"},
+            "type": "contour",
+            "name": "contour"
+        }
+    ],
+    "layout": {
+        "coloraxis": {
+            "colorscale": [[0, "blue"], [1, "red"]],
+            "reversescale": true,
+            "showscale": false
+        },
+        "title": "<i>contour</i> legend with <b>coloraxis</b>",
+        "margin": {
+            "t": 125,
+            "b": 25
+        },
+        "width": 600,
+        "height": 400
+    }
+}

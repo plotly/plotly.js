@@ -6,7 +6,6 @@
       "align": "left"
   }, {
       "type": "indicator",
-      "domain": {"x": [0.05, 0.5], "y": [0.15, 0.35]},
       "domain": {"row": 0, "column": 1},
       "delta": {"position": "top"},
       "align": "left"
@@ -29,7 +28,6 @@
       "align": "center"
   }, {
       "type": "indicator",
-      "domain": {"x": [0.05, 0.5], "y": [0.15, 0.35]},
       "domain": {"row": 1, "column": 1},
       "delta": {"position": "top"},
       "align": "center"
@@ -52,7 +50,6 @@
       "align": "right"
   }, {
       "type": "indicator",
-      "domain": {"x": [0.05, 0.5], "y": [0.15, 0.35]},
       "domain": {"row": 2, "column": 1},
       "delta": {"position": "top"},
       "align": "right"

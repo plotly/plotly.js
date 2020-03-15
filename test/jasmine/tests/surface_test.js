@@ -1,18 +1,14 @@
-var Surface = require('@src/traces/surface');
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
+var supplyDefaults = require('@src/traces/surface').supplyDefaults;
 var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
-var Lib = require('@src/lib');
-
 
 describe('Test surface', function() {
     'use strict';
 
     describe('supplyDefaults', function() {
-        var supplyDefaults = Surface.supplyDefaults;
-
         var defaultColor = '#444';
         var layout = {_dfltTitle: {colorbar: 'cb'}};
 
@@ -106,6 +102,7 @@ describe('Test surface', function() {
                 [0.7, 'rgb(230,145,90)'],
                 [1, 'rgb(178,10,28)']
             ]);
+            expect(traceOut.reversescale).toBe(false);
             expect(traceOut.showscale).toBe(true);
             expect(traceOut.colorbar).toBeDefined();
         });

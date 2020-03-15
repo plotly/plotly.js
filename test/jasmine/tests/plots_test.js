@@ -13,6 +13,33 @@ describe('Test Plots', function() {
     'use strict';
 
     describe('Plots.supplyDefaults', function() {
+        it('should not coerce `minsize` when `uniformtext.mode` is *false*', function() {
+            var gd = {};
+            supplyAllDefaults(gd);
+            expect(gd._fullLayout.uniformtext.minsize).toBe(undefined);
+        });
+
+        it('should not accept ranges where the end is not greater than the start', function() {
+            var gd = {
+                data: [{
+                    type: 'pie',
+                    domain: {
+                        x: [0.4, 0],
+                        y: [0.5, 0.5]
+                    },
+                    values: [1, 2, 3, 4],
+                    labels: ['a', 'b', 'c', 'd'],
+                    text: ['text', 'should', 'be', 'inside']
+                }]
+            };
+
+            supplyAllDefaults(gd);
+            expect(gd._fullData[0].domain.x[0]).toBe(0);
+            expect(gd._fullData[0].domain.y[1]).toBe(1);
+            expect(gd._fullData[0].domain.x[0]).toBe(0);
+            expect(gd._fullData[0].domain.y[1]).toBe(1);
+        });
+
         it('should not throw an error when gd is a plain object', function() {
             var height = 100;
             var gd = {
@@ -387,6 +414,31 @@ describe('Test Plots', function() {
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
                     .then(function() { return Plotly.Plots.resize(gd); })
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
+                    .catch(failTest)
+                    .then(done);
+            });
+        });
+
+        describe('returns Promises', function() {
+            afterEach(destroyGraphDiv);
+
+            it('should resolve them all', function(done) {
+                gd = createGraphDiv();
+                var p = [];
+                Plotly.newPlot(gd, [{y: [5, 2, 5]}])
+                    .then(function() {
+                        gd.style.width = '500px';
+                        gd.style.height = '500px';
+                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plotly.Plots.resize(gd));
+                        return Promise.all(p);
+                    })
+                    .then(function(v) {
+                        // Make sure they all resolve to the same value
+                        expect(v[0]).toEqual(v[1]);
+                        expect(v[1]).toEqual(v[2]);
+                    })
                     .catch(failTest)
                     .then(done);
             });
