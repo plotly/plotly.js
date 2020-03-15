@@ -1,0 +1,335 @@
+{
+    "data": [
+        {
+            "scene": "scene1",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.2",
+            "marker": {
+                "color": "rgb(0, 0, 255)",
+                "opacity": 0.2,
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene1",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.2",
+            "marker": {
+                "color": "rgba(255, 0, 0, 0.2)",
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene2",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.4",
+            "marker": {
+                "color": "rgb(0, 0, 255)",
+                "opacity": 0.4,
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene2",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.4",
+            "marker": {
+                "color": "rgba(255, 0, 0, 0.4)",
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene3",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.6",
+            "marker": {
+                "color": "rgb(0, 0, 255)",
+                "opacity": 0.6,
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene3",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.6",
+            "marker": {
+                "color": "rgba(255, 0, 0, 0.6)",
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene4",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.8",
+            "marker": {
+                "color": "rgb(0, 0, 255)",
+                "opacity": 0.8,
+                "size": 75
+            }
+        },
+        {
+            "scene": "scene4",
+            "x": [
+                0,
+                1,
+                1,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "type": "scatter3d",
+            "mode": "markers",
+            "name": "0.8",
+            "marker": {
+                "color": "rgba(255, 0, 0, 0.8)",
+                "size": 75
+            }
+        }
+    ],
+    "layout": {
+        "coloraxis": {
+            "colorscale": "Portland"
+        },
+        "title": {
+            "text": "scatter3d with different marker.opacity values"
+        },
+        "legend": {
+            "title": {
+                "text": "<b>opacity</b>"
+            }
+        },
+        "width": 800,
+        "height": 800,
+        "scene1": {
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 0.5
+                },
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene2": {
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 0.5
+                },
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene3": {
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 0.5
+                },
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene4": {
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 0.5
+                },
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        }
+    }
+}
