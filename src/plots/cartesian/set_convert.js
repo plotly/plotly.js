@@ -572,7 +572,7 @@ module.exports = function setConvert(ax, fullLayout) {
             if(ax._rangebreaks.length) {
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    ax._lBreaks += brk.max - brk.min;
+                    ax._lBreaks += Math.abs(brk.max - brk.min);
                 }
 
                 ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);

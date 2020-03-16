@@ -527,7 +527,7 @@ axes.prepTicks = function(ax) {
         if(ax.tickmode === 'array') nt *= 100;
 
 
-        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - Math.abs(ax._lBreaks || 0)) / nt;
+        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt;
         axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
@@ -1009,7 +1009,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
-        var minDiff = (Math.abs(rng[1] - rng[0]) - Math.abs(ax._lBreaks || 0)) / 10000;
+        var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
 
         for(i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
