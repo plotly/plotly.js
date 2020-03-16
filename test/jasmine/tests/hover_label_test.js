@@ -2698,8 +2698,8 @@ describe('Hover on axes with rangebreaks', function() {
         mouseEvent('mousemove', x, y);
     }
 
-    function _assert(msg, exp) {
-        assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
+    function _assert(msg, exp, noHoverLabel) {
+        if(!noHoverLabel) assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
         expect(eventData.x).toBe(exp.x, 'event data x');
         expect(eventData.y).toBe(exp.y, 'event data y');
     }
@@ -2766,6 +2766,85 @@ describe('Hover on axes with rangebreaks', function() {
                 axis: 'Jan 1, 1970, 00:00:00.2',
                 x: '1970-01-01 00:00:00.2',
                 y: 8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when rangebreaks are present on y-axis using hovermode x (case of bar and autorange reversed)', function(done) {
+        Plotly.plot(gd, [{
+            type: 'bar',
+            orientation: 'h',
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ],
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        }], {
+            yaxis: {
+                autorange: 'reversed',
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(50, 350); })
+        .then(function() {
+            _assert('1st test', {
+                axis: '1',
+                nums: 'Jan 1, 1970, 00:00:00.01',
+                y: '1970-01-01 00:00:00.01',
+                x: 1
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('2nd test', {
+                axis: '5',
+                nums: 'Jan 1, 1970, 00:00:00.1',
+                y: '1970-01-01 00:00:00.1',
+                x: 5
+            });
+        })
+        .then(function() { _hover(250, 150); }) // hover over break
+        .then(function() {
+            _assert('3rd test', {
+                // previous values
+                y: '1970-01-01 00:00:00.1',
+                x: 5
+            }, 'noHoverLabel');
+        })
+        .then(function() { _hover(350, 50); })
+        .then(function() {
+            _assert('4th test', {
+                axis: '8',
+                nums: 'Jan 1, 1970, 00:00:00.2',
+                y: '1970-01-01 00:00:00.2',
+                x: 8
             });
         })
         .catch(failTest)
