@@ -364,11 +364,11 @@
       "rangebreaks": [
         {
           "pattern": "%w",
-          "bounds": [ 6, 0 ],
-          "operation": "[]"
+          "bounds": [ 6, 0 ]
         },
         {
-          "values": ["2017-01-16"]
+          "values": ["2017-01-16"],
+          "operation": "()"
         }
       ]
     },
@@ -377,11 +377,11 @@
       "rangebreaks": [
         {
           "pattern": "%w",
-          "bounds": [ 6, 0 ],
-          "operation": "[]"
+          "bounds": [ 6, 0 ]
         },
         {
-          "values": ["2017-01-16"]
+          "values": ["2017-01-16"],
+          "operation": "()"
         }
       ]
     },

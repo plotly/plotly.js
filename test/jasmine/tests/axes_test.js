@@ -4179,11 +4179,11 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8]}
+                            {pattern: '%H', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
-                _assert('with dflt operation', [
+                _assert('with () operation', [
                     1577952000000, BADNUM,
                     1578038400000, BADNUM,
                     1578124800000, BADNUM,
@@ -4207,7 +4207,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8]}
+                            {pattern: '%H', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
@@ -4284,7 +4284,7 @@ describe('Test axes', function() {
                             {bounds: [
                                 '1970-01-01 00:00:00.002',
                                 '1970-01-01 00:00:00.003'
-                            ]}
+                            ], operation: '()'}
                         ]
                     }
                 });
@@ -4466,11 +4466,11 @@ describe('Test axes', function() {
                         {bounds: [
                             '1969-12-31 23:59:59.990',
                             '1970-01-01 00:00:00.089'
-                        ]},
+                        ], operation: '()'},
                         {bounds: [
                             '1970-01-01 00:00:00.101',
                             '1970-01-01 00:00:00.189'
-                        ]}
+                        ], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4506,11 +4506,11 @@ describe('Test axes', function() {
                         {bounds: [
                             '1969-12-31 23:59:59.989',
                             '1970-01-01 00:00:00.090'
-                        ]},
+                        ], operation: '()'},
                         {bounds: [
                             '1970-01-01 00:00:00.101',
                             '1970-01-01 00:00:00.300'
-                        ]}
+                        ], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4611,7 +4611,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 1]}
+                        {pattern: '%w', bounds: [5, 1], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4641,7 +4641,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [4, 6]}
+                        {pattern: '%w', bounds: [4, 6], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4680,7 +4680,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8]}
+                        {pattern: '%H', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4705,8 +4705,8 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 1]},
-                        {pattern: '%H', bounds: [17, 8]}
+                        {pattern: '%w', bounds: [5, 1], operation: '()'},
+                        {pattern: '%H', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4728,8 +4728,8 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8]},
-                        {pattern: '%w', bounds: [5, 1]}
+                        {pattern: '%H', bounds: [17, 8], operation: '()'},
+                        {pattern: '%w', bounds: [5, 1], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4751,7 +4751,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8]}
+                        {pattern: '%H', bounds: [17, 8], operation: '()'}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;
@@ -4772,7 +4772,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [1, 4]}
+                        {pattern: '%w', bounds: [1, 4], operation: '()'}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;

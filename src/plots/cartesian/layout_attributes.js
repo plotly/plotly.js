@@ -329,7 +329,7 @@ module.exports = {
         operation: {
             valType: 'enumerated',
             values: ['[]', '()', '[)', '(]'],
-            dflt: '()',
+            dflt: '[]',
             role: 'info',
             editType: 'calc',
             description: [
