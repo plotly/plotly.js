@@ -287,14 +287,14 @@ module.exports = {
                 'Determines a pattern on the time line that generates breaks.',
                 'If *day of week* - Sunday-based weekday as a decimal number [0, 6].',
                 'If *time of day* - hour (24-hour clock) as a decimal number [0, 23].',
-                'These are the same directive as in `tickformat`, see',
-                'https://github.com/d3/d3-time-format#locale_format',
+                '*day of week* and *time of day* are similar to *%w* and *%H* directives',
+                'applied in `tickformat`, see https://github.com/d3/d3-time-format#locale_format',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'day of week\', bounds: [6, 0], operation: \'[]\' }',
+                '- { pattern: \'day of week\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'time of day\', bounds: [17, 8] }',
-                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
+                '- { pattern: \'time of day\', bounds: [16, 8] }',
+                '  breaks from 4pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
 
