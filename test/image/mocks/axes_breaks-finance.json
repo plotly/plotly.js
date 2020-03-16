@@ -363,7 +363,7 @@
       "rangeslider": { "visible": true },
       "rangebreaks": [
         {
-          "pattern": "%w",
+          "pattern": "day of week",
           "bounds": [ 6, 0 ]
         },
         {
@@ -376,7 +376,7 @@
       "rangeslider": { "visible": true },
       "rangebreaks": [
         {
-          "pattern": "%w",
+          "pattern": "day of week",
           "bounds": [ 6, 0 ]
         },
         {

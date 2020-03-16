@@ -15,7 +15,7 @@
     "xaxis": {
       "rangebreaks": [
         {
-          "pattern": "%w",
+          "pattern": "day of week",
           "bounds": [ 6, 0 ],
           "operation": "[]"
         },
