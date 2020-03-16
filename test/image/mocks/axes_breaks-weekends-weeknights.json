@@ -20,7 +20,7 @@
           "operation": "[]"
         },
         {
-          "pattern": "%H",
+          "pattern": "time of day",
           "bounds": [ 16, 8 ],
           "operation": "()"
         }

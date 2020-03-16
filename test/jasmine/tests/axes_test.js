@@ -4166,7 +4166,7 @@ describe('Test axes', function() {
                 _assert('(5,0]', noWeekend);
             });
 
-            it('should discard coords within break bounds - date %H case', function() {
+            it('should discard coords within break bounds - date time of day case', function() {
                 _calc({
                     x: [
                         '2020-01-02 08:00', '2020-01-02 20:00',
@@ -4179,7 +4179,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8], operation: '()'}
+                            {pattern: 'time of day', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
@@ -4193,7 +4193,7 @@ describe('Test axes', function() {
                 ]);
             });
 
-            it('should discard coords within break bounds - date %H / high precision case', function() {
+            it('should discard coords within break bounds - date time of day / high precision case', function() {
                 _calc({
                     x: [
                         '2020-01-03 17:00',
@@ -4207,7 +4207,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8], operation: '()'}
+                            {pattern: 'time of day', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
@@ -4680,7 +4680,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'time of day', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4706,7 +4706,7 @@ describe('Test axes', function() {
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
                         {pattern: 'day of week', bounds: [5, 1], operation: '()'},
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'time of day', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4728,7 +4728,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'},
+                        {pattern: 'time of day', bounds: [17, 8], operation: '()'},
                         {pattern: 'day of week', bounds: [5, 1], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
@@ -4751,7 +4751,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'time of day', bounds: [17, 8], operation: '()'}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;
@@ -4759,7 +4759,7 @@ describe('Test axes', function() {
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
-                    _assert('when range[0] falls within a break pattern (%H case)', 'x', {
+                    _assert('when range[0] falls within a break pattern (time of day case)', 'x', {
                         rangebreaks: [
                             [1577908800000, Lib.dateTime2ms('2020-01-02 08:00:00')],
                             ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
@@ -4917,7 +4917,7 @@ describe('Test axes', function() {
                 ]
             }], {
                 xaxis: {
-                    rangebreaks: [{pattern: '%H', bounds: [17, 8]}]
+                    rangebreaks: [{pattern: 'time of day', bounds: [17, 8]}]
                 }
             })
             .then(function() {

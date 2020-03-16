@@ -632,7 +632,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             vb = (new Date(v)).getUTCDay();
                             if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
-                        case '%H':
+                        case 'time of day':
                             bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                             b0 = bnds[0];
                             b1 = bnds[1];
@@ -699,8 +699,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(!ax.rangebreaks) return rangebreaksOut;
 
         var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
-            if(a.pattern === 'day of week' && b.pattern === '%H') return -1;
-            else if(b.pattern === 'day of week' && a.pattern === '%H') return 1;
+            if(a.pattern === 'day of week' && b.pattern === 'time of day') return -1;
+            else if(b.pattern === 'day of week' && a.pattern === 'time of day') return 1;
             return 0;
         });
 
@@ -771,7 +771,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                     r0Date.getUTCSeconds() * ONESEC -
                                     r0Date.getUTCMilliseconds();
                                 break;
-                            case '%H':
+                            case 'time of day':
                                 b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCHours();
