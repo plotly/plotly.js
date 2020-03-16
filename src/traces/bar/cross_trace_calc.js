@@ -47,6 +47,14 @@ function crossTraceCalc(gd, plotinfo) {
             } else {
                 calcTracesVert.push(calcTraces[i]);
             }
+
+            if(fullTrace._computePh) {
+                var cd = gd.calcdata[i];
+                for(var j = 0; j < cd.length; j++) {
+                    if(typeof cd[j].ph0 === 'function') cd[j].ph0 = cd[j].ph0();
+                    if(typeof cd[j].ph1 === 'function') cd[j].ph1 = cd[j].ph1();
+                }
+            }
         }
     }
 
