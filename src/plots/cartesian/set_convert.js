@@ -614,7 +614,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
     ax.maskBreaks = function(v) {
         var rangebreaksIn = ax.rangebreaks || [];
-        var bnds, b0, b1, vb;
+        var bnds, b0, b1, vb, vDate;
 
         for(var i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
@@ -625,28 +625,27 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op1 = op.charAt(1);
 
                 if(brk.bounds) {
-                    var doesCrossPeriod = false;
-
-                    bnds = Lib.simpleMap(brk.bounds, brk.pattern ?
+                    var pattern = brk.pattern;
+                    bnds = Lib.simpleMap(brk.bounds, pattern ?
                         cleanNumber :
                         ax.d2c // case of pattern: ''
                     );
                     b0 = Math.min(bnds[0], bnds[1]);
                     b1 = Math.max(bnds[0], bnds[1]);
+                    var doesCrossPeriod = !!(pattern && bnds[0] > bnds[1]);
 
-                    switch(brk.pattern) {
+                    switch(pattern) {
                         case WEEKDAY_PATTERN:
-                            vb = (new Date(v)).getUTCDay();
-                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            vDate = new Date(v);
+                            vb = vDate.getUTCDay();
                             break;
                         case HOUR_PATTERN:
-                            var vDate = new Date(v);
+                            vDate = new Date(v);
                             vb = vDate.getUTCHours() + (
                                 vDate.getUTCMinutes() * ONEMIN +
                                 vDate.getUTCSeconds() * ONESEC +
                                 vDate.getUTCMilliseconds()
                             ) / ONEDAY;
-                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
                         case '':
                             // N.B. should work on date axes as well!
