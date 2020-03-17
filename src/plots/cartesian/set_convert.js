@@ -27,8 +27,11 @@ var ONEHOUR = numConstants.ONEHOUR;
 var ONEMIN = numConstants.ONEMIN;
 var ONESEC = numConstants.ONESEC;
 
-var constants = require('./constants');
 var axisIds = require('./axis_ids');
+
+var constants = require('./constants');
+var HOUR_PATTERN = constants.HOUR_PATTERN;
+var WEEKDAY_PATTERN = constants.WEEKDAY_PATTERN;
 
 function fromLog(v) {
     return Math.pow(10, v);
@@ -625,14 +628,14 @@ module.exports = function setConvert(ax, fullLayout) {
                     var doesCrossPeriod = false;
 
                     switch(brk.pattern) {
-                        case 'day of week':
+                        case WEEKDAY_PATTERN:
                             bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                             b0 = bnds[0];
                             b1 = bnds[1];
                             vb = (new Date(v)).getUTCDay();
                             if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
-                        case 'hour':
+                        case HOUR_PATTERN:
                             bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                             b0 = bnds[0];
                             b1 = bnds[1];
@@ -699,8 +702,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(!ax.rangebreaks) return rangebreaksOut;
 
         var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
-            if(a.pattern === 'day of week' && b.pattern === 'hour') return -1;
-            else if(b.pattern === 'day of week' && a.pattern === 'hour') return 1;
+            if(a.pattern === WEEKDAY_PATTERN && b.pattern === HOUR_PATTERN) return -1;
+            if(b.pattern === WEEKDAY_PATTERN && a.pattern === HOUR_PATTERN) return 1;
             return 0;
         });
 
@@ -756,7 +759,7 @@ module.exports = function setConvert(ax, fullLayout) {
                         var t;
 
                         switch(brk.pattern) {
-                            case 'day of week':
+                            case WEEKDAY_PATTERN:
                                 b0 = bnds[0] + (op0 === '(' ? 1 : 0);
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCDay();
@@ -771,7 +774,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                     r0Date.getUTCSeconds() * ONESEC -
                                     r0Date.getUTCMilliseconds();
                                 break;
-                            case 'hour':
+                            case HOUR_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCHours();

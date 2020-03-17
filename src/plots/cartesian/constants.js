@@ -31,6 +31,9 @@ module.exports = {
     // and for 2D subplots
     SUBPLOT_PATTERN: /^x([0-9]*)y([0-9]*)$/,
 
+    HOUR_PATTERN: 'hour',
+    WEEKDAY_PATTERN: 'day of week',
+
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
 
