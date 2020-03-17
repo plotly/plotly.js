@@ -290,8 +290,8 @@ module.exports = {
                 'Examples:',
                 '- { pattern: \'day of week\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'hour\', bounds: [16, 8] }',
-                '  breaks from 4pm to 8am (i.e. skips non-work hours).'
+                '- { pattern: \'hour\', bounds: [17, 8], operation: \'()\' }', // TODO: simplify after revise defaults
+                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
 
