@@ -88,7 +88,7 @@
         "xaxis": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
                         0
@@ -104,7 +104,7 @@
         "xaxis2": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
                         0
@@ -149,7 +149,7 @@
         "yaxis3": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
                         0
@@ -166,7 +166,7 @@
         "yaxis4": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
                         0

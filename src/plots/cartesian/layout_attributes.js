@@ -18,6 +18,8 @@ var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
+var HOUR = constants.HOUR_PATTERN;
+var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 module.exports = {
     visible: {
@@ -278,22 +280,19 @@ module.exports = {
 
         pattern: {
             valType: 'enumerated',
-            // TODO could add '%H:%M:%S'
-            values: ['%w', '%H', ''],
+            values: [DAY_OF_WEEK, HOUR, ''],
             dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
-                'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
-                'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
-                'These are the same directive as in `tickformat`, see',
-                'https://github.com/d3/d3-time-format#locale_format',
+                'If *' + DAY_OF_WEEK + '* - Sunday-based weekday as a decimal number [0, 6].',
+                'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'%w\', bounds: [6, 0], operation: \'[]\' }',
+                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'%H\', bounds: [17, 8] }',
+                '- { pattern: \'' + HOUR + '\', bounds: [17, 8], operation: \'()\' }', // TODO: simplify after revise defaults
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },

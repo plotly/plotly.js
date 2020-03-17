@@ -27,8 +27,11 @@ var ONEHOUR = numConstants.ONEHOUR;
 var ONEMIN = numConstants.ONEMIN;
 var ONESEC = numConstants.ONESEC;
 
-var constants = require('./constants');
 var axisIds = require('./axis_ids');
+
+var constants = require('./constants');
+var HOUR_PATTERN = constants.HOUR_PATTERN;
+var WEEKDAY_PATTERN = constants.WEEKDAY_PATTERN;
 
 function fromLog(v) {
     return Math.pow(10, v);
@@ -611,7 +614,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
     ax.maskBreaks = function(v) {
         var rangebreaksIn = ax.rangebreaks || [];
-        var bnds, b0, b1, vb;
+        var bnds, b0, b1, vb, vDate;
 
         for(var i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
@@ -622,55 +625,56 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op1 = op.charAt(1);
 
                 if(brk.bounds) {
-                    var doesCrossPeriod = false;
+                    var pattern = brk.pattern;
+                    bnds = Lib.simpleMap(brk.bounds, pattern ?
+                        cleanNumber :
+                        ax.d2c // case of pattern: ''
+                    );
+                    b0 = bnds[0];
+                    b1 = bnds[1];
 
-                    switch(brk.pattern) {
-                        case '%w':
-                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                            b0 = bnds[0];
-                            b1 = bnds[1];
-                            vb = (new Date(v)).getUTCDay();
-                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                    switch(pattern) {
+                        case WEEKDAY_PATTERN:
+                            vDate = new Date(v);
+                            vb = vDate.getUTCDay();
+
+                            if(b0 > b1) {
+                                b1 += 7;
+                                if(vb < b0) vb += 7;
+                            }
+
                             break;
-                        case '%H':
-                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                            b0 = bnds[0];
-                            b1 = bnds[1];
-                            var vDate = new Date(v);
-                            vb = vDate.getUTCHours() + (
-                                vDate.getUTCMinutes() * ONEMIN +
-                                vDate.getUTCSeconds() * ONESEC +
-                                vDate.getUTCMilliseconds()
-                            ) / ONEDAY;
-                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                        case HOUR_PATTERN:
+                            vDate = new Date(v);
+                            var hours = vDate.getUTCHours();
+                            var minutes = vDate.getUTCMinutes();
+                            var seconds = vDate.getUTCSeconds();
+                            var milliseconds = vDate.getUTCMilliseconds();
+
+                            vb = hours + (
+                                minutes / 60 +
+                                seconds / 3600 +
+                                milliseconds / 3600000
+                            );
+
+                            if(b0 > b1) {
+                                b1 += 24;
+                                if(vb < b0) vb += 24;
+                            }
+
                             break;
                         case '':
                             // N.B. should work on date axes as well!
                             // e.g. { bounds: ['2020-01-04', '2020-01-05 23:59'] }
-                            bnds = Lib.simpleMap(brk.bounds, ax.d2c);
-                            if(bnds[0] <= bnds[1]) {
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                            } else {
-                                b0 = bnds[1];
-                                b1 = bnds[0];
-                            }
                             // TODO should work with reversed-range axes
                             vb = v;
                             break;
                     }
 
-                    if(doesCrossPeriod) {
-                        if(
-                            (op0 === '(' ? vb > b0 : vb >= b0) ||
-                            (op1 === ')' ? vb < b1 : vb <= b1)
-                        ) return BADNUM;
-                    } else {
-                        if(
-                            (op0 === '(' ? vb > b0 : vb >= b0) &&
-                            (op1 === ')' ? vb < b1 : vb <= b1)
-                        ) return BADNUM;
-                    }
+                    if(
+                        (op0 === '(' ? vb > b0 : vb >= b0) &&
+                        (op1 === ')' ? vb < b1 : vb <= b1)
+                    ) return BADNUM;
                 } else {
                     var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
                     var onOpenBound = false;
@@ -699,8 +703,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(!ax.rangebreaks) return rangebreaksOut;
 
         var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
-            if(a.pattern === '%w' && b.pattern === '%H') return -1;
-            else if(b.pattern === '%w' && a.pattern === '%H') return 1;
+            if(a.pattern === WEEKDAY_PATTERN && b.pattern === HOUR_PATTERN) return -1;
+            if(b.pattern === WEEKDAY_PATTERN && a.pattern === HOUR_PATTERN) return 1;
             return 0;
         });
 
@@ -756,7 +760,7 @@ module.exports = function setConvert(ax, fullLayout) {
                         var t;
 
                         switch(brk.pattern) {
-                            case '%w':
+                            case WEEKDAY_PATTERN:
                                 b0 = bnds[0] + (op0 === '(' ? 1 : 0);
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCDay();
@@ -771,7 +775,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                     r0Date.getUTCSeconds() * ONESEC -
                                     r0Date.getUTCMilliseconds();
                                 break;
-                            case '%H':
+                            case HOUR_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCHours();

@@ -2654,22 +2654,22 @@
       "tickfont": {"size": 8},
       "rangebreaks": [
         {
-          "pattern": "%w",
+          "pattern": "day of week",
           "bounds": [6, 0],
           "operation": "[]"
         },
         {
-          "pattern": "%H",
+          "pattern": "hour",
           "bounds": [0, 9],
           "operation": "()"
         },
         {
-          "pattern": "%H",
+          "pattern": "hour",
           "bounds": [12, 13],
           "operation": "()"
         },
         {
-          "pattern": "%H",
+          "pattern": "hour",
           "bounds": [15, 21],
           "operation": "()"
         }

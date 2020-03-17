@@ -1125,14 +1125,14 @@ describe('Test axes', function() {
         it('should only coerce rangebreaks *pattern* with *bounds*', function() {
             layoutIn = {
                 xaxis: {type: 'date', rangebreaks: [{bounds: ['2020-01-04', '2020-01-05']}]},
-                xaxis2: {type: 'date', rangebreaks: [{bounds: [6, 0], pattern: '%w'}]},
+                xaxis2: {type: 'date', rangebreaks: [{bounds: [6, 0], pattern: 'day of week'}]},
                 xaxis3: {type: 'date', rangebreaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
             };
             layoutOut._subplots.xaxis.push('x2', 'x3');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].pattern).toBe('', 'coerced to dflt value');
-            expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('%w', 'coerced');
+            expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('day of week', 'coerced');
             expect(layoutOut.xaxis3.rangebreaks[0].pattern).toBe(undefined, 'not coerce, using *values*');
         });
     });
@@ -4104,7 +4104,7 @@ describe('Test axes', function() {
                 _assert('with mixed operation values', [0, BADNUM, BADNUM, 90, 100, BADNUM, BADNUM, 200]);
             });
 
-            it('should discard coords within break bounds - date %w case', function() {
+            it('should discard coords within break bounds - date day of week case', function() {
                 var x = [
                     // Thursday
                     '2020-01-02 08:00', '2020-01-02 16:00',
@@ -4132,7 +4132,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%w', bounds: [6, 0], operation: '[]'}
+                            {pattern: 'day of week', bounds: [6, 0], operation: '[]'}
                         ]
                     }
                 });
@@ -4141,7 +4141,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%w', bounds: [5, 1], operation: '()'}
+                            {pattern: 'day of week', bounds: [5, 1], operation: '()'}
                         ]
                     }
                 });
@@ -4150,7 +4150,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%w', bounds: [6, 1], operation: '[)'}
+                            {pattern: 'day of week', bounds: [6, 1], operation: '[)'}
                         ]
                     }
                 });
@@ -4159,14 +4159,14 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%w', bounds: [5, 0], operation: '(]'}
+                            {pattern: 'day of week', bounds: [5, 0], operation: '(]'}
                         ]
                     }
                 });
                 _assert('(5,0]', noWeekend);
             });
 
-            it('should discard coords within break bounds - date %H case', function() {
+            it('should discard coords within break bounds - date hour case', function() {
                 _calc({
                     x: [
                         '2020-01-02 08:00', '2020-01-02 20:00',
@@ -4179,7 +4179,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8], operation: '()'}
+                            {pattern: 'hour', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
@@ -4193,7 +4193,7 @@ describe('Test axes', function() {
                 ]);
             });
 
-            it('should discard coords within break bounds - date %H / high precision case', function() {
+            it('should discard coords within break bounds - date hour / high precision case', function() {
                 _calc({
                     x: [
                         '2020-01-03 17:00',
@@ -4207,7 +4207,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: '%H', bounds: [17, 8], operation: '()'}
+                            {pattern: 'hour', bounds: [17, 8], operation: '()'}
                         ]
                     }
                 });
@@ -4219,6 +4219,162 @@ describe('Test axes', function() {
                     Lib.dateTime2ms('2020-01-06 8:00'),
                     Lib.dateTime2ms('2020-01-06 8:15'),
                     Lib.dateTime2ms('2020-01-06 8:30')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23, 1]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 1], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23, 0]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 0], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 00:00:00'),
+                    Lib.dateTime2ms('2020-01-02 00:00:01'),
+                    Lib.dateTime2ms('2020-01-02 00:00:30'),
+                    Lib.dateTime2ms('2020-01-02 00:30'),
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23, 24]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 24], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 00:00:00'),
+                    Lib.dateTime2ms('2020-01-02 00:00:01'),
+                    Lib.dateTime2ms('2020-01-02 00:00:30'),
+                    Lib.dateTime2ms('2020-01-02 00:30'),
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23.75, 0.25]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23.75, 0.25]}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    Lib.dateTime2ms('2020-01-01 23:30'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 00:30'),
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
                 ]);
             });
 
@@ -4611,7 +4767,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 1], operation: '()'}
+                        {pattern: 'day of week', bounds: [5, 1], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4626,7 +4782,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [6, 0], operation: '[]'}
+                        {pattern: 'day of week', bounds: [6, 0], operation: '[]'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4641,7 +4797,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [4, 6], operation: '()'}
+                        {pattern: 'day of week', bounds: [4, 6], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4656,7 +4812,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 5], operation: '[]'}
+                        {pattern: 'day of week', bounds: [5, 5], operation: '[]'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4671,7 +4827,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 5], operation: '()'}
+                        {pattern: 'day of week', bounds: [5, 5], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4680,7 +4836,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4705,8 +4861,8 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [5, 1], operation: '()'},
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'day of week', bounds: [5, 1], operation: '()'},
+                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4728,8 +4884,8 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'},
-                        {pattern: '%w', bounds: [5, 1], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8], operation: '()'},
+                        {pattern: 'day of week', bounds: [5, 1], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4751,7 +4907,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%H', bounds: [17, 8], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;
@@ -4759,7 +4915,7 @@ describe('Test axes', function() {
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
-                    _assert('when range[0] falls within a break pattern (%H case)', 'x', {
+                    _assert('when range[0] falls within a break pattern (hour case)', 'x', {
                         rangebreaks: [
                             [1577908800000, Lib.dateTime2ms('2020-01-02 08:00:00')],
                             ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
@@ -4772,7 +4928,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: '%w', bounds: [1, 4], operation: '()'}
+                        {pattern: 'day of week', bounds: [1, 4], operation: '()'}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;
@@ -4780,7 +4936,7 @@ describe('Test axes', function() {
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .then(function() {
-                    _assert('when range[0] falls within a break pattern (%w case)', 'x', {
+                    _assert('when range[0] falls within a break pattern (day of week case)', 'x', {
                         rangebreaks: [
                             ['2020-01-01 00:00:00', '2020-01-02 00:00:00'].map(Lib.dateTime2ms),
                             ['2020-01-07 00:00:00', '2020-01-09 00:00:00'].map(Lib.dateTime2ms)
@@ -4917,7 +5073,7 @@ describe('Test axes', function() {
                 ]
             }], {
                 xaxis: {
-                    rangebreaks: [{pattern: '%H', bounds: [17, 8]}]
+                    rangebreaks: [{pattern: 'hour', bounds: [17, 8]}]
                 }
             })
             .then(function() {
