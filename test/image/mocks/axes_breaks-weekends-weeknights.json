@@ -16,8 +16,7 @@
       "rangebreaks": [
         {
           "pattern": "day of week",
-          "bounds": [ 6, 0 ],
-          "operation": "[]"
+          "bounds": [ 6, 1 ]
         },
         {
           "pattern": "hour",

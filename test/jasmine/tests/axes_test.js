@@ -1125,7 +1125,7 @@ describe('Test axes', function() {
         it('should only coerce rangebreaks *pattern* with *bounds*', function() {
             layoutIn = {
                 xaxis: {type: 'date', rangebreaks: [{bounds: ['2020-01-04', '2020-01-05']}]},
-                xaxis2: {type: 'date', rangebreaks: [{bounds: [6, 0], pattern: 'day of week'}]},
+                xaxis2: {type: 'date', rangebreaks: [{bounds: [6, 1], pattern: 'day of week'}]},
                 xaxis3: {type: 'date', rangebreaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
             };
             layoutOut._subplots.xaxis.push('x2', 'x3');
@@ -4132,38 +4132,11 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'day of week', bounds: [6, 0], operation: '[]'}
+                            {pattern: 'day of week', bounds: [6, 1]}
                         ]
                     }
                 });
-                _assert('[6,0]', noWeekend);
-
-                _calc({x: x}, {
-                    xaxis: {
-                        rangebreaks: [
-                            {pattern: 'day of week', bounds: [5, 1], operation: '()'}
-                        ]
-                    }
-                });
-                _assert('(5,1)', noWeekend);
-
-                _calc({x: x}, {
-                    xaxis: {
-                        rangebreaks: [
-                            {pattern: 'day of week', bounds: [6, 1], operation: '[)'}
-                        ]
-                    }
-                });
-                _assert('[6,1)', noWeekend);
-
-                _calc({x: x}, {
-                    xaxis: {
-                        rangebreaks: [
-                            {pattern: 'day of week', bounds: [5, 0], operation: '(]'}
-                        ]
-                    }
-                });
-                _assert('(5,0]', noWeekend);
+                _assert('[6,1]', noWeekend);
             });
 
             it('should discard coords within break bounds - date hour case', function() {
@@ -4767,7 +4740,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [5, 1], operation: '()'}
+                        {pattern: 'day of week', bounds: [6, 1]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4782,22 +4755,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [6, 0], operation: '[]'}
-                    ];
-                    return Plotly.react(gd, gd.data, gd.layout);
-                })
-                .then(function() {
-                    _assert('break over the weekend days (with operation:[])', 'x', {
-                        rangebreaks: [
-                            ['2020-01-04', '2020-01-06'].map(Lib.dateTime2ms)
-                        ],
-                        m2: 0.000001640946501588664,
-                        B: [-2589304.064, -2589587.619]
-                    });
-                })
-                .then(function() {
-                    gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [4, 6], operation: '()'}
+                        {pattern: 'day of week', bounds: [5, 6]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4812,22 +4770,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [5, 5], operation: '[]'}
-                    ];
-                    return Plotly.react(gd, gd.data, gd.layout);
-                })
-                .then(function() {
-                    _assert('skip Friday (operation:[] version)', 'x', {
-                        rangebreaks: [
-                            ['2020-01-03', '2020-01-04'].map(Lib.dateTime2ms)
-                        ],
-                        m2: 0.0000012658730158736563,
-                        B: [-1997456.107, -1997565.478]
-                    });
-                })
-                .then(function() {
-                    gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [5, 5], operation: '()'}
+                        {pattern: 'day of week', bounds: [5, 5]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4861,7 +4804,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [5, 1], operation: '()'},
+                        {pattern: 'day of week', bounds: [6, 1]},
                         {pattern: 'hour', bounds: [17, 8], operation: '()'}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
@@ -4885,7 +4828,7 @@ describe('Test axes', function() {
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
                         {pattern: 'hour', bounds: [17, 8], operation: '()'},
-                        {pattern: 'day of week', bounds: [5, 1], operation: '()'}
+                        {pattern: 'day of week', bounds: [6, 1]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4928,7 +4871,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'day of week', bounds: [1, 4], operation: '()'}
+                        {pattern: 'day of week', bounds: [2, 4]}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;

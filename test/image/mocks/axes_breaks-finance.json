@@ -364,8 +364,7 @@
       "rangebreaks": [
         {
           "pattern": "day of week",
-          "operation": "[]",
-          "bounds": [ 6, 0 ]
+          "bounds": [ 6, 1 ]
         },
         {
           "values": ["2017-01-16"],
@@ -378,8 +377,7 @@
       "rangebreaks": [
         {
           "pattern": "day of week",
-          "operation": "[]",
-          "bounds": [ 6, 0 ]
+          "bounds": [ 6, 1 ]
         },
         {
           "values": ["2017-01-16"],

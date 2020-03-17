@@ -196,8 +196,7 @@
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "domain": [
@@ -212,8 +211,7 @@
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "autorange": "reversed",
@@ -257,8 +255,7 @@
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "anchor": "x3",
@@ -274,8 +271,7 @@
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "autorange": "reversed",
