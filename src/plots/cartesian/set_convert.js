@@ -627,18 +627,19 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(brk.bounds) {
                     var doesCrossPeriod = false;
 
+                    bnds = Lib.simpleMap(brk.bounds, brk.pattern ?
+                        cleanNumber :
+                        ax.d2c // case of pattern: ''
+                    );
+                    b0 = Math.min(bnds[0], bnds[1]);
+                    b1 = Math.max(bnds[0], bnds[1]);
+
                     switch(brk.pattern) {
                         case WEEKDAY_PATTERN:
-                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                            b0 = bnds[0];
-                            b1 = bnds[1];
                             vb = (new Date(v)).getUTCDay();
                             if(bnds[0] > bnds[1]) doesCrossPeriod = true;
                             break;
                         case HOUR_PATTERN:
-                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                            b0 = bnds[0];
-                            b1 = bnds[1];
                             var vDate = new Date(v);
                             vb = vDate.getUTCHours() + (
                                 vDate.getUTCMinutes() * ONEMIN +
@@ -650,14 +651,6 @@ module.exports = function setConvert(ax, fullLayout) {
                         case '':
                             // N.B. should work on date axes as well!
                             // e.g. { bounds: ['2020-01-04', '2020-01-05 23:59'] }
-                            bnds = Lib.simpleMap(brk.bounds, ax.d2c);
-                            if(bnds[0] <= bnds[1]) {
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                            } else {
-                                b0 = bnds[1];
-                                b1 = bnds[0];
-                            }
                             // TODO should work with reversed-range axes
                             vb = v;
                             break;
@@ -665,8 +658,8 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     if(doesCrossPeriod) {
                         if(
-                            (op0 === '(' ? vb > b0 : vb >= b0) ||
-                            (op1 === ')' ? vb < b1 : vb <= b1)
+                            (op0 === '(' ? vb > b1 : vb >= b1) ||
+                            (op1 === ')' ? vb < b0 : vb <= b0)
                         ) return BADNUM;
                     } else {
                         if(
