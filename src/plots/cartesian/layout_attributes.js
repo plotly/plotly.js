@@ -279,21 +279,21 @@ module.exports = {
         pattern: {
             valType: 'enumerated',
             // TODO could add '%H:%M:%S'
-            values: ['day of week', 'time of day', ''],
+            values: ['day of week', 'hour', ''],
             dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
                 'If *day of week* - Sunday-based weekday as a decimal number [0, 6].',
-                'If *time of day* - hour (24-hour clock) as a decimal number [0, 23].',
-                '*day of week* and *time of day* are similar to *%w* and *%H* directives',
+                'If *hour* - hour (24-hour clock) as a decimal number [0, 23].',
+                '*day of week* and *hour* are similar to *%w* and *%H* directives',
                 'applied in `tickformat`, see https://github.com/d3/d3-time-format#locale_format',
                 'for more info.',
                 'Examples:',
                 '- { pattern: \'day of week\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'time of day\', bounds: [16, 8] }',
+                '- { pattern: \'hour\', bounds: [16, 8] }',
                 '  breaks from 4pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },

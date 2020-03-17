@@ -2659,17 +2659,17 @@
           "operation": "[]"
         },
         {
-          "pattern": "time of day",
+          "pattern": "hour",
           "bounds": [0, 9],
           "operation": "()"
         },
         {
-          "pattern": "time of day",
+          "pattern": "hour",
           "bounds": [12, 13],
           "operation": "()"
         },
         {
-          "pattern": "time of day",
+          "pattern": "hour",
           "bounds": [15, 21],
           "operation": "()"
         }

@@ -192,7 +192,7 @@
         "xaxis": {
             "rangebreaks": [
                 {
-                    "pattern": "time of day",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
@@ -208,7 +208,7 @@
         "xaxis2": {
             "rangebreaks": [
                 {
-                    "pattern": "time of day",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
@@ -253,7 +253,7 @@
         "yaxis3": {
             "rangebreaks": [
                 {
-                    "pattern": "time of day",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
@@ -270,7 +270,7 @@
         "yaxis4": {
             "rangebreaks": [
                 {
-                    "pattern": "time of day",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
