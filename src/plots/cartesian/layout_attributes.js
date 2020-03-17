@@ -287,7 +287,7 @@ module.exports = {
             description: [
                 'Determines a pattern on the time line that generates breaks.',
                 'If *' + DAY_OF_WEEK + '* - Sunday-based weekday as a decimal number [0, 6].',
-                'If *' + HOUR + '* - hour (24-hour clock) as integer numbers [0, 24].',
+                'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
                 'Examples:',
                 '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 0] }',

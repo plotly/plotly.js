@@ -630,22 +630,38 @@ module.exports = function setConvert(ax, fullLayout) {
                         cleanNumber :
                         ax.d2c // case of pattern: ''
                     );
-                    b0 = Math.min(bnds[0], bnds[1]);
-                    b1 = Math.max(bnds[0], bnds[1]);
-                    var doesCrossPeriod = !!(pattern && bnds[0] > bnds[1]);
+                    b0 = bnds[0];
+                    b1 = bnds[1];
 
                     switch(pattern) {
                         case WEEKDAY_PATTERN:
                             vDate = new Date(v);
                             vb = vDate.getUTCDay();
+
+                            if(b0 > b1) {
+                                b1 += 7;
+                                if(vb < b0) vb += 7;
+                            }
+
                             break;
                         case HOUR_PATTERN:
                             vDate = new Date(v);
-                            vb = vDate.getUTCHours() + (
-                                vDate.getUTCMinutes() * ONEMIN +
-                                vDate.getUTCSeconds() * ONESEC +
-                                vDate.getUTCMilliseconds()
-                            ) / ONEDAY;
+                            var hours = vDate.getUTCHours();
+                            var minutes = vDate.getUTCMinutes();
+                            var seconds = vDate.getUTCSeconds();
+                            var milliseconds = vDate.getUTCMilliseconds();
+
+                            vb = hours + (
+                                minutes / 60 +
+                                seconds / 3600 +
+                                milliseconds / 3600000
+                            );
+
+                            if(b0 > b1) {
+                                b1 += 24;
+                                if(vb < b0) vb += 24;
+                            }
+
                             break;
                         case '':
                             // N.B. should work on date axes as well!
@@ -655,17 +671,10 @@ module.exports = function setConvert(ax, fullLayout) {
                             break;
                     }
 
-                    if(doesCrossPeriod) {
-                        if(
-                            (op0 === '(' ? vb > b1 : vb >= b1) ||
-                            (op1 === ')' ? vb < b0 : vb <= b0)
-                        ) return BADNUM;
-                    } else {
-                        if(
-                            (op0 === '(' ? vb > b0 : vb >= b0) &&
-                            (op1 === ')' ? vb < b1 : vb <= b1)
-                        ) return BADNUM;
-                    }
+                    if(
+                        (op0 === '(' ? vb > b0 : vb >= b0) &&
+                        (op1 === ')' ? vb < b1 : vb <= b1)
+                    ) return BADNUM;
                 } else {
                     var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
                     var onOpenBound = false;
