@@ -4222,6 +4222,123 @@ describe('Test axes', function() {
                 ]);
             });
 
+            it('should discard coords within break bounds - date hour case of [23, 1]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 1], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23, 0]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 0], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 00:00:00'),
+                    Lib.dateTime2ms('2020-01-02 00:00:01'),
+                    Lib.dateTime2ms('2020-01-02 00:00:30'),
+                    Lib.dateTime2ms('2020-01-02 00:30'),
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
+            it('should discard coords within break bounds - date hour case of [23, 24]', function() {
+                _calc({
+                    x: [
+                        '2020-01-01 22',
+                        '2020-01-01 23',
+                        '2020-01-01 23:30',
+                        '2020-01-01 23:59',
+                        '2020-01-01 23:59:30',
+                        '2020-01-01 23:59:59',
+                        '2020-01-02 00:00:00',
+                        '2020-01-02 00:00:01',
+                        '2020-01-02 00:00:30',
+                        '2020-01-02 00:30',
+                        '2020-01-02 01',
+                        '2020-01-02 02'
+                    ]
+                }, {
+                    xaxis: {
+                        rangebreaks: [
+                            {pattern: 'hour', bounds: [23, 24], operation: '()'}
+                        ]
+                    }
+                });
+                _assert('with dflt operation', [
+                    Lib.dateTime2ms('2020-01-01 22'),
+                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    BADNUM,
+                    Lib.dateTime2ms('2020-01-02 00:00:00'),
+                    Lib.dateTime2ms('2020-01-02 00:00:01'),
+                    Lib.dateTime2ms('2020-01-02 00:00:30'),
+                    Lib.dateTime2ms('2020-01-02 00:30'),
+                    Lib.dateTime2ms('2020-01-02 01'),
+                    Lib.dateTime2ms('2020-01-02 02')
+                ]);
+            });
+
             it('should discard coords within [values[i], values[i] + dvalue] bounds', function() {
                 var x = [
                     // Thursday
