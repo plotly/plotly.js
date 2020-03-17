@@ -18,6 +18,8 @@ var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
+var HOUR = constants.HOUR_PATTERN;
+var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 module.exports = {
     visible: {
@@ -278,19 +280,19 @@ module.exports = {
 
         pattern: {
             valType: 'enumerated',
-            values: ['day of week', 'hour', ''],
+            values: [DAY_OF_WEEK, HOUR, ''],
             dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
-                'If *day of week* - Sunday-based weekday as a decimal number [0, 6].',
-                'If *hour* - hour (24-hour clock) as a decimal number [0, 23].',
+                'If *' + DAY_OF_WEEK + '* - Sunday-based weekday as a decimal number [0, 6].',
+                'If *' + HOUR + '* - hour (24-hour clock) as integer numbers [0, 24].',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'day of week\', bounds: [6, 0] }',
+                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'hour\', bounds: [17, 8], operation: \'()\' }', // TODO: simplify after revise defaults
+                '- { pattern: \'' + HOUR + '\', bounds: [17, 8], operation: \'()\' }', // TODO: simplify after revise defaults
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
