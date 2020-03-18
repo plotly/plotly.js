@@ -167,7 +167,7 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
             var i, q;
             for(i = 0; i < bnds.length; i++) {
                 q = indexOfDay(bnds[i]);
-                if(q !== -1) {
+                if(q) {
                     dfltPattern = DAY_OF_WEEK;
                     break;
                 }
@@ -177,9 +177,9 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
             if(pattern === DAY_OF_WEEK) {
                 for(i = 0; i < bnds.length; i++) {
                     q = indexOfDay(bnds[i]);
-                    if(q !== -1) {
-                        // convert to integers i.e 'Monday' --> 1
-                        itemOut.bounds[i] = bnds[i] = q;
+                    if(q) {
+                        // convert to integers i.e 'Sunday' --> 0
+                        itemOut.bounds[i] = bnds[i] = q - 1;
                     }
                 }
             }
@@ -211,17 +211,20 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
     }
 }
 
-var weekSTR = [
-    'sun',
-    'mon',
-    'tue',
-    'wed',
-    'thu',
-    'fri',
-    'sat'
-];
+// these numbers are one more than what bounds would be mapped to
+var dayStrToNum = {
+    sun: 1,
+    mon: 2,
+    tue: 3,
+    wed: 4,
+    thu: 5,
+    fri: 6,
+    sat: 7
+};
 
 function indexOfDay(v) {
-    var str = String(v).substr(0, 3).toLowerCase();
-    return weekSTR.indexOf(str);
+    if(typeof v !== 'string') return;
+    return dayStrToNum[
+        String(v).substr(0, 3).toLowerCase()
+    ];
 }
