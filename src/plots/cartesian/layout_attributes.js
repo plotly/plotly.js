@@ -285,6 +285,7 @@ module.exports = {
             description: [
                 'Determines a pattern on the time line that generates breaks.',
                 'If *' + DAY_OF_WEEK + '* - days of the week in English e.g. \'Sunday\' or `\sun\`',
+                '(matching is case-insensitive and considers only the first three characters),',
                 'as well as Sunday-based integers between 0 and 6.',
                 'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
