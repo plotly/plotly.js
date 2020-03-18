@@ -20,8 +20,7 @@
         },
         {
           "pattern": "hour",
-          "bounds": [ 16, 8 ],
-          "operation": "()"
+          "bounds": [ 16.001, 8 ]
         }
       ]
     },
