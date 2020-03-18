@@ -620,10 +620,6 @@ module.exports = function setConvert(ax, fullLayout) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
-                var op = brk.operation;
-                var op0 = op.charAt(0);
-                var op1 = op.charAt(1);
-
                 if(brk.bounds) {
                     var pattern = brk.pattern;
                     bnds = Lib.simpleMap(brk.bounds, pattern ?
@@ -671,24 +667,13 @@ module.exports = function setConvert(ax, fullLayout) {
                             break;
                     }
 
-                    if(
-                        (op0 === '(' ? vb > b0 : vb >= b0) &&
-                        (op1 === ')' ? vb < b1 : vb <= b1)
-                    ) return BADNUM;
+                    if(vb >= b0 && vb < b1) return BADNUM;
                 } else {
                     var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
-                    var onOpenBound = false;
-
                     for(var j = 0; j < vals.length; j++) {
                         b0 = vals[j];
                         b1 = b0 + brk.dvalue;
-                        if(
-                            (op0 === '(' ? v > b0 : v >= b0) &&
-                            (op1 === ')' ? v < b1 : v <= b1)
-                        ) return BADNUM;
-
-                        if(onOpenBound && op0 === '(' && v === b0) return BADNUM;
-                        onOpenBound = op1 === ')' && v === b1;
+                        if(v >= b0 && v < b1) return BADNUM;
                     }
                 }
             }
@@ -737,14 +722,9 @@ module.exports = function setConvert(ax, fullLayout) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
-                var op = brk.operation;
-                var op0 = op.charAt(0);
-                var op1 = op.charAt(1);
-
                 if(brk.bounds) {
                     if(brk.pattern) {
                         bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                        if(bnds[0] === bnds[1] && op === '()') continue;
 
                         // r0 value as date
                         var r0Date = new Date(r0);
@@ -761,12 +741,11 @@ module.exports = function setConvert(ax, fullLayout) {
 
                         switch(brk.pattern) {
                             case WEEKDAY_PATTERN:
-                                b0 = bnds[0] + (op0 === '(' ? 1 : 0);
+                                b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCDay();
                                 r0PatternDelta = b0 - r0Pattern;
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
-                                if(op1 === ']') bndDelta += ONEDAY;
                                 step = 7 * ONEDAY;
 
                                 t = r0 + r0PatternDelta * ONEDAY -

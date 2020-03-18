@@ -91,9 +91,8 @@
                     "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "domain": [
@@ -107,9 +106,8 @@
                     "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "autorange": "reversed",
@@ -152,9 +150,8 @@
                     "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "anchor": "x3",
@@ -169,9 +166,8 @@
                     "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "autorange": "reversed",

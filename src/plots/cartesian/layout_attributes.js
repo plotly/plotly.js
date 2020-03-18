@@ -273,7 +273,6 @@ module.exports = {
             editType: 'calc',
             description: [
                 'Sets the lower and upper bounds of this axis rangebreak.',
-                'Can be used with `operation` to determine the behavior at the bounds.',
                 'Can be used with `pattern`.'
             ].join(' ')
         },
@@ -292,7 +291,7 @@ module.exports = {
                 'Examples:',
                 '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 0] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'' + HOUR + '\', bounds: [17, 8], operation: \'()\' }', // TODO: simplify after revise defaults
+                '- { pattern: \'' + HOUR + '\', bounds: [17, 8] }',
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
@@ -322,23 +321,6 @@ module.exports = {
             description: [
                 'Sets the size of each `values` item.',
                 'The default is one day in milliseconds.'
-            ].join(' ')
-        },
-
-        operation: {
-            valType: 'enumerated',
-            values: ['[]', '()', '[)', '(]'],
-            dflt: '[]',
-            role: 'info',
-            editType: 'calc',
-            description: [
-                'Determines if we include or not the bound values within the rangebreak.',
-                'Closed interval bounds (i.e. starting with *[* or ending with *]*)',
-                'include the bound value within the rangebreak and thus make coordinates',
-                'equal to the bound disappear.',
-                'Open interval bounds (i.e. starting with *(* or ending with *)*)',
-                'does not include the bound value within the rangebreak and thus keep coordinates',
-                'equal to the bound on the axis.'
             ].join(' ')
         },
 

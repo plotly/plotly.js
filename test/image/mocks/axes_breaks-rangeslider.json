@@ -2655,23 +2655,19 @@
       "rangebreaks": [
         {
           "pattern": "day of week",
-          "bounds": [6, 0],
-          "operation": "[]"
+          "bounds": [6, 1]
         },
         {
           "pattern": "hour",
-          "bounds": [0, 9],
-          "operation": "()"
+          "bounds": [0, 9]
         },
         {
           "pattern": "hour",
-          "bounds": [12, 13],
-          "operation": "()"
+          "bounds": [12, 13]
         },
         {
           "pattern": "hour",
-          "bounds": [15, 21],
-          "operation": "()"
+          "bounds": [15, 21]
         }
       ],
       "rangeslider": { "visible": true }

@@ -187,7 +187,5 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                 return;
             }
         }
-
-        coerce('operation');
     }
 }
