@@ -165,17 +165,19 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
 
             var dfltPattern = '';
             var i, q;
-            for(i = 0; i < bnds.length; i++) {
-                q = indexOfDay(bnds[i]);
-                if(q) {
-                    dfltPattern = DAY_OF_WEEK;
-                    break;
+            if(bnds.length === 2) {
+                for(i = 0; i < 2; i++) {
+                    q = indexOfDay(bnds[i]);
+                    if(q) {
+                        dfltPattern = DAY_OF_WEEK;
+                        break;
+                    }
                 }
             }
             var pattern = coerce('pattern', dfltPattern);
 
-            if(pattern === DAY_OF_WEEK) {
-                for(i = 0; i < bnds.length; i++) {
+            if(bnds.length === 2 && pattern === DAY_OF_WEEK) {
+                for(i = 0; i < 2; i++) {
                     q = indexOfDay(bnds[i]);
                     if(q) {
                         // convert to integers i.e 'Sunday' --> 0
