@@ -21,6 +21,9 @@ var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
 
+var constants = require('./constants');
+var WEEKDAY_PATTERN = constants.WEEKDAY_PATTERN;
+
 /**
  * options: object containing:
  *
@@ -156,6 +159,8 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
     if(enabled) {
         var bnds = coerce('bounds');
 
+        var pattern;
+
         if(bnds && bnds.length >= 2) {
             if(bnds.length > 2) {
                 itemOut.bounds = itemOut.bounds.slice(0, 2);
@@ -176,7 +181,7 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                 }
             }
 
-            coerce('pattern');
+            pattern = coerce('pattern');
         } else {
             var values = coerce('values');
 
@@ -188,6 +193,8 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
             }
         }
 
-        coerce('operation');
+        if(pattern !== WEEKDAY_PATTERN) {
+            coerce('operation');
+        }
     }
 }

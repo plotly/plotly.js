@@ -620,7 +620,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
-                var op = brk.operation;
+                var op = brk.operation || '[)';
                 var op0 = op.charAt(0);
                 var op1 = op.charAt(1);
 
@@ -737,7 +737,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
-                var op = brk.operation;
+                var op = brk.operation || '[)';
                 var op0 = op.charAt(0);
                 var op1 = op.charAt(1);
 
