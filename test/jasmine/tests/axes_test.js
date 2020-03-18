@@ -1162,6 +1162,58 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis2.rangebreaks[2].bounds[1]).toBe(6, 'convert sat');
             expect(layoutOut.xaxis2.rangebreaks[3].bounds[1]).toBe('-1', 'string');
         });
+
+        it('should validate inputs in respect to *day of week* pattern', function() {
+            layoutIn = {
+                xaxis: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: ['6.999', '0'] }]},
+                xaxis2: {type: 'date', rangebreaks: [{bounds: ['Sunday'] }]},
+                xaxis3: {type: 'date', rangebreaks: [{bounds: ['sun', 'mon', 'tue'] }]},
+                xaxis4: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, '-1'] }]},
+                xaxis5: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, '-.001'] }]},
+                xaxis6: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, '7'] }]},
+                xaxis7: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, '6.999'] }]}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6', 'x7');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(true, 'valid');
+            expect(layoutOut.xaxis.rangebreaks[0].bounds[0]).toBe(6, 'cast float to int');
+            expect(layoutOut.xaxis.rangebreaks[0].bounds[1]).toBe(0, 'cast string to int');
+            expect(layoutOut.xaxis2.rangebreaks[0].enabled).toBe(false, 'reject bounds.length < 2');
+            expect(layoutOut.xaxis3.rangebreaks[0].enabled).toBe(true, 'do not reject bounds.length > 2');
+            expect(layoutOut.xaxis3.rangebreaks[0].bounds.length).toBe(2, 'pick first two');
+            expect(layoutOut.xaxis4.rangebreaks[0].enabled).toBe(false, 'reject bound < 0');
+            expect(layoutOut.xaxis5.rangebreaks[0].enabled).toBe(false, 'reject bound < 0');
+            expect(layoutOut.xaxis6.rangebreaks[0].enabled).toBe(false, 'reject bound >= 7');
+            expect(layoutOut.xaxis7.rangebreaks[0].enabled).toBe(true, 'do not reject bound < 7');
+        });
+
+        it('should validate inputs in respect to *hour* pattern', function() {
+            layoutIn = {
+                xaxis: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: ['23.999', '0'] }]},
+                xaxis2: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1] }]},
+                xaxis3: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, 2, 3] }]},
+                xaxis4: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, '-1'] }]},
+                xaxis5: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, '-.001'] }]},
+                xaxis6: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, '24.001'] }]},
+                xaxis7: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, '23.999'] }]},
+                xaxis8: {type: 'date', rangebreaks: [{pattern: 'hour', bounds: [1, '24'] }]}
+            };
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(true, 'valid');
+            expect(layoutOut.xaxis.rangebreaks[0].bounds[0]).toBe('23.999', 'do not cast float to int');
+            expect(layoutOut.xaxis.rangebreaks[0].bounds[1]).toBe('0', 'do not cast string to int');
+            expect(layoutOut.xaxis2.rangebreaks[0].enabled).toBe(false, 'reject bounds.length < 2');
+            expect(layoutOut.xaxis3.rangebreaks[0].enabled).toBe(true, 'do not reject bounds.length > 2');
+            expect(layoutOut.xaxis3.rangebreaks[0].bounds.length).toBe(2, 'pick first two');
+            expect(layoutOut.xaxis4.rangebreaks[0].enabled).toBe(false, 'reject bound < 0');
+            expect(layoutOut.xaxis5.rangebreaks[0].enabled).toBe(false, 'reject bound < 0');
+            expect(layoutOut.xaxis6.rangebreaks[0].enabled).toBe(false, 'reject bound > 24');
+            expect(layoutOut.xaxis7.rangebreaks[0].enabled).toBe(true, 'do not reject bound <= 24');
+            expect(layoutOut.xaxis8.rangebreaks[0].enabled).toBe(true, 'do not reject 24');
+        });
     });
 
     describe('constraints relayout', function() {

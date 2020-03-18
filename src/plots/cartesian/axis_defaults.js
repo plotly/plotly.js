@@ -8,6 +8,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
@@ -22,6 +24,7 @@ var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
 
 var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
+var HOUR = require('./constants').HOUR_PATTERN;
 
 /**
  * options: object containing:
@@ -175,13 +178,44 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                 }
             }
             var pattern = coerce('pattern', dfltPattern);
-
-            if(bnds.length === 2 && pattern === DAY_OF_WEEK) {
+            if(pattern && bnds.length !== 2) {
+                itemOut.enabled = false;
+                return;
+            }
+            if(pattern === DAY_OF_WEEK) {
                 for(i = 0; i < 2; i++) {
                     q = indexOfDay(bnds[i]);
                     if(q) {
                         // convert to integers i.e 'Sunday' --> 0
                         itemOut.bounds[i] = bnds[i] = q - 1;
+                    }
+                }
+            }
+            if(pattern) {
+                // ensure types and ranges
+                for(i = 0; i < 2; i++) {
+                    q = bnds[i];
+                    switch(pattern) {
+                        case DAY_OF_WEEK :
+                            if(isNumeric(q)) q = Math.floor(q);
+
+                            q = Math.floor(+q);
+                            if(!(q >= 0 && q < 7)) {
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use int [0, 7)
+                            itemOut.bounds[i] = bnds[i] = q;
+                            break;
+
+                        case HOUR :
+                            if(!(q >= 0 && q <= 24)) { // accept 24
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use float [0, 24]
+                            itemOut.bounds[i] = bnds[i] = q;
+                            break;
                     }
                 }
             }
