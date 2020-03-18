@@ -670,14 +670,10 @@ module.exports = function setConvert(ax, fullLayout) {
                     if(vb >= b0 && vb < b1) return BADNUM;
                 } else {
                     var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
-                    var onOpenBound = false;
-
                     for(var j = 0; j < vals.length; j++) {
                         b0 = vals[j];
                         b1 = b0 + brk.dvalue;
                         if(v >= b0 && v < b1) return BADNUM;
-
-                        if(onOpenBound && v === b0) return BADNUM;
                     }
                 }
             }
