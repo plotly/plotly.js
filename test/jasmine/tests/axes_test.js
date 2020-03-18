@@ -4054,54 +4054,18 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {'operation': '()', bounds: [
+                            {bounds: [
                                 '1970-01-01 00:00:00.010',
                                 '1970-01-01 00:00:00.090'
                             ]},
-                            {'operation': '()', bounds: [
+                            {bounds: [
                                 '1970-01-01 00:00:00.100',
                                 '1970-01-01 00:00:00.190'
                             ]}
                         ]
                     }
                 });
-                _assert('with operation:()', [0, 10, BADNUM, 90, 100, BADNUM, 190, 200]);
-
-                _calc({
-                    x: x
-                }, {
-                    xaxis: {
-                        rangebreaks: [
-                            {'operation': '[]', bounds: [
-                                '1970-01-01 00:00:00.010',
-                                '1970-01-01 00:00:00.090'
-                            ]},
-                            {'operation': '[]', bounds: [
-                                '1970-01-01 00:00:00.100',
-                                '1970-01-01 00:00:00.190'
-                            ]}
-                        ]
-                    }
-                });
-                _assert('with operation:[]', [0, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, BADNUM, 200]);
-
-                _calc({
-                    x: x
-                }, {
-                    xaxis: {
-                        rangebreaks: [
-                            {'operation': '[)', bounds: [
-                                '1970-01-01 00:00:00.010',
-                                '1970-01-01 00:00:00.090'
-                            ]},
-                            {'operation': '(]', bounds: [
-                                '1970-01-01 00:00:00.100',
-                                '1970-01-01 00:00:00.190'
-                            ]}
-                        ]
-                    }
-                });
-                _assert('with mixed operation values', [0, BADNUM, BADNUM, 90, 100, BADNUM, BADNUM, 200]);
+                _assert('', [0, BADNUM, BADNUM, 90, BADNUM, BADNUM, 190, 200]);
             });
 
             it('should discard coords within break bounds - date day of week case', function() {
@@ -4152,11 +4116,11 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'hour', bounds: [17, 8], operation: '()'}
+                            {pattern: 'hour', bounds: [17, 8]}
                         ]
                     }
                 });
-                _assert('with () operation', [
+                _assert('', [
                     1577952000000, BADNUM,
                     1578038400000, BADNUM,
                     1578124800000, BADNUM,
@@ -4169,6 +4133,7 @@ describe('Test axes', function() {
             it('should discard coords within break bounds - date hour / high precision case', function() {
                 _calc({
                     x: [
+                        '2020-01-03 16:45',
                         '2020-01-03 17:00',
                         '2020-01-03 17:15',
                         '2020-01-03 17:30',
@@ -4180,12 +4145,13 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'hour', bounds: [17, 8], operation: '()'}
+                            {pattern: 'hour', bounds: [17, 8]}
                         ]
                     }
                 });
-                _assert('with dflt operation', [
-                    Lib.dateTime2ms('2020-01-03 17:00'),
+                _assert('', [
+                    Lib.dateTime2ms('2020-01-03 16:45'),
+                    BADNUM,
                     BADNUM,
                     BADNUM,
                     BADNUM,
@@ -4214,13 +4180,13 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'hour', bounds: [23, 1], operation: '()'}
+                            {pattern: 'hour', bounds: [23, 1]}
                         ]
                     }
                 });
-                _assert('with dflt operation', [
+                _assert('', [
                     Lib.dateTime2ms('2020-01-01 22'),
-                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
                     BADNUM,
                     BADNUM,
                     BADNUM,
@@ -4253,13 +4219,13 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'hour', bounds: [23, 0], operation: '()'}
+                            {pattern: 'hour', bounds: [23, 0]}
                         ]
                     }
                 });
-                _assert('with dflt operation', [
+                _assert('', [
                     Lib.dateTime2ms('2020-01-01 22'),
-                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
                     BADNUM,
                     BADNUM,
                     BADNUM,
@@ -4292,13 +4258,13 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         rangebreaks: [
-                            {pattern: 'hour', bounds: [23, 24], operation: '()'}
+                            {pattern: 'hour', bounds: [23, 24]}
                         ]
                     }
                 });
-                _assert('with dflt operation', [
+                _assert('', [
                     Lib.dateTime2ms('2020-01-01 22'),
-                    Lib.dateTime2ms('2020-01-01 23'),
+                    BADNUM,
                     BADNUM,
                     BADNUM,
                     BADNUM,
@@ -4335,7 +4301,7 @@ describe('Test axes', function() {
                         ]
                     }
                 });
-                _assert('with dflt operation', [
+                _assert('', [
                     Lib.dateTime2ms('2020-01-01 22'),
                     Lib.dateTime2ms('2020-01-01 23'),
                     Lib.dateTime2ms('2020-01-01 23:30'),
@@ -4396,10 +4362,10 @@ describe('Test axes', function() {
                         rangebreaks: [{ values: [
                             '1970-01-01 00:00:00.002',
                             '1970-01-01 00:00:00.003'
-                        ], dvalue: 1, operation: '()' }]
+                        ], dvalue: 1 }]
                     }
                 });
-                _assert('', [1, 2, BADNUM, 4, 5]);
+                _assert('', [1, BADNUM, BADNUM, 4, 5]);
             });
 
             it('should adapt coords generated from x0/dx about rangebreaks', function() {
@@ -4413,11 +4379,11 @@ describe('Test axes', function() {
                             {bounds: [
                                 '1970-01-01 00:00:00.002',
                                 '1970-01-01 00:00:00.003'
-                            ], operation: '()'}
+                            ]}
                         ]
                     }
                 });
-                _assert('generated x=2.5 gets masked', [1, 1.5, 2, BADNUM, 3]);
+                _assert('generated x=2.5 gets masked', [1, 1.5, BADNUM, BADNUM, 3]);
             });
         });
 
@@ -4595,11 +4561,11 @@ describe('Test axes', function() {
                         {bounds: [
                             '1969-12-31 23:59:59.990',
                             '1970-01-01 00:00:00.089'
-                        ], operation: '()'},
+                        ]},
                         {bounds: [
                             '1970-01-01 00:00:00.101',
                             '1970-01-01 00:00:00.189'
-                        ], operation: '()'}
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4635,11 +4601,11 @@ describe('Test axes', function() {
                         {bounds: [
                             '1969-12-31 23:59:59.989',
                             '1970-01-01 00:00:00.090'
-                        ], operation: '()'},
+                        ]},
                         {bounds: [
                             '1970-01-01 00:00:00.101',
                             '1970-01-01 00:00:00.300'
-                        ], operation: '()'}
+                        ]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4779,7 +4745,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4790,22 +4756,20 @@ describe('Test axes', function() {
                             ['2020-01-03 17:00:00', '2020-01-04 08:00:00'].map(Lib.dateTime2ms),
                             ['2020-01-04 17:00:00', '2020-01-05 08:00:00'].map(Lib.dateTime2ms),
                             ['2020-01-05 17:00:00', '2020-01-06 08:00:00'].map(Lib.dateTime2ms),
-                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms),
-                            [Lib.dateTime2ms('2020-01-07 17:00:00'), 1578428892790]
+                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms)
                         ],
-                        m2: 0.0000026100474550128112,
+                        m2: 0.0000029537037039351,
                         B: [
-                            -4118496.99495763, -4118637.937520201,
-                            -4118778.8800827716, -4118919.8226453424,
-                            -4119060.7652079132, -4119201.707770484,
-                            -4119234.3145452295
+                            -4660771.917031818, -4660931.41703183,
+                            -4661090.917031842, -4661250.417031854,
+                            -4661409.9170318665, -4661569.417031879
                         ]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
                         {pattern: 'day of week', bounds: [6, 1]},
-                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4814,20 +4778,18 @@ describe('Test axes', function() {
                         rangebreaks: [
                             ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
                             ['2020-01-03 17:00:00', '2020-01-06 08:00:00'].map(Lib.dateTime2ms),
-                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms),
-                            [Lib.dateTime2ms('2020-01-07 17:00:00'), 1578424728526.6]
+                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms)
                         ],
-                        m2: 0.000003915071184408763,
+                        m2: 0.000004922839504765992,
                         B: [
-                            -6177761.798805676, -6177973.212649634,
-                            -6178861.150794258, -6179072.564638216,
-                            -6179105.171412717
+                            -7767973.692224438, -7768239.525557696,
+                            -7769356.025557376, -7769621.858890634
                         ]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'hour', bounds: [17, 8], operation: '()'},
+                        {pattern: 'hour', bounds: [17, 8]},
                         {pattern: 'day of week', bounds: [6, 1]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
@@ -4837,20 +4799,18 @@ describe('Test axes', function() {
                         rangebreaks: [
                             ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
                             ['2020-01-03 17:00:00', '2020-01-06 08:00:00'].map(Lib.dateTime2ms),
-                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms),
-                            [Lib.dateTime2ms('2020-01-07 17:00:00'), 1578424728526.6]
+                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms)
                         ],
-                        m2: 0.000003915071184408763,
+                        m2: 0.000004922839504765992,
                         B: [
-                            -6177761.798805676, -6177973.212649634,
-                            -6178861.150794258, -6179072.564638216,
-                            -6179105.171412717
+                            -7767973.692224438, -7768239.525557696,
+                            -7769356.025557376, -7769621.858890634
                         ]
                     });
                 })
                 .then(function() {
                     gd.layout.xaxis.rangebreaks = [
-                        {pattern: 'hour', bounds: [17, 8], operation: '()'}
+                        {pattern: 'hour', bounds: [17, 8]}
                     ];
                     // N.B. xaxis.range[0] falls within a break
                     gd.layout.xaxis.autorange = false;
