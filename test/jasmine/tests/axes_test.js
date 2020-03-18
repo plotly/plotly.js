@@ -1135,6 +1135,33 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('day of week', 'coerced');
             expect(layoutOut.xaxis3.rangebreaks[0].pattern).toBe(undefined, 'not coerce, using *values*');
         });
+
+        it('should auto default rangebreaks.pattern to *day of week* when *bounds* include a weekday string and convert bounds to integer days', function() {
+            layoutIn = {
+                xaxis: {type: 'date', rangebreaks: [
+                    {bounds: ['Saturday', 'Monday']}
+                ]},
+                xaxis2: {type: 'date', rangebreaks: [
+                    {bounds: ['sun', 'thu']},
+                    {bounds: ['mon', 'fri']},
+                    {bounds: ['tue', 'sat']},
+                    {bounds: ['wed', '-1']}
+                ]}
+            };
+            layoutOut._subplots.xaxis.push('x2');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.rangebreaks[0].pattern).toBe('day of week', 'complete Capital');
+            expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('day of week', '3-letter case');
+            expect(layoutOut.xaxis2.rangebreaks[0].bounds[0]).toBe(0, 'convert sun');
+            expect(layoutOut.xaxis2.rangebreaks[1].bounds[0]).toBe(1, 'convert mon');
+            expect(layoutOut.xaxis2.rangebreaks[2].bounds[0]).toBe(2, 'convert tue');
+            expect(layoutOut.xaxis2.rangebreaks[3].bounds[0]).toBe(3, 'convert wed');
+            expect(layoutOut.xaxis2.rangebreaks[0].bounds[1]).toBe(4, 'convert thu');
+            expect(layoutOut.xaxis2.rangebreaks[1].bounds[1]).toBe(5, 'convert fri');
+            expect(layoutOut.xaxis2.rangebreaks[2].bounds[1]).toBe(6, 'convert sat');
+            expect(layoutOut.xaxis2.rangebreaks[3].bounds[1]).toBe('-1', 'string');
+        });
     });
 
     describe('constraints relayout', function() {
