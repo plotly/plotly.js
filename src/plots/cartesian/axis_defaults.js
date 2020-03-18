@@ -160,12 +160,7 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
 
     if(enabled) {
         var bnds = coerce('bounds');
-
         if(bnds && bnds.length >= 2) {
-            if(bnds.length > 2) {
-                itemOut.bounds = itemOut.bounds.slice(0, 2);
-            }
-
             var dfltPattern = '';
             var i, q;
             if(bnds.length === 2) {
@@ -178,10 +173,6 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                 }
             }
             var pattern = coerce('pattern', dfltPattern);
-            if(pattern && bnds.length !== 2) {
-                itemOut.enabled = false;
-                return;
-            }
             if(pattern === DAY_OF_WEEK) {
                 for(i = 0; i < 2; i++) {
                     q = indexOfDay(bnds[i]);
