@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var BADNUM = require('../../constants/numerical').BADNUM;
 var barPlot = require('../bar/plot');
 var clearMinTextSize = require('../bar/uniform_text').clearMinTextSize;
 
@@ -66,31 +67,36 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
             var shape = '';
 
-            if(mode === 'spanning') {
-                if(!di.isSum && i > 0) {
-                    if(isHorizontal) {
-                        shape += 'M' + x[0] + ',' + y[1] + 'V' + y[0];
-                    } else {
-                        shape += 'M' + x[1] + ',' + y[0] + 'H' + x[0];
+            if(
+                x[0] !== BADNUM && y[0] !== BADNUM &&
+                x[1] !== BADNUM && y[1] !== BADNUM
+            ) {
+                if(mode === 'spanning') {
+                    if(!di.isSum && i > 0) {
+                        if(isHorizontal) {
+                            shape += 'M' + x[0] + ',' + y[1] + 'V' + y[0];
+                        } else {
+                            shape += 'M' + x[1] + ',' + y[0] + 'H' + x[0];
+                        }
                     }
                 }
-            }
 
-            if(mode !== 'between') {
-                if(di.isSum || i < len - 1) {
-                    if(isHorizontal) {
-                        shape += 'M' + x[1] + ',' + y[0] + 'V' + y[1];
-                    } else {
-                        shape += 'M' + x[0] + ',' + y[1] + 'H' + x[1];
+                if(mode !== 'between') {
+                    if(di.isSum || i < len - 1) {
+                        if(isHorizontal) {
+                            shape += 'M' + x[1] + ',' + y[0] + 'V' + y[1];
+                        } else {
+                            shape += 'M' + x[0] + ',' + y[1] + 'H' + x[1];
+                        }
                     }
                 }
-            }
 
-            if(x[2] !== undefined && y[2] !== undefined) {
-                if(isHorizontal) {
-                    shape += 'M' + x[1] + ',' + y[1] + 'V' + y[2];
-                } else {
-                    shape += 'M' + x[1] + ',' + y[1] + 'H' + x[2];
+                if(x[2] !== BADNUM && y[2] !== BADNUM) {
+                    if(isHorizontal) {
+                        shape += 'M' + x[1] + ',' + y[1] + 'V' + y[2];
+                    } else {
+                        shape += 'M' + x[1] + ',' + y[1] + 'H' + x[2];
+                    }
                 }
             }
 
