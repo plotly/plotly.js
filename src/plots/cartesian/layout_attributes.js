@@ -280,16 +280,17 @@ module.exports = {
         pattern: {
             valType: 'enumerated',
             values: [DAY_OF_WEEK, HOUR, ''],
-            dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
-                'If *' + DAY_OF_WEEK + '* - Sunday-based weekday as a decimal number [0, 6].',
+                'If *' + DAY_OF_WEEK + '* - days of the week in English e.g. \'Sunday\' or `\sun\`',
+                'as well as Sunday-based integers between 0 and 6.',
                 'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 0] }',
+                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 1] }',
+                ' or simply { bounds: [\'sat\', \'mon\'] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
                 '- { pattern: \'' + HOUR + '\', bounds: [17, 8] }',
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'

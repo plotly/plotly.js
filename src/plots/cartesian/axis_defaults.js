@@ -21,6 +21,8 @@ var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
 
+var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
+
 /**
  * options: object containing:
  *
@@ -161,6 +163,27 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                 itemOut.bounds = itemOut.bounds.slice(0, 2);
             }
 
+            var dfltPattern = '';
+            var i, q;
+            for(i = 0; i < bnds.length; i++) {
+                q = indexOfDay(bnds[i]);
+                if(q !== -1) {
+                    dfltPattern = DAY_OF_WEEK;
+                    break;
+                }
+            }
+            var pattern = coerce('pattern', dfltPattern);
+
+            if(pattern === DAY_OF_WEEK) {
+                for(i = 0; i < bnds.length; i++) {
+                    q = indexOfDay(bnds[i]);
+                    if(q !== -1) {
+                        // convert to integers i.e 'Monday' --> 1
+                        itemOut.bounds[i] = bnds[i] = q;
+                    }
+                }
+            }
+
             if(containerOut.autorange === false) {
                 var rng = containerOut.range;
 
@@ -175,8 +198,6 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                     return;
                 }
             }
-
-            coerce('pattern');
         } else {
             var values = coerce('values');
 
@@ -188,4 +209,19 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
             }
         }
     }
+}
+
+var weekSTR = [
+    'sun',
+    'mon',
+    'tue',
+    'wed',
+    'thu',
+    'fri',
+    'sat'
+];
+
+function indexOfDay(v) {
+    var str = String(v).substr(0, 3).toLowerCase();
+    return weekSTR.indexOf(str);
 }
