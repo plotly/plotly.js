@@ -102,6 +102,7 @@ function calc(gd, trace) {
         };
     }
 
+    // stash left and right gaps by group
     if(!gd._fullLayout._roundFnOpts) gd._fullLayout._roundFnOpts = {};
     var groupName = trace['_' + mainData + 'bingroup'];
     var roundFnOpts = {leftGap: Infinity, rightGap: Infinity};
@@ -140,7 +141,11 @@ function calc(gd, trace) {
         roundFn = function(v, isRightEdge) {
             return function() {
                 var roundFnOpts = gd._fullLayout._roundFnOpts[groupName];
-                return getBinSpanLabelRound(roundFnOpts.leftGap, roundFnOpts.rightGap, binEdges, pa, calendar)(v, isRightEdge);
+                return getBinSpanLabelRound(
+                    roundFnOpts.leftGap,
+                    roundFnOpts.rightGap,
+                    binEdges, pa, calendar
+                )(v, isRightEdge);
             };
         };
     }
