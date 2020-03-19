@@ -585,6 +585,7 @@ describe('Test histogram', function() {
             // even though -0 === 0
             out.forEach(function(cdi) {
                 for(var key in cdi) {
+                    if(typeof cdi[key] === 'function') cdi[key] = cdi[key]();
                     if(cdi[key] === 0) cdi[key] = 0;
                 }
             });
@@ -859,6 +860,23 @@ describe('Test histogram', function() {
 
             expect(calcPositions(trace1, [trace2])).toEqual([1, 3, 5]);
             expect(calcPositions(trace2, [trace1])).toEqual([5, 7]);
+        });
+
+        it('harmonizes start/end value of bins when all traces are autobinned', function(done) {
+            var mock = require('@mocks/histogram_overlay-bingroup');
+            var gd = createGraphDiv();
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    destroyGraphDiv();
+                    var cd0 = gd.calcdata[0];
+                    var cd1 = gd.calcdata[1];
+                    for(var i = 0; i < cd0.length && i < cd1.length; i++) {
+                        expect(cd0[i].ph0).toBe(cd1[i].ph0);
+                        expect(cd0[i].ph1).toBe(cd1[i].ph1);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('autobins all data as one', function() {
