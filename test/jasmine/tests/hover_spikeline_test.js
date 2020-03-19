@@ -298,6 +298,33 @@ describe('spikeline hover', function() {
         .then(done);
     });
 
+    it('does not show spikes if no points are hovered in the spikesnap "hovered data" mode', function(done) {
+        var _mock = makeMock('toaxis', 'x');
+        Plotly.newPlot(gd, _mock)
+        .then(function() {
+            _setSpikedistance(-1);
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert(
+                [[558, 401, 558, 251], [80, 251, 558, 251]], [[83, 251]]
+            );
+            return Plotly.relayout(gd, 'xaxis.spikesnap', 'hovered data');
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert([[80, 251, 558, 251]], [[83, 251]]);
+
+            return Plotly.relayout(gd, 'yaxis.spikesnap', 'hovered data');
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert([], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('doesn\'t switch between toaxis and across spikemodes on switching the hovermodes', function(done) {
         var _mock = makeMock('toaxis', 'closest');
 

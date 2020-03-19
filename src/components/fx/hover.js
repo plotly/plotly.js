@@ -520,7 +520,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                     if(closestPoints && closestPoints.length) {
                         var tmpPoint;
                         var closestVPoints = closestPoints.filter(function(point) {
-                            return point.xa.showspikes;
+                            return point.xa.showspikes && point.xa.spikesnap !== 'hovered data';
                         });
                         if(closestVPoints.length) {
                             var closestVPt = closestVPoints[0];
@@ -533,7 +533,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                         }
 
                         var closestHPoints = closestPoints.filter(function(point) {
-                            return point.ya.showspikes;
+                            return point.ya.showspikes && point.ya.spikesnap !== 'hovered data';
                         });
                         if(closestHPoints.length) {
                             var closestHPt = closestHPoints[0];

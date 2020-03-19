@@ -4044,6 +4044,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikethickness).toBe(1.5);
                 expect(ax.spikedash).toBe('dot');
                 expect(ax.spikecolor).toBe('red');
+                expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
             .catch(failTest)
@@ -4060,6 +4061,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikethickness).toBe(1.5);
                 expect(ax.spikedash).toBe('dot');
                 expect(ax.spikecolor).toBe('red');
+                expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
             .catch(failTest)
@@ -4251,16 +4253,11 @@ describe('hovermode: (x|y)unified', function() {
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
                 _hover(gd, {xval: 1});
-                // assertLabel({title: 'B', items: ['asdf', 'asdf']});
+
                 assertSymbol([
                   ['rgb(0, 255, 0)', '0px', ''],
                   ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
                 ]);
-            })
-            .then(function() {
-                _hover(gd, {xval: 4});
-                // assertLabel({title: 'E', items: ['asdf', 'asdf']});
-                // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
             })
             .catch(failTest)
             .then(done);

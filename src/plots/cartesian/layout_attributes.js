@@ -580,7 +580,7 @@ module.exports = {
     },
     spikesnap: {
         valType: 'enumerated',
-        values: ['data', 'cursor'],
+        values: ['data', 'cursor', 'hovered data'],
         dflt: 'data',
         role: 'style',
         editType: 'none',
