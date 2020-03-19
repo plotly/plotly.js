@@ -8,6 +8,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
@@ -20,6 +22,9 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
+
+var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
+var HOUR = require('./constants').HOUR_PATTERN;
 
 /**
  * options: object containing:
@@ -155,10 +160,67 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
 
     if(enabled) {
         var bnds = coerce('bounds');
-
         if(bnds && bnds.length >= 2) {
-            if(bnds.length > 2) {
-                itemOut.bounds = itemOut.bounds.slice(0, 2);
+            var dfltPattern = '';
+            var i, q;
+            if(bnds.length === 2) {
+                for(i = 0; i < 2; i++) {
+                    q = indexOfDay(bnds[i]);
+                    if(q) {
+                        dfltPattern = DAY_OF_WEEK;
+                        break;
+                    }
+                }
+            }
+            var pattern = coerce('pattern', dfltPattern);
+            if(pattern === DAY_OF_WEEK) {
+                for(i = 0; i < 2; i++) {
+                    q = indexOfDay(bnds[i]);
+                    if(q) {
+                        // convert to integers i.e 'Sunday' --> 0
+                        itemOut.bounds[i] = bnds[i] = q - 1;
+                    }
+                }
+            }
+            if(pattern) {
+                // ensure types and ranges
+                for(i = 0; i < 2; i++) {
+                    q = bnds[i];
+                    switch(pattern) {
+                        case DAY_OF_WEEK :
+                            if(!isNumeric(q)) {
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            q = +q;
+
+                            if(
+                                q !== Math.floor(q) || // don't accept fractional days for mow
+                                q < 0 || q >= 7
+                            ) {
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use number
+                            itemOut.bounds[i] = bnds[i] = q;
+                            break;
+
+                        case HOUR :
+                            if(!isNumeric(q)) {
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            q = +q;
+
+                            if(q < 0 || q > 24) { // accept 24
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use number
+                            itemOut.bounds[i] = bnds[i] = q;
+                            break;
+                    }
+                }
             }
 
             if(containerOut.autorange === false) {
@@ -175,8 +237,6 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                     return;
                 }
             }
-
-            coerce('pattern');
         } else {
             var values = coerce('values');
 
@@ -188,4 +248,22 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
             }
         }
     }
+}
+
+// these numbers are one more than what bounds would be mapped to
+var dayStrToNum = {
+    sun: 1,
+    mon: 2,
+    tue: 3,
+    wed: 4,
+    thu: 5,
+    fri: 6,
+    sat: 7
+};
+
+function indexOfDay(v) {
+    if(typeof v !== 'string') return;
+    return dayStrToNum[
+        v.substr(0, 3).toLowerCase()
+    ];
 }
