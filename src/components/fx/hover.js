@@ -45,6 +45,8 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 
+var XY = {x: 1, y: 1};
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -630,7 +632,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     // If in compare mode, select every point at position
     if(hoverData[0].length !== 0 &&
-      ['x', 'y'].indexOf(mode) !== -1 &&
+      XY[mode] &&
       hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
         var hd = hoverData[0];
@@ -657,7 +659,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         // Remove duplicated hoverData points
         // note that d3 also filters identical points in the rendering steps
-        // TODO: use ES6 map
         var repeated = {};
         hoverData = hoverData.filter(function(hd) {
             var key = hoverDataKey(hd);
