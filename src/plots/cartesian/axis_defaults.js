@@ -188,23 +188,35 @@ function rangebreaksDefaults(itemIn, itemOut, containerOut) {
                     q = bnds[i];
                     switch(pattern) {
                         case DAY_OF_WEEK :
-                            if(isNumeric(q)) q = Math.floor(q);
-
-                            q = Math.floor(+q);
-                            if(!(q >= 0 && q < 7)) {
+                            if(!isNumeric(q)) {
                                 itemOut.enabled = false;
                                 return;
                             }
-                            // use int [0, 7)
+                            q = +q;
+
+                            if(
+                                q !== Math.floor(q) || // don't accept fractional days for mow
+                                q < 0 || q >= 7
+                            ) {
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use number
                             itemOut.bounds[i] = bnds[i] = q;
                             break;
 
                         case HOUR :
-                            if(!(q >= 0 && q <= 24)) { // accept 24
+                            if(!isNumeric(q)) {
                                 itemOut.enabled = false;
                                 return;
                             }
-                            // use float [0, 24]
+                            q = +q;
+
+                            if(q < 0 || q > 24) { // accept 24
+                                itemOut.enabled = false;
+                                return;
+                            }
+                            // use number
                             itemOut.bounds[i] = bnds[i] = q;
                             break;
                     }
