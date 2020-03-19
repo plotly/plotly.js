@@ -17,6 +17,7 @@ var rgb = color.rgb;
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -972,6 +973,54 @@ describe('A waterfall plot', function() {
         })
         .then(function() {
             _assertNumberOfWaterfallConnectorNodes(4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('handle BADNUM positions', function(done) {
+        var y1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        var y2 = y1; // no transition now
+        var mockCopy = {
+            data: [
+                {
+                    type: 'waterfall',
+                    x: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9,
+                        10
+                    ],
+                    y: y1
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 300
+            }
+        };
+
+        var barTests = [
+            [0, '.point path', 'attr', 'd', ['M2,121V109H20V121Z', 'M24,111V98H41V111Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M199,28V15H216V28Z', 'M220,17V5H238V17Z']]
+        ];
+
+        var connectorTests = [
+            [0, '.line path', 'attr', 'd', ['M20,110H24', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M216,16H220', 'M0,0Z']]
+        ];
+
+        var animateOpts = {data: [{y: y2}]};
+        var transitionOpts = false; // use default
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, barTests)
+        .then(function() {
+            return checkTransition(gd, mockCopy, animateOpts, transitionOpts, connectorTests);
         })
         .catch(failTest)
         .then(done);
