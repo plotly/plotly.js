@@ -996,8 +996,14 @@ describe('hover info', function() {
 
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
-                    nums: 'x: 1\ny: 1\nz: 5.56',
-                    name: 'one'
+                    nums: [
+                        'x: 1\ny: 1\nz: 5.56',
+                        'x: 1\ny: 1\nz: 0'
+                    ],
+                    name: [
+                        'one',
+                        'two'
+                    ]
                 });
             })
             .then(function() {
@@ -1012,8 +1018,8 @@ describe('hover info', function() {
 
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
-                    nums: 'f(1.0, 1.0)=5.56',
-                    name: ''
+                    nums: ['f(1.0, 1.0)=5.56', 'f(1.0, 1.0)=0'],
+                    name: ['', '']
                 });
             })
             .catch(failTest)
@@ -3627,6 +3633,84 @@ describe('hover distance', function() {
                 nums: '(2, 3)',
                 name: 'trace 0'
             });
+        });
+    });
+
+    describe('compare', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('selects all points at the same position on a linear axis', function(done) {
+            var x = [0, 1, 2];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'linear'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a log axis', function(done) {
+            var x = [0, 1, 2];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'log'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a category axis', function(done) {
+            var x = ['a', 'b', 'c'];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'category'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a date axis', function(done) {
+            var x = ['2018', '2019', '2020'];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'date'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
         });
     });
 });
