@@ -1035,13 +1035,13 @@ describe('A funnel plot', function() {
     });
 
     it('handle BADNUM positions', function(done) {
-        var y1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-        var y2 = y1; // no transition now
+        var x1 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var x2 = x1; // no transition now
         var mockCopy = {
             data: [
                 {
                     type: 'funnel',
-                    x: [
+                    y: [
                         0,
                         1,
                         '',
@@ -1054,24 +1054,24 @@ describe('A funnel plot', function() {
                         9,
                         10
                     ],
-                    y: y1
+                    x: x1
                 }
             ],
             layout: {
-                width: 400,
-                height: 300
+                width: 800,
+                height: 600
             }
         };
 
         var barTests = [
-            [0, '.point path', 'attr', 'd', ['M12,12V108H12V12Z', 'M12,12V108H23V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M120,12V108H120V12Z', 'M23,12V108H120V12Z', 'M120,12V108H228V12Z']]
+            [0, '.point path', 'attr', 'd', ['M245,4V34H395V4Z', 'M251,42V73H389V42Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M306,347V378H334V347Z', 'M313,386V416H327V386Z']]
         ];
 
         var connectorTests = [
-            [0, '.regions path', 'attr', 'd', ['M12,108L12,12H23L12,108Z', 'M23,108L120,12H228L120,108Z', 'M0,0Z']]
+            [0, '.regions path', 'attr', 'd', ['M245,34L251,42H389L395,34Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M306,378L313,386H327L334,378Z', 'M0,0Z']]
         ];
 
-        var animateOpts = {data: [{y: y2}]};
+        var animateOpts = {data: [{x: x2}]};
         var transitionOpts = false; // use default
 
         checkTransition(gd, mockCopy, animateOpts, transitionOpts, barTests)
