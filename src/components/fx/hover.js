@@ -394,7 +394,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // within one trace mode can sometimes be overridden
             mode = hovermode;
-            if(['x unified', 'y unified'].indexOf(mode) !== -1) {
+            if(helpers.isUnifiedHover(mode)) {
                 mode = mode.charAt(0);
             }
 
@@ -715,7 +715,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
 
-    if(['x unified', 'y unified'].indexOf(hovermode) === -1) {
+    if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels);
     }
@@ -976,7 +976,7 @@ function createHoverText(hoverData, opts, gd) {
     }
 
     // Show a single hover label
-    if(['x unified', 'y unified'].indexOf(hovermode) !== -1) {
+    if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
 

@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var isUnifiedHover = require('./helpers').isUnifiedHover;
 var layoutAttributes = require('./layout_attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
@@ -35,12 +36,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var hoverMode = coerce('hovermode', hovermodeDflt);
     if(hoverMode) {
-        var dflt;
-        if(['x unified', 'y unified'].indexOf(hoverMode) !== -1) {
-            dflt = -1;
-        }
         coerce('hoverdistance');
-        coerce('spikedistance', dflt);
+        coerce('spikedistance', isUnifiedHover(hoverMode) ? -1 : undefined);
     }
 
     // if only mapbox or geo subplots is present on graph,

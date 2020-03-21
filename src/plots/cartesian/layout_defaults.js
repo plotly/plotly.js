@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var isUnifiedHover = require('../../components/fx/helpers').isUnifiedHover;
 var Template = require('../../plot_api/plot_template');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
@@ -250,7 +251,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var hovermode = layoutOut.hovermode || layoutIn.hovermode;
-        var unifiedHover = hovermode && ['x unified', 'y unified'].indexOf(hovermode) !== -1;
+        var unifiedHover = isUnifiedHover(hovermode);
         var unifiedSpike = unifiedHover && axLetter === hovermode.charAt(0);
         var spikecolor = coerce2('spikecolor', unifiedHover ? axLayoutOut.color : undefined);
         var spikethickness = coerce2('spikethickness', unifiedHover ? 1.5 : undefined);
