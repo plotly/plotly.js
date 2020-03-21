@@ -239,6 +239,11 @@ function getPointData(val, pointNumber) {
     }
 }
 
+var xyHoverMode = {
+    x: true,
+    y: true
+};
+
 var unifiedHoverMode = {
     'x unified': true,
     'y unified': true
@@ -247,4 +252,9 @@ var unifiedHoverMode = {
 exports.isUnifiedHover = function(hovermode) {
     if(typeof hovermode !== 'string') return false;
     return !!unifiedHoverMode[hovermode];
+};
+
+exports.isXYhover = function(hovermode) {
+    if(typeof hovermode !== 'string') return false;
+    return !!xyHoverMode[hovermode];
 };
