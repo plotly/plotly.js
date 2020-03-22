@@ -19,6 +19,7 @@ var attributes = require('./attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
+        fromTemplate: (layoutOut._template || {}).annotations,
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults
     });

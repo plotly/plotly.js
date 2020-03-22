@@ -17,6 +17,7 @@ var name = 'images';
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     var opts = {
+        fromTemplate: (layoutOut._template || {}).images,
         name: name,
         handleItemDefaults: imageDefaults
     };

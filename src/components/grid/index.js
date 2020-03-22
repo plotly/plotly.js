@@ -177,11 +177,12 @@ function getAxes(layout, grid, axLetter) {
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
 function sizeDefaults(layoutIn, layoutOut) {
-    var gridIn = layoutIn.grid || {};
-    var xAxes = getAxes(layoutOut, gridIn, 'x');
-    var yAxes = getAxes(layoutOut, gridIn, 'y');
+    var gridIn = layoutIn.grid || ((layoutIn.template || {}).layout || {}).grid;
+    var xAxes = getAxes(layoutOut, gridIn || {}, 'x');
+    var yAxes = getAxes(layoutOut, gridIn || {}, 'y');
 
-    if(!layoutIn.grid && !xAxes && !yAxes) return;
+    if(!gridIn && !xAxes && !yAxes) return;
+    if(!gridIn) gridIn = {};
 
     var hasSubplotGrid = Array.isArray(gridIn.subplots) && Array.isArray(gridIn.subplots[0]);
     var hasXaxes = Array.isArray(xAxes);

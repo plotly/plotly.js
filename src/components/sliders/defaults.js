@@ -20,6 +20,7 @@ var stepAttrs = attributes.steps;
 
 module.exports = function slidersDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
+        fromTemplate: (layoutOut._template || {}).sliders,
         name: name,
         handleItemDefaults: sliderDefaults
     });
@@ -31,6 +32,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     }
 
     var steps = handleArrayContainerDefaults(sliderIn, sliderOut, {
+        fromTemplate: (layoutOut._template || {}).steps,
         name: 'steps',
         handleItemDefaults: stepDefaults
     });

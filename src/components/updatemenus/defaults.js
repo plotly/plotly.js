@@ -20,6 +20,7 @@ var buttonAttrs = attributes.buttons;
 
 module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
     var opts = {
+        fromTemplate: (layoutOut._template || {}).updatemenus,
         name: name,
         handleItemDefaults: menuDefaults
     };
@@ -33,6 +34,7 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     }
 
     var buttons = handleArrayContainerDefaults(menuIn, menuOut, {
+        fromTemplate: (layoutOut._template || {}).buttons,
         name: 'buttons',
         handleItemDefaults: buttonDefaults
     });
