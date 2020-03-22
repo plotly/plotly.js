@@ -230,7 +230,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 axHasImage[axName]
               ));
 
+        var axTemplate;
+        if(Lib.isPlainObject(layoutOut._template)) {
+            axTemplate = layoutOut._template[axLayoutOut._name];
+        }
+
         var defaultOptions = {
+            axTemplate: axTemplate || {},
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
@@ -295,7 +301,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
         newAxLayoutOut();
 
+        var axTemplate2;
+        if(Lib.isPlainObject(layoutOut._template)) {
+            axTemplate2 = layoutOut._template[axLayoutOut._name];
+        }
+
         var defaultOptions2 = {
+            axTemplate: axTemplate2 || {},
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],

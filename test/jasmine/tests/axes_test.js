@@ -5411,3 +5411,49 @@ describe('Test tickformatstops:', function() {
         .then(done);
     });
 });
+
+describe('Test template:', function() {
+    'use strict';
+
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    it('apply axis *type*, *rangebreaks* and *tickformatstops* from template', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                x: [1e10, 2e10, 3e10, 4e10, 5e10, 6e10, 7e10],
+                y: [1, 2, 3, 4, 5, 6, 7]
+            }],
+            layout: {
+                template: {
+                    layout: {
+                        xaxis: {
+                            type: 'date',
+                            rangebreaks: [{
+                                bounds: ['sat', 'mon']
+                            }],
+                            tickformatstops: [{
+                                enabled: true,
+                                dtickrange: [1000, 60000],
+                                value: '%H:%M:%S s'
+                            }]
+                        }
+                    }
+                }
+            }
+        })
+        .then(function() {
+            var xaxis = gd._fullLayout.xaxis;
+            expect(xaxis.type).toBe('date');
+            expect(xaxis.rangebreaks).not.toBe(undefined, 'rangebreaks');
+            expect(xaxis.rangebreaks.length).toBe(1);
+            expect(xaxis.tickformatstops).not.toBe(undefined, 'tickformatstops');
+            expect(xaxis.tickformatstops.length).toBe(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
