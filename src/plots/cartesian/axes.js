@@ -586,7 +586,7 @@ axes.calcTicks = function calcTicks(ax) {
     var tickVals;
     function generateTicks() {
         var xPrevious = null;
-        var maxTicks = Math.max(1000, ax._length || 0);
+        var maxTicks = Math.max(1000, (ax._length || 0) - (ax._lBreaks || 0));
         tickVals = [];
         for(var x = ax._tmin;
                 (axrev) ? (x >= endTick) : (x <= endTick);
@@ -616,12 +616,12 @@ axes.calcTicks = function calcTicks(ax) {
             return ax.maskBreaks(d.value) !== BADNUM;
         });
 
-        // add tick at the start of every rangebreak
+        // add tick at the end of every rangebreak
         if(ax.tickmode === 'auto') {
             for(var k = 0; k < ax._rangebreaks.length; k++) {
                 Lib.pushUnique(tickVals, {
                     minor: false,
-                    value: ax._rangebreaks[k].min
+                    value: ax._rangebreaks[k].max
                 });
             }
         }
