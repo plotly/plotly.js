@@ -48,7 +48,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
     var previousContOut = parentObjOut[name];
 
-    var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : (opts.fromTemplate || []);
+    var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [];
     var contOut = parentObjOut[name] = [];
     var templater = Template.arrayTemplater(parentObjOut, name, inclusionAttr);
     var i, itemOut;

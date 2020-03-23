@@ -5433,9 +5433,11 @@ describe('Test template:', function() {
                         xaxis: {
                             type: 'date',
                             rangebreaks: [{
+                                name: 'name1', // N.B. should provide name
                                 bounds: ['sat', 'mon']
                             }],
                             tickformatstops: [{
+                                name: 'name2', // N.B. should provide name
                                 enabled: true,
                                 dtickrange: [1000, 60000],
                                 value: '%H:%M:%S s'

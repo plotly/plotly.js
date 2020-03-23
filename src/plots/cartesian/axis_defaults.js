@@ -130,7 +130,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
         if(Array.isArray(rangebreaks) && rangebreaks.length) {
             handleArrayContainerDefaults(containerIn, containerOut, {
-                fromTemplate: fromTemplate,
                 name: 'rangebreaks',
                 inclusionAttr: 'enabled',
                 handleItemDefaults: rangebreaksDefaults

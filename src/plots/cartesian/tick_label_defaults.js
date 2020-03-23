@@ -64,7 +64,6 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
 
             if(Array.isArray(tickformatStops) && tickformatStops.length) {
                 handleArrayContainerDefaults(containerIn, containerOut, {
-                    fromTemplate: fromTemplate,
                     name: 'tickformatstops',
                     inclusionAttr: 'enabled',
                     handleItemDefaults: tickformatstopDefaults
