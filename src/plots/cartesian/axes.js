@@ -611,31 +611,43 @@ axes.calcTicks = function calcTicks(ax) {
     generateTicks();
 
     if(ax.rangebreaks) {
-        var nTicksBefore = tickVals.length;
-
         // remove ticks falling inside rangebreaks
         tickVals = tickVals.filter(function(d) {
             return ax.maskBreaks(d.value) !== BADNUM;
         });
 
-        // if 'numerous' ticks get placed into rangebreaks,
-        // increase dtick to generate more ticks,
-        // so that some hopefully fall between rangebreaks
-        if(ax.tickmode === 'auto' && tickVals.length < nTicksBefore / 6) {
-            axes.autoTicks(ax, ax._roughDTick / 3);
-            autoTickRound(ax);
-            ax._tmin = axes.tickFirst(ax);
-            generateTicks();
-            tickVals = tickVals.filter(function(d) {
-                return ax.maskBreaks(d.value) !== BADNUM;
-            });
+        // add tick at the start of every rangebreak
+        if(ax.tickmode === 'auto') {
+            for(var k = 0; k < ax._rangebreaks.length; k++) {
+                Lib.pushUnique(tickVals, {
+                    minor: false,
+                    value: ax._rangebreaks[k].min
+                });
+            }
         }
 
-        // remove "overlapping" ticks (e.g. on either side of a break)
-        var tf2 = ax.tickfont ? 1.5 * ax.tickfont.size : 0;
-        tickVals = tickVals.filter(function(d, i, self) {
-            return !(i && Math.abs(ax.c2p(d.value) - ax.c2p(self[i - 1].value)) < tf2);
+        // sort
+        tickVals = tickVals.sort(function(a, b) {
+            return a.value - b.value;
         });
+
+        // remove "overlapping" ticks (e.g. on either side of a break)
+        var len = tickVals.length;
+        if(len > 2) {
+            var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
+
+            var newTickVals = [];
+            var prevPos;
+            for(var q = 0; q < len; q++) {
+                var pos = ax.c2p(tickVals[q].value);
+
+                if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
+                    prevPos = pos;
+                    newTickVals.push(tickVals[q]);
+                }
+            }
+            tickVals = newTickVals;
+        }
     }
 
     // If same angle over a full circle, the last tick vals is a duplicate.
