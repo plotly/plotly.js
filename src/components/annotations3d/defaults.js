@@ -16,7 +16,6 @@ var attributes = require('./attributes');
 
 module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
-        fromTemplate: (sceneLayoutOut._template || {}).annotations,
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,
         fullLayout: opts.fullLayout

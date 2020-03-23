@@ -26,7 +26,6 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
     }
 
     var buttons = handleArrayContainerDefaults(selectorIn, selectorOut, {
-        fromTemplate: (selectorOut._template || {}).buttons,
         name: 'buttons',
         handleItemDefaults: buttonDefaults,
         calendar: calendar

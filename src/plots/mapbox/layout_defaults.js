@@ -35,7 +35,6 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('pitch');
 
     handleArrayContainerDefaults(containerIn, containerOut, {
-        fromTemplate: (containerOut._template || {}).layers,
         name: 'layers',
         handleItemDefaults: handleLayerDefaults
     });
