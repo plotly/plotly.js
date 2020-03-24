@@ -12,6 +12,7 @@
 var axisIds = require('../../plots/cartesian/axis_ids');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 var Registry = require('../../registry');
+var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
@@ -85,7 +86,7 @@ function getButtonGroups(gd) {
     var hasPolar = fullLayout._has('polar');
     var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
-    var hasUnifiedHoverLabel = ['x unified', 'y unified'].indexOf(fullLayout.hovermode) !== -1;
+    var hasUnifiedHoverLabel = isUnifiedHover(fullLayout.hovermode);
 
     var groups = [];
 

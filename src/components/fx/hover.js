@@ -45,8 +45,6 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 
-var XY = {x: 1, y: 1};
-
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -394,7 +392,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // within one trace mode can sometimes be overridden
             mode = hovermode;
-            if(['x unified', 'y unified'].indexOf(mode) !== -1) {
+            if(helpers.isUnifiedHover(mode)) {
                 mode = mode.charAt(0);
             }
 
@@ -631,9 +629,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
     // If in compare mode, select every point at position
-    if(hoverData[0].length !== 0 &&
-      XY[mode] &&
-      hoverData[0].trace.type !== 'splom' // TODO: add support for splom
+    if(
+        helpers.isXYhover(mode) &&
+        hoverData[0].length !== 0 &&
+        hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
         var hd = hoverData[0];
         var cd0 = hd.cd[hd.index];
@@ -715,7 +714,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
 
-    if(['x unified', 'y unified'].indexOf(hovermode) === -1) {
+    if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels);
     }
@@ -976,7 +975,7 @@ function createHoverText(hoverData, opts, gd) {
     }
 
     // Show a single hover label
-    if(['x unified', 'y unified'].indexOf(hovermode) !== -1) {
+    if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
 
