@@ -586,7 +586,9 @@ axes.calcTicks = function calcTicks(ax) {
     var tickVals;
     function generateTicks() {
         var xPrevious = null;
-        var maxTicks = Math.max(1000, (ax._length || 0) - (ax._lBreaks || 0));
+
+        var maxTicks = Math.max(1000, ax._length || 0);
+
         tickVals = [];
         for(var x = ax._tmin;
                 (axrev) ? (x >= endTick) : (x <= endTick);
@@ -611,18 +613,25 @@ axes.calcTicks = function calcTicks(ax) {
     generateTicks();
 
     if(ax.rangebreaks) {
-        // remove ticks falling inside rangebreaks
-        tickVals = tickVals.filter(function(d) {
-            return ax.maskBreaks(d.value) !== BADNUM;
-        });
-
-        // add tick at the end of every rangebreak
+        // replace ticks inside breaks that would get a tick
         if(ax.tickmode === 'auto') {
-            for(var k = 0; k < ax._rangebreaks.length; k++) {
-                Lib.pushUnique(tickVals, {
-                    minor: false,
-                    value: ax._rangebreaks[k].max
-                });
+            for(var t = 0; t < tickVals.length; t++) {
+                var value = tickVals[t].value;
+                if(ax.maskBreaks(value) === BADNUM) {
+                    // find which break we are in
+                    for(var k = 0; k < ax._rangebreaks.length; k++) {
+                        var brk = ax._rangebreaks[k];
+                        if(value >= brk.min && value < brk.max) {
+                            // replace with break end
+                            tickVals[t] = {
+                                minor: false,
+                                value: brk.max
+                            };
+
+                            break;
+                        }
+                    }
+                }
             }
         }
 
