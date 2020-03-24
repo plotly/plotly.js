@@ -631,7 +631,7 @@ axes.calcTicks = function calcTicks(ax) {
             return a.value - b.value;
         });
 
-        // remove "overlapping" ticks (e.g. on either side of a break)
+        // reduce ticks
         var len = tickVals.length;
         if(len > 2) {
             var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
@@ -667,14 +667,25 @@ axes.calcTicks = function calcTicks(ax) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
-    var ticksOut = new Array(tickVals.length);
+    var prevLabel;
+    var ticksOut = [];
     for(var i = 0; i < tickVals.length; i++) {
-        ticksOut[i] = axes.tickText(
+        var label = axes.tickText(
             ax,
             tickVals[i].value,
             false, // hover
             tickVals[i].minor // noSuffixPrefix
         );
+
+        if(ax.rangebreaks) { // this might be useful in general - but applying it only to rangebreaks for now
+            if(label.text !== prevLabel) {
+                ticksOut.push(label);
+            }
+        } else {
+            ticksOut.push(label);
+        }
+
+        prevLabel = label.text;
     }
 
     ax._inCalcTicks = false;
