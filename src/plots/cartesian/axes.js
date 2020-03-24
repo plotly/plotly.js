@@ -620,12 +620,8 @@ axes.calcTicks = function calcTicks(ax) {
                     for(var k = 0; k < ax._rangebreaks.length; k++) {
                         var brk = ax._rangebreaks[k];
                         if(value >= brk.min && value < brk.max) {
-                            // replace with break end
-                            tickVals[t] = {
-                                minor: false,
-                                value: brk.max
-                            };
-
+                            tickVals[t]._realV = tickVals[t].value;
+                            tickVals[t].value = brk.max; // replace with break end
                             break;
                         }
                     }
@@ -677,6 +673,16 @@ axes.calcTicks = function calcTicks(ax) {
             false, // hover
             tickVals[i].minor // noSuffixPrefix
         );
+
+        if(tickVals[i]._realV) {
+            // correct label
+            ticksOut[i].text = axes.tickText(
+                ax,
+                tickVals[i]._realV,
+                false, // hover
+                tickVals[i].minor // noSuffixPrefix
+            ).text;
+        }
     }
 
     ax._inCalcTicks = false;
