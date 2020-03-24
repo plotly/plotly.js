@@ -636,7 +636,7 @@ axes.calcTicks = function calcTicks(ax) {
 
             var newTickVals = [];
             var prevPos;
-            for(var q = 0; q < len; q++) {
+            for(var q = len - 1; q > -1; q--) { // apply reverse loop to pick greater values in breaks first
                 var pos = ax.c2p(tickVals[q].value);
 
                 if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
@@ -644,7 +644,7 @@ axes.calcTicks = function calcTicks(ax) {
                     newTickVals.push(tickVals[q]);
                 }
             }
-            tickVals = newTickVals;
+            tickVals = newTickVals.reverse();
         }
     }
 
