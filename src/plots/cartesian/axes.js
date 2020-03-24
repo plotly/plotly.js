@@ -586,9 +586,7 @@ axes.calcTicks = function calcTicks(ax) {
     var tickVals;
     function generateTicks() {
         var xPrevious = null;
-
         var maxTicks = Math.max(1000, ax._length || 0);
-
         tickVals = [];
         for(var x = ax._tmin;
                 (axrev) ? (x >= endTick) : (x <= endTick);
@@ -635,11 +633,6 @@ axes.calcTicks = function calcTicks(ax) {
             }
         }
 
-        // sort
-        tickVals = tickVals.sort(function(a, b) {
-            return a.value - b.value;
-        });
-
         // reduce ticks
         var len = tickVals.length;
         if(len > 2) {
@@ -676,25 +669,14 @@ axes.calcTicks = function calcTicks(ax) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
-    var prevLabel;
-    var ticksOut = [];
+    var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
-        var label = axes.tickText(
+        ticksOut[i] = axes.tickText(
             ax,
             tickVals[i].value,
             false, // hover
             tickVals[i].minor // noSuffixPrefix
         );
-
-        if(ax.rangebreaks) { // this might be useful in general - but applying it only to rangebreaks for now
-            if(label.text !== prevLabel) {
-                ticksOut.push(label);
-            }
-        } else {
-            ticksOut.push(label);
-        }
-
-        prevLabel = label.text;
     }
 
     ax._inCalcTicks = false;
