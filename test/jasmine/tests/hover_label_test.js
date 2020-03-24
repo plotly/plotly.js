@@ -4103,6 +4103,16 @@ describe('hovermode: (x|y)unified', function() {
         };
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('y unified');
+                var ax = gd._fullLayout.yaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('#444');
+                expect(ax.spikesnap).toBe('hovered data');
+                expect(gd._fullLayout.xaxis.showspike).toBeFalse;
+
                 _hover(gd, { yval: 6 });
 
                 assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
