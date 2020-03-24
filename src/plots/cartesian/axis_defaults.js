@@ -51,7 +51,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     var visible = coerce('visible', !options.visibleDflt);
 
-    var axType = containerOut.type || options.axTemplate.type || '-';
+    var axTemplate = containerOut._template || {};
+    var axType = containerOut.type || axTemplate.type || '-';
 
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
@@ -125,8 +126,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        var fromTemplate = (options.axTemplate || {}).rangebreaks;
-        var rangebreaks = containerIn.rangebreaks || fromTemplate;
+        var rangebreaks = containerIn.rangebreaks || axTemplate.rangebreaks;
 
         if(Array.isArray(rangebreaks) && rangebreaks.length) {
             handleArrayContainerDefaults(containerIn, containerOut, {

@@ -59,8 +59,9 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
-            var fromTemplate = (options.axTemplate || {}).tickformatstops;
-            var tickformatStops = containerIn.tickformatstops || fromTemplate;
+
+            var axTemplate = containerOut._template || {};
+            var tickformatStops = containerIn.tickformatstops || axTemplate.tickformatstops;
 
             if(Array.isArray(tickformatStops) && tickformatStops.length) {
                 handleArrayContainerDefaults(containerIn, containerOut, {
