@@ -667,24 +667,39 @@ axes.calcTicks = function calcTicks(ax) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var _value;
+    var _minor;
+    var calcTickText = function() {
+        return axes.tickText(
+            ax,
+            _value,
+            false, // hover
+            _minor // noSuffixPrefix
+        );
+    };
+
+    var prevDateHead;
     var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
-        ticksOut[i] = axes.tickText(
-            ax,
-            tickVals[i].value,
-            false, // hover
-            tickVals[i].minor // noSuffixPrefix
-        );
+        _minor = tickVals[i].minor;
+
+        _value = tickVals[i].value;
+        ticksOut[i] = calcTickText();
 
         if(tickVals[i]._realV) {
             // correct label
-            ticksOut[i].text = axes.tickText(
-                ax,
-                tickVals[i]._realV,
-                false, // hover
-                tickVals[i].minor // noSuffixPrefix
-            ).text;
+            _value = tickVals[i]._realV;
+
+            var short = calcTickText().text;
+            ax._prevDateHead = '';
+            var long = calcTickText().text;
+
+            ticksOut[i].text = (
+                prevDateHead === ax._prevDateHead
+            ) ? short : long;
         }
+
+        prevDateHead = ax._prevDateHead;
     }
 
     ax._inCalcTicks = false;
