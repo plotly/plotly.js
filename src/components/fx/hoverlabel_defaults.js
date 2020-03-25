@@ -15,7 +15,9 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     opts = opts || {};
 
     if(contIn && isUnifiedHover(contIn.hovermode)) {
-        opts.bgcolor = contIn.legend ? contIn.legend.bgcolor : contIn.paper_bgcolor;
+        if(!opts.bgcolor) opts.bgcolor = contIn.legend ? contIn.legend.bgcolor : contIn.paper_bgcolor;
+        // Merge in decreasing order of importance layout.font, layout.legend.font and hoverlabel.font
+        opts.font = Lib.extendFlat({}, contIn.font, contIn.legend ? contIn.legend.font : {}, opts.font);
     }
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);

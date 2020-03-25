@@ -989,8 +989,8 @@ function createHoverText(hoverData, opts, gd) {
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.font},
-                font: fullLayout.font,
+                title: {text: t0, font: fullLayout.hoverlabel.font},
+                font: fullLayout.hoverlabel.font,
                 bgcolor: fullLayout.hoverlabel.bgcolor,
                 borderwidth: 1,
                 tracegroupgap: 7,

@@ -3988,14 +3988,18 @@ describe('hovermode: (x|y)unified', function() {
         Lib.clearThrottle();
     }
 
+    function getHoverLabel() {
+        var hoverLayer = d3.select('g.hoverlayer');
+        return hoverLayer.select('g.legend');
+    }
+
     function assertElementCount(selector, size) {
         var g = d3.selectAll(selector);
         expect(g.size()).toBe(size);
     }
 
     function assertLabel(expectation) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+        var hover = getHoverLabel();
         var title = hover.select('text.legendtitletext');
         var traces = hover.selectAll('g.traces');
 
@@ -4011,15 +4015,13 @@ describe('hovermode: (x|y)unified', function() {
     }
 
     function assertBgcolor(color) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+        var hover = getHoverLabel();
         var bg = hover.select('rect.bg');
         expect(bg.node().style.fill).toBe(color);
     }
 
     function assertSymbol(exp) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+        var hover = getHoverLabel();
         var traces = hover.selectAll('g.traces');
         expect(traces.size()).toBe(exp.length);
 
@@ -4032,6 +4034,17 @@ describe('hovermode: (x|y)unified', function() {
                 expect(node.style.stroke).toBe(exp[i][2], 'wrong stroke for point ' + i);
             });
         });
+    }
+
+    function assertFont(fontFamily, fontSize, fontColor) {
+        var hover = getHoverLabel();
+        var text = hover.select('text.legendtext');
+        var node = text.node();
+
+        var textStyle = window.getComputedStyle(node);
+        expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+        expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+        expect(textStyle.fill).toBe(fontColor, 'wrong font color');
     }
 
     it('set smart defaults for spikeline in x unified', function(done) {
@@ -4366,6 +4379,61 @@ describe('hovermode: (x|y)unified', function() {
                 _hover(gd, { xval: 3 });
 
                 assertBgcolor(bgcolor[3]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should use hoverlabel.font or legend.font or layout.font', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        // Set layout.font
+        mockCopy.layout.font = {size: 20, family: 'Mono', color: 'rgb(10, 10, 10)'};
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3});
+
+                assertFont('Mono', '20px', 'rgb(10, 10, 10)');
+
+                // Set legend.font which should win over layout font
+                return Plotly.relayout(gd, {
+                    'showlegend': true,
+                    'legend.font.size': 15,
+                    'legend.font.family': 'Helvetica',
+                    'legend.font.color': 'rgb(20, 20, 20)'
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Helvetica', '15px', 'rgb(20, 20, 20)');
+
+                // Set hoverlabel.font which should win over legend.font
+                return Plotly.relayout(gd, {
+                    'hoverlabel.font.size': 22,
+                    'hoverlabel.font.family': 'Arial',
+                    'hoverlabel.font.color': 'rgb(30, 30, 30)'
+                });
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Arial', '22px', 'rgb(30, 30, 30)');
+
+                // Finally, check that a hoverlabel.font defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { hoverlabel: { font: {family: 'Mono', size: 30, color: 'red'}}}},
+                    legend: {font: {size: 20, family: 'Mono', color: 'rgb(10, 10, 10)'}}
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Mono', '30px', 'rgb(255, 0, 0)');
             })
             .catch(failTest)
             .then(done);
