@@ -126,14 +126,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        var rangebreaks = containerIn.rangebreaks || axTemplate.rangebreaks;
+        handleArrayContainerDefaults(containerIn, containerOut, {
+            name: 'rangebreaks',
+            inclusionAttr: 'enabled',
+            handleItemDefaults: rangebreaksDefaults
+        });
 
-        if(Array.isArray(rangebreaks) && rangebreaks.length) {
-            handleArrayContainerDefaults(containerIn, containerOut, {
-                name: 'rangebreaks',
-                inclusionAttr: 'enabled',
-                handleItemDefaults: rangebreaksDefaults
-            });
+        if(!containerOut.rangebreaks.length) {
+            delete containerOut.rangebreaks;
+        } else {
             setConvert(containerOut, layoutOut);
 
             if(layoutOut._has('scattergl') || layoutOut._has('splom')) {
