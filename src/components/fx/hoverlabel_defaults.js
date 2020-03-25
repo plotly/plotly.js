@@ -14,8 +14,9 @@ var isUnifiedHover = require('./helpers').isUnifiedHover;
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
+    // In unified hover, inherit from legend if available
     if(contIn && isUnifiedHover(contIn.hovermode)) {
-        if(!opts.bgcolor) opts.bgcolor = contIn.legend ? contIn.legend.bgcolor : contIn.paper_bgcolor;
+        if(!opts.bgcolor && contIn.legend) opts.bgcolor = contIn.legend.bgcolor;
         // Merge in decreasing order of importance layout.font, layout.legend.font and hoverlabel.font
         opts.font = Lib.extendFlat({}, contIn.font, contIn.legend ? contIn.legend.font : {}, opts.font);
     }

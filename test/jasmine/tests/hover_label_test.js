@@ -4338,9 +4338,15 @@ describe('hovermode: (x|y)unified', function() {
             'rgb(40, 40, 40)'
         ];
 
-        // Set paper_bgcolor
-        mockCopy.layout.paper_bgcolor = bgcolor[0];
         Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor('rgb(255, 255, 255)');
+
+                // Set paper_bgcolor
+                return Plotly.relayout(gd, 'paper_bgcolor', bgcolor[0]);
+            })
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
