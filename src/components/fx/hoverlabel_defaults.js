@@ -14,17 +14,25 @@ var isUnifiedHover = require('./helpers').isUnifiedHover;
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
+    function inheritFontAttr(attr) {
+        if(!opts.font[attr]) {
+            if(contIn.legend && contIn.legend.font && contIn.legend.font[attr]) {
+                opts.font[attr] = contIn.legend.font[attr];
+            } else if(contIn.font && contIn.font[attr]) {
+                opts.font[attr] = contIn.font[attr];
+            }
+        }
+    }
+
     // In unified hover, inherit from legend if available
     if(contIn && isUnifiedHover(contIn.hovermode)) {
-        if(!opts.bgcolor && contIn.legend) opts.bgcolor = contIn.legend.bgcolor;
-        if(!opts.bordercolor && contIn.legend) opts.bordercolor = contIn.legend.bordercolor;
-        // Merge in decreasing order of importance layout.font, layout.legend.font and hoverlabel.font
-
-        var l = contIn.legend;
         if(!opts.font) opts.font = {};
-        if(!opts.font.size) opts.font.size = l && l.size ? l.size : contIn.font.size;
-        if(!opts.font.family) opts.font.family = l && l.family ? l.family : contIn.font.family;
-        if(!opts.font.color) opts.font.color = l && l.color ? l.color : contIn.font.color;
+        inheritFontAttr('size');
+        inheritFontAttr('family');
+        inheritFontAttr('color');
+
+        if(!opts.bgcolor && contIn.legend && contIn.legend.bgcolor) opts.bgcolor = contIn.legend.bgcolor;
+        if(!opts.bordercolor && contIn.legend && contIn.legend.bordercolor) opts.bordercolor = contIn.legend.bordercolor;
     }
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);
