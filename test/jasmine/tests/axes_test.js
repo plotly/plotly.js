@@ -1852,7 +1852,14 @@ describe('Test axes', function() {
     });
 
     describe('handleTickValueDefaults', function() {
+        var viaTemplate;
+
         function mockSupplyDefaults(axIn, axOut, axType) {
+            if(viaTemplate) {
+                axOut._template = axIn;
+                axIn = {};
+            }
+
             function coerce(attr, dflt) {
                 return Lib.coerce(axIn, axOut, Cartesian.layoutAttributes, attr, dflt);
             }
@@ -1860,193 +1867,200 @@ describe('Test axes', function() {
             handleTickValueDefaults(axIn, axOut, coerce, axType);
         }
 
-        it('should set default tickmode correctly', function() {
-            var axIn = {};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('auto');
-            // and not push it back to axIn (which we used to do)
-            expect(axIn.tickmode).toBeUndefined();
+        [
+            '(without template) ',
+            '(with template) '
+        ].forEach(function(woTemplate, index) {
+            viaTemplate = index === 1;
 
-            axIn = {tickmode: 'array', tickvals: 'stuff'};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('auto');
-            expect(axIn.tickmode).toBe('array');
+            it(woTemplate + 'should set default tickmode correctly', function() {
+                var axIn = {};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('auto');
+                // and not push it back to axIn (which we used to do)
+                expect(axIn.tickmode).toBeUndefined();
 
-            axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'date');
-            expect(axOut.tickmode).toBe('auto');
-            expect(axIn.tickmode).toBe('array');
+                axIn = {tickmode: 'array', tickvals: 'stuff'};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('auto');
+                expect(axIn.tickmode).toBe('array');
 
-            axIn = {tickvals: [1, 2, 3]};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('array');
-            expect(axIn.tickmode).toBeUndefined();
+                axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tickmode).toBe('auto');
+                expect(axIn.tickmode).toBe('array');
 
-            axIn = {dtick: 1};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('linear');
-            expect(axIn.tickmode).toBeUndefined();
-        });
+                axIn = {tickvals: [1, 2, 3]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('array');
+                expect(axIn.tickmode).toBeUndefined();
 
-        it('should set nticks iff tickmode=auto', function() {
-            var axIn = {};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.nticks).toBe(0);
-
-            axIn = {tickmode: 'auto', nticks: 5};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.nticks).toBe(5);
-
-            axIn = {tickmode: 'linear', nticks: 15};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.nticks).toBe(undefined);
-        });
-
-        it('should set tick0 and dtick iff tickmode=linear', function() {
-            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tick0).toBe(undefined);
-            expect(axOut.dtick).toBe(undefined);
-
-            axIn = {tickvals: [1, 2, 3], tick0: 1, dtick: 1};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tick0).toBe(undefined);
-            expect(axOut.dtick).toBe(undefined);
-
-            axIn = {tick0: 2.71, dtick: 0.00828};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tick0).toBe(2.71);
-            expect(axOut.dtick).toBe(0.00828);
-
-            axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tick0).toBe(3.14);
-            expect(axOut.dtick).toBe(0.00159);
-        });
-
-        it('should handle tick0 and dtick for date axes', function() {
-            var someMs = 123456789;
-            var someMsDate = Lib.ms2DateTimeLocal(someMs);
-            var oneDay = 24 * 3600 * 1000;
-            var axIn = {tick0: someMs, dtick: String(3 * oneDay)};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'date');
-            expect(axOut.tick0).toBe(someMsDate);
-            expect(axOut.dtick).toBe(3 * oneDay);
-
-            var someDate = '2011-12-15 13:45:56';
-            axIn = {tick0: someDate, dtick: 'M15'};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'date');
-            expect(axOut.tick0).toBe(someDate);
-            expect(axOut.dtick).toBe('M15');
-
-            // dtick without tick0: get the right default
-            axIn = {dtick: 'M12'};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'date');
-            expect(axOut.tick0).toBe('2000-01-01');
-            expect(axOut.dtick).toBe('M12');
-
-            var errors = [];
-            spyOn(Loggers, 'error').and.callFake(function(msg) {
-                errors.push(msg);
+                axIn = {dtick: 1};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('linear');
+                expect(axIn.tickmode).toBeUndefined();
             });
 
-            // now some stuff that shouldn't work, should give defaults
-            [
-                ['next thursday', -1],
-                ['123-45', 'L1'],
-                ['', 'M0.5'],
-                ['', 'M-1'],
-                ['', '2000-01-01']
-            ].forEach(function(v, i) {
-                axIn = {tick0: v[0], dtick: v[1]};
+            it(woTemplate + 'should set nticks iff tickmode=auto', function() {
+                var axIn = {};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.nticks).toBe(0);
+
+                axIn = {tickmode: 'auto', nticks: 5};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.nticks).toBe(5);
+
+                axIn = {tickmode: 'linear', nticks: 15};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.nticks).toBe(undefined);
+            });
+
+            it(woTemplate + 'should set tick0 and dtick iff tickmode=linear', function() {
+                var axIn = {tickmode: 'auto', tick0: 1, dtick: 1};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tick0).toBe(undefined);
+                expect(axOut.dtick).toBe(undefined);
+
+                axIn = {tickvals: [1, 2, 3], tick0: 1, dtick: 1};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tick0).toBe(undefined);
+                expect(axOut.dtick).toBe(undefined);
+
+                axIn = {tick0: 2.71, dtick: 0.00828};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tick0).toBe(2.71);
+                expect(axOut.dtick).toBe(0.00828);
+
+                axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tick0).toBe(3.14);
+                expect(axOut.dtick).toBe(0.00159);
+            });
+
+            it(woTemplate + 'should handle tick0 and dtick for date axes', function() {
+                var someMs = 123456789;
+                var someMsDate = Lib.ms2DateTimeLocal(someMs);
+                var oneDay = 24 * 3600 * 1000;
+                var axIn = {tick0: someMs, dtick: String(3 * oneDay)};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tick0).toBe(someMsDate);
+                expect(axOut.dtick).toBe(3 * oneDay);
+
+                var someDate = '2011-12-15 13:45:56';
+                axIn = {tick0: someDate, dtick: 'M15'};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tick0).toBe(someDate);
+                expect(axOut.dtick).toBe('M15');
+
+                // dtick without tick0: get the right default
+                axIn = {dtick: 'M12'};
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'date');
                 expect(axOut.tick0).toBe('2000-01-01');
-                expect(axOut.dtick).toBe(oneDay);
-                expect(errors.length).toBe(i + 1);
+                expect(axOut.dtick).toBe('M12');
+
+                var errors = [];
+                spyOn(Loggers, 'error').and.callFake(function(msg) {
+                    errors.push(msg);
+                });
+
+                // now some stuff that shouldn't work, should give defaults
+                [
+                    ['next thursday', -1],
+                    ['123-45', 'L1'],
+                    ['', 'M0.5'],
+                    ['', 'M-1'],
+                    ['', '2000-01-01']
+                ].forEach(function(v, i) {
+                    axIn = {tick0: v[0], dtick: v[1]};
+                    axOut = {};
+                    mockSupplyDefaults(axIn, axOut, 'date');
+                    expect(axOut.tick0).toBe('2000-01-01');
+                    expect(axOut.dtick).toBe(oneDay);
+                    expect(errors.length).toBe(i + 1);
+                });
             });
-        });
 
-        it('should handle tick0 and dtick for log axes', function() {
-            var axIn = {tick0: '0.2', dtick: 0.3};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'log');
-            expect(axOut.tick0).toBe(0.2);
-            expect(axOut.dtick).toBe(0.3);
-
-            ['D1', 'D2'].forEach(function(v) {
-                axIn = {tick0: -1, dtick: v};
-                axOut = {};
+            it(woTemplate + 'should handle tick0 and dtick for log axes', function() {
+                var axIn = {tick0: '0.2', dtick: 0.3};
+                var axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'log');
-                // tick0 gets ignored for D<n>
-                expect(axOut.tick0).toBeUndefined(v);
-                expect(axOut.dtick).toBe(v);
+                expect(axOut.tick0).toBe(0.2);
+                expect(axOut.dtick).toBe(0.3);
+
+                ['D1', 'D2'].forEach(function(v) {
+                    axIn = {tick0: -1, dtick: v};
+                    axOut = {};
+                    mockSupplyDefaults(axIn, axOut, 'log');
+                    // tick0 gets ignored for D<n>
+                    expect(axOut.tick0).toBeUndefined(v);
+                    expect(axOut.dtick).toBe(v);
+                });
+
+                [
+                    [-1, 'L3'],
+                    ['0.2', 'L0.3'],
+                    [-1, 3],
+                    ['0.1234', '0.69238473']
+                ].forEach(function(v) {
+                    axIn = {tick0: v[0], dtick: v[1]};
+                    axOut = {};
+                    mockSupplyDefaults(axIn, axOut, 'log');
+                    expect(axOut.tick0).toBe(Number(v[0]));
+                    expect(axOut.dtick).toBe((+v[1]) ? Number(v[1]) : v[1]);
+                });
+
+                // now some stuff that should not work, should give defaults
+                [
+                    ['', -1],
+                    ['D1', 'D3'],
+                    ['', 'D0'],
+                    ['2011-01-01', 'L0'],
+                    ['', 'L-1']
+                ].forEach(function(v) {
+                    axIn = {tick0: v[0], dtick: v[1]};
+                    axOut = {};
+                    mockSupplyDefaults(axIn, axOut, 'log');
+                    expect(axOut.tick0).toBe(0);
+                    expect(axOut.dtick).toBe(1);
+                });
             });
 
-            [
-                [-1, 'L3'],
-                ['0.2', 'L0.3'],
-                [-1, 3],
-                ['0.1234', '0.69238473']
-            ].forEach(function(v) {
-                axIn = {tick0: v[0], dtick: v[1]};
+            it(woTemplate + 'should set tickvals and ticktext iff tickmode=array', function() {
+                var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickvals).toBe(undefined);
+                expect(axOut.ticktext).toBe(undefined);
+
+                axIn = {tickvals: [2, 4, 6, 8], ticktext: ['who', 'do', 'we', 'appreciate']};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'log');
-                expect(axOut.tick0).toBe(Number(v[0]));
-                expect(axOut.dtick).toBe((+v[1]) ? Number(v[1]) : v[1]);
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickvals).toEqual([2, 4, 6, 8]);
+                expect(axOut.ticktext).toEqual(['who', 'do', 'we', 'appreciate']);
             });
 
-            // now some stuff that should not work, should give defaults
-            [
-                ['', -1],
-                ['D1', 'D3'],
-                ['', 'D0'],
-                ['2011-01-01', 'L0'],
-                ['', 'L-1']
-            ].forEach(function(v) {
-                axIn = {tick0: v[0], dtick: v[1]};
-                axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'log');
-                expect(axOut.tick0).toBe(0);
-                expect(axOut.dtick).toBe(1);
+            it(woTemplate + 'should not coerce ticktext/tickvals on multicategory axes', function() {
+                var axIn = {tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
+                var axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'multicategory');
+                expect(axOut.tickvals).toBe(undefined);
+                expect(axOut.ticktext).toBe(undefined);
             });
-        });
-
-        it('should set tickvals and ticktext iff tickmode=array', function() {
-            var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickvals).toBe(undefined);
-            expect(axOut.ticktext).toBe(undefined);
-
-            axIn = {tickvals: [2, 4, 6, 8], ticktext: ['who', 'do', 'we', 'appreciate']};
-            axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickvals).toEqual([2, 4, 6, 8]);
-            expect(axOut.ticktext).toEqual(['who', 'do', 'we', 'appreciate']);
-        });
-
-        it('should not coerce ticktext/tickvals on multicategory axes', function() {
-            var axIn = {tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
-            var axOut = {};
-            mockSupplyDefaults(axIn, axOut, 'multicategory');
-            expect(axOut.tickvals).toBe(undefined);
-            expect(axOut.ticktext).toBe(undefined);
         });
     });
 
