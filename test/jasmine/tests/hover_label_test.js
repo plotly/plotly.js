@@ -4316,15 +4316,56 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
-    it('label should have color of paper_bgcolor', function(done) {
+    it('label should have color of hoverlabel.bgcolor or legend.bgcolor or paper_bgcolor', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
-        var bgcolor = 'rgb(15, 200, 85)';
-        mockCopy.layout.paper_bgcolor = bgcolor;
+        var bgcolor = [
+            'rgb(10, 10, 10)',
+            'rgb(20, 20, 20)',
+            'rgb(30, 30, 30)',
+            'rgb(40, 40, 40)'
+        ];
+
+        // Set paper_bgcolor
+        mockCopy.layout.paper_bgcolor = bgcolor[0];
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor);
+                assertBgcolor(bgcolor[0]);
+
+                // Set legend.bgcolor which should win over paper_bgcolor
+                return Plotly.relayout(gd, {
+                    'showlegend': true,
+                    'legend.bgcolor': bgcolor[1]
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor(bgcolor[1]);
+
+                // Set hoverlabel.bgcolor which should win over legend.bgcolor
+                return Plotly.relayout(gd, 'hoverlabel.bgcolor', bgcolor[2]);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor(bgcolor[2]);
+
+                // Finally, check that a hoverlabel.bgcolor defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { hoverlabel: { bgcolor: bgcolor[3] } } },
+                    legend: { bgcolor: bgcolor[1] }
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertBgcolor(bgcolor[3]);
             })
             .catch(failTest)
             .then(done);

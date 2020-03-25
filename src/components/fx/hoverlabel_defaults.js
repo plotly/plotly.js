@@ -9,9 +9,14 @@
 'use strict';
 
 var Lib = require('../../lib');
+var isUnifiedHover = require('./helpers').isUnifiedHover;
 
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
+
+    if(contIn && isUnifiedHover(contIn.hovermode)) {
+        opts.bgcolor = contIn.legend ? contIn.legend.bgcolor : contIn.paper_bgcolor;
+    }
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);
     coerce('hoverlabel.bordercolor', opts.bordercolor);

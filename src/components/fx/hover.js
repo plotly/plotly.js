@@ -991,7 +991,7 @@ function createHoverText(hoverData, opts, gd) {
             legend: {
                 title: {text: t0, font: fullLayout.font},
                 font: fullLayout.font,
-                bgcolor: fullLayout.paper_bgcolor,
+                bgcolor: fullLayout.hoverlabel.bgcolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
