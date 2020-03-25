@@ -611,31 +611,43 @@ axes.calcTicks = function calcTicks(ax) {
     generateTicks();
 
     if(ax.rangebreaks) {
-        var nTicksBefore = tickVals.length;
-
-        // remove ticks falling inside rangebreaks
-        tickVals = tickVals.filter(function(d) {
-            return ax.maskBreaks(d.value) !== BADNUM;
-        });
-
-        // if 'numerous' ticks get placed into rangebreaks,
-        // increase dtick to generate more ticks,
-        // so that some hopefully fall between rangebreaks
-        if(ax.tickmode === 'auto' && tickVals.length < nTicksBefore / 6) {
-            axes.autoTicks(ax, ax._roughDTick / 3);
-            autoTickRound(ax);
-            ax._tmin = axes.tickFirst(ax);
-            generateTicks();
-            tickVals = tickVals.filter(function(d) {
-                return ax.maskBreaks(d.value) !== BADNUM;
-            });
+        // replace ticks inside breaks that would get a tick
+        if(ax.tickmode === 'auto') {
+            for(var t = 0; t < tickVals.length; t++) {
+                var value = tickVals[t].value;
+                if(ax.maskBreaks(value) === BADNUM) {
+                    // find which break we are in
+                    for(var k = 0; k < ax._rangebreaks.length; k++) {
+                        var brk = ax._rangebreaks[k];
+                        if(value >= brk.min && value < brk.max) {
+                            tickVals[t]._realV = tickVals[t].value;
+                            tickVals[t].value = brk.max; // replace with break end
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
-        // remove "overlapping" ticks (e.g. on either side of a break)
-        var tf2 = ax.tickfont ? 1.5 * ax.tickfont.size : 0;
-        tickVals = tickVals.filter(function(d, i, self) {
-            return !(i && Math.abs(ax.c2p(d.value) - ax.c2p(self[i - 1].value)) < tf2);
-        });
+        // reduce ticks
+        var len = tickVals.length;
+        if(len > 2) {
+            var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
+
+            var newTickVals = [];
+            var prevPos;
+
+            var signAx = axrev ? -1 : 1;
+            for(var q = axrev ? 0 : len - 1; signAx * q >= signAx * (axrev ? len - 1 : 0); q -= signAx) { // apply reverse loop to pick greater values in breaks first
+                var pos = ax.c2p(tickVals[q].value);
+
+                if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
+                    prevPos = pos;
+                    newTickVals.push(tickVals[q]);
+                }
+            }
+            tickVals = newTickVals.reverse();
+        }
     }
 
     // If same angle over a full circle, the last tick vals is a duplicate.
@@ -663,6 +675,16 @@ axes.calcTicks = function calcTicks(ax) {
             false, // hover
             tickVals[i].minor // noSuffixPrefix
         );
+
+        if(tickVals[i]._realV) {
+            // correct label
+            ticksOut[i].text = axes.tickText(
+                ax,
+                tickVals[i]._realV,
+                false, // hover
+                tickVals[i].minor // noSuffixPrefix
+            ).text;
+        }
     }
 
     ax._inCalcTicks = false;

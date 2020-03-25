@@ -4963,7 +4963,7 @@ describe('Test axes', function() {
                     .withContext(msg).toEqual(exp.tickVals);
             }
 
-            it('should not include ticks that fall within rangebreaks', function(done) {
+            it('should include requested ticks that fall within rangebreaks', function(done) {
                 Plotly.plot(gd, [{
                     x: [
                         '1970-01-01 00:00:00.000',
@@ -4977,7 +4977,7 @@ describe('Test axes', function() {
                     ]
                 }], {
                     xaxis: {},
-                    width: 500,
+                    width: 800,
                     height: 400
                 })
                 .then(function() {
@@ -5002,49 +5002,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('with two rangebreaks', {
-                        tickVals: [0, 10, 100, 200]
-                    });
-                })
-                .catch(failTest)
-                .then(done);
-            });
-
-            it('should increase dtick when too many (auto) ticks fall into rangebreaks', function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/axes_breaks-finance.json'));
-                // break over weekend
-                fig.layout.xaxis.rangebreaks[0].enabled = false;
-                // break on a single holiday
-                fig.layout.xaxis.rangebreaks[1].enabled = false;
-
-                Plotly.plot(gd, fig)
-                .then(function() {
-                    _assert('base', {
-                        tickVals: [1483833600000, 1485043200000, 1486252800000]
-                    });
-                })
-                .then(function() {
-                    gd.layout.xaxis.rangebreaks[0].enabled = true;
-                    gd.layout.xaxis.rangebreaks[1].enabled = true;
-                    return Plotly.react(gd, gd.data, gd.layout);
-                })
-                .then(function() {
-                    _assert('with rangebreaks enabled on x-axis', {
-                        tickVals: [
-                            1483574400000, 1484092800000, 1484611200000, 1484870400000,
-                            1485388800000, 1485907200000, 1486425600000, 1486684800000
-                        ]
-                    });
-                })
-                .then(function() {
-                    // a Saturday
-                    gd.layout.xaxis.tick0 = '2017-01-02';
-                    // one week
-                    gd.layout.xaxis.dtick = 7 + 24 * 60 * 60 * 1000;
-                    return Plotly.react(gd, gd.data, gd.layout);
-                })
-                .then(function() {
-                    _assert('honor set tick0/dtick even though they result in few visible ticks', {
-                        tickVals: [1483488000014]
+                        tickVals: [0, 5, 10, 90, 95, 100, 190, 195, 200]
                     });
                 })
                 .catch(failTest)
