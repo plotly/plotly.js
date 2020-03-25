@@ -135,6 +135,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(!containerOut.rangebreaks.length) {
             delete containerOut.rangebreaks;
         } else {
+            for(var k = 0; k < containerOut.rangebreaks.length; k++) {
+                if(containerOut.rangebreaks[k].pattern === DAY_OF_WEEK) {
+                    containerOut._hasDayOfWeekBreaks = true;
+                    break;
+                }
+            }
+
             setConvert(containerOut, layoutOut);
 
             if(layoutOut._has('scattergl') || layoutOut._has('splom')) {
