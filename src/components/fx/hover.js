@@ -992,6 +992,7 @@ function createHoverText(hoverData, opts, gd) {
                 title: {text: t0, font: fullLayout.hoverlabel.font},
                 font: fullLayout.hoverlabel.font,
                 bgcolor: fullLayout.hoverlabel.bgcolor || fullLayout.paper_bgcolor,
+                bordercolor: fullLayout.hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,

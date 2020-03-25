@@ -4014,10 +4014,11 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
-    function assertBgcolor(color) {
+    function assertRectColor(color, bordercolor) {
         var hover = getHoverLabel();
         var bg = hover.select('rect.bg');
-        expect(bg.node().style.fill).toBe(color);
+        if(color) expect(bg.node().style.fill).toBe(color);
+        if(bordercolor) expect(bg.node().style.stroke).toBe(bordercolor);
     }
 
     function assertSymbol(exp) {
@@ -4329,7 +4330,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
-    it('label should have color of hoverlabel.bgcolor or legend.bgcolor or paper_bgcolor', function(done) {
+    it('label should have bgcolor/bordercolor from hoverlabel or legend or paper_bgcolor', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         var bgcolor = [
             'rgb(10, 10, 10)',
@@ -4342,7 +4343,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor('rgb(255, 255, 255)');
+                assertRectColor('rgb(255, 255, 255)', 'rgb(68, 68, 68)');
 
                 // Set paper_bgcolor
                 return Plotly.relayout(gd, 'paper_bgcolor', bgcolor[0]);
@@ -4350,33 +4351,37 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor[0]);
+                assertRectColor(bgcolor[0]);
 
                 // Set legend.bgcolor which should win over paper_bgcolor
                 return Plotly.relayout(gd, {
                     'showlegend': true,
-                    'legend.bgcolor': bgcolor[1]
+                    'legend.bgcolor': bgcolor[1],
+                    'legend.bordercolor': bgcolor[1]
                 });
             })
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor[1]);
+                assertRectColor(bgcolor[1], bgcolor[1]);
 
                 // Set hoverlabel.bgcolor which should win over legend.bgcolor
-                return Plotly.relayout(gd, 'hoverlabel.bgcolor', bgcolor[2]);
+                return Plotly.relayout(gd, {
+                    'hoverlabel.bgcolor': bgcolor[2],
+                    'hoverlabel.bordercolor': bgcolor[2]
+                });
             })
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor[2]);
+                assertRectColor(bgcolor[2], bgcolor[2]);
 
                 // Finally, check that a hoverlabel.bgcolor defined in template wins
                 delete mockCopy.layout;
                 mockCopy.layout = {
                     hovermode: 'x unified',
-                    template: { layout: { hoverlabel: { bgcolor: bgcolor[3] } } },
-                    legend: { bgcolor: bgcolor[1] }
+                    template: { layout: { hoverlabel: { bgcolor: bgcolor[3], bordercolor: bgcolor[3] } } },
+                    legend: { bgcolor: bgcolor[1], bordercolor: bgcolor[1] }
                 };
 
                 return Plotly.newPlot(gd, mockCopy);
@@ -4384,7 +4389,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor[3]);
+                assertRectColor(bgcolor[3], bgcolor[3]);
             })
             .catch(failTest)
             .then(done);
