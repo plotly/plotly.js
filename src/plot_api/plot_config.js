@@ -34,7 +34,7 @@ var configAttributes = {
         valType: 'string',
         dflt: '',
         description: [
-            'When set it determines base URL for',
+            'When set it determines base URL e.g. \'https://plotly.com\' for',
             'the \'Edit in Chart Studio\' (aka sendDataToCloud) mode bar button',
             'and the showLink/sendData on-graph link.'
         ].join(' ')
