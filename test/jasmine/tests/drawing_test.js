@@ -40,7 +40,7 @@ describe('Drawing', function() {
             // append <base> with href
             var base = d3.select('body')
                 .append('base')
-                .attr('href', 'https://plot.ly');
+                .attr('href', 'https://chart-studio.plotly.com');
 
             // grab window URL
             var href = window.location.href;
@@ -56,7 +56,7 @@ describe('Drawing', function() {
         it('should append window URL w/o hash to clip-path if <base> is present', function() {
             var base = d3.select('body')
                 .append('base')
-                .attr('href', 'https://plot.ly/#hash');
+                .attr('href', 'https://chart-studio.plotly.com/#hash');
 
             window.location.hash = 'hash';
             var href = window.location.href;
@@ -547,7 +547,7 @@ describe('gradients', function() {
     it('should append window URL to gradient ref if <base> is present', function(done) {
         var base = d3.select('body')
             .append('base')
-            .attr('href', 'https://plot.ly');
+            .attr('href', 'https://chart-studio.plotly.com');
 
         Plotly.plot(gd, [{
             type: 'heatmap',

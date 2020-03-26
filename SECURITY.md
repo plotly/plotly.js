@@ -9,17 +9,17 @@ untrusted data being graphed by plotly.js.  However, XSS or other issues may sti
 Note that the typical use case for plotly.js is for visualizing data from trusted sources.  For example if you use plotly.js to add a dashboard to your site and you control all the input data that's sent to plotly.js, you are not dependent on plotly.js for XSS protection.
 
 If you require a higher degree of assurance, please consider purchasing our
-[Plotly On-Premise](https://plot.ly/product/enterprise/) product, or [contact the Plotly sales team](mailto:sales@plot.ly)
+[Plotly On-Premise](https://plotly.com/get-pricing/) product, or [contact the Plotly sales team](mailto:sales@plotly.com)
 for more options.
 
 ## Reports
 
-To report a security vulnerability, please email security@plot.ly with steps to reproduce the problem. Please allow up to
+To report a security vulnerability, please email security@plotly.com with steps to reproduce the problem. Please allow up to
 24 hours for an initial response.
 
 ## Bounties
 
-In some cases, we offer monetary compensation (bounties) for reports of security vulnerabilities.  Please see the [Plotly Security Vulnerability Bounty Program](http://help.plot.ly/security/) page for more information.
+In some cases, we offer monetary compensation (bounties) for reports of security vulnerabilities.  Please see the [Plotly Security Vulnerability Bounty Program](https://plotly.com/chart-studio-help/security/) page for more information.
 
 ## Release Process
 
@@ -31,4 +31,4 @@ Since the typical plotly.js use case involves trusted data, we do not remove old
 
 ## Advisories
 
-All plotly.js security advisories released after August 1, 2016 are available at the [Plotly Security Advisories](http://help.plot.ly/security-advisories/) page.
+All plotly.js security advisories released after August 1, 2016 are available at the [Plotly Security Advisories](https://plotly.com/chart-studio-help/security-advisories/) page.
