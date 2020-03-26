@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Color = require('../color');
 var isUnifiedHover = require('./helpers').isUnifiedHover;
 
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
@@ -28,7 +29,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
         inheritFontAttr('color');
 
         if(contOut.legend) {
-            if(!opts.bgcolor) opts.bgcolor = contOut.legend.bgcolor;
+            if(!opts.bgcolor) opts.bgcolor = Color.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
             if(!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
         } else {
             if(!opts.bgcolor) opts.bgcolor = contOut.paper_bgcolor;
