@@ -16,23 +16,23 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
 
     function inheritFontAttr(attr) {
         if(!opts.font[attr]) {
-            if(contIn.legend && contIn.legend.font && contIn.legend.font[attr]) {
-                opts.font[attr] = contIn.legend.font[attr];
-            } else if(contIn.font && contIn.font[attr]) {
-                opts.font[attr] = contIn.font[attr];
-            }
+            opts.font[attr] = contOut.legend ? contOut.legend.font[attr] : contOut.font[attr];
         }
     }
 
-    // In unified hover, inherit from legend if available
-    if(contIn && isUnifiedHover(contIn.hovermode)) {
+    // In unified hover, inherit from layout.legend if available or layout
+    if(contOut && isUnifiedHover(contOut.hovermode)) {
         if(!opts.font) opts.font = {};
         inheritFontAttr('size');
         inheritFontAttr('family');
         inheritFontAttr('color');
 
-        if(!opts.bgcolor && contIn.legend && contIn.legend.bgcolor) opts.bgcolor = contIn.legend.bgcolor;
-        if(!opts.bordercolor && contIn.legend && contIn.legend.bordercolor) opts.bordercolor = contIn.legend.bordercolor;
+        if(contOut.legend) {
+            if(!opts.bgcolor) opts.bgcolor = contOut.legend.bgcolor;
+            if(!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
+        } else {
+            if(!opts.bgcolor) opts.bgcolor = contOut.paper_bgcolor;
+        }
     }
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);

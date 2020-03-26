@@ -4376,7 +4376,21 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertRectColor(bgcolor[2], bgcolor[2]);
 
-                // Finally, check that a hoverlabel.bgcolor defined in template wins
+                // Check that a legend.bgcolor defined in template works
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { legend: { bgcolor: bgcolor[1], bordercolor: bgcolor[1] } } }
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[1], bgcolor[1]);
+
+                // Check that a hoverlabel.bgcolor defined in template wins
                 delete mockCopy.layout;
                 mockCopy.layout = {
                     hovermode: 'x unified',
@@ -4430,6 +4444,20 @@ describe('hovermode: (x|y)unified', function() {
                 _hover(gd, { xval: 3 });
 
                 assertFont('Arial', '22px', 'rgb(30, 30, 30)');
+
+                // Check that a legend.font defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { legend: {font: {size: 5, family: 'Mono', color: 'rgb(5, 5, 5)'}}}},
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Mono', '5px', 'rgb(5, 5, 5)');
 
                 // Finally, check that a hoverlabel.font defined in template wins
                 delete mockCopy.layout;

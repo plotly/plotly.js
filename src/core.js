@@ -42,8 +42,8 @@ register(require('./traces/scatter'));
 
 // register all registrable components modules
 register([
-    require('./components/fx'),
     require('./components/legend'),
+    require('./components/fx'),
     require('./components/annotations'),
     require('./components/annotations3d'),
     require('./components/shapes'),

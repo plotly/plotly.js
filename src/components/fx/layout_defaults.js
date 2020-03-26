@@ -12,6 +12,7 @@ var Lib = require('../../lib');
 var isUnifiedHover = require('./helpers').isUnifiedHover;
 var layoutAttributes = require('./layout_attributes');
 var handleHoverModeDefaults = require('./hovermode_defaults');
+var handleHoverLabelDefaults = require('./hoverlabel_defaults');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
@@ -40,4 +41,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     )) {
         layoutOut.dragmode = 'pan';
     }
+
+    handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
