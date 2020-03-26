@@ -32,10 +32,14 @@ var configAttributes = {
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: 'https://plot.ly',
+        dflt: '',
         description: [
-            'Sets base URL for the \'Edit in Chart Studio\' (aka sendDataToCloud) mode bar button',
-            'and the showLink/sendData on-graph link'
+            'When set it determines base URL for',
+            'the \'Edit in Chart Studio\' `showEditInChartStudio`/`showSendToCloud` mode bar button',
+            'and the showLink/sendData on-graph link.',
+            'To enable sending your data to Chart Studio Cloud, you need to',
+            'set both `plotlyServerURL` to \'https://chart-studio.plotly.com\' and',
+            'also set `showSendToCloud` to true.'
         ].join(' ')
     },
 
@@ -261,10 +265,10 @@ var configAttributes = {
         dflt: false,
         description: [
             'Should we include a ModeBar button, labeled "Edit in Chart Studio",',
-            'that sends this chart to plot.ly or another plotly server as specified',
-            'by `plotlyServerURL` for editing, export, etc? Prior to version 1.43.0',
+            'that sends this chart to chart-studio.plotly.com (formerly plot.ly) or another plotly server',
+            'as specified by `plotlyServerURL` for editing, export, etc? Prior to version 1.43.0',
             'this button was included by default, now it is opt-in using this flag.',
-            'Note that this button can (depending on `plotlyServerURL`) send your data',
+            'Note that this button can (depending on `plotlyServerURL` being set) send your data',
             'to an external server. However that server does not persist your data',
             'until you arrive at the Chart Studio and explicitly click "Save".'
         ].join(' ')

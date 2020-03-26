@@ -501,13 +501,29 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should default to plotly cloud', function(done) {
+        it('should not default to an external plotly cloud', function(done) {
             Plotly.plot(gd, [], {})
             .then(function() {
-                expect(gd._context.plotlyServerURL).toBe('https://plot.ly');
+                expect(gd._context.plotlyServerURL).not.toBe('https://plot.ly');
+                expect(gd._context.plotlyServerURL).not.toBe('https://chart-studio.plotly.com');
+                expect(gd._context.plotlyServerURL).toBe('');
 
                 Plotly.Plots.sendDataToCloud(gd);
-                expect(form.action).toBe('https://plot.ly/external');
+                expect(form).toBe(undefined);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should be able to connect to Chart Studio Cloud when set to https://chart-studio.plotly.com', function(done) {
+            Plotly.plot(gd, [], {}, {
+                plotlyServerURL: 'https://chart-studio.plotly.com'
+            })
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('https://chart-studio.plotly.com');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toBe('https://chart-studio.plotly.com/external');
                 expect(form.method).toBe('post');
             })
             .catch(failTest)
