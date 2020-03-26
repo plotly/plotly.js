@@ -36,7 +36,10 @@ var configAttributes = {
         description: [
             'When set it determines base URL e.g. \'https://plotly.com\' for',
             'the \'Edit in Chart Studio\' (aka sendDataToCloud) mode bar button',
-            'and the showLink/sendData on-graph link.'
+            'and the showLink/sendData on-graph link.',
+            'To enable sending your data to Plotly\'s public cloud, you need to',
+            'set both `plotlyServerURL` to \'https://chart-studio.plotly.com\' and',
+            'also set `showSendToCloud` to true.'
         ].join(' ')
     },
 
