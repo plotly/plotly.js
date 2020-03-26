@@ -509,8 +509,7 @@ describe('config argument', function() {
                 expect(gd._context.plotlyServerURL).toBe('');
 
                 Plotly.Plots.sendDataToCloud(gd);
-                expect(form.action.substring(0, 17)).toBe('http://localhost:');
-                expect(form.method).toBe('post');
+                expect(form).toBe(undefined);
             })
             .catch(failTest)
             .then(done);

@@ -34,8 +34,9 @@ var configAttributes = {
         valType: 'string',
         dflt: '',
         description: [
-            'Sets base URL for the \'Edit in Chart Studio\' (aka sendDataToCloud) mode bar button',
-            'and the showLink/sendData on-graph link'
+            'When set it determines base URL for',
+            'the \'Edit in Chart Studio\' (aka sendDataToCloud) mode bar button',
+            'and the showLink/sendData on-graph link.'
         ].join(' ')
     },
 
