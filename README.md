@@ -44,10 +44,10 @@ and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = 
 
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js" charset="utf-8"></script>
 
-<!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
-<script src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
+<!-- OR use a specific plotly.js release (e.g. version 1.52.3) -->
+<script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
 
 <!-- OR an un-minified version is also available -->
 <script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
