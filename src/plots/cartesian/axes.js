@@ -807,12 +807,8 @@ axes.autoTicks = function(ax, roughDTick) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            if(ax._hasDayOfWeekBreaks) {
-                ax.dtick = roundDTick(roughDTick, ONEDAY, [1, 1.001, 7, 14]);
-                if(ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
-            } else {
-                ax.dtick = roundDTick(roughDTick, ONEDAY, roundDays);
-            }
+            ax.dtick = roundDTick(roughDTick, ONEDAY, roundDays);
+            if(ax._hasDayOfWeekBreaks && ax.dtick < ONEWEEK) ax.dtick = ONEDAY;
 
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
