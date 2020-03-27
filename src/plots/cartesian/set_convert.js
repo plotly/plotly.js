@@ -742,8 +742,8 @@ module.exports = function setConvert(ax, fullLayout) {
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
                                 step = 7 * ONEDAY;
 
-                                t = r0 - (
-                                    (r0Date.getUTCDay() - b0) * ONEDAY +
+                                t = r0 + b0 * ONEDAY - (
+                                    r0Date.getUTCDay() * ONEDAY +
                                     r0Date.getUTCHours() * ONEHOUR +
                                     r0Date.getUTCMinutes() * ONEMIN +
                                     r0Date.getUTCSeconds() * ONESEC +
@@ -756,8 +756,8 @@ module.exports = function setConvert(ax, fullLayout) {
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                                 step = ONEDAY;
 
-                                t = r0 - (
-                                    (r0Date.getUTCHours() - b0) * ONEHOUR +
+                                t = r0 + b0 * ONEHOUR - (
+                                    r0Date.getUTCHours() * ONEHOUR +
                                     r0Date.getUTCMinutes() * ONEMIN +
                                     r0Date.getUTCSeconds() * ONESEC +
                                     r0Date.getUTCMilliseconds()
