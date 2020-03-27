@@ -25,6 +25,7 @@ var cleanTicks = require('./clean_ticks');
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
@@ -808,7 +809,7 @@ axes.autoTicks = function(ax, roughDTick) {
         } else if(roughX2 > ONEDAY) {
             if(ax._hasDayOfWeekBreaks) {
                 ax.dtick = roundDTick(roughDTick, ONEDAY, [1, 1.001, 7, 14]);
-                if(ax.dtick !== ONEDAY) ax.dtick = 7 * ONEDAY;
+                if(ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
             } else {
                 ax.dtick = roundDTick(roughDTick, ONEDAY, roundDays);
             }
