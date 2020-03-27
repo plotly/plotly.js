@@ -734,8 +734,9 @@ module.exports = function setConvert(ax, fullLayout) {
                         var bndDelta;
                         // step in ms between rangebreaks
                         var step;
-                        // tracker to position bounds
-                        var t;
+
+                        var t0 = r0;
+                        var t1 = r1;
 
                         switch(brk.pattern) {
                             case WEEKDAY_PATTERN:
@@ -746,7 +747,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                     (b1 - b0)
                                 ) * ONEDAY;
 
-                                t = r0 + b0 * ONEDAY - (
+                                t0 += b0 * ONEDAY - (
                                     r0Date.getUTCDay() * ONEDAY +
                                     r0Date.getUTCHours() * ONEHOUR +
                                     r0Date.getUTCMinutes() * ONEMIN +
@@ -762,7 +763,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                     (b1 - b0)
                                 ) * ONEHOUR;
 
-                                t = r0 + b0 * ONEHOUR - (
+                                t0 += b0 * ONEHOUR - (
                                     r0Date.getUTCHours() * ONEHOUR +
                                     r0Date.getUTCMinutes() * ONEMIN +
                                     r0Date.getUTCSeconds() * ONESEC +
@@ -771,13 +772,12 @@ module.exports = function setConvert(ax, fullLayout) {
                                 break;
                         }
 
-                        while(t <= r1) {
+                        for(var t = t0; t <= t1; t += step) {
                             // TODO we need to remove decimal (most often found
                             // in auto ranges) for this to work correctly,
                             // should this be Math.floor, Math.ceil or
                             // Math.round ??
                             addBreak(Math.floor(t), Math.floor(t + bndDelta));
-                            t += step;
                         }
                     } else {
                         bnds = Lib.simpleMap(brk.bounds, ax.r2l);
