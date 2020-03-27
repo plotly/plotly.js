@@ -25,7 +25,6 @@ var cleanTicks = require('./clean_ticks');
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
-var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
@@ -514,7 +513,7 @@ axes.prepTicks = function(ax) {
                 minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
                 nt = ax._length / minPx;
             } else {
-                minPx = ax._hasDayOfWeekBreaks ? 40 : ax._id.charAt(0) === 'y' ? 40 : 80;
+                minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
 
@@ -807,8 +806,7 @@ axes.autoTicks = function(ax, roughDTick) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, roundDays);
-            if(ax._hasDayOfWeekBreaks && ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
+            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 7, 14] : roundDays);
 
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
