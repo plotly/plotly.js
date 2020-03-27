@@ -744,28 +744,32 @@ module.exports = function setConvert(ax, fullLayout) {
                                 b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCDay();
-                                r0PatternDelta = b0 - r0Pattern;
+                                r0PatternDelta = r0Pattern - b0;
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
                                 step = 7 * ONEDAY;
 
-                                t = r0 + r0PatternDelta * ONEDAY -
-                                    r0Date.getUTCHours() * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
+                                t = r0 - (
+                                    r0PatternDelta * ONEDAY +
+                                    r0Date.getUTCHours() * ONEHOUR +
+                                    r0Date.getUTCMinutes() * ONEMIN +
+                                    r0Date.getUTCSeconds() * ONESEC +
+                                    r0Date.getUTCMilliseconds()
+                                );
                                 break;
                             case HOUR_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCHours();
-                                r0PatternDelta = b0 - r0Pattern;
+                                r0PatternDelta = r0Pattern - b0;
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                                 step = ONEDAY;
 
-                                t = r0 + r0PatternDelta * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
+                                t = r0 - (
+                                    r0PatternDelta * ONEHOUR +
+                                    r0Date.getUTCMinutes() * ONEMIN +
+                                    r0Date.getUTCSeconds() * ONESEC +
+                                    r0Date.getUTCMilliseconds()
+                                );
                                 break;
                         }
 
