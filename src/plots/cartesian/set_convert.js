@@ -729,8 +729,6 @@ module.exports = function setConvert(ax, fullLayout) {
                         // r0 value as date
                         var r0Date = new Date(r0);
                         // r0 value for break pattern
-                        var r0Pattern;
-                        // delta between r0 and first break in break pattern values
                         var r0PatternDelta;
                         // delta between break bounds in ms
                         var bndDelta;
@@ -743,8 +741,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             case WEEKDAY_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
-                                r0Pattern = r0Date.getUTCDay();
-                                r0PatternDelta = r0Pattern - b0;
+                                r0PatternDelta = r0Date.getUTCDay() - b0;
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
                                 step = 7 * ONEDAY;
 
@@ -759,8 +756,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             case HOUR_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
-                                r0Pattern = r0Date.getUTCHours();
-                                r0PatternDelta = r0Pattern - b0;
+                                r0PatternDelta = r0Date.getUTCHours() - b0;
                                 bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                                 step = ONEDAY;
 
