@@ -633,7 +633,7 @@ function mergeValTypeAndRole(attrs) {
             valType: 'string',
             role: 'info',
             description: [
-                'Sets the source reference on plot.ly for ',
+                'Sets the source reference on Chart Studio Cloud for ',
                 attrName, '.'
             ].join(' '),
             editType: 'none'

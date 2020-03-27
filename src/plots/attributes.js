@@ -164,7 +164,7 @@ module.exports = {
             editType: 'calc',
             description: [
                 'The stream id number links a data trace on a plot with a stream.',
-                'See https://plot.ly/settings for more details.'
+                'See https://chart-studio.plotly.com/settings for more details.'
             ].join(' ')
         },
         maxpoints: {

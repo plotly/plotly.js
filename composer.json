@@ -9,12 +9,12 @@
       "plotly"
   ],
   "minimum-stability": "stable",
-  "homepage": "https://plot.ly/javascript/",
+  "homepage": "https://plotly.com/javascript/",
   "license": "MIT",
   "authors": [
       {
           "name": "Plotly, Inc.",
-          "email": "sales@plot.ly"
+          "email": "sales@plotly.com"
       }
   ]
 }
