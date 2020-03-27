@@ -620,7 +620,6 @@ axes.calcTicks = function calcTicks(ax) {
                     for(var k = 0; k < ax._rangebreaks.length; k++) {
                         var brk = ax._rangebreaks[k];
                         if(value >= brk.min && value < brk.max) {
-                            tickVals[t]._realV = tickVals[t].value;
                             tickVals[t].value = brk.max; // replace with break end
                             break;
                         }
@@ -667,39 +666,17 @@ axes.calcTicks = function calcTicks(ax) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
-    var _value;
-    var _minor;
-    var calcTickText = function() {
-        return axes.tickText(
+    var ticksOut = new Array(tickVals.length);
+    for(var i = 0; i < tickVals.length; i++) {
+        var _minor = tickVals[i].minor;
+        var _value = tickVals[i].value;
+
+        ticksOut[i] = axes.tickText(
             ax,
             _value,
             false, // hover
             _minor // noSuffixPrefix
         );
-    };
-
-    var prevDateHead;
-    var ticksOut = new Array(tickVals.length);
-    for(var i = 0; i < tickVals.length; i++) {
-        _minor = tickVals[i].minor;
-
-        _value = tickVals[i].value;
-        ticksOut[i] = calcTickText();
-
-        if(tickVals[i]._realV) {
-            // correct label
-            _value = tickVals[i]._realV;
-
-            var short = calcTickText().text;
-            ax._prevDateHead = '';
-            var long = calcTickText().text;
-
-            ticksOut[i].text = (
-                prevDateHead === ax._prevDateHead
-            ) ? short : long;
-        }
-
-        prevDateHead = ax._prevDateHead;
     }
 
     ax._inCalcTicks = false;
