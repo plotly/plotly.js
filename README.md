@@ -144,11 +144,6 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plotly/python/getting-started](https://plotly.com/python/getting-started) |
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plotly/matlab/getting-started](https://plotly.com/matlab/getting-started) |
 |**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
-|**node.js cloud client**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plotly/nodejs/getting-started](https://plotly.com/nodejs/getting-started) |
-|**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plotly/julia/getting-started](https://plotly.com/julia/getting-started) |
-
-plotly.js charts can also be created and saved online for free at [plotly/create](https://chart-studio.plotly.com/create).
-
 ## Creators
 
 ### Active
