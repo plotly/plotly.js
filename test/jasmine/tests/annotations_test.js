@@ -514,7 +514,7 @@ describe('annotations log/linear axis changes', function() {
         // we don't try to figure out the position on a new axis / canvas
         // automatically when you change xref / yref, we leave it to the caller.
         // previously this logic was part of plotly.js... But it's really only
-        // the plot.ly workspace that wants this and can assign an unambiguous
+        // the Chart Studio Cloud workspace that wants this and can assign an unambiguous
         // meaning to it, so we'll move the logic there, where there are far
         // fewer edge cases to consider because xref never gets edited along
         // with anything else in one `relayout` call.

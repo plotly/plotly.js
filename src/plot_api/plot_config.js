@@ -218,7 +218,7 @@ var configAttributes = {
         valType: 'boolean',
         dflt: false,
         description: [
-            'Determines whether a link to plot.ly is displayed',
+            'Determines whether a link to Chart Studio Cloud is displayed',
             'at the bottom right corner of resulting graphs.',
             'Use with `sendData` and `linkText`.'
         ].join(' ')
@@ -236,7 +236,7 @@ var configAttributes = {
         dflt: true,
         description: [
             'If *showLink* is true, does it contain data',
-            'just link to a plot.ly file?'
+            'just link to a Chart Studio Cloud file?'
         ].join(' ')
     },
     showSources: {
