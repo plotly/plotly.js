@@ -739,7 +739,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             case WEEKDAY_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
-                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
+                                bndDelta = (b1 >= b0 ? b1 : b1 + 7) * ONEDAY - b0 * ONEDAY;
                                 step = 7 * ONEDAY;
 
                                 t = r0 + b0 * ONEDAY - (
@@ -753,7 +753,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             case HOUR_PATTERN:
                                 b0 = bnds[0];
                                 b1 = bnds[1];
-                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
+                                bndDelta = (b1 >= b0 ? b1 : b1 + 24) * ONEHOUR - b0 * ONEHOUR;
                                 step = ONEDAY;
 
                                 t = r0 + b0 * ONEHOUR - (
