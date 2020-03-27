@@ -725,6 +725,8 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(brk.bounds) {
                     if(brk.pattern) {
                         bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                        b0 = bnds[0];
+                        b1 = bnds[1];
 
                         // r0 value as date
                         var r0Date = new Date(r0);
@@ -739,9 +741,10 @@ module.exports = function setConvert(ax, fullLayout) {
                             case WEEKDAY_PATTERN:
                                 step = 7 * ONEDAY;
 
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                                bndDelta = (b1 < b0 ? 7 : 0) * ONEDAY + (b1 - b0) * ONEDAY;
+                                bndDelta = (
+                                    (b1 < b0 ? 7 : 0) +
+                                    (b1 - b0)
+                                ) * ONEDAY;
 
                                 t = r0 + b0 * ONEDAY - (
                                     r0Date.getUTCDay() * ONEDAY +
@@ -754,9 +757,10 @@ module.exports = function setConvert(ax, fullLayout) {
                             case HOUR_PATTERN:
                                 step = ONEDAY;
 
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                                bndDelta = (b1 < b0 ? 24 : 0) * ONEHOUR + (b1 - b0) * ONEHOUR;
+                                bndDelta = (
+                                    (b1 < b0 ? 24 : 0) +
+                                    (b1 - b0)
+                                ) * ONEHOUR;
 
                                 t = r0 + b0 * ONEHOUR - (
                                     r0Date.getUTCHours() * ONEHOUR +
