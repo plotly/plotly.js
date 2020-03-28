@@ -229,15 +229,15 @@ module.exports = function setConvert(ax, fullLayout) {
             var reversed = ax.range[0] > ax.range[1];
             var signAx = reversed ? -1 : 1;
 
-            var first = reversed ? len - 1 : 0;
-            var last = signAx * (reversed ? 0 : len - 1);
+            var first = 0;
+            var last = len - 1;
             var q = first;
-            for(var i = first; signAx * i <= last; i += signAx) {
-                var nextI = i + signAx;
+            for(var i = first; i <= last; i += 1) {
+                var nextI = i + 1;
                 var brk = ax._rangebreaks[i];
 
-                if(pos < brk.pmin) break;
-                if(pos > brk.pmax) q = nextI;
+                if(signAx * pos < signAx * brk.pmin) break;
+                if(signAx * pos > signAx * brk.pmax) q = nextI;
             }
 
             return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
@@ -598,8 +598,8 @@ module.exports = function setConvert(ax, fullLayout) {
                 // to not have to loop through the _rangebreaks twice during `p2l`
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    brk.pmin = l2p(axReverse ? brk.max : brk.min);
-                    brk.pmax = l2p(axReverse ? brk.min : brk.max);
+                    brk.pmin = l2p(brk.min);
+                    brk.pmax = l2p(brk.max);
                 }
             }
         }
