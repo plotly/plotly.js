@@ -220,28 +220,26 @@ module.exports = function setConvert(ax, fullLayout) {
         };
 
         p2l = function(px) {
-            if(!isNumeric(px)) return BADNUM;
             var len = ax._rangebreaks.length;
             if(!len) return _p2l(px, ax._m, ax._b);
 
             var isY = axLetter === 'y';
-            var pos = isY ? -px : px;
+            var pos = px;
 
-            var q = 0;
-            for(var i = 0; i < len; i++) {
-                var nextI = i + 1;
+            var reversed = ax.range[0] > ax.range[1];
+            var signAx = reversed ? -1 : 1;
+
+            var first = reversed ? len - 1 : 0;
+            var last = signAx * (reversed ? 0 : len - 1);
+            var q = first;
+            for(var i = first; signAx * i <= last; i += signAx) {
+                var nextI = i + signAx;
                 var brk = ax._rangebreaks[i];
 
-                var min = isY ? -brk.pmax : brk.pmin;
-                var max = isY ? -brk.pmin : brk.pmax;
-
-                if(pos < min) break;
-                if(pos > max) q = nextI;
-                else {
-                    q = i;
-                    break;
-                }
+                if(pos < brk.pmin) break;
+                if(pos > brk.pmax) q = nextI;
             }
+
             return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
         };
     }
