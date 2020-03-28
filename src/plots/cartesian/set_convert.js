@@ -198,21 +198,27 @@ module.exports = function setConvert(ax, fullLayout) {
             if(!len) return _l2p(v, ax._m, ax._b);
 
             var isY = axLetter === 'y';
-            var pos = isY ? -v : v;
+            var pos = v;
 
-            var q = 0;
-            for(var i = 0; i < len; i++) {
+            var flip = isY;
+            if(ax.range[0] > ax.range[1]) flip = !flip;
+            var signAx = flip ? -1 : 1;
+
+            var first = 0;
+            var last = len - 1;
+            var q = first;
+            for(var i = first; i <= last; i += 1) {
                 var nextI = i + 1;
                 var brk = ax._rangebreaks[i];
 
-                var min = isY ? -brk.max : brk.min;
-                var max = isY ? -brk.min : brk.max;
+                var min = brk.min;
+                var max = brk.max;
 
-                if(pos < min) break;
-                if(pos > max) q = nextI;
+                if(signAx * pos < signAx * min) break;
+                if(signAx * pos > signAx * max) q = nextI;
                 else {
                     // when falls into break, pick 'closest' offset
-                    q = pos > (min + max) / 2 ? nextI : i;
+                    q = signAx * pos > signAx * (min + max) / 2 ? nextI : i;
                     break;
                 }
             }
@@ -226,9 +232,6 @@ module.exports = function setConvert(ax, fullLayout) {
             var isY = axLetter === 'y';
             var pos = px;
 
-            var reversed = ax.range[0] > ax.range[1];
-            var signAx = reversed ? -1 : 1;
-
             var first = 0;
             var last = len - 1;
             var q = first;
@@ -236,8 +239,8 @@ module.exports = function setConvert(ax, fullLayout) {
                 var nextI = i + 1;
                 var brk = ax._rangebreaks[i];
 
-                if(signAx * pos < signAx * brk.pmin) break;
-                if(signAx * pos > signAx * brk.pmax) q = nextI;
+                if(pos < brk.pmin) break;
+                if(pos > brk.pmax) q = nextI;
             }
 
             return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
@@ -586,12 +589,13 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._B.push(-ax._m2 * rl0);
                 }
 
+                if(axReverse) {
+                    ax._rangebreaks.reverse();
+                }
+
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
                     ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
-                }
-                if(axReverse) {
-                    ax._B.reverse();
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
