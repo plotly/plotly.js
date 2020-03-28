@@ -723,19 +723,23 @@ module.exports = function setConvert(ax, fullLayout) {
 
             if(brk.enabled) {
                 if(brk.bounds) {
+                    var t0 = r0;
+                    var t1 = r1;
+                    if(brk.pattern) {
+                        // to remove decimal (most often found in auto ranges)
+                        t0 = Math.floor(t0);
+                    }
+
                     bnds = Lib.simpleMap(brk.bounds, brk.pattern ? cleanNumber : ax.r2l);
                     b0 = bnds[0];
                     b1 = bnds[1];
 
                     // r0 value as date
-                    var r0Date = new Date(r0);
+                    var t0Date = new Date(t0);
                     // r0 value for break pattern
                     var bndDelta;
                     // step in ms between rangebreaks
                     var step;
-
-                    var t0 = r0;
-                    var t1 = r1;
 
                     switch(brk.pattern) {
                         case WEEKDAY_PATTERN:
@@ -747,11 +751,11 @@ module.exports = function setConvert(ax, fullLayout) {
                             ) * ONEDAY;
 
                             t0 += b0 * ONEDAY - (
-                                r0Date.getUTCDay() * ONEDAY +
-                                r0Date.getUTCHours() * ONEHOUR +
-                                r0Date.getUTCMinutes() * ONEMIN +
-                                r0Date.getUTCSeconds() * ONESEC +
-                                r0Date.getUTCMilliseconds()
+                                t0Date.getUTCDay() * ONEDAY +
+                                t0Date.getUTCHours() * ONEHOUR +
+                                t0Date.getUTCMinutes() * ONEMIN +
+                                t0Date.getUTCSeconds() * ONESEC +
+                                t0Date.getUTCMilliseconds()
                             );
                             break;
                         case HOUR_PATTERN:
@@ -763,10 +767,10 @@ module.exports = function setConvert(ax, fullLayout) {
                             ) * ONEHOUR;
 
                             t0 += b0 * ONEHOUR - (
-                                r0Date.getUTCHours() * ONEHOUR +
-                                r0Date.getUTCMinutes() * ONEMIN +
-                                r0Date.getUTCSeconds() * ONESEC +
-                                r0Date.getUTCMilliseconds()
+                                t0Date.getUTCHours() * ONEHOUR +
+                                t0Date.getUTCMinutes() * ONEMIN +
+                                t0Date.getUTCSeconds() * ONESEC +
+                                t0Date.getUTCMilliseconds()
                             );
                             break;
                         default:
@@ -774,11 +778,6 @@ module.exports = function setConvert(ax, fullLayout) {
                             t1 = Math.max(bnds[0], bnds[1]);
                             step = t1 - t0;
                             bndDelta = step;
-                    }
-
-                    if(brk.pattern) {
-                        // to remove decimal (most often found in auto ranges)
-                        t0 = Math.floor(t0);
                     }
 
                     for(var t = t0; t < t1; t += step) {
