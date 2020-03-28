@@ -723,70 +723,65 @@ module.exports = function setConvert(ax, fullLayout) {
 
             if(brk.enabled) {
                 if(brk.bounds) {
+                    var t0 = r0;
+                    var t1 = r1;
                     if(brk.pattern) {
-                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                        // to remove decimal (most often found in auto ranges)
+                        t0 = Math.floor(t0);
+                    }
 
-                        // r0 value as date
-                        var r0Date = new Date(r0);
-                        // r0 value for break pattern
-                        var r0Pattern;
-                        // delta between r0 and first break in break pattern values
-                        var r0PatternDelta;
-                        // delta between break bounds in ms
-                        var bndDelta;
-                        // step in ms between rangebreaks
-                        var step;
-                        // tracker to position bounds
-                        var t;
+                    bnds = Lib.simpleMap(brk.bounds, brk.pattern ? cleanNumber : ax.r2l);
+                    b0 = bnds[0];
+                    b1 = bnds[1];
 
-                        switch(brk.pattern) {
-                            case WEEKDAY_PATTERN:
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                                r0Pattern = r0Date.getUTCDay();
-                                r0PatternDelta = b0 - r0Pattern;
-                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
-                                step = 7 * ONEDAY;
+                    // r0 value as date
+                    var t0Date = new Date(t0);
+                    // r0 value for break pattern
+                    var bndDelta;
+                    // step in ms between rangebreaks
+                    var step;
 
-                                t = r0 + r0PatternDelta * ONEDAY -
-                                    r0Date.getUTCHours() * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
-                                break;
-                            case HOUR_PATTERN:
-                                b0 = bnds[0];
-                                b1 = bnds[1];
-                                r0Pattern = r0Date.getUTCHours();
-                                r0PatternDelta = b0 - r0Pattern;
-                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
-                                step = ONEDAY;
+                    switch(brk.pattern) {
+                        case WEEKDAY_PATTERN:
+                            step = 7 * ONEDAY;
 
-                                t = r0 + r0PatternDelta * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
-                                break;
-                        }
+                            bndDelta = (
+                                (b1 < b0 ? 7 : 0) +
+                                (b1 - b0)
+                            ) * ONEDAY;
 
-                        while(t <= r1) {
-                            // TODO we need to remove decimal (most often found
-                            // in auto ranges) for this to work correctly,
-                            // should this be Math.floor, Math.ceil or
-                            // Math.round ??
-                            addBreak(Math.floor(t), Math.floor(t + bndDelta));
-                            t += step;
-                        }
-                    } else {
-                        bnds = Lib.simpleMap(brk.bounds, ax.r2l);
-                        if(bnds[0] <= bnds[1]) {
-                            b0 = bnds[0];
-                            b1 = bnds[1];
-                        } else {
-                            b0 = bnds[1];
-                            b1 = bnds[0];
-                        }
-                        addBreak(b0, b1);
+                            t0 += b0 * ONEDAY - (
+                                t0Date.getUTCDay() * ONEDAY +
+                                t0Date.getUTCHours() * ONEHOUR +
+                                t0Date.getUTCMinutes() * ONEMIN +
+                                t0Date.getUTCSeconds() * ONESEC +
+                                t0Date.getUTCMilliseconds()
+                            );
+                            break;
+                        case HOUR_PATTERN:
+                            step = ONEDAY;
+
+                            bndDelta = (
+                                (b1 < b0 ? 24 : 0) +
+                                (b1 - b0)
+                            ) * ONEHOUR;
+
+                            t0 += b0 * ONEHOUR - (
+                                t0Date.getUTCHours() * ONEHOUR +
+                                t0Date.getUTCMinutes() * ONEMIN +
+                                t0Date.getUTCSeconds() * ONESEC +
+                                t0Date.getUTCMilliseconds()
+                            );
+                            break;
+                        default:
+                            t0 = Math.min(bnds[0], bnds[1]);
+                            t1 = Math.max(bnds[0], bnds[1]);
+                            step = t1 - t0;
+                            bndDelta = step;
+                    }
+
+                    for(var t = t0; t < t1; t += step) {
+                        addBreak(t, t + bndDelta);
                     }
                 } else {
                     var vals = Lib.simpleMap(brk.values, ax.d2c);
