@@ -559,8 +559,6 @@ module.exports = function setConvert(ax, fullLayout) {
                 Math.min(rl0, rl1),
                 Math.max(rl0, rl1)
             );
-            var axReverse = rl0 > rl1;
-            var signAx = axReverse ? -1 : 1;
 
             if(ax._rangebreaks.length) {
                 for(i = 0; i < ax._rangebreaks.length; i++) {
@@ -568,18 +566,22 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._lBreaks += Math.abs(brk.max - brk.min);
                 }
 
+                var axReverse = rl0 > rl1;
+                var signAx = axReverse ? -1 : 1;
+
+                var flip = isY;
+                if(ax.range[0] > ax.range[1]) flip = !flip;
+                if(flip) {
+                    ax._rangebreaks.reverse();
+                }
+
                 ax._m2 = (isY ? -1 : 1) * ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
 
                 if(isY) {
-                    ax._rangebreaks.reverse();
                     // N.B. top to bottom (negative coord, positive px direction)
                     ax._B.push(-ax._m2 * rl1);
                 } else {
                     ax._B.push(-ax._m2 * rl0);
-                }
-
-                if(axReverse) {
-                    ax._rangebreaks.reverse();
                 }
 
                 for(i = 0; i < ax._rangebreaks.length; i++) {
