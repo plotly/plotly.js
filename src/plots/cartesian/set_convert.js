@@ -192,57 +192,46 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     if(ax.rangebreaks) {
+        var isY = axLetter === 'y';
+
         l2p = function(v) {
             if(!isNumeric(v)) return BADNUM;
             var len = ax._rangebreaks.length;
             if(!len) return _l2p(v, ax._m, ax._b);
 
-            var isY = axLetter === 'y';
-            var pos = isY ? -v : v;
+            var flip = isY;
+            if(ax.range[0] > ax.range[1]) flip = !flip;
+            var signAx = flip ? -1 : 1;
+            var pos = signAx * v;
 
             var q = 0;
             for(var i = 0; i < len; i++) {
-                var nextI = i + 1;
-                var brk = ax._rangebreaks[i];
-
-                var min = isY ? -brk.max : brk.min;
-                var max = isY ? -brk.min : brk.max;
+                var min = signAx * ax._rangebreaks[i].min;
+                var max = signAx * ax._rangebreaks[i].max;
 
                 if(pos < min) break;
-                if(pos > max) q = nextI;
+                if(pos > max) q = i + 1;
                 else {
                     // when falls into break, pick 'closest' offset
-                    q = pos > (min + max) / 2 ? nextI : i;
+                    q = pos < (min + max) / 2 ? i : i + 1;
                     break;
                 }
             }
-            return _l2p(v, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+            var b2 = ax._B[q] || 0;
+            if(!isFinite(b2)) return 0; // avoid NaN translate e.g. in positionLabels if one keep zooming exactly into a break
+            return _l2p(v, ax._m2, b2);
         };
 
         p2l = function(px) {
-            if(!isNumeric(px)) return BADNUM;
             var len = ax._rangebreaks.length;
             if(!len) return _p2l(px, ax._m, ax._b);
 
-            var isY = axLetter === 'y';
-            var pos = isY ? -px : px;
-
             var q = 0;
             for(var i = 0; i < len; i++) {
-                var nextI = i + 1;
-                var brk = ax._rangebreaks[i];
-
-                var min = isY ? -brk.pmax : brk.pmin;
-                var max = isY ? -brk.pmin : brk.pmax;
-
-                if(pos < min) break;
-                if(pos > max) q = nextI;
-                else {
-                    q = i;
-                    break;
-                }
+                if(px < ax._rangebreaks[i].pmin) break;
+                if(px > ax._rangebreaks[i].pmax) q = i + 1;
             }
-            return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+            return _p2l(px, ax._m2, ax._B[q]);
         };
     }
 
@@ -541,7 +530,8 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl0 = ax.r2l(ax[rangeAttr][0], calendar);
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
-        if(axLetter === 'y') {
+        var isY = axLetter === 'y';
+        if(isY) {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl0 - rl1);
@@ -569,8 +559,6 @@ module.exports = function setConvert(ax, fullLayout) {
                 Math.min(rl0, rl1),
                 Math.max(rl0, rl1)
             );
-            var axReverse = rl0 > rl1;
-            var signAx = axReverse ? -1 : 1;
 
             if(ax._rangebreaks.length) {
                 for(i = 0; i < ax._rangebreaks.length; i++) {
@@ -578,30 +566,27 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._lBreaks += Math.abs(brk.max - brk.min);
                 }
 
-                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
+                var flip = isY;
+                if(rl0 > rl1) flip = !flip;
+                if(flip) ax._rangebreaks.reverse();
+                var sign = flip ? -1 : 1;
 
-                if(axLetter === 'y') {
-                    ax._rangebreaks.reverse();
-                    // N.B. top to bottom (negative coord, positive px direction)
-                    ax._B.push(ax._m2 * rl1);
-                } else {
-                    ax._B.push(-ax._m2 * rl0);
-                }
-
+                ax._m2 = sign * ax._length / (Math.abs(rl1 - rl0) - ax._lBreaks);
+                ax._B.push(-ax._m2 * (isY ? rl1 : rl0));
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
-                }
-                if(axReverse) {
-                    ax._B.reverse();
+                    ax._B.push(
+                        ax._B[ax._B.length - 1] -
+                        sign * ax._m2 * (brk.max - brk.min)
+                    );
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
                 // to not have to loop through the _rangebreaks twice during `p2l`
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    brk.pmin = l2p(axReverse ? brk.max : brk.min);
-                    brk.pmax = l2p(axReverse ? brk.min : brk.max);
+                    brk.pmin = l2p(brk.min);
+                    brk.pmax = l2p(brk.max);
                 }
             }
         }

@@ -4761,7 +4761,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('2 disjoint rangebreaks within range', 'y', {
                         rangebreaks: [[101, 189], [11, 89]],
-                        m2: 6.923076923076923,
+                        m2: -6.923076923076923,
                         B: [1401.923, 792.692, 252.692]
                     });
                 })
@@ -4781,7 +4781,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('2 overlapping rangebreaks within range', 'y', {
                         rangebreaks: [[11, 189]],
-                        m2: 10.714285714283243,
+                        m2: -10.714285714283243,
                         B: [2160, 252.857]
                     });
                 })
