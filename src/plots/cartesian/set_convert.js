@@ -570,15 +570,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(rl0 > rl1) flip = !flip;
                 if(flip) ax._rangebreaks.reverse();
                 var sign = flip ? -1 : 1;
+
                 ax._m2 = sign * ax._length / (Math.abs(rl1 - rl0) - ax._lBreaks);
-
-                if(isY) {
-                    // N.B. top to bottom (negative coord, positive px direction)
-                    ax._B.push(-ax._m2 * rl1);
-                } else {
-                    ax._B.push(-ax._m2 * rl0);
-                }
-
+                ax._B.push(-ax._m2 * (isY ? rl1 : rl0));
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
                     ax._B.push(
