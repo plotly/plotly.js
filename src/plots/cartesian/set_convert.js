@@ -566,16 +566,11 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._lBreaks += Math.abs(brk.max - brk.min);
                 }
 
-                var axReverse = rl0 > rl1;
-                var signAx = axReverse ? -1 : 1;
-
                 var flip = isY;
-                if(ax.range[0] > ax.range[1]) flip = !flip;
-                if(flip) {
-                    ax._rangebreaks.reverse();
-                }
-
-                ax._m2 = (isY ? -1 : 1) * ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
+                if(rl0 > rl1) flip = !flip;
+                if(flip) ax._rangebreaks.reverse();
+                var sign = flip ? -1 : 1;
+                ax._m2 = sign * ax._length / (Math.abs(rl1 - rl0) - ax._lBreaks);
 
                 if(isY) {
                     // N.B. top to bottom (negative coord, positive px direction)
@@ -586,7 +581,10 @@ module.exports = function setConvert(ax, fullLayout) {
 
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    ax._B.push(ax._B[ax._B.length - 1] - (isY ? -1 : 1) * ax._m2 * (brk.max - brk.min) * signAx);
+                    ax._B.push(
+                        ax._B[ax._B.length - 1] -
+                        sign * ax._m2 * (brk.max - brk.min)
+                    );
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
