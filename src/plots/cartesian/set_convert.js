@@ -219,8 +219,7 @@ module.exports = function setConvert(ax, fullLayout) {
             }
             var b2 = ax._B[q] || 0;
             if(!isFinite(b2)) return 0; // avoid NaN translate e.g. in positionLabels if one keep zooming exactly into a break
-
-            return _l2p(v, (isY ? -1 : 1) * ax._m2, b2);
+            return _l2p(v, ax._m2, b2);
         };
 
         p2l = function(px) {
@@ -232,8 +231,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(px < ax._rangebreaks[i].pmin) break;
                 if(px > ax._rangebreaks[i].pmax) q = i + 1;
             }
-            var b2 = ax._B[q];
-            return _p2l(px, (isY ? -1 : 1) * ax._m2, b2);
+            return _p2l(px, ax._m2, ax._B[q]);
         };
     }
 
@@ -532,7 +530,8 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl0 = ax.r2l(ax[rangeAttr][0], calendar);
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
-        if(axLetter === 'y') {
+        var isY = axLetter === 'y';
+        if(isY) {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
             ax._m = ax._length / (rl0 - rl1);
@@ -569,12 +568,12 @@ module.exports = function setConvert(ax, fullLayout) {
                     ax._lBreaks += Math.abs(brk.max - brk.min);
                 }
 
-                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
+                ax._m2 = (isY ? -1 : 1) * ax._length / (rl1 - rl0 - ax._lBreaks * signAx);
 
-                if(axLetter === 'y') {
+                if(isY) {
                     ax._rangebreaks.reverse();
                     // N.B. top to bottom (negative coord, positive px direction)
-                    ax._B.push(ax._m2 * rl1);
+                    ax._B.push(-ax._m2 * rl1);
                 } else {
                     ax._B.push(-ax._m2 * rl0);
                 }
@@ -585,7 +584,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                 for(i = 0; i < ax._rangebreaks.length; i++) {
                     brk = ax._rangebreaks[i];
-                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min) * signAx);
+                    ax._B.push(ax._B[ax._B.length - 1] - (isY ? -1 : 1) * ax._m2 * (brk.max - brk.min) * signAx);
                 }
 
                 // fill pixel (i.e. 'p') min/max here,
