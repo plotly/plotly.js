@@ -222,7 +222,10 @@ module.exports = function setConvert(ax, fullLayout) {
                     break;
                 }
             }
-            return _l2p(v, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+            var b2 = ax._B[q] || 0;
+            if(!isFinite(b2)) return 0; // avoid NaN translate e.g. in positionLabels if one keep zooming exactly into a break
+
+            return _l2p(v, (isY ? -1 : 1) * ax._m2, b2);
         };
 
         p2l = function(px) {
@@ -242,8 +245,8 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(pos < brk.pmin) break;
                 if(pos > brk.pmax) q = nextI;
             }
-
-            return _p2l(px, (isY ? -1 : 1) * ax._m2, ax._B[q]);
+            var b2 = ax._B[q];
+            return _p2l(px, (isY ? -1 : 1) * ax._m2, b2);
         };
     }
 
