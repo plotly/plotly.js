@@ -192,33 +192,28 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     if(ax.rangebreaks) {
+        var isY = axLetter === 'y';
+
         l2p = function(v) {
             if(!isNumeric(v)) return BADNUM;
             var len = ax._rangebreaks.length;
             if(!len) return _l2p(v, ax._m, ax._b);
 
-            var isY = axLetter === 'y';
-            var pos = v;
-
             var flip = isY;
             if(ax.range[0] > ax.range[1]) flip = !flip;
             var signAx = flip ? -1 : 1;
+            var pos = signAx * v;
 
-            var first = 0;
-            var last = len - 1;
-            var q = first;
-            for(var i = first; i <= last; i += 1) {
-                var nextI = i + 1;
-                var brk = ax._rangebreaks[i];
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                var min = signAx * ax._rangebreaks[i].min;
+                var max = signAx * ax._rangebreaks[i].max;
 
-                var min = brk.min;
-                var max = brk.max;
-
-                if(signAx * pos < signAx * min) break;
-                if(signAx * pos > signAx * max) q = nextI;
+                if(pos < min) break;
+                if(pos > max) q = i + 1;
                 else {
                     // when falls into break, pick 'closest' offset
-                    q = signAx * pos > signAx * (min + max) / 2 ? nextI : i;
+                    q = pos < (min + max) / 2 ? i : i + 1;
                     break;
                 }
             }
@@ -232,18 +227,10 @@ module.exports = function setConvert(ax, fullLayout) {
             var len = ax._rangebreaks.length;
             if(!len) return _p2l(px, ax._m, ax._b);
 
-            var isY = axLetter === 'y';
-            var pos = px;
-
-            var first = 0;
-            var last = len - 1;
-            var q = first;
-            for(var i = first; i <= last; i += 1) {
-                var nextI = i + 1;
-                var brk = ax._rangebreaks[i];
-
-                if(pos < brk.pmin) break;
-                if(pos > brk.pmax) q = nextI;
+            var q = 0;
+            for(var i = 0; i < len; i++) {
+                if(px < ax._rangebreaks[i].pmin) break;
+                if(px > ax._rangebreaks[i].pmax) q = i + 1;
             }
             var b2 = ax._B[q];
             return _p2l(px, (isY ? -1 : 1) * ax._m2, b2);
