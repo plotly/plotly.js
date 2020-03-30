@@ -512,7 +512,7 @@ function setBaseAndTop(sa, sieve) {
             pts.push(top);
             if(bar.hasB) pts.push(base);
 
-            if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
+            if(!bar.hasB || !(bar.b > 0 && bar.b + bar.s > 0)) {
                 allBaseAboveZero = false;
             }
         }
