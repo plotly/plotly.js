@@ -11,6 +11,7 @@
 var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
 var supportsPassive = require('has-passive-events');
+var fscreen = require('fscreen').default;
 
 var removeElement = require('../../lib').removeElement;
 var constants = require('../../plots/cartesian/constants');
@@ -264,6 +265,7 @@ dragElement.init = function init(options) {
 
 function coverSlip() {
     var cover = document.createElement('div');
+    var fullscreenElement = fscreen.fullscreenElement;
 
     cover.className = 'dragcover';
     var cStyle = cover.style;
@@ -274,6 +276,12 @@ function coverSlip() {
     cStyle.bottom = 0;
     cStyle.zIndex = 999999999;
     cStyle.background = 'none';
+
+    if(fullscreenElement) {
+        fullscreenElement.appendChild(cover);
+
+        return cover;
+    }
 
     document.body.appendChild(cover);
 
