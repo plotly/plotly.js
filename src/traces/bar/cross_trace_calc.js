@@ -502,6 +502,7 @@ function setBaseAndTop(sa, sieve) {
         var fullTrace = calcTrace[0].trace;
         var pts = [];
         var allBaseAboveZero = true;
+        var allBaseBelowZero = true;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
@@ -515,10 +516,14 @@ function setBaseAndTop(sa, sieve) {
             if(!bar.hasB || !(bar.b > 0 && bar.b + bar.s > 0)) {
                 allBaseAboveZero = false;
             }
+
+            if(!bar.hasB || !(bar.b < 0 && bar.b + bar.s < 0)) {
+                allBaseBelowZero = false;
+            }
         }
 
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: !allBaseAboveZero,
+            tozero: !(allBaseAboveZero || allBaseBelowZero),
             padded: true
         });
     }
