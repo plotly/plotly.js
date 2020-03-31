@@ -501,8 +501,7 @@ function setBaseAndTop(sa, sieve) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
         var pts = [];
-        var allBaseAboveZero = true;
-        var allBaseBelowZero = true;
+        var tozero = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
@@ -513,17 +512,13 @@ function setBaseAndTop(sa, sieve) {
             pts.push(top);
             if(bar.hasB) pts.push(base);
 
-            if(!bar.hasB || !(bar.b > 0 && bar.b + bar.s > 0)) {
-                allBaseAboveZero = false;
-            }
-
-            if(!bar.hasB || !(bar.b < 0 && bar.b + bar.s < 0)) {
-                allBaseBelowZero = false;
+            if(!bar.hasB || !bar.b) {
+                tozero = true;
             }
         }
 
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: !(allBaseAboveZero || allBaseBelowZero),
+            tozero: tozero,
             padded: true
         });
     }
@@ -672,7 +667,7 @@ function normalizeBars(sa, sieve, opts) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
         var pts = [];
-        var allBaseAboveZero = true;
+        var tozero = false;
         var padded = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
@@ -695,14 +690,14 @@ function normalizeBars(sa, sieve, opts) {
                     padded = padded || needsPadding(base);
                 }
 
-                if(!bar.hasB || !(bar.b > 0 && bar.s > 0)) {
-                    allBaseAboveZero = false;
+                if(!bar.hasB || !bar.b) {
+                    tozero = true;
                 }
             }
         }
 
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: !allBaseAboveZero,
+            tozero: tozero,
             padded: padded
         });
     }
