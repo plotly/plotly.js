@@ -151,7 +151,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     var promises = [];
     var styleObj = getStyleObj(opts.style);
 
-    if(self.styleObj.id !== styleObj.id) {
+    if(JSON.stringify(self.styleObj) !== JSON.stringify(styleObj)) {
         self.styleObj = styleObj;
         map.setStyle(styleObj.style);
 
