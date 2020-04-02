@@ -63,8 +63,8 @@ proto.plot = function(calcData, fullLayout, promises) {
         self.map.remove();
         self.map = null;
         self.styleObj = null;
-        self.traceHash = [];
-        self.layerList = {};
+        self.traceHash = {};
+        self.layerList = [];
     }
 
     var promise;
