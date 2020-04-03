@@ -99,9 +99,14 @@ color.fill = function(s, c) {
 color.clean = function(container) {
     if(!container || typeof container !== 'object') return;
 
-    var keys = Object.keys(container);
     var i, j, key, val;
+    // Always clean Arrays by index.
+    if(Array.isArray(container)) {
+        for(i = 0; i < container.length; i++) color.clean(container[i]);
+        return;
+    }
 
+    var keys = Object.keys(container);
     for(i = 0; i < keys.length; i++) {
         key = keys[i];
         val = container[key];
@@ -118,14 +123,10 @@ color.clean = function(container) {
             for(j = 0; j < val.length; j++) {
                 if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
             }
-        } else if(Array.isArray(val)) {
+        } else {
             // recurse into arrays of objects, and plain objects
-
-            var el0 = val[0];
-            if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
-                for(j = 0; j < val.length; j++) color.clean(val[j]);
-            }
-        } else if(val && typeof val === 'object') color.clean(val);
+            if(val && typeof val === 'object') color.clean(val);
+        }
     }
 };
 
