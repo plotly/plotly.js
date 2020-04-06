@@ -972,7 +972,7 @@ axes.tickFirst = function(ax) {
     if(ax.rangebreaks && ax.maskBreaks(tick0) === BADNUM) {
         // attempt move tick0 outside rangebreak
         for(var h = 24; h > 0; h--) {
-            var delta = (axrev ? -1 : 1) * h * ONEHOUR;
+            var delta = h * ONEHOUR;
             if(ax.maskBreaks(tick0 - delta) !== BADNUM) {
                 tick0 -= delta;
                 break;
