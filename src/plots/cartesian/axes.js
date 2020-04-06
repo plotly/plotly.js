@@ -969,6 +969,17 @@ axes.tickFirst = function(ax) {
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
 
+    if(ax.rangebreaks && ax.maskBreaks(tick0) === BADNUM) {
+        // attempt move tick0 outside rangebreak
+        for(var h = 0; h < 24; h++) {
+            var delta = (axrev ? -1 : 1) * h * ONEHOUR;
+            if(ax.maskBreaks(tick0 - delta) !== BADNUM) {
+                tick0 -= delta;
+                break;
+            }
+        }
+    }
+
     if(isNumeric(dtick)) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
