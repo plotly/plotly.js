@@ -24,7 +24,7 @@ function createWave(n, minOpacity) {
         var v = minOpacity + (1 - minOpacity) * (1 - Math.pow(Math.sin(n * u * Math.PI), 2));
         arr.push([
             u,
-            Math.max(1, Math.min(0, v))
+            Math.max(0, Math.min(1, v))
         ]);
     }
     return arr;
