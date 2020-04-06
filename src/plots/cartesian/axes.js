@@ -56,6 +56,15 @@ var autorange = require('./autorange');
 axes.getAutoRange = autorange.getAutoRange;
 axes.findExtremes = autorange.findExtremes;
 
+var epsilon = 0.0001;
+function expandRange(range) {
+    var delta = (range[1] - range[0]) * epsilon;
+    return [
+        range[0] - delta,
+        range[1] + delta
+    ];
+}
+
 /*
  * find the list of possible axes to reference with an xref or yref attribute
  * and coerce it to that list
@@ -566,8 +575,9 @@ axes.calcTicks = function calcTicks(ax) {
     ax._tmin = axes.tickFirst(ax);
 
     // add a tiny bit so we get ticks which may have rounded out
-    var startTick = rng[0] * 1.0001 - rng[1] * 0.0001;
-    var endTick = rng[1] * 1.0001 - rng[0] * 0.0001;
+    var exRng = expandRange(rng);
+    var startTick = exRng[0];
+    var endTick = exRng[1];
     // check for reversed axis
     var axrev = (rng[1] < rng[0]);
 
@@ -691,10 +701,9 @@ function arrayTicks(ax) {
     var text = ax.ticktext;
     var ticksOut = new Array(vals.length);
     var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var r0expanded = rng[0] * 1.0001 - rng[1] * 0.0001;
-    var r1expanded = rng[1] * 1.0001 - rng[0] * 0.0001;
-    var tickMin = Math.min(r0expanded, r1expanded);
-    var tickMax = Math.max(r0expanded, r1expanded);
+    var exRng = expandRange(rng);
+    var tickMin = Math.min(exRng[0], exRng[1]);
+    var tickMax = Math.max(exRng[0], exRng[1]);
     var j = 0;
 
     // without a text array, just format the given values as any other ticks
@@ -956,7 +965,7 @@ axes.tickFirst = function(ax) {
     var sRound = axrev ? Math.floor : Math.ceil;
     // add a tiny extra bit to make sure we get ticks
     // that may have been rounded out
-    var r0 = rng[0] * 1.0001 - rng[1] * 0.0001;
+    var r0 = expandRange(rng)[0];
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
 
