@@ -88,12 +88,11 @@
         "xaxis": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "domain": [
@@ -104,12 +103,11 @@
         "xaxis2": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "autorange": "reversed",
@@ -149,12 +147,11 @@
         "yaxis3": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "anchor": "x3",
@@ -166,12 +163,11 @@
         "yaxis4": {
             "rangebreaks": [
                 {
-                    "pattern": "%w",
+                    "pattern": "day of week",
                     "bounds": [
                         6,
-                        0
-                    ],
-                    "operation": "[]"
+                        1
+                    ]
                 }
             ],
             "autorange": "reversed",

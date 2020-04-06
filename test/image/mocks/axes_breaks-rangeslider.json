@@ -2654,24 +2654,20 @@
       "tickfont": {"size": 8},
       "rangebreaks": [
         {
-          "pattern": "%w",
-          "bounds": [6, 0],
-          "operation": "[]"
+          "pattern": "day of week",
+          "bounds": [6, 1]
         },
         {
-          "pattern": "%H",
-          "bounds": [0, 9],
-          "operation": "()"
+          "pattern": "hour",
+          "bounds": [0, 9]
         },
         {
-          "pattern": "%H",
-          "bounds": [12, 13],
-          "operation": "()"
+          "pattern": "hour",
+          "bounds": [12, 13]
         },
         {
-          "pattern": "%H",
-          "bounds": [15, 21],
-          "operation": "()"
+          "pattern": "hour",
+          "bounds": [15, 21]
         }
       ],
       "rangeslider": { "visible": true }

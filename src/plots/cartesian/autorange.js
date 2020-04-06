@@ -105,7 +105,7 @@ function getAutoRange(gd, ax) {
                 lBreaks += brk.max - brk.min;
             }
         }
-        return (axReverse ? -1 : 1) * lBreaks;
+        return lBreaks;
     };
 
     var mbest = 0;

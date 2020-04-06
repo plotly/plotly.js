@@ -2135,7 +2135,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     '1970-01-01 00:00:00.2019'
                 ]);
             })
-            .then(doDrag('xy', 'nsew', 0, 50))
+            .then(doDrag('xy', 'nsew', 0, -50))
             // y range would be ~ [62, 100] w/o rangebreaks
             .then(function() {
                 _assert('after y-only zoombox', [
@@ -2151,7 +2151,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 ]);
             })
             .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
-            .then(doDrag('xy', 'nsew', 0, 50))
+            .then(doDrag('xy', 'nsew', 0, -50))
             // y range would be ~ [35, 239] w/o rangebreaks
             .then(function() {
                 _assert('after y-only pan', [

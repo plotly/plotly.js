@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.52.3
+* plotly.js v1.53.0
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -68,10 +68,23 @@ exports['usa_50m'] = _dereq_('./dist/usa_50m.json')
 var saneTopojson = _dereq_('sane-topojson');
 
 
-// package version injected by `npm run preprocess`
-exports.version = '1.52.3';
+exports.version = _dereq_('../version').version;
 
 exports.topojson = saneTopojson;
 
-},{"sane-topojson":15}]},{},[16])(16)
+},{"../version":17,"sane-topojson":15}],17:[function(_dereq_,module,exports){
+/**
+* Copyright 2012-2020, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+// package version injected by `npm run preprocess`
+exports.version = '1.53.0';
+
+},{}]},{},[16])(16)
 });

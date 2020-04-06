@@ -10,6 +10,36 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.53.0] -- 2020-03-31
+
+### Added
+ - Introduce `rangebreaks` on date axes mainly thanks to [#4614] with API revision & improvements in
+   [#4639, #4641, #4644, #4649, #4652, #4653, #4660, #4661, #4670, #4677, #4684, #4688, #4695, #4696, #4698, #4699]
+ - Introduce "(x|y) unified" `hovermode` [#4620, #4664, #4669, #4687]
+ - Add "hovered data" mode to `spikesnap` [#4665]
+ - Add "full-json" export format to `Plotly.toImage` and `Plotly.dowloadImage` [#4593]
+ - Add `node.customdata` and `link.customdata` to `sankey` traces [#4621]
+ - Add `opacityscale` for `surface` traces [#4480]
+
+### Changed
+ - Improve `contour` labels (add extra pad) and correct minus sign [#4540]
+ - Improve sizing text inside `pie` and `sunburst` (add extra pad) [#4519]
+ - Improve display of spikelines when `spikedistance` is set to -1 [#4637]
+ - Improve compare `hovermode` to include all points at same coordinate [#4664]
+ - Improve `histogram` hover labels (harmonize start & end values) [#4662]
+ - Display new colors on Plotly's logo [#4691]
+ - Update links & descriptions to Chart Studio Cloud and plotly.com website [#4694]
+ - Update contributing guidelines & add info about trace module architecture [#4624]
+ - Require `config.plotlyServerURL` to be set for Chart Studio export [#4690]
+
+### Fixed
+ - Fix `Plotly.downloadImage` to match transparencies in gl3d plots with the on-screen render [#4566]
+ - Fix amount of transparency applied by `opacity` in `surface` traces [#4480, #4642]
+ - Fix gaps in `bar` traces (regression introduced in 1.50.0) [#4634]
+ - Fix gaps in `funnel` & `waterfall` [#4663]
+ - Fix `template` to set axis `type`, `tickformatstops`, `tick0`, `dtick`, `tickvals` and `tickmode` [#4670, #4685]
+
+
 ## [1.52.3] -- 2020-03-02
 
 ## Fixed

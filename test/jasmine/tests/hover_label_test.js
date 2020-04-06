@@ -996,8 +996,14 @@ describe('hover info', function() {
 
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
-                    nums: 'x: 1\ny: 1\nz: 5.56',
-                    name: 'one'
+                    nums: [
+                        'x: 1\ny: 1\nz: 5.56',
+                        'x: 1\ny: 1\nz: 0'
+                    ],
+                    name: [
+                        'one',
+                        'two'
+                    ]
                 });
             })
             .then(function() {
@@ -1012,8 +1018,8 @@ describe('hover info', function() {
 
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
-                    nums: 'f(1.0, 1.0)=5.56',
-                    name: ''
+                    nums: ['f(1.0, 1.0)=5.56', 'f(1.0, 1.0)=0'],
+                    name: ['', '']
                 });
             })
             .catch(failTest)
@@ -2698,8 +2704,8 @@ describe('Hover on axes with rangebreaks', function() {
         mouseEvent('mousemove', x, y);
     }
 
-    function _assert(msg, exp) {
-        assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
+    function _assert(msg, exp, noHoverLabel) {
+        if(!noHoverLabel) assertHoverLabelContent({ nums: exp.nums, axis: exp.axis }, msg + '| hover label');
         expect(eventData.x).toBe(exp.x, 'event data x');
         expect(eventData.y).toBe(exp.y, 'event data y');
     }
@@ -2772,6 +2778,154 @@ describe('Hover on axes with rangebreaks', function() {
         .then(done);
     });
 
+    it('should work when rangebreaks are present on x-axis (reversed range)', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            xaxis: {
+                autorange: 'reversed',
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(11, 11); })
+        .then(function() {
+            _assert('leftmost interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: '1970-01-01 00:00:00.2',
+                y: 8
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: '1970-01-01 00:00:00.095',
+                y: 4
+            });
+        })
+        .then(function() { _hover(388, 388); })
+        .then(function() {
+            _assert('rightmost interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: '1970-01-01',
+                y: 0
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when rangebreaks are present on y-axis using hovermode x (case of bar and autorange reversed)', function(done) {
+        Plotly.plot(gd, [{
+            type: 'bar',
+            orientation: 'h',
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ],
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        }], {
+            yaxis: {
+                autorange: 'reversed',
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'x'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(50, 350); })
+        .then(function() {
+            _assert('1st test', {
+                axis: '1',
+                nums: 'Jan 1, 1970, 00:00:00.01',
+                y: '1970-01-01 00:00:00.01',
+                x: 1
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('2nd test', {
+                axis: '5',
+                nums: 'Jan 1, 1970, 00:00:00.1',
+                y: '1970-01-01 00:00:00.1',
+                x: 5
+            });
+        })
+        .then(function() { _hover(250, 150); }) // hover over break
+        .then(function() {
+            _assert('3rd test', {
+                // previous values
+                y: '1970-01-01 00:00:00.1',
+                x: 5
+            }, 'noHoverLabel');
+        })
+        .then(function() { _hover(350, 50); })
+        .then(function() {
+            _assert('4th test', {
+                axis: '8',
+                nums: 'Jan 1, 1970, 00:00:00.2',
+                y: '1970-01-01 00:00:00.2',
+                x: 8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should work when rangebreaks are present on y-axis', function(done) {
         Plotly.plot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
@@ -2834,6 +2988,75 @@ describe('Hover on axes with rangebreaks', function() {
                 axis: 'Jan 1, 1970',
                 x: 0,
                 y: '1970-01-01'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work when rangebreaks are present on y-axis (reversed range)', function(done) {
+        Plotly.plot(gd, [{
+            mode: 'lines',  // i.e. no autorange padding
+            y: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.095',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            yaxis: {
+                autorange: 'reversed',
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ]
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 10, t: 10, b: 10, r: 10},
+            hovermode: 'y'
+        })
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(388, 30); })
+        .then(function() {
+            _assert('topmost interval', {
+                nums: '0',
+                axis: 'Jan 1, 1970',
+                x: 0,
+                y: '1970-01-01'
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            _assert('middle interval', {
+                nums: '4',
+                axis: 'Jan 1, 1970, 00:00:00.095',
+                x: 4,
+                y: '1970-01-01 00:00:00.095'
+            });
+        })
+        .then(function() { _hover(11, 370); })
+        .then(function() {
+            _assert('bottom interval', {
+                nums: '8',
+                axis: 'Jan 1, 1970, 00:00:00.2',
+                x: 8,
+                y: '1970-01-01 00:00:00.2'
             });
         })
         .catch(failTest)
@@ -3550,6 +3773,84 @@ describe('hover distance', function() {
             });
         });
     });
+
+    describe('compare', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('selects all points at the same position on a linear axis', function(done) {
+            var x = [0, 1, 2];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'linear'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a log axis', function(done) {
+            var x = [0, 1, 2];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'log'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a category axis', function(done) {
+            var x = ['a', 'b', 'c'];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'category'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('selects all points at the same position on a date axis', function(done) {
+            var x = ['2018', '2019', '2020'];
+            var mock = {
+                data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
+                layout: {width: 400, height: 400, xaxis: {type: 'date'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 65});
+
+                    expect(gd._hoverdata.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+    });
 });
 
 describe('hover label rotation:', function() {
@@ -3825,14 +4126,18 @@ describe('hovermode: (x|y)unified', function() {
         Lib.clearThrottle();
     }
 
+    function getHoverLabel() {
+        var hoverLayer = d3.select('g.hoverlayer');
+        return hoverLayer.select('g.legend');
+    }
+
     function assertElementCount(selector, size) {
         var g = d3.selectAll(selector);
         expect(g.size()).toBe(size);
     }
 
     function assertLabel(expectation) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+        var hover = getHoverLabel();
         var title = hover.select('text.legendtitletext');
         var traces = hover.selectAll('g.traces');
 
@@ -3847,16 +4152,15 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
-    function assertBgcolor(color) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+    function assertRectColor(color, bordercolor) {
+        var hover = getHoverLabel();
         var bg = hover.select('rect.bg');
-        expect(bg.node().style.fill).toBe(color);
+        if(color) expect(bg.node().style.fill).toBe(color);
+        if(bordercolor) expect(bg.node().style.stroke).toBe(bordercolor);
     }
 
     function assertSymbol(exp) {
-        var hoverLayer = d3.select('g.hoverlayer');
-        var hover = hoverLayer.select('g.legend');
+        var hover = getHoverLabel();
         var traces = hover.selectAll('g.traces');
         expect(traces.size()).toBe(exp.length);
 
@@ -3871,6 +4175,17 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
+    function assertFont(fontFamily, fontSize, fontColor) {
+        var hover = getHoverLabel();
+        var text = hover.select('text.legendtext');
+        var node = text.node();
+
+        var textStyle = window.getComputedStyle(node);
+        expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+        expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+        expect(textStyle.fill).toBe(fontColor, 'wrong font color');
+    }
+
     it('set smart defaults for spikeline in x unified', function(done) {
         Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
             .then(function(gd) {
@@ -3881,6 +4196,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikethickness).toBe(1.5);
                 expect(ax.spikedash).toBe('dot');
                 expect(ax.spikecolor).toBe('red');
+                expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
             .catch(failTest)
@@ -3897,6 +4213,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikethickness).toBe(1.5);
                 expect(ax.spikedash).toBe('dot');
                 expect(ax.spikecolor).toBe('red');
+                expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
             .catch(failTest)
@@ -3920,6 +4237,34 @@ describe('hovermode: (x|y)unified', function() {
         mockCopy.layout.hovermode = 'y unified';
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
+                _hover(gd, { yval: 6 });
+
+                assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('unified hover modes should work for x/y cartesian traces via template', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        delete mockCopy.layout.hovermode;
+        mockCopy.layout.template = {
+            layout: {
+                hovermode: 'y unified'
+            }
+        };
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                expect(gd._fullLayout.hovermode).toBe('y unified');
+                var ax = gd._fullLayout.yaxis;
+                expect(ax.showspike).toBeTrue;
+                expect(ax.spikemode).toBe('across');
+                expect(ax.spikethickness).toBe(1.5);
+                expect(ax.spikedash).toBe('dot');
+                expect(ax.spikecolor).toBe('#444');
+                expect(ax.spikesnap).toBe('hovered data');
+                expect(gd._fullLayout.xaxis.showspike).toBeFalse;
+
                 _hover(gd, { yval: 6 });
 
                 assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
@@ -4088,16 +4433,11 @@ describe('hovermode: (x|y)unified', function() {
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
                 _hover(gd, {xval: 1});
-                // assertLabel({title: 'B', items: ['asdf', 'asdf']});
+
                 assertSymbol([
                   ['rgb(0, 255, 0)', '0px', ''],
                   ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
                 ]);
-            })
-            .then(function() {
-                _hover(gd, {xval: 4});
-                // assertLabel({title: 'E', items: ['asdf', 'asdf']});
-                // assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
             })
             .catch(failTest)
             .then(done);
@@ -4128,15 +4468,149 @@ describe('hovermode: (x|y)unified', function() {
             .then(done);
     });
 
-    it('label should have color of paper_bgcolor', function(done) {
+    it('label should have bgcolor/bordercolor from hoverlabel or legend or paper_bgcolor', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
-        var bgcolor = 'rgb(15, 200, 85)';
-        mockCopy.layout.paper_bgcolor = bgcolor;
+        var bgcolor = [
+            'rgb(10, 10, 10)',
+            'rgb(20, 20, 20)',
+            'rgb(30, 30, 30)',
+            'rgb(40, 40, 40)'
+        ];
+
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
                 _hover(gd, { xval: 3 });
 
-                assertBgcolor(bgcolor);
+                assertRectColor('rgb(255, 255, 255)', 'rgb(68, 68, 68)');
+
+                // Set paper_bgcolor
+                return Plotly.relayout(gd, 'paper_bgcolor', bgcolor[0]);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[0]);
+
+                // Set legend.bgcolor which should win over paper_bgcolor
+                return Plotly.relayout(gd, {
+                    'showlegend': true,
+                    'legend.bgcolor': bgcolor[1],
+                    'legend.bordercolor': bgcolor[1]
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[1], bgcolor[1]);
+
+                // Set hoverlabel.bgcolor which should win over legend.bgcolor
+                return Plotly.relayout(gd, {
+                    'hoverlabel.bgcolor': bgcolor[2],
+                    'hoverlabel.bordercolor': bgcolor[2]
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[2], bgcolor[2]);
+
+                // Check that a legend.bgcolor defined in template works
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { legend: { bgcolor: bgcolor[1], bordercolor: bgcolor[1] } } }
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[1], bgcolor[1]);
+
+                // Check that a hoverlabel.bgcolor defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { hoverlabel: { bgcolor: bgcolor[3], bordercolor: bgcolor[3] } } },
+                    legend: { bgcolor: bgcolor[1], bordercolor: bgcolor[1] }
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertRectColor(bgcolor[3], bgcolor[3]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should use hoverlabel.font or legend.font or layout.font', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        // Set layout.font
+        mockCopy.layout.font = {size: 20, family: 'Mono', color: 'rgb(10, 10, 10)'};
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 3});
+
+                assertFont('Mono', '20px', 'rgb(10, 10, 10)');
+
+                // Set legend.font which should win over layout font
+                return Plotly.relayout(gd, {
+                    'showlegend': true,
+                    'legend.font.size': 15,
+                    'legend.font.family': 'Helvetica',
+                    'legend.font.color': 'rgb(20, 20, 20)'
+                });
+            })
+            .then(function(gd) {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Helvetica', '15px', 'rgb(20, 20, 20)');
+
+                // Set hoverlabel.font which should win over legend.font
+                return Plotly.relayout(gd, {
+                    'hoverlabel.font.size': 22,
+                    'hoverlabel.font.family': 'Arial',
+                    'hoverlabel.font.color': 'rgb(30, 30, 30)'
+                });
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Arial', '22px', 'rgb(30, 30, 30)');
+
+                // Check that a legend.font defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { legend: {font: {size: 5, family: 'Mono', color: 'rgb(5, 5, 5)'}}}},
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Mono', '5px', 'rgb(5, 5, 5)');
+
+                // Finally, check that a hoverlabel.font defined in template wins
+                delete mockCopy.layout;
+                mockCopy.layout = {
+                    hovermode: 'x unified',
+                    template: { layout: { hoverlabel: { font: {family: 'Mono', size: 30, color: 'red'}}}},
+                    legend: {font: {size: 20, family: 'Mono', color: 'rgb(10, 10, 10)'}}
+                };
+
+                return Plotly.newPlot(gd, mockCopy);
+            })
+            .then(function() {
+                _hover(gd, { xval: 3 });
+
+                assertFont('Mono', '30px', 'rgb(255, 0, 0)');
             })
             .catch(failTest)
             .then(done);

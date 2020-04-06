@@ -18,6 +18,8 @@ var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
+var HOUR = constants.HOUR_PATTERN;
+var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 module.exports = {
     visible: {
@@ -271,29 +273,27 @@ module.exports = {
             editType: 'calc',
             description: [
                 'Sets the lower and upper bounds of this axis rangebreak.',
-                'Can be used with `operation` to determine the behavior at the bounds.',
                 'Can be used with `pattern`.'
             ].join(' ')
         },
 
         pattern: {
             valType: 'enumerated',
-            // TODO could add '%H:%M:%S'
-            values: ['%w', '%H', ''],
-            dflt: '',
+            values: [DAY_OF_WEEK, HOUR, ''],
             role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
-                'If *%w* - Sunday-based weekday as a decimal number [0, 6].',
-                'If *%H* - hour (24-hour clock) as a decimal number [0, 23].',
-                'These are the same directive as in `tickformat`, see',
-                'https://github.com/d3/d3-time-format#locale_format',
+                'If *' + DAY_OF_WEEK + '* - days of the week in English e.g. \'Sunday\' or `\sun\`',
+                '(matching is case-insensitive and considers only the first three characters),',
+                'as well as Sunday-based integers between 0 and 6.',
+                'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'%w\', bounds: [6, 0], operation: \'[]\' }',
+                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 1] }',
+                ' or simply { bounds: [\'sat\', \'mon\'] }',
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'%H\', bounds: [17, 8] }',
+                '- { pattern: \'' + HOUR + '\', bounds: [17, 8] }',
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
@@ -323,23 +323,6 @@ module.exports = {
             description: [
                 'Sets the size of each `values` item.',
                 'The default is one day in milliseconds.'
-            ].join(' ')
-        },
-
-        operation: {
-            valType: 'enumerated',
-            values: ['[]', '()', '[)', '(]'],
-            dflt: '()',
-            role: 'info',
-            editType: 'calc',
-            description: [
-                'Determines if we include or not the bound values within the rangebreak.',
-                'Closed interval bounds (i.e. starting with *[* or ending with *]*)',
-                'include the bound value within the rangebreak and thus make coordinates',
-                'equal to the bound disappear.',
-                'Open interval bounds (i.e. starting with *(* or ending with *)*)',
-                'does not include the bound value within the rangebreak and thus keep coordinates',
-                'equal to the bound on the axis.'
             ].join(' ')
         },
 
@@ -597,7 +580,7 @@ module.exports = {
     },
     spikesnap: {
         valType: 'enumerated',
-        values: ['data', 'cursor'],
+        values: ['data', 'cursor', 'hovered data'],
         dflt: 'data',
         role: 'style',
         editType: 'none',

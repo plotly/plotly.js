@@ -11,6 +11,8 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var isUnifiedHover = require('../../components/fx/helpers').isUnifiedHover;
+var handleHoverModeDefaults = require('../../components/fx/hovermode_defaults');
 var Template = require('../../plot_api/plot_template');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
@@ -205,6 +207,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
+    var hovermode = handleHoverModeDefaults(layoutIn, layoutOut, fullData);
+    var unifiedHover = isUnifiedHover(hovermode);
+
     // first pass creates the containers, determines types, and handles most of the settings
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
@@ -249,13 +254,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        var unifiedHover = layoutIn.hovermode && ['x unified', 'y unified'].indexOf(layoutIn.hovermode) !== -1;
-        var unifiedSpike = unifiedHover && axLetter === layoutIn.hovermode.charAt(0);
+        var unifiedSpike = unifiedHover && axLetter === hovermode.charAt(0);
         var spikecolor = coerce2('spikecolor', unifiedHover ? axLayoutOut.color : undefined);
         var spikethickness = coerce2('spikethickness', unifiedHover ? 1.5 : undefined);
         var spikedash = coerce2('spikedash', unifiedHover ? 'dot' : undefined);
         var spikemode = coerce2('spikemode', unifiedHover ? 'across' : undefined);
-        var spikesnap = coerce2('spikesnap');
+        var spikesnap = coerce2('spikesnap', unifiedHover ? 'hovered data' : undefined);
         var showSpikes = coerce('showspikes', !!unifiedSpike || !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
 
         if(!showSpikes) {

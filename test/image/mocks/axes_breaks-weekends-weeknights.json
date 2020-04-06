@@ -15,14 +15,12 @@
     "xaxis": {
       "rangebreaks": [
         {
-          "pattern": "%w",
-          "bounds": [ 6, 0 ],
-          "operation": "[]"
+          "pattern": "day of week",
+          "bounds": [ 6, 1 ]
         },
         {
-          "pattern": "%H",
-          "bounds": [ 16, 8 ],
-          "operation": "()"
+          "pattern": "hour",
+          "bounds": [ 16.001, 8 ]
         }
       ]
     },

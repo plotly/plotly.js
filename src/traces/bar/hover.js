@@ -16,6 +16,7 @@ var Color = require('../../components/color');
 var fillText = require('../../lib').fillText;
 var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
@@ -130,6 +131,9 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
+
+    // skip points inside axis rangebreaks
+    if(cd[pointData.index].p === BADNUM) return;
 
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be

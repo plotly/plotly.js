@@ -13,7 +13,7 @@
     "visualization",
     "plotly"
   ],
-  "homepage": "https://plot.ly",
+  "homepage": "https://plotly.com/",
   "ignore": [
     "**/.*",
     "bower_components",

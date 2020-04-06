@@ -235,7 +235,7 @@ describe('Plotly.toImage', function() {
 
         var base = d3.select('body')
             .append('base')
-            .attr('href', 'https://plot.ly');
+            .attr('href', 'https://chart-studio.plotly.com');
 
         Plotly.plot(gd, [{ y: [1, 2, 1] }])
         .then(function() {

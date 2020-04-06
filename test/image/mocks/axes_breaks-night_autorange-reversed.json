@@ -192,12 +192,11 @@
         "xaxis": {
             "rangebreaks": [
                 {
-                    "pattern": "%H",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "domain": [
@@ -208,12 +207,11 @@
         "xaxis2": {
             "rangebreaks": [
                 {
-                    "pattern": "%H",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "autorange": "reversed",
@@ -253,12 +251,11 @@
         "yaxis3": {
             "rangebreaks": [
                 {
-                    "pattern": "%H",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "anchor": "x3",
@@ -270,12 +267,11 @@
         "yaxis4": {
             "rangebreaks": [
                 {
-                    "pattern": "%H",
+                    "pattern": "hour",
                     "bounds": [
                         18,
                         6
-                    ],
-                    "operation": "[)"
+                    ]
                 }
             ],
             "autorange": "reversed",

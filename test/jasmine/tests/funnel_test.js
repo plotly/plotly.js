@@ -17,6 +17,7 @@ var rgb = color.rgb;
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
 var d3 = require('d3');
@@ -1028,6 +1029,54 @@ describe('A funnel plot', function() {
         })
         .then(function() {
             _assertNumberOfFunnelConnectorNodes(4);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('handle BADNUM positions', function(done) {
+        var x1 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        var x2 = x1; // no transition now
+        var mockCopy = {
+            data: [
+                {
+                    type: 'funnel',
+                    y: [
+                        0,
+                        1,
+                        '',
+                        'NaN',
+                        NaN,
+                        Infinity,
+                        -Infinity,
+                        undefined,
+                        null,
+                        9,
+                        10
+                    ],
+                    x: x1
+                }
+            ],
+            layout: {
+                width: 800,
+                height: 600
+            }
+        };
+
+        var barTests = [
+            [0, '.point path', 'attr', 'd', ['M245,4V34H395V4Z', 'M251,42V73H389V42Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M306,347V378H334V347Z', 'M313,386V416H327V386Z']]
+        ];
+
+        var connectorTests = [
+            [0, '.regions path', 'attr', 'd', ['M245,34L251,42H389L395,34Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M0,0Z', 'M306,378L313,386H327L334,378Z', 'M0,0Z']]
+        ];
+
+        var animateOpts = {data: [{x: x2}]};
+        var transitionOpts = false; // use default
+
+        checkTransition(gd, mockCopy, animateOpts, transitionOpts, barTests)
+        .then(function() {
+            return checkTransition(gd, mockCopy, animateOpts, transitionOpts, connectorTests);
         })
         .catch(failTest)
         .then(done);
