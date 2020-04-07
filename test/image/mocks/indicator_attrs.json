@@ -123,19 +123,19 @@
                     "exponentformat": "none",
                     "showexponent": "all"
                 },
-                "steps": {
+                "steps": [{
                     "color": "red",
                     "line": {
                         "color": "blue",
                         "width": 2
                     },
-                    "thickness": 0.5,
+                    "thickness": 2,
                     "range": [
                         -100,
                         100
                     ],
                     "name": "name"
-                },
+                }],
                 "threshold": {
                     "line": {
                         "color": "green",
