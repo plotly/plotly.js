@@ -15,7 +15,7 @@ var failTest = require('../assets/fail_test');
 var negateIf = require('../assets/negate_if');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('../../../src/components/color');
+var color = require('@src/components/color');
 var rgb = color.rgb;
 
 var checkEventData = require('../assets/check_event_data');

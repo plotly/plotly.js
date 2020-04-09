@@ -11,7 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('../../../src/components/color');
+var color = require('@src/components/color');
 var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
