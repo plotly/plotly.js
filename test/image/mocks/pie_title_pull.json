@@ -10,9 +10,11 @@
       "sort": false,
       "type": "pie",
       "textposition": "inside",
-      "title": "Withering<br>Flower",
-      "titlefont": {
-        "size": 16
+      "title": {
+        "text": "Withering<br>Flower",
+        "font": {
+          "size": 16
+        }
       }
     }
   ],

@@ -45,7 +45,6 @@
             "marker": {
                 "line": {
                     "color": "rgb(255, 0, 0)",
-                    "dash": 10,
                     "width": 2
                 }
             }

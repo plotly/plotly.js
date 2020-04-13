@@ -57,16 +57,11 @@
                 ],
                 "showscale": true,
                 "colorbar": {
-                    "title": "trace A",
+                    "title": {
+                        "text": "trace A"
+                    },
                     "x": 0,
                     "xanchor": "right"
-                }
-            },
-            "hovered": {
-                "marker": {
-                    "line": {
-                        "color": "white"
-                    }
                 }
             },
             "textinfo": "label+value",
@@ -75,7 +70,6 @@
             },
             "pathbar": {
                 "thickness": 32,
-                "color": "black",
                 "textfont": {
                     "color": "white",
                     "size": 28,
@@ -144,18 +138,12 @@
                 "reversescale": true,
                 "showscale": true,
                 "colorbar": {
-                    "title": "trace B"
+                    "title": {
+                        "text": "trace B"
+                    }
                 }
             },
-            "textinfo": "label+text",
-            "pathbar": {
-                "side": "bottom",
-                "color": "#7F7",
-                "textfont": {
-                    "size": 20,
-                    "family": "Times New Roman"
-                }
-            }
+            "textinfo": "label+text"
         }
     ],
     "layout": {

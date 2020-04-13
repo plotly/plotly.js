@@ -13,8 +13,10 @@
         "y": [0, 0.49]
       },
       "textinfo": "none",
-      "title": "Starry Night",
-      "titleposition": "bottom center",
+      "title": {
+        "text": "Starry Night",
+        "position": "bottom center"
+      },
       "scalegroup": "1"
     },
     {
@@ -30,10 +32,12 @@
         "y": [0, 0.49]
       },
       "textinfo": "none",
-      "title": "Sunflowers",
-      "titleposition": "top center",
-      "titlefont": {
-        "size": 12
+      "title": {
+        "text": "Sunflowers",
+        "position": "top center",
+        "font": {
+          "size": 12
+        }
       },
       "scalegroup": "2"
     },
@@ -50,9 +54,11 @@
         "y": [0.51, 1]
       },
       "textinfo": "none",
-      "title": "Irises",
-      "titlefont": {
+      "title": {
+        "text": "Irises",
+        "font": {
           "size": 12
+        }
       },
       "scalegroup": "2"
     },
@@ -61,8 +67,11 @@
       "labels": ["1st", "2nd", "3rd", "4th", "5th"],
       "type": "pie",
       "name": "The Night Cafe",
-      "titlefont": {
-        "size": 50
+      "title": {
+        "text": "The<br>Night<br>Cafe",
+        "font": {
+          "size": 50
+        }
       },
       "marker": {
         "colors": ["rgb(146, 123, 21)", "rgb(177, 180, 34)", "rgb(206, 206, 40)", "rgb(175, 51, 21)", "rgb(35, 36, 21)"]
@@ -72,7 +81,6 @@
         "y": [0.52, 1]
       },
       "textinfo": "none",
-      "title": "The<br>Night<br>Cafe",
       "scalegroup": "1"
     }
   ],
