@@ -12,9 +12,9 @@
         "surface": { "show": true, "fill": 1.0, "count": 16 },
         "spaceframe": { "show": true, "fill": 1.0 },
         "slices": {
-            "x": { "show": false, "fill": 1.0 },
-            "y": { "show": false, "fill": 1.0 },
-            "z": { "show": false, "fill": 1.0 }
+            "x": { "show": false },
+            "y": { "show": false },
+            "z": { "show": false }
         },
         "caps": {
             "x": { "show": true, "fill": 1.0 },
@@ -25,8 +25,6 @@
             "show": true,
             "width": 4
         },
-        "isomin": null,
-        "isomax": null,
         "value": [
 
             1000, 969, 876, 729, 536, 309, 63, -187, -426, -637, -809, -930, -992, -992, -930, -809, -637, -426, -187, 63, 309, 536, 729, 876, 969, 1000,

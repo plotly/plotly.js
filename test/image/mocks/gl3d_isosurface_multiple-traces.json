@@ -17,8 +17,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": 150,
             "isomax": 250,
@@ -407,8 +406,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": 150,
             "isomax": 250,
