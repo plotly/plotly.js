@@ -424,7 +424,7 @@
                 "showarrow": false
             }
         ],
-        "title": "CHECK THAT THE HOVER TEXT CORRESPOND TO THE DATA POINTS",
+        "title": {"text": "CHECK THAT THE HOVER TEXT CORRESPOND TO THE DATA POINTS"},
         "width": 869.828125,
         "height": 450,
         "autosize": true,

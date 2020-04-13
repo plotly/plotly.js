@@ -282,6 +282,6 @@
         }
     ],
     "layout": {
-        "title": "heatmap xyz with date & categories"
+        "title": {"text": "heatmap xyz with date & categories"}
     }
 }

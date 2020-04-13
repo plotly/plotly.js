@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Jet"
+    "title": {"text": "Jet"}
   }
 }

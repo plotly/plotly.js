@@ -20,7 +20,7 @@
     "yaxis": "y2"
   }],
   "layout": {
-    "title": "categoryorder: \"total ascending\"",
+    "title": {"text": "categoryorder: \"total ascending\""},
     "height": 400,
     "width": 600,
     "barmode": "stack",

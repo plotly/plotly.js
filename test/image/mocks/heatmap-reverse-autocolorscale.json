@@ -19,7 +19,7 @@
         }
     ],
     "layout": {
-        "title": "reverse auto colorscale",
+        "title": {"text": "reverse auto colorscale"},
         "xaxis": {
             "type": "linear",
             "range": [

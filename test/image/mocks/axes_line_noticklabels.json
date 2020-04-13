@@ -5,12 +5,16 @@
   }],
   "layout": {
     "xaxis": {
-	  "title": "x axis line w/o tick labels",
+      "title": {
+        "text": "x axis line w/o tick labels"
+      },
       "showline": true,
       "showticklabels": false
     },
     "yaxis": {
-	  "title": "y axis line w/o tick labels",
+      "title": {
+        "text": "y axis line w/o tick labels"
+      },
       "showline": true,
       "showticklabels": false
     }

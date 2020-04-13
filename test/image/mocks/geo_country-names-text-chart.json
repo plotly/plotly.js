@@ -785,7 +785,7 @@
         }
     ],
     "layout": {
-        "title": "The World's countries",
+        "title": {"text": "The World's countries"},
         "geo": {
             "domain": {
                 "x": [

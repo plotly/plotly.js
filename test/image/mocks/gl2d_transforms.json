@@ -70,6 +70,6 @@
     "layout": {
         "width": 600,
         "height": 400,
-        "title": "Transforms on scattergl traces"
+        "title": {"text": "Transforms on scattergl traces"}
     }
 }

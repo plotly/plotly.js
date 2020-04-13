@@ -92,7 +92,7 @@
         }
     ],
     "layout": {
-        "title": "zsmooth: best, fast, false",
+        "title": {"text": "zsmooth: best, fast, false"},
         "width": 800,
         "height": 350,
         "xaxis": {

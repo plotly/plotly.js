@@ -5,7 +5,7 @@
             "opacityscale": "min",
             "colorscale": "Earth",
             "colorbar": {
-                "title": "fade top",
+                "title": {"text": "fade top"},
                 "len": 0.5,
                 "y": 0.0,
                 "yanchor": "bottom"
@@ -29,7 +29,7 @@
             "type": "surface",
             "opacityscale": "max",
             "colorbar": {
-                "title": "fade bottom",
+                "title": {"text": "fade bottom"},
                 "len": 0.5,
                 "y": 0.5,
                 "yanchor": "bottom"
@@ -123,7 +123,7 @@
         }
     ],
     "layout": {
-        "title": "Surface with opacityscale",
+        "title": {"text": "Surface with opacityscale"},
         "width": 900,
         "height": 600,
         "scene": {

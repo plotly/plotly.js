@@ -19,7 +19,7 @@
     "scene": "scene2"
   }],
   "layout": {
-    "title": "scene should be the same as scene1",
+    "title": {"text": "scene should be the same as scene1"},
     "scene1": {
       "domain": {
         "x": [0, 0.5],

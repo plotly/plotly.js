@@ -79,7 +79,9 @@
         }
     ],
     "layout": {
-        "title": "Revenue and Take Rate",
+        "title": {
+            "text": "Revenue and Take Rate"
+        },
         "xaxis": {
             "type": "category",
             "autorange": true,
@@ -95,7 +97,9 @@
             ]
         },
         "yaxis": {
-            "title": "",
+            "title": {
+                "text": ""
+            },
             "rangemode": "nonnegative",
             "autorange": true,
             "showgrid": false,
@@ -121,7 +125,9 @@
             "yanchor": "bottom"
         },
         "yaxis2": {
-            "title": "Take Rate %",
+            "title": {
+                "text": "Take Rate %"
+            },
             "rangemode": "tozero",
             "autorange": true,
             "showgrid": false,

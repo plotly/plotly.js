@@ -33,25 +33,25 @@
         "ternary": {
             "sum": 100,
             "aaxis": {
-                "title": "",
+                "title": {"text": ""},
                 "layer": "below traces",
                 "linewidth": 4,
                 "min": 4.5
             },
             "baxis": {
-                "title": "",
+                "title": {"text": ""},
                 "layer": "below traces",
                 "linewidth": 4,
                 "min": 7.5
             },
             "caxis": {
-                "title": "",
+                "title": {"text": ""},
                 "layer": "below traces",
                 "linewidth": 4,
                 "min": 7.5
             }
         },
-        "title": "ternary axes below traces",
+        "title": {"text": "ternary axes below traces"},
         "showlegend": false,
         "height": 450,
         "width": 500

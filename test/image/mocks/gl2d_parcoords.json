@@ -2,7 +2,7 @@
   "layout": {
     "width": 1184,
     "height": 400,
-    "title": "Widget parameters and cost"
+    "title": {"text": "Widget parameters and cost"}
   },
 
   "data": [{

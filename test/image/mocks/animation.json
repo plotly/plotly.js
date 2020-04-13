@@ -12,7 +12,9 @@
         }
     ],
     "layout": {
-        "title": "Animation test",
+        "title": {
+            "text": "Animation test"
+        },
         "showlegend": true,
         "autosize": false,
         "xaxis": {

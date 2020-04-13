@@ -20020,17 +20020,17 @@
         "yaxis": {
             "zeroline": false,
             "gridcolor": "#dfe8f3",
-            "title": " "
+            "title": {"text": " "}
         },
         "margin": {
             "l": 40,
             "t": 10
         },
-        "title": " ",
+        "title": {"text": " "},
         "barmode": "stack",
         "xaxis": {
             "zeroline": false,
-            "title": "Lat",
+            "title": {"text": "Lat"},
             "showgrid": false
         },
         "font": {

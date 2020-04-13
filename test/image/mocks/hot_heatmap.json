@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Hot"
+    "title": {"text": "Hot"}
   }
 }

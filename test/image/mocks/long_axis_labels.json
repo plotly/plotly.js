@@ -38,21 +38,27 @@
     ],
     "layout": {
         "xaxis": {
-            "title": "X Axis Title",
-            "titlefont": { "size": 80 },
+            "title": {
+                "text": "X Axis Title",
+                "font": { "size": 80 }
+            },
             "automargin": true
         },
         "yaxis": {
-            "title": "Y Axis Title",
-            "titlefont": { "size": 40 },
+            "title": {
+                "text": "Y Axis Title",
+                "font": { "size": 40 }
+            },
             "ticklen": 50,
             "automargin": true
         },
         "yaxis2": {
-            "title": "Y2 Axis Title",
+            "title": {
+                "text": "Y2 Axis Title",
+                "font": { "size": 40 }
+            },
             "overlaying": "y",
             "side": "right",
-            "titlefont": { "size": 40 },
             "automargin": true
         }
     }

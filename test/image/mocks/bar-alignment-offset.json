@@ -438,7 +438,9 @@
         0.14666666666666667
       ],
       "anchor": "y",
-      "title": "=alignment<br>≠offset"
+      "title": {
+        "text": "=alignment<br>≠offset"
+      }
     },
     "yaxis": {
       "domain": [
@@ -453,7 +455,9 @@
         0.3133333333333333
       ],
       "anchor": "y2",
-      "title": "=alignment<br>=offset"
+      "title": {
+        "text": "=alignment<br>=offset"
+      }
     },
     "yaxis2": {
       "domain": [
@@ -468,7 +472,9 @@
         0.48
       ],
       "anchor": "y3",
-      "title": "≠alignment<br>=offset"
+      "title": {
+        "text": "≠alignment<br>=offset"
+      }
     },
     "yaxis3": {
       "domain": [
@@ -483,7 +489,9 @@
         0.6466666666666666
       ],
       "anchor": "y4",
-      "title": "=alignment<br>≠offset"
+      "title": {
+        "text": "=alignment<br>≠offset"
+      }
     },
     "yaxis4": {
       "domain": [
@@ -505,7 +513,9 @@
         0.8133333333333332
       ],
       "anchor": "y6",
-      "title": "=alignment<br>=offset"
+      "title": {
+        "text": "=alignment<br>=offset"
+      }
     },
     "yaxis6": {
       "domain": [
@@ -527,7 +537,9 @@
         1
       ],
       "anchor": "y8",
-      "title": "≠alignment<br>=offset"
+      "title": {
+        "text": "≠alignment<br>=offset"
+      }
     },
     "yaxis8": {
       "domain": [

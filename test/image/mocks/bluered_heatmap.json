@@ -2608,6 +2608,8 @@
     }
   ],
   "layout": {
-    "title": "Bluered"
+    "title": {
+      "text": "Bluered"
+    }
   }
 }

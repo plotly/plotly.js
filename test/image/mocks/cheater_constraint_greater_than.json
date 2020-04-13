@@ -182,7 +182,9 @@
     }
   ],
   "layout": {
-    "title": "Greater than constraint",
+    "title": {
+      "text": "Greater than constraint"
+    },
     "width": 600,
     "height": 800,
     "dragmode": "pan",

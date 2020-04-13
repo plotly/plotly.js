@@ -102,7 +102,7 @@
         }
     ],
     "layout": {
-        "title": "Sales report monthly",
+        "title": {"text": "Sales report monthly"},
         "barmode": "stack",
         "margin": {
             "r": 50,

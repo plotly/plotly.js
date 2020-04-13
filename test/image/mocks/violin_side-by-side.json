@@ -5,7 +5,7 @@
         "yaxis": {
             "showgrid": true
         },
-        "title": "Total bill distribution<br><i>scaled by number of bills per gender",
+        "title": {"text": "Total bill distribution<br><i>scaled by number of bills per gender"},
         "legend": {
             "tracegroupgap": 0
         },

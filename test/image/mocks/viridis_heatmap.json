@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Viridis"
+    "title": {"text": "Viridis"}
   }
 }

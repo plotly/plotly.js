@@ -2608,6 +2608,8 @@
     }
   ],
   "layout": {
-    "title": "Blackbody"
+    "title": {
+      "text": "Blackbody"
+    }
   }
 }

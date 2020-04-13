@@ -27,7 +27,7 @@
     }
   ],
   "layout": {
-    "title": "Global Font",
+    "title": {"text": "Global Font"},
     "font": {
       "family": "Courier New, monospace",
       "size": 18,

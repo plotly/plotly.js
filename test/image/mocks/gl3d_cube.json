@@ -193,7 +193,7 @@
                 "showline": false,
                 "zeroline": false,
                 "showticklabels": false,
-                "title": "",
+                "title": {"text": ""},
                 "type": "linear"
             },
             "yaxis": {
@@ -201,7 +201,7 @@
                 "showline": false,
                 "zeroline": false,
                 "showticklabels": false,
-                "title": "",
+                "title": {"text": ""},
                 "type": "linear"
             },
             "zaxis": {
@@ -209,7 +209,7 @@
                 "showline": false,
                 "zeroline": false,
                 "showticklabels": false,
-                "title": "",
+                "title": {"text": ""},
                 "type": "linear"
             },
             "aspectratio": {

@@ -225,7 +225,7 @@
     "layout": {
         "width": 1080,
         "height": 598,
-        "title": "Executions by U.S. State Since 1819",
+        "title": {"text": "Executions by U.S. State Since 1819"},
         "geo": {
             "scope": "usa",
             "projection": {

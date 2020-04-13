@@ -49,7 +49,7 @@
         }
     ],
     "layout": {
-        "title": "Scatter3d arrayOk",
+        "title": {"text": "Scatter3d arrayOk"},
         "scene": {
             "aspectratio": {
                 "x": 1,

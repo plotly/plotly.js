@@ -462,11 +462,13 @@
       "gridwidth": 0.6642,
       "zeroline": false,
       "anchor": "y",
-      "title": "Fiscal year",
-      "titlefont": {
-        "color": "rgba(34,34,34,1)",
-        "family": "Roboto",
-        "size": 15.9402
+      "title": {
+        "text": "Fiscal year",
+        "font": {
+          "color": "rgba(34,34,34,1)",
+          "family": "Roboto",
+          "size": 15.9402
+        }
       },
       "hoverformat": ".2f"
     },
@@ -497,11 +499,13 @@
       "gridwidth": 0.6642,
       "zeroline": false,
       "anchor": "x",
-      "title": "% of students",
-      "titlefont": {
-        "color": "rgba(34,34,34,1)",
-        "family": "Roboto",
-        "size": 15.9402
+      "title": {
+        "text": "% of students",
+        "font": {
+          "color": "rgba(34,34,34,1)",
+          "family": "Roboto",
+          "size": 15.9402
+        }
       },
       "hoverformat": ".2f"
     },

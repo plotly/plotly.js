@@ -1232,7 +1232,7 @@
   }],
 
   "layout": {
-    "title": "gl3d trace with shared coloraxes",
+    "title": {"text": "gl3d trace with shared coloraxes"},
 
     "scene": {
       "camera": {

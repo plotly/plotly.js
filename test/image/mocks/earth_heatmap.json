@@ -2609,6 +2609,6 @@
     }
   ],
   "layout": {
-    "title": "Earth"
+    "title": {"text": "Earth"}
   }
 }

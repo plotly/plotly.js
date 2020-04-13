@@ -112,7 +112,9 @@
         }
     ],
     "layout": {
-        "title": "multiple axes example",
+        "title": {
+            "text": "multiple axes example"
+        },
         "xaxis": {
             "domain": [
                 0.3,
@@ -126,9 +128,11 @@
         },
         "yaxis": {
             "domain": [0.5, 1],
-            "title": "yaxis title",
-            "titlefont": {
-                "color": "#1f77b4"
+            "title": {
+                "text": "yaxis title",
+                "font": {
+                    "color": "#1f77b4"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -146,9 +150,11 @@
             "borderwidth": 1
         },
         "yaxis2": {
-            "title": "yaxis2 title",
-            "titlefont": {
-                "color": "#ff7f0e"
+            "title": {
+                "text": "yaxis2 title",
+                "font": {
+                    "color": "#ff7f0e"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -163,9 +169,11 @@
             "overlaying": "y"
         },
         "yaxis3": {
-            "title": "yaxis3 title",
-            "titlefont": {
-                "color": "#2ca02c"
+            "title": {
+                "text": "yaxis3 title",
+                "font": {
+                    "color": "#2ca02c"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -179,9 +187,11 @@
             "overlaying": "y"
         },
         "yaxis4": {
-            "title": "yaxis4 title",
-            "titlefont": {
-                "color": "#d62728"
+            "title": {
+                "text": "yaxis4 title",
+                "font": {
+                    "color": "#d62728"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -196,9 +206,11 @@
             "overlaying": "y"
         },
         "yaxis5": {
-            "title": "yaxis5 title",
-            "titlefont": {
-                "color": "#9467bd"
+            "title": {
+                "text": "yaxis5 title",
+                "font": {
+                    "color": "#9467bd"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -216,9 +228,11 @@
             "overlaying": "y"
         },
         "yaxis6": {
-            "title": "yaxis6 title",
-            "titlefont": {
-                "color": "#8c564b"
+            "title": {
+                "text": "yaxis6 title",
+                "font": {
+                    "color": "#8c564b"
+                }
             },
             "showline": true,
             "ticks": "outside",
@@ -234,7 +248,9 @@
             "overlaying": "y"
         },
         "xaxis2": {
-            "title": "xaxis2 title",
+            "title": {
+                "text": "xaxis2 title"
+            },
             "domain": [0.2, 0.8],
             "anchor": "y7",
             "color": "rgba(100,100,0,0.6)",
@@ -243,7 +259,9 @@
             "linewidth": 3
         },
         "xaxis3": {
-            "title": "xaxis3 title",
+            "title": {
+                "text": "xaxis3 title"
+            },
             "overlaying": "x2",
             "anchor": "y7",
             "color": "rgba(100,0,100,0.6)",
@@ -253,7 +271,9 @@
             "side": "top"
         },
         "xaxis4": {
-            "title": "xaxis4 title",
+            "title": {
+                "text": "xaxis4 title"
+            },
             "overlaying": "x2",
             "color": "rgba(0,0,0,0.6)",
             "showline": true,
@@ -262,7 +282,9 @@
             "anchor": "free"
         },
         "yaxis7": {
-            "title": "yaxis7 title",
+            "title": {
+                "text": "yaxis7 title"
+            },
             "domain": [0.15, 0.3],
             "color": "rgba(0,0,0,0.6)",
             "anchor": "x2",
@@ -271,7 +293,9 @@
             "linewidth": 4
         },
         "yaxis8": {
-            "title": "yaxis8 title",
+            "title": {
+                "text": "yaxis8 title"
+            },
             "overlaying": "y7",
             "color": "rgba(0,0,0,0.6)",
             "anchor": "x2",
@@ -281,7 +305,9 @@
             "linewidth": 8
         },
         "yaxis9": {
-            "title": "yaxis9 title",
+            "title": {
+                "text": "yaxis9 title"
+            },
             "overlaying": "y7",
             "color": "rgba(0,0,0,0.6)",
             "anchor": "free",

@@ -279,10 +279,12 @@
         }
     ],
     "layout": {
-        "title": "IBM Volatility",
-        "titlefont": {
-            "size": 24,
-            "color": "#D9D9D9"
+        "title": {
+            "text": "IBM Volatility",
+            "font": {
+                "size": 24,
+                "color": "#D9D9D9"
+            }
         },
         "showlegend": false,
         "autosize": false,
@@ -303,9 +305,11 @@
         "plot_bgcolor": "#151516",
         "scene": {
             "xaxis": {
-                "title": "Term",
-                "titlefont": {
-                    "color": "#D9D9D9"
+                "title": {
+                    "font": {
+                        "color": "#D9D9D9"
+                    },
+                    "text": "Term"
                 },
                 "type": "category",
                 "tickfont": {
@@ -317,9 +321,11 @@
                 "zerolinewidth": 0.7000000000000001
             },
             "yaxis": {
-                "title": "Moneyness",
-                "titlefont": {
-                    "color": "#D9D9D9"
+                "title": {
+                    "font": {
+                        "color": "#D9D9D9"
+                    },
+                    "text": "Moneyness"
                 },
                 "type": "linear",
                 "tickfont": {
@@ -331,9 +337,11 @@
                 "zerolinewidth": 0.7000000000000001
             },
             "zaxis": {
-                "title": "Volatilty",
-                "titlefont": {
-                    "color": "#D9D9D9"
+                "title": {
+                    "font": {
+                        "color": "#D9D9D9"
+                    },
+                    "text": "Volatilty"
                 },
                 "tickfont": {
                     "color": "#C2C2C2"

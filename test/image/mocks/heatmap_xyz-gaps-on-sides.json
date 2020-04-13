@@ -144,6 +144,6 @@
         }
     ],
     "layout": {
-        "title": "heatmap with x/y/z columns with gaps on the sides"
+        "title": {"text": "heatmap with x/y/z columns with gaps on the sides"}
     }
 }

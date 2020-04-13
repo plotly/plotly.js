@@ -45,7 +45,7 @@
         }
     ],
     "layout": {
-        "title": "COLOURED GEOS",
+        "title": {"text": "COLOURED GEOS"},
         "geo": {
             "projection": {
                 "type": "mercator"

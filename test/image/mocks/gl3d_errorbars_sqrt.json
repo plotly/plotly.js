@@ -33,7 +33,7 @@
         }
     ],
     "layout": {
-        "title": "sqrt errorbars",
+        "title": {"text": "sqrt errorbars"},
         "scene": {
             "camera": {
                 "eye": {

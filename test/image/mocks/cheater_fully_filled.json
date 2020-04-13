@@ -35,7 +35,9 @@
     }
   ],
   "layout": {
-    "title": "Fully filled carpet with a hole",
+    "title": {
+      "text": "Fully filled carpet with a hole"
+    },
     "annotations": [{
       "text": "These two fills differ only in a tiny threshold that affects whether the<br>contour fills the whole region or cuts off a sliver on the left side.<br> They should be effectively identical, not complementary.",
       "align": "left",

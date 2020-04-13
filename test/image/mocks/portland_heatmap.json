@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Portland"
+    "title": {"text": "Portland"}
   }
 }

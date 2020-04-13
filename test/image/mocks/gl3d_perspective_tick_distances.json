@@ -13,7 +13,7 @@
 		}
 	],
     "layout": {
-        "title": "Tick distances and contour lines in perspective view.",
+        "title": {"text": "Tick distances and contour lines in perspective view."},
         "width": 1000,
         "height": 500,
         "scene": {

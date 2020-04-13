@@ -25,7 +25,7 @@
         }
     ],
     "layout":{
-        "title": "No opacity with filled scatter",
+        "title": {"text": "No opacity with filled scatter"},
         "width": 400,
         "height": 400
     }

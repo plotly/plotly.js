@@ -41,10 +41,12 @@
       },
       "radialaxis": {
         "showgrid": false,
-        "title": "1st subplot",
-        "titlefont": {
-          "size": 20,
-          "color": "blue"
+        "title": {
+          "text": "1st subplot",
+          "font": {
+            "size": 20,
+            "color": "blue"
+          }
         },
         "angle": -45
       }
@@ -56,10 +58,12 @@
       "radialaxis": {
         "range": [0, 4.7],
         "showgrid": false,
-        "title": "2nd subplot",
-        "titlefont": {
-          "size": 10,
-          "color": "orange"
+        "title": {
+          "text": "2nd subplot",
+          "font": {
+            "size": 10,
+            "color": "orange"
+          }
         },
         "angle": 45
       }

@@ -18,6 +18,6 @@
     "layout": {
         "width": 500,
         "height": 400,
-        "title": "colorbar tickformat"
+        "title": {"text": "colorbar tickformat"}
     }
 }

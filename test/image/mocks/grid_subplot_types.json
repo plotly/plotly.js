@@ -16,12 +16,12 @@
     {"type": "heatmap", "z": [[1, 2], [4, 1]], "showscale": false, "xaxis": "x3", "yaxis": "y3"}
   ],
   "layout": {
-    "xaxis": {"title": "x"},
-    "xaxis2": {"title": "x2"},
-    "yaxis": {"title": "y"},
-    "yaxis2": {"title": "y2"},
-    "xaxis3": {"title": "x3"},
-    "yaxis3": {"title": "y3"},
+    "xaxis": {"title": {"text": "x"}},
+    "xaxis2": {"title": {"text": "x2"}},
+    "yaxis": {"title": {"text": "y"}},
+    "yaxis2": {"title": {"text": "y2"}},
+    "xaxis3": {"title": {"text": "x3"}},
+    "yaxis3": {"title": {"text": "y3"}},
     "grid": {"rows": 3, "columns": 3, "xgap": 0.3, "ygap": 0.3},
     "scene": {"domain": {"row": 1, "column": 1}},
     "ternary": {"domain": {"row": 1, "column": 2}},

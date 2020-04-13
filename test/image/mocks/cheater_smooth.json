@@ -25,12 +25,12 @@
       ],
       "cheaterslope":2,
       "aaxis":{
-        "title":"width, cm",
+        "title":{"text":"width, cm"},
         "tickformat":".1f",
         "type":"linear"
       },
       "baxis":{
-        "title":"height, cm",
+        "title":{"text":"height, cm"},
         "tickformat":".2f",
         "type":"linear"
       }

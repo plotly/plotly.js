@@ -19,10 +19,10 @@
     }
   }],
   "layout": {
-    "title": "test",
+    "title": {"text": "test"},
     "scene": {
       "xaxis": {
-        "title": "foo<sup>bar</sup>",
+        "title": {"text": "foo<sup>bar</sup>"},
         "type": "log"
       }
     }

@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Cividis"
+    "title": {"text": "Cividis"}
   }
 }

@@ -50,7 +50,9 @@
         }
     ],
     "layout": {
-        "title": "bars + colorbar = <3",
+        "title": {
+            "text": "bars + colorbar = <3"
+        },
         "xaxis": {
             "type": "linear",
             "range": [

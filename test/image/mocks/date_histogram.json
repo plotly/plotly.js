@@ -19,10 +19,10 @@
         "width": 600,
         "height": 400,
         "xaxis": {
-            "title": "month"
+            "title": {"text": "month"}
         },
         "yaxis": {
-            "title": "count",
+            "title": {"text": "count"},
             "gridcolor": "rgb(255,255,255)"
         },
         "plot_bgcolor": "rgb(229,229,229)",

@@ -182,7 +182,9 @@
     }
   ],
   "layout": {
-    "title": "Less than constraint",
+    "title": {
+      "text": "Less than constraint"
+    },
     "width": 600,
     "height": 800,
     "dragmode": "pan",

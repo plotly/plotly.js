@@ -21,7 +21,7 @@
             }
         }],
     "layout": {
-        "title": "Sankey with manually positioned node",
+        "title": {"text": "Sankey with manually positioned node"},
         "width": 800,
         "height": 800
     }

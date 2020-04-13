@@ -5,8 +5,8 @@
         "name":"<b>test</b> <i>pseudo</i>HTML<br><sup>3</sup>H<sub>2</sub>O is <em>heavy!</em><br>and <span style=\"color:#f00;font-family:'Times New Roman', Times, serif\">Fonts,</span><br>oh my?"
     }],
     "layout":{
-        "xaxis": {"title":"<b>multiline</b> title<br>with <a>a link</a> and    spaces"},
-        "yaxis": {"title":"y<sup>2</sup><sub>3</sub> <i>or something</i>"},
+        "xaxis": {"title":{"text":"<b>multiline</b> title<br>with <a>a link</a> and    spaces"}},
+        "yaxis": {"title":{"text":"y<sup>2</sup><sub>3</sub> <i>or something</i>"}},
         "showlegend":true,
         "height":300,
         "width":400

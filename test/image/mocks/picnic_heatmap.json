@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Picnic"
+    "title": {"text": "Picnic"}
   }
 }

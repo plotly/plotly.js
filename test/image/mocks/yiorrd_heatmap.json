@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "YIOrRd"
+    "title": {"text": "YIOrRd"}
   }
 }

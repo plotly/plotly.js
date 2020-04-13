@@ -21,7 +21,7 @@
             "colorbar": {
                 "tickprefix": "",
                 "autotick": false,
-                "title": ""
+                "title": {"text": ""}
             },
             "lat": [
                 9.95,
@@ -65,7 +65,7 @@
             "colorbar": {
                 "tickprefix": "",
                 "autotick": false,
-                "title": ""
+                "title": {"text": ""}
             },
             "lat": [
                 9.95,
@@ -106,7 +106,7 @@
             "colorbar": {
                 "tickprefix": "",
                 "autotick": false,
-                "title": ""
+                "title": {"text": ""}
             },
             "lat": [
                 9.95,
@@ -145,7 +145,7 @@
             "colorbar": {
                 "tickprefix": "",
                 "autotick": false,
-                "title": ""
+                "title": {"text": ""}
             },
             "lat": [
                 9.95,
@@ -276,7 +276,7 @@
         "legend": {
             "traceorder": "reversed"
         },
-        "title": "Ebola cases reported by month in West Africa 2014<br> Source: <a href=\"https://data.hdx.rwlabs.org/dataset/rowca-ebola-cases\">HDX</a>",
+        "title": {"text": "Ebola cases reported by month in West Africa 2014<br> Source: <a href=\"https://data.hdx.rwlabs.org/dataset/rowca-ebola-cases\">HDX</a>"},
         "autosize": true,
         "height": 791,
         "width": 1600

@@ -22,11 +22,6 @@
         "boxmode":"overlay",
         "paper_bgcolor":"#fff",
         "height":790,
-        "titlefont":{
-            "color":"",
-            "family":"",
-            "size":0
-        },
         "hovermode":"x",
         "font":{
             "color":"#444",
@@ -34,7 +29,7 @@
             "size":16
         },
         "autosize":true,
-        "title":"Click to enter Plot title",
+        "title":{"text":"Click to enter Plot title"},
         "plot_bgcolor":"#fff",
         "dragmode":"zoom",
         "width":1530,
@@ -54,7 +49,7 @@
             "autorange":false,
             "zerolinecolor":"#444",
             "tickmode":"auto",
-            "title":"Click to enter X axis title",
+            "title":{"text":"Click to enter X axis title"},
             "ticks":"",
             "showgrid":false,
             "overlaying":false,
@@ -62,11 +57,6 @@
             "type":"linear",
             "zerolinewidth":1,
             "ticklen":5,
-            "titlefont":{
-                "color":"",
-                "family":"",
-                "size":0
-            },
             "tickcolor":"#444",
             "showline":false,
             "tickfont":{
@@ -434,7 +424,7 @@
             "autorange":false,
             "zerolinecolor":"#444",
             "tickmode":"auto",
-            "title":"Click to enter Y axis title",
+            "title":{"text":"Click to enter Y axis title"},
             "ticks":"",
             "showgrid":false,
             "overlaying":false,
@@ -442,11 +432,6 @@
             "type":"linear",
             "zerolinewidth":1,
             "ticklen":5,
-            "titlefont":{
-                "color":"",
-                "family":"",
-                "size":0
-            },
             "tickcolor":"#444",
             "showline":false,
             "tickfont":{

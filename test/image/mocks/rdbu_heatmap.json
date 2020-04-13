@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "RdBu"
+    "title": {"text": "RdBu"}
   }
 }

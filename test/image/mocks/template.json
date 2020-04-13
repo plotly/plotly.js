@@ -10,7 +10,7 @@
     "layout": {
         "width": 600,
         "height": 500,
-        "yaxis2": {"anchor": "x2", "title": "y2"},
+        "yaxis2": {"anchor": "x2", "title": {"text": "y2"}},
         "annotations": [
             {"text": "Hi!", "x": 0, "y": 3.5},
             {"templateitemname": "watermark", "font": {"size": 120}, "name": "new watermark"},
@@ -37,9 +37,9 @@
             },
             "layout":{
                 "colorway": ["red", "green", "blue"],
-                "xaxis": {"domain": [0, 0.45], "color": "#CCC", "title": "XXX"},
-                "xaxis2": {"domain": [0.55, 1], "title": "XXX222"},
-                "yaxis": {"color": "#88F", "title": "y"},
+                "xaxis": {"domain": [0, 0.45], "color": "#CCC", "title": {"text": "XXX"}},
+                "xaxis2": {"domain": [0.55, 1], "title": {"text": "XXX222"}},
+                "yaxis": {"color": "#88F", "title": {"text": "y"}},
                 "legend": {"bgcolor": "rgba(0,0,0,0)"},
                 "annotationdefaults": {"arrowcolor": "#8F8", "arrowhead": 7, "ax": 0},
                 "annotations": [

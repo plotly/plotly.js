@@ -524,7 +524,7 @@
     }
   ],
   "layout": {
-    "title": "Correlation Matrix",
+    "title": {"text": "Correlation Matrix"},
     "width": 1670,
     "height": 758,
     "autosize": true,

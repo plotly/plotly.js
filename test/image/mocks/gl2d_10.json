@@ -36,11 +36,11 @@
         }
     ],
     "layout": {
-        "title": "Math Score Box Plots",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 16
+        "title": {
+            "text": "Math Score Box Plots",
+            "font": {
+                "size": 16
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -52,12 +52,7 @@
         "width": 600,
         "height": 440,
         "xaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
-            },
+            "title": {"text": ""},
             "range": [
                 -0.6575,
                 5.5
@@ -101,12 +96,7 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Score",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
-            },
+            "title": {"text": "Score"},
             "range": [
                 -1.6340975059013805,
                 7.166241526218911

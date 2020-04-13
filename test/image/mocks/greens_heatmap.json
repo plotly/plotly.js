@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "Greens"
+    "title": {"text": "Greens"}
   }
 }
