@@ -12,14 +12,11 @@
             },
             "line": {
                 "width": 50,
-                "color": ["rgba(0, 255, 0, 0.5)", "rgba(255, 0, 0, 0.0)", "rgba(255, 0, 0, 0.0)", "rgba(255, 0, 0, 0.0)", "rgba(0, 0, 255, 1.0)"],
-                "opacity": 0.999
+                "color": ["rgba(0, 255, 0, 0.5)", "rgba(255, 0, 0, 0.0)", "rgba(255, 0, 0, 0.0)", "rgba(255, 0, 0, 0.0)", "rgba(0, 0, 255, 1.0)"]
             },
             "error_z": {
                 "type": "sqrt",
-                "line": { "thickness": 10 },
-                "color": "rgba(0, 255, 0, 0.0)",
-                "opacity": 0.999
+                "color": "rgba(0, 255, 0, 0.0)"
             },
             "error_x": {
                 "type": "sqrt"

@@ -24,9 +24,6 @@
         "width": 8,
         "color": "magenta"
       },
-      "marker": {
-        "size": 10
-      },
       "type":"scatter3d"
     },
     {

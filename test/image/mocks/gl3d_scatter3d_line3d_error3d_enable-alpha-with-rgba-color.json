@@ -15,7 +15,6 @@
             },
             "error_z": {
                 "type": "sqrt",
-                "line": { "thickness": 10 },
                 "color": "rgba(255, 127, 0, 0.75)"
             },
             "error_x": {

@@ -7,7 +7,7 @@
     "marker": {
       "color": "blue"
     },
-    "scene": "scene1"
+    "scene": "scene"
   },{
     "type": "scatter3d",
     "x": [2],
@@ -20,7 +20,7 @@
   }],
   "layout": {
     "title": {"text": "scene should be the same as scene1"},
-    "scene1": {
+    "scene": {
       "domain": {
         "x": [0, 0.5],
         "y": [0, 0.5]
