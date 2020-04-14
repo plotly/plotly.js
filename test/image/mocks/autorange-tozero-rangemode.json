@@ -71,7 +71,6 @@
                 null,
                 null
             ],
-            "mode": "lines",
             "name": "Take Rate",
             "xaxis": "x",
             "yaxis": "y2",

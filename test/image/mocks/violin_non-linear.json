@@ -11,6 +11,7 @@
             "1799-01-01"
         ],
         "orientation": "h",
+        "xcalendar": "discworld",
         "name": "discworld dates",
         "box": {"visible": true},
         "xaxis": "x",

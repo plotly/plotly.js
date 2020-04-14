@@ -45,7 +45,10 @@
         "shape": "vh",
         "dash": "solid"
       },
-      "fill": "tozeroy"
+      "fill": "tozeroy",
+      "marker": {
+        "color": "rgba(168, 216, 234, 0.5)"
+      }
     }
   ],
   "layout": {

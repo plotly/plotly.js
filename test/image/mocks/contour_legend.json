@@ -1,12 +1,12 @@
 {
   "data":[{
     "type": "contour",
-    "contours":{"coloring":"fills", "showlabels": true},
+    "contours":{"coloring":"fill", "showlabels": true},
     "z":[[1, 2, 1], [2, 4, 1], [3, 4, 4]],
     "colorscale": "Greys",
     "showscale": false,
     "showlegend": true,
-    "name": "fills"
+    "name": "fill"
   }, {
       "type": "contour",
       "contours":{"coloring":"lines", "showlabels": true},
