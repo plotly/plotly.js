@@ -49,15 +49,7 @@
             "showcoastlines": true,
             "showcountries": true,
             "showland": true,
-            "showocean": true,
-            "lonaxis": {
-                "gridwidth": 2,
-                "gridcolor": "black"
-            },
-            "lataxis": {
-                "gridwidth": 2,
-                "gridcolor": "black"
-            }
+            "showocean": true
         },
         "autosize": false,
         "width": 500,
