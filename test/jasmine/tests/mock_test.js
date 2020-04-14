@@ -1027,6 +1027,8 @@ var figs = {};
     });
     console.log(code);
 */
+
+/*
 figs['0'] = require('@mocks/0');
 figs['1'] = require('@mocks/1');
 figs['4'] = require('@mocks/4');
@@ -2041,6 +2043,7 @@ figs['yaxis-over-yaxis2'] = require('@mocks/yaxis-over-yaxis2');
 figs['yignbu_heatmap'] = require('@mocks/yignbu_heatmap');
 figs['yiorrd_heatmap'] = require('@mocks/yiorrd_heatmap');
 figs['zsmooth_methods'] = require('@mocks/zsmooth_methods');
+*/
 
 describe('@noCI mock validation', function() {
     list.forEach(function(name) {
