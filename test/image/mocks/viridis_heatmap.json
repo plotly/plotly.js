@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Viridis",
+      "colorscale": "Viridis",
       "type": "heatmap"
     }
   ],

@@ -42,9 +42,6 @@
     }],
     "layout": {
         "title": {"text": "in_Fz_tar = f(in_Fy_tar)"},
-        "margin": {"r": 80},
-        "legend": {
-            "font": {"size": 9}
-        }
+        "margin": {"r": 80}
     }
 }

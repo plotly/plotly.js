@@ -33,11 +33,6 @@
     "xaxis": {
       "type": "category"
     },
-    "barmode": "stack",
-    "categories": [
-      "giraffes",
-      "orangutans",
-      "monkeys"
-    ]
+    "barmode": "stack"
   }
 }

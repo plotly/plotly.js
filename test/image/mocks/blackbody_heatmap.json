@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Blackbody",
+      "colorscale": "Blackbody",
       "type": "heatmap"
     }
   ],

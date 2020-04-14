@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "RdBu",
+      "colorscale": "RdBu",
       "type": "heatmap"
     }
   ],

@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Picnic",
+      "colorscale": "Picnic",
       "type": "heatmap"
     }
   ],

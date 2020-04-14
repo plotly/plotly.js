@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Greens",
+      "colorscale": "Greens",
       "type": "heatmap"
     }
   ],

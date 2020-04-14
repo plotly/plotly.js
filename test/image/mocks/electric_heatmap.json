@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Electric",
+      "colorscale": "Electric",
       "type": "heatmap"
     }
   ],

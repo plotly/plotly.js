@@ -16,7 +16,6 @@
         }],
     "layout": {
         "title": {"text": "Violins - negative sided with positive points"},
-        "legend": {"x": 0},
         "xaxis": {"zeroline": false},
         "yaxis": {"dtick": 0.1, "gridcolor": "black"}
     }

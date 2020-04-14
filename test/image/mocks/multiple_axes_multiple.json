@@ -61,7 +61,9 @@
         }
     ],
     "layout": {
-        "title": "multiple y-axes example",
+        "title": {
+            "text": "multiple y-axes example"
+        },
         "width": 800,
         "xaxis": {
             "domain": [

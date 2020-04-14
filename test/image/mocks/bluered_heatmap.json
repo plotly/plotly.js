@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Bluered",
+      "colorscale": "Bluered",
       "type": "heatmap"
     }
   ],

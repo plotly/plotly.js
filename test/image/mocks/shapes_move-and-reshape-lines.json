@@ -31,7 +31,6 @@
     },
     "yaxis2": {
       "domain": [0.55,0.92],
-      "type": "categorical",
       "anchor": "x2"
     },
     "xaxis3": {

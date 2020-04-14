@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Greys",
+      "colorscale": "Greys",
       "type": "heatmap"
     }
   ],

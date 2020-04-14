@@ -2603,7 +2603,7 @@
           100
         ]
       ],
-      "scl": "Earth",
+      "colorscale": "Earth",
       "type": "heatmap",
       "zsmooth": "fast"
     }
