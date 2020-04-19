@@ -170,6 +170,21 @@ function getButtonGroups(gd) {
         dragModeGroup.push('select2d', 'lasso2d');
     }
 
+    if(
+        // fullLayout._has('ternary') ||
+        // fullLayout._has('mapbox') ||
+        fullLayout._has('cartesian')
+    ) {
+        dragModeGroup.push(
+            'linedraw',
+            'openfreedraw',
+            'closedfreedraw',
+            'ellipsedraw',
+            'rectdraw',
+            'eraseshape'
+        );
+    }
+
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));
     addGroup(hoverGroup);
