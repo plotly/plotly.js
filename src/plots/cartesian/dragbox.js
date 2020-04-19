@@ -21,6 +21,10 @@ var Fx = require('../../components/fx');
 var Axes = require('./axes');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
+var helpers = require('../../components/dragelement/helpers');
+var selectingOrDrawing = helpers.selectingOrDrawing;
+var freeMode = helpers.freeMode;
+
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
@@ -163,7 +167,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    else if(!selectingOrDrawing(dragModeNow)) dragModeNow = 'pan';
                 } else if(e.ctrlKey) {
                     dragModeNow = 'pan';
                 }
@@ -173,17 +177,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
-        if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+        if(freeMode(dragModeNow)) dragOptions.minDrag = 1;
         else dragOptions.minDrag = undefined;
 
-        if(isSelectOrLasso(dragModeNow)) {
+        if(selectingOrDrawing(dragModeNow)) {
             dragOptions.xaxes = xaxes;
             dragOptions.yaxes = yaxes;
             // this attaches moveFn, clickFn, doneFn on dragOptions
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
-            if(isSelectOrLasso(dragModePrev)) {
+            if(selectingOrDrawing(dragModePrev)) {
                 // TODO Fix potential bug
                 // Note: clearing / resetting selection state only happens, when user
                 // triggers at least one interaction in pan/zoom mode. Otherwise, the
@@ -221,7 +225,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(dragDataNow && dragDataNow.element === dragger) {
                 var dragModeNow = gd._fullLayout.dragmode;
 
-                if(!isSelectOrLasso(dragModeNow)) {
+                if(!selectingOrDrawing(dragModeNow)) {
                     recomputeAxisLists();
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
@@ -1109,10 +1113,6 @@ function showDoubleClickNotifier(gd) {
         Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
         SHOWZOOMOUTTIP = false;
     }
-}
-
-function isSelectOrLasso(dragmode) {
-    return dragmode === 'lasso' || dragmode === 'select';
 }
 
 function xCorners(box, y0) {

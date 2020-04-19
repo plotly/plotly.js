@@ -12,6 +12,15 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+
+var newShape = require('../../plots/cartesian/new_shape');
+var readPaths = newShape.readPaths;
+var displayOutlines = newShape.displayOutlines;
+
+var handleOutline = require('../../plots/cartesian/handle_outline');
+var activateShape = handleOutline.activateShape;
+var eraseActiveShape = handleOutline.eraseActiveShape;
+
 var Color = require('../color');
 var Drawing = require('../drawing');
 var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
@@ -34,7 +43,8 @@ var helpers = require('./helpers');
 
 module.exports = {
     draw: draw,
-    drawOne: drawOne
+    drawOne: drawOne,
+    eraseActiveShape: eraseActiveShape
 };
 
 function draw(gd) {
@@ -72,13 +82,16 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!options._input || options.visible === false) return;
 
+    var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
+    var hasPlotinfo = !!plotinfo;
+    if(!hasPlotinfo) plotinfo = {};
+
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);
     } else if(options.xref === 'paper' || options.yref === 'paper') {
         drawShape(gd._fullLayout._shapeLowerLayer);
     } else {
-        var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
-        if(plotinfo) {
+        if(hasPlotinfo) {
             var mainPlot = plotinfo.mainplotinfo || plotinfo;
             drawShape(mainPlot.shapelayer);
         } else {
@@ -90,23 +103,73 @@ function drawOne(gd, index) {
     }
 
     function drawShape(shapeLayer) {
+        var d = getPathString(gd, options);
         var attrs = {
             'data-index': index,
-            'fill-rule': 'evenodd',
-            d: getPathString(gd, options)
+            'fill-rule': options.fillrule,
+            d: d
         };
+
+        var opacity = options.opacity;
+        var fillColor = options.fillcolor;
         var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
+        var lineWidth = options.line.width;
+        var lineDash = options.line.dash;
+
+        var isOpen = d[d.length - 1] !== 'Z';
+
+        var isActiveShape = options.editable && gd._fullLayout._activeShapeIndex === index;
+        if(isActiveShape) {
+            fillColor = isOpen ? 'rgba(0,0,0,0)' :
+                gd._fullLayout.activeshape.fillcolor;
+
+            opacity = gd._fullLayout.activeshape.opacity;
+        }
 
         var path = shapeLayer.append('path')
             .attr(attrs)
-            .style('opacity', options.opacity)
+            .style('opacity', opacity)
             .call(Color.stroke, lineColor)
-            .call(Color.fill, options.fillcolor)
-            .call(Drawing.dashLine, options.line.dash, options.line.width);
+            .call(Color.fill, fillColor)
+            .call(Drawing.dashLine, lineDash, lineWidth);
 
         setClipPath(path, gd, options);
 
-        if(gd._context.edits.shapePosition) setupDragElement(gd, path, options, index, shapeLayer);
+        if(isActiveShape) {
+            path.style({
+                'cursor': 'move',
+            });
+
+            var dragOptions = {
+                element: path.node(),
+                plotinfo: plotinfo,
+                gd: gd,
+                dragmode: gd._fullLayout.dragmode,
+                isActiveShape: true // i.e. to enable controllers
+            };
+
+            var polygons = readPaths(d);
+            // display polygons on the screen
+            displayOutlines(polygons, path, dragOptions);
+        } else {
+            if(gd._context.edits.shapePosition) {
+                setupDragElement(gd, path, options, index, shapeLayer);
+            }
+
+            path.style('pointer-events',
+                !gd._context.edits.shapePosition && // for backward compatibility
+                (lineWidth >= 1) && ( // has border
+                    (Color.opacity(fillColor) * opacity <= 0.5) || // too transparent
+                    isOpen
+                ) ?
+                'stroke' : 'all'
+            );
+            path.node().addEventListener('click', function() { return clickFn(path); });
+        }
+    }
+
+    function clickFn(path) {
+        return activateShape(gd, path, draw);
     }
 }
 
@@ -213,7 +276,16 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         return g;
     }
 
+    function shouldSkipEdits() {
+        return !!gd._fullLayout._drawing;
+    }
+
     function updateDragMode(evt) {
+        if(shouldSkipEdits()) {
+            dragMode = null;
+            return;
+        }
+
         if(isLine) {
             if(evt.target.tagName === 'path') {
                 dragMode = 'move';
@@ -244,6 +316,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function startDrag(evt) {
+        if(shouldSkipEdits()) return;
+
         // setup update strings and initial values
         if(xPixelSized) {
             xAnchor = x2p(shapeOptions.xanchor);
@@ -292,9 +366,12 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         renderVisualCues(shapeLayer, shapeOptions);
         deactivateClipPathTemporarily(shapePath, shapeOptions, gd);
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
+        dragOptions.altKey = evt.altKey;
     }
 
     function endDrag() {
+        if(shouldSkipEdits()) return;
+
         setCursor(shapePath);
         removeVisualCues(shapeLayer);
 
@@ -304,6 +381,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function abortDrag() {
+        if(shouldSkipEdits()) return;
+
         removeVisualCues(shapeLayer);
     }
 
