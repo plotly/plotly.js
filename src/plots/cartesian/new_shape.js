@@ -638,7 +638,8 @@ function addNewShapes(outlines, dragOptions) {
                     dragmode = 'linedraw';
                     break;
                 case 'path':
-                    if(d[d.length - 1] === 'Z') {
+                    var path = gd._fullLayout.shapes[id].path || '';
+                    if(path[path.length - 1] === 'Z') {
                         dragmode = 'closedfreedraw';
                     } else {
                         dragmode = 'openfreedraw';
@@ -651,6 +652,15 @@ function addNewShapes(outlines, dragOptions) {
 
     var newShapes = [];
     var polygons = readPaths(d, plotinfo, gd._fullLayout._size, isActiveShape);
+    if(isOpenMode) {
+        var last = polygons[0].length - 1;
+        if( // ensure first and last positions are not the same on an open path
+            polygons[0][0][0] === polygons[0][last][0] &&
+            polygons[0][0][1] === polygons[0][last][1]
+        ) {
+            polygons[0].pop();
+        }
+    }
     for(var i = 0; i < polygons.length; i++) {
         var cell = polygons[i];
         var len = cell.length;
