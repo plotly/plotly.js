@@ -17,35 +17,35 @@ exports.selectMode = function(dragmode) {
 
 exports.drawMode = function(dragmode) {
     return (
-        dragmode === 'closedfreedraw' ||
-        dragmode === 'openfreedraw' ||
-        dragmode === 'linedraw' ||
-        dragmode === 'rectdraw' ||
-        dragmode === 'ellipsedraw'
+        dragmode === 'drawclosedpath' ||
+        dragmode === 'drawopenpath' ||
+        dragmode === 'drawline' ||
+        dragmode === 'drawrect' ||
+        dragmode === 'drawcircle'
     );
 };
 
 exports.openMode = function(dragmode) {
     return (
-        dragmode === 'linedraw' ||
-        dragmode === 'openfreedraw'
+        dragmode === 'drawline' ||
+        dragmode === 'drawopenpath'
     );
 };
 
 exports.rectMode = function(dragmode) {
     return (
         dragmode === 'select' ||
-        dragmode === 'linedraw' ||
-        dragmode === 'rectdraw' ||
-        dragmode === 'ellipsedraw'
+        dragmode === 'drawline' ||
+        dragmode === 'drawrect' ||
+        dragmode === 'drawcircle'
     );
 };
 
 exports.freeMode = function(dragmode) {
     return (
         dragmode === 'lasso' ||
-        dragmode === 'closedfreedraw' ||
-        dragmode === 'openfreedraw'
+        dragmode === 'drawclosedpath' ||
+        dragmode === 'drawopenpath'
     );
 };
 

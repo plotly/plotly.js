@@ -645,20 +645,20 @@ function addNewShapes(outlines, dragOptions) {
         if(id < gd._fullLayout.shapes.length) {
             switch(gd._fullLayout.shapes[id].type) {
                 case 'rect':
-                    dragmode = 'rectdraw';
+                    dragmode = 'drawrect';
                     break;
                 case 'circle':
-                    dragmode = 'ellipsedraw';
+                    dragmode = 'drawcircle';
                     break;
                 case 'line':
-                    dragmode = 'linedraw';
+                    dragmode = 'drawline';
                     break;
                 case 'path':
                     var path = gd._fullLayout.shapes[id].path || '';
                     if(path[path.length - 1] === 'Z') {
-                        dragmode = 'closedfreedraw';
+                        dragmode = 'drawclosedpath';
                     } else {
-                        dragmode = 'openfreedraw';
+                        dragmode = 'drawopenpath';
                     }
                     break;
             }
@@ -695,7 +695,7 @@ function addNewShapes(outlines, dragOptions) {
         }
 
         if(
-            dragmode === 'rectdraw' &&
+            dragmode === 'drawrect' &&
             pointsShapeRectangle(cell)
         ) {
             shape.type = 'rect';
@@ -704,7 +704,7 @@ function addNewShapes(outlines, dragOptions) {
             shape.x1 = cell[2][1];
             shape.y1 = cell[2][2];
         } else if(
-            dragmode === 'linedraw'
+            dragmode === 'drawline'
         ) {
             shape.type = 'line';
             shape.x0 = cell[0][1];
@@ -712,7 +712,7 @@ function addNewShapes(outlines, dragOptions) {
             shape.x1 = cell[1][1];
             shape.y1 = cell[1][2];
         } else if(
-            dragmode === 'ellipsedraw' &&
+            dragmode === 'drawcircle' &&
             (isActiveShape === false || pointsShapeEllipse(cell))
         ) {
             shape.type = 'circle'; // an ellipse!

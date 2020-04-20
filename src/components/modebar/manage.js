@@ -176,11 +176,11 @@ function getButtonGroups(gd) {
         fullLayout._has('cartesian')
     ) {
         dragModeGroup.push(
-            'linedraw',
-            'openfreedraw',
-            'closedfreedraw',
-            'ellipsedraw',
-            'rectdraw',
+            'drawline',
+            'drawopenpath',
+            'drawclosedpath',
+            'drawcircle',
+            'drawrect',
             'eraseshape'
         );
     }

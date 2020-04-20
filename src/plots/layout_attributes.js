@@ -514,7 +514,7 @@ module.exports = {
             dflt: 'diagonal',
             editType: 'none',
             description: [
-                'When `dragmode` is set to *rectdraw*, *linedraw* or *ellipsedraw*',
+                'When `dragmode` is set to *drawrect*, *drawline* or *drawcircle*',
                 'this limits the drag to be horizontal, vertical or diagonal.',
                 'Using *diagonal* there is no limit e.g. in drawing lines in any direction.',
                 '*ortho* limits the draw to be either horizontal or vertical.',

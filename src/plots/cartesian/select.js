@@ -59,8 +59,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var isDrawMode = drawMode(mode);
     var isSelectMode = selectMode(mode);
 
-    var isLine = mode === 'linedraw';
-    var isEllipse = mode === 'ellipsedraw';
+    var isLine = mode === 'drawline';
+    var isEllipse = mode === 'drawcircle';
     var isLineOrEllipse = isLine || isEllipse; // cases with two start & end positions
 
     var gd = dragOptions.gd;

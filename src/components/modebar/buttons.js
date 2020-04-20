@@ -134,48 +134,48 @@ modeBarButtons.lasso2d = {
     click: handleCartesian
 };
 
-modeBarButtons.closedfreedraw = {
-    name: 'closedfreedraw',
+modeBarButtons.drawclosedpath = {
+    name: 'drawclosedpath',
     title: function(gd) { return _(gd, 'Draw Closed Freeform'); },
     attr: 'dragmode',
-    val: 'closedfreedraw',
-    icon: Icons.closedfreedraw,
+    val: 'drawclosedpath',
+    icon: Icons.drawclosedpath,
     click: handleCartesian
 };
 
-modeBarButtons.openfreedraw = {
-    name: 'openfreedraw',
+modeBarButtons.drawopenpath = {
+    name: 'drawopenpath',
     title: function(gd) { return _(gd, 'Draw Open Freeform'); },
     attr: 'dragmode',
-    val: 'openfreedraw',
-    icon: Icons.openfreedraw,
+    val: 'drawopenpath',
+    icon: Icons.drawopenpath,
     click: handleCartesian
 };
 
-modeBarButtons.linedraw = {
-    name: 'linedraw',
+modeBarButtons.drawline = {
+    name: 'drawline',
     title: function(gd) { return _(gd, 'Draw Line'); },
     attr: 'dragmode',
-    val: 'linedraw',
-    icon: Icons.linedraw,
+    val: 'drawline',
+    icon: Icons.drawline,
     click: handleCartesian
 };
 
-modeBarButtons.rectdraw = {
-    name: 'rectdraw',
+modeBarButtons.drawrect = {
+    name: 'drawrect',
     title: function(gd) { return _(gd, 'Draw Rectangle'); },
     attr: 'dragmode',
-    val: 'rectdraw',
-    icon: Icons.rectdraw,
+    val: 'drawrect',
+    icon: Icons.drawrect,
     click: handleCartesian
 };
 
-modeBarButtons.ellipsedraw = {
-    name: 'ellipsedraw',
+modeBarButtons.drawcircle = {
+    name: 'drawcircle',
     title: function(gd) { return _(gd, 'Draw Ellipse'); },
     attr: 'dragmode',
-    val: 'ellipsedraw',
-    icon: Icons.ellipsedraw,
+    val: 'drawcircle',
+    icon: Icons.drawcircle,
     click: handleCartesian
 };
 
