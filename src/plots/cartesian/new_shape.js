@@ -39,27 +39,21 @@ var handleOutline = require('./handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 var clearSelect = handleOutline.clearSelect;
 
-function recordPositions(polygonsOut, polygonsIn) { // copy & clean (i.e. skip duplicates)
+function recordPositions(polygonsOut, polygonsIn) {
     for(var i = 0; i < polygonsIn.length; i++) {
+        var cell = polygonsIn[i];
         polygonsOut[i] = [];
-        var len = polygonsIn[i].length;
-        for(var newJ = 0, j = 0; j < len; j++) {
-            // skip close points
-            if(j > 0 && dist(polygonsIn[i][j], polygonsIn[i][(j + 1) % len]) < 1) continue;
-
-            polygonsOut[i][newJ] = [];
-            for(var k = 0; k < polygonsIn[i][newJ].length; k++) {
-                polygonsOut[i][newJ][k] = polygonsIn[i][j][k];
+        for(var j = 0; j < cell.length; j++) {
+            polygonsOut[i][j] = [];
+            for(var k = 0; k < cell[j].length; k++) {
+                polygonsOut[i][j][k] = cell[j][k];
             }
-            newJ++;
         }
     }
     return polygonsOut;
 }
 
-function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
-    var polygons = recordPositions([], polygonsIn);
-
+function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     if(!nCalls) nCalls = 0;
 
     var gd = dragOptions.gd;
@@ -87,12 +81,11 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
 
     var dragmode = dragOptions.dragmode;
     var isDrawMode = drawMode(dragmode);
-    var isOpenMode = openMode(dragmode);
 
     if(isDrawMode) gd._fullLayout._drawing = true;
 
     // make outline
-    outlines.attr('d', writePaths(polygons, isOpenMode));
+    outlines.attr('d', writePaths(polygons));
 
     // add controllers
     var rVertexController = MINSELECT * 1.5; // bigger vertex buttons
@@ -337,7 +330,7 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
     }
 }
 
-function writePaths(polygons, isOpenMode) {
+function writePaths(polygons) {
     var nI = polygons.length;
     if(!nI) return 'M0,0Z';
 
@@ -345,16 +338,21 @@ function writePaths(polygons, isOpenMode) {
     for(var i = 0; i < nI; i++) {
         var nJ = polygons[i].length;
         for(var j = 0; j < nJ; j++) {
-            var nK = polygons[i][j].length;
-            for(var k = 0; k < nK; k++) {
-                str += polygons[i][j][k];
-                if(k > 0 && k < nK - 1) {
-                    str += ',';
+            if(polygons[i][j][0] === 'Z') {
+                str += 'Z';
+                break;
+            } else {
+                var nK = polygons[i][j].length;
+                for(var k = 0; k < nK; k++) {
+                    str += polygons[i][j][k];
+                    if(k > 0 && k < nK - 1) {
+                        str += ',';
+                    }
                 }
             }
         }
-        if(!isOpenMode) str += 'Z';
     }
+
     return str;
 }
 
@@ -434,41 +432,44 @@ function readPaths(str, plotinfo, size, isActiveShape) {
                 }
 
                 break;
+
+            case 'Z':
+                if(x !== initX || y !== initY) {
+                    x = initX;
+                    y = initY;
+                    newPos.push([x, y]);
+                }
+                break;
         }
 
-        if(c === 'Z') {
-            x = initX;
-            y = initY;
-        } else {
-            for(var j = 0; j < newPos.length; j++) {
-                x = newPos[j][0];
-                y = newPos[j][1];
+        for(var j = 0; j < newPos.length; j++) {
+            x = newPos[j][0];
+            y = newPos[j][1];
 
-                if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
-                    polys[n].push([
-                        w,
-                        x,
-                        y
-                    ]);
-                } else if(plotinfo.domain) {
-                    polys[n].push([
-                        w,
-                        plotinfo.domain.x[0] + x / size.w,
-                        plotinfo.domain.y[1] - y / size.h
-                    ]);
-                } else if(isActiveShape === false) {
-                    polys[n].push([
-                        w,
-                        p2r(plotinfo.xaxis, x - plotinfo.xaxis._offset),
-                        p2r(plotinfo.yaxis, y - plotinfo.yaxis._offset)
-                    ]);
-                } else {
-                    polys[n].push([
-                        w,
-                        p2r(plotinfo.xaxis, x),
-                        p2r(plotinfo.yaxis, y)
-                    ]);
-                }
+            if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
+                polys[n].push([
+                    w,
+                    x,
+                    y
+                ]);
+            } else if(plotinfo.domain) {
+                polys[n].push([
+                    w,
+                    plotinfo.domain.x[0] + x / size.w,
+                    plotinfo.domain.y[1] - y / size.h
+                ]);
+            } else if(isActiveShape === false) {
+                polys[n].push([
+                    w,
+                    p2r(plotinfo.xaxis, x - plotinfo.xaxis._offset),
+                    p2r(plotinfo.yaxis, y - plotinfo.yaxis._offset)
+                ]);
+            } else {
+                polys[n].push([
+                    w,
+                    p2r(plotinfo.xaxis, x),
+                    p2r(plotinfo.yaxis, y)
+                ]);
             }
         }
     }
@@ -518,9 +519,10 @@ function calcMax(cell, dim) {
     return v;
 }
 
-function pointsShapeRectangle(cell, len) {
-    if(!len) len = cell.length;
-    if(len !== 4) return false;
+function pointsShapeRectangle(cell) {
+    var len = cell.length;
+    if(len !== 5) return false;
+
     for(var j = 1; j < 3; j++) {
         var e01 = cell[0][j] - cell[1][j];
         var e32 = cell[3][j] - cell[2][j];
@@ -545,10 +547,12 @@ function pointsShapeRectangle(cell, len) {
     );
 }
 
-function pointsShapeEllipse(cell, len) {
-    if(!len) len = cell.length;
-    if(len !== CIRCLE_SIDES) return false;
+function pointsShapeEllipse(cell) {
+    var len = cell.length;
+    if(len !== CIRCLE_SIDES + 1) return false;
+
     // opposite diagonals should be the same
+    len = CIRCLE_SIDES;
     for(var i = 0; i < len; i++) {
         var k = (len * 2 - i) % len;
 
@@ -660,30 +664,15 @@ function addNewShapes(outlines, dragOptions) {
             }
         }
     }
+
     var isOpenMode = openMode(dragmode);
 
     var polygons = readPaths(d, plotinfo, gd._fullLayout._size, isActiveShape);
-    if(isOpenMode) {
-        var last = polygons[0].length - 1;
-        if( // ensure first and last positions are not the same on an open path
-            polygons[0][0][1] === polygons[0][last][1] &&
-            polygons[0][0][2] === polygons[0][last][2]
-        ) {
-            polygons[0].pop();
-        }
-    }
 
     var newShapes = [];
     for(var i = 0; i < polygons.length; i++) {
         var cell = polygons[i];
-        var len = cell.length;
-        if(
-            cell[0][1] === cell[len - 1][1] &&
-            cell[0][2] === cell[len - 1][2]
-        ) {
-            len -= 1;
-        }
-        if(len < 2) continue;
+        if(cell.length < 2) continue;
 
         var shape = {
             editable: true,
@@ -707,7 +696,7 @@ function addNewShapes(outlines, dragOptions) {
 
         if(
             dragmode === 'rectdraw' &&
-            pointsShapeRectangle(cell, len) // should pass len here which is equal to cell.length - 1 i.e. because of the closing point
+            pointsShapeRectangle(cell)
         ) {
             shape.type = 'rect';
             shape.x0 = cell[0][1];
@@ -724,7 +713,7 @@ function addNewShapes(outlines, dragOptions) {
             shape.y1 = cell[1][2];
         } else if(
             dragmode === 'ellipsedraw' &&
-            (isActiveShape === false || pointsShapeEllipse(cell, len)) // should pass len here which is equal to cell.length - 1 i.e. because of the closing point
+            (isActiveShape === false || pointsShapeEllipse(cell))
         ) {
             shape.type = 'circle'; // an ellipse!
             var pos = {};
@@ -758,7 +747,7 @@ function addNewShapes(outlines, dragOptions) {
                 fixDatesOnPaths(cell, xaxis, yaxis);
             }
 
-            shape.path = writePaths([cell], isOpenMode);
+            shape.path = writePaths([cell]);
         }
 
         newShapes.push(shape);

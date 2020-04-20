@@ -144,7 +144,6 @@ function drawOne(gd, index) {
                 element: path.node(),
                 plotinfo: plotinfo,
                 gd: gd,
-                dragmode: gd._fullLayout.dragmode,
                 isActiveShape: true // i.e. to enable controllers
             };
 
