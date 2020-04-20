@@ -140,7 +140,7 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
             if(!pointsShapeRectangle(cell)) {
                 // reject result to rectangles with ensure areas
                 for(var j = 0; j < len; j++) {
-                    for(var k = 0; k < 3; k++) {
+                    for(var k = 0; k < cell[j].length; k++) {
                         cell[j][k] = copyPolygons[indexI][j][k];
                     }
                 }
@@ -330,6 +330,9 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     }
 }
 
+var iC = [0, 3, 4, 5, 6, 1, 2];
+var iQS = [0, 3, 4, 1, 2];
+
 function writePaths(polygons) {
     var nI = polygons.length;
     if(!nI) return 'M0,0Z';
@@ -338,13 +341,21 @@ function writePaths(polygons) {
     for(var i = 0; i < nI; i++) {
         var nJ = polygons[i].length;
         for(var j = 0; j < nJ; j++) {
-            if(polygons[i][j][0] === 'Z') {
+            var w = polygons[i][j][0];
+            if(w === 'Z') {
                 str += 'Z';
                 break;
             } else {
                 var nK = polygons[i][j].length;
                 for(var k = 0; k < nK; k++) {
-                    str += polygons[i][j][k];
+                    var realK = k;
+                    if(w === 'Q' || w === 'S') {
+                        realK = iQS[k];
+                    } else if(w === 'C') {
+                        realK = iC[k];
+                    }
+
+                    str += polygons[i][j][realK];
                     if(k > 0 && k < nK - 1) {
                         str += ',';
                     }
@@ -366,6 +377,7 @@ function readPaths(str, plotinfo, size, isActiveShape) {
         polys[n] = [];
     };
 
+    var k;
     var x = 0;
     var y = 0;
     var initX;
@@ -379,6 +391,8 @@ function readPaths(str, plotinfo, size, isActiveShape) {
     for(var i = 0; i < cmd.length; i++) {
         var newPos = [];
 
+        var x1, x2, y1, y2; // i.e. extra params for curves
+
         var c = cmd[i][0];
         var w = c;
         switch(c) {
@@ -386,34 +400,51 @@ function readPaths(str, plotinfo, size, isActiveShape) {
                 newPoly();
                 x = +cmd[i][1];
                 y = +cmd[i][2];
-                newPos.push([x, y]);
+                newPos.push([w, x, y]);
 
                 recStart();
                 break;
 
+            case 'Q':
+            case 'S':
+                x1 = +cmd[i][1];
+                y1 = +cmd[i][2];
+                x = +cmd[i][3];
+                y = +cmd[i][4];
+                newPos.push([w, x, y, x1, y1]); // -> iQS order
+                break;
+
+            case 'C':
+                x1 = +cmd[i][1];
+                y1 = +cmd[i][2];
+                x2 = +cmd[i][3];
+                y2 = +cmd[i][4];
+                x = +cmd[i][5];
+                y = +cmd[i][6];
+                newPos.push([w, x, y, x1, y1, x2, y2]); // -> iC order
+                break;
+
+            case 'T':
             case 'L':
                 x = +cmd[i][1];
                 y = +cmd[i][2];
-                newPos.push([x, y]);
-
+                newPos.push([w, x, y]);
                 break;
 
             case 'H':
-                w = 'L'; // convert to line
+                w = 'L'; // convert to line (for now)
                 x = +cmd[i][1];
-                newPos.push([x, y]);
-
+                newPos.push([w, x, y]);
                 break;
 
             case 'V':
-                w = 'L'; // convert to line
+                w = 'L'; // convert to line (for now)
                 y = +cmd[i][1];
-                newPos.push([x, y]);
-
+                newPos.push([w, x, y]);
                 break;
 
             case 'A':
-                w = 'L'; // convert to line (for now)
+                w = 'L'; // convert to line to handle circle
                 var rx = +cmd[i][1];
                 var ry = +cmd[i][2];
                 if(!+cmd[i][4]) {
@@ -423,54 +454,55 @@ function readPaths(str, plotinfo, size, isActiveShape) {
 
                 var cenX = x - rx;
                 var cenY = y;
-                for(var k = 1; k <= CIRCLE_SIDES / 2; k++) {
+                for(k = 1; k <= CIRCLE_SIDES / 2; k++) {
                     var t = 2 * Math.PI * k / CIRCLE_SIDES;
                     newPos.push([
+                        w,
                         cenX + rx * Math.cos(t),
                         cenY + ry * Math.sin(t)
                     ]);
                 }
-
                 break;
 
             case 'Z':
                 if(x !== initX || y !== initY) {
                     x = initX;
                     y = initY;
-                    newPos.push([x, y]);
+                    newPos.push([w, x, y]);
                 }
                 break;
         }
 
         for(var j = 0; j < newPos.length; j++) {
-            x = newPos[j][0];
-            y = newPos[j][1];
+            for(k = 0; k <= 4; k += 2) {
+                var _x = newPos[j][k + 1];
+                var _y = newPos[j][k + 2];
 
-            if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
-                polys[n].push([
-                    w,
-                    x,
-                    y
-                ]);
-            } else if(plotinfo.domain) {
-                polys[n].push([
-                    w,
-                    plotinfo.domain.x[0] + x / size.w,
-                    plotinfo.domain.y[1] - y / size.h
-                ]);
-            } else if(isActiveShape === false) {
-                polys[n].push([
-                    w,
-                    p2r(plotinfo.xaxis, x - plotinfo.xaxis._offset),
-                    p2r(plotinfo.yaxis, y - plotinfo.yaxis._offset)
-                ]);
-            } else {
-                polys[n].push([
-                    w,
-                    p2r(plotinfo.xaxis, x),
-                    p2r(plotinfo.yaxis, y)
-                ]);
+                if(_x === undefined || _y === undefined) continue;
+                if(k === 0) {
+                    x = _x;
+                    y = _y;
+                }
+
+                if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
+                    // no change
+                } else if(plotinfo.domain) {
+                    _x = plotinfo.domain.x[0] + _x / size.w;
+                    _y = plotinfo.domain.y[1] - _y / size.h;
+                } else if(isActiveShape === false) {
+                    _x = p2r(plotinfo.xaxis, _x - plotinfo.xaxis._offset);
+                    _y = p2r(plotinfo.yaxis, _y - plotinfo.yaxis._offset);
+                } else {
+                    _x = p2r(plotinfo.xaxis, _x);
+                    _y = p2r(plotinfo.yaxis, _y);
+                }
+
+                newPos[j][k + 1] = _x;
+                newPos[j][k + 2] = _y;
             }
+            polys[n].push(
+                newPos[j].slice()
+            );
         }
     }
 
