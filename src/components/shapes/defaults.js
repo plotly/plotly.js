@@ -32,8 +32,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var visible = coerce('visible');
     if(!visible) return;
 
-    var dfltType = shapeIn.path ? 'path' : 'rect';
+    var path = coerce('path');
+    var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
+    if(shapeOut.type !== 'path') delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
