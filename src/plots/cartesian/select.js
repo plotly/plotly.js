@@ -282,7 +282,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // display polygons on the screen
-        displayOutlines(mergedPolygons, outlines, dragOptions);
+        displayOutlines(convertPoly(mergedPolygons), outlines, dragOptions);
 
         if(isSelectMode) {
             throttle.throttle(
@@ -459,7 +459,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
                 var polygons = dragOptions.mergedPolygons;
 
                 // display polygons on the screen
-                displayOutlines(polygons, polygonOutlines, dragOptions);
+                displayOutlines(convertPoly(polygons), polygonOutlines, dragOptions);
             }
 
             if(sendEvents) {
@@ -900,6 +900,23 @@ function fillSelectionItem(selection, searchInfo) {
     }
 
     return selection;
+}
+
+function convertPoly(polygonsIn) { // add M and L command to draft positions
+    var polygonsOut = [];
+    for(var i = 0; i < polygonsIn.length; i++) {
+        polygonsOut[i] = [];
+        for(var j = 0; j < polygonsIn[i].length; j++) {
+            polygonsOut[i][j] = [];
+            polygonsOut[i][j][0] = j ? 'L' : 'M';
+            for(var k = 0; k < polygonsIn[i][j].length; k++) {
+                polygonsOut[i][j].push(
+                    polygonsIn[i][j][k]
+                );
+            }
+        }
+    }
+    return polygonsOut;
 }
 
 module.exports = {

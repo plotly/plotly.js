@@ -39,18 +39,19 @@ var handleOutline = require('./handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 var clearSelect = handleOutline.clearSelect;
 
-function recordPositions(polygonsOut, polygonsIn) {
+function recordPositions(polygonsOut, polygonsIn) { // copy & clean (i.e. skip duplicates)
     for(var i = 0; i < polygonsIn.length; i++) {
         polygonsOut[i] = [];
         var len = polygonsIn[i].length;
-        for(var j = 0; j < len; j++) {
+        for(var newJ = 0, j = 0; j < len; j++) {
             // skip close points
-            if(dist(polygonsIn[i][j], polygonsIn[i][(j + 1) % len]) < 1) continue;
+            if(j > 0 && dist(polygonsIn[i][j], polygonsIn[i][(j + 1) % len]) < 1) continue;
 
-            polygonsOut[i].push([
-                polygonsIn[i][j][0],
-                polygonsIn[i][j][1]
-            ]);
+            polygonsOut[i][newJ] = [];
+            for(var k = 0; k < polygonsIn[i][newJ].length; k++) {
+                polygonsOut[i][newJ][k] = polygonsIn[i][j][k];
+            }
+            newJ++;
         }
     }
     return polygonsOut;
@@ -90,16 +91,8 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
 
     if(isDrawMode) gd._fullLayout._drawing = true;
 
-    var paths = [];
-    for(var k = 0; k < polygons.length; k++) {
-        // create outline path
-        paths.push(
-            providePath(polygons[k], isOpenMode)
-        );
-    }
-
     // make outline
-    outlines.attr('d', writePaths(paths, isOpenMode));
+    outlines.attr('d', writePaths(polygons, isOpenMode));
 
     // add controllers
     var rVertexController = MINSELECT * 1.5; // bigger vertex buttons
@@ -127,8 +120,8 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
     function moveVertexController(dx, dy) {
         if(!polygons.length) return;
 
-        var x0 = copyPolygons[indexI][indexJ][0];
-        var y0 = copyPolygons[indexI][indexJ][1];
+        var x0 = copyPolygons[indexI][indexJ][1];
+        var y0 = copyPolygons[indexI][indexJ][2];
 
         var cell = polygons[indexI];
         var len = cell.length;
@@ -139,29 +132,29 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
                 // move other corners of rectangle
                 var pos = cell[q];
 
-                if(pos[0] === cell[indexJ][0]) {
-                    pos[0] = x0 + dx;
+                if(pos[1] === cell[indexJ][1]) {
+                    pos[1] = x0 + dx;
                 }
 
-                if(pos[1] === cell[indexJ][1]) {
-                    pos[1] = y0 + dy;
+                if(pos[2] === cell[indexJ][2]) {
+                    pos[2] = y0 + dy;
                 }
             }
             // move the corner
-            cell[indexJ][0] = x0 + dx;
-            cell[indexJ][1] = y0 + dy;
+            cell[indexJ][1] = x0 + dx;
+            cell[indexJ][2] = y0 + dy;
 
             if(!pointsShapeRectangle(cell)) {
                 // reject result to rectangles with ensure areas
                 for(var j = 0; j < len; j++) {
-                    for(var k = 0; k < 2; k++) {
+                    for(var k = 0; k < 3; k++) {
                         cell[j][k] = copyPolygons[indexI][j][k];
                     }
                 }
             }
         } else { // other polylines
-            cell[indexJ][0] = x0 + dx;
-            cell[indexJ][1] = y0 + dy;
+            cell[indexJ][1] = x0 + dx;
+            cell[indexJ][2] = y0 + dy;
         }
 
         redraw();
@@ -211,10 +204,10 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
             var maxY;
             if(onRect) {
                 // compute bounding box
-                minX = calcMin(cell, 0);
-                minY = calcMin(cell, 1);
-                maxX = calcMax(cell, 0);
-                maxY = calcMax(cell, 1);
+                minX = calcMin(cell, 1);
+                minY = calcMin(cell, 2);
+                maxX = calcMax(cell, 1);
+                maxY = calcMax(cell, 2);
             }
 
             vertexDragOptions[i] = [];
@@ -228,8 +221,8 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
                     continue;
                 }
 
-                var x = cell[j][0];
-                var y = cell[j][1];
+                var x = cell[j][1];
+                var y = cell[j][2];
 
                 var rIcon = 3;
                 var button = g.append(onRect ? 'rect' : 'circle')
@@ -301,11 +294,11 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
 
         for(var i = 0; i < polygons.length; i++) {
             for(var j = 0; j < polygons[i].length; j++) {
-                var x0 = copyPolygons[i][j][0];
-                var y0 = copyPolygons[i][j][1];
+                var x0 = copyPolygons[i][j][1];
+                var y0 = copyPolygons[i][j][2];
 
-                polygons[i][j][0] = x0 + dx;
-                polygons[i][j][1] = y0 + dy;
+                polygons[i][j][1] = x0 + dx;
+                polygons[i][j][2] = y0 + dy;
             }
         }
     }
@@ -344,14 +337,25 @@ function displayOutlines(polygonsIn, outlines, dragOptions, nCalls) {
     }
 }
 
-function providePath(cell, isOpenMode) {
-    return cell.join('L') + (
-        isOpenMode ? '' : 'L' + cell[0]
-    );
-}
+function writePaths(polygons, isOpenMode) {
+    var nI = polygons.length;
+    if(!nI) return 'M0,0Z';
 
-function writePaths(paths, isOpenMode) {
-    return paths.length > 0 ? 'M' + paths.join('M') + (isOpenMode ? '' : 'Z') : 'M0,0Z';
+    var str = '';
+    for(var i = 0; i < nI; i++) {
+        var nJ = polygons[i].length;
+        for(var j = 0; j < nJ; j++) {
+            var nK = polygons[i][j].length;
+            for(var k = 0; k < nK; k++) {
+                str += polygons[i][j][k];
+                if(k > 0 && k < nK - 1) {
+                    str += ',';
+                }
+            }
+        }
+        if(!isOpenMode) str += 'Z';
+    }
+    return str;
 }
 
 function readPaths(str, plotinfo, size, isActiveShape) {
@@ -378,6 +382,7 @@ function readPaths(str, plotinfo, size, isActiveShape) {
         var newPos = [];
 
         var c = cmd[i][0];
+        var w = c;
         switch(c) {
             case 'M':
                 newPoly();
@@ -396,18 +401,21 @@ function readPaths(str, plotinfo, size, isActiveShape) {
                 break;
 
             case 'H':
+                w = 'L'; // convert to line
                 x = +cmd[i][1];
                 newPos.push([x, y]);
 
                 break;
 
             case 'V':
+                w = 'L'; // convert to line
                 y = +cmd[i][1];
                 newPos.push([x, y]);
 
                 break;
 
             case 'A':
+                w = 'L'; // convert to line (for now)
                 var rx = +cmd[i][1];
                 var ry = +cmd[i][2];
                 if(!+cmd[i][4]) {
@@ -438,21 +446,25 @@ function readPaths(str, plotinfo, size, isActiveShape) {
 
                 if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
                     polys[n].push([
+                        w,
                         x,
                         y
                     ]);
                 } else if(plotinfo.domain) {
                     polys[n].push([
+                        w,
                         plotinfo.domain.x[0] + x / size.w,
                         plotinfo.domain.y[1] - y / size.h
                     ]);
                 } else if(isActiveShape === false) {
                     polys[n].push([
+                        w,
                         p2r(plotinfo.xaxis, x - plotinfo.xaxis._offset),
                         p2r(plotinfo.yaxis, y - plotinfo.yaxis._offset)
                     ]);
                 } else {
                     polys[n].push([
+                        w,
                         p2r(plotinfo.xaxis, x),
                         p2r(plotinfo.yaxis, y)
                     ]);
@@ -470,8 +482,8 @@ function fixDatesOnPaths(path, xaxis, yaxis) {
     if(!xIsDate && !yIsDate) return path;
 
     for(var i = 0; i < path.length; i++) {
-        if(xIsDate) path[i][0] = path[i][0].replace(' ', '_');
-        if(yIsDate) path[i][1] = path[i][1].replace(' ', '_');
+        if(xIsDate) path[i][1] = path[i][1].replace(' ', '_');
+        if(yIsDate) path[i][2] = path[i][2].replace(' ', '_');
     }
 
     return path;
@@ -482,8 +494,8 @@ function almostEq(a, b) {
 }
 
 function dist(a, b) {
-    var dx = b[0] - a[0];
-    var dy = b[1] - a[1];
+    var dx = b[1] - a[1];
+    var dy = b[2] - a[2];
     return Math.sqrt(
         dx * dx +
         dy * dy
@@ -509,7 +521,7 @@ function calcMax(cell, dim) {
 function pointsShapeRectangle(cell, len) {
     if(!len) len = cell.length;
     if(len !== 4) return false;
-    for(var j = 0; j < 2; j++) {
+    for(var j = 1; j < 3; j++) {
         var e01 = cell[0][j] - cell[1][j];
         var e32 = cell[3][j] - cell[2][j];
 
@@ -522,8 +534,8 @@ function pointsShapeRectangle(cell, len) {
 
     // N.B. rotated rectangles are not valid rects since rotation is not supported in shapes for now.
     if(
-        !almostEq(cell[0][0], cell[1][0]) &&
-        !almostEq(cell[0][0], cell[3][0])
+        !almostEq(cell[0][1], cell[1][1]) &&
+        !almostEq(cell[0][1], cell[3][1])
     ) return false;
 
     // reject cases with zero area
@@ -650,23 +662,24 @@ function addNewShapes(outlines, dragOptions) {
     }
     var isOpenMode = openMode(dragmode);
 
-    var newShapes = [];
     var polygons = readPaths(d, plotinfo, gd._fullLayout._size, isActiveShape);
     if(isOpenMode) {
         var last = polygons[0].length - 1;
         if( // ensure first and last positions are not the same on an open path
-            polygons[0][0][0] === polygons[0][last][0] &&
-            polygons[0][0][1] === polygons[0][last][1]
+            polygons[0][0][1] === polygons[0][last][1] &&
+            polygons[0][0][2] === polygons[0][last][2]
         ) {
             polygons[0].pop();
         }
     }
+
+    var newShapes = [];
     for(var i = 0; i < polygons.length; i++) {
         var cell = polygons[i];
         var len = cell.length;
         if(
-            cell[0][0] === cell[len - 1][0] &&
-            cell[0][1] === cell[len - 1][1]
+            cell[0][1] === cell[len - 1][1] &&
+            cell[0][2] === cell[len - 1][2]
         ) {
             len -= 1;
         }
@@ -697,18 +710,18 @@ function addNewShapes(outlines, dragOptions) {
             pointsShapeRectangle(cell, len) // should pass len here which is equal to cell.length - 1 i.e. because of the closing point
         ) {
             shape.type = 'rect';
-            shape.x0 = cell[0][0];
-            shape.y0 = cell[0][1];
-            shape.x1 = cell[2][0];
-            shape.y1 = cell[2][1];
+            shape.x0 = cell[0][1];
+            shape.y0 = cell[0][2];
+            shape.x1 = cell[2][1];
+            shape.y1 = cell[2][2];
         } else if(
             dragmode === 'linedraw'
         ) {
             shape.type = 'line';
-            shape.x0 = cell[0][0];
-            shape.y0 = cell[0][1];
-            shape.x1 = cell[1][0];
-            shape.y1 = cell[1][1];
+            shape.x0 = cell[0][1];
+            shape.y0 = cell[0][2];
+            shape.x1 = cell[1][1];
+            shape.y1 = cell[1][2];
         } else if(
             dragmode === 'ellipsedraw' &&
             (isActiveShape === false || pointsShapeEllipse(cell, len)) // should pass len here which is equal to cell.length - 1 i.e. because of the closing point
@@ -716,10 +729,10 @@ function addNewShapes(outlines, dragOptions) {
             shape.type = 'circle'; // an ellipse!
             var pos = {};
             if(isActiveShape === false) {
-                var x0 = (cell[i090][0] + cell[i270][0]) / 2;
-                var y0 = (cell[i000][1] + cell[i180][1]) / 2;
-                var rx = (cell[i270][0] - cell[i090][0] + cell[i180][0] - cell[i000][0]) / 2;
-                var ry = (cell[i270][1] - cell[i090][1] + cell[i180][1] - cell[i000][1]) / 2;
+                var x0 = (cell[i090][1] + cell[i270][1]) / 2;
+                var y0 = (cell[i000][2] + cell[i180][2]) / 2;
+                var rx = (cell[i270][1] - cell[i090][1] + cell[i180][1] - cell[i000][1]) / 2;
+                var ry = (cell[i270][2] - cell[i090][2] + cell[i180][2] - cell[i000][2]) / 2;
                 pos = ellipseOver({
                     x0: x0,
                     y0: y0,
@@ -728,10 +741,10 @@ function addNewShapes(outlines, dragOptions) {
                 });
             } else {
                 pos = ellipseOver({
-                    x0: (cell[i000][0] + cell[i180][0]) / 2,
-                    y0: (cell[i000][1] + cell[i180][1]) / 2,
-                    x1: cell[i045][0],
-                    y1: cell[i045][1]
+                    x0: (cell[i000][1] + cell[i180][1]) / 2,
+                    y0: (cell[i000][2] + cell[i180][2]) / 2,
+                    x1: cell[i045][1],
+                    y1: cell[i045][2]
                 });
             }
 
@@ -745,9 +758,7 @@ function addNewShapes(outlines, dragOptions) {
                 fixDatesOnPaths(cell, xaxis, yaxis);
             }
 
-            shape.path = writePaths([
-                providePath(cell, isOpenMode)
-            ], isOpenMode);
+            shape.path = writePaths([cell], isOpenMode);
         }
 
         newShapes.push(shape);
