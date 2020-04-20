@@ -48,7 +48,7 @@ module.exports = function prepareRegl(gd, extensions) {
         } catch(e) {
             success = false;
         }
-        
+
         if(!d.regl) success = false;
 
         if(success) {
