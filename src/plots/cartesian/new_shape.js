@@ -669,9 +669,12 @@ function addNewShapes(outlines, dragOptions) {
 
     var isActiveShape = dragOptions.isActiveShape;
     var dragmode = dragOptions.dragmode;
+
+    var shapes = (gd.layout || {}).shapes || [];
+
     if(isActiveShape !== undefined) {
         var id = gd._fullLayout._activeShapeIndex;
-        if(id < gd._fullLayout.shapes.length) {
+        if(id < shapes.length) {
             switch(gd._fullLayout.shapes[id].type) {
                 case 'rect':
                     dragmode = 'drawrect';
@@ -683,7 +686,7 @@ function addNewShapes(outlines, dragOptions) {
                     dragmode = 'drawline';
                     break;
                 case 'path':
-                    var path = gd._fullLayout.shapes[id].path || '';
+                    var path = shapes[id].path || '';
                     if(path[path.length - 1] === 'Z') {
                         dragmode = 'drawclosedpath';
                     } else {
@@ -780,13 +783,13 @@ function addNewShapes(outlines, dragOptions) {
 
     clearSelect(gd);
 
-    var shapes;
+    var allShapes;
     if(newShapes.length) {
         var updatedActiveShape = false;
-        shapes = [];
-        for(var q = 0; q < gd._fullLayout.shapes.length; q++) {
+        allShapes = [];
+        for(var q = 0; q < shapes.length; q++) {
             var beforeEdit = gd._fullLayout.shapes[q];
-            shapes[q] = beforeEdit._input;
+            allShapes[q] = beforeEdit._input;
 
             if(
                 isActiveShape !== undefined &&
@@ -805,17 +808,17 @@ function addNewShapes(outlines, dragOptions) {
                     case 'circle':
                         updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['x0', 'x1', 'y0', 'y1']);
                         if(updatedActiveShape) { // update active shape
-                            shapes[q].x0 = afterEdit.x0;
-                            shapes[q].x1 = afterEdit.x1;
-                            shapes[q].y0 = afterEdit.y0;
-                            shapes[q].y1 = afterEdit.y1;
+                            allShapes[q].x0 = afterEdit.x0;
+                            allShapes[q].x1 = afterEdit.x1;
+                            allShapes[q].y0 = afterEdit.y0;
+                            allShapes[q].y1 = afterEdit.y1;
                         }
                         break;
 
                     case 'path':
                         updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['path']);
                         if(updatedActiveShape) { // update active shape
-                            shapes[q].path = afterEdit.path;
+                            allShapes[q].path = afterEdit.path;
                         }
                         break;
                 }
@@ -823,11 +826,11 @@ function addNewShapes(outlines, dragOptions) {
         }
 
         if(isActiveShape === undefined) {
-            shapes = shapes.concat(newShapes); // add new shapes
+            allShapes = allShapes.concat(newShapes); // add new shapes
         }
     }
 
-    return shapes;
+    return allShapes;
 }
 
 function hasChanged(beforeEdit, afterEdit, keys) {

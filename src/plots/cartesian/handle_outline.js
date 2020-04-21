@@ -22,16 +22,9 @@ function activateShape(gd, path, drawShapes) {
 function deactivateShape(gd) {
     clearOutlineControllers(gd);
 
-    var shapes = [];
-    for(var q = 0; q < gd._fullLayout.shapes.length; q++) {
-        var shapeIn = gd._fullLayout.shapes[q]._input;
-        shapes.push(shapeIn);
-    }
-
     delete gd._fullLayout._activeShapeIndex;
-
     Registry.call('_guiRelayout', gd, {
-        shapes: shapes
+        shapes: (gd.layout || {}).shapes || []
     });
 }
 
@@ -39,20 +32,19 @@ function eraseActiveShape(gd) {
     clearOutlineControllers(gd);
 
     var id = gd._fullLayout._activeShapeIndex;
-    if(id < gd._fullLayout.shapes.length) {
-        var shapes = [];
-        for(var q = 0; q < gd._fullLayout.shapes.length; q++) {
-            var shapeIn = gd._fullLayout.shapes[q]._input;
-
+    var shapes = (gd.layout || {}).shapes || [];
+    if(id < shapes.length) {
+        var allShapes = [];
+        for(var q = 0; q < shapes.length; q++) {
             if(q !== id) {
-                shapes.push(shapeIn);
+                allShapes.push(shapes[q]);
             }
         }
 
         delete gd._fullLayout._activeShapeIndex;
 
         Registry.call('_guiRelayout', gd, {
-            shapes: shapes
+            shapes: allShapes
         });
     }
 }
