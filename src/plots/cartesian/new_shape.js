@@ -287,11 +287,10 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
         for(var i = 0; i < polygons.length; i++) {
             for(var j = 0; j < polygons[i].length; j++) {
-                var x0 = copyPolygons[i][j][1];
-                var y0 = copyPolygons[i][j][2];
-
-                polygons[i][j][1] = x0 + dx;
-                polygons[i][j][2] = y0 + dy;
+                for(var k = 0; k < polygons[i][j].length - 1; k += 2) {
+                    polygons[i][j][k + 1] = copyPolygons[i][j][k + 1] + dx;
+                    polygons[i][j][k + 2] = copyPolygons[i][j][k + 2] + dy;
+                }
             }
         }
     }
@@ -800,6 +799,11 @@ function addNewShapes(outlines, dragOptions) {
                 q === gd._fullLayout._activeShapeIndex
             ) {
                 var afterEdit = newShapes[0]; // pick first
+                if(beforeEdit.type === 'path') { // add other paths
+                    for(var k = 1; k < newShapes.length; k++) {
+                        afterEdit.path += newShapes[k].path;
+                    }
+                }
 
                 switch(beforeEdit.type) {
                     case 'line':
