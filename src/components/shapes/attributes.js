@@ -235,7 +235,7 @@ module.exports = templatedArray('shape', {
         role: 'info',
         editType: 'arraydraw',
         description: [
-            'Sets the color filling the closed shape\'s interior.'
+            'Sets the color filling the shape\'s interior. Only applies to closed shapes.'
         ].join(' ')
     },
     fillrule: {
@@ -245,7 +245,7 @@ module.exports = templatedArray('shape', {
         role: 'info',
         editType: 'arraydraw',
         description: [
-            'Determines the path\'s interior.',
+            'Determines which regions of complex paths constitute the interior.',
             'For more info please visit https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule'
         ].join(' ')
     },

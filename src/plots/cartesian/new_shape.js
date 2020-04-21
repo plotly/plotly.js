@@ -208,10 +208,10 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
                 if(cell[j][0] === 'Z') continue;
 
                 if(onEllipse &&
-                    j !== 0 &&
-                    j !== CIRCLE_SIDES * 0.25 &&
-                    j !== CIRCLE_SIDES * 0.5 &&
-                    j !== CIRCLE_SIDES * 0.75
+                    j !== i000 &&
+                    j !== i090 &&
+                    j !== i180 &&
+                    j !== i270
                 ) {
                     continue;
                 }
