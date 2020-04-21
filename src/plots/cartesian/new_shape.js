@@ -515,8 +515,10 @@ function fixDatesOnPaths(path, xaxis, yaxis) {
     if(!xIsDate && !yIsDate) return path;
 
     for(var i = 0; i < path.length; i++) {
-        if(xIsDate) path[i][1] = path[i][1].replace(' ', '_');
-        if(yIsDate) path[i][2] = path[i][2].replace(' ', '_');
+        for(var j = 1; j + 2 < path[i].length; j += 2) {
+            if(xIsDate) path[i][j + 1] = path[i][j + 1].replace(' ', '_');
+            if(yIsDate) path[i][j + 2] = path[i][j + 2].replace(' ', '_');
+        }
     }
 
     return path;
