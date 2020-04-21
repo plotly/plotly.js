@@ -701,90 +701,89 @@ function addNewShapes(outlines, dragOptions) {
 
     var polygons = readPaths(d, gd, plotinfo, isActiveShape);
 
-    var newShapes = [];
-    for(var i = 0; i < polygons.length; i++) {
-        var cell = polygons[i];
-        if(cell.length < 2) continue;
+    var newShape = {
+        editable: true,
 
-        var shape = {
-            editable: true,
+        xref: onPaper ? 'paper' : xaxis._id,
+        yref: onPaper ? 'paper' : yaxis._id,
 
-            xref: onPaper ? 'paper' : xaxis._id,
-            yref: onPaper ? 'paper' : yaxis._id,
-
-            layer: drwStyle.layer,
-            opacity: drwStyle.opacity,
-            line: {
-                color: drwStyle.line.color,
-                width: drwStyle.line.width,
-                dash: drwStyle.line.dash
-            }
-        };
-
-        if(!isOpenMode) {
-            shape.fillcolor = drwStyle.fillcolor;
-            shape.fillrule = drwStyle.fillrule;
+        layer: drwStyle.layer,
+        opacity: drwStyle.opacity,
+        line: {
+            color: drwStyle.line.color,
+            width: drwStyle.line.width,
+            dash: drwStyle.line.dash
         }
+    };
 
-        if(
-            dragmode === 'drawrect' &&
-            pointsShapeRectangle(cell)
-        ) {
-            shape.type = 'rect';
-            shape.x0 = cell[0][1];
-            shape.y0 = cell[0][2];
-            shape.x1 = cell[2][1];
-            shape.y1 = cell[2][2];
-        } else if(
-            dragmode === 'drawline'
-        ) {
-            shape.type = 'line';
-            shape.x0 = cell[0][1];
-            shape.y0 = cell[0][2];
-            shape.x1 = cell[1][1];
-            shape.y1 = cell[1][2];
-        } else if(
-            dragmode === 'drawcircle' &&
-            (isActiveShape === false || pointsShapeEllipse(cell))
-        ) {
-            shape.type = 'circle'; // an ellipse!
-            var pos = {};
-            if(isActiveShape === false) {
-                var x0 = (cell[i090][1] + cell[i270][1]) / 2;
-                var y0 = (cell[i000][2] + cell[i180][2]) / 2;
-                var rx = (cell[i270][1] - cell[i090][1] + cell[i180][1] - cell[i000][1]) / 2;
-                var ry = (cell[i270][2] - cell[i090][2] + cell[i180][2] - cell[i000][2]) / 2;
-                pos = ellipseOver({
-                    x0: x0,
-                    y0: y0,
-                    x1: x0 + rx * cos45,
-                    y1: y0 + ry * sin45
-                });
-            } else {
-                pos = ellipseOver({
-                    x0: (cell[i000][1] + cell[i180][1]) / 2,
-                    y0: (cell[i000][2] + cell[i180][2]) / 2,
-                    x1: cell[i045][1],
-                    y1: cell[i045][2]
-                });
-            }
+    if(!isOpenMode) {
+        newShape.fillcolor = drwStyle.fillcolor;
+        newShape.fillrule = drwStyle.fillrule;
+    }
 
-            shape.x0 = pos.x0;
-            shape.y0 = pos.y0;
-            shape.x1 = pos.x1;
-            shape.y1 = pos.y1;
+    var cell;
+    // only define cell if there is single cell
+    if(polygons.length === 1) cell = polygons[0];
+
+    if(
+        cell &&
+        dragmode === 'drawrect' &&
+        pointsShapeRectangle(cell)
+    ) {
+        newShape.type = 'rect';
+        newShape.x0 = cell[0][1];
+        newShape.y0 = cell[0][2];
+        newShape.x1 = cell[2][1];
+        newShape.y1 = cell[2][2];
+    } else if(
+        cell &&
+        dragmode === 'drawline'
+    ) {
+        newShape.type = 'line';
+        newShape.x0 = cell[0][1];
+        newShape.y0 = cell[0][2];
+        newShape.x1 = cell[1][1];
+        newShape.y1 = cell[1][2];
+    } else if(
+        cell &&
+        dragmode === 'drawcircle' &&
+        (isActiveShape === false || pointsShapeEllipse(cell))
+    ) {
+        newShape.type = 'circle'; // an ellipse!
+        var pos = {};
+        if(isActiveShape === false) {
+            var x0 = (cell[i090][1] + cell[i270][1]) / 2;
+            var y0 = (cell[i000][2] + cell[i180][2]) / 2;
+            var rx = (cell[i270][1] - cell[i090][1] + cell[i180][1] - cell[i000][1]) / 2;
+            var ry = (cell[i270][2] - cell[i090][2] + cell[i180][2] - cell[i000][2]) / 2;
+            pos = ellipseOver({
+                x0: x0,
+                y0: y0,
+                x1: x0 + rx * cos45,
+                y1: y0 + ry * sin45
+            });
         } else {
-            shape.type = 'path';
-            shape.path = writePaths([cell]);
+            pos = ellipseOver({
+                x0: (cell[i000][1] + cell[i180][1]) / 2,
+                y0: (cell[i000][2] + cell[i180][2]) / 2,
+                x1: cell[i045][1],
+                y1: cell[i045][2]
+            });
         }
 
-        newShapes.push(shape);
+        newShape.x0 = pos.x0;
+        newShape.y0 = pos.y0;
+        newShape.x1 = pos.x1;
+        newShape.y1 = pos.y1;
+    } else {
+        newShape.type = 'path';
+        newShape.path = writePaths(polygons);
     }
 
     clearSelect(gd);
 
     var allShapes;
-    if(newShapes.length) {
+    if(newShape) {
         var updatedActiveShape = false;
         allShapes = [];
         for(var q = 0; q < shapes.length; q++) {
@@ -795,12 +794,7 @@ function addNewShapes(outlines, dragOptions) {
                 isActiveShape !== undefined &&
                 q === gd._fullLayout._activeShapeIndex
             ) {
-                var afterEdit = newShapes[0]; // pick first
-                if(beforeEdit.type === 'path') { // add other paths
-                    for(var k = 1; k < newShapes.length; k++) {
-                        afterEdit.path += newShapes[k].path;
-                    }
-                }
+                var afterEdit = newShape;
 
                 switch(beforeEdit.type) {
                     case 'line':
@@ -826,7 +820,7 @@ function addNewShapes(outlines, dragOptions) {
         }
 
         if(isActiveShape === undefined) {
-            allShapes = allShapes.concat(newShapes); // add new shapes
+            allShapes.push(newShape); // add new shape
         }
     }
 
