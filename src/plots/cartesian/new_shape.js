@@ -479,22 +479,26 @@ function readPaths(str, plotinfo, size, isActiveShape) {
                 var _y = newPos[j][k + 2];
 
                 if(_x === undefined || _y === undefined) continue;
-                if(k === 0) {
+                if(k === 0) { // record end point
                     x = _x;
                     y = _y;
                 }
 
-                if(!plotinfo || !(plotinfo.xaxis && plotinfo.yaxis)) {
-                    // no change
-                } else if(plotinfo.domain) {
-                    _x = plotinfo.domain.x[0] + _x / size.w;
-                    _y = plotinfo.domain.y[1] - _y / size.h;
-                } else if(isActiveShape === false) {
-                    _x = p2r(plotinfo.xaxis, _x - plotinfo.xaxis._offset);
-                    _y = p2r(plotinfo.yaxis, _y - plotinfo.yaxis._offset);
-                } else {
-                    _x = p2r(plotinfo.xaxis, _x);
-                    _y = p2r(plotinfo.yaxis, _y);
+                if(plotinfo) {
+                    if(plotinfo.domain) {
+                        _x = plotinfo.domain.x[0] + _x / size.w;
+                        _y = plotinfo.domain.y[1] - _y / size.h;
+                    } else {
+                        if(plotinfo.xaxis) {
+                            if(isActiveShape === false) _x -= plotinfo.xaxis._offset;
+                            _x = p2r(plotinfo.xaxis, _x);
+                        }
+
+                        if(plotinfo.yaxis) {
+                            if(isActiveShape === false) _y -= plotinfo.yaxis._offset;
+                            _y = p2r(plotinfo.yaxis, _y);
+                        }
+                    }
                 }
 
                 newPos[j][k + 1] = _x;
@@ -507,21 +511,6 @@ function readPaths(str, plotinfo, size, isActiveShape) {
     }
 
     return polys;
-}
-
-function fixDatesOnPaths(path, xaxis, yaxis) {
-    var xIsDate = xaxis.type === 'date';
-    var yIsDate = yaxis.type === 'date';
-    if(!xIsDate && !yIsDate) return path;
-
-    for(var i = 0; i < path.length; i++) {
-        for(var j = 1; j + 2 < path[i].length; j += 2) {
-            if(xIsDate) path[i][j + 1] = path[i][j + 1].replace(' ', '_');
-            if(yIsDate) path[i][j + 2] = path[i][j + 2].replace(' ', '_');
-        }
-    }
-
-    return path;
 }
 
 function almostEq(a, b) {
@@ -777,10 +766,6 @@ function addNewShapes(outlines, dragOptions) {
             shape.y1 = pos.y1;
         } else {
             shape.type = 'path';
-            if(xaxis && yaxis) {
-                fixDatesOnPaths(cell, xaxis, yaxis);
-            }
-
             shape.path = writePaths([cell]);
         }
 

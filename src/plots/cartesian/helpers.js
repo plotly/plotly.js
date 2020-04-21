@@ -20,7 +20,7 @@ function p2r(ax, v) {
         case 'log':
             return ax.p2d(v);
         case 'date':
-            return ax.p2r(v, 0, ax.calendar);
+            return ax.p2r(v, 0, ax.calendar).replace(' ', '_');
         default:
             return ax.p2r(v);
     }
