@@ -15,18 +15,8 @@ var Registry = require('../../registry');
 function activateShape(gd, path, drawShapes) {
     var element = path.node();
     var id = +element.getAttribute('data-index');
-
-    for(var q = 0; q < gd._fullLayout.shapes.length; q++) {
-        var shapeIn = gd._fullLayout.shapes[q]._input;
-        if(q === id && shapeIn.editable) {
-            gd._fullLayout._activeShapeIndex = q;
-            break;
-        }
-    }
-
-    if(gd._fullLayout._activeShapeIndex >= 0) {
-        drawShapes(gd);
-    }
+    gd._fullLayout._activeShapeIndex = id;
+    if(id >= 0) drawShapes(gd);
 }
 
 function deactivateShape(gd) {
