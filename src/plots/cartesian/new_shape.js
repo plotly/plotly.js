@@ -488,7 +488,7 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
                 }
 
                 if(plotinfo) {
-                    if(plotinfo.xaxis) {
+                    if(plotinfo.xaxis && plotinfo.xaxis.p2r) {
                         if(isActiveShape === false) _x -= plotinfo.xaxis._offset;
                         _x = p2r(plotinfo.xaxis, _x);
                     } else {
@@ -497,7 +497,7 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
                         else _x = _x / size.w;
                     }
 
-                    if(plotinfo.yaxis) {
+                    if(plotinfo.yaxis && plotinfo.yaxis.p2r) {
                         if(isActiveShape === false) _y -= plotinfo.yaxis._offset;
                         _y = p2r(plotinfo.yaxis, _y);
                     } else {

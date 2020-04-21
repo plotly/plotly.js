@@ -172,7 +172,7 @@ function getButtonGroups(gd) {
 
     if(
         // fullLayout._has('ternary') ||
-        // fullLayout._has('mapbox') ||
+        fullLayout._has('mapbox') ||
         fullLayout._has('cartesian')
     ) {
         dragModeGroup.push(

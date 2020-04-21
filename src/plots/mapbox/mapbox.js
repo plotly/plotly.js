@@ -514,9 +514,9 @@ proto.initFx = function(calcData, fullLayout) {
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
-    self.clearSelect = function(e) {
+    self.clearSelect = function() {
         clearSelectionsCache(self.dragOptions);
-        clearSelect(e);
+        clearSelect(self.dragOptions.gd);
     };
 
     /**

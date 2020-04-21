@@ -492,9 +492,9 @@ var STARTMARKER = 'm0.5,0.5h5v-2h-5v-5h-2v5h-5v2h5v5h2Z';
 // I guess this could be shared with cartesian... but for now it's separate.
 var SHOWZOOMOUTTIP = true;
 
-proto.clearSelect = function(e) {
+proto.clearSelect = function() {
     clearSelectionsCache(this.dragOptions);
-    clearSelect(e);
+    clearSelect(self.dragOptions);
 };
 
 proto.initInteractions = function() {
