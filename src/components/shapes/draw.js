@@ -147,7 +147,7 @@ function drawOne(gd, index) {
                 isActiveShape: true // i.e. to enable controllers
             };
 
-            var polygons = readPaths(d);
+            var polygons = readPaths(d, gd);
             // display polygons on the screen
             displayOutlines(polygons, path, dragOptions);
         } else {

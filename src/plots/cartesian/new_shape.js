@@ -367,7 +367,7 @@ function writePaths(polygons) {
     return str;
 }
 
-function readPaths(str, plotinfo, size, isActiveShape) {
+function readPaths(str, gd, plotinfo, isActiveShape) {
     var cmd = parseSvgPath(str);
 
     var polys = [];
@@ -473,31 +473,37 @@ function readPaths(str, plotinfo, size, isActiveShape) {
                 break;
         }
 
+        var domain = (plotinfo || {}).domain;
+        var size = gd._fullLayout._size;
+
         for(var j = 0; j < newPos.length; j++) {
             for(k = 0; k + 2 < 7; k += 2) {
                 var _x = newPos[j][k + 1];
                 var _y = newPos[j][k + 2];
 
                 if(_x === undefined || _y === undefined) continue;
-                if(k === 0) { // record end point
+                if(k === 0) { // keep track of end point for Z
                     x = _x;
                     y = _y;
                 }
 
                 if(plotinfo) {
-                    if(plotinfo.domain) {
-                        _x = plotinfo.domain.x[0] + _x / size.w;
-                        _y = plotinfo.domain.y[1] - _y / size.h;
+                    if(plotinfo.xaxis) {
+                        if(isActiveShape === false) _x -= plotinfo.xaxis._offset;
+                        _x = p2r(plotinfo.xaxis, _x);
                     } else {
-                        if(plotinfo.xaxis) {
-                            if(isActiveShape === false) _x -= plotinfo.xaxis._offset;
-                            _x = p2r(plotinfo.xaxis, _x);
-                        }
+                        if(isActiveShape === false) _x -= size.l;
+                        if(domain) _x = domain.x[0] + _x / size.w;
+                        else _x = _x / size.w;
+                    }
 
-                        if(plotinfo.yaxis) {
-                            if(isActiveShape === false) _y -= plotinfo.yaxis._offset;
-                            _y = p2r(plotinfo.yaxis, _y);
-                        }
+                    if(plotinfo.yaxis) {
+                        if(isActiveShape === false) _y -= plotinfo.yaxis._offset;
+                        _y = p2r(plotinfo.yaxis, _y);
+                    } else {
+                        if(isActiveShape === false) _y -= size.t;
+                        if(domain) _y = domain.y[1] - _y / size.h;
+                        else _y = 1 - _y / size.h;
                     }
                 }
 
@@ -690,7 +696,7 @@ function addNewShapes(outlines, dragOptions) {
 
     var isOpenMode = openMode(dragmode);
 
-    var polygons = readPaths(d, plotinfo, gd._fullLayout._size, isActiveShape);
+    var polygons = readPaths(d, gd, plotinfo, isActiveShape);
 
     var newShapes = [];
     for(var i = 0; i < polygons.length; i++) {
