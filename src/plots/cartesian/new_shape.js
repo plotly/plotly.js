@@ -205,6 +205,8 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
             vertexDragOptions[i] = [];
             for(var j = 0; j < cell.length; j++) {
+                if(cell[j][0] === 'Z') continue;
+
                 if(onEllipse &&
                     j !== 0 &&
                     j !== CIRCLE_SIDES * 0.25 &&
@@ -287,7 +289,7 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
         for(var i = 0; i < polygons.length; i++) {
             for(var j = 0; j < polygons[i].length; j++) {
-                for(var k = 0; k < polygons[i][j].length - 1; k += 2) {
+                for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
                     polygons[i][j][k + 1] = copyPolygons[i][j][k + 1] + dx;
                     polygons[i][j][k + 2] = copyPolygons[i][j][k + 2] + dy;
                 }
@@ -343,7 +345,6 @@ function writePaths(polygons) {
             var w = polygons[i][j][0];
             if(w === 'Z') {
                 str += 'Z';
-                break;
             } else {
                 var nK = polygons[i][j].length;
                 for(var k = 0; k < nK; k++) {
@@ -473,7 +474,7 @@ function readPaths(str, plotinfo, size, isActiveShape) {
         }
 
         for(var j = 0; j < newPos.length; j++) {
-            for(k = 0; k <= 4; k += 2) {
+            for(k = 0; k + 2 < 7; k += 2) {
                 var _x = newPos[j][k + 1];
                 var _y = newPos[j][k + 2];
 
