@@ -777,14 +777,24 @@ function addNewShapes(outlines, dragOptions) {
         var yC = cell[i180][2];
         var yD = cell[i270][2];
 
-        if(plotinfo.xaxis && plotinfo.xaxis.type === 'date') {
+        var xDateOrLog = plotinfo.xaxis && (
+            plotinfo.xaxis.type === 'date' ||
+            plotinfo.xaxis.type === 'log'
+        );
+
+        var yDateOrLog = plotinfo.yaxis && (
+            plotinfo.yaxis.type === 'date' ||
+            plotinfo.yaxis.type === 'log'
+        );
+
+        if(xDateOrLog) {
             xA = r2p(plotinfo.xaxis, xA);
             xB = r2p(plotinfo.xaxis, xB);
             xC = r2p(plotinfo.xaxis, xC);
             xD = r2p(plotinfo.xaxis, xD);
         }
 
-        if(plotinfo.yaxis && plotinfo.yaxis.type === 'date') {
+        if(yDateOrLog) {
             yA = r2p(plotinfo.yaxis, yA);
             yB = r2p(plotinfo.yaxis, yB);
             yC = r2p(plotinfo.yaxis, yC);
@@ -802,12 +812,12 @@ function addNewShapes(outlines, dragOptions) {
             y1: y0 + ry * sin45
         });
 
-        if(plotinfo.xaxis && plotinfo.xaxis.type === 'date') {
+        if(xDateOrLog) {
             pos.x0 = p2r(plotinfo.xaxis, pos.x0);
             pos.x1 = p2r(plotinfo.xaxis, pos.x1);
         }
 
-        if(plotinfo.yaxis && plotinfo.yaxis.type === 'date') {
+        if(yDateOrLog) {
             pos.y0 = p2r(plotinfo.yaxis, pos.y0);
             pos.y1 = p2r(plotinfo.yaxis, pos.y1);
         }
