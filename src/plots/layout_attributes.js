@@ -477,7 +477,12 @@ module.exports = {
             dflt: 'rgba(0,0,0,0)',
             role: 'info',
             editType: 'none',
-            description: 'Sets the color filling new shapes\' interior.'
+            description: [
+                'Sets the color filling new shapes\' interior.',
+                'Please note that if using a fillcolor with alpha greater than half,',
+                'drag inside the active shape starts moving the shape underneath,',
+                'otherwise a new shape could be started over.'
+            ].join(' ')
         },
         fillrule: {
             valType: 'enumerated',
@@ -541,12 +546,7 @@ module.exports = {
             dflt: 0.5,
             role: 'info',
             editType: 'none',
-            description: [
-                'Sets the opacity of the active shape.',
-                'If using a value greater than half,',
-                'drag inside the active shape starts moving shape,',
-                'otherwise it starts drawing a new shape.'
-            ].join(' ')
+            description: 'Sets the opacity of the active shape.'
         },
         editType: 'none'
     },
