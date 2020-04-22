@@ -84,7 +84,11 @@ function drawOne(gd, index) {
 
     var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
     var hasPlotinfo = !!plotinfo;
-    if(!hasPlotinfo) plotinfo = {};
+    if(!hasPlotinfo) {
+        plotinfo = {};
+        if(options.xref && options.xref !== 'paper') plotinfo.xaxis = gd._fullLayout[options.xref + 'axis'];
+        if(options.yref && options.yref !== 'paper') plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
+    }
 
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);

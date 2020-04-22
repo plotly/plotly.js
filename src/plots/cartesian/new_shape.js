@@ -681,7 +681,8 @@ function addNewShapes(outlines, dragOptions) {
     var plotinfo = dragOptions.plotinfo;
     var xaxis = plotinfo.xaxis;
     var yaxis = plotinfo.yaxis;
-    var onPaper = plotinfo.domain || !plotinfo || !(plotinfo.xaxis && plotinfo.yaxis);
+    var xPaper = !!plotinfo.domain || !plotinfo || !plotinfo.xaxis;
+    var yPaper = !!plotinfo.domain || !plotinfo || !plotinfo.yaxis;
 
     var isActiveShape = dragOptions.isActiveShape;
     var dragmode = dragOptions.dragmode;
@@ -720,8 +721,8 @@ function addNewShapes(outlines, dragOptions) {
     var newShape = {
         editable: true,
 
-        xref: onPaper ? 'paper' : xaxis._id,
-        yref: onPaper ? 'paper' : yaxis._id,
+        xref: xPaper ? 'paper' : xaxis._id,
+        yref: yPaper ? 'paper' : yaxis._id,
 
         layer: drwStyle.layer,
         opacity: drwStyle.opacity,
