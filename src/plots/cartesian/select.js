@@ -618,7 +618,7 @@ function clearSelectionsCache(dragOptions) {
             // add shape
             var shapes = addNewShapes(outlines, dragOptions);
             if(shapes) {
-                Registry.call('relayout', gd, {
+                Registry.call('_guiRelayout', gd, {
                     shapes: shapes
                 });
             }
