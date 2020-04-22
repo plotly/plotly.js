@@ -22,9 +22,8 @@ var setCursor = require('../../lib/setcursor');
 
 var constants = require('./constants');
 var MINSELECT = constants.MINSELECT;
-var CIRCLE_SIDES = 32; // should be divisible by 8
+var CIRCLE_SIDES = 32; // should be divisible by 4
 var i000 = 0;
-var i045 = CIRCLE_SIDES / 8;
 var i090 = CIRCLE_SIDES / 4;
 var i180 = CIRCLE_SIDES / 2;
 var i270 = CIRCLE_SIDES / 4 * 3;
@@ -34,6 +33,7 @@ var SQRT2 = Math.sqrt(2);
 
 var helpers = require('./helpers');
 var p2r = helpers.p2r;
+var r2p = helpers.r2p;
 
 var handleOutline = require('./handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
@@ -519,6 +519,23 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
     return polys;
 }
 
+function fixDatesForPaths(polygons, xaxis, yaxis) {
+    var xIsDate = xaxis.type === 'date';
+    var yIsDate = yaxis.type === 'date';
+    if(!xIsDate && !yIsDate) return polygons;
+
+    for(var i = 0; i < polygons.length; i++) {
+        for(var j = 0; j < polygons[i].length; j++) {
+            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
+                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
+                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
+            }
+        }
+    }
+
+    return polygons;
+}
+
 function almostEq(a, b) {
     return Math.abs(a - b) <= 1e-6;
 }
@@ -672,7 +689,7 @@ function addNewShapes(outlines, dragOptions) {
 
     var shapes = (gd.layout || {}).shapes || [];
 
-    if(isActiveShape !== undefined) {
+    if(!drawMode(dragmode) && isActiveShape !== undefined) {
         var id = gd._fullLayout._activeShapeIndex;
         if(id < shapes.length) {
             switch(gd._fullLayout.shapes[id].type) {
@@ -722,13 +739,13 @@ function addNewShapes(outlines, dragOptions) {
     }
 
     var cell;
+    // line, rect and circle can be in one cell
     // only define cell if there is single cell
     if(polygons.length === 1) cell = polygons[0];
 
     if(
         cell &&
-        dragmode === 'drawrect' &&
-        pointsShapeRectangle(cell)
+        dragmode === 'drawrect'
     ) {
         newShape.type = 'rect';
         newShape.x0 = cell[0][1];
@@ -746,29 +763,53 @@ function addNewShapes(outlines, dragOptions) {
         newShape.y1 = cell[1][2];
     } else if(
         cell &&
-        dragmode === 'drawcircle' &&
-        (isActiveShape === false || pointsShapeEllipse(cell))
+        dragmode === 'drawcircle'
     ) {
         newShape.type = 'circle'; // an ellipse!
-        var pos = {};
-        if(isActiveShape === false) {
-            var x0 = (cell[i090][1] + cell[i270][1]) / 2;
-            var y0 = (cell[i000][2] + cell[i180][2]) / 2;
-            var rx = (cell[i270][1] - cell[i090][1] + cell[i180][1] - cell[i000][1]) / 2;
-            var ry = (cell[i270][2] - cell[i090][2] + cell[i180][2] - cell[i000][2]) / 2;
-            pos = ellipseOver({
-                x0: x0,
-                y0: y0,
-                x1: x0 + rx * cos45,
-                y1: y0 + ry * sin45
-            });
-        } else {
-            pos = ellipseOver({
-                x0: (cell[i000][1] + cell[i180][1]) / 2,
-                y0: (cell[i000][2] + cell[i180][2]) / 2,
-                x1: cell[i045][1],
-                y1: cell[i045][2]
-            });
+
+        var xA = cell[i000][1];
+        var xB = cell[i090][1];
+        var xC = cell[i180][1];
+        var xD = cell[i270][1];
+
+        var yA = cell[i000][2];
+        var yB = cell[i090][2];
+        var yC = cell[i180][2];
+        var yD = cell[i270][2];
+
+        if(plotinfo.xaxis && plotinfo.xaxis.type === 'date') {
+            xA = r2p(plotinfo.xaxis, xA);
+            xB = r2p(plotinfo.xaxis, xB);
+            xC = r2p(plotinfo.xaxis, xC);
+            xD = r2p(plotinfo.xaxis, xD);
+        }
+
+        if(plotinfo.yaxis && plotinfo.yaxis.type === 'date') {
+            yA = r2p(plotinfo.yaxis, yA);
+            yB = r2p(plotinfo.yaxis, yB);
+            yC = r2p(plotinfo.yaxis, yC);
+            yD = r2p(plotinfo.yaxis, yD);
+        }
+
+        var x0 = (xB + xD) / 2;
+        var y0 = (yA + yC) / 2;
+        var rx = (xD - xB + xC - xA) / 2;
+        var ry = (yD - yB + yC - yA) / 2;
+        var pos = ellipseOver({
+            x0: x0,
+            y0: y0,
+            x1: x0 + rx * cos45,
+            y1: y0 + ry * sin45
+        });
+
+        if(plotinfo.xaxis && plotinfo.xaxis.type === 'date') {
+            pos.x0 = p2r(plotinfo.xaxis, pos.x0);
+            pos.x1 = p2r(plotinfo.xaxis, pos.x1);
+        }
+
+        if(plotinfo.yaxis && plotinfo.yaxis.type === 'date') {
+            pos.y0 = p2r(plotinfo.yaxis, pos.y0);
+            pos.y1 = p2r(plotinfo.yaxis, pos.y1);
         }
 
         newShape.x0 = pos.x0;
@@ -777,51 +818,51 @@ function addNewShapes(outlines, dragOptions) {
         newShape.y1 = pos.y1;
     } else {
         newShape.type = 'path';
+        if(xaxis && yaxis) fixDatesForPaths(polygons, xaxis, yaxis);
         newShape.path = writePaths(polygons);
+        cell = null;
     }
 
     clearSelect(gd);
 
     var allShapes;
-    if(newShape) {
-        var updatedActiveShape = false;
-        allShapes = [];
-        for(var q = 0; q < shapes.length; q++) {
-            var beforeEdit = gd._fullLayout.shapes[q];
-            allShapes[q] = beforeEdit._input;
+    var updatedActiveShape = false;
+    allShapes = [];
+    for(var q = 0; q < shapes.length; q++) {
+        var beforeEdit = gd._fullLayout.shapes[q];
+        allShapes[q] = beforeEdit._input;
 
-            if(
-                isActiveShape !== undefined &&
-                q === gd._fullLayout._activeShapeIndex
-            ) {
-                var afterEdit = newShape;
+        if(
+            isActiveShape !== undefined &&
+            q === gd._fullLayout._activeShapeIndex
+        ) {
+            var afterEdit = newShape;
 
-                switch(beforeEdit.type) {
-                    case 'line':
-                    case 'rect':
-                    case 'circle':
-                        updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['x0', 'x1', 'y0', 'y1']);
-                        if(updatedActiveShape) { // update active shape
-                            allShapes[q].x0 = afterEdit.x0;
-                            allShapes[q].x1 = afterEdit.x1;
-                            allShapes[q].y0 = afterEdit.y0;
-                            allShapes[q].y1 = afterEdit.y1;
-                        }
-                        break;
+            switch(beforeEdit.type) {
+                case 'line':
+                case 'rect':
+                case 'circle':
+                    updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['x0', 'x1', 'y0', 'y1']);
+                    if(updatedActiveShape) { // update active shape
+                        allShapes[q].x0 = afterEdit.x0;
+                        allShapes[q].x1 = afterEdit.x1;
+                        allShapes[q].y0 = afterEdit.y0;
+                        allShapes[q].y1 = afterEdit.y1;
+                    }
+                    break;
 
-                    case 'path':
-                        updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['path']);
-                        if(updatedActiveShape) { // update active shape
-                            allShapes[q].path = afterEdit.path;
-                        }
-                        break;
-                }
+                case 'path':
+                    updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['path']);
+                    if(updatedActiveShape) { // update active shape
+                        allShapes[q].path = afterEdit.path;
+                    }
+                    break;
             }
         }
+    }
 
-        if(isActiveShape === undefined) {
-            allShapes.push(newShape); // add new shape
-        }
+    if(isActiveShape === undefined) {
+        allShapes.push(newShape); // add new shape
     }
 
     return allShapes;

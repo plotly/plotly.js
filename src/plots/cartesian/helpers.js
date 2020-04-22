@@ -20,9 +20,20 @@ function p2r(ax, v) {
         case 'log':
             return ax.p2d(v);
         case 'date':
-            return ax.p2r(v, 0, ax.calendar).replace(' ', '_');
+            return ax.p2r(v, 0, ax.calendar);
         default:
             return ax.p2r(v);
+    }
+}
+
+function r2p(ax, v) {
+    switch(ax.type) {
+        case 'log':
+            return ax.d2p(v);
+        case 'date':
+            return ax.r2p(v, 0, ax.calendar);
+        default:
+            return ax.r2p(v);
     }
 }
 
@@ -40,6 +51,7 @@ function getTransform(plotinfo) {
 module.exports = {
     getAxId: getAxId,
     p2r: p2r,
+    r2p: r2p,
     axValue: axValue,
     getTransform: getTransform
 };
