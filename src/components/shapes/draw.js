@@ -69,13 +69,7 @@ function draw(gd) {
     // return Plots.previousPromises(gd);
 }
 
-function drawOne(gd, index) {
-    // remove the existing shape if there is one.
-    // because indices can change, we need to look in all shape layers
-    gd._fullLayout._paperdiv
-        .selectAll('.shapelayer [data-index="' + index + '"]')
-        .remove();
-
+function makeOptionsAndPlotinfo(gd, index) {
     var options = gd._fullLayout.shapes[index] || {};
 
     // this shape is gone - quit now after deleting it
@@ -84,18 +78,37 @@ function drawOne(gd, index) {
 
     var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
     var hasPlotinfo = !!plotinfo;
-    if(!hasPlotinfo) {
+    if(hasPlotinfo) {
+        plotinfo._hadPlotinfo = true;
+    } else {
         plotinfo = {};
         if(options.xref && options.xref !== 'paper') plotinfo.xaxis = gd._fullLayout[options.xref + 'axis'];
         if(options.yref && options.yref !== 'paper') plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
     }
+
+    return {
+        options: options,
+        plotinfo: plotinfo
+    };
+}
+
+function drawOne(gd, index) {
+    // remove the existing shape if there is one.
+    // because indices can change, we need to look in all shape layers
+    gd._fullLayout._paperdiv
+        .selectAll('.shapelayer [data-index="' + index + '"]')
+        .remove();
+
+    var o = makeOptionsAndPlotinfo(gd, index);
+    var options = o.options;
+    var plotinfo = o.plotinfo;
 
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);
     } else if(options.xref === 'paper' || options.yref === 'paper') {
         drawShape(gd._fullLayout._shapeLowerLayer);
     } else {
-        if(hasPlotinfo) {
+        if(plotinfo._hadPlotinfo) {
             var mainPlot = plotinfo.mainplotinfo || plotinfo;
             drawShape(mainPlot.shapelayer);
         } else {
