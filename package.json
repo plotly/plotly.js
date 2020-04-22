@@ -150,7 +150,7 @@
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.6",
     "madge": "^3.8.0",
-    "minify-stream": "^1.2.1",
+    "minify-stream": "^2.0.0",
     "minimist": "^1.2.5",
     "node-sass": "^4.13.1",
     "npm-link-check": "^3.0.0",
