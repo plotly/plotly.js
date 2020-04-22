@@ -155,12 +155,13 @@ function drawOne(gd, index) {
                 ) ?
                 'stroke' : 'all'
             );
-            path.node().addEventListener('click', function() { return clickFn(path); });
         }
+
+        path.node().addEventListener('click', function() { return clickFn(path); });
     }
 
     function clickFn(path) {
-        return activateShape(gd, path);
+        activateShape(gd, path);
     }
 }
 
@@ -698,6 +699,12 @@ function activateShape(gd, path) {
     var element = path.node();
     var id = +element.getAttribute('data-index');
     if(id >= 0) {
+        // deactivate if already active
+        if(id === gd._fullLayout._activeShapeIndex) {
+            deactivateShape(gd);
+            return;
+        }
+
         gd._fullLayout._activeShapeIndex = id;
         gd._fullLayout._deactivateShape = deactivateShape;
         draw(gd);
