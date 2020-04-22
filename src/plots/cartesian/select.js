@@ -37,9 +37,7 @@ var MINSELECT = constants.MINSELECT;
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 
-var handleOutline = require('./handle_outline');
-var clearSelect = handleOutline.clearSelect;
-var deactivateShape = handleOutline.deactivateShape;
+var clearSelect = require('./handle_outline').clearSelect;
 
 var newShape = require('./new_shape');
 var displayOutlines = newShape.displayOutlines;
@@ -322,7 +320,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         corners.remove();
 
         if(gd._fullLayout._activeShapeIndex >= 0) {
-            deactivateShape(gd);
+            gd._fullLayout._deactivateShape(gd);
             return;
         }
         if(isDrawMode) return;
@@ -606,12 +604,12 @@ function clearSelectionsCache(dragOptions) {
     var dragmode = dragOptions.dragmode;
     var plotinfo = dragOptions.plotinfo;
 
-    if(drawMode(dragmode)) {
-        var gd = dragOptions.gd;
-        if(gd._fullLayout._activeShapeIndex >= 0) {
-            deactivateShape(gd);
-        }
+    var gd = dragOptions.gd;
+    if(gd._fullLayout._activeShapeIndex >= 0) {
+        gd._fullLayout._deactivateShape(gd);
+    }
 
+    if(drawMode(dragmode)) {
         var fullLayout = gd._fullLayout;
         var zoomLayer = fullLayout._zoomlayer;
 

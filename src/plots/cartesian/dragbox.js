@@ -245,6 +245,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function clickFn(numClicks, evt) {
+        var gd = dragOptions.gd;
+        if(gd._fullLayout._activeShapeIndex >= 0) {
+            gd._fullLayout._deactivateShape(gd);
+            return;
+        }
+
         var clickmode = gd._fullLayout.clickmode;
 
         removeZoombox(gd);

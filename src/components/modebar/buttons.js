@@ -12,7 +12,7 @@ var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
-var eraseActiveShape = require('../../plots/cartesian/handle_outline').eraseActiveShape;
+var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var Lib = require('../../lib');
 var _ = Lib._;
 

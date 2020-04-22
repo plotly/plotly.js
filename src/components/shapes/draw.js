@@ -17,9 +17,7 @@ var newShape = require('../../plots/cartesian/new_shape');
 var readPaths = newShape.readPaths;
 var displayOutlines = newShape.displayOutlines;
 
-var handleOutline = require('../../plots/cartesian/handle_outline');
-var activateShape = handleOutline.activateShape;
-var eraseActiveShape = handleOutline.eraseActiveShape;
+var clearOutlineControllers = require('../../plots/cartesian/handle_outline').clearOutlineControllers;
 
 var Color = require('../color');
 var Drawing = require('../drawing');
@@ -162,7 +160,7 @@ function drawOne(gd, index) {
     }
 
     function clickFn(path) {
-        return activateShape(gd, path, draw);
+        return activateShape(gd, path);
     }
 }
 
@@ -694,4 +692,44 @@ function movePath(pathIn, moveX, moveY) {
 
         return segmentType + paramString;
     });
+}
+
+function activateShape(gd, path) {
+    var element = path.node();
+    var id = +element.getAttribute('data-index');
+    if(id >= 0) {
+        gd._fullLayout._activeShapeIndex = id;
+        gd._fullLayout._deactivateShape = deactivateShape;
+        draw(gd);
+    }
+}
+
+function deactivateShape(gd) {
+    var id = gd._fullLayout._activeShapeIndex;
+    if(id >= 0) {
+        clearOutlineControllers(gd);
+        delete gd._fullLayout._activeShapeIndex;
+        draw(gd);
+    }
+}
+
+function eraseActiveShape(gd) {
+    clearOutlineControllers(gd);
+
+    var id = gd._fullLayout._activeShapeIndex;
+    var shapes = (gd.layout || {}).shapes || [];
+    if(id < shapes.length) {
+        var allShapes = [];
+        for(var q = 0; q < shapes.length; q++) {
+            if(q !== id) {
+                allShapes.push(shapes[q]);
+            }
+        }
+
+        delete gd._fullLayout._activeShapeIndex;
+
+        Registry.call('_guiRelayout', gd, {
+            shapes: allShapes
+        });
+    }
 }
