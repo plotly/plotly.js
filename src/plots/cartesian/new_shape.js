@@ -482,10 +482,9 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
                 var _y = newPos[j][k + 2];
 
                 if(_x === undefined || _y === undefined) continue;
-                if(k === 0) { // keep track of end point for Z
-                    x = _x;
-                    y = _y;
-                }
+                // keep track of end point for Z
+                x = _x;
+                y = _y;
 
                 if(plotinfo) {
                     if(plotinfo.xaxis && plotinfo.xaxis.p2r) {
