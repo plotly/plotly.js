@@ -93,7 +93,7 @@ module.exports = overrideAll({
             role: 'style',
             arrayOk: true,
             description: [
-                'Sets the marker angle.'
+                'Sets the marker rotation, in degrees clockwise.'
             ].join(' ')
         },
         allowoverlap: {
