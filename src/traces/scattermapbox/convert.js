@@ -115,11 +115,7 @@ module.exports = function convert(gd, calcTrace) {
                 });
             }
 
-            if('allowoverlap' in trace.marker) {
-                Lib.extendFlat(symbol.layout,
-                {'icon-allow-overlap': trace.marker.allowoverlap});
-            }
-
+            symbol.layout['icon-allow-overlap'] = trace.marker.allowoverlap;
 
             Lib.extendFlat(symbol.paint, {
                 'icon-opacity': trace.opacity * trace.marker.opacity,

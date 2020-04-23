@@ -89,7 +89,7 @@ module.exports = overrideAll({
         },
         angle: {
             valType: 'number',
-            dflt: null,
+            dflt: 0,
             role: 'style',
             arrayOk: true,
             description: [
