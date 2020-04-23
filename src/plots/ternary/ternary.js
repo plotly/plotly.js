@@ -563,7 +563,7 @@ proto.initInteractions = function() {
         }
 
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
-            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, this.dragOptions);
+            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, _this.dragOptions);
         }
 
         if(clickMode.indexOf('event') > -1) {
