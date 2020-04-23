@@ -67,6 +67,15 @@ function draw(gd) {
     // return Plots.previousPromises(gd);
 }
 
+function shouldSkipEdits(gd) {
+    return !!gd._fullLayout._drawing;
+}
+
+function couldHaveActiveShape(gd) {
+    // for now keep config.editable: true as it was before shape-drawing PR
+    return !gd._context.edits.shapePosition;
+}
+
 function drawOne(gd, index) {
     // remove the existing shape if there is one.
     // because indices can change, we need to look in all shape layers
@@ -110,7 +119,9 @@ function drawOne(gd, index) {
 
         var isOpen = d[d.length - 1] !== 'Z';
 
-        var isActiveShape = options.editable && gd._fullLayout._activeShapeIndex === index;
+        var isActiveShape = couldHaveActiveShape(gd) &&
+            options.editable && gd._fullLayout._activeShapeIndex === index;
+
         if(isActiveShape) {
             fillColor = isOpen ? 'rgba(0,0,0,0)' :
                 gd._fullLayout.activeshape.fillcolor;
@@ -148,12 +159,11 @@ function drawOne(gd, index) {
             }
 
             path.style('pointer-events',
-                !gd._context.edits.shapePosition && // for backward compatibility
-                (lineWidth >= 1) && ( // has border
-                    (Color.opacity(fillColor) * opacity <= 0.5) || // too transparent
-                    isOpen
-                ) ?
-                'stroke' : 'all'
+                !couldHaveActiveShape(gd) || (
+                    lineWidth < 2 || ( // not has a remarkable border
+                        !isOpen && Color.opacity(fillColor) * opacity > 0.5 // not too transparent
+                    )
+                ) ? 'all' : 'stroke'
             );
         }
 
@@ -268,12 +278,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         return g;
     }
 
-    function shouldSkipEdits() {
-        return !!gd._fullLayout._drawing;
-    }
-
     function updateDragMode(evt) {
-        if(shouldSkipEdits()) {
+        if(shouldSkipEdits(gd)) {
             dragMode = null;
             return;
         }
@@ -308,7 +314,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function startDrag(evt) {
-        if(shouldSkipEdits()) return;
+        if(shouldSkipEdits(gd)) return;
 
         // setup update strings and initial values
         if(xPixelSized) {
@@ -362,7 +368,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function endDrag() {
-        if(shouldSkipEdits()) return;
+        if(shouldSkipEdits(gd)) return;
 
         setCursor(shapePath);
         removeVisualCues(shapeLayer);
@@ -373,7 +379,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function abortDrag() {
-        if(shouldSkipEdits()) return;
+        if(shouldSkipEdits(gd)) return;
 
         removeVisualCues(shapeLayer);
     }
@@ -696,6 +702,8 @@ function movePath(pathIn, moveX, moveY) {
 }
 
 function activateShape(gd, path) {
+    if(!couldHaveActiveShape(gd)) return;
+
     var element = path.node();
     var id = +element.getAttribute('data-index');
     if(id >= 0) {
@@ -712,6 +720,8 @@ function activateShape(gd, path) {
 }
 
 function deactivateShape(gd) {
+    if(!couldHaveActiveShape(gd)) return;
+
     var id = gd._fullLayout._activeShapeIndex;
     if(id >= 0) {
         clearOutlineControllers(gd);
@@ -721,6 +731,8 @@ function deactivateShape(gd) {
 }
 
 function eraseActiveShape(gd) {
+    if(!couldHaveActiveShape(gd)) return;
+
     clearOutlineControllers(gd);
 
     var id = gd._fullLayout._activeShapeIndex;
