@@ -121,10 +121,6 @@ exports.roundPositionForSharpStrokeRendering = function(pos, strokeWidth) {
 exports.makeOptionsAndPlotinfo = function(gd, index) {
     var options = gd._fullLayout.shapes[index] || {};
 
-    // this shape is gone - quit now after deleting it
-    // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!options._input || options.visible === false) return;
-
     var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
     var hasPlotinfo = !!plotinfo;
     if(hasPlotinfo) {

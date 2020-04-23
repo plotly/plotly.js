@@ -87,6 +87,10 @@ function drawOne(gd, index) {
     var options = o.options;
     var plotinfo = o.plotinfo;
 
+    // this shape is gone - quit now after deleting it
+    // TODO: use d3 idioms instead of deleting and redrawing every time
+    if(!options._input || options.visible === false) return;
+
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);
     } else if(options.xref === 'paper' || options.yref === 'paper') {
