@@ -494,7 +494,7 @@ var SHOWZOOMOUTTIP = true;
 
 proto.clearSelect = function() {
     clearSelectionsCache(this.dragOptions);
-    clearSelect(self.dragOptions);
+    clearSelect(this.dragOptions.gd);
 };
 
 proto.initInteractions = function() {
