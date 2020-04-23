@@ -41,7 +41,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('layer');
     coerce('opacity');
     coerce('fillcolor');
-    if(shapeType === 'path') coerce('fillrule');
+    coerce('fillrule');
     var lineWidth = coerce('line.width');
     if(lineWidth) {
         coerce('line.color');
