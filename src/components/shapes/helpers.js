@@ -131,6 +131,11 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
         if(options.yref && options.yref !== 'paper') plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
     }
 
+    plotinfo.xsizemode = options.xsizemode;
+    plotinfo.ysizemode = options.ysizemode;
+    plotinfo.xanchor = options.xanchor;
+    plotinfo.yanchor = options.yanchor;
+
     return {
         options: options,
         plotinfo: plotinfo

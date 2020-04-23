@@ -475,6 +475,9 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
 
         var domain = (plotinfo || {}).domain;
         var size = gd._fullLayout._size;
+        var xPixelSized = plotinfo && plotinfo.xsizemode === 'pixel';
+        var yPixelSized = plotinfo && plotinfo.ysizemode === 'pixel';
+        var noOffset = isActiveShape === false;
 
         for(var j = 0; j < newPos.length; j++) {
             for(k = 0; k + 2 < 7; k += 2) {
@@ -488,19 +491,27 @@ function readPaths(str, gd, plotinfo, isActiveShape) {
 
                 if(plotinfo) {
                     if(plotinfo.xaxis && plotinfo.xaxis.p2r) {
-                        if(isActiveShape === false) _x -= plotinfo.xaxis._offset;
-                        _x = p2r(plotinfo.xaxis, _x);
+                        if(noOffset) _x -= plotinfo.xaxis._offset;
+                        if(xPixelSized) {
+                            _x = r2p(plotinfo.xaxis, plotinfo.xanchor) + _x;
+                        } else {
+                            _x = p2r(plotinfo.xaxis, _x);
+                        }
                     } else {
-                        if(isActiveShape === false) _x -= size.l;
+                        if(noOffset) _x -= size.l;
                         if(domain) _x = domain.x[0] + _x / size.w;
                         else _x = _x / size.w;
                     }
 
                     if(plotinfo.yaxis && plotinfo.yaxis.p2r) {
-                        if(isActiveShape === false) _y -= plotinfo.yaxis._offset;
-                        _y = p2r(plotinfo.yaxis, _y);
+                        if(noOffset) _y -= plotinfo.yaxis._offset;
+                        if(yPixelSized) {
+                            _y = r2p(plotinfo.yaxis, plotinfo.yanchor) - _y;
+                        } else {
+                            _y = p2r(plotinfo.yaxis, _y);
+                        }
                     } else {
-                        if(isActiveShape === false) _y -= size.t;
+                        if(noOffset) _y -= size.t;
                         if(domain) _y = domain.y[1] - _y / size.h;
                         else _y = 1 - _y / size.h;
                     }
@@ -681,8 +692,8 @@ function addNewShapes(outlines, dragOptions) {
     var plotinfo = dragOptions.plotinfo;
     var xaxis = plotinfo.xaxis;
     var yaxis = plotinfo.yaxis;
-    var xPaper = !!plotinfo.domain || !plotinfo || !plotinfo.xaxis;
-    var yPaper = !!plotinfo.domain || !plotinfo || !plotinfo.yaxis;
+    var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
+    var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
 
     var isActiveShape = dragOptions.isActiveShape;
     var dragmode = dragOptions.dragmode;
