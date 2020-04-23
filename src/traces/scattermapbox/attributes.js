@@ -101,7 +101,7 @@ module.exports = overrideAll({
             dflt: false,
             role: 'style',
             description: [
-                'Flag to allow symbols to overlap'
+                'Flag to draw all symbols, even if they overlap.'
             ].join(' ')
         },
         opacity: markerAttrs.opacity,
