@@ -480,7 +480,7 @@ describe('scattermapbox convert', function() {
             return f.properties.angle;
         });
 
-        var expected = [0, 90, 45, undefined, undefined];
+        var expected = [0, 90, 45, 0, 0];
         expect(symbolAngle).toEqual(expected, 'geojson properties');
 
 
