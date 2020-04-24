@@ -104,6 +104,19 @@ module.exports = function convert(gd, calcTrace) {
                 'icon-size': trace.marker.size / 10
             });
 
+            if('angle' in trace.marker) {
+                Lib.extendFlat(symbol.layout, {
+                // unfortunately cant use {angle} do to this issue:
+                // https://github.com/mapbox/mapbox-gl-js/issues/873
+                    'icon-rotate': {
+                        type: 'identity', property: 'angle'
+                    },
+                    'icon-rotation-alignment': 'map'
+                });
+            }
+
+            symbol.layout['icon-allow-overlap'] = trace.marker.allowoverlap;
+
             Lib.extendFlat(symbol.paint, {
                 'icon-opacity': trace.opacity * trace.marker.opacity,
 
@@ -239,14 +252,20 @@ function makeSymbolGeoJSON(calcTrace, gd) {
 
     var marker = trace.marker || {};
     var symbol = marker.symbol;
+    var angle = marker.angle;
 
     var fillSymbol = (symbol !== 'circle') ?
         getFillFunc(symbol) :
         blankFillFunc;
 
+    var fillAngle = (angle) ?
+        getFillFunc(angle, true) :
+        blankFillFunc;
+
     var fillText = subTypes.hasText(trace) ?
         getFillFunc(trace.text) :
         blankFillFunc;
+
 
     var features = [];
 
@@ -266,7 +285,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             var meta = trace._meta || {};
             text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
         } else {
-            text = fillText(calcPt.tx);
+            text = fillText(i);
         }
 
         if(text) {
@@ -280,7 +299,8 @@ function makeSymbolGeoJSON(calcTrace, gd) {
                 coordinates: calcPt.lonlat
             },
             properties: {
-                symbol: fillSymbol(calcPt.mx),
+                symbol: fillSymbol(i),
+                angle: fillAngle(i),
                 text: text
             }
         });
@@ -292,9 +312,12 @@ function makeSymbolGeoJSON(calcTrace, gd) {
     };
 }
 
-function getFillFunc(attr) {
+function getFillFunc(attr, numeric) {
     if(Lib.isArrayOrTypedArray(attr)) {
-        return function(v) { return v; };
+        if(numeric) {
+            return function(i) { return isNumeric(attr[i]) ? +attr[i] : 0; };
+        }
+        return function(i) { return attr[i]; };
     } else if(attr) {
         return function() { return attr; };
     } else {

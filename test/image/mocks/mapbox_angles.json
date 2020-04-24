@@ -41,7 +41,9 @@
           "monument",
           "harbor",
           "music"
-        ]
+        ],
+        "angle": [-45, 45, 0],
+        "allowoverlap":true
       },
       "subplot": "mapbox2"
     }
