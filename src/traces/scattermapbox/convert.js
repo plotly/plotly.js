@@ -259,7 +259,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
         blankFillFunc;
 
     var fillAngle = (angle) ?
-        getFillFunc(angle) :
+        getFillFunc(angle, true) :
         blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
@@ -312,8 +312,11 @@ function makeSymbolGeoJSON(calcTrace, gd) {
     };
 }
 
-function getFillFunc(attr) {
+function getFillFunc(attr, numeric) {
     if(Lib.isArrayOrTypedArray(attr)) {
+        if(numeric) {
+            return function(i) { return isNumeric(attr[i]) ? +attr[i] : 0; };
+        }
         return function(i) { return attr[i]; };
     } else if(attr) {
         return function() { return attr; };
