@@ -575,13 +575,19 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         buttonDefault.click();
     });
 
-    it('@gl button resetCameraDefault3d should reset to initial aspectratios', function(done) {
+    it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+        expect(gd._fullLayout.scene._scene.viewInitial.aspectmode).toEqual('auto');
+        expect(gd._fullLayout.scene2._scene.viewInitial.aspectmode).toEqual('manual');
 
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
         gd.once('plotly_relayout', function() {
+            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
+            expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
+
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
@@ -595,8 +601,11 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         buttonDefault.click();
     });
 
-    it('@gl button resetCameraLastSave3d should reset to initial aspectratios', function(done) {
+    it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+        expect(gd._fullLayout.scene._scene.viewInitial.aspectmode).toEqual('auto');
+        expect(gd._fullLayout.scene2._scene.viewInitial.aspectmode).toEqual('manual');
 
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
@@ -771,13 +780,19 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         buttonDefault.click();
     });
 
-    it('@gl button resetCameraDefault3d should reset to initial aspectratios', function(done) {
+    it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+        expect(gd._fullLayout.scene._scene.viewInitial.aspectmode).toEqual('auto');
+        expect(gd._fullLayout.scene2._scene.viewInitial.aspectmode).toEqual('manual');
 
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
         gd.once('plotly_relayout', function() {
+            expect(gd._fullLayout.scene._scene.aspectmode).toEqual(undefined);
+            expect(gd._fullLayout.scene2._scene.aspectmode).toEqual(undefined);
+
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
@@ -791,13 +806,19 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         buttonDefault.click();
     });
 
-    it('@gl button resetCameraLastSave3d should reset to initial aspectratios', function(done) {
+    it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+        expect(gd._fullLayout.scene._scene.viewInitial.aspectmode).toEqual('auto');
+        expect(gd._fullLayout.scene2._scene.viewInitial.aspectmode).toEqual('manual');
 
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
         gd.once('plotly_relayout', function() {
+            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
+            expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
+
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
             expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
@@ -1175,7 +1196,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(done);
     });
 
-    it('@gl should update the scene aspectratio when zooming with scroll wheel i.e. orthographic case', function(done) {
+    it('@gl should update the scene aspectmode & aspectratio when zooming with scroll wheel i.e. orthographic case', function(done) {
         var sceneLayout, sceneLayout2, sceneTarget, sceneTarget2;
 
         var mock = {
@@ -1192,8 +1213,13 @@ describe('Test gl3d drag and wheel interactions', function() {
         var aspectratio;
         var relayoutEvent;
         var relayoutCnt = 0;
+        var modeBar;
 
         Plotly.plot(gd, mock)
+        .then(delay(20))
+        .then(function() {
+            modeBar = gd._fullLayout._modeBar;
+        })
         .then(function() {
             gd.on('plotly_relayout', function(e) {
                 relayoutCnt++;
@@ -1218,6 +1244,9 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.x).toBeCloseTo(0.909, 3, 'aspectratio.x');
             expect(aspectratio.y).toBeCloseTo(0.909, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene.aspectmode']).toBe('manual');
+            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('manual');
         })
         .then(function() {
             return scroll(sceneTarget2);
@@ -1229,6 +1258,25 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.x).toBeCloseTo(2.727, 3, 'aspectratio.x');
             expect(aspectratio.y).toBeCloseTo(1.818, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(0.909, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene2.aspectmode']).toBe('manual');
+            expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
+        })
+        .then(function() {
+            var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+            buttonDefault.click();
+        })
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.aspectmode).toEqual(undefined);
+            expect(gd._fullLayout.scene2._scene.aspectmode).toEqual(undefined);
+
+            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
+            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
+            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
+            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
+            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
         })
         .catch(failTest)
         .then(done);
@@ -1279,6 +1327,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
                 expect(key).not.toBe('scene.aspectratio');
+                expect(key).not.toBe('scene.aspectmode');
             });
         })
         .catch(failTest)
@@ -1329,6 +1378,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
                 expect(key).not.toBe('scene.aspectratio');
+                expect(key).not.toBe('scene.aspectmode');
             });
         })
         .catch(failTest)
@@ -1380,6 +1430,101 @@ describe('Test gl3d drag and wheel interactions', function() {
             Object.keys(relayoutEvent).sort().forEach(function(key) {
                 expect(Object.keys(events[0])).toContain(key);
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should preserve aspectratio values when orthographic scroll zoom i.e. after restyle', function(done) {
+        var coords = {
+            x: [1, 2, 10, 4, 5],
+            y: [10, 2, 4, 4, 2],
+            z: [10, 2, 4, 8, 16],
+        };
+
+        var mock = {
+            data: [{
+                type: 'scatter3d',
+                x: coords.x,
+                y: coords.y,
+                z: coords.z,
+                mode: 'markers',
+                marker: {
+                    color: 'red',
+                    size: 16,
+                }
+            }, {
+                type: 'scatter3d',
+                x: [coords.x[0]],
+                y: [coords.y[0]],
+                z: [coords.z[0]],
+                mode: 'markers',
+                marker: {
+                    color: 'blue',
+                    size: 32,
+                }
+            }],
+            layout: {
+                width: 400,
+                height: 400,
+                scene: {
+                    camera: {
+                        projection: {
+                            type: 'orthographic'
+                        }
+                    },
+                }
+            }
+        };
+
+        var sceneTarget;
+        var relayoutEvent;
+        var relayoutCnt = 0;
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+
+            sceneTarget = gd.querySelector('.svg-container .gl-container #scene canvas');
+        })
+        .then(function() {
+            var aspectratio = gd._fullLayout.scene.aspectratio;
+            expect(aspectratio.x).toBeCloseTo(0.898, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.798, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.396, 3, 'aspectratio.z');
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            expect(relayoutCnt).toEqual(1);
+
+            var aspectratio = relayoutEvent['scene.aspectratio'];
+            expect(aspectratio.x).toBeCloseTo(0.816, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
+
+            expect(relayoutEvent['scene.aspectmode']).toBe('manual');
+            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('manual');
+        })
+        .then(function() {
+            // select a point
+            var i = 2;
+
+            return Plotly.restyle(gd, {
+                x: [[coords.x[i]]],
+                y: [[coords.y[i]]],
+                z: [[coords.z[i]]],
+            }, 1);
+        })
+        .then(function() {
+            var aspectratio = gd._fullLayout.scene.aspectratio;
+            expect(aspectratio.x).toBeCloseTo(0.816, 3, 'aspectratio.x');
+            expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
+            expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
         })
         .catch(failTest)
         .then(done);

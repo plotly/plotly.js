@@ -122,7 +122,7 @@ describe('Test animate API', function() {
 
         expect(function() {
             Plotly.addFrames(gd2, [{}]);
-        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before adding frames. For more details, see https://plot.ly/javascript/animations/'));
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before adding frames. For more details, see https://plotly.com/javascript/animations/'));
 
         document.body.removeChild(gd);
     });
@@ -134,7 +134,7 @@ describe('Test animate API', function() {
 
         expect(function() {
             Plotly.animate(gd2, {data: [{}]});
-        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before animating it. For more details, see https://plot.ly/javascript/animations/'));
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before animating it. For more details, see https://plotly.com/javascript/animations/'));
 
         document.body.removeChild(gd);
     });

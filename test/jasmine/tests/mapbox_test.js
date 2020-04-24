@@ -1551,45 +1551,6 @@ describe('@noCI, mapbox plots', function() {
         });
     });
 
-    function getMapInfo(gd) {
-        var subplot = gd._fullLayout.mapbox._subplot;
-        var map = subplot.map;
-
-        var sources = map.style.sourceCaches;
-        var layers = map.style._layers;
-        var uid = subplot.uid;
-
-        var traceSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf('source-') === 0;
-        });
-
-        var traceLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf('plotly-trace-layer-') === 0;
-        });
-
-        var layoutSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf(uid) !== -1;
-        });
-
-        var layoutLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf(uid) !== -1;
-        });
-
-        return {
-            map: map,
-            div: subplot.div,
-            sources: sources,
-            layers: layers,
-            traceSources: traceSources,
-            traceLayers: traceLayers,
-            layoutSources: layoutSources,
-            layoutLayers: layoutLayers,
-            center: map.getCenter(),
-            zoom: map.getZoom(),
-            style: map.getStyle()
-        };
-    }
-
     function countVisibleTraces(gd, modes) {
         var mapInfo = getMapInfo(gd);
         var cnts = [];
@@ -1681,6 +1642,83 @@ describe('@noCI, mapbox plots', function() {
 
         return promise;
     }
+});
+
+describe('@noCI, mapbox react', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should be able to react to new tiles', function(done) {
+        function assertTile(link) {
+            var mapInfo = getMapInfo(gd);
+            expect(mapInfo.style.sources.REF.tiles[0]).toEqual(link);
+        }
+
+        var firstLink = 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        var secondLink = 'https://a.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+
+        var fig = {
+            data: [
+                {
+                    type: 'scattermapbox',
+                    lon: [10, 20],
+                    lat: [20, 10]
+                }
+            ],
+            layout: {
+                mapbox: {
+                    style: {
+                        version: 8,
+                        sources: {
+                            REF: {
+                                type: 'raster',
+                                tileSize: 256,
+                                tiles: [firstLink]
+                            }
+                        },
+                        layers: [{
+                            id: 'REF',
+                            source: 'REF',
+                            type: 'raster'
+                        }],
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            assertTile(firstLink);
+
+            // copy figure
+            var newFig = JSON.parse(JSON.stringify(fig));
+
+            // new figure
+            newFig.layout.mapbox.style.sources = {
+                REF: {
+                    type: 'raster',
+                    tileSize: 256,
+                    tiles: [secondLink]
+                }
+            };
+
+            // update
+            Plotly.react(gd, newFig);
+        })
+        .then(function() {
+            assertTile(secondLink);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
 });
 
 describe('@noCI test mapbox trace/layout *below* interactions', function() {
@@ -2088,3 +2126,42 @@ describe('@noCI, mapbox toImage', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 });
+
+function getMapInfo(gd) {
+    var subplot = gd._fullLayout.mapbox._subplot;
+    var map = subplot.map;
+
+    var sources = map.style.sourceCaches;
+    var layers = map.style._layers;
+    var uid = subplot.uid;
+
+    var traceSources = Object.keys(sources).filter(function(k) {
+        return k.indexOf('source-') === 0;
+    });
+
+    var traceLayers = Object.keys(layers).filter(function(k) {
+        return k.indexOf('plotly-trace-layer-') === 0;
+    });
+
+    var layoutSources = Object.keys(sources).filter(function(k) {
+        return k.indexOf(uid) !== -1;
+    });
+
+    var layoutLayers = Object.keys(layers).filter(function(k) {
+        return k.indexOf(uid) !== -1;
+    });
+
+    return {
+        map: map,
+        div: subplot.div,
+        sources: sources,
+        layers: layers,
+        traceSources: traceSources,
+        traceLayers: traceLayers,
+        layoutSources: layoutSources,
+        layoutLayers: layoutLayers,
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        style: map.getStyle()
+    };
+}

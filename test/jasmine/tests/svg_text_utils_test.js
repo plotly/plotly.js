@@ -117,32 +117,32 @@ describe('svg+text utils', function() {
 
         it('whitelists http hrefs', function() {
             var node = mockTextSVGElement(
-                '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
+                '<a href="https://bl.ocks.org/">bl.ocks.org</a>'
             );
 
             expect(node.text()).toEqual('bl.ocks.org');
             assertAnchorAttrs(node);
-            assertAnchorLink(node, 'http://bl.ocks.org/');
+            assertAnchorLink(node, 'https://bl.ocks.org/');
         });
 
         it('whitelists https hrefs', function() {
             var node = mockTextSVGElement(
-                '<a href="https://plot.ly">plot.ly</a>'
+                '<a href="https://chart-studio.plotly.com">plotly</a>'
             );
 
-            expect(node.text()).toEqual('plot.ly');
+            expect(node.text()).toEqual('plotly');
             assertAnchorAttrs(node);
-            assertAnchorLink(node, 'https://plot.ly');
+            assertAnchorLink(node, 'https://chart-studio.plotly.com');
         });
 
         it('whitelists mailto hrefs', function() {
             var node = mockTextSVGElement(
-                '<a href="mailto:support@plot.ly">support</a>'
+                '<a href="mailto:support@plotly.com">support</a>'
             );
 
             expect(node.text()).toEqual('support');
             assertAnchorAttrs(node);
-            assertAnchorLink(node, 'mailto:support@plot.ly');
+            assertAnchorLink(node, 'mailto:support@plotly.com');
         });
 
         it('drops XSS attacks in href', function() {

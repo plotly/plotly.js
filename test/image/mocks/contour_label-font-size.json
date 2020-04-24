@@ -1,0 +1,106 @@
+{
+  "data": [
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 4}},
+      "showscale": false
+    },
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 8}},
+      "showscale": false,
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 12}},
+      "showscale": false,
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 16}},
+      "showscale": false,
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 20}},
+      "showscale": false,
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "type": "contour",
+      "x": [1, 2, 3, 4],
+      "y": [1, 2, 3, 4],
+      "z": [
+        [-1, -2, -4, -8],
+        [-2, -4, -8, -1],
+        [-4, -8, -1, -2],
+        [-8, -1, -2, -4]
+      ],
+      "contours": {"showlabels": true, "labelfont": {"size": 24}},
+      "showscale": false,
+      "xaxis": "x6",
+      "yaxis": "y6"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 3, "columns": 2, "pattern": "independent"},
+
+    "template": {
+      "data": {
+        "contour": [{
+          "hoverlabel": {"namelength": -1}
+        }]
+      }
+    },
+
+    "width": 800,
+    "height": 1200
+  }
+}

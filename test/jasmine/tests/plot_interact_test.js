@@ -560,7 +560,7 @@ describe('plot svg clip paths', function() {
         // append <base> with href
         var base = d3.select('body')
             .append('base')
-            .attr('href', 'https://plot.ly');
+            .attr('href', 'https://chart-studio.plotly.com');
 
         // grab window URL
         var href = window.location.href.split('#')[0];

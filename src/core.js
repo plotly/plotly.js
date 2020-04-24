@@ -8,8 +8,7 @@
 
 'use strict';
 
-// package version injected by `npm run preprocess`
-exports.version = '1.52.2';
+exports.version = require('./version').version;
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -43,8 +42,8 @@ register(require('./traces/scatter'));
 
 // register all registrable components modules
 register([
-    require('./components/fx'),
     require('./components/legend'),
+    require('./components/fx'), // fx needs to come after legend
     require('./components/annotations'),
     require('./components/annotations3d'),
     require('./components/shapes'),

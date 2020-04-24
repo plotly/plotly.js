@@ -127,7 +127,7 @@ function getMainBundleInfo() {
         '- using CommonJS with `require(\'plotly.js\')`',
         '',
         'If you would like to have access to the attribute meta information ' +
-        '(including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), ' +
+        '(including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)), ' +
         'use dist file `dist/plotly-with-meta.js`',
         '',
         'The main plotly.js bundle weights in at:',

@@ -20,7 +20,11 @@ module.exports = function sceneUpdate(gd, trace) {
     var splomScenes = fullLayout._splomScenes;
     if(!splomScenes) splomScenes = fullLayout._splomScenes = {};
 
-    var reset = {dirty: true};
+    var reset = {
+        dirty: true,
+        selectBatch: [],
+        unselectBatch: []
+    };
 
     var first = {
         matrix: false,

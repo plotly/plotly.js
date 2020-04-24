@@ -16,8 +16,10 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
-
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
+var HOUR = constants.HOUR_PATTERN;
+var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 module.exports = {
     visible: {
@@ -248,6 +250,116 @@ module.exports = {
             'Moreover, note that matching axes must have the same `type`.'
         ].join(' ')
     },
+
+    rangebreaks: templatedArray('rangebreak', {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'calc',
+            description: [
+                'Determines whether this axis rangebreak is enabled or disabled.',
+                'Please note that `rangebreaks` only work for *date* axis type.'
+            ].join(' ')
+        },
+
+        bounds: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'any', editType: 'calc'},
+                {valType: 'any', editType: 'calc'}
+            ],
+            editType: 'calc',
+            description: [
+                'Sets the lower and upper bounds of this axis rangebreak.',
+                'Can be used with `pattern`.'
+            ].join(' ')
+        },
+
+        pattern: {
+            valType: 'enumerated',
+            values: [DAY_OF_WEEK, HOUR, ''],
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Determines a pattern on the time line that generates breaks.',
+                'If *' + DAY_OF_WEEK + '* - days of the week in English e.g. \'Sunday\' or `\sun\`',
+                '(matching is case-insensitive and considers only the first three characters),',
+                'as well as Sunday-based integers between 0 and 6.',
+                'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
+                'for more info.',
+                'Examples:',
+                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 1] }',
+                ' or simply { bounds: [\'sat\', \'mon\'] }',
+                '  breaks from Saturday to Monday (i.e. skips the weekends).',
+                '- { pattern: \'' + HOUR + '\', bounds: [17, 8] }',
+                '  breaks from 5pm to 8am (i.e. skips non-work hours).'
+            ].join(' ')
+        },
+
+        values: {
+            valType: 'info_array',
+            freeLength: true,
+            role: 'info',
+            editType: 'calc',
+            items: {
+                valType: 'any',
+                editType: 'calc'
+            },
+            description: [
+                'Sets the coordinate values corresponding to the rangebreaks.',
+                'An alternative to `bounds`.',
+                'Use `dvalue` to set the size of the values along the axis.'
+            ].join(' ')
+        },
+        dvalue: {
+            // TODO could become 'any' to add support for 'months', 'years'
+            valType: 'number',
+            role: 'info',
+            editType: 'calc',
+            min: 0,
+            dflt: ONEDAY,
+            description: [
+                'Sets the size of each `values` item.',
+                'The default is one day in milliseconds.'
+            ].join(' ')
+        },
+
+        /*
+        gap: {
+            valType: 'number',
+            min: 0,
+            dflt: 0, // for *date* axes, maybe something else for *linear*
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Sets the gap distance between the start and the end of this rangebreak.',
+                'Use with `gapmode` to set the unit of measurement.'
+            ].join(' ')
+        },
+        gapmode: {
+            valType: 'enumerated',
+            values: ['pixels', 'fraction'],
+            dflt: 'pixels',
+            editType: 'calc',
+            role: 'info',
+            description: [
+                'Determines if the `gap` value corresponds to a pixel length',
+                'or a fraction of the plot area.'
+            ].join(' ')
+        },
+        */
+
+        // To complete https://github.com/plotly/plotly.js/issues/4210
+        // we additionally need `gap` and make this work on *linear*, and
+        // possibly all other cartesian axis types. We possibly would also need
+        // some style attributes controlling the zig-zag on the corresponding
+        // axis.
+
+        editType: 'calc'
+    }),
+
     // ticks
     tickmode: {
         valType: 'enumerated',
@@ -468,7 +580,7 @@ module.exports = {
     },
     spikesnap: {
         valType: 'enumerated',
-        values: ['data', 'cursor'],
+        values: ['data', 'cursor', 'hovered data'],
         dflt: 'data',
         role: 'style',
         editType: 'none',

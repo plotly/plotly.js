@@ -45,7 +45,6 @@
       "alignmentgroup": "True",
       "offsetgroup": "smoker=No",
       "legendgroup": "smoker=No",
-      "showlegend": false,
       "marker": { "color": "#636efa" },
       "x": [ "Male", "Female", "Male" ],
       "y": [ 22.49, 22.75, 12.46 ],

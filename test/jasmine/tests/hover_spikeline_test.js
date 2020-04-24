@@ -298,6 +298,33 @@ describe('spikeline hover', function() {
         .then(done);
     });
 
+    it('does not show spikes if no points are hovered in the spikesnap "hovered data" mode', function(done) {
+        var _mock = makeMock('toaxis', 'x');
+        Plotly.newPlot(gd, _mock)
+        .then(function() {
+            _setSpikedistance(-1);
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert(
+                [[558, 401, 558, 251], [80, 251, 558, 251]], [[83, 251]]
+            );
+            return Plotly.relayout(gd, 'xaxis.spikesnap', 'hovered data');
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert([[80, 251, 558, 251]], [[83, 251]]);
+
+            return Plotly.relayout(gd, 'yaxis.spikesnap', 'hovered data');
+        })
+        .then(function() {
+            _hover({xval: 1.5});
+            _assert([], []);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('doesn\'t switch between toaxis and across spikemodes on switching the hovermodes', function(done) {
         var _mock = makeMock('toaxis', 'closest');
 
@@ -399,6 +426,29 @@ describe('spikeline hover', function() {
                 [[820, 220, 820, 167]],
                 []
             );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly select the closest bar even when setting spikedistance to -1', function(done) {
+        var mock = require('@mocks/bar_stack-with-gaps');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.xaxis.showspikes = true;
+        mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.spikedistance = -1;
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function() {
+            _hover({xpx: 600, ypx: 400});
+            var lines = d3.selectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+
+            _hover({xpx: 600, ypx: 200});
+            lines = d3.selectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
         })
         .catch(failTest)
         .then(done);
@@ -592,5 +642,140 @@ describe('spikeline hover', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('correctly draws lines up to the last point', function(done) {
+        Plotly.newPlot(gd, [
+            {type: 'bar', y: [5, 7, 9, 6, 4, 3]},
+            {y: [5, 7, 9, 6, 4, 3]},
+            {y: [5, 7, 9, 6, 4, 3], marker: {color: 'red'}}
+        ], {
+            xaxis: {showspikes: true},
+            yaxis: {showspikes: true},
+            spikedistance: -1,
+            width: 400, height: 400,
+            showlegend: false
+        })
+        .then(function() {
+            _hover({xpx: 150, ypx: 250});
+
+            var lines = d3.selectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('red');
+            expect(lines[0][3].getAttribute('stroke')).toBe('red');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    describe('works across all cartesian traces', function() {
+        var schema = Plotly.PlotSchema.get();
+        var traces = Object.keys(schema.traces);
+        var tracesSchema = [];
+        var i, j, k;
+        for(i = 0; i < traces.length; i++) {
+            tracesSchema.push(schema.traces[traces[i]]);
+        }
+        var excludedTraces = [ 'image' ];
+        var cartesianTraces = tracesSchema.filter(function(t) {
+            return t.categories.length &&
+                t.categories.indexOf('cartesian') !== -1 &&
+                t.categories.indexOf('noHover') === -1 &&
+                excludedTraces.indexOf(t.type) === -1;
+        });
+
+        function makeData(type, axName, a, b) {
+            var input = [a, b];
+            var cat = input[axName === 'yaxis' ? 1 : 0];
+            var data = input[axName === 'yaxis' ? 0 : 1];
+
+            var measure = [];
+            for(j = 0; j < data.length; j++) {
+                measure.push('absolute');
+            }
+
+            var z = Lib.init2dArray(cat.length, data.length);
+            for(j = 0; j < z.length; j++) {
+                for(k = 0; k < z[j].length; k++) {
+                    z[j][k] = 0;
+                }
+            }
+            if(axName === 'xaxis') {
+                for(j = 0; j < b.length; j++) {
+                    z[0][j] = b[j];
+                }
+            }
+            if(axName === 'yaxis') {
+                for(j = 0; j < b.length; j++) {
+                    z[j][0] = b[j];
+                }
+            }
+
+            return Lib.extendDeep({}, {
+                orientation: axName === 'yaxis' ? 'h' : 'v',
+                type: type,
+                x: cat,
+                a: cat,
+
+                b: data,
+                y: data,
+                z: z,
+
+                // For OHLC
+                open: data,
+                close: data,
+                high: data,
+                low: data,
+
+                // For histogram
+                nbinsx: cat.length,
+                nbinsy: data.length,
+
+                // For waterfall
+                measure: measure,
+
+                // For splom
+                dimensions: [
+                    {
+                        label: 'DimensionA',
+                        values: a
+                    },
+                    {
+                        label: 'DimensionB',
+                        values: b
+                    }
+                ]
+            });
+        }
+
+        cartesianTraces.forEach(function(trace) {
+            it('correctly responds to setting the spikedistance to -1 for ' + trace.type, function(done) {
+                var type = trace.type;
+                var x = [4, 5, 6];
+                var data = [7, 2, 3];
+
+                var mock = {
+                    data: [makeData(type, 'xaxis', x, data)],
+                    layout: {
+                        spikedistance: -1,
+                        xaxis: {showspikes: true},
+                        yaxis: {showspikes: true},
+                        zaxis: {showspikes: true},
+                        title: {text: trace.type},
+                        width: 400, height: 400
+                    }
+                };
+
+                Plotly.newPlot(gd, mock)
+                    .then(function() {
+                        _hover({xpx: 200, ypx: 100});
+
+                        var lines = d3.selectAll('line.spikeline');
+                        expect(lines.size()).toBe(4);
+                    })
+                    .catch(failTest)
+                    .then(done);
+            });
+        });
     });
 });
