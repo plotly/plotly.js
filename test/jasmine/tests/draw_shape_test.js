@@ -8,6 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
+var click = require('../assets/click');
 
 function drag(path, options) {
     var len = path.length;
@@ -44,8 +45,6 @@ function assertPos(actual, expected) {
     expect(typeof actual).toEqual(typeof expected);
 
     if(typeof actual === 'string') {
-        expect(actual).toEqual(expected);
-
         if(expected.indexOf('_') !== -1) {
             actual = fixDates(actual);
             expected = fixDates(expected);
@@ -69,7 +68,6 @@ function assertPos(actual, expected) {
         var o2 = Object.keys(expected);
         expect(o1.length === o2.length);
         for(var j = 0; j < o1.length; j++) {
-            expect(o1[j]).toEqual(o2[j]);
             var key = o1[j];
 
             var posA = actual[key];
@@ -748,11 +746,11 @@ describe('Draw new shapes to layout', function() {
 
     allMocks.forEach(function(mockItem) {
         ['mouse', 'touch'].forEach(function(device) {
-            it('@flaky draw various shape types over mock ' + mockItem.name + ' using ' + device, function(done) {
-                var _drag = function(path) {
-                    return drag(path, {type: device});
-                };
+            var _drag = function(path) {
+                return drag(path, {type: device});
+            };
 
+            it('@flaky draw various shape types over mock ' + mockItem.name + ' using ' + device, function(done) {
                 var fig = Lib.extendDeep({}, mockItem.json);
                 fig.layout = {
                     width: 800,
@@ -945,6 +943,412 @@ describe('Draw new shapes to layout', function() {
                     .catch(failTest)
                     .then(done);
             });
+        });
+    });
+});
+
+describe('Activate and deactivate shapes to edit', function() {
+    var fig = {
+        data: [{ x: [0, 50], y: [0, 50] }],
+        layout: {
+            width: 800,
+            height: 600,
+            margin: {
+                t: 100,
+                b: 50,
+                l: 100,
+                r: 50
+            },
+
+            yaxis: {
+                autorange: 'reversed'
+            },
+
+            template: {
+                layout: {
+                    shapes: [{
+                        name: 'myPath',
+                        editable: true,
+                        layer: 'below',
+                        line: { width: 0 },
+                        fillcolor: 'gray',
+                        opacity: 0.5,
+                        xref: 'paper',
+                        yref: 'paper',
+                        path: 'M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z'
+                    }]
+                }
+            },
+            shapes: [
+                {
+                    editable: true,
+                    layer: 'below',
+                    type: 'rect',
+                    line: { width: 5 },
+                    fillcolor: 'red',
+                    opacity: 0.5,
+                    xref: 'xaxis',
+                    yref: 'yaxis',
+                    y0: 25,
+                    y1: 75,
+                    x0: 25,
+                    x1: 75
+                },
+                {
+                    editable: true,
+                    layer: 'top',
+                    type: 'circle',
+                    line: { width: 5 },
+                    fillcolor: 'green',
+                    opacity: 0.5,
+                    xref: 'xaxis',
+                    yref: 'yaxis',
+                    y0: 25,
+                    y1: 75,
+                    x0: 125,
+                    x1: 175
+                },
+                {
+                    editable: true,
+                    line: { width: 5 },
+                    fillcolor: 'blue',
+                    path: 'M250,25L225,75L275,75Z'
+                },
+                {
+                    editable: true,
+                    line: { width: 15 },
+                    path: 'M250,225L225,275L275,275'
+                },
+                {
+                    editable: true,
+                    layer: 'below',
+                    path: 'M320,100C390,180 290,180 360,100Z',
+                    fillcolor: 'rgba(0,127,127,0.5)',
+                    line: { width: 5 }
+                },
+                {
+                    editable: true,
+                    line: {
+                        width: 5,
+                        color: 'orange'
+                    },
+                    fillcolor: 'rgba(127,255,127,0.5)',
+                    path: 'M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z'
+                },
+                {
+                    editable: true,
+                    line: { width: 2 },
+                    fillcolor: 'yellow',
+
+                    path: 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z'
+                }
+            ]
+        },
+        config: {
+            editable: false,
+            modeBarButtonsToAdd: [
+                'drawline',
+                'drawopenpath',
+                'drawclosedpath',
+                'drawcircle',
+                'drawrect',
+                'eraseshape'
+            ]
+        }
+    };
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    ['mouse'].forEach(function(device) {
+        it('@flaky activate editable shapes using' + device, function(done) {
+            var i;
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
+            // shape between 175, 160 and 255, 230
+            .then(function() { click(200, 160); }) // activate shape
+            .then(function() {
+                i = 0; // test first shape i.e. case of rectangle
+
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 25,
+                    'y0': 25,
+                    'x1': 75,
+                    'y1': 75
+                });
+            })
+            .then(function() { drag([[175, 160], [150, 100]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 9.494573643410854,
+                    'y0': -17.732937685459945,
+                    'x1': 75.0015503875969,
+                    'y1': 74.99821958456974
+                });
+            })
+            .then(function() { drag([[150, 100], [175, 160]]); }) // move vertex back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 25,
+                    'y0': 25,
+                    'x1': 75,
+                    'y1': 75
+                });
+            })
+            .then(function() { drag([[215, 195], [150, 100]]); }) // move shape
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'y0': -42.65875370919882,
+                    'y1': 7.342433234421367,
+                    'x0': -15.311627906976742,
+                    'x1': 34.691472868217055
+                });
+            })
+            .then(function() { drag([[150, 100], [215, 195]]); }) // move shape back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 25,
+                    'y0': 25,
+                    'x1': 75,
+                    'y1': 75
+                });
+            })
+            .then(function() { click(100, 100); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(undefined, 'deactivate shape by clicking outside');
+            })
+            .then(function() { click(255, 230); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking on corner');
+            })
+            .then(function() { click(215, 195); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(undefined, 'deactivate shape by clicking inside');
+            })
+
+            // next shape
+            .then(function() { click(355, 225); }) // activate shape
+            .then(function() {
+                i = 1; // test second shape i.e. case of circle
+
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('circle');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 125,
+                    'x1': 175,
+                    'y0': 25,
+                    'y1': 75
+                });
+            })
+            .then(function() { drag([[338, 196], [300, 175]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('circle');
+                print(obj);
+                assertPos({
+                    'x0': obj.x0,
+                    'y0': obj.y0,
+                    'x1': obj.x1,
+                    'y1': obj.y1
+                }, {
+                    'x0': 186.78449612403102,
+                    'y0': 74.99821958456971,
+                    'x1': 113.21550387596898,
+                    'y1': 10.04154302670623
+                });
+            })
+
+            // next shape
+            .then(function() { click(500, 225); }) // activate shape
+            .then(function() {
+                i = 2; // test third shape i.e. case of closed-path
+
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M250,25L225,75L275,75Z');
+            })
+            .then(function() { drag([[540, 160], [500, 120]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M225.1968992248062,-3.4896142433234463L225,75L275,75Z');
+            })
+            .then(function() { drag([[500, 120], [540, 160]]); }) // move vertex back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M250,25L225,75L275,75Z');
+            })
+
+            // next shape
+            .then(function() { click(300, 266); }) // activate shape
+            .then(function() {
+                i = 5; // test case of bezier curves
+
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z');
+            })
+            .then(function() { drag([[297, 407], [200, 300]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M0,100.00237388724034L0,199.99762611275966L50.00310077519379,199.99762611275966L0,300Q100,300,39.84496124031008,123.79584569732937T150.0031007751938,199.99762611275966C100,300,200,300,200,199.99762611275966S150.0031007751938,199.99762611275966,150.0031007751938,100.00237388724034Z');
+            })
+            .then(function() { drag([[200, 300], [297, 407]]); }) // move vertex back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M0,100.00237388724034L0,199.99762611275966L50.00310077519379,199.99762611275966L0,300Q100,300,100,199.9976261127597T150.0031007751938,199.99762611275966C100,300,200,300,200,199.99762611275966S150.0031007751938,199.99762611275966,150.0031007751938,100.00237388724034Z');
+            })
+
+            // next shape
+            .then(function() { click(627, 193); }) // activate shape
+            .then(function() {
+                i = 6; // test case of multi-cell path
+
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z');
+            })
+            .then(function() { drag([[717, 225], [725, 230]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M300,69.99881305637984C300,9.998813056379817,380,9.998813056379817,380,69.99881305637984C380,90.00356083086054,300,90.00356083086054,300,69.99881305637984ZM320,60.00000000000001C320,50.00118694362017,332,50.00118694362017,332,60.00000000000001ZM348,60.00000000000001C348,50.00118694362017,360,50.00118694362017,360,60.00000000000001ZM320,69.99881305637984C326.0031007751938,79.99762611275966,354.0031007751938,79.99762611275966,364.9612403100775,69.99881305637984Z');
+            })
+            .then(function() { drag([[725, 230], [717, 225]]); }) // move vertex back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                print(obj);
+                assertPos(obj.path, 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z');
+            })
+
+            .catch(failTest)
+            .then(done);
         });
     });
 });
