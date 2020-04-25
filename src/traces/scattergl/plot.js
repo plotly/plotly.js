@@ -186,6 +186,7 @@ module.exports = function plot(gd, subplot, cdata) {
                         if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
                             pos = pos.concat(srcPos.slice(last, j));
                             pos.push(srcPos[last], srcPos[last + 1]);
+                            pos.push(null, null); // keep null to mark end of polygon
                             last = j + 2;
                         }
                     }
