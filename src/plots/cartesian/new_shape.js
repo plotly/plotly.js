@@ -159,26 +159,36 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
     function removeVertex() {
         if(!polygons.length) return;
+        var len = polygons[indexI].length;
+        if(len < 3) return;
 
         var newPolygon = [];
-        for(var j = 0; j < polygons[indexI].length; j++) {
+        for(var j = 0; j < len; j++) {
             if(j !== indexJ) {
                 newPolygon.push(
                     polygons[indexI][j]
                 );
             }
         }
+
+        if(indexJ === 0) {
+            newPolygon[indexI][0] = 'M';
+        }
+
         polygons[indexI] = newPolygon;
+
+        redraw();
     }
 
     function clickVertexController(numClicks) {
         if(numClicks === 2) {
             var cell = polygons[indexI];
-            if(cell.length > 4) {
+            if(
+                !pointsShapeRectangle(cell) &&
+                !pointsShapeEllipse(cell)
+            ) {
                 removeVertex();
             }
-
-            redraw();
         }
     }
 
