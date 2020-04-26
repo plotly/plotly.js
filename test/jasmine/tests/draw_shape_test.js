@@ -6,6 +6,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var selectButton = require('../assets/modebar_button');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 var click = require('../assets/click');
@@ -1345,6 +1346,15 @@ describe('Activate and deactivate shapes to edit', function() {
                 var obj = shapes[id]._input;
                 print(obj);
                 assertPos(obj.path, 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z');
+            })
+            // erase shape
+            .then(function() {
+                expect(gd._fullLayout.shapes.length).toEqual(8);
+                selectButton(gd._fullLayout._modeBar, 'eraseshape').click();
+            })
+            .then(function() {
+                expect(gd._fullLayout.shapes.length).toEqual(7);
+                expect(gd._fullLayout._activeShapeIndex).toEqual(undefined, 'clear active shape index');
             })
 
             .catch(failTest)
