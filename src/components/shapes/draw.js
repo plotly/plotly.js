@@ -141,6 +141,9 @@ function drawOne(gd, index) {
 
         setClipPath(path, gd, options);
 
+        var editHelpers;
+        if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
+
         if(isActiveShape) {
             path.style({
                 'cursor': 'move',
@@ -150,6 +153,7 @@ function drawOne(gd, index) {
                 element: path.node(),
                 plotinfo: plotinfo,
                 gd: gd,
+                editHelpers: editHelpers,
                 isActiveShape: true // i.e. to enable controllers
             };
 
@@ -158,7 +162,7 @@ function drawOne(gd, index) {
             displayOutlines(polygons, path, dragOptions);
         } else {
             if(gd._context.edits.shapePosition) {
-                setupDragElement(gd, path, options, index, shapeLayer);
+                setupDragElement(gd, path, options, index, shapeLayer, editHelpers);
             }
 
             path.style('pointer-events',
@@ -187,7 +191,7 @@ function setClipPath(shapePath, gd, shapeOptions) {
     );
 }
 
-function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
+function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHelpers) {
     var MINWIDTH = 10;
     var MINHEIGHT = 10;
 
@@ -196,7 +200,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     var isLine = shapeOptions.type === 'line';
     var isPath = shapeOptions.type === 'path';
 
-    var editHelpers = arrayEditor(gd.layout, 'shapes', shapeOptions);
     var modifyItem = editHelpers.modifyItem;
 
     var x0, y0, x1, y1, xAnchor, yAnchor;

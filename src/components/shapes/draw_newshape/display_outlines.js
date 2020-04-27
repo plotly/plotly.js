@@ -49,11 +49,9 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     function update(opts) {
         dragOptions.isActiveShape = false; // i.e. to disable controllers
 
-        var shapes = newShapes(outlines, dragOptions);
-        if(shapes) {
-            Registry.call(opts && opts.redrawing ? 'relayout' : '_guiRelayout', gd, {
-                shapes: shapes // update active shape
-            });
+        var updateObject = newShapes(outlines, dragOptions);
+        if(Object.keys(updateObject).length) {
+            Registry.call(opts && opts.redrawing ? 'relayout' : '_guiRelayout', gd, updateObject);
         }
     }
 
@@ -166,6 +164,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
             polygons[indexI] = newPolygon;
 
+            redraw();
             update();
         }
     }

@@ -200,9 +200,10 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     clearSelect(gd);
 
-    var allShapes;
-    var updatedActiveShape = false;
-    allShapes = [];
+    var editHelpers = dragOptions.editHelpers;
+    var modifyItem = (editHelpers || {}).modifyItem;
+
+    var allShapes = [];
     for(var q = 0; q < shapes.length; q++) {
         var beforeEdit = gd._fullLayout.shapes[q];
         allShapes[q] = beforeEdit._input;
@@ -217,20 +218,14 @@ module.exports = function newShapes(outlines, dragOptions) {
                 case 'line':
                 case 'rect':
                 case 'circle':
-                    updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['x0', 'x1', 'y0', 'y1']);
-                    if(updatedActiveShape) { // update active shape
-                        allShapes[q].x0 = afterEdit.x0;
-                        allShapes[q].x1 = afterEdit.x1;
-                        allShapes[q].y0 = afterEdit.y0;
-                        allShapes[q].y1 = afterEdit.y1;
-                    }
+                    modifyItem('x0', afterEdit.x0);
+                    modifyItem('x1', afterEdit.x1);
+                    modifyItem('y0', afterEdit.y0);
+                    modifyItem('y1', afterEdit.y1);
                     break;
 
                 case 'path':
-                    updatedActiveShape = hasChanged(beforeEdit, afterEdit, ['path']);
-                    if(updatedActiveShape) { // update active shape
-                        allShapes[q].path = afterEdit.path;
-                    }
+                    modifyItem('path', afterEdit.path);
                     break;
             }
         }
@@ -238,20 +233,11 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     if(isActiveShape === undefined) {
         allShapes.push(newShape); // add new shape
+        return allShapes;
     }
 
-    return allShapes;
+    return editHelpers ? editHelpers.getUpdateObj() : {};
 };
-
-function hasChanged(beforeEdit, afterEdit, keys) {
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        if(beforeEdit[k] !== afterEdit[k]) {
-            return true;
-        }
-    }
-    return false;
-}
 
 function fixDatesForPaths(polygons, xaxis, yaxis) {
     var xIsDate = xaxis.type === 'date';

@@ -42,7 +42,9 @@ function print(obj) {
     return obj;
 }
 
-function assertPos(actual, expected) {
+function assertPos(actual, expected, tolerance) {
+    if(tolerance === undefined) tolerance = 2;
+
     expect(typeof actual).toEqual(typeof expected);
 
     if(typeof actual === 'string') {
@@ -61,7 +63,7 @@ function assertPos(actual, expected) {
             expect(A.length).toEqual(B.length); // svg letters should be identical
             expect(A[0]).toEqual(B[0]);
             for(var k = 1; k < A.length; k++) {
-                expect(A[k]).toBeCloseTo(B[k], 2);
+                expect(A[k]).toBeCloseTo(B[k], tolerance);
             }
         }
     } else {
@@ -79,7 +81,7 @@ function assertPos(actual, expected) {
                 posB = fixDates(posB);
             }
 
-            expect(posA).toBeCloseTo(posB, 2);
+            expect(posA).toBeCloseTo(posB, tolerance);
         }
     }
 }
@@ -1063,7 +1065,7 @@ describe('Activate and deactivate shapes to edit', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky activate editable shapes using' + device, function(done) {
+        it('@flaky activate and edit editable shapes using' + device, function(done) {
             var i;
 
             Plotly.newPlot(gd, {
@@ -1096,7 +1098,7 @@ describe('Activate and deactivate shapes to edit', function() {
                     'y1': 75
                 });
             })
-            .then(function() { drag([[175, 160], [150, 100]]); }) // move vertex
+            .then(function() { drag([[255, 230], [300, 200]]); }) // move vertex
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
@@ -1111,13 +1113,13 @@ describe('Activate and deactivate shapes to edit', function() {
                     'x1': obj.x1,
                     'y1': obj.y1
                 }, {
-                    'x0': 9.494573643410854,
-                    'y0': -17.732937685459945,
-                    'x1': 75.0015503875969,
-                    'y1': 74.99821958456974
+                    'x0': 24.998449612403103,
+                    'y0': 24.997032640949552,
+                    'x1': 102.90852713178295,
+                    'y1': 53.63323442136499
                 });
             })
-            .then(function() { drag([[150, 100], [175, 160]]); }) // move vertex back
+            .then(function() { drag([[300, 200], [255, 230]]); }) // move vertex back
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
@@ -1138,7 +1140,7 @@ describe('Activate and deactivate shapes to edit', function() {
                     'y1': 75
                 });
             })
-            .then(function() { drag([[215, 195], [150, 100]]); }) // move shape
+            .then(function() { drag([[215, 195], [300, 200]]); }) // move shape
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
@@ -1153,13 +1155,13 @@ describe('Activate and deactivate shapes to edit', function() {
                     'x1': obj.x1,
                     'y1': obj.y1
                 }, {
-                    'y0': -42.65875370919882,
-                    'y1': 7.342433234421367,
-                    'x0': -15.311627906976742,
-                    'x1': 34.691472868217055
+                    'x0': 77.71162790697674,
+                    'y0': 24.997032640949552,
+                    'x1': 127.71472868217053,
+                    'y1': 74.99821958456974
                 });
             })
-            .then(function() { drag([[150, 100], [215, 195]]); }) // move shape back
+            .then(function() { drag([[300, 200], [215, 195]]); }) // move shape back
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
