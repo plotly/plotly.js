@@ -23,10 +23,9 @@ var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
 var selectMode = dragHelpers.selectMode;
 
-var drawNewShape = require('../../components/shapes/draw_newshape/draw');
-var displayOutlines = drawNewShape.displayOutlines;
-var handleEllipse = drawNewShape.handleEllipse;
-var addNewShapes = drawNewShape.addNewShapes;
+var displayOutlines = require('../../components/shapes/draw_newshape/display_outlines');
+var handleEllipse = require('../../components/shapes/draw_newshape/helpers').handleEllipse;
+var newShapes = require('../../components/shapes/draw_newshape/newshapes');
 
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
@@ -615,7 +614,7 @@ function clearSelectionsCache(dragOptions) {
         var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
         if(outlines && gd._fullLayout._drawing) {
             // add shape
-            var shapes = addNewShapes(outlines, dragOptions);
+            var shapes = newShapes(outlines, dragOptions);
             if(shapes) {
                 Registry.call('_guiRelayout', gd, {
                     shapes: shapes

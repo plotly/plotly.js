@@ -13,9 +13,8 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
-var drawNewShape = require('./draw_newshape/draw');
-var readPaths = drawNewShape.readPaths;
-var displayOutlines = drawNewShape.displayOutlines;
+var readPaths = require('./draw_newshape/helpers').readPaths;
+var displayOutlines = require('./draw_newshape/display_outlines');
 
 var clearOutlineControllers = require('../../plots/cartesian/handle_outline').clearOutlineControllers;
 
