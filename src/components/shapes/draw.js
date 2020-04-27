@@ -171,11 +171,7 @@ function drawOne(gd, index) {
             );
         }
 
-        path.node().addEventListener('click', function() { return clickFn(path); });
-    }
-
-    function clickFn(path) {
-        activateShape(gd, path);
+        path.node().addEventListener('click', function() { return activateShape(gd, path); });
     }
 }
 
