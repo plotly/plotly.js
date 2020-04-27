@@ -166,7 +166,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
             polygons[indexI] = newPolygon;
 
-            redraw();
+            update();
         }
     }
 
