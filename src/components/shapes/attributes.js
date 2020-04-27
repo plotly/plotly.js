@@ -256,7 +256,8 @@ module.exports = templatedArray('shape', {
         editType: 'calc+arraydraw',
         description: [
             'Determines whether the shape could be activated for edit or not.',
-            'Please note that setting to *false* has no effect in case `config.editable` is set to true'
+            'Has no effect when the older editable shapes mode is enabled via',
+            '`config.editable` or `config.edits.shapePosition`.'
         ].join(' ')
     },
 
