@@ -86,11 +86,7 @@ function assertPos(actual, expected) {
 
 function fixDates(str) {
     // hack to conver date axes to some numbers to parse with parse-svg-path
-    str = str.replace(/ /g, '');
-    str = str.replace(/_/g, '');
-    str = str.replace(/-/g, '');
-    str = str.replace(/:/g, '');
-    return str;
+    return str.replace(/[ _\-:]/g, '');
 }
 
 describe('Draw new shapes to layout', function() {
