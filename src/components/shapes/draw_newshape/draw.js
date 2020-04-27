@@ -11,16 +11,16 @@
 
 var parseSvgPath = require('parse-svg-path');
 
-var dragElement = require('../../components/dragelement');
-var dragHelpers = require('../../components/dragelement/helpers');
+var dragElement = require('../../dragelement');
+var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
+var Registry = require('../../../registry');
+var Lib = require('../../../lib');
+var setCursor = require('../../../lib/setcursor');
 
-var constants = require('./constants');
+var constants = require('../../../plots/cartesian/constants');
 var MINSELECT = constants.MINSELECT;
 var CIRCLE_SIDES = 32; // should be divisible by 4
 var i000 = 0;
@@ -31,11 +31,11 @@ var cos45 = Math.cos(Math.PI / 4);
 var sin45 = Math.sin(Math.PI / 4);
 var SQRT2 = Math.sqrt(2);
 
-var helpers = require('./helpers');
+var helpers = require('../../../plots/cartesian/helpers');
 var p2r = helpers.p2r;
 var r2p = helpers.r2p;
 
-var handleOutline = require('./handle_outline');
+var handleOutline = require('../../../plots/cartesian/handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 var clearSelect = handleOutline.clearSelect;
 

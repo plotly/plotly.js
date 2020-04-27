@@ -23,6 +23,11 @@ var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
 var selectMode = dragHelpers.selectMode;
 
+var drawNewShape = require('../../components/shapes/draw_newshape/draw');
+var displayOutlines = drawNewShape.displayOutlines;
+var handleEllipse = drawNewShape.handleEllipse;
+var addNewShapes = drawNewShape.addNewShapes;
+
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
@@ -38,11 +43,6 @@ var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 
 var clearSelect = require('./handle_outline').clearSelect;
-
-var newShape = require('./new_shape');
-var displayOutlines = newShape.displayOutlines;
-var handleEllipse = newShape.handleEllipse;
-var addNewShapes = newShape.addNewShapes;
 
 var helpers = require('./helpers');
 var p2r = helpers.p2r;
