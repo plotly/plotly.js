@@ -187,9 +187,8 @@ function getButtonGroups(gd) {
             if(typeof b === 'string') {
                 if(DRAW_MODES.indexOf(b) !== -1) {
                     if(
-                        // fullLayout._has('ternary') ||
-                        fullLayout._has('mapbox') ||
-                        fullLayout._has('cartesian')
+                        fullLayout._has('mapbox') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
+                        fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
                         dragModeGroup.push(b);
                     }
