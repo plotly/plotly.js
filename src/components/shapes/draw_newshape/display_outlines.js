@@ -14,7 +14,6 @@ var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 
 var Registry = require('../../../registry');
-var Lib = require('../../../lib');
 var setCursor = require('../../../lib/setcursor');
 
 var MINSELECT = require('../../../plots/cartesian/constants').MINSELECT;
@@ -42,10 +41,17 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         // recursive call
         displayOutlines(polygons, outlines, dragOptions, nCalls++);
 
+        if(pointsShapeEllipse(polygons[0])) {
+            update({redrawing: true});
+        }
+    }
+
+    function update(opts) {
         dragOptions.isActiveShape = false; // i.e. to disable controllers
+
         var shapes = newShapes(outlines, dragOptions);
         if(shapes) {
-            Registry.call('_guiRelayout', gd, {
+            Registry.call(opts && opts.redrawing ? 'relayout' : '_guiRelayout', gd, {
                 shapes: shapes // update active shape
             });
         }
@@ -75,9 +81,9 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     var indexJ; // vertex or cell-controller index
     var copyPolygons;
 
-    copyPolygons = recordPositions([], polygons);
-
     if(isActiveShape) {
+        if(!nCalls) copyPolygons = recordPositions([], polygons);
+
         var g = zoomLayer.append('g').attr('class', 'outline-controllers');
         addVertexControllers(g);
         addShapeControllers();
@@ -133,8 +139,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         redraw();
     }
 
-    function endDragVertexController(evt) {
-        Lib.noop(evt);
+    function endDragVertexController() {
+        update();
     }
 
     function removeVertex() {
@@ -307,8 +313,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         shapeDragOptions[indexI].moveFn = moveShapeController;
     }
 
-    function endDragShapeController(evt) {
-        Lib.noop(evt);
+    function endDragShapeController() {
+        update();
     }
 
     function addShapeControllers() {
