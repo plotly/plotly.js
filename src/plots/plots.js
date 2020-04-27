@@ -1527,20 +1527,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
     coerce('modebar.uirevision', uirevision);
 
-    coerce('newshape.drawdirection');
-    coerce('newshape.layer');
-    coerce('newshape.fillcolor');
-    coerce('newshape.fillrule');
-    coerce('newshape.opacity');
-    var newshapeLineWidth = coerce('newshape.line.width');
-    if(newshapeLineWidth) {
-        var bgcolor = (layoutIn || {}).plot_bgcolor || '#FFF';
-        coerce('newshape.line.color', Color.contrast(bgcolor));
-        coerce('newshape.line.dash');
-    }
-
-    coerce('activeshape.fillcolor');
-    coerce('activeshape.opacity');
+    Registry.getComponentMethod(
+        'shapes',
+        'supplyDrawNewShapeDefaults'
+    )(layoutIn, layoutOut, coerce);
 
     coerce('meta');
 
