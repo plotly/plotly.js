@@ -9,10 +9,6 @@
 
 'use strict';
 
-function getAxId(ax) {
-    return ax._id;
-}
-
 // in v2 (once log ranges are fixed),
 // we'll be able to p2r here for all axis types
 function p2r(ax, v) {
@@ -49,7 +45,6 @@ function getTransform(plotinfo) {
 }
 
 module.exports = {
-    getAxId: getAxId,
     p2r: p2r,
     r2p: r2p,
     axValue: axValue,

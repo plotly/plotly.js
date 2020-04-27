@@ -45,7 +45,6 @@ var handleEllipse = newShape.handleEllipse;
 var addNewShapes = newShape.addNewShapes;
 
 var helpers = require('./helpers');
-var getAxId = helpers.getAxId;
 var p2r = helpers.p2r;
 var axValue = helpers.axValue;
 var getTransform = helpers.getTransform;
@@ -634,8 +633,8 @@ function clearSelectionsCache(dragOptions) {
 
 function determineSearchTraces(gd, xAxes, yAxes, subplot) {
     var searchTraces = [];
-    var xAxisIds = xAxes.map(getAxId);
-    var yAxisIds = yAxes.map(getAxId);
+    var xAxisIds = xAxes.map(function(ax) { return ax._id; });
+    var yAxisIds = yAxes.map(function(ax) { return ax._id; });
     var cd, trace, i;
 
     for(i = 0; i < gd.calcdata.length; i++) {
