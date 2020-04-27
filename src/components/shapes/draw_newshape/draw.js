@@ -159,11 +159,11 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
     function removeVertex() {
         if(!polygons.length) return;
-        var len = polygons[indexI].length;
-        if(len < 3) return;
+        if(!polygons[indexI]) return;
+        if(!polygons[indexI].length) return;
 
         var newPolygon = [];
-        for(var j = 0; j < len; j++) {
+        for(var j = 0; j < polygons[indexI].length; j++) {
             if(j !== indexJ) {
                 newPolygon.push(
                     polygons[indexI][j]
@@ -171,17 +171,24 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
             }
         }
 
-        if(indexJ === 0) {
-            newPolygon[indexI][0] = 'M';
+        if(newPolygon.length > 1 && !(
+            newPolygon.length === 2 && newPolygon[1][0] === 'Z')
+        ) {
+            if(indexJ === 0) {
+                newPolygon[0][0] = 'M';
+            }
+
+            polygons[indexI] = newPolygon;
+
+            redraw();
         }
-
-        polygons[indexI] = newPolygon;
-
-        redraw();
     }
 
-    function clickVertexController(numClicks) {
+    function clickVertexController(numClicks, evt) {
         if(numClicks === 2) {
+            indexI = +evt.srcElement.getAttribute('data-i');
+            indexJ = +evt.srcElement.getAttribute('data-j');
+
             var cell = polygons[indexI];
             if(
                 !pointsShapeRectangle(cell) &&
