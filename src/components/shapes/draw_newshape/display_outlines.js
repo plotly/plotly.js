@@ -56,9 +56,6 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     }
 
 
-    // remove previous controllers - only if there is an active shape
-    if(gd._fullLayout._activeShapeIndex >= 0) clearOutlineControllers(gd);
-
     var isActiveShape = dragOptions.isActiveShape;
     var fullLayout = gd._fullLayout;
     var zoomLayer = fullLayout._zoomlayer;
@@ -67,6 +64,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     var isDrawMode = drawMode(dragmode);
 
     if(isDrawMode) gd._fullLayout._drawing = true;
+    else if(gd._fullLayout._activeShapeIndex >= 0) clearOutlineControllers(gd);
 
     // make outline
     outlines.attr('d', writePaths(polygons));
@@ -79,8 +77,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     var indexJ; // vertex or cell-controller index
     var copyPolygons;
 
-    if(isActiveShape) {
-        if(!nCalls) copyPolygons = recordPositions([], polygons);
+    if(isActiveShape && !nCalls) {
+        copyPolygons = recordPositions([], polygons);
 
         var g = zoomLayer.append('g').attr('class', 'outline-controllers');
         addVertexControllers(g);
