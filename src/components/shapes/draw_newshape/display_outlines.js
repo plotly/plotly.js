@@ -193,18 +193,6 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
             var onRect = pointsShapeRectangle(cell);
             var onEllipse = !onRect && pointsShapeEllipse(cell);
 
-            var minX;
-            var minY;
-            var maxX;
-            var maxY;
-            if(onRect) {
-                // compute bounding box
-                minX = calcMin(cell, 1);
-                minY = calcMin(cell, 2);
-                maxX = calcMax(cell, 1);
-                maxY = calcMax(cell, 2);
-            }
-
             vertexDragOptions[i] = [];
             for(var j = 0; j < cell.length; j++) {
                 if(cell[j][0] === 'Z') continue;
@@ -222,7 +210,10 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                 var y = cell[j][2];
 
                 var rIcon = 3;
-                var button = g.append(onRect ? 'rect' : 'circle')
+                g.append('circle')
+                    .attr('cx', x)
+                    .attr('cy', y)
+                    .attr('r', rIcon)
                 .style({
                     'mix-blend-mode': 'luminosity',
                     fill: 'black',
@@ -230,48 +221,16 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     'stroke-width': 1
                 });
 
-                if(onRect) {
-                    button
-                        .attr('x', x - rIcon)
-                        .attr('y', y - rIcon)
-                        .attr('width', 2 * rIcon)
-                        .attr('height', 2 * rIcon);
-                } else {
-                    button
+                var vertex = g.append('circle')
+                    .classed('cursor-grab', true)
+                    .attr('data-i', i)
+                    .attr('data-j', j)
                         .attr('cx', x)
                         .attr('cy', y)
-                        .attr('r', rIcon);
-                }
-
-                var vertex = g.append(onRect ? 'rect' : 'circle')
-                .attr('data-i', i)
-                .attr('data-j', j)
+                    .attr('r', rVertexController)
                 .style({
                     opacity: 0
                 });
-
-                if(onRect) {
-                    var ratioX = (x - minX) / (maxX - minX);
-                    var ratioY = (y - minY) / (maxY - minY);
-                    if(isFinite(ratioX) && isFinite(ratioY)) {
-                        setCursor(
-                            vertex,
-                            dragElement.getCursor(ratioX, 1 - ratioY)
-                        );
-                    }
-
-                    vertex
-                        .attr('x', x - rVertexController)
-                        .attr('y', y - rVertexController)
-                        .attr('width', 2 * rVertexController)
-                        .attr('height', 2 * rVertexController);
-                } else {
-                    vertex
-                        .classed('cursor-grab', true)
-                        .attr('cx', x)
-                        .attr('cy', y)
-                        .attr('r', rVertexController);
-                }
 
                 vertexDragOptions[i][j] = {
                     element: vertex.node(),
@@ -332,22 +291,6 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         dragElement.init(shapeDragOptions[i]);
     }
 };
-
-function calcMin(cell, dim) {
-    var v = Infinity;
-    for(var i = 0; i < cell.length; i++) {
-        v = Math.min(v, cell[i][dim]);
-    }
-    return v;
-}
-
-function calcMax(cell, dim) {
-    var v = -Infinity;
-    for(var i = 0; i < cell.length; i++) {
-        v = Math.max(v, cell[i][dim]);
-    }
-    return v;
-}
 
 function recordPositions(polygonsOut, polygonsIn) {
     for(var i = 0; i < polygonsIn.length; i++) {
