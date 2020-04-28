@@ -15,7 +15,6 @@ var drawMode = dragHelpers.drawMode;
 
 var Registry = require('../../../registry');
 
-var MINSELECT = require('../../../plots/cartesian/constants').MINSELECT;
 var constants = require('./constants');
 var i000 = constants.i000;
 var i090 = constants.i090;
@@ -69,7 +68,6 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     outlines.attr('d', writePaths(polygons));
 
     // add controllers
-    var rVertexController = MINSELECT * 1.5; // bigger vertex buttons
     var vertexDragOptions;
     var shapeDragOptions;
     var indexI; // cell index
@@ -206,28 +204,19 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                 var x = cell[j][1];
                 var y = cell[j][2];
 
-                var rIcon = 3;
-                g.append('circle')
-                    .attr('cx', x)
-                    .attr('cy', y)
-                    .attr('r', rIcon)
-                .style({
-                    'mix-blend-mode': 'luminosity',
-                    fill: 'black',
-                    stroke: 'white',
-                    'stroke-width': 1
-                });
-
                 var vertex = g.append('circle')
                     .classed('cursor-grab', true)
                     .attr('data-i', i)
                     .attr('data-j', j)
-                        .attr('cx', x)
-                        .attr('cy', y)
-                    .attr('r', rVertexController)
-                .style({
-                    opacity: 0
-                });
+                    .attr('cx', x)
+                    .attr('cy', y)
+                    .attr('r', 4)
+                    .style({
+                        'mix-blend-mode': 'luminosity',
+                        fill: 'black',
+                        stroke: 'white',
+                        'stroke-width': 1
+                    });
 
                 vertexDragOptions[i][j] = {
                     element: vertex.node(),
