@@ -40,16 +40,16 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         displayOutlines(polygons, outlines, dragOptions, nCalls++);
 
         if(pointsShapeEllipse(polygons[0])) {
-            Registry.getComponentMethod('shapes', 'drawOne')(gd, gd._fullLayout._activeShapeIndex);
+            update({redrawing: true});
         }
     }
 
-    function update() {
+    function update(opts) {
         dragOptions.isActiveShape = false; // i.e. to disable controllers
 
         var updateObject = newShapes(outlines, dragOptions);
         if(Object.keys(updateObject).length) {
-            Registry.call('_guiRelayout', gd, updateObject);
+            Registry.call((opts || {}).redrawing ? 'relayout' : '_guiRelayout', gd, updateObject);
         }
     }
 
