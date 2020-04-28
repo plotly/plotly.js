@@ -946,106 +946,130 @@ describe('Draw new shapes to layout', function() {
     });
 });
 
-describe('Activate and deactivate shapes to edit', function() {
+describe('Activate and edit editable shapes', function() {
     var fig = {
-        data: [{ x: [0, 50], y: [0, 50] }],
-        layout: {
-            width: 800,
-            height: 600,
-            margin: {
-                t: 100,
-                b: 50,
-                l: 100,
-                r: 50
+        'data': [
+            {
+                'x': [
+                    0,
+                    50
+                ],
+                'y': [
+                    0,
+                    50
+                ]
+            }
+        ],
+        'layout': {
+            'width': 800,
+            'height': 600,
+            'margin': {
+                't': 100,
+                'b': 50,
+                'l': 100,
+                'r': 50
             },
-
-            yaxis: {
-                autorange: 'reversed'
+            'yaxis': {
+                'autorange': 'reversed'
             },
-
-            template: {
-                layout: {
-                    shapes: [{
-                        name: 'myPath',
-                        editable: true,
-                        layer: 'below',
-                        line: { width: 0 },
-                        fillcolor: 'gray',
-                        opacity: 0.5,
-                        xref: 'paper',
-                        yref: 'paper',
-                        path: 'M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z'
-                    }]
+            'template': {
+                'layout': {
+                    'shapes': [
+                        {
+                            'name': 'myPath',
+                            'editable': true,
+                            'layer': 'below',
+                            'line': {
+                                'width': 0
+                            },
+                            'fillcolor': 'gray',
+                            'opacity': 0.5,
+                            'xref': 'paper',
+                            'yref': 'paper',
+                            'path': 'M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z'
+                        }
+                    ]
                 }
             },
-            shapes: [
+            'shapes': [
                 {
-                    editable: true,
-                    layer: 'below',
-                    type: 'rect',
-                    line: { width: 5 },
-                    fillcolor: 'red',
-                    opacity: 0.5,
-                    xref: 'xaxis',
-                    yref: 'yaxis',
-                    y0: 25,
-                    y1: 75,
-                    x0: 25,
-                    x1: 75
-                },
-                {
-                    editable: true,
-                    layer: 'top',
-                    type: 'circle',
-                    line: { width: 5 },
-                    fillcolor: 'green',
-                    opacity: 0.5,
-                    xref: 'xaxis',
-                    yref: 'yaxis',
-                    y0: 25,
-                    y1: 75,
-                    x0: 125,
-                    x1: 175
-                },
-                {
-                    editable: true,
-                    line: { width: 5 },
-                    fillcolor: 'blue',
-                    path: 'M250,25L225,75L275,75Z'
-                },
-                {
-                    editable: true,
-                    line: { width: 15 },
-                    path: 'M250,225L225,275L275,275'
-                },
-                {
-                    editable: true,
-                    layer: 'below',
-                    path: 'M320,100C390,180 290,180 360,100Z',
-                    fillcolor: 'rgba(0,127,127,0.5)',
-                    line: { width: 5 }
-                },
-                {
-                    editable: true,
-                    line: {
-                        width: 5,
-                        color: 'orange'
+                    'editable': true,
+                    'layer': 'below',
+                    'type': 'rect',
+                    'line': {
+                        'width': 5
                     },
-                    fillcolor: 'rgba(127,255,127,0.5)',
-                    path: 'M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z'
+                    'fillcolor': 'red',
+                    'opacity': 0.5,
+                    'xref': 'xaxis',
+                    'yref': 'yaxis',
+                    'x0': 25,
+                    'y0': 25,
+                    'x1': 75,
+                    'y1': 75
                 },
                 {
-                    editable: true,
-                    line: { width: 2 },
-                    fillcolor: 'yellow',
-
-                    path: 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z'
+                    'editable': true,
+                    'layer': 'top',
+                    'type': 'circle',
+                    'line': {
+                        'width': 5
+                    },
+                    'fillcolor': 'green',
+                    'opacity': 0.5,
+                    'xref': 'xaxis',
+                    'yref': 'yaxis',
+                    'x0': 125,
+                    'y0': 25,
+                    'x1': 175,
+                    'y1': 75
+                },
+                {
+                    'editable': true,
+                    'line': {
+                        'width': 5
+                    },
+                    'fillcolor': 'blue',
+                    'path': 'M250,25L225,75L275,75Z'
+                },
+                {
+                    'editable': true,
+                    'line': {
+                        'width': 15
+                    },
+                    'path': 'M250,225L225,275L275,275'
+                },
+                {
+                    'editable': true,
+                    'layer': 'below',
+                    'path': 'M320,100C390,180 290,180 360,100Z',
+                    'fillcolor': 'rgba(0,127,127,0.5)',
+                    'line': {
+                        'width': 5
+                    }
+                },
+                {
+                    'editable': true,
+                    'line': {
+                        'width': 5,
+                        'color': 'orange'
+                    },
+                    'fillcolor': 'rgba(127,255,127,0.5)',
+                    'path': 'M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z'
+                },
+                {
+                    'editable': true,
+                    'line': {
+                        'width': 2
+                    },
+                    'fillcolor': 'yellow',
+                    'path': 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z'
                 }
             ]
         },
-        config: {
-            editable: false,
-            modeBarButtonsToAdd: [
+        'config': {
+            'editable': false,
+            'modeBarButtonsToAdd': [
                 'drawline',
                 'drawopenpath',
                 'drawclosedpath',
@@ -1065,8 +1089,8 @@ describe('Activate and deactivate shapes to edit', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky activate and edit editable shapes using' + device, function(done) {
-            var i;
+        it('@flaky reactangle using' + device, function(done) {
+            var i = 0; // shape index
 
             Plotly.newPlot(gd, {
                 data: fig.data,
@@ -1077,8 +1101,6 @@ describe('Activate and deactivate shapes to edit', function() {
             // shape between 175, 160 and 255, 230
             .then(function() { click(200, 160); }) // activate shape
             .then(function() {
-                i = 0; // test first shape i.e. case of rectangle
-
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'activate shape by clicking border');
 
@@ -1198,11 +1220,22 @@ describe('Activate and deactivate shapes to edit', function() {
                 expect(id).toEqual(undefined, 'deactivate shape by clicking inside');
             })
 
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@flaky circle using' + device, function(done) {
+            var i = 1; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
             // next shape
             .then(function() { click(355, 225); }) // activate shape
             .then(function() {
-                i = 1; // test second shape i.e. case of circle
-
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'activate shape by clicking border');
 
@@ -1244,11 +1277,22 @@ describe('Activate and deactivate shapes to edit', function() {
                 });
             })
 
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@flaky closed-path using' + device, function(done) {
+            var i = 2; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
             // next shape
             .then(function() { click(500, 225); }) // activate shape
             .then(function() {
-                i = 2; // test third shape i.e. case of closed-path
-
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'activate shape by clicking border');
 
@@ -1278,11 +1322,22 @@ describe('Activate and deactivate shapes to edit', function() {
                 assertPos(obj.path, 'M250,25L225,75L275,75Z');
             })
 
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@flaky bezier curves using' + device, function(done) {
+            var i = 5; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
             // next shape
             .then(function() { click(300, 266); }) // activate shape
             .then(function() {
-                i = 5; // test case of bezier curves
-
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'activate shape by clicking border');
 
@@ -1312,11 +1367,21 @@ describe('Activate and deactivate shapes to edit', function() {
                 assertPos(obj.path, 'M0,100.00237388724034L0,199.99762611275966L50.00310077519379,199.99762611275966L0,300Q100,300,100,199.9976261127597T150.0031007751938,199.99762611275966C100,300,200,300,200,199.99762611275966S150.0031007751938,199.99762611275966,150.0031007751938,100.00237388724034Z');
             })
 
-            // next shape
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@flaky multi-cell path using' + device, function(done) {
+            var i = 6; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
             .then(function() { click(627, 193); }) // activate shape
             .then(function() {
-                i = 6; // test case of multi-cell path
-
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'activate shape by clicking border');
 
@@ -1325,7 +1390,7 @@ describe('Activate and deactivate shapes to edit', function() {
                 print(obj);
                 assertPos(obj.path, 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z');
             })
-            .then(function() { drag([[717, 225], [725, 230]]); }) // move vertex
+            .then(function() { drag([[717, 225], [700, 250]]); }) // move vertex
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
@@ -1333,9 +1398,9 @@ describe('Activate and deactivate shapes to edit', function() {
                 var shapes = gd._fullLayout.shapes;
                 var obj = shapes[id]._input;
                 print(obj);
-                assertPos(obj.path, 'M300,69.99881305637984C300,9.998813056379817,380,9.998813056379817,380,69.99881305637984C380,90.00356083086054,300,90.00356083086054,300,69.99881305637984ZM320,60.00000000000001C320,50.00118694362017,332,50.00118694362017,332,60.00000000000001ZM348,60.00000000000001C348,50.00118694362017,360,50.00118694362017,360,60.00000000000001ZM320,69.99881305637984C326.0031007751938,79.99762611275966,354.0031007751938,79.99762611275966,364.9612403100775,69.99881305637984Z');
+                assertPos(obj.path, 'M300,69.99881305637984C300,9.998813056379817,380,9.998813056379817,380,69.99881305637984C380,90.00356083086054,300,90.00356083086054,300,69.99881305637984ZM320,60.00000000000001C320,50.00118694362017,332,50.00118694362017,332,60.00000000000001ZM348,60.00000000000001C348,50.00118694362017,360,50.00118694362017,360,60.00000000000001ZM320,69.99881305637984C326.0031007751938,79.99762611275966,354.0031007751938,79.99762611275966,349.4573643410853,87.80296735905047Z');
             })
-            .then(function() { drag([[725, 230], [717, 225]]); }) // move vertex back
+            .then(function() { drag([[700, 250], [717, 225]]); }) // move vertex back
             .then(function() {
                 var id = gd._fullLayout._activeShapeIndex;
                 expect(id).toEqual(i, 'keep shape active after drag corner');
@@ -1345,6 +1410,7 @@ describe('Activate and deactivate shapes to edit', function() {
                 print(obj);
                 assertPos(obj.path, 'M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z');
             })
+
             // erase shape
             .then(function() {
                 expect(gd._fullLayout.shapes.length).toEqual(8);
