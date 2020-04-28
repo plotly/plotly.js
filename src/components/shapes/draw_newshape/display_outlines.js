@@ -14,7 +14,6 @@ var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 
 var Registry = require('../../../registry');
-var setCursor = require('../../../lib/setcursor');
 
 var MINSELECT = require('../../../plots/cartesian/constants').MINSELECT;
 var constants = require('./constants');
