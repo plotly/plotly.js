@@ -26,6 +26,10 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var doAutoRange = require('../cartesian/autorange').doAutoRange;
 
+var dragHelpers = require('../../components/dragelement/helpers');
+var drawMode = dragHelpers.drawMode;
+var selectMode = dragHelpers.selectMode;
+
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -524,8 +528,8 @@ proto.updateTraces = function(fullData, calcData) {
 };
 
 proto.updateFx = function(dragmode) {
-    // switch to svg interactions in lasso/select mode
-    if(dragmode === 'lasso' || dragmode === 'select') {
+    // switch to svg interactions in lasso/select mode & shape drawing
+    if(selectMode(dragmode) || drawMode(dragmode)) {
         this.pickCanvas.style['pointer-events'] = 'none';
         this.mouseContainer.style['pointer-events'] = 'none';
     } else {

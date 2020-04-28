@@ -1646,13 +1646,13 @@ describe('Test select box and lasso in general:', function() {
         .then(_drag(path1))
         .then(function() {
             _assert('select path1', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
             });
         })
         .then(_drag(path2))
         .then(function() {
             _assert('select path2', {
-                outline: [[193, 0], [193, 500], [213, 500], [213, 0], [193, 0]]
+                outline: [[193, 0], [193, 500], [213, 500], [213, 0]]
             });
         })
         .then(_drag(path1))
@@ -1660,8 +1660,8 @@ describe('Test select box and lasso in general:', function() {
         .then(function() {
             _assert('select path1+path2', {
                 outline: [
-                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
-                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500]
+                    [170, 170], [170, 150], [150, 150], [150, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500]
                 ]
             });
         })
@@ -1678,16 +1678,16 @@ describe('Test select box and lasso in general:', function() {
             // merged with previous 'select' polygon
             _assert('after shift lasso', {
                 outline: [
-                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
-                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500],
-                    [335, 243], [328, 169], [316, 171], [318, 239], [335, 243]
+                    [170, 170], [170, 150], [150, 150], [150, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500],
+                    [335, 243], [328, 169], [316, 171], [318, 239]
                 ]
             });
         })
         .then(_drag(lassoPath))
         .then(function() {
             _assert('after lasso (no-shift)', {
-                outline: [[316, 171], [318, 239], [335, 243], [328, 169], [316, 171]]
+                outline: [[316, 171], [318, 239], [335, 243], [328, 169]]
             });
         })
         .then(function() {
@@ -1706,15 +1706,15 @@ describe('Test select box and lasso in general:', function() {
         .then(function() {
             // this used to merged 'lasso' polygons before (see #2669)
             _assert('shift select path1 after pan', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
             });
         })
         .then(_drag(path2, {shiftKey: true}))
         .then(function() {
             _assert('shift select path1+path2 after pan', {
                 outline: [
-                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
-                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500]
+                    [170, 170], [170, 150], [150, 150], [150, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500]
                 ]
             });
         })
@@ -1725,7 +1725,7 @@ describe('Test select box and lasso in general:', function() {
         .then(_drag(path1, {shiftKey: true}))
         .then(function() {
             _assert('shift select path1 after scroll', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
             });
         })
         .catch(failTest)
