@@ -41,7 +41,7 @@ npm install plotly.js-dist
 and import plotly.js as 
 ```js
 import Plotly from 'plotly.js-dist'
-// Or in Node,
+// Or using require,
 var Plotly = require('plotly.js-dist')
 ```
 
