@@ -104,7 +104,7 @@ module.exports = function convert(gd, calcTrace) {
                 'icon-size': trace.marker.size / 10
             });
 
-            if('angle' in trace.marker) {
+            if('angle' in trace.marker && trace.marker.angle !== 'auto') {
                 Lib.extendFlat(symbol.layout, {
                 // unfortunately cant use {angle} do to this issue:
                 // https://github.com/mapbox/mapbox-gl-js/issues/873
@@ -258,7 +258,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
         getFillFunc(symbol) :
         blankFillFunc;
 
-    var fillAngle = (angle) ?
+    var fillAngle = (angle !== 'auto') ?
         getFillFunc(angle, true) :
         blankFillFunc;
 
