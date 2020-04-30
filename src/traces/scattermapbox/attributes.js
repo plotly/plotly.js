@@ -89,11 +89,13 @@ module.exports = overrideAll({
         },
         angle: {
             valType: 'number',
-            dflt: 0,
+            dflt: null,
             role: 'style',
             arrayOk: true,
             description: [
-                'Sets the marker rotation, in degrees clockwise.'
+                'Sets the marker rotation, in degrees clockwise.',
+                'When it is not defined or using null (i.e. default),',
+                'no rotation would be applied in perspective views.'
             ].join(' ')
         },
         allowoverlap: {
