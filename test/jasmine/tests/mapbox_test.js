@@ -1536,15 +1536,18 @@ describe('@noCI, mapbox plots', function() {
             var mock = require('@mocks/mapbox_layers.json');
             var customMock = Lib.extendDeep(mock);
 
-            var attr = 'super custom attribution';
+            var attr = 'custom attribution';
+            var XSS = '<img src=x onerror=\"alert(XSS);\">';
             customMock.data.pop();
-            customMock.layout.mapbox.layers[0].sourceattribution = attr;
+            customMock.layout.mapbox.layers[0].sourceattribution = XSS + attr;
 
             Plotly.newPlot(gd, customMock)
             .then(function() {
                 var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual([attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
+                expect(s.text()).toEqual([XSS + attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
+                expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
+                expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
             .catch(failTest)
             .then(done);

@@ -117,12 +117,12 @@ describe('svg+text utils', function() {
 
         it('whitelists http hrefs', function() {
             var node = mockTextSVGElement(
-                '<a href="https://bl.ocks.org/">bl.ocks.org</a>'
+                '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
             );
 
             expect(node.text()).toEqual('bl.ocks.org');
             assertAnchorAttrs(node);
-            assertAnchorLink(node, 'https://bl.ocks.org/');
+            assertAnchorLink(node, 'http://bl.ocks.org/');
         });
 
         it('whitelists https hrefs', function() {
@@ -509,6 +509,118 @@ describe('svg+text utils', function() {
             expect(fn(sIn)).toBe('ThisIsDATA300');
             expect(fn(sIn, {allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i><b>DATA</b><em>300</em>');
             expect(fn(sIn, {len: 10, allowedTags: ['i', 'b', 'em']})).toBe('<i>ThisIs</i>D...');
+        });
+    });
+});
+
+describe('sanitizeHTML', function() {
+    'use strict';
+
+    describe('convertToTspans', function() {
+        var stringFromCodePoint;
+
+        beforeAll(function() {
+            stringFromCodePoint = String.fromCodePoint;
+        });
+
+        afterEach(function() {
+            String.fromCodePoint = stringFromCodePoint;
+        });
+
+        function mockHTML(txt) {
+            return util.sanitizeHTML(txt);
+        }
+
+        afterEach(function() {
+            d3.selectAll('.text-tester').remove();
+        });
+
+        it('checks for XSS attack in href', function() {
+            var innerHTML = mockHTML(
+                '<a href="javascript:alert(\'attack\')">XSS</a>'
+            );
+
+            expect(innerHTML).toEqual('<a>XSS</a>');
+        });
+
+        it('checks for XSS attack in href (with plenty of white spaces)', function() {
+            var innerHTML = mockHTML(
+                '<a href =    "     javascript:alert(\'attack\')">XSS</a>'
+            );
+
+            expect(innerHTML).toEqual('<a>XSS</a>');
+        });
+
+        it('whitelists relative hrefs (interpreted as http)', function() {
+            var innerHTML = mockHTML(
+                '<a href="/mylink">mylink</a>'
+            );
+
+            expect(innerHTML).toEqual('<a href="/mylink">mylink</a>');
+        });
+
+        it('whitelists http hrefs', function() {
+            var innerHTML = mockHTML(
+                '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
+            );
+
+            expect(innerHTML).toEqual('<a href="http://bl.ocks.org/">bl.ocks.org</a>');
+        });
+
+        it('whitelists https hrefs', function() {
+            var innerHTML = mockHTML(
+                '<a href="https://chart-studio.plotly.com">plotly</a>'
+            );
+
+            expect(innerHTML).toEqual('<a href="https://chart-studio.plotly.com">plotly</a>');
+        });
+
+        it('whitelists mailto hrefs', function() {
+            var innerHTML = mockHTML(
+                '<a href="mailto:support@plotly.com">support</a>'
+            );
+
+            expect(innerHTML).toEqual('<a href="mailto:support@plotly.com">support</a>');
+        });
+
+        it('drops XSS attacks in href', function() {
+            // "XSS" gets interpreted as a relative link (http)
+            var textCases = [
+                '<a href="XSS\" onmouseover="alert(1)\" style="font-size:300px">Subtitle</a>',
+                '<a href="XSS" onmouseover="alert(1)" style="font-size:300px">Subtitle</a>'
+            ];
+
+            textCases.forEach(function(textCase) {
+                var innerHTML = mockHTML(textCase);
+
+                expect(innerHTML).toEqual('<a style="font-size:300px" href="XSS">Subtitle</a>');
+            });
+        });
+
+        it('accepts href and style in <a> in any order and tosses other stuff', function() {
+            var textCases = [
+                '<a href="x" style="y">z</a>',
+                '<a href=\'x\' style="y">z</a>',
+                '<A HREF="x"StYlE=\'y\'>z</a>',
+                '<a style=\'y\'href=\'x\'>z</A>',
+                '<a \t\r\n href="x" \n\r\t style="y"  \n  \t  \r>z</a>',
+                '<a magic="true" href="x" weather="cloudy" style="y" speed="42">z</a>',
+                '<a href="x" style="y">z</a href="nope" style="for real?">',
+            ];
+
+            textCases.forEach(function(textCase) {
+                var innerHTML = mockHTML(textCase);
+
+                expect(innerHTML).toEqual('<a style="y" href="x">z</a>');
+            });
+        });
+
+        it('allows encoded URIs in href', function() {
+            var innerHTML = mockHTML(
+              '<a href="https://example.com/?q=date%20%3E=%202018-01-01">click</a>'
+            );
+
+            expect(innerHTML).toEqual('<a href="https://example.com/?q=date%20%3E=%202018-01-01">click</a>');
         });
     });
 });
