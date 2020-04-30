@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var sanitizeHTML = require('../../lib/svg_text_utils').sanitizeHTML;
 var convertTextOpts = require('./convert_text_opts');
 var constants = require('./constants');
 
@@ -278,7 +279,9 @@ function convertSourceOpts(opts) {
 
     sourceOpts[field] = source;
 
-    if(opts.sourceattribution) sourceOpts.attribution = opts.sourceattribution;
+    if(opts.sourceattribution) {
+        sourceOpts.attribution = sanitizeHTML(opts.sourceattribution);
+    }
 
     return sourceOpts;
 }
