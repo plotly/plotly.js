@@ -9,6 +9,29 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.0] -- 2020-04-30
+
+### Added
+ - Introduce new drag modes "drawline", "drawrect", "drawcircle", "drawopenpath", "drawclosedpath" &
+   add optional modebar buttons for drawing & removing new shapes inside cartesian subplots &
+   add `newshape` and `activeshape` attributes to `layout` &
+   add `editable` and `fillrule` attributes to `layout.shapes` [#4775]
+ - Add `angle` and `allowoverlap` attributes to `marker` of `scattermapbox` traces [#4575, #4794]
+ - Add Portuguese (Portugal) `pt-pt` locale [#4736]
+
+### Changed
+ - Bump WebGL modules including mapbox-gl and is-mobile [#4731, #4752, #4791]
+ - Bump jsdom, d3-force, minify-stream, topojson-client and es6-promise [#4751, #4768, #4772, #4773, #4774]
+
+### Fixed
+ - Sanitize `sourceattribution` in mapbox `layers` [#4793]
+ - Fix `react`to mapbox `style` changes [#4720]
+ - Fix transform sort order with gaps [#4783]
+ - Fix autorange for `bar` and `waterfall` when `base` is present [#4714]
+ - Fix "extremes" `opacityscale` option for `volume` and `surface` [#4725]
+ - Fix no-WebGL warning for `scattergl` and `splom` traces [#4777]
+ - Fix notifier CSS to have a fallback in font stack [#4778]
+
 
 ## [1.53.0] -- 2020-03-31
 
