@@ -19,154 +19,6 @@
       "action": "update",
       "resolves": [
         {
-          "id": 758,
-          "path": "gl-cone3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-streamtube3d>gl-cone3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-contour2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-error3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-heatmap2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-line3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-mesh3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-plot2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-plot3d>gl-axes3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-plot3d>gl-spikes3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-plot3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-pointcloud2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-scatter3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-select-box>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-streamtube3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "gl-surface3d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "regl-line2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "regl-scatter2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 758,
-          "path": "regl-splom>regl-scatter2d>glslify>static-eval",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        }
-      ],
-      "module": "static-eval",
-      "target": "2.0.5",
-      "depth": 4
-    },
-    {
-      "action": "update",
-      "resolves": [
-        {
           "id": 1179,
           "path": "eslint>file-entry-cache>flat-cache>write>mkdirp>minimist",
           "dev": true,
@@ -1682,31 +1534,6 @@
     "758": {
       "findings": [
         {
-          "version": "2.0.0",
-          "paths": [
-            "gl-cone3d>glslify>static-eval",
-            "gl-streamtube3d>gl-cone3d>glslify>static-eval",
-            "gl-contour2d>glslify>static-eval",
-            "gl-error3d>glslify>static-eval",
-            "gl-heatmap2d>glslify>static-eval",
-            "gl-line3d>glslify>static-eval",
-            "gl-mesh3d>glslify>static-eval",
-            "gl-plot2d>glslify>static-eval",
-            "gl-plot3d>gl-axes3d>glslify>static-eval",
-            "gl-plot3d>gl-spikes3d>glslify>static-eval",
-            "gl-plot3d>glslify>static-eval",
-            "gl-pointcloud2d>glslify>static-eval",
-            "gl-scatter3d>glslify>static-eval",
-            "gl-select-box>glslify>static-eval",
-            "gl-streamtube3d>glslify>static-eval",
-            "gl-surface3d>glslify>static-eval",
-            "glslify>static-eval",
-            "regl-line2d>glslify>static-eval",
-            "regl-scatter2d>glslify>static-eval",
-            "regl-splom>regl-scatter2d>glslify>static-eval"
-          ]
-        },
-        {
           "version": "0.2.4",
           "paths": [
             "gl-plot2d>gl-select-static>cwise>static-module>static-eval",
@@ -2160,14 +1987,14 @@
     "vulnerabilities": {
       "info": 0,
       "low": 157,
-      "moderate": 64,
+      "moderate": 44,
       "high": 0,
       "critical": 0
     },
-    "dependencies": 5645,
+    "dependencies": 5662,
     "devDependencies": 9316,
     "optionalDependencies": 139,
-    "totalDependencies": 14981
+    "totalDependencies": 14998
   },
-  "runId": "6d0181cd-8e8c-4d39-ae31-de026763bd0e"
+  "runId": "bb613b2d-e32a-44c4-9964-9e5b533af59d"
 }
