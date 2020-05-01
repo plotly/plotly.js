@@ -61,7 +61,6 @@
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "@turf/centroid": "^6.0.2",
-    "acorn": "^7.1.1",
     "alpha-shape": "^1.0.0",
     "canvas-fit": "^1.5.0",
     "color-normalize": "^1.5.0",
@@ -123,6 +122,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
+    "acorn": "^7.1.1",
     "brfs": "^2.0.2",
     "browserify": "^16.5.1",
     "browserify-transform-tools": "^1.7.0",
@@ -132,6 +132,7 @@
     "derequire": "^2.1.0",
     "ecstatic": "^4.1.2",
     "eslint": "^6.8.0",
+    "espree": "^6.2.1",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.0",
     "fuse.js": "^3.6.1",
@@ -154,6 +155,7 @@
     "madge": "^3.8.0",
     "minify-stream": "^2.0.0",
     "minimist": "^1.2.5",
+    "mkdirp": "^1.0.4",
     "node-sass": "^4.13.1",
     "npm-link-check": "^3.0.0",
     "open": "^7.0.3",
