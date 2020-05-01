@@ -70,226 +70,6 @@
       "resolves": [
         {
           "id": 1488,
-          "path": "point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-scatter2d>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-error2d>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-line2d>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>bubleify>buble>acorn-dynamic-import>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "point-cluster>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-scatter2d>point-cluster>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>point-cluster>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-error2d>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-line2d>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>bubleify>buble>acorn-jsx>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        }
-      ],
-      "module": "bubleify",
-      "target": "1.2.1",
-      "depth": 4
-    },
-    {
-      "action": "update",
-      "resolves": [
-        {
-          "id": 1488,
-          "path": "brfs>static-module>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "brfs>static-module>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        }
-      ],
-      "module": "static-module",
-      "target": "3.0.4",
-      "depth": 2
-    },
-    {
-      "action": "update",
-      "resolves": [
-        {
-          "id": 1488,
-          "path": "browserify>insert-module-globals>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>insert-module-globals>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "browserify>syntax-error>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>syntax-error>acorn-node>acorn-dynamic-import>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "browserify>insert-module-globals>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>insert-module-globals>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "browserify>syntax-error>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "watchify>browserify>syntax-error>acorn-node>acorn",
-          "dev": true,
-          "optional": false,
-          "bundled": false
-        }
-      ],
-      "module": "acorn-node",
-      "target": "1.8.2",
-      "depth": 5
-    },
-    {
-      "action": "update",
-      "resolves": [
-        {
-          "id": 1488,
           "path": "eslint>espree>acorn",
           "dev": true,
           "optional": false,
@@ -1414,61 +1194,6 @@
     },
     {
       "action": "review",
-      "module": "acorn",
-      "resolves": [
-        {
-          "id": 1488,
-          "path": "point-cluster>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-scatter2d>point-cluster>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>point-cluster>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-error2d>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-line2d>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        },
-        {
-          "id": 1488,
-          "path": "regl-splom>bubleify>buble>acorn",
-          "dev": false,
-          "optional": false,
-          "bundled": false
-        }
-      ]
-    },
-    {
-      "action": "review",
       "module": "yargs-parser",
       "resolves": [
         {
@@ -1649,46 +1374,6 @@
     },
     "1488": {
       "findings": [
-        {
-          "version": "5.7.1",
-          "paths": [
-            "point-cluster>bubleify>buble>acorn",
-            "regl-scatter2d>point-cluster>bubleify>buble>acorn",
-            "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn",
-            "regl-splom>point-cluster>bubleify>buble>acorn",
-            "regl-error2d>bubleify>buble>acorn",
-            "regl-line2d>bubleify>buble>acorn",
-            "regl-splom>bubleify>buble>acorn",
-            "point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-scatter2d>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-splom>point-cluster>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-error2d>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-line2d>bubleify>buble>acorn-dynamic-import>acorn",
-            "regl-splom>bubleify>buble>acorn-dynamic-import>acorn",
-            "brfs>static-module>acorn-node>acorn-dynamic-import>acorn",
-            "browserify>insert-module-globals>acorn-node>acorn-dynamic-import>acorn",
-            "watchify>browserify>insert-module-globals>acorn-node>acorn-dynamic-import>acorn",
-            "browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn-dynamic-import>acorn",
-            "watchify>browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn-dynamic-import>acorn",
-            "browserify>syntax-error>acorn-node>acorn-dynamic-import>acorn",
-            "watchify>browserify>syntax-error>acorn-node>acorn-dynamic-import>acorn",
-            "point-cluster>bubleify>buble>acorn-jsx>acorn",
-            "regl-scatter2d>point-cluster>bubleify>buble>acorn-jsx>acorn",
-            "regl-splom>regl-scatter2d>point-cluster>bubleify>buble>acorn-jsx>acorn",
-            "regl-splom>point-cluster>bubleify>buble>acorn-jsx>acorn",
-            "regl-error2d>bubleify>buble>acorn-jsx>acorn",
-            "regl-line2d>bubleify>buble>acorn-jsx>acorn",
-            "regl-splom>bubleify>buble>acorn-jsx>acorn",
-            "brfs>static-module>acorn-node>acorn",
-            "browserify>insert-module-globals>acorn-node>acorn",
-            "watchify>browserify>insert-module-globals>acorn-node>acorn",
-            "browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn",
-            "watchify>browserify>insert-module-globals>undeclared-identifiers>acorn-node>acorn",
-            "browserify>syntax-error>acorn-node>acorn",
-            "watchify>browserify>syntax-error>acorn-node>acorn"
-          ]
-        },
         {
           "version": "7.1.0",
           "paths": [
@@ -1987,14 +1672,14 @@
     "vulnerabilities": {
       "info": 0,
       "low": 157,
-      "moderate": 44,
+      "moderate": 9,
       "high": 0,
       "critical": 0
     },
-    "dependencies": 5662,
+    "dependencies": 5663,
     "devDependencies": 9316,
     "optionalDependencies": 139,
-    "totalDependencies": 14998
+    "totalDependencies": 14999
   },
-  "runId": "94009465-c4ef-4c58-98c1-c74f772e029b"
+  "runId": "e3ebdedd-c022-455d-954a-f76af056972d"
 }
