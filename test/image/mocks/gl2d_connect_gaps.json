@@ -17,6 +17,6 @@
     }
   ],
   "layout": {
-    "title": "Connect gaps + line opacity test"
+    "title": {"text": "Connect gaps + line opacity test"}
   }
 }

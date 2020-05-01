@@ -7217,7 +7217,7 @@
       "type": "linear",
       "anchor": "x"
     },
-    "title": "",
+    "title": {"text": ""},
     "hovermode": "closest",
     "annotations": [
       {

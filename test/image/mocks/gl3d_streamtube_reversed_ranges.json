@@ -16,7 +16,7 @@
   "layout": {
     "height": 758,
     "width": 1310,
-    "title": "Streamtube, X and Y axes reversed using autorange: reversed, Z-axis reversed using range: [2, -2]",
+    "title": {"text": "Streamtube, X and Y axes reversed using autorange: reversed, Z-axis reversed using range: [2, -2]"},
     "scene": {
       "camera": {
         "eye": {

@@ -7350,11 +7350,13 @@
         "plot_bgcolor": "#fff",
         "separators": ".,",
         "showlegend": true,
-        "title": "<b><b></b></b>",
-        "titlefont": {
-            "color": "#444",
-            "family": "\"Open Sans\", verdana, arial, sans-serif",
-            "size": 17
+        "title": {
+            "text": "<b><b></b></b>",
+            "font": {
+                "color": "#444",
+                "family": "\"Open Sans\", verdana, arial, sans-serif",
+                "size": 17
+            }
         },
         "width": 840,
         "xaxis": {
@@ -7372,7 +7374,6 @@
                 6,
                 30
             ],
-            "rangemode": "normal",
             "showexponent": "all",
             "showgrid": true,
             "showline": false,
@@ -7387,11 +7388,13 @@
             },
             "tickmode": "linear",
             "ticks": "",
-            "title": "Breathing Rate (BPM)",
-            "titlefont": {
-                "color": "#444",
-                "family": "\"Open Sans\", verdana, arial, sans-serif",
-                "size": 14
+            "title": {
+                "text": "Breathing Rate (BPM)",
+                "font": {
+                    "color": "#444",
+                    "family": "\"Open Sans\", verdana, arial, sans-serif",
+                    "size": 14
+                }
             },
             "type": "linear",
             "zeroline": true,
@@ -7427,11 +7430,13 @@
             },
             "tickmode": "auto",
             "ticks": "",
-            "title": "Normalized Amplitude",
-            "titlefont": {
-                "color": "#444",
-                "family": "\"Open Sans\", verdana, arial, sans-serif",
-                "size": 14
+            "title": {
+                "text": "Normalized Amplitude",
+                "font": {
+                    "color": "#444",
+                    "family": "\"Open Sans\", verdana, arial, sans-serif",
+                    "size": 14
+                }
             },
             "type": "linear",
             "zeroline": true,

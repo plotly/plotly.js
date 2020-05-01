@@ -11,6 +11,6 @@
       }
     }],
   "layout": {
-    "title": "Scatter3d with under-defined marker color array"
+    "title": {"text": "Scatter3d with under-defined marker color array"}
   }
 }

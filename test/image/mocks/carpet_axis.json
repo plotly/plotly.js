@@ -10,7 +10,9 @@
         [1.73205, 1.93649, 2.23606]
       ],
       "aaxis": {
-        "title": "length, l, m",
+        "title": {
+          "text": "length, l, m"
+        },
         "ticksuffix": "m",
         "tickformat": ".3s",
         "tickmode": "linear",
@@ -21,7 +23,9 @@
         "smoothing": 1
       },
       "baxis": {
-        "title": "pressure, p, Pa",
+        "title": {
+          "text": "pressure, p, Pa"
+        },
         "ticksuffix": "Pa",
         "tickformat": ".3s",
         "tickmode": "linear",
@@ -65,7 +69,9 @@
           [1.7320, 1.7635, 1.8000, 1.8411, 1.8867, 1.9364, 1.9899, 2.0469, 2.1071, 2.1702, 2.2360]
       ],
       "aaxis": {
-        "title": "length, l, m",
+        "title": {
+          "text": "length, l, m"
+        },
         "ticksuffix": "m",
         "tickformat": ".3s",
         "tickmode": "array",
@@ -76,7 +82,9 @@
         "smoothing": 0
       },
       "baxis": {
-        "title": "pressure, p, Pa",
+        "title": {
+          "text": "pressure, p, Pa"
+        },
         "ticksuffix": "Pa",
         "tickformat": ".3s",
         "tickmode": "array",
@@ -100,7 +108,9 @@
         [1.73205, 1.93649, 2.23606]
       ],
       "aaxis": {
-        "title": "length, l, m",
+        "title": {
+          "text": "length, l, m"
+        },
         "ticksuffix": "m",
         "tickformat": ".3s",
         "tickmode": "linear",
@@ -111,7 +121,9 @@
         "smoothing": 1
       },
       "baxis": {
-        "title": "pressure, p, Pa",
+        "title": {
+          "text": "pressure, p, Pa"
+        },
         "ticksuffix": "Pa",
         "tickformat": ".3s",
         "tickmode": "linear",
@@ -178,7 +190,9 @@
         [1.7320, 1.7635, 1.8000, 1.8411, 1.8867, 1.9364, 1.9899, 2.0469, 2.1071, 2.1702, 2.2360]
       ],
       "aaxis": {
-        "title": "length, l, m",
+        "title": {
+          "text": "length, l, m"
+        },
         "ticksuffix": "m",
         "tickformat": ".3s",
         "tickmode": "array",
@@ -189,7 +203,9 @@
         "smoothing": 0
       },
       "baxis": {
-        "title": "pressure, p, Pa",
+        "title": {
+          "text": "pressure, p, Pa"
+        },
         "ticksuffix": "Pa",
         "tickformat": ".3s",
         "tickmode": "array",

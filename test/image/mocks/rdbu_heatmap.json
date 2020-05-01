@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "RdBu",
+      "colorscale": "RdBu",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "RdBu"
+    "title": {"text": "RdBu"}
   }
 }

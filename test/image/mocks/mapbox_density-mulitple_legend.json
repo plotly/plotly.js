@@ -10,12 +10,7 @@
     "zmid": 0,
     "reversescale": true,
     "radius": 50,
-    "below": "",
-    "colorbar": {
-      "y": 1,
-      "yanchor": "top",
-      "len": 0.45
-    }
+    "below": ""
   }, {
     "showlegend": true,
     "showscale": false,
@@ -25,12 +20,7 @@
     "lat": [15, 25, 35],
     "zmin": 0,
     "zauto": false,
-    "radius": [50, 100, 10],
-    "colorbar": {
-      "y": 0,
-      "yanchor": "bottom",
-      "len": 0.45
-    }
+    "radius": [50, 100, 10]
   }],
   "layout": {
     "mapbox": {

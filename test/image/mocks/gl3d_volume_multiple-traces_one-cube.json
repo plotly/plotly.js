@@ -11,7 +11,9 @@
             "colorscale": [[ 0, "rgb(127,127,127)" ], [ 0.499, "rgb(127,127,127)" ], [ 0.5, "rgb(255,255,0)" ], [ 0.7, "rgb(255,0,0)" ], [ 0.9, "rgb(0,0,0)" ], [ 0.901, "rgb(127,127,127)" ], [ 1.0, "rgb(127,127,127)" ]],
             "reversescale": false,
             "colorbar": {
-                "title": "trace A",
+                "title": {
+                    "text": "trace A"
+                },
                 "len": 0.5,
                 "y": 0.5,
                 "yanchor": "bottom"
@@ -24,8 +26,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": -3000,
             "isomax": 3000,
@@ -1136,7 +1137,9 @@
             "colorscale": [[ 0, "rgb(127,127,127)" ], [ 0.199, "rgb(127,127,127)" ], [ 0.2, "rgb(0,0,255)" ], [ 0.4, "rgb(0,255,0)" ], [ 0.401, "rgb(127,127,127)" ], [ 1.0, "rgb(127,127,127)" ]],
             "reversescale": false,
             "colorbar": {
-                "title": "trace B",
+                "title": {
+                    "text": "trace B"
+                },
                 "len": 0.5,
                 "y": 0.0,
                 "yanchor": "bottom"
@@ -1154,8 +1157,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": -3000,
             "isomax": 3000,

@@ -63,7 +63,7 @@
       },
       "radialaxis": {
         "angle": 45,
-        "title": "angular period > _categories"
+        "title": {"text": "angular period > _categories"}
       },
       "angularaxis": {
         "direction": "clockwise",
@@ -89,7 +89,7 @@
       "sector": [-20, 200],
       "radialaxis": {
         "angle": 60,
-        "title": "snapped to 90"
+        "title": {"text": "snapped to 90"}
       },
       "angularaxis": {
         "categoryarray": ["d", "a", "c", "b"],

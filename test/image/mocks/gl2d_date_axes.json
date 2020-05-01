@@ -67,11 +67,11 @@
             ],
             "autorange": false,
             "calendar": "thai",
-            "title": "Thai"
+            "title": {"text": "Thai"}
         },
         "yaxis": {
             "calendar": "mayan",
-            "title": "Mayan"
+            "title": {"text": "Mayan"}
         }
     }
 }

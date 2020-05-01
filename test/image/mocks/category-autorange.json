@@ -68,7 +68,9 @@
         "yaxis":{
             "categoryarray": ["W", "X", "Y", "Z"],
             "anchor": "y",
-            "title": "letter refs",
+            "title": {
+                "text": "letter refs"
+            },
             "domain": [0, 0.48],
             "ticks": "outside",
             "mirror":"allticks",
@@ -88,7 +90,9 @@
         },
         "yaxis3":{
             "categoryarray": ["W", "X", "Y", "Z"],
-            "title": "number refs",
+            "title": {
+                "text": "number refs"
+            },
             "domain": [0.52, 1],
             "anchor": "x3",
             "ticks": "outside",
@@ -111,7 +115,9 @@
         "width": 500,
         "showlegend": false,
         "margin":{"r":40,"b":25,"l":40,"t":55},
-        "title": "left: auto range || right: set range",
+        "title": {
+            "text": "left: auto range || right: set range"
+        },
         "font": {"size": 10},
         "annotations":[{
             "xref": "x", "yref": "y", "axref": "x", "ayref": "y",

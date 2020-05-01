@@ -34,9 +34,9 @@
   "layout": {
     "width": 500,
     "height": 500,
-    "title": "Duplicate positions",
-    "xaxis": {"title": "infer zero"},
-    "xaxis2": {"title": "interpolate"},
+    "title": {"text": "Duplicate positions"},
+    "xaxis": {"title": {"text": "infer zero"}},
+    "xaxis2": {"title": {"text": "interpolate"}},
     "grid": {"columns": 1, "rows": 2, "pattern": "independent"}
   }
 }

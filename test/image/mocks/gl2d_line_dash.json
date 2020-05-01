@@ -44,7 +44,6 @@
                 "size": 16,
                 "symbol": "cross",
                 "line": {
-                    "color": "",
                     "width": 0
                 },
                 "opacity": 0.9

@@ -3800,11 +3800,13 @@
         }
     ],
     "layout": {
-        "title": "Home Temperature",
-        "titlefont": {
-            "color": "black",
-            "family": "Open Sans, sans-serif",
-            "size": 25
+        "title": {
+            "text": "Home Temperature",
+            "font": {
+                "color": "black",
+                "family": "Open Sans, sans-serif",
+                "size": 25
+            }
         },
         "font": {
             "family": "Open Sans, sans-serif",
@@ -3816,11 +3818,13 @@
         "width": 1366,
         "height": 713,
         "xaxis": {
-            "title": "Time",
-            "titlefont": {
-                "color": "black",
-                "family": "Open Sans, sans-serif",
-                "size": 18
+            "title": {
+                "text": "Time",
+                "font": {
+                    "color": "black",
+                    "family": "Open Sans, sans-serif",
+                    "size": 18
+                }
             },
             "range": [
                 1397330493000,
@@ -3865,11 +3869,13 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Temperature (F)",
-            "titlefont": {
-                "color": "black",
-                "family": "Open Sans, sans-serif",
-                "size": 18
+            "title": {
+                "text": "Temperature (F)",
+                "font": {
+                    "color": "black",
+                    "family": "Open Sans, sans-serif",
+                    "size": 18
+                }
             },
             "range": [
                 48.00333333333333,

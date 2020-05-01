@@ -497,7 +497,7 @@
         }
     ],
     "layout": {
-        "title": "range selector prototype",
+        "title": {"text": "range selector prototype"},
         "xaxis": {
             "rangeselector": {
                 "buttons": [

@@ -93,7 +93,7 @@
         }
     ],
     "layout": {
-        "title": "Toggle legend group",
+        "title": {"text": "Toggle legend group"},
         "legend": {
             "tracegroupgap": 20
         },

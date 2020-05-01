@@ -60,11 +60,11 @@
         }
     ],
     "layout": {
-        "title": "Grouped Waterfall Chart",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 16
+        "title": {
+            "text": "Grouped Waterfall Chart",
+            "font": {
+                "size": 16
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -76,11 +76,11 @@
         "width": 600,
         "height": 440,
         "xaxis": {
-            "title": "Dose (mg)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
+            "title": {
+                "text": "Dose (mg)",
+                "font": {
+                    "size": 16
+                }
             },
             "range": [
                 -0.5,
@@ -125,11 +125,11 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Length",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
+            "title": {
+                "text": "Length",
+                "font": {
+                    "size": 16
+                }
             },
             "range": [
                 0,

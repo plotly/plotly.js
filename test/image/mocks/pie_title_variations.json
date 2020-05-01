@@ -13,8 +13,10 @@
         "y": [0, 0.49]
       },
       "textinfo": "none",
-      "title": "Starry Night (following a well-known painting by Vincent Van Gogh)",
-      "titleposition": "bottom left"
+      "title": {
+        "text": "Starry Night (following a well-known painting by Vincent Van Gogh)",
+        "position": "bottom left"
+      }
     },
     {
       "values": [28, 26, 21, 15, 10],
@@ -29,10 +31,12 @@
         "y": [0, 0.49]
       },
       "textinfo": "none",
-      "title": "Sunflowers",
-      "titleposition": "top right",
-      "titlefont": {
-        "size": 14
+      "title": {
+        "text": "Sunflowers",
+        "position": "top right",
+        "font": {
+          "size": 14
+        }
       }
     },
     {
@@ -48,9 +52,11 @@
         "y": [0.51, 1]
       },
       "textinfo": "none",
-      "title": "Irises",
-      "titlefont": {
-          "size": 14
+      "title": {
+        "text": "Irises",
+        "font": {
+            "size": 14
+        }
       }
     },
     {
@@ -58,9 +64,6 @@
       "labels": ["1st", "2nd", "3rd", "4th", "5th"],
       "type": "pie",
       "name": "The Night Cafe",
-      "titlefont": {
-        "size": 50
-      },
       "marker": {
         "colors": ["rgb(146, 123, 21)", "rgb(177, 180, 34)", "rgb(206, 206, 40)", "rgb(175, 51, 21)", "rgb(35, 36, 21)"]
       },
@@ -69,7 +72,12 @@
         "y": [0.52, 1]
       },
       "textinfo": "none",
-      "title": "The<br>Night<br>Cafe"
+      "title": {
+        "text": "The<br>Night<br>Cafe",
+        "font": {
+          "size": 50
+        }
+      }
     }
   ],
   "layout": {

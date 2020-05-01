@@ -166,13 +166,13 @@
                 ]
             },
             "aaxis": {
-                "title": "A"
+                "title": {"text": "A"}
             },
             "baxis": {
-                "title": "B"
+                "title": {"text": "B"}
             },
             "caxis": {
-                "title": "C"
+                "title": {"text": "C"}
             }
         },
         "margin": {

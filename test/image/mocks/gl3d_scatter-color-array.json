@@ -46,7 +46,7 @@
     }
   ],
   "layout": {
-    "title": "Markers should default to line color",
+    "title": {"text": "Markers should default to line color"},
     "height":758,
     "width":1310
   }

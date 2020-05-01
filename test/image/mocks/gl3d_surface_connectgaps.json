@@ -14,7 +14,7 @@
       }
     ],
     "layout": {
-        "title": "Surface plot with interpolated gaps<br>(connectgaps: true)",
+        "title": {"text": "Surface plot with interpolated gaps<br>(connectgaps: true)"},
         "width": 600,
         "height": 400
     }

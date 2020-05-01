@@ -93,12 +93,6 @@
     }
   ],
   "layout": {
-    "yaxis": {
-      "type": "linear"
-    },
-    "xaxis": {
-      "type": "linear"
-    },
     "height": 758,
     "width": 1310,
     "autosize": true,

@@ -13,8 +13,7 @@
       "anchor": "tip",
       "colorbar": {
         "x": 0,
-        "xanchor": "right",
-        "side": "left"
+        "xanchor": "right"
       }
     },
     {

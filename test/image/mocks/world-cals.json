@@ -355,7 +355,7 @@
     "layout": {
         "xaxis": {
             "calendar": "ummalqura",
-            "title": "ummalqura axis",
+            "title": {"text": "ummalqura axis"},
             "domain": [
                 0,
                 0.8
@@ -381,7 +381,7 @@
         "yaxis2": {
             "anchor": "x2",
             "calendar": "nepali",
-            "title": "nepali axis",
+            "title": {"text": "nepali axis"},
             "type": "date",
             "range": [
                 "1496-11-30 12:00",

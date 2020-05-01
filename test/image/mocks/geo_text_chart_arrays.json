@@ -113,11 +113,13 @@
         }
     ],
     "layout": {
-        "title": "Canadian cities",
-        "font": {},
-        "titlefont": {
-            "size": 28
+        "title": {
+            "text": "Canadian cities",
+            "font": {
+                "size": 28
+            }
         },
+        "font": {},
         "geo": {
             "scope": "north america",
             "lonaxis": {

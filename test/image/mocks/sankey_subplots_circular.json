@@ -51,7 +51,7 @@
         }
     ],
     "layout": {
-        "title": "Multiple Sankey plots with circular links",
+        "title": {"text": "Multiple Sankey plots with circular links"},
         "width": 800,
         "height": 300,
         "margin": {

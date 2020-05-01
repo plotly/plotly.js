@@ -86,9 +86,6 @@
         "ternary": {
             "sum": 100,
             "aaxis": {
-                "titlefont": {
-                    "size": 20
-                },
                 "tickfont": {
                     "size": 15
                 },
@@ -96,14 +93,16 @@
                 "ticklen": 5,
                 "showline": true,
                 "showgrid": true,
-                "title": "Journalist",
+                "title": {
+                    "font": {
+                        "size": 20
+                    },
+                    "text": "Journalist"
+                },
                 "tickangle": 0
             },
             "baxis": {
                 "min": 20,
-                "titlefont": {
-                    "size": 20
-                },
                 "tickfont": {
                     "size": 15
                 },
@@ -111,13 +110,15 @@
                 "ticklen": 5,
                 "showline": true,
                 "showgrid": true,
-                "title": "<br>Developer",
+                "title": {
+                    "font": {
+                        "size": 20
+                    },
+                    "text": "<br>Developer"
+                },
                 "tickangle": 45
             },
             "caxis": {
-                "titlefont": {
-                    "size": 20
-                },
                 "tickfont": {
                     "size": 15
                 },
@@ -125,7 +126,12 @@
                 "ticklen": 5,
                 "showline": true,
                 "showgrid": true,
-                "title": "<br>Designer",
+                "title": {
+                    "font": {
+                        "size": 20
+                    },
+                    "text": "<br>Designer"
+                },
                 "tickangle": -45
             },
             "bgcolor": "#fff1e0"

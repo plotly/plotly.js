@@ -32,7 +32,7 @@
         }
     ],
     "layout": {
-        "title": "Scatter3d show line AND marker color scales",
+        "title": {"text": "Scatter3d show line AND marker color scales"},
         "width": 600,
         "height": 600
     }

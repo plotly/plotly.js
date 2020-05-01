@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Viridis",
+      "colorscale": "Viridis",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Viridis"
+    "title": {"text": "Viridis"}
   }
 }

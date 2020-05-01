@@ -11,7 +11,9 @@
             "colorscale": "Blackbody",
             "reversescale": true,
             "colorbar": {
-                "title": "<b>extremes</b><br>opacistyscale",
+                "title": {
+                    "text": "<b>extremes</b><br>opacistyscale"
+                },
                 "len": 0.5,
                 "y": 0.5,
                 "yanchor": "bottom"
@@ -29,8 +31,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": -500,
             "isomax": 3000,
@@ -781,7 +782,9 @@
             "colorscale": "Portland",
             "reversescale": false,
             "colorbar": {
-                "title": "<b>max</b><br>opacistyscale",
+                "title": {
+                    "text": "<b>max</b><br>opacistyscale"
+                },
                 "len": 0.5,
                 "y": 0.0,
                 "yanchor": "bottom"
@@ -799,8 +802,7 @@
                 "z": { "show": true }
             },
             "contour": {
-                "show": false,
-                "width": 4
+                "show": false
             },
             "isomin": -500,
             "isomax": 3000,

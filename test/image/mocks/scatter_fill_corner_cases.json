@@ -155,19 +155,19 @@
   "layout": {
     "xaxis": {
       "domain": [0, 0.45],
-      "title": "linear"
+      "title": {"text": "linear"}
     },
     "xaxis2": {
       "domain": [0.55, 1],
-      "title": "spline"
+      "title": {"text": "spline"}
     },
     "yaxis": {
       "domain": [0.05, 0.475],
-      "title": "tozeroy"
+      "title": {"text": "tozeroy"}
     },
     "yaxis2": {
       "domain": [0.525, 1],
-      "title": "tonexty"
+      "title": {"text": "tonexty"}
     },
     "legend": {
       "orientation": "h"

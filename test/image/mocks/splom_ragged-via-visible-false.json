@@ -51,6 +51,6 @@
   ],
   "layout": {
     "showlegend": false,
-    "title": "ragged sploms using visible false dimensions"
+    "title": {"text": "ragged sploms using visible false dimensions"}
   }
 }

@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Electric",
+      "colorscale": "Electric",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Electric"
+    "title": {"text": "Electric"}
   }
 }

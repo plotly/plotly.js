@@ -43,6 +43,6 @@
   "layout": {
     "width": 500,
     "height": 450,
-    "title": "Stack groups and unstacked filled traces"
+    "title": {"text": "Stack groups and unstacked filled traces"}
   }
 }

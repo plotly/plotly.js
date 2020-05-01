@@ -296,6 +296,6 @@
     "font": {
       "size": 10
     },
-    "title": "Injection in VISpm"
+    "title": {"text": "Injection in VISpm"}
   }
 }

@@ -30,7 +30,7 @@
         }
     ],
     "layout": {
-        "title": "Simple surface",
+        "title": {"text": "Simple surface"},
         "scene": {
             "aspectratio": {
                 "x": 1,

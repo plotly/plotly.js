@@ -2,7 +2,7 @@
     "layout": {
         "width": 1000,
         "height":  550,
-        "title": "Deep-water horizon oil spill - observed birds<br><sup><i>U.S. Fish & Wildlife Service</i></sup>"
+        "title": {"text": "Deep-water horizon oil spill - observed birds<br><sup><i>U.S. Fish & Wildlife Service</i></sup>"}
     },
 
     "data": [{

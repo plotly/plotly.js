@@ -21,7 +21,7 @@
       "domain": [ 0, 0.45 ],
       "range": [ 1, 2 ],
       "rangeslider": {},
-      "title": "X",
+      "title": {"text": "X"},
       "side": "top"
     },
     "xaxis2": {
@@ -30,7 +30,7 @@
       "rangeslider": {
         "range": [ -2, 4 ]
       },
-      "title": "X2"
+      "title": {"text": "X2"}
     },
     "yaxis": {
       "domain": [ 0.3, 0.8 ],

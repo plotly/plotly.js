@@ -27,7 +27,7 @@
                     "coordinates": [[-0.5, 52], [0.5, 50]]
                   },
                   "properties": {
-                    "title": "Line Text Example"
+                    "title": {"text": "Line Text Example"}
                   }
                 }
               ]
@@ -55,7 +55,7 @@
                     "coordinates": [[-0.5, 52], [0.5, 50]]
                   },
                   "properties": {
-                    "title": "Line Text Example"
+                    "title": {"text": "Line Text Example"}
                   }
                 }
               ]

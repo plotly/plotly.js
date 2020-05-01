@@ -12,10 +12,9 @@
                 "invisible"
             ],
             "type": "bar",
-            "textinfo": "text",
             "textposition": "auto",
-            "xaxis": "x1",
-            "yaxis": "y1"
+            "xaxis": "x",
+            "yaxis": "y"
         },
         {
             "y": [
@@ -29,10 +28,9 @@
                 "visible"
             ],
             "type": "bar",
-            "textinfo": "text",
             "textposition": "auto",
-            "xaxis": "x1",
-            "yaxis": "y1"
+            "xaxis": "x",
+            "yaxis": "y"
         },
         {
             "y": [
@@ -46,7 +44,6 @@
                 "invisible"
             ],
             "type": "bar",
-            "textinfo": "text",
             "textposition": "inside",
             "xaxis": "x2",
             "yaxis": "y2"
@@ -63,7 +60,6 @@
                 "invisible"
             ],
             "type": "bar",
-            "textinfo": "text",
             "textposition": "inside",
             "xaxis": "x2",
             "yaxis": "y2"

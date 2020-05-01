@@ -88,7 +88,7 @@
    "layout":{
       "yaxis":{
          "zeroline":false,
-         "title":"normalized moisture"
+         "title":{"text":"normalized moisture"}
       },
       "violinmode":"group",
       "legend": {

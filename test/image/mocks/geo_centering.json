@@ -22,7 +22,6 @@
 			},
 			"showcountries": true,
 			"showland": true,
-			"showsubunits": true,
 			"lataxis": {
 			  	"showgrid": true,
 			  	"tick0": 3,
@@ -34,8 +33,7 @@
 			  	"dtick": 3
 			},
 			"landcolor": "rgb(243,243,243)",
-			"countrycolor": "rgb(204,204,204)",
-			"subunitcolor": "rgb(224,224,224)"
+			"countrycolor": "rgb(204,204,204)"
 	  	}
 	}
 }

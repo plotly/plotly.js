@@ -22,7 +22,7 @@
         }
     ],
     "layout": {
-        "title": "heatmap and contour map with irregular bricks",
+        "title": {"text": "heatmap and contour map with irregular bricks"},
         "xaxis": {"domain": [0, 0.4]},
         "xaxis2": {"domain": [0.6, 1]},
         "yaxis2": {"anchor": "x2"},

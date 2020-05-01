@@ -40,7 +40,9 @@
 "layout": {
   "xaxis": {
     "zeroline": false,
-    "title": "normalized moisture"
+    "title": {
+      "text": "normalized moisture"
+    }
   },
   "boxmode": "group",
   "boxgroupgap": 0.5

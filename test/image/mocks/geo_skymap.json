@@ -4922,8 +4922,7 @@
       "showrivers": false,
       "showlakes": false,
       "showocean": false,
-      "showcountries": false,
-      "showsubunits": false
+      "showcountries": false
     }
   }
 }

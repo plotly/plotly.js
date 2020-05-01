@@ -2,8 +2,10 @@
     "layout": {
         "width": 1500,
         "height":  600,
-        "title": "Half and Double Angles",
-        "titlefont": {"size": 24},
+        "title": {
+            "text": "Half and Double Angles",
+            "font": {"size": 24}
+        },
         "xaxis": {"domain": [0.65, 1], "tickfont": {"size": 10}},
         "yaxis": {"ticklen": 10, "tickfont": {"size": 10}},
         "showlegend": true,

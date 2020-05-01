@@ -24,9 +24,6 @@
         "width": 8,
         "color": "magenta"
       },
-      "marker": {
-        "size": 10
-      },
       "type":"scatter3d"
     },
     {
@@ -69,7 +66,7 @@
 
   ],
   "layout": {
-    "title": "Monochrome and palette based line plots",
+    "title": {"text": "Monochrome and palette based line plots"},
     "height":758,
     "width":1310
   }

@@ -23,7 +23,7 @@
                     50
                 ],
                 "colorbar": {
-                    "title": "wow"
+                    "title": {"text": "wow"}
                 }
             }
         }

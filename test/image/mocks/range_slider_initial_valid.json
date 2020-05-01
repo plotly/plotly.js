@@ -14,7 +14,7 @@
         "name": "Bird 2"
     }],
     "layout": {
-        "title": "Seagull Positions",
+        "title": {"text": "Seagull Positions"},
         "xaxis": {
             "rangeslider": {
                 "visible": true,
@@ -24,11 +24,11 @@
                 "borderwidth": 2,
                 "range": [10, 25]
             },
-            "title": "Time (Hours)",
+            "title": {"text": "Time (Hours)"},
             "range": [15, 20]
         },
         "yaxis": {
-            "title": "Height (ft)"
+            "title": {"text": "Height (ft)"}
         },
         "paper_bgcolor": "#eee",
         "height": 500,

@@ -273,10 +273,10 @@
    "layout":{
       "showlegend":false,
       "xaxis":{
-         "title":"Grade [%]",
+         "title":{"text":"Grade [%]"},
          "type":"linear"
       },
-      "title":"Based on Fig 4.4a: Course Grade Distributions",
+      "title":{"text":"Based on Fig 4.4a: Course Grade Distributions"},
       "yaxis":{
          "type":"category"
       },

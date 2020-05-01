@@ -19,12 +19,7 @@
         }
     ],
     "layout": {
-        "title": "Click to enter Plot title",
-        "titlefont": {
-            "family": "",
-            "size": 0,
-            "color": ""
-        },
+        "title": {"text": "Click to enter Plot title"},
         "font": {
             "family": "\"Open sans\", verdana, arial, sans-serif",
             "size": 16,
@@ -35,12 +30,7 @@
         "width": 1785,
         "height": 764,
         "xaxis": {
-            "title": "Click to enter X axis title",
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
+            "title": {"text": "Click to enter X axis title"},
             "range": [
                 0.9421558530724339,
                 2.057844146927566
@@ -84,12 +74,7 @@
             "position": 0
         },
         "yaxis": {
-            "title": "Click to enter Y axis title",
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
+            "title": {"text": "Click to enter Y axis title"},
             "range": [
                 0.9380292532717475,
                 2.0619707467282526

@@ -41,7 +41,7 @@
             "opacity": 0.5,
             "type": "mesh3d",
             "name": "mesh3d",
-            "scene": "scene1"
+            "scene": "scene"
         },
         {
             "x": [
@@ -99,7 +99,7 @@
         },
         "width": 400,
         "height": 600,
-        "scene1": {
+        "scene": {
             "aspectratio": {
                 "x": 1,
                 "y": 1,

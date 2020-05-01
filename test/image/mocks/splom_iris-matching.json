@@ -689,7 +689,7 @@
     }
   ],
   "layout": {
-	"title": "Iris dataset splom",
+	"title": {"text": "Iris dataset splom"},
     "xaxis": {"matches": "y"},
     "xaxis2": {"matches": "y2"},
     "xaxis3": {"matches": "y3"},

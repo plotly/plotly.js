@@ -72,13 +72,13 @@
   "layout": {
     "width": 800,
     "height": 800,
-    "xaxis": {"title": "stackgaps: infer zero"},
-    "xaxis2": {"title": "stackgaps: interpolate"},
-    "yaxis": {"title": "groupnorm: -", "type": "log"},
+    "xaxis": {"title": {"text": "stackgaps: infer zero"}},
+    "xaxis2": {"title": {"text": "stackgaps: interpolate"}},
+    "yaxis": {"title": {"text": "groupnorm: -"}, "type": "log"},
     "yaxis2": {"type": "log"},
-    "yaxis3": {"title": "groupnorm: fraction<br>mode: lines+markers", "type": "log"},
+    "yaxis3": {"title": {"text": "groupnorm: fraction<br>mode: lines+markers"}, "type": "log"},
     "yaxis4": {"type": "log"},
-    "yaxis5": {"title": "groupnorm: percent", "type": "log"},
+    "yaxis5": {"title": {"text": "groupnorm: percent"}, "type": "log"},
     "yaxis6": {"type": "log"},
     "legend": {"traceorder": "reversed"},
     "grid": {"columns": 2, "rows": 3, "pattern": "independent", "roworder": "bottom to top"}

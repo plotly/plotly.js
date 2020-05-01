@@ -12,7 +12,7 @@
         }
     ],
     "layout": {
-        "title": "xaxis.categoryorder: \"total descending\"",
+        "title": {"text": "xaxis.categoryorder: \"total descending\""},
         "width": 400,
         "height": 400,
         "xaxis": {

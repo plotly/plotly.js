@@ -21,8 +21,10 @@
             ],
             "name": "trace 0",
             "colorbar": {
-                "title": "colorbar title",
-                "titleside": "right",
+                "title": {
+                    "text": "colorbar title",
+                    "side": "right"
+                },
                 "autotick": false,
                 "dtick": 0.511,
                 "tickangle": -10
@@ -32,7 +34,7 @@
         }
     ],
     "layout": {
-        "title": "plot title",
+        "title": {"text": "plot title"},
         "xaxis": {
             "range": [
                 -0.5,
@@ -63,11 +65,6 @@
             "zeroline": true,
             "zerolinecolor": "#444",
             "zerolinewidth": 1,
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
             "tickfont": {
                 "family": "",
                 "size": 0,
@@ -80,7 +77,14 @@
             ],
             "position": 0,
             "anchor": "y",
-            "title": "x title"
+            "title": {
+                "font": {
+                    "family": "",
+                    "size": 0,
+                    "color": ""
+                },
+                "text": "x title"
+            }
         },
         "yaxis": {
             "range": [
@@ -112,11 +116,6 @@
             "zeroline": true,
             "zerolinecolor": "#444",
             "zerolinewidth": 1,
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
             "tickfont": {
                 "family": "",
                 "size": 18,
@@ -129,7 +128,7 @@
             ],
             "position": 0,
             "anchor": "x",
-            "title": "y title"
+            "title": {"text": "y title"}
         },
         "legend": {
             "bgcolor": "#fff",
@@ -165,11 +164,6 @@
             "family": "\"Open sans\", verdana, arial, sans-serif",
             "size": 12,
             "color": "#444"
-        },
-        "titlefont": {
-            "family": "",
-            "size": 0,
-            "color": ""
         },
         "dragmode": "zoom",
         "hovermode": "x",
