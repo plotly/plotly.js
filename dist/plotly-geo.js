@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.54.0
+* plotly.js (geo) v1.54.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34068,6 +34068,11 @@ function drawOne(gd, index) {
         var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
         var lineWidth = options.line.width;
         var lineDash = options.line.dash;
+        if(!lineWidth && options.editable === true) {
+            // ensure invisible border to activate the shape
+            lineWidth = 5;
+            lineDash = 'solid';
+        }
 
         var isOpen = d[d.length - 1] !== 'Z';
 
@@ -34112,15 +34117,11 @@ function drawOne(gd, index) {
         } else {
             if(gd._context.edits.shapePosition) {
                 setupDragElement(gd, path, options, index, shapeLayer, editHelpers);
+            } else if(options.editable === true) {
+                path.style('pointer-events',
+                    (isOpen || Color.opacity(fillColor) * opacity <= 0.5) ? 'stroke' : 'all'
+                );
             }
-
-            path.style('pointer-events',
-                !couldHaveActiveShape(gd) || (
-                    lineWidth < 2 || ( // not has a remarkable border
-                        !isOpen && Color.opacity(fillColor) * opacity > 0.5 // not too transparent
-                    )
-                ) ? 'all' : 'stroke'
-            );
         }
 
         path.node().addEventListener('click', function() { return activateShape(gd, path); });
@@ -80588,7 +80589,7 @@ function styleTrace(gd, calcTrace) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.0';
+exports.version = '1.54.1';
 
 },{}]},{},[4])(4)
 });
