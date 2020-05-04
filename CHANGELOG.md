@@ -9,6 +9,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.1] -- 2020-04-04
+
+### Changed
+ - Update dependencies in package.json & package-lock.json [#4799, #4800, #4802, #4805, #4811]
+
+### Fixed
+ - Set pointer-events only for editable shapes to allow pan, zoom & hover
+   events to work inside shapes (regression introduced in 1.54.0) [#4810]
+ - Update and validate various mocks [#4762]
+
+
 ## [1.54.0] -- 2020-04-30
 
 ### Added
