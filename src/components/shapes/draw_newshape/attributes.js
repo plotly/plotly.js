@@ -44,7 +44,12 @@ module.exports = {
             dflt: 'rgba(0,0,0,0)',
             role: 'info',
             editType: 'none',
-            description: 'Sets the color filling new shapes\' interior.'
+            description: [
+                'Sets the color filling new shapes\' interior.',
+                'Please note that if using a fillcolor with alpha greater than half,',
+                'drag inside the active shape starts moving the shape underneath,',
+                'otherwise a new shape could be started over.'
+            ].join(' ')
         },
         fillrule: {
             valType: 'enumerated',
@@ -94,10 +99,6 @@ module.exports = {
     },
 
     activeshape: {
-        description: [
-            'An \'editable`\' shape can be \'activated\' by clicking on its border line.'
-        ].join(' '),
-
         fillcolor: {
             valType: 'color',
             dflt: 'rgb(255,0,255)',

@@ -120,7 +120,7 @@ function drawOne(gd, index) {
         var lineWidth = options.line.width;
         var lineDash = options.line.dash;
         if(!lineWidth && options.editable === true) {
-            // ensure invisible border to active the shape
+            // ensure invisible border to activate the shape
             lineWidth = 5;
             lineDash = 'solid';
         }
@@ -168,10 +168,10 @@ function drawOne(gd, index) {
         } else {
             if(gd._context.edits.shapePosition) {
                 setupDragElement(gd, path, options, index, shapeLayer, editHelpers);
-            } else {
-                if(options.editable === true) {
-                    path.style('pointer-events', 'stroke');
-                }
+            } else if(options.editable === true) {
+                path.style('pointer-events',
+                    (isOpen || Color.opacity(fillColor) * opacity <= 0.5) ? 'stroke' : 'all'
+                );
             }
         }
 

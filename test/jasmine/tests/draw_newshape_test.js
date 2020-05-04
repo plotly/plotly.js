@@ -1447,11 +1447,52 @@ describe('Activate and edit editable shapes', function() {
             layout: {
                 shapes: [
                     {
+                        editable: false,
                         x0: 1.5,
+                        x1: 2,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: false,
+                        x0: 2,
                         x1: 2.5,
                         y0: 1.5,
+                        y1: 2,
+                        opacity: 0.7,
+                        fillcolor: 'rgba(255,0,0,0.7)', // N.B. 0.7 * 0.7 = 0.49 <= 0.5 is quite transparent
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: false,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 2,
                         y1: 2.5,
-                        fillcolor: 'blue'
+                        fillcolor: 'red',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }, {
+                        editable: false,
+                        path: 'M2,2H2.5,V2.5', // open path
+                        fillcolor: 'rgba(0,0,0,0)',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
                     }
                 ]
             }
@@ -1459,17 +1500,35 @@ describe('Activate and edit editable shapes', function() {
 
         .then(function() {
             var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
-            var pointerEvents = el.style['pointer-events'];
-            expect(pointerEvents).not.toBe('all');
-            expect(pointerEvents).not.toBe('stroke');
-            expect(pointerEvents).toBe('');
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
         .catch(failTest)
         .then(done);
     });
 
-    it('should provide invisible border & set pointer-events to "stroke" for editable shapes i.e. to allow shape activation', function(done) {
+    it('should provide invisible border & set pointer-events (depending on fill transparency) for editable shapes i.e. to allow shape activation', function(done) {
         Plotly.newPlot(gd, {
             data: [{
                 mode: 'markers',
@@ -1481,14 +1540,49 @@ describe('Activate and edit editable shapes', function() {
                     {
                         editable: true,
                         x0: 1.5,
-                        x1: 2.5,
+                        x1: 2,
                         y0: 1.5,
-                        y1: 2.5,
+                        y1: 2,
+                        opacity: 0.5,
                         fillcolor: 'blue',
                         line: {
                             width: 0,
                             dash: 'dash',
                             color: 'black'
+                        }
+                    }, {
+                        editable: true,
+                        x0: 2,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.7,
+                        fillcolor: 'rgba(255,0,0,0.7)', // N.B. 0.7 * 0.7 = 0.49 <= 0.5 is quite transparent
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: true,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 2,
+                        y1: 2.5,
+                        fillcolor: 'red',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }, {
+                        editable: true,
+                        path: 'M2,2H2.5,V2.5', // open path
+                        fillcolor: 'rgba(0,0,0,0)',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
                         }
                     }
                 ]
@@ -1501,6 +1595,24 @@ describe('Activate and edit editable shapes', function() {
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            expect(el.style['pointer-events']).toBe('all');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
         .catch(failTest)
