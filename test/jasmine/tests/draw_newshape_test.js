@@ -1641,14 +1641,15 @@ describe('Activate and edit editable shapes', function() {
                         }
                     }
                 ]
-            }, onfig: {
+            },
+            config: {
                 editable: true
             }
         })
 
         .then(function() {
             var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
-            expect(el.style['pointer-events']).toBe('');
+            expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no extra pixels
