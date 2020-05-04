@@ -1089,7 +1089,7 @@ describe('Activate and edit editable shapes', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky reactangle using' + device, function(done) {
+        it('@flaky reactangle using ' + device, function(done) {
             var i = 0; // shape index
 
             Plotly.newPlot(gd, {
@@ -1224,7 +1224,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky circle using' + device, function(done) {
+        it('@flaky circle using ' + device, function(done) {
             var i = 1; // shape index
 
             Plotly.newPlot(gd, {
@@ -1281,7 +1281,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky closed-path using' + device, function(done) {
+        it('@flaky closed-path using ' + device, function(done) {
             var i = 2; // shape index
 
             Plotly.newPlot(gd, {
@@ -1326,7 +1326,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky bezier curves using' + device, function(done) {
+        it('@flaky bezier curves using ' + device, function(done) {
             var i = 5; // shape index
 
             Plotly.newPlot(gd, {
@@ -1371,7 +1371,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky multi-cell path using' + device, function(done) {
+        it('@flaky multi-cell path using ' + device, function(done) {
             var i = 6; // shape index
 
             Plotly.newPlot(gd, {
@@ -1424,5 +1424,238 @@ describe('Activate and edit editable shapes', function() {
             .catch(failTest)
             .then(done);
         });
+    });
+});
+
+
+describe('Activate and edit editable shapes', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not set pointer-events for non-editable shapes i.e. to allow pan/zoom/hover work inside shapes', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        editable: false,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: false,
+                        x0: 2,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.7,
+                        fillcolor: 'rgba(255,0,0,0.7)', // N.B. 0.7 * 0.7 = 0.49 <= 0.5 is quite transparent
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: false,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 2,
+                        y1: 2.5,
+                        fillcolor: 'red',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }, {
+                        editable: false,
+                        path: 'M2,2H2.5,V2.5', // open path
+                        fillcolor: 'rgba(0,0,0,0)',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }
+                ]
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should provide invisible border & set pointer-events (depending on fill transparency) for editable shapes i.e. to allow shape activation', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        editable: true,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: true,
+                        x0: 2,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2,
+                        opacity: 0.7,
+                        fillcolor: 'rgba(255,0,0,0.7)', // N.B. 0.7 * 0.7 = 0.49 <= 0.5 is quite transparent
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }, {
+                        editable: true,
+                        x0: 1.5,
+                        x1: 2,
+                        y0: 2,
+                        y1: 2.5,
+                        fillcolor: 'red',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }, {
+                        editable: true,
+                        path: 'M2,2H2.5,V2.5', // open path
+                        fillcolor: 'rgba(0,0,0,0)',
+                        line: {
+                            width: 3,
+                            dash: 'dash',
+                            color: 'green'
+                        }
+                    }
+                ]
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            expect(el.style['pointer-events']).toBe('all');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
+            expect(el.style['stroke-opacity']).toBe('1'); // visible
+            expect(el.style['stroke-width']).toBe('3px'); // custom pixel
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not provide invisible border & set pointer-events to "stroke" for shapes made editable via config', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        x0: 1.5,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }
+                ]
+            },
+            config: {
+                editable: true
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            expect(el.style['pointer-events']).toBe('all');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no extra pixels
+        })
+
+        .catch(failTest)
+        .then(done);
     });
 });
