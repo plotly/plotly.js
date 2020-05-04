@@ -9,7 +9,7 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [1.54.1] -- 2020-04-04
+## [1.54.1] -- 2020-05-04
 
 ### Changed
  - Update dependencies in package.json & package-lock.json [#4799, #4800, #4802, #4805, #4811]
