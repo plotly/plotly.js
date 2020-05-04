@@ -123,7 +123,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "acorn": "^7.1.1",
+    "acorn": "^6.4.1",
     "brfs": "^2.0.2",
     "browserify": "^16.5.1",
     "browserify-transform-tools": "^1.7.0",
