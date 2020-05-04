@@ -1089,7 +1089,7 @@ describe('Activate and edit editable shapes', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky reactangle using' + device, function(done) {
+        it('@flaky reactangle using ' + device, function(done) {
             var i = 0; // shape index
 
             Plotly.newPlot(gd, {
@@ -1224,7 +1224,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky circle using' + device, function(done) {
+        it('@flaky circle using ' + device, function(done) {
             var i = 1; // shape index
 
             Plotly.newPlot(gd, {
@@ -1281,7 +1281,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky closed-path using' + device, function(done) {
+        it('@flaky closed-path using ' + device, function(done) {
             var i = 2; // shape index
 
             Plotly.newPlot(gd, {
@@ -1326,7 +1326,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky bezier curves using' + device, function(done) {
+        it('@flaky bezier curves using ' + device, function(done) {
             var i = 5; // shape index
 
             Plotly.newPlot(gd, {
@@ -1371,7 +1371,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky multi-cell path using' + device, function(done) {
+        it('@flaky multi-cell path using ' + device, function(done) {
             var i = 6; // shape index
 
             Plotly.newPlot(gd, {
@@ -1424,5 +1424,125 @@ describe('Activate and edit editable shapes', function() {
             .catch(failTest)
             .then(done);
         });
+    });
+});
+
+
+describe('Activate and edit editable shapes', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not set pointer-events for non-editable shapes i.e. to allow pan/zoom/hover work inside shapes', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        x0: 1.5,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2.5,
+                        fillcolor: 'blue'
+                    }
+                ]
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            var pointerEvents = el.style['pointer-events'];
+            expect(pointerEvents).not.toBe('all');
+            expect(pointerEvents).not.toBe('stroke');
+            expect(pointerEvents).toBe('');
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should provide invisible border & set pointer-events to "stroke" for editable shapes i.e. to allow shape activation', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        editable: true,
+                        x0: 1.5,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }
+                ]
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not provide invisible border & set pointer-events to "stroke" for shapes made editable via config', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                mode: 'markers',
+                x: [1, 3, 3],
+                y: [2, 1, 3]
+            }],
+            layout: {
+                shapes: [
+                    {
+                        x0: 1.5,
+                        x1: 2.5,
+                        y0: 1.5,
+                        y1: 2.5,
+                        fillcolor: 'blue',
+                        line: {
+                            width: 0,
+                            dash: 'dash',
+                            color: 'black'
+                        }
+                    }
+                ]
+            }, onfig: {
+                editable: true
+            }
+        })
+
+        .then(function() {
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            expect(el.style['pointer-events']).toBe('');
+            expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
+            expect(el.style['stroke-opacity']).toBe('0'); // invisible
+            expect(el.style['stroke-width']).toBe('0px'); // no extra pixels
+        })
+
+        .catch(failTest)
+        .then(done);
     });
 });
