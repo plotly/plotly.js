@@ -152,7 +152,13 @@ function plot(gd, data, layout, config) {
     fullLayout._replotting = true;
 
     // make or remake the framework if we need to
-    if(graphWasEmpty) makePlotFramework(gd);
+    if(graphWasEmpty || fullLayout._shouldCreateBgLayer) {
+        makePlotFramework(gd);
+
+        if(fullLayout._shouldCreateBgLayer) {
+            delete fullLayout._shouldCreateBgLayer;
+        }
+    }
 
     // polar need a different framework
     if(gd.framework !== makePlotFramework) {
