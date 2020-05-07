@@ -50,6 +50,8 @@ var list = [
     'autorange-tozero-rangemode',
     'axes_booleans',
     'axes_breaks',
+    'axes_breaks-candlestick',
+    'axes_breaks-candlestick2',
     'axes_breaks-finance',
     'axes_breaks-gridlines',
     'axes_breaks-night_autorange-reversed',
@@ -1078,6 +1080,8 @@ figs['automargin-title-standoff'] = require('@mocks/automargin-title-standoff');
 figs['autorange-tozero-rangemode'] = require('@mocks/autorange-tozero-rangemode');
 // figs['axes_booleans'] = require('@mocks/axes_booleans');
 figs['axes_breaks'] = require('@mocks/axes_breaks');
+figs['axes_breaks-candlestick'] = require('@mocks/axes_breaks-candlestick');
+figs['axes_breaks-candlestick2'] = require('@mocks/axes_breaks-candlestick2');
 figs['axes_breaks-finance'] = require('@mocks/axes_breaks-finance');
 figs['axes_breaks-gridlines'] = require('@mocks/axes_breaks-gridlines');
 figs['axes_breaks-night_autorange-reversed'] = require('@mocks/axes_breaks-night_autorange-reversed');
