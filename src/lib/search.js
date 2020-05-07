@@ -73,25 +73,19 @@ exports.sorterDes = function(a, b) { return b - a; };
  */
 exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
-    vals.sort(exports.sorterAsc);
-
-    var first;
-    for(first = 0; first < vals.length; first++) {
-        if(vals[first] !== BADNUM) break;
-    }
+    vals.sort(exports.sorterAsc); // undefined listed in the end - also works on IE11
 
     var last;
     for(last = vals.length - 1; last > -1; last--) {
         if(vals[last] !== BADNUM) break;
     }
 
-    var minDiff = (vals[last] - vals[first]) || 1;
-    var errDiff = minDiff / ((last - first) || 1) / 10000;
+    var minDiff = (vals[last] - vals[0]) || 1;
+    var errDiff = minDiff / (last || 1) / 10000;
     var newVals = [];
     var preV;
-    for(var i = first; i <= last; i++) {
+    for(var i = 0; i <= last; i++) {
         var v = vals[i];
-        if(v === BADNUM) continue;
 
         // make sure values aren't just off by a rounding error
         var diff = v - preV;
