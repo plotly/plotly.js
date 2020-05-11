@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "type": "heatmap",
+            "type": "contour",
             "x": [
                 "2020-01-02 17:00",
                 "2020-01-02 17:10",
@@ -853,7 +853,7 @@
         "width": 600,
         "height": 400,
         "title": {
-            "text": "1D-z-array heatmap with rangebreaks"
+            "text": "1D-z-array contour with rangebreaks"
         },
         "xaxis": {
             "rangebreaks": [

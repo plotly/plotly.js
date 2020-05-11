@@ -52,6 +52,8 @@ var list = [
     'axes_breaks',
     'axes_breaks-candlestick',
     'axes_breaks-candlestick2',
+    'axes_breaks-contour1d',
+    'axes_breaks-contour2d',
     'axes_breaks-finance',
     'axes_breaks-gridlines',
     'axes_breaks-heatmap1d',
@@ -1084,6 +1086,8 @@ figs['autorange-tozero-rangemode'] = require('@mocks/autorange-tozero-rangemode'
 figs['axes_breaks'] = require('@mocks/axes_breaks');
 figs['axes_breaks-candlestick'] = require('@mocks/axes_breaks-candlestick');
 figs['axes_breaks-candlestick2'] = require('@mocks/axes_breaks-candlestick2');
+figs['axes_breaks-contour1d'] = require('@mocks/axes_breaks-contour1d');
+figs['axes_breaks-contour2d'] = require('@mocks/axes_breaks-contour2d');
 figs['axes_breaks-finance'] = require('@mocks/axes_breaks-finance');
 figs['axes_breaks-gridlines'] = require('@mocks/axes_breaks-gridlines');
 figs['axes_breaks-heatmap1d'] = require('@mocks/axes_breaks-heatmap1d');
