@@ -818,6 +818,42 @@ describe('legend relayout update', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to clear legend title using react', function(done) {
+        var data = [{
+            type: 'scatter',
+            x: [0, 1],
+            y: [1, 0]
+        }];
+
+        Plotly.newPlot(gd, {
+            data: data,
+            layout: {
+                showlegend: true,
+                legend: {
+                    title: {
+                        text: 'legend<br>title'
+                    }
+                }
+            }
+        })
+        .then(function() {
+            expect(d3.selectAll('.legendtitletext')[0].length).toBe(1);
+        })
+        .then(function() {
+            Plotly.react(gd, {
+                data: data,
+                layout: {
+                    showlegend: true
+                }
+            });
+        })
+        .then(function() {
+            expect(d3.selectAll('.legendtitletext')[0].length).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('legend orientation change:', function() {
