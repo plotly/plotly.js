@@ -19,6 +19,7 @@ var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
 var findEmpties = require('./find_empties');
 var makeBoundArray = require('./make_bound_array');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function calc(gd, trace) {
     // prepare the raw data
@@ -70,6 +71,12 @@ module.exports = function calc(gd, trace) {
         dy = trace.dy;
 
         z = clean2dArray(zIn, trace, xa, ya);
+
+        if(xa.rangebreaks || ya.rangebreaks) {
+            z = dropZonBreaks(z, trace);
+            x = trace._x = skipBreaks(trace._x);
+            y = trace._y = skipBreaks(trace._y);
+        }
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -156,3 +163,29 @@ module.exports = function calc(gd, trace) {
 
     return [cd0];
 };
+
+function skipBreaks(a) {
+    var b = [];
+    var len = a.length;
+    for(var i = 0; i < len; i++) {
+        var v = a[i];
+        if(v !== BADNUM) b.push(v);
+    }
+    return b;
+}
+
+function dropZonBreaks(z, trace) {
+    var newZ = [];
+    var k = -1;
+    for(var i = 0; i < z.length; i++) {
+        if(trace._y[i] === BADNUM) continue;
+        k++;
+        newZ[k] = [];
+        for(var j = 0; j < z[i].length; j++) {
+            if(trace._x[j] === BADNUM) continue;
+
+            newZ[k].push(z[i][j]);
+        }
+    }
+    return newZ;
+}
