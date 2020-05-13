@@ -622,23 +622,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     if(ax.rangebreaks) {
         // replace ticks inside breaks that would get a tick
-        if(ax.tickmode === 'auto') {
-            for(var t = 0; t < tickVals.length; t++) {
-                var value = tickVals[t].value;
-                if(ax.maskBreaks(value) === BADNUM) {
-                    // find which break we are in
-                    for(var k = 0; k < ax._rangebreaks.length; k++) {
-                        var brk = ax._rangebreaks[k];
-                        if(value >= brk.min && value < brk.max) {
-                            tickVals[t].value = brk.max; // replace with break end
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // reduce ticks
+        // and reduce ticks
         var len = tickVals.length;
         if(len > 2) {
             var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
@@ -650,11 +634,16 @@ axes.calcTicks = function calcTicks(ax) {
             var first = axrev ? 0 : len - 1;
             var last = axrev ? len - 1 : 0;
             for(var q = first; dir * q <= dir * last; q += dir) { // apply reverse loop to pick greater values in breaks first
-                var pos = ax.c2p(tickVals[q].value);
+                var tickVal = tickVals[q];
+                var value = tickVal.value;
+                if(ax.maskBreaks(value) === BADNUM) {
+                    tickVal.value = moveToEndOfBreak(tickVal.value, ax);
+                }
 
+                var pos = ax.c2p(tickVal.value);
                 if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
                     prevPos = pos;
-                    newTickVals.push(tickVals[q]);
+                    newTickVals.push(tickVal);
                 }
             }
             tickVals = newTickVals.reverse();
@@ -968,6 +957,10 @@ axes.tickFirst = function(ax) {
     var r0 = expandRange(rng)[0];
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
+
+    if(ax.tickmode === 'auto' && ax.rangebreaks && ax.maskBreaks(tick0) === BADNUM) {
+        tick0 = moveToEndOfBreak(tick0, ax);
+    }
 
     if(isNumeric(dtick)) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
@@ -3166,4 +3159,14 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
 
 function isAngular(ax) {
     return ax._id === 'angularaxis';
+}
+
+function moveToEndOfBreak(v, ax) {
+    for(var k = 0; k < ax._rangebreaks.length; k++) {
+        var brk = ax._rangebreaks[k];
+        if(v >= brk.min && v < brk.max) {
+            return brk.max;
+        }
+    }
+    return v;
 }
