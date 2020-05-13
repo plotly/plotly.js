@@ -71,17 +71,23 @@ module.exports = function calc(gd, trace) {
         dy = trace.dy;
 
         z = clean2dArray(zIn, trace, xa, ya);
+    }
 
-        if(xa.rangebreaks || ya.rangebreaks) {
-            z = dropZonBreaks(z, trace);
-            x = trace._x = skipBreaks(trace._x);
-            y = trace._y = skipBreaks(trace._y);
-        }
+    if(xa.rangebreaks || ya.rangebreaks) {
+        z = dropZonBreaks(x, y, z);
 
-        if(isContour || trace.connectgaps) {
-            trace._emptypoints = findEmpties(z);
-            interp2d(z, trace._emptypoints);
+        if(!isHist) {
+            x = skipBreaks(x);
+            y = skipBreaks(y);
+
+            trace._x = x;
+            trace._y = y;
         }
+    }
+
+    if(!isHist && (isContour || trace.connectgaps)) {
+        trace._emptypoints = findEmpties(z);
+        interp2d(z, trace._emptypoints);
     }
 
     function noZsmooth(msg) {
@@ -174,15 +180,15 @@ function skipBreaks(a) {
     return b;
 }
 
-function dropZonBreaks(z, trace) {
+function dropZonBreaks(x, y, z) {
     var newZ = [];
     var k = -1;
     for(var i = 0; i < z.length; i++) {
-        if(trace._y[i] === BADNUM) continue;
+        if(y[i] === BADNUM) continue;
         k++;
         newZ[k] = [];
         for(var j = 0; j < z[i].length; j++) {
-            if(trace._x[j] === BADNUM) continue;
+            if(x[j] === BADNUM) continue;
 
             newZ[k].push(z[i][j]);
         }
