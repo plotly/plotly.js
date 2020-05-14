@@ -5485,21 +5485,77 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({A: 0, Z: 1});
         })
         .then(function() {
-            var newFig = JSON.parse(JSON.stringify(fig));
-
             // flip order
-            newFig.data[0].x.reverse();
-            newFig.data[0].y.reverse();
-            newFig.data[1].x.reverse();
-            newFig.data[1].y.reverse();
+            fig.data[0].x = ['Z', 'A'];
+            fig.data[1].x = ['Z', 'A'];
 
-            return Plotly.react(gd, newFig);
+            return Plotly.react(gd, fig);
         })
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['Z', 'A']);
             expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', 'A']);
             expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, A: 1});
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, A: 1});
+        })
+        .then(function() {
+            // should get the same order with newPlot
+            return Plotly.newPlot(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, A: 1});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, A: 1});
+        })
+        .then(function() {
+            // add new category
+            fig.data[0].x = ['Z', 0, 'A'];
+            fig.data[1].x = ['Z', 0, 'A'];
+            fig.data[0].y = [1, 2, 3];
+            fig.data[1].y = [2, 4, 6];
+
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+        })
+        .then(function() {
+            // should get the same order with newPlot
+            return Plotly.newPlot(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+        })
+        .then(function() {
+            // change data
+            fig.data[0].x = ['Z', 0, 'A'];
+            fig.data[1].x = ['A', 'Z'];
+            fig.data[0].y = [3, 2, 1];
+            fig.data[1].y = [-1, 0];
+
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+        })
+        .then(function() {
+            // should get the same order with newPlot
+            return Plotly.newPlot(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
         .catch(failTest)
         .then(done);
