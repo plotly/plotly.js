@@ -635,9 +635,9 @@ axes.calcTicks = function calcTicks(ax) {
             var last = axrev ? len - 1 : 0;
             for(var q = first; dir * q <= dir * last; q += dir) { // apply reverse loop to pick greater values in breaks first
                 var tickVal = tickVals[q];
-                var value = tickVal.value;
-                if(ax.maskBreaks(value) === BADNUM) {
+                if(ax.maskBreaks(tickVal.value) === BADNUM) {
                     tickVal.value = moveToEndOfBreak(tickVal.value, ax);
+                    if(ax.maskBreaks(tickVal.value) === BADNUM) continue;
                 }
 
                 var pos = ax.c2p(tickVal.value);
