@@ -636,8 +636,7 @@ axes.calcTicks = function calcTicks(ax) {
             for(var q = first; dir * q <= dir * last; q += dir) { // apply reverse loop to pick greater values in breaks first
                 var tickVal = tickVals[q];
                 if(ax.maskBreaks(tickVal.value) === BADNUM) {
-                    tickVal.value = moveToEndOfBreak(tickVal.value, ax);
-                    if(ax.maskBreaks(tickVal.value) === BADNUM) continue;
+                    tickVal.value = moveOutsideBreak(tickVal.value, ax, q < len - 1);
                 }
 
                 var pos = ax.c2p(tickVal.value);
@@ -959,7 +958,7 @@ axes.tickFirst = function(ax) {
     var tick0 = r2l(ax.tick0);
 
     if(ax.tickmode === 'auto' && ax.rangebreaks && ax.maskBreaks(tick0) === BADNUM) {
-        tick0 = moveToEndOfBreak(tick0, ax);
+        tick0 = moveOutsideBreak(tick0, ax, true);
     }
 
     if(isNumeric(dtick)) {
@@ -3161,11 +3160,11 @@ function isAngular(ax) {
     return ax._id === 'angularaxis';
 }
 
-function moveToEndOfBreak(v, ax) {
+function moveOutsideBreak(v, ax, toEnd) {
     for(var k = 0; k < ax._rangebreaks.length; k++) {
         var brk = ax._rangebreaks[k];
         if(v >= brk.min && v < brk.max) {
-            return brk.max;
+            return toEnd ? brk.max : brk.min;
         }
     }
     return v;
