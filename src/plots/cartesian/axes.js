@@ -637,6 +637,8 @@ axes.calcTicks = function calcTicks(ax) {
                 var tickVal = tickVals[q];
                 if(ax.maskBreaks(tickVal.value) === BADNUM) {
                     tickVal.value = moveOutsideBreak(tickVal.value, ax);
+
+                    if(ax._rl && tickVal.value === ax._rl[1]) continue;
                 }
 
                 var pos = ax.c2p(tickVal.value);
