@@ -9,6 +9,7 @@
 'use strict';
 
 var cleanTicks = require('./clean_ticks');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
     function readInput(attr) {
@@ -22,7 +23,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     var _dtick = readInput('dtick');
     var _tickvals = readInput('tickvals');
 
-    var tickmodeDefault = Array.isArray(_tickvals) ? 'array' :
+    var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' :
         _dtick ? 'linear' :
         'auto';
     var tickmode = coerce('tickmode', tickmodeDefault);

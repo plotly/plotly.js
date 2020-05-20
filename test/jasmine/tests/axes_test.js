@@ -1905,6 +1905,15 @@ describe('Test axes', function() {
                 expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBeUndefined();
 
+                var arr = new Float32Array(2);
+                arr[0] = 0;
+                arr[1] = 1;
+                axIn = {tickvals: arr};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('array');
+                expect(axIn.tickmode).toBeUndefined();
+
                 axIn = {dtick: 1};
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'linear');
