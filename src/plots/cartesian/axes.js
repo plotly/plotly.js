@@ -536,7 +536,7 @@ axes.prepTicks = function(ax) {
         if(ax.tickmode === 'array') nt *= 100;
 
 
-        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt;
+        ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
         axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
@@ -731,6 +731,25 @@ function arrayTicks(ax) {
     return ticksOut;
 }
 
+function roundBaseDay(dayHours) {
+    switch(dayHours) {
+        case 4: return [1, 2];
+        case 6: return [1, 2, 3];
+        case 8: return [1, 2, 4];
+        case 9: return [1, 3];
+        case 10: return [1, 2, 5];
+        case 12: return [1, 2, 3, 4, 6];
+        case 14: return [1, 2, 7];
+        case 15: return [1, 3, 5];
+        case 16: return [1, 2, 4, 8];
+        case 18: return [1, 2, 3, 6, 9];
+        case 20: return [1, 2, 4, 5, 10];
+        case 21: return [1, 3, 7];
+        case 22: return [1, 2, 11];
+    }
+    return [1];
+}
+
 var roundBase10 = [2, 5, 10];
 var roundBase24 = [1, 2, 3, 6, 12];
 var roundBase60 = [1, 2, 5, 10, 15, 30];
@@ -776,6 +795,13 @@ axes.autoTicks = function(ax, roughDTick) {
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
 
+        var oneDay = ONEDAY;
+        var dayRatio = 1;
+        if(ax._hasHourBreaks) {
+            oneDay = ax._dayHours * ONEHOUR;
+            dayRatio = Math.round(ax._dayHours / 24 * 7) / 7; // we use this in week context
+        }
+
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
@@ -783,15 +809,20 @@ axes.autoTicks = function(ax, roughDTick) {
         } else if(roughX2 > ONEAVGMONTH) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
-        } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 7, 14] : roundDays);
-
+        } else if(roughX2 > oneDay) {
+            ax.dtick = roundDTick(roughDTick, oneDay, ax._hasDayOfWeekBreaks ?
+                [1, 2 * dayRatio, 7 * dayRatio, 14 * dayRatio] :
+                roundDays
+            );
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
         } else if(roughX2 > ONEHOUR) {
-            ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
+            ax.dtick = roundDTick(roughDTick, ONEHOUR, ax._hasHourBreaks ?
+                roundBaseDay(ax._dayHours) :
+                roundBase24
+            );
         } else if(roughX2 > ONEMIN) {
             ax.dtick = roundDTick(roughDTick, ONEMIN, roundBase60);
         } else if(roughX2 > ONESEC) {

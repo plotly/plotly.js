@@ -135,11 +135,22 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(!containerOut.rangebreaks.length) {
             delete containerOut.rangebreaks;
         } else {
+            var n = 0;
             for(var k = 0; k < containerOut.rangebreaks.length; k++) {
-                if(containerOut.rangebreaks[k].pattern === DAY_OF_WEEK) {
+                var brk = containerOut.rangebreaks[k];
+                if(brk.pattern === DAY_OF_WEEK) {
                     containerOut._hasDayOfWeekBreaks = true;
-                    break;
+                    n++;
                 }
+
+                if(brk.pattern === HOUR) {
+                    containerOut._hasHourBreaks = true;
+                    containerOut._dayHours = Math.round((brk.bounds[1] - brk.bounds[0] + 24) % 24);
+                    n++;
+                }
+
+                // break when found all types
+                if(n === 2) break;
             }
 
             setConvert(containerOut, layoutOut);

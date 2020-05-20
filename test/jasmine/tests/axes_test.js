@@ -4977,7 +4977,7 @@ describe('Test axes', function() {
                     .withContext(msg).toEqual(exp.tickVals);
             }
 
-            it('should include requested ticks that fall within rangebreaks', function(done) {
+            it('should not include requested ticks that fall within rangebreaks', function(done) {
                 Plotly.plot(gd, [{
                     x: [
                         '1970-01-01 00:00:00.000',
@@ -5016,7 +5016,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('with two rangebreaks', {
-                        tickVals: [0, 5, 10, 90, 95, 100, 190, 195, 200]
+                        tickVals: [0, 89, 100, 200]
                     });
                 })
                 .catch(failTest)
