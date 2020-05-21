@@ -1887,13 +1887,28 @@ describe('Test axes', function() {
                 expect(axOut.tickmode).toBe('auto');
                 expect(axIn.tickmode).toBe('array');
 
+                axIn = {tickvals: [1, 2, 3]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tickmode).toBe('array');
+                expect(axIn.tickmode).toBeUndefined();
+
                 axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'date');
-                expect(axOut.tickmode).toBe('auto');
+                expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBe('array');
 
                 axIn = {tickvals: [1, 2, 3]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'linear');
+                expect(axOut.tickmode).toBe('array');
+                expect(axIn.tickmode).toBeUndefined();
+
+                var arr = new Float32Array(2);
+                arr[0] = 0;
+                arr[1] = 1;
+                axIn = {tickvals: arr};
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('array');
