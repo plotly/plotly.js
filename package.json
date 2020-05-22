@@ -133,7 +133,7 @@
     "derequire": "^2.1.0",
     "ecstatic": "^4.1.2",
     "eslint": "^7.0.0",
-    "espree": "^6.2.1",
+    "espree": "^7.0.0",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.0",
     "fuse.js": "^3.6.1",
