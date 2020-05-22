@@ -31,7 +31,7 @@ exports.name2id = function name2id(name) {
 };
 
 exports.cleanId = function cleanId(id, axLetter) {
-    if(!id.match(constants.AX_ID_PATTERN)) return;
+    if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
 
     var axNum = id.substr(1).replace(/^0+/, '');

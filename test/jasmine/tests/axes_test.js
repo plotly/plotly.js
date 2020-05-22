@@ -5576,3 +5576,41 @@ describe('more react tests', function() {
         .then(done);
     });
 });
+
+describe('more matching axes tests', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should bypass non-string id when matching ids', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                x: [0, 1],
+                y: [0, 1]
+            }, {
+                x: [0, 1],
+                y: [1, 2],
+                yaxis: 'y2'
+            }],
+            layout: {
+                xaxis: {
+                    anchor: 'y'
+                },
+                yaxis: {
+                    anchor: 'x'
+                },
+                yaxis2: {
+                    anchor: [], // bad input
+                    position: 0.1,
+                    overlaying: 'y'
+                }
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
