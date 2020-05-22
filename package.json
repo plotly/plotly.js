@@ -129,7 +129,7 @@
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^4.0.3",
     "chttps": "^1.0.6",
-    "deep-equal": "^2.0.2",
+    "deep-equal": "^2.0.3",
     "derequire": "^2.1.0",
     "ecstatic": "^4.1.2",
     "eslint": "^7.0.0",
