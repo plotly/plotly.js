@@ -59,13 +59,13 @@
         }
       },
       "xaxis": {
-        "title": "<==X.X==>"
+        "title": {"text": "<==X.X==>"}
       },
       "yaxis": {
-        "title": "<==Y.Y==>"
+        "title": {"text": "<==Y.Y==>"}
       },
       "zaxis": {
-        "title": "<==Z.Z==>"
+        "title": {"text": "<==Z.Z==>"}
       }
     }
   }

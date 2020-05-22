@@ -689,7 +689,7 @@
     }
   ],
   "layout": {
-	"title": "Iris dataset splom",
+	"title": {"text": "Iris dataset splom"},
   	"width": 600,
 	"height": 500
   }

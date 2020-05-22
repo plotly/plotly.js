@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54,7 +54,7 @@ exports.hovertemplateAttrs = function(opts, extra) {
             'Template string used for rendering the information that appear on hover box.',
             'Note that this will override `hoverinfo`.',
             templateFormatStringDescription,
-            'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plot.ly/javascript/plotlyjs-events/#event-data.',
+            'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
             'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
             descPart,
             'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".',

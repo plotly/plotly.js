@@ -1,0 +1,433 @@
+{
+  "data": [
+    {
+      "name": "usa",
+      "geo": "geo",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -120,
+                40
+              ],
+              [
+                -110,
+                40
+              ],
+              [
+                -110,
+                30
+              ],
+              [
+                -120,
+                30
+              ],
+              [
+                -120,
+                40
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) usa<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) usa<extra></extra>",
+      "geo": "geo",
+      "type": "scattergeo",
+      "lon": [
+        -115
+      ],
+      "lat": [
+        45
+      ],
+      "marker": {
+        "size": 23
+      }
+    },
+    {
+      "name": "europe",
+      "geo": "geo2",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2,
+                50
+              ],
+              [
+                20,
+                50
+              ],
+              [
+                20,
+                40
+              ],
+              [
+                2,
+                40
+              ],
+              [
+                2,
+                50
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) europe<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) europe<extra></extra>",
+      "geo": "geo2",
+      "type": "scattergeo",
+      "lon": [
+        24
+      ],
+      "lat": [
+        45
+      ],
+      "marker": {
+        "size": 23
+      }
+    },
+    {
+      "name": "asia",
+      "geo": "geo3",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                120,
+                50
+              ],
+              [
+                150,
+                50
+              ],
+              [
+                150,
+                20
+              ],
+              [
+                120,
+                20
+              ],
+              [
+                120,
+                50
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) asia<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) asia<extra></extra>",
+      "geo": "geo3",
+      "type": "scattergeo",
+      "lon": [
+        155
+      ],
+      "lat": [
+        30
+      ],
+      "marker": {
+        "size": 23
+      }
+    },
+    {
+      "name": "africa",
+      "geo": "geo4",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2,
+                1
+              ],
+              [
+                20,
+                1
+              ],
+              [
+                20,
+                -20
+              ],
+              [
+                2,
+                -20
+              ],
+              [
+                2,
+                1
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) africa<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) africa<extra></extra>",
+      "geo": "geo4",
+      "type": "scattergeo",
+      "lon": [
+        -2
+      ],
+      "lat": [
+        10
+      ],
+      "marker": {
+        "size": 23
+      }
+    },
+    {
+      "name": "north america",
+      "geo": "geo5",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -120,
+                40
+              ],
+              [
+                -110,
+                40
+              ],
+              [
+                -110,
+                30
+              ],
+              [
+                -120,
+                30
+              ],
+              [
+                -120,
+                40
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) north america<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) north america<extra></extra>",
+      "geo": "geo5",
+      "type": "scattergeo",
+      "lon": [
+        -125
+      ],
+      "lat": [
+        25
+      ],
+      "marker": {
+        "size": 23
+      }
+    },
+    {
+      "name": "south america",
+      "geo": "geo6",
+      "type": "choropleth",
+      "locations": [
+        1
+      ],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "geojson": {
+        "type": "Feature",
+        "id": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -60,
+                -20
+              ],
+              [
+                -50,
+                -20
+              ],
+              [
+                -50,
+                -40
+              ],
+              [
+                -60,
+                -40
+              ],
+              [
+                -60,
+                -20
+              ]
+            ]
+          ]
+        }
+      },
+      "marker": {
+        "opacity": 0.6
+      },
+      "hovertemplate": "(%{ct[0]},%{ct[1]}) south america<extra></extra>"
+    },
+    {
+      "hovertemplate": "(%{lon},%{lat}) south america<extra></extra>",
+      "geo": "geo6",
+      "type": "scattergeo",
+      "lon": [
+        -55
+      ],
+      "lat": [
+        -45
+      ],
+      "marker": {
+        "size": 23
+      }
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 3,
+      "columns": 2
+    },
+    "showlegend": false,
+    "width": 650,
+    "height": 900,
+    "margin": {
+      "l": 20,
+      "t": 20,
+      "r": 20,
+      "b": 20
+    },
+    "geo": {
+      "domain": {
+        "row": 0,
+        "column": 0
+      },
+      "scope": "usa",
+      "fitbounds": "locations"
+    },
+    "geo2": {
+      "domain": {
+        "row": 1,
+        "column": 0
+      },
+      "scope": "europe",
+      "fitbounds": "locations"
+    },
+    "geo3": {
+      "domain": {
+        "row": 2,
+        "column": 0
+      },
+      "scope": "asia",
+      "fitbounds": "locations"
+    },
+    "geo4": {
+      "domain": {
+        "row": 0,
+        "column": 1
+      },
+      "scope": "africa",
+      "fitbounds": "locations"
+    },
+    "geo5": {
+      "domain": {
+        "row": 1,
+        "column": 1
+      },
+      "scope": "north america",
+      "fitbounds": "locations"
+    },
+    "geo6": {
+      "domain": {
+        "row": 2,
+        "column": 1
+      },
+      "scope": "south america",
+      "fitbounds": "locations"
+    }
+  }
+}

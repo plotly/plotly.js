@@ -22,7 +22,6 @@
                 "color": "rgb(0, 0, 0)",
                 "thickness": 2,
                 "width": 6,
-                "opacity": 1,
                 "visible": true,
                 "traceref": "2"
             },
@@ -53,7 +52,6 @@
                 "color": "rgb(0, 0, 0)",
                 "thickness": 2,
                 "width": 6,
-                "opacity": 1,
                 "visible": true,
                 "traceref": "3"
             },
@@ -78,7 +76,6 @@
                 "color": "rgb(0, 0, 0)",
                 "thickness": 2,
                 "width": 6,
-                "opacity": 1,
                 "visible": true
             },
             "visible": false,
@@ -106,7 +103,6 @@
                 "color": "rgb(0, 0, 0)",
                 "thickness": 2,
                 "width": 6,
-                "opacity": 1,
                 "visible": true,
                 "traceref": "3"
             },
@@ -115,11 +111,11 @@
         }
     ],
     "layout": {
-        "title": "Grouped Bar Chart",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 16
+        "title": {
+            "text": "Grouped Bar Chart",
+            "font": {
+                "size": 16
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -131,11 +127,11 @@
         "width": 600,
         "height": 440,
         "xaxis": {
-            "title": "Dose (mg)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
+            "title": {
+                "text": "Dose (mg)",
+                "font": {
+                    "size": 16
+                }
             },
             "range": [
                 -0.5,
@@ -180,11 +176,11 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Length",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
+            "title": {
+                "text": "Length",
+                "font": {
+                    "size": 16
+                }
             },
             "range": [
                 0,

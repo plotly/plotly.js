@@ -25,14 +25,14 @@
     }
   ],
   "layout": {
-    "title": "Fixed size shapes",
+    "title": {"text": "Fixed size shapes"},
     "autosize": false,
     "width": 1000,
     "height": 800,
     "xaxis": {
       "domain": [0,0.30],
       "anchor": "y",
-      "title": "rect, circle, line"
+      "title": {"text": "rect, circle, line"}
     },
     "yaxis": {
       "domain": [0.55,1],
@@ -42,7 +42,7 @@
     "xaxis2": {
       "domain":[0.33,0.66],
       "anchor": "y2",
-      "title": "triangle as path"
+      "title": {"text": "triangle as path"}
     },
     "yaxis2": {
       "domain": [0.55,1],
@@ -52,7 +52,7 @@
     "xaxis3": {
       "domain":[0.70,1],
       "anchor": "y3",
-      "title": "drag / resize for auto-range"
+      "title": {"text": "drag / resize for auto-range"}
     },
     "yaxis3": {
       "domain": [0.55,1],
@@ -62,7 +62,7 @@
     "xaxis4": {
       "domain": [0,0.30],
       "anchor": "y4",
-      "title": "xy pos & x size paper, y size pixel"
+      "title": {"text": "xy pos & x size paper, y size pixel"}
     },
     "yaxis4": {
       "domain": [0,0.45],
@@ -72,7 +72,7 @@
     "xaxis5": {
       "domain":[0.33,0.66],
       "anchor": "y5",
-      "title": "rects w/ mixed size modes"
+      "title": {"text": "rects w/ mixed size modes"}
     },
     "yaxis5": {
       "domain": [0,0.45],
@@ -82,7 +82,7 @@
     "xaxis6": {
       "domain":[0.70,1],
       "anchor": "y6",
-      "title": "paths w/ mixed size modes"
+      "title": {"text": "paths w/ mixed size modes"}
     },
     "yaxis6": {
       "domain": [0,0.45],

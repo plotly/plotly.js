@@ -4,7 +4,7 @@
             "type": "surface",
             "colorscale": "Portland",
             "colorbar": {
-                "title": "elevation",
+                "title": {"text": "elevation"},
                 "len": 0.5,
                 "y": 0.0,
                 "yanchor": "bottom"
@@ -27,7 +27,7 @@
         {
             "type": "surface",
             "colorbar": {
-                "title": "parametric",
+                "title": {"text": "parametric"},
                 "len": 0.5,
                 "y": 0.5,
                 "yanchor": "bottom"
@@ -121,7 +121,7 @@
         }
     ],
     "layout": {
-        "title": "Surface contours using start, end and size",
+        "title": {"text": "Surface contours using start, end and size"},
         "width": 900,
         "height": 600,
         "scene": {

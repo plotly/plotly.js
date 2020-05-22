@@ -1,0 +1,167 @@
+{
+	"data": [
+		{
+            "type": "sunburst",
+            "insidetextorientation": "horizontal",
+            "domain": {
+                "y": [0.5, 1]
+            },
+            "count": "leaves+branches",
+			"textinfo": "label",
+			"marker": {
+				"line": {
+					"color": "#777"
+                },
+                "coloraxis": "coloraxis"
+			},
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ]
+        },
+		{
+            "type": "treemap",
+            "domain": {
+                "y": [0, 0.5]
+            },
+            "count": "leaves+branches",
+			"textinfo": "label",
+			"marker": {
+				"line": {
+					"color": "#777"
+                },
+                "coloraxis": "coloraxis"
+            },
+            "level": "Juliet",
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ]
+		}
+	],
+	"layout": {
+        "coloraxis": {
+            "colorscale": "Blackbody",
+            "reversescale": true,
+            "showscale": false
+        },
+		"width": 500,
+        "height": 1000,
+        "margin": {
+            "t": 10,
+            "b": 10,
+            "l": 10,
+            "r": 10
+        },
+        "uniformtext": {
+            "mode": "hide",
+            "minsize": 8
+        }
+	}
+}

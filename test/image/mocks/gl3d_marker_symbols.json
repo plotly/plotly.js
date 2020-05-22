@@ -52,7 +52,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": "",
+        "title": {"text": ""},
         "range": [0, 10]
       },
       "yaxis": {
@@ -60,7 +60,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": "",
+        "title": {"text": ""},
         "range": [0, 6]
       },
       "zaxis": {
@@ -68,7 +68,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": "",
+        "title": {"text": ""},
         "range": [0, 2]
       }
     },

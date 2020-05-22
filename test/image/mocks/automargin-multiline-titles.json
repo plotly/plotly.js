@@ -9,7 +9,9 @@
       "automargin": true,
       "nticks": 3,
       "tickfont": {"size": 30},
-      "title": {"text": "Hello<br>Bonjour"},
+      "title": {
+        "text": "Hello<br>Bonjour"
+      },
       "zeroline": false
     },
     "yaxis": {

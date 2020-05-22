@@ -5,13 +5,17 @@
       "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
       "textinfo": "label+percent",
       "hole": 0.4,
-      "title": "Number<br>of<br>speakers",
-      "titleposition": "middle center",
+      "title":{
+        "text": "Number<br>of<br>speakers",
+        "position": "middle center"
+      },
       "type": "pie"
     }
   ],
   "layout": {
-    "title": "Top 5 languages by number of native speakers (2010, est.)",
+    "title": {
+      "text": "Top 5 languages by number of native speakers (2010, est.)"
+    },
     "height": 600,
     "width": 600
   }

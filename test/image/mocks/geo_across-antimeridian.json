@@ -47,7 +47,6 @@
                 "x": [0, 0.5],
                 "y": [0, 1]
             },
-            "type": "miller",
             "showocean": true,
             "lonaxis": {
                 "showgrid": true,
@@ -66,7 +65,6 @@
                 "x": [0.5, 1],
                 "y": [0, 1]
             },
-            "type": "miller",
             "showocean": true,
             "lonaxis": {
                 "showgrid": true,

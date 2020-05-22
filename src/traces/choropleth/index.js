@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
     calc: require('./calc'),
+    calcGeoJSON: require('./plot').calcGeoJSON,
     plot: require('./plot').plot,
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,
@@ -23,7 +24,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'choropleth',
     basePlotModule: require('../../plots/geo'),
-    categories: ['geo', 'noOpacity'],
+    categories: ['geo', 'noOpacity', 'showLegend'],
     meta: {
         description: [
             'The data that describes the choropleth value-to-color mapping',

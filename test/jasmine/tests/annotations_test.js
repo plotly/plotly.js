@@ -514,7 +514,7 @@ describe('annotations log/linear axis changes', function() {
         // we don't try to figure out the position on a new axis / canvas
         // automatically when you change xref / yref, we leave it to the caller.
         // previously this logic was part of plotly.js... But it's really only
-        // the plot.ly workspace that wants this and can assign an unambiguous
+        // the Chart Studio Cloud workspace that wants this and can assign an unambiguous
         // meaning to it, so we'll move the logic there, where there are far
         // fewer edge cases to consider because xref never gets edited along
         // with anything else in one `relayout` call.
@@ -1586,10 +1586,10 @@ describe('annotation effects', function() {
 
     it('makes the whole text box a link if the link is the whole text', function(done) {
         makePlot([
-            {x: 20, y: 20, text: '<a href="https://plot.ly">Plot</a>', showarrow: false},
-            {x: 50, y: 50, text: '<a href="https://plot.ly">or</a> not', showarrow: false},
-            {x: 80, y: 80, text: '<a href="https://plot.ly">arrow</a>'},
-            {x: 20, y: 80, text: 'nor <a href="https://plot.ly">this</a>'}
+            {x: 20, y: 20, text: '<a href="https://plotly.com">Plot</a>', showarrow: false},
+            {x: 50, y: 50, text: '<a href="https://plotly.com">or</a> not', showarrow: false},
+            {x: 80, y: 80, text: '<a href="https://plotly.com">arrow</a>'},
+            {x: 20, y: 80, text: 'nor <a href="https://plotly.com">this</a>'}
         ])
         .then(function() {
             function checkBoxLink(index, isLink) {
@@ -1605,7 +1605,7 @@ describe('annotation effects', function() {
 
             function checkLink(link) {
                 expect(link.node().style.cursor).toBe('pointer');
-                expect(link.attr('xlink:href')).toBe('https://plot.ly');
+                expect(link.attr('xlink:href')).toBe('https://plotly.com');
                 expect(link.attr('xlink:show')).toBe('new');
             }
 

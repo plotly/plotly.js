@@ -2603,12 +2603,12 @@
           100
         ]
       ],
-      "scl": "Earth",
+      "colorscale": "Earth",
       "type": "heatmap",
       "zsmooth": "fast"
     }
   ],
   "layout": {
-    "title": "Earth"
+    "title": {"text": "Earth"}
   }
 }

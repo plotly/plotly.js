@@ -1,0 +1,316 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "showlegend": true,
+      "marker": { "color": "#636efa" },
+      "x": [ "Female", "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Female", "Female", "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Male", "Male" ],
+      "y": [ 16.99, 10.34, 21.01, 23.68, 24.59, 25.29, 8.77, 26.88, 15.04, 14.78, 10.27, 35.26, 15.42, 18.43, 14.83, 21.58, 10.33, 16.29, 16.97, 17.46, 13.94, 9.68, 30.4, 18.29, 22.23, 32.4, 28.55, 18.04, 12.54, 10.29, 34.81, 9.94, 25.56, 19.49, 38.07, 23.95, 25.71, 17.31, 29.93, 14.07, 13.13, 17.26, 24.55, 19.77, 29.85, 48.17, 25, 13.39, 16.49, 21.5, 12.66, 16.21, 13.81, 24.52, 20.76, 31.71, 20.69 ],
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "showlegend": false,
+      "marker": { "color": "#636efa" },
+      "x": [ "Male", "Male", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Male", "Female", "Female", "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Female", "Male", "Male", "Female", "Female", "Male", "Female", "Male", "Male", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Male" ],
+      "y": [ 20.65, 17.92, 20.29, 15.77, 39.42, 19.82, 17.81, 13.37, 12.69, 21.7, 19.65, 9.55, 18.35, 15.06, 20.69, 17.78, 24.06, 16.31, 16.93, 18.69, 31.27, 16.04, 26.41, 48.27, 17.59, 20.08, 16.45, 20.23, 12.02, 17.07, 14.73, 10.51, 20.92, 18.24, 14, 7.25, 48.33, 20.45, 13.28, 11.61, 10.77, 10.07, 35.83, 29.03, 17.82 ],
+      "xaxis": "x6",
+      "yaxis": "y6"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "showlegend": false,
+      "marker": { "color": "#636efa" },
+      "x": [ "Female" ],
+      "y": [ 18.78 ],
+      "xaxis": "x7",
+      "yaxis": "y7"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "marker": { "color": "#636efa" },
+      "x": [ "Male", "Female", "Male" ],
+      "y": [ 22.49, 22.75, 12.46 ],
+      "xaxis": "x8",
+      "yaxis": "y8",
+      "showlegend": false
+    },
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "showlegend": false,
+      "marker": { "color": "#636efa" },
+      "x": [ "Male", "Male", "Male", "Male", "Female", "Male", "Female", "Male", "Male", "Male", "Male", "Female", "Female", "Female", "Male", "Female", "Male", "Male", "Female", "Female", "Male", "Female", "Female", "Male", "Male", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Male", "Male", "Female", "Female", "Female", "Female", "Female", "Male", "Male", "Male" ],
+      "y": [ 27.2, 22.76, 17.29, 16.66, 10.07, 15.98, 34.83, 13.03, 18.28, 24.71, 21.16, 10.65, 12.43, 24.08, 11.69, 13.42, 14.26, 15.95, 12.48, 29.8, 8.52, 14.52, 11.38, 22.82, 19.08, 20.27, 11.17, 12.26, 18.26, 8.51, 10.33, 14.15, 13.16, 17.47, 34.3, 41.19, 27.05, 16.43, 8.35, 18.64, 11.87, 9.78, 7.51, 7.56 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=No",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=No",
+      "legendgroup": "smoker=No",
+      "showlegend": false,
+      "marker": { "color": "#636efa" },
+      "x": [ "Female" ],
+      "y": [ 15.98 ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=Yes",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=Yes",
+      "legendgroup": "smoker=Yes",
+      "showlegend": true,
+      "marker": { "color": "#EF553B" },
+      "x": [ "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Female", "Male", "Male" ],
+      "y": [ 17.51, 7.25, 31.85, 16.82, 32.9, 17.89, 14.48, 9.6, 34.63, 34.65, 23.33, 45.35, 23.17, 40.55, 20.9, 30.46, 18.15, 23.1, 15.69 ],
+      "xaxis": "x5",
+      "yaxis": "y5"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=Yes",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=Yes",
+      "legendgroup": "smoker=Yes",
+      "showlegend": false,
+      "marker": { "color": "#EF553B" },
+      "x": [ "Male", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Female", "Female", "Male", "Female", "Female", "Male", "Male", "Male", "Female", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Female", "Male", "Male", "Female", "Female", "Female", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Female", "Male" ],
+      "y": [ 38.01, 11.24, 20.29, 13.81, 11.02, 18.29, 3.07, 15.01, 26.86, 25.28, 17.92, 44.3, 22.42, 15.36, 20.49, 25.21, 14.31, 10.59, 10.63, 50.81, 15.81, 26.59, 38.73, 24.27, 12.76, 30.06, 25.89, 13.27, 28.17, 12.9, 28.15, 11.59, 7.74, 30.14, 22.12, 24.01, 15.69, 15.53, 12.6, 32.83, 27.18, 22.67 ],
+      "xaxis": "x6",
+      "yaxis": "y6"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=Yes",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=Yes",
+      "legendgroup": "smoker=Yes",
+      "showlegend": false,
+      "marker": { "color": "#EF553B" },
+      "x": [ "Male", "Female", "Female", "Male", "Male", "Male", "Male", "Female", "Female" ],
+      "y": [ 28.97, 5.75, 16.32, 40.17, 27.28, 12.03, 21.01, 11.35, 15.38 ],
+      "xaxis": "x8",
+      "yaxis": "y8"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=Yes",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=Yes",
+      "legendgroup": "smoker=Yes",
+      "showlegend": false,
+      "marker": { "color": "#EF553B" },
+      "x": [ "Male", "Male", "Male", "Female", "Male", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Female", "Female", "Female", "Male", "Female" ],
+      "y": [ 19.44, 32.68, 16, 19.81, 28.44, 15.48, 16.58, 10.34, 43.11, 13, 13.51, 18.71, 12.74, 13, 16.4, 20.53, 16.47 ],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
+      "type": "bar",
+      "name": "smoker=Yes",
+      "alignmentgroup": "True",
+      "offsetgroup": "smoker=Yes",
+      "legendgroup": "smoker=Yes",
+      "showlegend": false,
+      "marker": { "color": "#EF553B" },
+      "x": [ "Male", "Female", "Male", "Male", "Female", "Female" ],
+      "y": [ 12.16, 13.42, 8.58, 13.42, 16.27, 10.09 ],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "day=Sun",
+        "x": 0.11499999999999999,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "showarrow": false,
+        "text": "day=Sat",
+        "x": 0.365,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "showarrow": false,
+        "text": "day=Thur",
+        "x": 0.615,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "showarrow": false,
+        "text": "day=Fri",
+        "x": 0.865,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "showarrow": false,
+        "text": "time=Lunch",
+        "textangle": 90,
+        "x": 0.98,
+        "xanchor": "left",
+        "xref": "paper",
+        "y": 0.2425,
+        "yanchor": "middle",
+        "yref": "paper"
+      },
+      {
+        "showarrow": false,
+        "text": "time=Dinner",
+        "textangle": 90,
+        "x": 0.98,
+        "xanchor": "left",
+        "xref": "paper",
+        "y": 0.7575000000000001,
+        "yanchor": "middle",
+        "yref": "paper"
+      }
+    ],
+    "barmode": "group",
+    "legend": { "tracegroupgap": 0 },
+    "margin": { "t": 60 },
+    "xaxis": {
+      "anchor": "y",
+      "domain": [ 0, 0.22999999999999998 ],
+      "title": { "text": "sex" },
+      "categoryarray": [ "Male", "Female" ]
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [ 0.24999999999999997, 0.48 ],
+      "matches": "x",
+      "title": { "text": "sex" }
+    },
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [ 0.49999999999999994, 0.73 ],
+      "matches": "x",
+      "title": { "text": "sex" }
+    },
+    "xaxis4": {
+      "anchor": "y4",
+      "domain": [ 0.75, 0.98 ],
+      "matches": "x",
+      "title": { "text": "sex" }
+    },
+    "xaxis5": {
+      "anchor": "y5",
+      "domain": [ 0, 0.22999999999999998 ],
+      "matches": "x",
+      "showticklabels": false
+    },
+    "xaxis6": {
+      "anchor": "y6",
+      "domain": [ 0.24999999999999997, 0.48 ],
+      "matches": "x",
+      "showticklabels": false
+    },
+    "xaxis7": {
+      "anchor": "y7",
+      "domain": [ 0.49999999999999994, 0.73 ],
+      "matches": "x",
+      "showticklabels": false
+    },
+    "xaxis8": {
+      "anchor": "y8",
+      "domain": [ 0.75, 0.98 ],
+      "matches": "x",
+      "showticklabels": false
+    },
+    "yaxis": {
+      "anchor": "x",
+      "domain": [ 0, 0.485 ],
+      "title": { "text": "total_bill" }
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [ 0, 0.485 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [ 0, 0.485 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "yaxis4": {
+      "anchor": "x4",
+      "domain": [ 0, 0.485 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "yaxis5": {
+      "anchor": "x5",
+      "domain": [ 0.515, 1 ],
+      "matches": "y",
+      "title": { "text": "total_bill" }
+    },
+    "yaxis6": {
+      "anchor": "x6",
+      "domain": [ 0.515, 1 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "yaxis7": {
+      "anchor": "x7",
+      "domain": [ 0.515, 1 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "yaxis8": {
+      "anchor": "x8",
+      "domain": [ 0.515, 1 ],
+      "matches": "y",
+      "showticklabels": false
+    },
+    "title": {
+      "text" : "Matching missing axes 'x' and 'y'<br>with categoryarray set in xaxis",
+      "x": 0.05,
+      "y": 0.2
+    }
+  }
+}

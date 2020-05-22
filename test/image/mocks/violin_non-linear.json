@@ -32,7 +32,7 @@
         "box": {"visible": true},
         "xaxis": "x2",
         "yaxis": "y2"
-        
+
     }],
     "layout": {
         "xaxis": {

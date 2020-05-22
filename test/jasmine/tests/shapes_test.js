@@ -126,6 +126,37 @@ describe('Test shapes defaults:', function() {
         expect(shape2Out.y0).toBeWithin(1.5, 0.001);
         expect(shape2Out.y1).toBeWithin(5.5, 0.001);
     });
+
+    it('should not coerce line.color and line.dash when line.width is zero', function() {
+        var fullLayout = {
+            xaxis: {type: 'linear', range: [0, 1], _shapeIndices: []},
+            yaxis: {type: 'log', range: [0, 1], _shapeIndices: []},
+            _subplots: {xaxis: ['x'], yaxis: ['y']}
+        };
+
+        Axes.setConvert(fullLayout.xaxis);
+        Axes.setConvert(fullLayout.yaxis);
+
+        var layoutIn = {
+            shapes: [{
+                type: 'line',
+                xref: 'xaxis',
+                yref: 'yaxis',
+                x0: 0,
+                x1: 1,
+                y0: 1,
+                y1: 10,
+                line: {
+                    width: 0
+                }
+            }]
+        };
+
+        var shapes = _supply(layoutIn, fullLayout);
+
+        expect(shapes[0].line.color).toEqual(undefined);
+        expect(shapes[0].line.dash).toEqual(undefined);
+    });
 });
 
 function countShapesInLowerLayer(gd) {

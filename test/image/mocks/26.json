@@ -31185,11 +31185,8 @@
         }
     ],
     "layout": {
-        "title": "A Century of Asteroid Flybys",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 0
+        "title": {
+            "text": "A Century of Asteroid Flybys"
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -31201,11 +31198,8 @@
         "width": 1366,
         "height": 713,
         "xaxis": {
-            "title": "Date<br>Data extracted from <a href='http://neo.jpl.nasa.gov/ca/'>JPL</a> on 2014-3-8 by <a href='http://www.alexharrisonparker.com'>Alex H. Parker</a>",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Date<br>Data extracted from <a href='http://neo.jpl.nasa.gov/ca/'>JPL</a> on 2014-3-8 by <a href='http://www.alexharrisonparker.com'>Alex H. Parker</a>"
             },
             "range": [
                 2000,
@@ -31250,11 +31244,8 @@
             "autorange": false
         },
         "yaxis": {
-            "title": "Nominal Flyby Distance (Earth Radii)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Nominal Flyby Distance (Earth Radii)"
             },
             "range": [
                 1,

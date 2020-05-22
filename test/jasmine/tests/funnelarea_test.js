@@ -9,7 +9,7 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var rgb = require('../../../src/components/color').rgb;
+var rgb = require('@src/components/color').rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -69,6 +69,49 @@ describe('Funnelarea defaults', function() {
 
         out = _supply({type: 'funnelarea'});
         expect(out.visible).toBe(false);
+    });
+
+    it('skip negatives and non-JSON values and avoid zero total', function() {
+        [
+            -1, '-1',
+            0, '0',
+            false, 'false',
+            true, 'true',
+            null, 'null',
+            NaN, 'NaN',
+            -Infinity, '-Infinity',
+            Infinity, 'Infinity',
+            undefined, 'undefined',
+            '', [], {}
+        ].forEach(function(e) {
+            var out;
+
+            out = _supply({type: 'pie', values: [1, e, 3]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(3, e);
+
+            out = _supply({type: 'pie', values: [1, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+
+            out = _supply({type: 'pie', values: [e]});
+            expect(out.visible).toBe(false, e);
+            expect(out._length).toBe(undefined, e);
+        });
+    });
+
+    it('convert positive numbers in string format', function() {
+        ['1', '+1', '1e1'].forEach(function(e) {
+            var out;
+
+            out = _supply({type: 'pie', values: [0, e]});
+            expect(out.visible).toBe(true, e);
+            expect(out._length).toBe(2, e);
+        });
     });
 
     it('is marked invisible if either labels or values is empty', function() {
@@ -1709,5 +1752,134 @@ describe('Test funnelarea calculated areas with scalegroup on various domain rat
               .catch(failTest)
               .then(done);
         });
+    });
+});
+
+describe('funnelarea uniformtext', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertTextSizes(msg, opts) {
+        return function() {
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var size = selection.size();
+            ['fontsizes', 'scales'].forEach(function(e) {
+                expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
+            });
+
+            selection.each(function(d, i) {
+                var fontSize = this.style.fontSize;
+                expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
+            });
+
+            for(var i = 0; i < selection[0].length; i++) {
+                var transform = selection[0][i].getAttribute('transform');
+                var pos0 = transform.indexOf('scale(');
+                var scale = 1;
+                if(pos0 !== -1) {
+                    pos0 += 'scale('.length;
+                    var pos1 = transform.indexOf(')', pos0);
+                    scale = +(transform.substring(pos0, pos1));
+                }
+
+                expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
+            }
+        };
+    }
+
+    it('should be able to react with new uniform text options', function(done) {
+        var fig = {
+            data: [{
+                type: 'funnelarea',
+                baseratio: 1,
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                sort: false,
+
+                text: [
+                    0,
+                    '<br>',
+                    null,
+                    '',
+                    ' ',
+                    '.',
+                    '|',
+                    '=',
+                    'longest word in German',
+                    'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
+                ],
+
+                textinfo: 'text',
+                textangle: 0,
+                showlegend: false
+            }],
+            layout: {
+                width: 450,
+                height: 450
+            }
+        };
+
+        Plotly.plot(gd, fig)
+        .then(assertTextSizes('without uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.69],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "hide"', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69, 0.69],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 9', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 32; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 32', {
+            fontsizes: [32, 32, 32, 32, 32, 32, 32, 32],
+            scales: [0, 1, 0, 0, 0, 0, 0, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using minsize: 16', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0],
+        }))
+        .then(function() {
+            fig.layout.uniformtext.mode = 'show';
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('using mode: "show"', {
+            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13],
+            scales: [1, 1, 1, 1, 1, 1, 1, 1],
+        }))
+        .then(function() {
+            fig.layout.uniformtext = undefined; // back to default
+            return Plotly.react(gd, fig);
+        })
+        .then(assertTextSizes('clear uniformtext', {
+            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
+            scales: [1, 1, 1, 1, 1, 1, 1, 0.69],
+        }))
+        .catch(failTest)
+        .then(done);
     });
 });

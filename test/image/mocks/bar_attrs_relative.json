@@ -36,6 +36,6 @@
         "height":400,
         "width":400,
         "barmode":"relative",
-        "barnorm":false
+        "barnorm":""
     }
 }

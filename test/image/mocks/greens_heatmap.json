@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Greens",
+      "colorscale": "Greens",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Greens"
+    "title": {"text": "Greens"}
   }
 }

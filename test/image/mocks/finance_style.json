@@ -266,7 +266,7 @@
 	    "visible": false
       },
       "calendar": "islamic",
-      "title": "Islamic dates"
+      "title": {"text": "Islamic dates"}
     },
     "showlegend": true,
     "height": 450,

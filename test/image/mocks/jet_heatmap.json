@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Jet",
+      "colorscale": "Jet",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Jet"
+    "title": {"text": "Jet"}
   }
 }

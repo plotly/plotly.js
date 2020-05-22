@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -298,6 +298,24 @@ colorScaleAttrs('', {
         ].join(' ')
     },
 
+    opacityscale: {
+        valType: 'any',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Sets the opacityscale.',
+            ' The opacityscale must be an array containing',
+            ' arrays mapping a normalized value to an opacity value.',
+            ' At minimum, a mapping for the lowest (0) and highest (1)',
+            ' values are required. For example,',
+            ' `[[0, 1], [0.5, 0.2], [1, 1]]` means that higher/lower values would have',
+            ' higher opacity values and those in the middle would be more transparent',
+            ' Alternatively, `opacityscale` may be a palette name string',
+            ' of the following list: \'min\', \'max\', \'extremes\' and \'uniform\'.',
+            ' The default is \'uniform\'.'
+        ].join('')
+    },
+
     _deprecated: {
         zauto: extendFlat({}, colorScaleAttrs.zauto, {
             description: 'Obsolete. Use `cauto` instead.'
@@ -310,7 +328,8 @@ colorScaleAttrs('', {
         })
     },
 
-    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
 }), 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

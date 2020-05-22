@@ -1,0 +1,67 @@
+{
+    "data": [
+        {
+            "type": "choropleth",
+            "name": "Canada",
+            "locations": ["CAN"],
+            "z": [1],
+            "colorscale": [[0, "blue"], [1, "blue"]],
+            "showscale": false,
+            "showlegend": true
+        },
+        {
+            "type": "choropleth",
+            "name": "USA",
+            "locations": ["USA"],
+            "z": [1],
+            "colorscale": [[0, "orange"], [1, "orange"]],
+            "showscale": false,
+            "showlegend": true
+        },
+        {
+            "type": "choropleth",
+            "name": "Brazil",
+            "locations": ["BRA"],
+            "z": [1],
+            "colorscale": [[0, "green"], [1, "green"]],
+            "showscale": false,
+            "showlegend": true
+        },
+        {
+            "type": "choropleth",
+            "name": "China",
+            "locations": ["CHN"],
+            "z": [1],
+            "colorscale": [[0, "red"], [1, "red"]],
+            "showscale": false,
+            "showlegend": true
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "choropleth with legends and legend title"
+        },
+        "legend": {
+            "borderwidth": 5,
+            "bordercolor": "gray",
+            "bgcolor": "yellow",
+            "orientation": "h",
+            "title": {
+                "text": "<b>World</b> <i>Countries</i><br>legends on <sub>different lines!</sub>",
+                "font": {
+                    "size": 15,
+                    "family": "Times New Roman"
+                }
+            }
+        },
+        "paper_bgcolor": "lightblue",
+        "width": 500,
+        "height": 350,
+        "margin": {
+            "t": 50,
+            "b": 0,
+            "l": 0,
+            "r": 0
+        }
+    }
+}

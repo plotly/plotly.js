@@ -37,8 +37,7 @@
       "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": true,
-      "textfont": {"size": [20]},
-	    "marker": {"opacity": 0.3}
+      "textfont": {"size": [20]}
     },
     {
       "type": "funnel", "orientation": "v",
@@ -86,22 +85,16 @@
       "domain": [0.84, 1]
     },
     "yaxis": {
-      "showline": true,
-      "mirror": true,
       "layer": "below traces",
       "range": [0, 2]
     },
     "yaxis2": {
       "anchor": "x2",
-      "showline": true,
-      "mirror": true,
       "layer": "below traces",
       "range": [0, 2]
     },
     "yaxis3": {
       "anchor": "x3",
-      "showline": true,
-      "mirror": true,
       "layer": "below traces",
       "range": [2, 0]
     },

@@ -574,7 +574,8 @@
             [-71.516, 37.936],
             [-80.425, 37.936]
           ],
-          "source": "https://docs.mapbox.com/mapbox-gl-js/assets/radar.gif"
+          "source": "https://docs.mapbox.com/mapbox-gl-js/assets/radar.gif",
+          "opacity": 0.3
         }
       ]
     },

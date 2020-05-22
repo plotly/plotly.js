@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -109,7 +109,7 @@ function calcHover(pointData, x, y, trace) {
 
     var font = trace.textfont;
     if(font) {
-        di.ts = Array.isArray(font.size) ? font.size[id] : font.size;
+        di.ts = Lib.isArrayOrTypedArray(font.size) ? font.size[id] : font.size;
         di.tc = Array.isArray(font.color) ? font.color[id] : font.color;
         di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
     }
@@ -118,7 +118,7 @@ function calcHover(pointData, x, y, trace) {
     if(marker) {
         di.ms = Lib.isArrayOrTypedArray(marker.size) ? marker.size[id] : marker.size;
         di.mo = Lib.isArrayOrTypedArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
-        di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
+        di.mx = Lib.isArrayOrTypedArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
         di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
     }
 
@@ -143,10 +143,10 @@ function calcHover(pointData, x, y, trace) {
     if(hoverlabel) {
         di.hbg = Array.isArray(hoverlabel.bgcolor) ? hoverlabel.bgcolor[id] : hoverlabel.bgcolor;
         di.hbc = Array.isArray(hoverlabel.bordercolor) ? hoverlabel.bordercolor[id] : hoverlabel.bordercolor;
-        di.hts = Array.isArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
+        di.hts = Lib.isArrayOrTypedArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
         di.htc = Array.isArray(hoverlabel.font.color) ? hoverlabel.font.color[id] : hoverlabel.font.color;
         di.htf = Array.isArray(hoverlabel.font.family) ? hoverlabel.font.family[id] : hoverlabel.font.family;
-        di.hnl = Array.isArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
+        di.hnl = Lib.isArrayOrTypedArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
     }
     var hoverinfo = trace.hoverinfo;
     if(hoverinfo) {

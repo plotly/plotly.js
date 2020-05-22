@@ -1,0 +1,397 @@
+{
+    "data": [
+        {
+            "name": "horizontal",
+            "insidetextorientation": "horizontal",
+            "type": "sunburst",
+            "parents": [
+                "",
+                "A",
+                "A",
+                "C",
+                "C",
+                "C",
+                "F",
+                "F",
+                "F",
+                "F",
+                "J",
+                "J",
+                "J",
+                "J",
+                "J",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U"
+            ],
+            "labels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z"
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0.5,
+                    1
+                ],
+                "y": [
+                    0.5,
+                    1
+                ]
+            }
+        },
+        {
+            "name": "radial",
+            "insidetextorientation": "radial",
+            "type": "sunburst",
+            "parents": [
+                "",
+                "A",
+                "A",
+                "C",
+                "C",
+                "C",
+                "F",
+                "F",
+                "F",
+                "F",
+                "J",
+                "J",
+                "J",
+                "J",
+                "J",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U"
+            ],
+            "labels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z"
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0.5,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.5
+                ]
+            }
+        },
+        {
+            "name": "tangential",
+            "insidetextorientation": "tangential",
+            "type": "sunburst",
+            "parents": [
+                "",
+                "A",
+                "A",
+                "C",
+                "C",
+                "C",
+                "F",
+                "F",
+                "F",
+                "F",
+                "J",
+                "J",
+                "J",
+                "J",
+                "J",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U"
+            ],
+            "labels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z"
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0,
+                    0.5
+                ],
+                "y": [
+                    0,
+                    0.5
+                ]
+            }
+        },
+        {
+            "name": "auto",
+            "insidetextorientation": "auto",
+            "type": "sunburst",
+            "parents": [
+                "",
+                "A",
+                "A",
+                "C",
+                "C",
+                "C",
+                "F",
+                "F",
+                "F",
+                "F",
+                "J",
+                "J",
+                "J",
+                "J",
+                "J",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U",
+                "U"
+            ],
+            "labels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z"
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0,
+                    0.5
+                ],
+                "y": [
+                    0.5,
+                    1
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "margin": {
+            "t": 10,
+            "b": 10,
+            "l": 10,
+            "r": 10
+        },
+        "font": {
+            "size": 14
+        },
+        "shapes": [
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0,
+                "x1": 0.5,
+                "y0": 0,
+                "y1": 0.5
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.5,
+                "x1": 1,
+                "y0": 0,
+                "y1": 0.5
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0.5,
+                "x1": 1,
+                "y0": 0.5,
+                "y1": 1
+            },
+            {
+                "type": "rect",
+                "layer": "below",
+                "x0": 0,
+                "x1": 0.5,
+                "y0": 0.5,
+                "y1": 1
+            }
+        ],
+        "annotations": [
+            {
+                "text": "auto",
+                "showarrow": false,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "bottom",
+                "x": 0.5,
+                "y": 0.5,
+                "font": {
+                    "size": 20
+                }
+            },
+            {
+                "text": "tangential",
+                "showarrow": false,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "bottom",
+                "x": 0.5,
+                "y": 0,
+                "font": {
+                    "size": 20
+                }
+            },
+            {
+                "text": "radial",
+                "showarrow": false,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "bottom",
+                "x": 1,
+                "y": 0,
+                "font": {
+                    "size": 20
+                }
+            },
+            {
+                "text": "horizontal",
+                "showarrow": false,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "bottom",
+                "x": 1,
+                "y": 0.5,
+                "font": {
+                    "size": 20
+                }
+            }
+        ]
+    }
+}

@@ -2840,9 +2840,6 @@
       "projection": {
         "y": {
           "show": true
-        },
-        "x": {
-          "scale": 7.3
         }
       }
     },

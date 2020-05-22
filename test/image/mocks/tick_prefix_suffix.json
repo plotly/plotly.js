@@ -9,7 +9,7 @@
         }
     ],
     "layout": {
-        "title": "tick label prefix and suffix",
+        "title": {"text": "tick label prefix and suffix"},
         "xaxis": {
             "tickprefix": "-> ",
             "ticksuffix": " s"

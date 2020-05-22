@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@ var createMatrix = require('regl-splom');
 
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
+var selectMode = require('../../components/dragelement/helpers').selectMode;
 
 module.exports = function plot(gd, _, splomCalcData) {
     if(!splomCalcData.length) return;
@@ -78,11 +79,11 @@ function plotOne(gd, cd0) {
     }
 
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
-    var selectMode = dragmode === 'lasso' || dragmode === 'select' ||
+    var isSelectMode = selectMode(dragmode) ||
       !!trace.selectedpoints || clickSelectEnabled;
     var needsBaseUpdate = true;
 
-    if(selectMode) {
+    if(isSelectMode) {
         var commonLength = trace._length;
 
         // regenerate scene batch, if traces number changed during selection

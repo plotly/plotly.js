@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,6 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('color', nodeOut.label.map(function(d, i) {
         return Color.addOpacity(defaultNodePalette(i), 0.8);
     }));
+    coerceNode('customdata');
 
     // link attributes
     var linkIn = traceIn.link || {};
@@ -73,6 +74,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 'rgba(0, 0, 0, 0.2)';
 
     coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
+    coerceLink('customdata');
 
     handleArrayContainerDefaults(linkIn, linkOut, {
         name: 'colorscales',

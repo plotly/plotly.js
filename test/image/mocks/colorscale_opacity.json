@@ -549,7 +549,7 @@
         }
     ],
     "layout": {
-        "title": "RGBA colorscales",
+        "title": {"text": "RGBA colorscales"},
         "xaxis": {
             "range": [
                 -0.271356783919598,

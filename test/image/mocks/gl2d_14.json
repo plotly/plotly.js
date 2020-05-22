@@ -97,12 +97,7 @@
         }
     ],
     "layout": {
-        "title": "Silicon Photovoltaics Learning Curve",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 0
-        },
+        "title": {"text": "Silicon Photovoltaics Learning Curve"},
         "font": {
             "family": "Arial, sans-serif",
             "size": 12,
@@ -113,12 +108,7 @@
         "width": 800,
         "height": 440,
         "xaxis": {
-            "title": "Cumulative Production (GW)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
-            },
+            "title": {"text": "Cumulative Production (GW)"},
             "range": [
                 -3.011967491973726,
                 2.1561305597186564
@@ -162,12 +152,7 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Cost ($/W<sub>P</sub>)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
-            },
+            "title": {"text": "Cost ($/W<sub>P</sub>)"},
             "range": [
                 -0.9910086301469277,
                 1.389382716298284

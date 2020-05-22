@@ -19,7 +19,7 @@
             }
         }],
     "layout": {
-        "title": "Sankey with circular data",
+        "title": {"text": "Sankey with circular data"},
         "width": 800,
         "height": 800
     }

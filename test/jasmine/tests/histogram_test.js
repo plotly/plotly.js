@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
 var supplyDefaults = require('@src/traces/histogram/defaults');
@@ -478,6 +479,35 @@ describe('Test histogram', function() {
             );
         });
 
+        it('should attempt to group traces when the *calendars* module is not registered', function() {
+            var original = Registry.getComponentMethod;
+            var cnt = 0;
+
+            spyOn(Registry, 'getComponentMethod').and.callFake(function() {
+                if(arguments[0] === 'calendars') {
+                    cnt++;
+                    return Lib.noop;
+                } else {
+                    return original.call(arguments);
+                }
+            });
+
+            gd = {
+                data: [
+                    {uid: 'a', type: 'histogram', x: [1, 3]},
+                    {uid: 'b', type: 'histogram', x: [1, 20]}
+                ],
+                layout: {barmode: 'stack'}
+            };
+            supplyAllDefaults(gd);
+
+            _assert('', [
+                ['xyx', [0, 1]]
+            ]);
+
+            expect(cnt).toBe(3, '# of Registry.getComponentMethod calls for *calendars* methods');
+        });
+
         it('should force traces that "have to match" to have same bingroup (alignmentgroup case)', function() {
             var traces;
 
@@ -555,6 +585,7 @@ describe('Test histogram', function() {
             // even though -0 === 0
             out.forEach(function(cdi) {
                 for(var key in cdi) {
+                    if(typeof cdi[key] === 'function') cdi[key] = cdi[key]();
                     if(cdi[key] === 0) cdi[key] = 0;
                 }
             });
@@ -829,6 +860,23 @@ describe('Test histogram', function() {
 
             expect(calcPositions(trace1, [trace2])).toEqual([1, 3, 5]);
             expect(calcPositions(trace2, [trace1])).toEqual([5, 7]);
+        });
+
+        it('harmonizes start/end value of bins when all traces are autobinned', function(done) {
+            var mock = require('@mocks/histogram_overlay-bingroup');
+            var gd = createGraphDiv();
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    destroyGraphDiv();
+                    var cd0 = gd.calcdata[0];
+                    var cd1 = gd.calcdata[1];
+                    for(var i = 0; i < cd0.length && i < cd1.length; i++) {
+                        expect(cd0[i].ph0).toBe(cd1[i].ph0);
+                        expect(cd0[i].ph1).toBe(cd1[i].ph1);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('autobins all data as one', function() {

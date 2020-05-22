@@ -178,7 +178,7 @@
         }
     ],
     "layout": {
-        "title": "scattergeo trace scaled bubbles",
+        "title": {"text": "scattergeo trace scaled bubbles"},
         "showlegend": true
     }
 }

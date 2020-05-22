@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -39,7 +39,7 @@ module.exports = function(opts) {
                 'The web browser will only be able to apply a font if it is available on the system',
                 'which it operates. Provide multiple font families, separated by commas, to indicate',
                 'the preference in which to apply fonts if they aren\'t available on the system.',
-                'The plotly service (at https://plot.ly or on-premise) generates images on a server,',
+                'The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server,',
                 'where only a select number of',
                 'fonts are installed and supported.',
                 'These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*,',

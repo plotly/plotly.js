@@ -18,7 +18,7 @@
             "reversescale": true,
             "showscale": false
         },
-        "title": "<i>contour</i> legend with <b>coloraxis</b>",
+        "title": {"text": "<i>contour</i> legend with <b>coloraxis</b>"},
         "margin": {
             "t": 125,
             "b": 25

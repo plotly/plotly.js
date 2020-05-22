@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,6 +16,7 @@ var Color = require('../../components/color');
 var fillText = require('../../lib').fillText;
 var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
@@ -39,7 +40,6 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     var isClosest = (hovermode === 'closest');
     var isWaterfall = (trace.type === 'waterfall');
     var maxHoverDistance = pointData.maxHoverDistance;
-    var maxSpikeDistance = pointData.maxSpikeDistance;
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
@@ -91,7 +91,12 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
         var s = di[sizeLetter];
 
         if(isWaterfall) {
-            s += Math.abs(di.rawS || 0);
+            var rawS = Math.abs(di.rawS) || 0;
+            if(v > 0) {
+                s += rawS;
+            } else if(v < 0) {
+                s -= rawS;
+            }
         }
 
         // add a gradient so hovering near the end of a
@@ -127,6 +132,9 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
 
+    // skip points inside axis rangebreaks
+    if(cd[pointData.index].p === BADNUM) return;
+
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be
     // over the hover label.
@@ -156,7 +164,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal']);
 
     // spikelines always want "closest" distance regardless of hovermode
-    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 + maxSpikeDistance - maxHoverDistance;
+    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 - maxHoverDistance;
     // they also want to point to the data value, regardless of where the label goes
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);

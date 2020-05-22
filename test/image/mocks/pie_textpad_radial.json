@@ -1,0 +1,46 @@
+{
+    "data": [
+        {
+            "type": "pie",
+            "hole": 0.5,
+            "labels": [
+                "a",
+                "b",
+                "c",
+                "d"
+            ],
+            "values": [
+                20,
+                10,
+                2,
+                1
+            ],
+            "textposition": "inside",
+            "insidetextorientation": "radial",
+            "marker": {
+                "colors": [
+                    "pink",
+                    "lightgreen",
+                    "skyblue",
+                    "orange"
+                ],
+                "line": {
+                    "width": 3,
+                    "color": [
+                        "red",
+                        "green",
+                        "blue",
+                        "grey"
+                    ]
+                }
+            }
+        }
+    ],
+    "layout": {
+        "width": 300,
+        "height": 300,
+        "title": {
+            "text": "should provide some pad<br>before fiting & printing text"
+        }
+    }
+}

@@ -7,7 +7,7 @@
       "cmin": 2,
       "cmax": 3,
       "colorbar": {
-        "title": "trace 0",
+        "title": {"text": "trace 0"},
         "len": 0.3,
         "y": 0,
         "yanchor": "bottom"
@@ -21,7 +21,7 @@
       "cmin": 1,
       "cmax": 4,
       "colorbar": {
-        "title": "trace 1",
+        "title": {"text": "trace 1"},
         "len": 0.3,
         "y": 0.3,
         "yanchor": "bottom"
@@ -35,7 +35,7 @@
       "color": [0,0,0,0],
       "size": 10,
       "colorbar": {
-        "title": "trace 2",
+        "title": {"text": "trace 2"},
         "len": 0.3,
         "y": 0.6,
         "yanchor": "bottom"

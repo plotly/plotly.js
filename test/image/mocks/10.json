@@ -223,16 +223,15 @@
                 "color": "rgba(255, 0, 0, 0.5)",
                 "width": 2
             },
-            "fillcolor": "rgba(255, 255, 255, 0)",
             "type": "scatter"
         }
     ],
     "layout": {
-        "title": "Math Score Box Plots",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 16
+        "title": {
+            "text": "Math Score Box Plots",
+            "font": {
+                "size": 16
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -244,11 +243,8 @@
         "width": 600,
         "height": 440,
         "xaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": ""
             },
             "range": [
                 -0.6575,
@@ -259,45 +255,20 @@
                 1
             ],
             "type": "category",
-            "rangemode": "normal",
             "showgrid": false,
             "zeroline": false,
             "showline": false,
-            "autotick": true,
-            "nticks": 0,
             "ticks": "",
             "showticklabels": true,
             "tick0": 0,
             "dtick": 1,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "#000",
             "tickangle": 0,
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "exponentformat": "e",
-            "showexponent": "all",
-            "gridcolor": "rgb(255, 255, 255)",
-            "gridwidth": 1,
-            "zerolinecolor": "#000",
-            "zerolinewidth": 1,
-            "linecolor": "rgba(0, 0, 0, 0)",
-            "linewidth": 1,
             "anchor": "y",
-            "position": 0,
-            "mirror": true,
-            "overlaying": false,
             "autorange": true
         },
         "yaxis": {
-            "title": "Score",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Score"
             },
             "range": [
                 -1.6340975059013805,
@@ -312,47 +283,17 @@
             "showgrid": true,
             "zeroline": false,
             "showline": false,
-            "autotick": true,
-            "nticks": 0,
             "ticks": "",
             "showticklabels": true,
             "tick0": 0,
             "dtick": 2,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "#000",
             "tickangle": 0,
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
             "exponentformat": "e",
             "showexponent": "all",
             "gridcolor": "rgb(204, 204, 204)",
             "gridwidth": 1,
-            "zerolinecolor": "#000",
-            "zerolinewidth": 1,
-            "linecolor": "rgba(0, 0, 0, 0)",
-            "linewidth": 2,
             "anchor": "x",
-            "position": 0,
-            "mirror": true,
-            "overlaying": false,
             "autorange": true
-        },
-        "legend": {
-            "x": 1.1837209302325582,
-            "y": 1.0189344262295081,
-            "traceorder": "normal",
-            "font": {
-                "family": "",
-                "size": 0,
-                "color": "rgb(67, 67, 67)"
-            },
-            "bgcolor": "rgba(255, 255, 255, 0)",
-            "bordercolor": "rgba(0, 0, 0, 0)",
-            "borderwidth": 1
         },
         "margin": {
             "l": 80,
@@ -366,10 +307,6 @@
         "plot_bgcolor": "rgb(255, 255, 255)",
         "hovermode": "x",
         "dragmode": "zoom",
-        "barmode": "stack",
-        "bargap": 0.2,
-        "bargroupgap": 0,
-        "boxmode": "overlay",
         "separators": ".,",
         "hidesources": false
     }

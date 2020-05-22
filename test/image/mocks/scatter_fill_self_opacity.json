@@ -16,6 +16,6 @@
     }
   ],
   "layout": {
-    "title": "toself fill with opacity"
+    "title": {"text": "toself fill with opacity"}
   }
 }

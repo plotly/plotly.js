@@ -568,14 +568,14 @@
         }
     ],
     "layout": {
-        "title": "Extracting the Acceleration of Gravity<br>from Velocity Data",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 18
+        "title": {
+            "text": "Extracting the Acceleration of Gravity<br>from Velocity Data",
+            "font": {
+                "size": 18
+            }
         },
         "font": {
-            "family": "Times New Roman", 
+            "family": "Times New Roman",
             "size": 12,
             "color": "#000"
         },
@@ -584,11 +584,8 @@
         "width": 800,
         "height": 440,
         "xaxis": {
-            "title": "Time (s)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Time (s)"
             },
             "range": [
                 -0.01,
@@ -633,11 +630,8 @@
             "autorange": false
         },
         "yaxis": {
-            "title": "Velocity (m/s)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Velocity (m/s)"
             },
             "range": [
                 -14.271205357142858,

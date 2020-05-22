@@ -23,7 +23,7 @@
       ],
       "showgrid":false
     },
-    "title":"Flow over a Karman-Trefftz airfoil",
+    "title":{"text":"Flow over a Karman-Trefftz airfoil"},
     "hovermode":"closest",
     "margin":{
       "r":60,
@@ -215,9 +215,11 @@
       "colorbar":{
         "y":0,
         "yanchor":"bottom",
-        "titleside":"right",
         "len":0.75,
-        "title":"Pressure coefficient, c<sub>p</sub>"
+        "title":{
+          "side":"right",
+          "text":"Pressure coefficient, c<sub>p</sub>"
+        }
       },
       "contours":{
         "start":-1,

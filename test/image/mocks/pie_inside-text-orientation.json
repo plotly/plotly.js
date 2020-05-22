@@ -1,0 +1,371 @@
+{
+    "data": [
+        {
+            "name": "horizontal",
+            "title": {
+                "text": "horizontal",
+                "font": {
+                    "size": 20
+                }
+            },
+            "insidetextorientation": "horizontal",
+            "textposition": "inside",
+            "type": "pie",
+            "hole": 0.5,
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "marker": {
+                "colors": [
+                    "aquamarine",
+                    "brown",
+                    "chocolate",
+                    "darkblue",
+                    "darkgreen",
+                    "forestgreen",
+                    "gold",
+                    "honeydew",
+                    "indigo",
+                    "navajowhite",
+                    "khaki",
+                    "lightblue",
+                    "magenta",
+                    "navy",
+                    "orange",
+                    "pink",
+                    "aqua",
+                    "red",
+                    "silver",
+                    "tomato",
+                    "turquoise",
+                    "violet",
+                    "wheat",
+                    "yellow",
+                    "azure"
+                ]
+            },
+            "values": [
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            }
+        },
+        {
+            "name": "radial",
+            "title": {
+                "text": "radial",
+                "font": {
+                    "size": 20
+                }
+            },
+            "insidetextorientation": "radial",
+            "textposition": "inside",
+            "type": "pie",
+            "hole": 0.5,
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "values": [
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            }
+        },
+        {
+            "name": "tangential",
+            "title": {
+                "text": "tangential",
+                "font": {
+                    "size": 20
+                }
+            },
+            "insidetextorientation": "tangential",
+            "textposition": "inside",
+            "type": "pie",
+            "hole": 0.5,
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "values": [
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            }
+        },
+        {
+            "name": "auto",
+            "title": {
+                "text": "auto",
+                "font": {
+                    "size": 20
+                }
+            },
+            "insidetextorientation": "auto",
+            "textposition": "inside",
+            "type": "pie",
+            "hole": 0.5,
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "values": [
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1
+            ],
+            "textinfo": "label+value",
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            }
+        }
+    ],
+    "layout": {
+        "width": 925,
+        "height": 750,
+        "margin": {
+            "t": 10,
+            "b": 10,
+            "l": 10,
+            "r": 10
+        },
+        "legend": {
+            "title": {
+                "text": "<b>inside text orientation</b>"
+            }
+        },
+        "font": {
+            "size": 14
+        }
+    }
+}

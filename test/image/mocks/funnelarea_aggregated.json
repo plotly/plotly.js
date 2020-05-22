@@ -10,7 +10,6 @@
         "Alice"
       ],
       "type": "funnelarea",
-      "sort": true,
       "domain": {
         "x": [
           0,
@@ -47,7 +46,6 @@
         ]
       },
       "type": "funnelarea",
-      "sort": true,
       "domain": {
         "x": [
           0.5,

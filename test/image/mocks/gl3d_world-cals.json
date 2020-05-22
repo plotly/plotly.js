@@ -102,16 +102,16 @@
     "layout": {
         "scene": {
             "xaxis": {
-                "title": "taiwan",
+                "title": {"text": "taiwan"},
                 "calendar": "taiwan",
                 "type": "date"
             },
             "yaxis": {
-                "title": "gregorian",
+                "title": {"text": "gregorian"},
                 "type": "date"
             },
             "zaxis": {
-                "title": "chinese",
+                "title": {"text": "chinese"},
                 "calendar": "chinese",
                 "type": "date"
             },

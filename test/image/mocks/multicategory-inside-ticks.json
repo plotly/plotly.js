@@ -42,7 +42,7 @@
     "grid": {"rows": 2, "columns": 1, "pattern": "independent"},
     "xaxis": {
       "side": "top",
-      "title": "MULTI-CATEGORY",
+      "title": {"text": "MULTI-CATEGORY"},
       "range": [-0.5, 7],
       "showline": true,
       "tickfont": {"size": 16},
@@ -54,7 +54,7 @@
       "dividerwidth": 2
     },
     "xaxis2": {
-      "title": "MULTI-CATEGORY",
+      "title": {"text": "MULTI-CATEGORY"},
       "range": [-1, 6.5],
       "showline": true,
       "tickfont": {"size": 16},

@@ -96,7 +96,7 @@
     }
   ],
   "layout": {
-    "title": "US Export of Plastic Scrap",
+    "title": {"text": "US Export of Plastic Scrap"},
     "xaxis": {
       "tickfont": {
         "color": "rgb(107, 107, 107)",
@@ -108,11 +108,13 @@
         "color": "rgb(107, 107, 107)",
         "size": 14
       },
-      "titlefont": {
-        "color": "rgb(107, 107, 107)",
-        "size": 16
-      },
-      "title": "USD (millions)"
+      "title": {
+        "font": {
+          "color": "rgb(107, 107, 107)",
+          "size": 16
+        },
+        "text": "USD (millions)"
+      }
     },
     "legend": {
       "x": 0,

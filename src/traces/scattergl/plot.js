@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,6 +14,7 @@ var createError = require('regl-error2d');
 var Text = require('gl-text');
 
 var Lib = require('../../lib');
+var selectMode = require('../../components/dragelement/helpers').selectMode;
 var prepareRegl = require('../../lib/prepare_regl');
 
 var subTypes = require('../scatter/subtypes');
@@ -246,7 +247,7 @@ module.exports = function plot(gd, subplot, cdata) {
 
     // form batch arrays, and check for selected points
     var dragmode = fullLayout.dragmode;
-    var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
     for(i = 0; i < count; i++) {
@@ -258,8 +259,8 @@ module.exports = function plot(gd, subplot, cdata) {
         var x = stash.x;
         var y = stash.y;
 
-        if(trace.selectedpoints || selectMode || clickSelectEnabled) {
-            if(!selectMode) selectMode = true;
+        if(trace.selectedpoints || isSelectMode || clickSelectEnabled) {
+            if(!isSelectMode) isSelectMode = true;
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
@@ -292,7 +293,7 @@ module.exports = function plot(gd, subplot, cdata) {
         }
     }
 
-    if(selectMode) {
+    if(isSelectMode) {
         // create scatter instance by cloning scatter2d
         if(!scene.select2d) {
             scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);

@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "x": [
+                999,
+                4999,
+                8999,
+                12999,
+                16999,
+                20999,
+                24999,
+                28999,
+                32999,
+                36999,
+                40999,
+                44999
+            ],
+            "texttemplate": "%{x}",
+            "textposition": "auto",
+            "insidetextanchor": "end",
+            "textangle": 15,
+            "textfont": {
+                "size": 16
+            }
+        }
+    ],
+    "layout": {
+        "width": 300,
+        "height": 600,
+        "uniformtext": {
+            "mode": "hide"
+        },
+        "xaxis": {
+            "autorange": "reversed"
+        },
+        "yaxis": {
+            "autorange": "reversed"
+        }
+    }
+}

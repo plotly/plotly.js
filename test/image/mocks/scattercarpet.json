@@ -11,12 +11,12 @@
       ],
       "cheaterslope": 1,
       "aaxis": {
-        "title": "a",
+        "title": {"text": "a"},
         "tickmode": "linear",
         "dtick": 0.05
       },
       "baxis": {
-        "title": "b",
+        "title": {"text": "b"},
         "tickmode": "linear",
         "dtick": 0.5
       }
@@ -94,7 +94,7 @@
     }
   ],
   "layout": {
-    "title": "scattercarpet extrapolation, clipping, and smoothing",
+    "title": {"text": "scattercarpet extrapolation, clipping, and smoothing"},
     "hovermode": "closest"
   }
 }

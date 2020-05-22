@@ -1,0 +1,333 @@
+{
+    "data": [
+        {
+            "type": "surface",
+            "name": "opacity: 1<br>opacityscale: max",
+            "coloraxis": "coloraxis",
+            "opacityscale": "max",
+            "opacity": 1,
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "y": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "z": [
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0.1,
+                    0.8,
+                    0.7,
+                    0
+                ],
+                [
+                    0,
+                    0.2,
+                    0,
+                    0.6,
+                    0
+                ],
+                [
+                    0,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            ]
+        },
+        {
+            "scene": "scene2",
+            "name": "opacity: 0.5<br>opacityscale: max",
+            "type": "surface",
+            "coloraxis": "coloraxis",
+            "opacityscale": "max",
+            "opacity": 0.5,
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "y": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "z": [
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0.1,
+                    0.8,
+                    0.7,
+                    0
+                ],
+                [
+                    0,
+                    0.2,
+                    0,
+                    0.6,
+                    0
+                ],
+                [
+                    0,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            ]
+        },
+        {
+            "scene": "scene3",
+            "type": "surface",
+            "name": "opacity: 1<br>opacityscale: min",
+            "coloraxis": "coloraxis",
+            "opacityscale": "min",
+            "opacity": 1,
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "y": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "z": [
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0.1,
+                    0.8,
+                    0.7,
+                    0
+                ],
+                [
+                    0,
+                    0.2,
+                    0,
+                    0.6,
+                    0
+                ],
+                [
+                    0,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            ]
+        },
+        {
+            "scene": "scene4",
+            "type": "surface",
+            "name": "opacity: 0.5<br>opacityscale: min",
+            "coloraxis": "coloraxis",
+            "opacityscale": "min",
+            "opacity": 0.5,
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "y": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                1
+            ],
+            "z": [
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0.1,
+                    0.8,
+                    0.7,
+                    0
+                ],
+                [
+                    0,
+                    0.2,
+                    0,
+                    0.6,
+                    0
+                ],
+                [
+                    0,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            ]
+        }
+    ],
+    "layout": {
+        "coloraxis": {
+            "colorscale": "Portland"
+        },
+        "title": {
+            "text": "surface with opacityscale and opacity"
+        },
+        "width": 600,
+        "height": 800,
+        "scene": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "domain": {
+                "x": [0, 0.5],
+                "y": [0.5, 1]
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene2": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "domain": {
+                "x": [0.5, 1],
+                "y": [0.5, 1]
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene3": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "domain": {
+                "x": [0, 0.5],
+                "y": [0, 0.5]
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        },
+        "scene4": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "domain": {
+                "x": [0.5, 1],
+                "y": [0, 0.5]
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            }
+        }
+    }
+}

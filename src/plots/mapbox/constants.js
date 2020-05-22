@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var requiredVersion = '1.3.2';
+var requiredVersion = '1.10.0';
 
 var stylesNonMapbox = {
     'open-street-map': {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,6 +14,7 @@ var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
+var resizeText = require('./uniform_text').resizeText;
 var attributes = require('./attributes');
 var attributeTextFont = attributes.textfont;
 var attributeInsideTextFont = attributes.insidetextfont;
@@ -22,6 +23,8 @@ var helpers = require('./helpers');
 
 function style(gd) {
     var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+    resizeText(gd, s, 'bar');
+
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
 
@@ -57,7 +60,8 @@ function stylePoints(sel, trace, gd) {
 function styleTextPoints(sel, trace, gd) {
     sel.selectAll('text').each(function(d) {
         var tx = d3.select(this);
-        var font = determineFont(tx, d, trace, gd);
+        var font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
+
         Drawing.font(tx, font);
     });
 }
@@ -84,7 +88,7 @@ function styleTextInSelectionMode(txs, trace, gd) {
         var font;
 
         if(d.selected) {
-            font = Lib.extendFlat({}, determineFont(tx, d, trace, gd));
+            font = Lib.ensureUniformFontSize(gd, determineFont(tx, d, trace, gd));
 
             var selectedFontColor = trace.selected.textfont && trace.selected.textfont.color;
             if(selectedFontColor) {
@@ -171,5 +175,6 @@ module.exports = {
     styleOnSelect: styleOnSelect,
     getInsideTextFont: getInsideTextFont,
     getOutsideTextFont: getOutsideTextFont,
-    getBarColor: getBarColor
+    getBarColor: getBarColor,
+    resizeText: resizeText
 };

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -127,6 +127,7 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
     var moduleHasCliponaxis = !(opts.moduleHasCliponaxis === false);
     var moduleHasTextangle = !(opts.moduleHasTextangle === false);
     var moduleHasInsideanchor = !(opts.moduleHasInsideanchor === false);
+    var hasPathbar = !!opts.hasPathbar;
 
     var hasBoth = Array.isArray(textposition) || textposition === 'auto';
     var hasInside = hasBoth || textposition === 'inside';
@@ -147,8 +148,15 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
         }
         coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
 
-        if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
+        if(hasPathbar) {
+            var pathbarTextFontDefault = Lib.extendFlat({}, dfltFont);
+            if(isColorInheritedFromLayoutFont) {
+                delete pathbarTextFontDefault.color;
+            }
+            coerceFont(coerce, 'pathbar.textfont', pathbarTextFontDefault);
+        }
 
+        if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
 
         if(moduleHasSelected) coerce('selected.textfont.color');
         if(moduleHasUnselected) coerce('unselected.textfont.color');

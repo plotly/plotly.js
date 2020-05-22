@@ -20,7 +20,7 @@
         }
     ],
     "layout": {
-        "title": "Average Distribution per Month",
+        "title": {"text": "Average Distribution per Month"},
         "legend": { "orientation": "h" }
     }
 }

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -164,7 +164,7 @@ module.exports = {
             editType: 'calc',
             description: [
                 'The stream id number links a data trace on a plot with a stream.',
-                'See https://plot.ly/settings for more details.'
+                'See https://chart-studio.plotly.com/settings for more details.'
             ].join(' ')
         },
         maxpoints: {

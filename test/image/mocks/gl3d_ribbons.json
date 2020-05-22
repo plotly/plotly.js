@@ -11592,7 +11592,7 @@
         }
     ],
     "layout": {
-        "title": "Ribbon Plot 1",
+        "title": {"text": "Ribbon Plot 1"},
         "autosize": false,
         "width": 800,
         "height": 800,

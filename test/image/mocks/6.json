@@ -687,7 +687,9 @@
         }
     ],
     "layout": {
-        "title": "Mic Patterns",
+        "title": {
+            "text": "Mic Patterns"
+        },
         "font": {
             "family": "Arial, sans-serif",
             "size": 12,

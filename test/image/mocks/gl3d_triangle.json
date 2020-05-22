@@ -10,7 +10,7 @@
       "k":[2]
     }],
   "layout": {
-    "title": "Triangle mesh",
+    "title": {"text": "Triangle mesh"},
     "scene": {
       "annotations": [{
         "x": 2,

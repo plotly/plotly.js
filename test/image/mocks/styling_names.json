@@ -54,22 +54,26 @@
     }
   ],
   "layout": {
-    "title": "Plot Title",
+    "title": {"text": "Plot Title"},
     "xaxis": {
-      "titlefont": {
-        "color": "#7f7f7f",
-        "family": "Courier New, monospace",
-        "size": 18
-      },
-      "title": "x Axis"
+      "title": {
+        "font": {
+          "color": "#7f7f7f",
+          "family": "Courier New, monospace",
+          "size": 18
+        },
+        "text": "x Axis"
+      }
     },
     "yaxis": {
-      "titlefont": {
-        "color": "#7f7f7f",
-        "family": "Courier New, monospace",
-        "size": 18
-      },
-      "title": "y Axis"
+      "title": {
+        "font": {
+          "color": "#7f7f7f",
+          "family": "Courier New, monospace",
+          "size": 18
+        },
+        "text": "y Axis"
+      }
     }
   }
 }

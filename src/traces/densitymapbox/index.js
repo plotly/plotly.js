@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,6 +12,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
+    formatLabels: require('../scattermapbox/format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     hoverPoints: require('./hover'),
@@ -36,7 +37,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'densitymapbox',
     basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl'],
+    categories: ['mapbox', 'gl', 'showLegend'],
     meta: {
         hr_name: 'density_mapbox',
         description: [

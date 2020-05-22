@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,22 +12,24 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+var handleLabelsAndValues = require('../pie/defaults').handleLabelsAndValues;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len;
-    var vals = coerce('values');
-    var hasVals = Lib.isArrayOrTypedArray(vals);
     var labels = coerce('labels');
-    if(Array.isArray(labels)) {
-        len = labels.length;
-        if(hasVals) len = Math.min(len, vals.length);
-    } else if(hasVals) {
-        len = vals.length;
+    var values = coerce('values');
 
+    var res = handleLabelsAndValues(labels, values);
+    var len = res.len;
+    traceOut._hasLabels = res.hasLabels;
+    traceOut._hasValues = res.hasValues;
+
+    if(!traceOut._hasLabels &&
+        traceOut._hasValues
+    ) {
         coerce('label0');
         coerce('dlabel');
     }

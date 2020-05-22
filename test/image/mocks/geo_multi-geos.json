@@ -32,7 +32,7 @@
         }
     ],
     "layout": {
-        "title": "MULTI GEOS",
+        "title": {"text": "MULTI GEOS"},
         "height": 450,
         "width": 1000,
         "autosize": true,

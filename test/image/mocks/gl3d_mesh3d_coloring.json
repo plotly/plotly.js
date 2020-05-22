@@ -1,0 +1,143 @@
+{
+  "data":  [{
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "vertexcolor": ["#000", "#00F", "#0F0", "#0FF", "#F00", "#F0F", "#FF0", "#FFF"],
+    "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>vertex color: %{vertexcolor}",
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "vertex color",
+    "scene": "scene"
+  }, {
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "facecolor": [
+        "#000", "#000",
+        "#00F", "#00F",
+        "#0F0", "#0F0",
+        "#0FF", "#0FF",
+        "#F00", "#F00",
+        "#F0F", "#F0F",
+        "#FF0", "#FF0",
+        "#FFF", "#FFF"
+    ],
+    "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>face color: %{facecolor}",
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "face color",
+    "scene": "scene2"
+  }, {
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "intensity": [1, 2, 3, 4, 5, 6, 7, 8],
+    "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>vertex intensity: %{intensity}",
+    "showscale": true,
+    "colorscale": "Portland",
+    "colorbar": {
+      "title": {
+        "text": "vertex<br>intensity"
+      },
+      "len": 0.5,
+      "y": 0,
+      "yanchor": "bottom"
+    },
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "vertex intensity",
+    "scene": "scene3"
+  }, {
+    "showlegend": true,
+    "x": [0, 1, 0, 1, 0, 1, 0, 1],
+    "y": [0, 0, 1, 1, 0, 0, 1, 1],
+    "z": [0, 0, 0, 0, 1, 1, 1, 1],
+    "i": [0, 3, 4, 7, 0, 6, 1, 7, 0, 5, 2, 7],
+    "j": [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
+    "k": [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2],
+    "intensity": [
+        1, 1,
+        2, 2,
+        3, 3,
+        4, 4,
+        5, 5,
+        6, 6
+    ],
+    "intensitymode": "cell",
+    "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}",
+    "showscale": true,
+    "colorbar": {
+      "title": {
+        "text": "cell<br>intensity"
+      },
+      "len": 0.5,
+      "y": 0.5,
+      "yanchor": "bottom"
+    },
+    "flatshading": true,
+    "lightposition": { "x": 1000, "y": 1000, "z": 0 },
+    "type": "mesh3d",
+    "name": "cell intensity",
+    "scene": "scene4"
+  }],
+  "layout": {
+    "width": 800,
+    "height": 800,
+    "legend": {
+      "bgcolor": "#eee",
+      "orientation": "h",
+      "title": {
+        "text": "<b>mesh3d with different coloring:</b>",
+        "side": "top left"
+      }
+    },
+    "scene": {
+      "bgcolor": "#eee",
+      "domain": {
+        "x": [0, 0.5],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -1.5, "z": 1 } }
+    },
+    "scene2": {
+      "bgcolor": "#eee",
+      "domain": {
+        "x": [0, 0.5],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -1.5, "z": 1 } }
+    },
+    "scene3": {
+      "bgcolor": "#eee",
+      "domain": {
+        "x": [0.5, 1],
+        "y": [0, 0.5]
+      },
+      "camera": { "eye": { "x": 2, "y": -1.5, "z": 1 } }
+    },
+    "scene4": {
+      "bgcolor": "#eee",
+      "domain": {
+        "x": [0.5, 1],
+        "y": [0.5, 1]
+      },
+      "camera": { "eye": { "x": 2, "y": -1.5, "z": 1 } }
+    }
+  }
+}

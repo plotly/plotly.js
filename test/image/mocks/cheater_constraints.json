@@ -10,12 +10,12 @@
       "yaxis":"y",
       "aaxis":{
         "smoothing":1,
-        "title":"a",
+        "title":{"text":"a"},
         "type":"linear"
       },
       "baxis":{
         "smoothing":1,
-        "title":"b",
+        "title":{"text":"b"},
         "type":"linear"
       }
     },
@@ -29,12 +29,12 @@
       "yaxis":"y",
       "aaxis":{
         "smoothing":0,
-        "title":"a",
+        "title":{"text":"a"},
         "type":"linear"
       },
       "baxis":{
         "smoothing":0,
-        "title":"b",
+        "title":{"text":"b"},
         "type":"linear"
       }
     },
@@ -48,12 +48,12 @@
       "yaxis":"y2",
       "aaxis":{
         "smoothing":1,
-        "title":"a",
+        "title":{"text":"a"},
         "type":"linear"
       },
       "baxis":{
         "smoothing":1,
-        "title":"b",
+        "title":{"text":"b"},
         "type":"linear"
       }
     },
@@ -67,12 +67,12 @@
       "yaxis":"y2",
       "aaxis":{
         "smoothing":0,
-        "title":"a",
+        "title":{"text":"a"},
         "type":"linear"
       },
       "baxis":{
         "smoothing":0,
-        "title":"b",
+        "title":{"text":"b"},
         "type":"linear"
       }
     },

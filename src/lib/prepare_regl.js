@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48,6 +48,8 @@ module.exports = function prepareRegl(gd, extensions) {
         } catch(e) {
             success = false;
         }
+
+        if(!d.regl) success = false;
 
         if(success) {
             this.addEventListener('webglcontextlost', function(event) {

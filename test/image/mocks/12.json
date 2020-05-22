@@ -681,11 +681,8 @@
         }
     ],
     "layout": {
-        "title": "Life Expectancy vs GDP<br>Bubble Chart",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 0
+        "title": {
+            "text": "Life Expectancy vs GDP<br>Bubble Chart"
         },
         "font": {
             "family": "'Open sans', verdana, arial, sans-serif",
@@ -697,11 +694,8 @@
         "width": 600,
         "height": 496,
         "xaxis": {
-            "title": "GDP per capita (2000 dollars)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "GDP per capita (2000 dollars)"
             },
             "range": [
                 2.1277059579936974,
@@ -746,11 +740,8 @@
             "autorange": true
         },
         "yaxis": {
-            "title": "Life Expectancy (years)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Life Expectancy (years)"
             },
             "range": [
                 36.324623672665126,

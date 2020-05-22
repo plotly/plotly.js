@@ -155,15 +155,15 @@
     }
   ],
   "layout": {
-    "title": "Quarter 1 Growth",
+    "title": {"text": "Quarter 1 Growth"},
     "xaxis": {
       "zeroline": false,
       "showgrid": false,
-      "title": "GDP per Capita"
+      "title": {"text": "GDP per Capita"}
     },
     "yaxis": {
       "showline": false,
-      "title": "Percent"
+      "title": {"text": "Percent"}
     }
   }
 }

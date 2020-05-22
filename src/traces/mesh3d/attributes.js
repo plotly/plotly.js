@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -144,8 +144,19 @@ module.exports = extendFlat({
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the vertex intensity values,',
-            'used for plotting fields on meshes'
+            'Sets the intensity values for vertices or cells',
+            'as defined by `intensitymode`.',
+            'It can be used for plotting fields on meshes.'
+        ].join(' ')
+    },
+    intensitymode: {
+        valType: 'enumerated',
+        values: ['vertex', 'cell'],
+        dflt: 'vertex',
+        editType: 'calc',
+        role: 'info',
+        description: [
+            'Determines the source of `intensity` values.'
         ].join(' ')
     },
 
@@ -238,5 +249,6 @@ colorScaleAttrs('', {
         editType: 'calc'
     }, surfaceAttrs.lighting),
 
-    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'}),
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 });

@@ -58,12 +58,12 @@ describe('Test sort transform defaults:', function() {
 
 describe('Test sort transform calc:', function() {
     var base = {
-        x: [-2, -1, -2, 0, 1, 3, 1],
-        y: [1, 2, 3, 1, 2, 3, 1],
-        ids: ['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'p3'],
+        x: [-2, -1, -2, 0, 1, 3, null, 1],
+        y: [1, 2, 3, 1, 2, 3, 4, 1],
+        ids: ['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'n3', 'p3'],
         marker: {
-            color: [0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4],
-            size: [10, 20, 5, 1, 6, 0, 10]
+            color: [0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4, 0.4],
+            size: [10, 20, 5, 1, 6, 0, 3, 10]
         },
         transforms: [{ type: 'sort' }]
     };
@@ -89,21 +89,26 @@ describe('Test sort transform calc:', function() {
     }
 
     it('should sort all array attributes (ascending case)', function() {
-        var out = _transform([extend({})]);
+        var out = _transform([extend({
+            transforms: [{
+                order: 'ascending'
+            }]
+        })]);
 
-        expect(out[0].x).toEqual([-2, -2, -1, 0, 1, 1, 3]);
-        expect(out[0].y).toEqual([1, 3, 2, 1, 2, 1, 3]);
-        expect(out[0].ids).toEqual(['n0', 'n2', 'n1', 'z', 'p1', 'p3', 'p2']);
-        expect(out[0].marker.color).toEqual([0.1, 0.3, 0.2, 0.1, 0.2, 0.4, 0.3]);
-        expect(out[0].marker.size).toEqual([10, 5, 20, 1, 6, 10, 0]);
+        expect(out[0].x).toEqual([-2, -2, -1, 0, 1, 1, 3, null]);
+        expect(out[0].y).toEqual([1, 3, 2, 1, 2, 1, 3, 4]);
+        expect(out[0].ids).toEqual(['n0', 'n2', 'n1', 'z', 'p1', 'p3', 'p2', 'n3']);
+        expect(out[0].marker.color).toEqual([0.1, 0.3, 0.2, 0.1, 0.2, 0.4, 0.3, 0.4]);
+        expect(out[0].marker.size).toEqual([10, 5, 20, 1, 6, 10, 0, 3]);
         expect(out[0].transforms[0]._indexToPoints).toEqual({
             0: [0],
             1: [2],
             2: [1],
             3: [3],
             4: [4],
-            5: [6],
-            6: [5]
+            5: [7],
+            6: [5],
+            7: [6],
         });
     });
 
@@ -114,19 +119,20 @@ describe('Test sort transform calc:', function() {
             }]
         })]);
 
-        expect(out[0].x).toEqual([3, 1, 1, 0, -1, -2, -2]);
-        expect(out[0].y).toEqual([3, 2, 1, 1, 2, 1, 3]);
-        expect(out[0].ids).toEqual(['p2', 'p1', 'p3', 'z', 'n1', 'n0', 'n2']);
-        expect(out[0].marker.color).toEqual([0.3, 0.2, 0.4, 0.1, 0.2, 0.1, 0.3]);
-        expect(out[0].marker.size).toEqual([0, 6, 10, 1, 20, 10, 5]);
+        expect(out[0].x).toEqual([3, 1, 1, 0, -1, -2, -2, null]);
+        expect(out[0].y).toEqual([3, 2, 1, 1, 2, 1, 3, 4]);
+        expect(out[0].ids).toEqual(['p2', 'p1', 'p3', 'z', 'n1', 'n0', 'n2', 'n3']);
+        expect(out[0].marker.color).toEqual([0.3, 0.2, 0.4, 0.1, 0.2, 0.1, 0.3, 0.4]);
+        expect(out[0].marker.size).toEqual([0, 6, 10, 1, 20, 10, 5, 3]);
         expect(out[0].transforms[0]._indexToPoints).toEqual({
             0: [5],
             1: [4],
-            2: [6],
+            2: [7],
             3: [3],
             4: [1],
             5: [0],
-            6: [2]
+            6: [2],
+            7: [6]
         });
     });
 
@@ -138,19 +144,20 @@ describe('Test sort transform calc:', function() {
             }]
         })]);
 
-        expect(out[0].x).toEqual([-1, -2, 1, 1, -2, 0, 3]);
-        expect(out[0].y).toEqual([2, 1, 1, 2, 3, 1, 3]);
-        expect(out[0].ids).toEqual(['n1', 'n0', 'p3', 'p1', 'n2', 'z', 'p2']);
-        expect(out[0].marker.color).toEqual([0.2, 0.1, 0.4, 0.2, 0.3, 0.1, 0.3]);
-        expect(out[0].marker.size).toEqual([20, 10, 10, 6, 5, 1, 0]);
+        expect(out[0].x).toEqual([-1, -2, 1, 1, -2, null, 0, 3]);
+        expect(out[0].y).toEqual([2, 1, 1, 2, 3, 4, 1, 3]);
+        expect(out[0].ids).toEqual(['n1', 'n0', 'p3', 'p1', 'n2', 'n3', 'z', 'p2']);
+        expect(out[0].marker.color).toEqual([0.2, 0.1, 0.4, 0.2, 0.3, 0.4, 0.1, 0.3]);
+        expect(out[0].marker.size).toEqual([20, 10, 10, 6, 5, 3, 1, 0]);
         expect(out[0].transforms[0]._indexToPoints).toEqual({
             0: [1],
             1: [0],
-            2: [6],
+            2: [7],
             3: [4],
             4: [2],
-            5: [3],
-            6: [5]
+            5: [6],
+            6: [3],
+            7: [5],
         });
     });
 
@@ -175,25 +182,25 @@ describe('Test sort transform calc:', function() {
 
         var out = _transform([trace]);
 
-        expect(out[0].x).toEqual(['F', 'D', 'C', 'E', 'A', 'G', 'B']);
-        expect(out[0].y).toEqual([3, 1, 3, 2, 1, 1, 2]);
-        expect(out[0].ids).toEqual(['p2', 'z', 'n2', 'p1', 'n0', 'p3', 'n1']);
-        expect(out[0].marker.size).toEqual([0, 1, 5, 6, 10, 10, 20]);
-        expect(out[0].marker.color).toEqual([0.3, 0.1, 0.3, 0.2, 0.1, 0.4, 0.2]);
+        expect(out[0].x).toEqual(['F', 'D', 'G', 'C', 'E', 'A', 'H', 'B']);
+        expect(out[0].y).toEqual([3, 1, 4, 3, 2, 1, 1, 2]);
+        expect(out[0].ids).toEqual(['p2', 'z', 'n3', 'n2', 'p1', 'n0', 'p3', 'n1']);
+        expect(out[0].marker.size).toEqual([0, 1, 3, 5, 6, 10, 10, 20]);
+        expect(out[0].marker.color).toEqual([0.3, 0.1, 0.4, 0.3, 0.2, 0.1, 0.4, 0.2]);
     });
 
     it('should sort via custom targets', function() {
         var out = _transform([extend({
             transforms: [{
-                target: [10, 20, 30, 10, 20, 30, 0]
+                target: [10, 20, 30, 10, 20, 30, null, 0]
             }]
         })]);
 
-        expect(out[0].x).toEqual([1, -2, 0, -1, 1, -2, 3]);
-        expect(out[0].y).toEqual([1, 1, 1, 2, 2, 3, 3]);
-        expect(out[0].ids).toEqual(['p3', 'n0', 'z', 'n1', 'p1', 'n2', 'p2']);
-        expect(out[0].marker.color).toEqual([0.4, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3]);
-        expect(out[0].marker.size).toEqual([10, 10, 1, 20, 6, 5, 0]);
+        expect(out[0].x).toEqual([1, -2, 0, -1, 1, -2, 3, null]);
+        expect(out[0].y).toEqual([1, 1, 1, 2, 2, 3, 3, 4]);
+        expect(out[0].ids).toEqual(['p3', 'n0', 'z', 'n1', 'p1', 'n2', 'p2', 'n3']);
+        expect(out[0].marker.color).toEqual([0.4, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.4]);
+        expect(out[0].marker.size).toEqual([10, 10, 1, 20, 6, 5, 0, 3]);
     });
 
     it('should truncate transformed arrays to target array length (short target case)', function() {
@@ -237,19 +244,19 @@ describe('Test sort transform calc:', function() {
             transforms: [{ target: 'text' }]
         })]);
 
-        expect(out[0].x).toEqual([1, -2, 3, -1, 1, -2, 0]);
-        expect(out[0].y).toEqual([1, 3, 3, 2, 2, 1, 1]);
-        expect(out[0].ids).toEqual(['p3', 'n2', 'p2', 'n1', 'p1', 'n0', 'z']);
-        expect(out[0].marker.color).toEqual([0.4, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1]);
-        expect(out[0].marker.size).toEqual([10, 5, 0, 20, 6, 10, 1]);
-        expect(out[0]._length).toBe(7);
+        expect(out[0].x).toEqual([null, -2, 3, -1, 1, -2, 0, 1]);
+        expect(out[0].y).toEqual([4, 3, 3, 2, 2, 1, 1, 1]);
+        expect(out[0].ids).toEqual(['n3', 'n2', 'p2', 'n1', 'p1', 'n0', 'z', 'p3']);
+        expect(out[0].marker.color).toEqual([0.4, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1, 0.4]);
+        expect(out[0].marker.size).toEqual([3, 5, 0, 20, 6, 10, 1, 10]);
+        expect(out[0]._length).toBe(8);
 
-        expect(out[1].x).toEqual([-2, -1, -2, 0, 1, 3, 1]);
-        expect(out[1].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
-        expect(out[1].ids).toEqual(['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'p3']);
-        expect(out[1].marker.color).toEqual([0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4]);
-        expect(out[1].marker.size).toEqual([10, 20, 5, 1, 6, 0, 10]);
-        expect(out[1]._length).toBe(7);
+        expect(out[1].x).toEqual([-2, -1, -2, 0, 1, 3, null, 1]);
+        expect(out[1].y).toEqual([1, 2, 3, 1, 2, 3, 4, 1]);
+        expect(out[1].ids).toEqual(['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'n3', 'p3']);
+        expect(out[1].marker.color).toEqual([0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4, 0.4]);
+        expect(out[1].marker.size).toEqual([10, 20, 5, 1, 6, 0, 3, 10]);
+        expect(out[1]._length).toBe(8);
     });
 });
 

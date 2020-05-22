@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,9 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;
-
+var uniformText = require('../bar/uniform_text');
+var recordMinTextSize = uniformText.recordMinTextSize;
+var clearMinTextSize = uniformText.clearMinTextSize;
 var pieHelpers = require('../pie/helpers');
 var piePlot = require('../pie/plot');
 
@@ -26,9 +28,12 @@ var determineInsideTextFont = piePlot.determineInsideTextFont;
 var layoutAreas = piePlot.layoutAreas;
 var prerenderTitles = piePlot.prerenderTitles;
 var positionTitleOutside = piePlot.positionTitleOutside;
+var formatSliceLabel = piePlot.formatSliceLabel;
 
 module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
+
+    clearMinTextSize('funnelarea', fullLayout);
 
     prerenderTitles(cdModule, gd);
     layoutAreas(cdModule, fullLayout._size);
@@ -47,7 +52,7 @@ module.exports = function plot(gd, cdModule) {
                 .classed('slice', true);
             slices.exit().remove();
 
-            slices.each(function(pt) {
+            slices.each(function(pt, i) {
                 if(pt.hidden) {
                     d3.select(this).selectAll('path,g').remove();
                     return;
@@ -78,7 +83,7 @@ module.exports = function plot(gd, cdModule) {
                 slicePath.attr('d', shape);
 
                 // add text
-                piePlot.formatSliceLabel(gd, pt, cd0);
+                formatSliceLabel(gd, pt, cd0);
                 var textPosition = pieHelpers.castOption(trace.textposition, pt.pts);
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);
@@ -94,13 +99,15 @@ module.exports = function plot(gd, cdModule) {
                         s.attr('data-notex', 1);
                     });
 
+                    var font = Lib.ensureUniformFontSize(gd, determineInsideTextFont(trace, pt, fullLayout.font));
+
                     sliceText.text(pt.text)
                         .attr({
                             'class': 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
                         })
-                        .call(Drawing.font, determineInsideTextFont(trace, pt, gd._fullLayout.font))
+                        .call(Drawing.font, font)
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
@@ -108,22 +115,24 @@ module.exports = function plot(gd, cdModule) {
                     var transform;
 
                     var x0, x1;
-                    var y0 = Math.min(pt.BL[1], pt.BR[1]);
-                    var y1 = Math.max(pt.TL[1], pt.TR[1]);
+                    var y0 = Math.min(pt.BL[1], pt.BR[1]) + cy;
+                    var y1 = Math.max(pt.TL[1], pt.TR[1]) + cy;
 
-                    x0 = Math.max(pt.TL[0], pt.BL[0]);
-                    x1 = Math.min(pt.TR[0], pt.BR[0]);
+                    x0 = Math.max(pt.TL[0], pt.BL[0]) + cx;
+                    x1 = Math.min(pt.TR[0], pt.BR[0]) + cx;
 
-                    transform = Lib.getTextTransform(toMoveInsideBar(x0, x1, y0, y1, textBB, {
+                    transform = toMoveInsideBar(x0, x1, y0, y1, textBB, {
                         isHorizontal: true,
                         constrained: true,
                         angle: 0,
                         anchor: 'middle'
-                    }));
+                    });
 
-                    sliceText.attr('transform',
-                        'translate(' + cx + ',' + cy + ')' + transform
-                    );
+                    transform.fontSize = font.size;
+                    recordMinTextSize(trace.type, transform, fullLayout);
+                    cd[i].transform = transform;
+
+                    sliceText.attr('transform', Lib.getTextTransform(transform));
                 });
             });
 

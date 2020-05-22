@@ -937,6 +937,192 @@ describe('resizing with Plotly.relayout and Plotly.react', function() {
     });
 });
 
+describe('clear bglayer react', function() {
+    var x = [1];
+    var y = [2];
+    var z = [3];
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function hasBgRect() {
+        var bgLayer = d3.selectAll('.bglayer .bg');
+        return bgLayer[0][0] !== undefined; // i.e. background rect
+    }
+
+    it('clear plot background when react from cartesian to gl3d & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'green' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'red' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('clear plot background when react from gl2d to gl3d & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'green' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'red' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('create plot background when react from gl3d to gl2d & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'red' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'red' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('create plot background when react from gl3d to cartesian & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'red' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter3d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'red' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
+            expect(hasBgRect()).toBe(false);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('change plot background when react from cartesian to gl2d & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'yellow' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'yellow' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
+            expect(hasBgRect()).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('change plot background when react from gl2d to cartesian & back', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+            layout: { plot_bgcolor: 'yellow' }
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'green' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('green');
+            expect(hasBgRect()).toBe(true);
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [{ type: 'scatter2d', x: x, y: y, z: z }],
+                layout: { plot_bgcolor: 'yellow' }
+            });
+        }).then(function() {
+            expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
+            expect(hasBgRect()).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
 
 describe('Plotly.react and uirevision attributes', function() {
     var gd;
@@ -1437,6 +1623,39 @@ describe('Plotly.react and uirevision attributes', function() {
                 'geo.projection.rotation.lon': original ? [undefined, 0] : -45,
                 'geo.center.lat': original ? [undefined, 0] : 22,
                 'geo.center.lon': original ? [undefined, 0] : -45
+            };
+        }
+
+        function editView() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkOriginalView = checkState([], attrs(true));
+        var checkEditedView = checkState([], attrs());
+
+        _run(fig, editView, checkOriginalView, checkEditedView).then(done);
+    });
+
+    it('preserves geo viewport changes using geo.uirevision (fitbounds case)', function(done) {
+        function fig(mainRev, geoRev) {
+            return {
+                data: [{
+                    type: 'scattergeo', lon: [0, -75], lat: [0, 45]
+                }],
+                layout: {
+                    uirevision: mainRev,
+                    geo: {uirevision: geoRev, fitbounds: 'locations'}
+                }
+            };
+        }
+
+        function attrs(original) {
+            return {
+                'geo.fitbounds': original ? ['locations', 'locations'] : false,
+                'geo.projection.scale': original ? [undefined, undefined] : 3,
+                'geo.projection.rotation.lon': original ? [undefined, undefined] : -45,
+                'geo.center.lat': original ? [undefined, undefined] : 22,
+                'geo.center.lon': original ? [undefined, undefined] : -45
             };
         }
 

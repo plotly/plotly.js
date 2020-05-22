@@ -3439,9 +3439,6 @@
           1
         ]
       },
-      "radialaxis": {
-        "rangemode": "reversed"
-      },
       "angularaxis": {}
     },
     "polar6": {

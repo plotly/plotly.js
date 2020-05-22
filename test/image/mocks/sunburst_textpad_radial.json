@@ -1,0 +1,51 @@
+{
+    "data": [
+        {
+            "type": "sunburst",
+            "parents": [
+                "",
+                "",
+                "",
+                "",
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta"
+            ],
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel"
+            ],
+            "branchvalues": "total",
+            "values": [
+                20,
+                10,
+                2,
+                1,
+                20,
+                10,
+                2,
+                1
+            ],
+            "insidetextorientation": "radial",
+            "marker": {
+                "line": {
+                    "width": 3
+                }
+            }
+        }
+    ],
+    "layout": {
+        "width": 300,
+        "height": 300,
+        "title": {
+            "text": "should provide some pad<br>before fiting & printing text"
+        }
+    }
+}

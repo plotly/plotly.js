@@ -13,7 +13,7 @@
     "showscale": false,
     "type": "surface",
     "name": "surface",
-    "scene": "scene1"
+    "scene": "scene"
   }, {
     "x": [0, 1, 0, 1, 0, 1, 0, 1],
     "y": [0, 0, 1, 1, 0, 0, 1, 1],
@@ -115,7 +115,7 @@
     },
     "width": 1000,
     "height": 500,
-    "scene1": {
+    "scene": {
       "domain": {
         "x": [0, 0.25],
         "y": [0, 0.5]

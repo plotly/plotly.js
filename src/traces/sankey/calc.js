@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -22,6 +22,7 @@ function convertToD3Sankey(trace) {
 
     var links = [];
     var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
+    var hasLinkCustomdataArray = isArrayOrTypedArray(linkSpec.customdata);
     var linkedNodes = {};
 
     var components = {};
@@ -103,6 +104,7 @@ function convertToD3Sankey(trace) {
             pointNumber: i,
             label: label,
             color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
+            customdata: hasLinkCustomdataArray ? linkSpec.customdata[i] : linkSpec.customdata,
             concentrationscale: concentrationscale,
             source: source,
             target: target,
@@ -116,6 +118,7 @@ function convertToD3Sankey(trace) {
     // Process nodes
     var totalCount = nodeCount + groups.length;
     var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
+    var hasNodeCustomdataArray = isArrayOrTypedArray(nodeSpec.customdata);
     var nodes = [];
     for(i = 0; i < totalCount; i++) {
         if(!linkedNodes[i]) continue;
@@ -126,7 +129,8 @@ function convertToD3Sankey(trace) {
             childrenNodes: [],
             pointNumber: i,
             label: l,
-            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+            color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color,
+            customdata: hasNodeCustomdataArray ? nodeSpec.customdata[i] : nodeSpec.customdata
         });
     }
 

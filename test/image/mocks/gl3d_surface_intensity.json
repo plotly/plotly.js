@@ -251,6 +251,6 @@
     }
   ],
   "layout": {
-    "title": "Surface intensity test"
+    "title": {"text": "Surface intensity test"}
   }
 }

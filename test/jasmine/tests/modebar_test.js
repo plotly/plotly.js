@@ -484,7 +484,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 
@@ -502,7 +502,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['resetViewMapbox'],
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
                 ['toggleHover']
             ]);
 
@@ -980,6 +980,29 @@ describe('ModeBar', function() {
             ]];
 
             expect(function() { manageModeBar(gd); }).toThrowError();
+        });
+
+        it('add pre-defined buttons as strings for drawing shapes on cartesian subplot', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
+
+            var initialGroupCount = countGroups(gd._fullLayout._modeBar);
+            var initialButtonCount = countButtons(gd._fullLayout._modeBar);
+
+            gd._context.modeBarButtonsToAdd = [
+                'drawline',
+                'drawopenpath',
+                'drawclosedpath',
+                'drawcircle',
+                'drawrect',
+                'eraseshape'
+            ];
+            manageModeBar(gd);
+
+            expect(countGroups(gd._fullLayout._modeBar))
+                .toEqual(initialGroupCount + 0); // no new group - added inside the dragMode group
+            expect(countButtons(gd._fullLayout._modeBar))
+                .toEqual(initialButtonCount + 6);
         });
     });
 

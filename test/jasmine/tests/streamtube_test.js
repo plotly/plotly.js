@@ -246,55 +246,97 @@ describe('Test streamtube interactions', function() {
         .then(done);
     });
 
-    it('@gl should work with negative grid steps', function(done) {
-        var x = [];
-        var y = [];
-        var z = [];
-        var u = [];
-        var v = [];
-        var w = [];
+    [ // list of directions
+        'number',
+        'string',
+        'typedArray'
+    ].forEach(function(format) {
+        [ // list of directions
+            [-1, -1, -1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1],
+            [1, 1, -1],
+            [1, -1, 1],
+            [-1, 1, 1],
+            [1, 1, 1]
+        ].forEach(function(dir) {
+            it('@gl should work with grid steps: ' + dir + ' and values in ' + format + ' format.', function(done) {
+                var x = [];
+                var y = [];
+                var z = [];
+                var u = [];
+                var v = [];
+                var w = [];
 
-        for(var i = 0; i < 3; i++) {
-            for(var j = 0; j < 4; j++) {
-                for(var k = 0; k < 5; k++) {
-                    x.push(-i);
-                    y.push(-j);
-                    z.push(-k);
-                    u.push(1);
-                    v.push(1);
-                    w.push(1);
+                for(var i = 0; i < 3; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        for(var k = 0; k < 5; k++) {
+                            var newU = 1;
+                            var newV = 1;
+                            var newW = 1;
+                            var newX = i * dir[0];
+                            var newY = j * dir[1];
+                            var newZ = k * dir[2];
+
+                            if(format === 'string') {
+                                newU = String(newU);
+                                newV = String(newV);
+                                newW = String(newW);
+                                newX = String(newX);
+                                newY = String(newY);
+                                newZ = String(newZ);
+                            }
+
+                            u.push(newU);
+                            v.push(newV);
+                            w.push(newW);
+                            x.push(newX);
+                            y.push(newY);
+                            z.push(newZ);
+                        }
+                    }
                 }
-            }
-        }
 
-        var fig = {
-            data: [{
-                type: 'streamtube',
-                x: x,
-                y: y,
-                z: z,
-                u: u,
-                v: v,
-                w: w
-            }]
-        };
+                if(format === 'typedArray') {
+                    u = new Int16Array(u);
+                    v = new Int32Array(v);
+                    w = new Int32Array(w);
+                    x = new Float32Array(x);
+                    y = new Float32Array(y);
+                    z = new Float64Array(z);
+                }
 
-        function _assert(msg, exp) {
-            var scene = gd._fullLayout.scene._scene;
-            var objs = scene.glplot.objects;
-            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
-            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
-            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
-        }
+                var fig = {
+                    data: [{
+                        type: 'streamtube',
+                        x: x,
+                        y: y,
+                        z: z,
+                        u: u,
+                        v: v,
+                        w: w
+                    }]
+                };
 
-        Plotly.plot(gd, fig).then(function() {
-            _assert('with negative steps', {
-                positionsLength: 6336,
-                cellsLength: 2112
+                function _assert(msg, exp) {
+                    var scene = gd._fullLayout.scene._scene;
+                    var objs = scene.glplot.objects;
+                    expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+                    expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+                    expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+                }
+
+                Plotly.plot(gd, fig).then(function() {
+                    _assert('lengths', {
+                        positionsLength: 6336,
+                        cellsLength: 2112
+                    });
+                })
+                .catch(failTest)
+                .then(done);
             });
-        })
-        .catch(failTest)
-        .then(done);
+        });
     });
 
     it('@gl should return blank mesh grid if encountered arbitrary coordinates', function(done) {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,15 +11,19 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var barPlot = require('../bar/plot').plot;
+var BADNUM = require('../../constants/numerical').BADNUM;
+var barPlot = require('../bar/plot');
+var clearMinTextSize = require('../bar/uniform_text').clearMinTextSize;
 
 module.exports = function plot(gd, plotinfo, cdModule, traceLayer) {
     var fullLayout = gd._fullLayout;
 
+    clearMinTextSize('funnel', fullLayout);
+
     plotConnectorRegions(gd, plotinfo, cdModule, traceLayer);
     plotConnectorLines(gd, plotinfo, cdModule, traceLayer);
 
-    barPlot(gd, plotinfo, cdModule, traceLayer, {
+    barPlot.plot(gd, plotinfo, cdModule, traceLayer, {
         mode: fullLayout.funnelmode,
         norm: fullLayout.funnelmode,
         gap: fullLayout.funnelgap,
@@ -63,13 +67,20 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
             var shape = '';
 
-            if(x[3] !== undefined && y[3] !== undefined) {
+            if(
+                x[0] !== BADNUM && y[0] !== BADNUM &&
+                x[1] !== BADNUM && y[1] !== BADNUM &&
+                x[2] !== BADNUM && y[2] !== BADNUM &&
+                x[3] !== BADNUM && y[3] !== BADNUM
+            ) {
                 if(isHorizontal) {
                     shape += 'M' + x[0] + ',' + y[1] + 'L' + x[2] + ',' + y[2] + 'H' + x[3] + 'L' + x[1] + ',' + y[1] + 'Z';
                 } else {
                     shape += 'M' + x[1] + ',' + y[1] + 'L' + x[2] + ',' + y[3] + 'V' + y[2] + 'L' + x[1] + ',' + y[0] + 'Z';
                 }
             }
+
+            if(shape === '') shape = 'M0,0Z';
 
             Lib.ensureSingle(d3.select(this), 'path')
                 .attr('d', shape)

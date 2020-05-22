@@ -201,6 +201,61 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
+    it('should update correctly when moving slider on an axis with rangebreaks', function(done) {
+        var start = 250;
+        var end = 300;
+
+        Plotly.plot(gd, [{
+            mode: 'lines',
+            x: [
+                '1970-01-01 00:00:00.000',
+                '1970-01-01 00:00:00.010',
+                '1970-01-01 00:00:00.050',
+                '1970-01-01 00:00:00.090',
+                '1970-01-01 00:00:00.100',
+                '1970-01-01 00:00:00.150',
+                '1970-01-01 00:00:00.190',
+                '1970-01-01 00:00:00.200'
+            ]
+        }], {
+            xaxis: {
+                rangebreaks: [
+                    {bounds: [
+                        '1970-01-01 00:00:00.011',
+                        '1970-01-01 00:00:00.089'
+                    ]},
+                    {bounds: [
+                        '1970-01-01 00:00:00.101',
+                        '1970-01-01 00:00:00.189'
+                    ]}
+                ],
+                rangeslider: {visible: true}
+            },
+            width: 800,
+            hieght: 500
+        })
+        .then(function() {
+            var bb = getRangeSlider().getBoundingClientRect();
+            sliderY = bb.top + bb.height / 2;
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).withContext('base xrng').toEqual([
+                '1970-01-01',
+                '1970-01-01 00:00:00.2'
+            ]);
+        })
+        .then(function() { return slide(start, sliderY, end, sliderY); })
+        .then(function() {
+            // x range would be ~ [15.625, 200] w/o rangebreaks
+            expect(gd._fullLayout.xaxis.range).withContext('after xrng').toEqual([
+                '1970-01-01 00:00:00.0027',
+                '1970-01-01 00:00:00.2'
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should resize the main plot when rangeslider has moved', function(done) {
         var start = 300;
         var end = 400;

@@ -20011,31 +20011,17 @@
             "marker": {
                 "color": "#19d3f3"
             },
-            "latsrc": "jackp:17903:e3ab9a",
-            "type": "scattergeo",
-            "lonsrc": "jackp:17903:767d41"
+            "type": "scattergeo"
         }
     ],
     "layout": {
-        "yaxis": {
-            "zeroline": false,
-            "gridcolor": "#dfe8f3",
-            "title": " "
-        },
         "margin": {
             "l": 40,
             "t": 10
         },
-        "title": " ",
-        "barmode": "stack",
-        "xaxis": {
-            "zeroline": false,
-            "title": "Lat",
-            "showgrid": false
-        },
+        "title": {"text": " "},
         "font": {
-            "color": "#506784",
-            "size": "12px"
+            "color": "#506784"
         },
         "geo": {
             "showland": true,

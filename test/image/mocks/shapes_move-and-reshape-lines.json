@@ -12,7 +12,7 @@
     }
   ],
   "layout": {
-    "title": "Editable line shapes",
+    "title": {"text": "Editable line shapes"},
     "autosize": false,
     "width": 1000,
     "height": 800,
@@ -31,7 +31,6 @@
     },
     "yaxis2": {
       "domain": [0.55,0.92],
-      "type": "categorical",
       "anchor": "x2"
     },
     "xaxis3": {

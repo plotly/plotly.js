@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,7 +44,20 @@ module.exports = {
     dragmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable', false],
+        values: [
+            'zoom',
+            'pan',
+            'select',
+            'lasso',
+            'drawclosedpath',
+            'drawopenpath',
+            'drawline',
+            'drawrect',
+            'drawcircle',
+            'orbit',
+            'turntable',
+            false
+        ],
         dflt: 'zoom',
         editType: 'modebar',
         description: [
@@ -57,10 +70,20 @@ module.exports = {
     hovermode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['x', 'y', 'closest', false],
+        values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
         editType: 'modebar',
         description: [
             'Determines the mode of hover interactions.',
+            'If *closest*, a single hoverlabel will appear',
+            'for the *closest* point within the `hoverdistance`.',
+            'If *x* (or *y*), multiple hoverlabels will appear for multiple points',
+            'at the *closest* x- (or y-) coordinate within the `hoverdistance`,',
+            'with the caveat that no more than one hoverlabel will appear per trace.',
+            'If *x unified* (or *y unified*), a single hoverlabel will appear',
+            'multiple points at the closest x- (or y-) coordinate within the `hoverdistance`',
+            'with the caveat that no more than one hoverlabel will appear per trace.',
+            'In this mode, spikelines are enabled by default perpendicular to the specified axis.',
+            'If false, hover interactions are disabled.',
             'If `clickmode` includes the *select* flag,',
             '`hovermode` defaults to *closest*.',
             'If `clickmode` lacks the *select* flag,',
@@ -151,9 +174,9 @@ module.exports = {
         values: ['h', 'v', 'd', 'any'],
         dflt: 'any',
         description: [
-            'When "dragmode" is set to "select", this limits the selection of the drag to',
-            'horizontal, vertical or diagonal. "h" only allows horizontal selection,',
-            '"v" only vertical, "d" only diagonal and "any" sets no limit.'
+            'When `dragmode` is set to *select*, this limits the selection of the drag to',
+            'horizontal, vertical or diagonal. *h* only allows horizontal selection,',
+            '*v* only vertical, *d* only diagonal and *any* sets no limit.'
         ].join(' '),
         editType: 'none'
     }

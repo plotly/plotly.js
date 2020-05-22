@@ -8,6 +8,6 @@
       "delaunayaxis": "x"
     }],
   "layout": {
-    "title": "Delaunay axis"
+    "title": {"text": "Delaunay axis"}
   }
 }

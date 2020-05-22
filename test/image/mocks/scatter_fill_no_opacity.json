@@ -2,7 +2,6 @@
     "data":[
         {
             "marker":{"size":16},
-            "fillcolor":"rgb(31, 119, 180)",
             "y":["1","2","3","4","5"],
             "x":["1","2","3","4","5"],
             "opacity": 0.2
@@ -25,7 +24,7 @@
         }
     ],
     "layout":{
-        "title": "No opacity with filled scatter",
+        "title": {"text": "No opacity with filled scatter"},
         "width": 400,
         "height": 400
     }

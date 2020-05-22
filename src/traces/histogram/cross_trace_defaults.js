@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55,7 +55,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         if(!groupName) groupName = fallbackGroupName;
 
         var axType = getAxisType(traceOut, binDir);
-        var calendar = traceOut[binDir + 'calendar'];
+        var calendar = traceOut[binDir + 'calendar'] || '';
         var binOpts = allBinOpts[groupName];
         var needsNewItem = true;
 

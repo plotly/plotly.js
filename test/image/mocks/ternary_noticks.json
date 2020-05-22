@@ -12,17 +12,17 @@
             "aaxis": {
                 "showticklabels": false,
                 "showline": false,
-                "title": "no labels / no line"
+                "title": {"text": "no labels / no line"}
             },
             "baxis": {
                 "ticks": "",
                 "showticklabels": false,
-                "title": "no ticks / no labels"
+                "title": {"text": "no ticks / no labels"}
             },
             "caxis": {
                 "showticklabels": false,
                 "showgrid": false,
-                "title": "no grid / no labels"
+                "title": {"text": "no grid / no labels"}
             }
         },
         "height": 450,

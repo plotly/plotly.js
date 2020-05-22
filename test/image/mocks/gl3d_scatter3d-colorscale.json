@@ -39,7 +39,7 @@
                 ],
                 "colorscale": "Greens",
                 "colorbar": {
-                    "title": "WOW"
+                    "title": {"text": "WOW"}
                 }
             },
             "type": "scatter3d",
@@ -47,6 +47,6 @@
         }
     ],
     "layout": {
-        "title": "scatter3d + colorbar = <3"
+        "title": {"text": "scatter3d + colorbar = <3"}
     }
 }

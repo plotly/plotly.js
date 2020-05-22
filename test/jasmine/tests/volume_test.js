@@ -1,4 +1,5 @@
 var Plotly = require('@lib');
+var Lib = require('@src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -350,8 +351,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.4',
                         'y: 100μ',
-                        'z: −8',
-                        'value: −1.31'
+                        'z: −16',
+                        'value: −1.32'
                     ].join('\n')
                 });
             })
@@ -360,10 +361,10 @@ describe('Test volume', function() {
             .then(function() {
                 assertHoverLabelContent({
                     nums: [
-                        'x: 0.4',
+                        'x: 0.3',
                         'y: 0.001',
                         'z: −16',
-                        'value: −0.32'
+                        'value: −0.27'
                     ].join('\n')
                 });
             })
@@ -374,8 +375,8 @@ describe('Test volume', function() {
                     nums: [
                         'x: 0.3',
                         'y: 100μ',
-                        'z: −8',
-                        'value: −1.19'
+                        'z: −16',
+                        'value: −1.2'
                     ].join('\n')
                 });
             })
@@ -385,9 +386,9 @@ describe('Test volume', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −2',
-                        'value: −1.26'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3'
                     ].join('\n')
                 });
             })
@@ -402,10 +403,10 @@ describe('Test volume', function() {
                 assertHoverLabelContent({
                     nums: [
                         'x: 0.4',
-                        'y: 0.001',
-                        'z: −2',
-                        'value: −1.26',
-                        '!! -1.26 !!'
+                        'y: 100μ',
+                        'z: −4',
+                        'value: −1.3',
+                        '!! -1.3 !!'
                     ].join('\n')
                 });
             })
@@ -415,5 +416,150 @@ describe('Test volume', function() {
             .catch(failTest)
             .then(done);
         });
+    });
+});
+
+describe('Test volume grid', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    [ // list of directions
+        'number',
+        'string',
+        'typedArray'
+    ].forEach(function(format) {
+        [ // list of directions
+            [-1, -1, -1],
+            [-1, -1, 1],
+            [-1, 1, -1],
+            [1, -1, -1],
+            [1, 1, -1],
+            [1, -1, 1],
+            [-1, 1, 1],
+            [1, 1, 1]
+        ].forEach(function(dir) {
+            it('@gl should work with grid steps: ' + dir + ' and values in ' + format + ' format.', function(done) {
+                var x = [];
+                var y = [];
+                var z = [];
+                var v = [];
+
+                for(var i = 0; i < 3; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        for(var k = 0; k < 5; k++) {
+                            var newX = i * dir[0];
+                            var newY = j * dir[1];
+                            var newZ = k * dir[2];
+                            var newV = (
+                                newX * newX +
+                                newY * newY +
+                                newZ * newZ
+                            );
+
+                            if(format === 'string') {
+                                newV = String(newV);
+                                newX = String(newX);
+                                newY = String(newY);
+                                newZ = String(newZ);
+                            }
+
+                            v.push(newV);
+                            x.push(newX);
+                            y.push(newY);
+                            z.push(newZ);
+                        }
+                    }
+                }
+
+                if(format === 'typedArray') {
+                    v = new Int32Array(v);
+                    x = new Float32Array(x);
+                    y = new Float32Array(y);
+                    z = new Float64Array(z);
+                }
+
+                var fig = {
+                    data: [{
+                        type: 'volume',
+                        x: x,
+                        y: y,
+                        z: z,
+                        value: v
+                    }]
+                };
+
+                function _assert(msg, exp) {
+                    var scene = gd._fullLayout.scene._scene;
+                    var objs = scene.glplot.objects;
+                    expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+                    expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+                    expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+                }
+
+                Plotly.plot(gd, fig).then(function() {
+                    _assert('lengths', {
+                        positionsLength: 372,
+                        cellsLength: 104
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
+
+    it('@gl should return blank mesh grid if encountered arbitrary coordinates', function(done) {
+        var x = [];
+        var y = [];
+        var z = [];
+        var v = [];
+
+        Lib.seedPseudoRandom();
+
+        for(var n = 0; n < 1000; n++) {
+            x.push((10 * Lib.pseudoRandom()) | 0);
+            y.push((10 * Lib.pseudoRandom()) | 0);
+            z.push((10 * Lib.pseudoRandom()) | 0);
+            v.push((10 * Lib.pseudoRandom()) | 0);
+        }
+
+        var fig = {
+            data: [{
+                type: 'volume',
+                x: x,
+                y: y,
+                z: z,
+                value: v
+            }]
+        };
+
+        function _assert(msg, exp) {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+            expect(objs.length).toBe(1, 'one gl-vis object - ' + msg);
+            expect(exp.positionsLength).toBe(objs[0].positions.length, 'positions length - ' + msg);
+            expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
+        }
+
+        spyOn(Lib, 'warn');
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('arbitrary coordinates', {
+                positionsLength: 0,
+                cellsLength: 0
+            });
+        }).then(function() {
+            expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

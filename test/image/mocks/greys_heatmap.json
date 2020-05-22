@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Greys",
+      "colorscale": "Greys",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Greys"
+    "title": {"text": "Greys"}
   }
 }

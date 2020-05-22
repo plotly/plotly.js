@@ -27,7 +27,6 @@
             "width": 0.6,
             "name": "width: 0.6",
             "x": [0, 5, 7, 8],
-            "side": "positive",
             "line": {
                 "color": "black"
             },

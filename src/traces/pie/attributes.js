@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -181,6 +181,22 @@ module.exports = {
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
+    insidetextorientation: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['horizontal', 'radial', 'tangential', 'auto'],
+        dflt: 'auto',
+        editType: 'plot',
+        description: [
+            'Controls the orientation of the text inside chart sectors.',
+            'When set to *auto*, text may be oriented in any direction in order',
+            'to be as big as possible in the middle of a sector.',
+            'The *horizontal* option orients text to be parallel with the bottom',
+            'of the chart, and may make text smaller in order to achieve that goal.',
+            'The *radial* option orients text along the radius of the sector.',
+            'The *tangential* option orients text perpendicular to the radius of the sector.'
+        ].join(' ')
+    },
     insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the sector.'
     }),

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,6 +11,8 @@
 var Lib = require('../lib');
 var Axes = require('../plots/cartesian/axes');
 var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
+
+var BADNUM = require('../constants/numerical').BADNUM;
 
 exports.moduleType = 'transform';
 
@@ -136,8 +138,28 @@ function getIndices(opts, targetArray, d2c, len) {
 function getSortFunc(opts, d2c) {
     switch(opts.order) {
         case 'ascending':
-            return function(a, b) { return d2c(a.v) - d2c(b.v); };
+            return function(a, b) {
+                var ac = d2c(a.v);
+                var bc = d2c(b.v);
+                if(ac === BADNUM) {
+                    return 1;
+                }
+                if(bc === BADNUM) {
+                    return -1;
+                }
+                return ac - bc;
+            };
         case 'descending':
-            return function(a, b) { return d2c(b.v) - d2c(a.v); };
+            return function(a, b) {
+                var ac = d2c(a.v);
+                var bc = d2c(b.v);
+                if(ac === BADNUM) {
+                    return 1;
+                }
+                if(bc === BADNUM) {
+                    return -1;
+                }
+                return bc - ac;
+            };
     }
 }

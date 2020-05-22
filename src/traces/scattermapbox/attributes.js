@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85,6 +85,25 @@ module.exports = overrideAll({
                 'Full list: https://www.mapbox.com/maki-icons/',
                 'Note that the array `marker.color` and `marker.size`',
                 'are only available for *circle* symbols.'
+            ].join(' ')
+        },
+        angle: {
+            valType: 'number',
+            dflt: 'auto',
+            role: 'style',
+            arrayOk: true,
+            description: [
+                'Sets the marker orientation from true North, in degrees clockwise.',
+                'When using the *auto* default, no rotation would be applied',
+                'in perspective views which is different from using a zero angle.'
+            ].join(' ')
+        },
+        allowoverlap: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'style',
+            description: [
+                'Flag to draw all symbols, even if they overlap.'
             ].join(' ')
         },
         opacity: markerAttrs.opacity,

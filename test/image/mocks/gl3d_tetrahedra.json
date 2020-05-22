@@ -20,10 +20,12 @@
       "cmax": 0.5,
       "colorbar": {
         "x": 0,
-        "title": "for colorscale + intensity tetrahedra",
-        "titleside": "right"
+        "title": {
+          "text": "for colorscale + intensity tetrahedra",
+          "side": "right"
+        }
       }
-    }, 
+    },
     {
       "type":"mesh3d",
       "name": "facecolor",
@@ -69,7 +71,7 @@
     }
   ],
   "layout": {
-    "title": "Tetrahedra",
+    "title": {"text": "Tetrahedra"},
     "scene": {
         "aspectratio": {
           "x": 5,

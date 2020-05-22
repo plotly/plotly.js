@@ -11334,7 +11334,9 @@
   ],
   "layout": {
     "width": 600,
-    "title": "Cone plot along a trajectory within the Rössler attractor",
+    "title": {
+      "text": "Cone plot along a trajectory within the Rössler attractor"
+    },
     "scene": {
       "aspectratio": {
         "y": 1,

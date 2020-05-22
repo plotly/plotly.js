@@ -36,7 +36,7 @@
                 "12pm",
                 "6pm"
             ],
-            "scl": [
+            "colorscale": [
                 [
                     0,
                     "rgb(128, 0, 38)"
@@ -82,7 +82,9 @@
         }
     ],
     "layout": {
-        "title": "User Traffic",
+        "title": {
+            "text": "User Traffic"
+        },
         "font": {
           "family": "Arial, sans-serif",
           "size": 12,

@@ -19,7 +19,7 @@
     }
   }],
   "layout": {
-    "title": "test",
+    "title": {"text": "test"},
     "scene": {
       "xaxis": {
         "type": "log"

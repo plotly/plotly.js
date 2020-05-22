@@ -319,7 +319,7 @@
     "layout": {
         "ternary": {
             "aaxis": {
-                "title": "Clay",
+                "title": {"text": "Clay"},
                 "min": 0.01,
                 "linewidth": 2,
                 "ticks": "outside",
@@ -339,7 +339,7 @@
                 ]
             },
             "baxis": {
-                "title": "Sand",
+                "title": {"text": "Sand"},
                 "min": 0.01,
                 "linewidth": 2,
                 "ticks": "outside",
@@ -359,7 +359,7 @@
                 ]
             },
             "caxis": {
-                "title": "Silt",
+                "title": {"text": "Silt"},
                 "min": 0.01,
                 "linewidth": 2,
                 "ticks": "outside",

@@ -3467,7 +3467,7 @@
         "height": 500,
         "hovermode": "closest",
         "showlegend": false,
-        "title": "Violin and Rug Plot",
+        "title": {"text": "Violin and Rug Plot"},
         "width": 800,
         "xaxis1": {
             "anchor": "y1",
@@ -3484,7 +3484,7 @@
             "showline": false,
             "showticklabels": false,
             "ticks": "",
-            "title": "A",
+            "title": {"text": "A"},
             "zeroline": false
         },
         "xaxis2": {
@@ -3503,7 +3503,7 @@
             "showline": false,
             "showticklabels": false,
             "ticks": "",
-            "title": "B",
+            "title": {"text": "B"},
             "zeroline": false
         },
         "xaxis3": {
@@ -3522,7 +3522,7 @@
             "showline": false,
             "showticklabels": false,
             "ticks": "",
-            "title": "C",
+            "title": {"text": "C"},
             "zeroline": false
         },
         "xaxis4": {
@@ -3541,7 +3541,7 @@
             "showline": false,
             "showticklabels": false,
             "ticks": "",
-            "title": "D",
+            "title": {"text": "D"},
             "zeroline": false
         },
         "xaxis5": {
@@ -3560,7 +3560,7 @@
             "showline": false,
             "showticklabels": false,
             "ticks": "",
-            "title": "E",
+            "title": {"text": "E"},
             "zeroline": false
         },
         "yaxis1": {
@@ -3575,7 +3575,7 @@
             "showline": true,
             "showticklabels": true,
             "ticklen": 4,
-            "title": "",
+            "title": {"text": ""},
             "zeroline": false
         }
     }

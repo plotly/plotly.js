@@ -1,0 +1,147 @@
+{
+    "data": [
+        {
+            "x": [
+                -1,
+                1,
+                -1,
+                1
+            ],
+            "y": [
+                -1,
+                -1,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "i": [
+                0,
+                3
+            ],
+            "j": [
+                1,
+                2
+            ],
+            "k": [
+                3,
+                0
+            ],
+            "flatshading": true,
+            "lightposition": {
+                "x": 1000,
+                "y": 1000,
+                "z": 0
+            },
+            "color": "red",
+            "opacity": 0.5,
+            "type": "mesh3d",
+            "name": "mesh3d",
+            "scene": "scene"
+        },
+        {
+            "x": [
+                -1,
+                0,
+                1
+            ],
+            "y": [
+                -1,
+                0,
+                1
+            ],
+            "z": [
+                [
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "lightposition": {
+                "x": 1000,
+                "y": 1000,
+                "z": 0
+            },
+            "showscale": false,
+            "colorscale": [
+                [
+                    0,
+                    "red"
+                ],
+                [
+                    1,
+                    "red"
+                ]
+            ],
+            "opacity": 0.5,
+            "type": "surface",
+            "name": "surface",
+            "scene": "scene2"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "surface and mesh3d with half opacity"
+        },
+        "width": 400,
+        "height": 600,
+        "scene": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            },
+            "domain": {
+                "x": [
+                    0,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.5
+                ]
+            }
+        },
+        "scene2": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                }
+            },
+            "domain": {
+                "x": [
+                    0,
+                    1
+                ],
+                "y": [
+                    0.5,
+                    1
+                ]
+            }
+        }
+    }
+}

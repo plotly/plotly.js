@@ -295,7 +295,7 @@ describe('mapbox credentials', function() {
             }]);
         }).toThrow(new Error(constants.missingStyleErrorMsg));
 
-        expect(Lib.error).toHaveBeenCalledTimes(0);
+        expect(Lib.error).toHaveBeenCalledWith(constants.missingStyleErrorMsg);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should throw error when setting a Mapbox style w/o a registered token', function() {
@@ -410,7 +410,7 @@ describe('mapbox credentials', function() {
         }], {
             mapbox: {
                 accesstoken: MAPBOX_ACCESS_TOKEN,
-                style: 'mapbox://styles/etpinard/cip93fm98000sbmnuednknloo'
+                style: 'mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m'
             }
         }).catch(function() {
             cnt++;
@@ -582,6 +582,53 @@ describe('@noCI, mapbox plots', function() {
         })
         .catch(failTest)
         .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not update center while dragging', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setCenter').and.callThrough();
+
+        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lon: 13.5, lat: -19.5}});
+        }).then(function() {
+            // First relayout on mapbox.center results in setCenter call
+            expect(map.setCenter).toHaveBeenCalledWith([13.5, -19.5]);
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            return _mouseEvent('mousedown', pointPos, noop);
+        }).then(function() {
+            return _mouseEvent('mousemove', p1, noop);
+        }).then(function() {
+            return Plotly.relayout(gd, {'mapbox.center': {lat: 0, lon: 0}});
+        }).then(function() {
+            return _mouseEvent('mouseup', p1, noop);
+        }).then(function() {
+            // Second relayout on mapbox.center does not result in a setCenter
+            // call since map drag is underway
+            expect(map.setCenter).toHaveBeenCalledTimes(1);
+        }).then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should not update zoom while scroll wheeling', function(done) {
+        var map = gd._fullLayout.mapbox._subplot.map;
+        spyOn(map, 'setZoom').and.callThrough();
+
+        _mouseEvent('mousemove', pointPos, noop).then(function() {
+            return Plotly.relayout(gd, {'mapbox.zoom': 5});
+        }).then(function() {
+            // First relayout on mapbox.zoom results in setZoom call
+            expect(map.setZoom).toHaveBeenCalledWith(5);
+            expect(map.setZoom).toHaveBeenCalledTimes(1);
+        }).then(function() {
+            mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
+            return Plotly.relayout(gd, {'mapbox.zoom': 2}).then(function() {
+                // Second relayout on mapbox.zoom does not result in setZoom
+                // call since a scroll wheel zoom is underway
+                expect(map.setZoom).toHaveBeenCalledTimes(1);
+            });
+        }).then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle', function(done) {
@@ -883,6 +930,57 @@ describe('@noCI, mapbox plots', function() {
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should be able to update layer image', function(done) {
+        var coords = [
+            [-80.425, 46.437],
+            [-71.516, 46.437],
+            [-71.516, 37.936],
+            [-80.425, 37.936]
+        ];
+        function makeFigure(source) {
+            return {
+                data: [{type: 'scattermapbox'}],
+                layout: {
+                    mapbox: {
+                        layers: [{
+                            'sourcetype': 'image',
+                            'coordinates': coords,
+                            'source': source
+                        }]
+                    }
+                }
+            };
+        }
+
+        var map = null;
+        var layerSource = null;
+
+        // Single pixel PNGs generated with http://png-pixel.com/
+        var prefix = 'data:image/png;base64,';
+        var redImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'P8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+        var greenImage = prefix + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m' +
+            'Nk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==';
+
+        Plotly.react(gd, makeFigure(redImage)).then(function() {
+            var mapbox = gd._fullLayout.mapbox._subplot;
+            map = mapbox.map;
+            layerSource = map.getSource(mapbox.layerList[0].idSource);
+
+            spyOn(layerSource, 'updateImage').and.callThrough();
+            spyOn(map, 'removeSource').and.callThrough();
+            return Plotly.react(gd, makeFigure(greenImage));
+        })
+        .then(function() {
+            expect(layerSource.updateImage).toHaveBeenCalledWith(
+                {url: greenImage, coordinates: coords}
+            );
+            expect(map.removeSource).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);
@@ -1226,11 +1324,18 @@ describe('@noCI, mapbox plots', function() {
             expect(layout.zoom).toBeCloseTo(zoom);
         }
 
-        function _assert(center, zoom) {
+        function _assert(center, zoom, lon0, lat0, lon1, lat1) {
             _assertLayout(center, zoom);
 
             expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
             expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
+            expect(Object.keys(evtData['mapbox._derived'])).toEqual(['coordinates']);
+            expect(evtData['mapbox._derived'].coordinates).toBeCloseTo2DArray([
+                [lon0, lat1],
+                [lon1, lat1],
+                [lon1, lat0],
+                [lon0, lat0]
+            ], -0.1);
         }
 
         _assertLayout([-4.710, 19.475], 1.234);
@@ -1241,7 +1346,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(1, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(0, 'double click cnt');
-            _assert([-19.651, 13.751], 1.234);
+            _assert([-19.651, 13.751], 1.234,
+                -155.15981291032617, -25.560300274373148,
+                115.85734493011842, 47.573988219006424);
 
             return _doubleClick(p1);
         })
@@ -1249,7 +1356,9 @@ describe('@noCI, mapbox plots', function() {
             expect(relayoutCnt).toBe(2, 'relayout cnt');
             expect(relayoutingCnt).toBe(1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
-            _assert([-4.710, 19.475], 1.234);
+            _assert([-4.710, 19.475], 1.234,
+                -140.21950652441467, -20.054298691163496,
+                130.79765131602989, 51.4513888208798);
 
             return _scroll(pointPos);
         })
@@ -1427,59 +1536,23 @@ describe('@noCI, mapbox plots', function() {
             var mock = require('@mocks/mapbox_layers.json');
             var customMock = Lib.extendDeep(mock);
 
-            var attr = 'super custom attribution';
+            var attr = 'custom attribution';
+            var XSS = '<img src=x onerror=\"alert(XSS);\">';
             customMock.data.pop();
-            customMock.layout.mapbox.layers[0].sourceattribution = attr;
+            customMock.layout.mapbox.layers[0].sourceattribution = XSS + attr;
 
             Plotly.newPlot(gd, customMock)
             .then(function() {
                 var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual([attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
+                expect(s.text()).toEqual([XSS + attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
+                expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
+                expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
             .catch(failTest)
             .then(done);
         });
     });
-
-    function getMapInfo(gd) {
-        var subplot = gd._fullLayout.mapbox._subplot;
-        var map = subplot.map;
-
-        var sources = map.style.sourceCaches;
-        var layers = map.style._layers;
-        var uid = subplot.uid;
-
-        var traceSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf('source-') === 0;
-        });
-
-        var traceLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf('plotly-trace-layer-') === 0;
-        });
-
-        var layoutSources = Object.keys(sources).filter(function(k) {
-            return k.indexOf(uid) !== -1;
-        });
-
-        var layoutLayers = Object.keys(layers).filter(function(k) {
-            return k.indexOf(uid) !== -1;
-        });
-
-        return {
-            map: map,
-            div: subplot.div,
-            sources: sources,
-            layers: layers,
-            traceSources: traceSources,
-            traceLayers: traceLayers,
-            layoutSources: layoutSources,
-            layoutLayers: layoutLayers,
-            center: map.getCenter(),
-            zoom: map.getZoom(),
-            style: map.getStyle()
-        };
-    }
 
     function countVisibleTraces(gd, modes) {
         var mapInfo = getMapInfo(gd);
@@ -1572,6 +1645,83 @@ describe('@noCI, mapbox plots', function() {
 
         return promise;
     }
+});
+
+describe('@noCI, mapbox react', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should be able to react to new tiles', function(done) {
+        function assertTile(link) {
+            var mapInfo = getMapInfo(gd);
+            expect(mapInfo.style.sources.REF.tiles[0]).toEqual(link);
+        }
+
+        var firstLink = 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        var secondLink = 'https://a.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+
+        var fig = {
+            data: [
+                {
+                    type: 'scattermapbox',
+                    lon: [10, 20],
+                    lat: [20, 10]
+                }
+            ],
+            layout: {
+                mapbox: {
+                    style: {
+                        version: 8,
+                        sources: {
+                            REF: {
+                                type: 'raster',
+                                tileSize: 256,
+                                tiles: [firstLink]
+                            }
+                        },
+                        layers: [{
+                            id: 'REF',
+                            source: 'REF',
+                            type: 'raster'
+                        }],
+                    }
+                }
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            assertTile(firstLink);
+
+            // copy figure
+            var newFig = JSON.parse(JSON.stringify(fig));
+
+            // new figure
+            newFig.layout.mapbox.style.sources = {
+                REF: {
+                    type: 'raster',
+                    tileSize: 256,
+                    tiles: [secondLink]
+                }
+            };
+
+            // update
+            Plotly.react(gd, newFig);
+        })
+        .then(function() {
+            assertTile(secondLink);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
 });
 
 describe('@noCI test mapbox trace/layout *below* interactions', function() {
@@ -1979,3 +2129,42 @@ describe('@noCI, mapbox toImage', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 });
+
+function getMapInfo(gd) {
+    var subplot = gd._fullLayout.mapbox._subplot;
+    var map = subplot.map;
+
+    var sources = map.style.sourceCaches;
+    var layers = map.style._layers;
+    var uid = subplot.uid;
+
+    var traceSources = Object.keys(sources).filter(function(k) {
+        return k.indexOf('source-') === 0;
+    });
+
+    var traceLayers = Object.keys(layers).filter(function(k) {
+        return k.indexOf('plotly-trace-layer-') === 0;
+    });
+
+    var layoutSources = Object.keys(sources).filter(function(k) {
+        return k.indexOf(uid) !== -1;
+    });
+
+    var layoutLayers = Object.keys(layers).filter(function(k) {
+        return k.indexOf(uid) !== -1;
+    });
+
+    return {
+        map: map,
+        div: subplot.div,
+        sources: sources,
+        layers: layers,
+        traceSources: traceSources,
+        traceLayers: traceLayers,
+        layoutSources: layoutSources,
+        layoutLayers: layoutLayers,
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        style: map.getStyle()
+    };
+}

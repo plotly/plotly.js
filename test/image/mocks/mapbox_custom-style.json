@@ -48,7 +48,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "mapbox://styles/etpinard/cip93fm98000sbmnuednknloo",
+      "style": "mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m",
       "center": {
         "lon": -73.60287319770295,
         "lat": 45.50110152988742

@@ -1250,13 +1250,14 @@
         }
     ],
     "layout": {
-        "title": "Superformula",
+        "title": {
+            "text": "Superformula"
+        },
         "font": {
             "family": "Arial, sans-serif",
             "size": 12,
             "color": "grey"
         },
-        "showlegend": true,
         "width": 500,
         "height": 500,
         "margin": {

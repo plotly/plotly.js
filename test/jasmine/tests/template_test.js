@@ -19,7 +19,9 @@ describe('makeTemplate', function() {
                 {fill: 'toself'}
             ] },
             layout: {
-                title: 'Fill toself and tonext',
+                title: {
+                    text: 'Fill toself and tonext'
+                },
                 width: 400,
                 height: 400
             }
@@ -130,11 +132,11 @@ describe('makeTemplate', function() {
                     line: {width: 2, color: 'rgba(160,160,0,0.25)'}
                 }],
                 width: 600,
-                xaxis: {domain: [0, 0.45], color: '#CCC', title: 'XXX'},
-                xaxis2: {domain: [0.55, 1], title: 'XXX222'},
-                yaxis: {color: '#88F', title: 'y'},
+                xaxis: {domain: [0, 0.45], color: '#CCC', title: {text: 'XXX'}},
+                xaxis2: {domain: [0.55, 1], title: {text: 'XXX222'}},
+                yaxis: {color: '#88F', title: {text: 'y'}},
                 // inherits from both yaxis2 and template.yaxis
-                yaxis2: {color: '#88F', title: 'y2', anchor: 'x2'}
+                yaxis2: {color: '#88F', title: {text: 'y2'}, anchor: 'x2'}
             }
         };
 

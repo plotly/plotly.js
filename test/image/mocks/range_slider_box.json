@@ -582,9 +582,11 @@
         }
     ],
     "layout": {
-        "title": "Spectral Box Plot with Range Slider",
-        "titlefont": {
-            "size": 18
+        "title": {
+            "text": "Spectral Box Plot with Range Slider",
+            "font": {
+                "size": 18
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -596,13 +598,13 @@
         "width": 600,
         "height": 400,
         "xaxis": {
-          "title": "Wavelength (nm)",
+          "title": {"text": "Wavelength (nm)"},
           "rangeslider": {
             "thickness": 0.1
           }
         },
         "yaxis": {
-            "title": "Response (mV)"
+            "title": {"text": "Response (mV)"}
         },
         "paper_bgcolor": "rgb(233, 233, 233)",
         "plot_bgcolor": "rgb(233, 233, 233)"

@@ -2608,6 +2608,6 @@
     }
   ],
   "layout": {
-    "title": "YIGnBu"
+    "title": {"text": "YIGnBu"}
   }
 }

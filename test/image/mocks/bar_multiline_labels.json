@@ -154,7 +154,6 @@
             "anchor": "x8",
             "tickangle": 45
         },
-        "legend": "none",
         "height":800,
         "width":800
     }

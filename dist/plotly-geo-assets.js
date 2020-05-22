@@ -1,6 +1,6 @@
 /**
-* plotly.js v1.51.1
-* Copyright 2012-2019, Plotly, Inc.
+* plotly.js v1.54.1
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -56,7 +56,7 @@ exports['usa_50m'] = _dereq_('./dist/usa_50m.json')
 
 },{"./dist/africa_110m.json":1,"./dist/africa_50m.json":2,"./dist/asia_110m.json":3,"./dist/asia_50m.json":4,"./dist/europe_110m.json":5,"./dist/europe_50m.json":6,"./dist/north-america_110m.json":7,"./dist/north-america_50m.json":8,"./dist/south-america_110m.json":9,"./dist/south-america_50m.json":10,"./dist/usa_110m.json":11,"./dist/usa_50m.json":12,"./dist/world_110m.json":13,"./dist/world_50m.json":14}],16:[function(_dereq_,module,exports){
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68,10 +68,23 @@ exports['usa_50m'] = _dereq_('./dist/usa_50m.json')
 var saneTopojson = _dereq_('sane-topojson');
 
 
-// package version injected by `npm run preprocess`
-exports.version = '1.51.1';
+exports.version = _dereq_('../version').version;
 
 exports.topojson = saneTopojson;
 
-},{"sane-topojson":15}]},{},[16])(16)
+},{"../version":17,"sane-topojson":15}],17:[function(_dereq_,module,exports){
+/**
+* Copyright 2012-2020, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+// package version injected by `npm run preprocess`
+exports.version = '1.54.1';
+
+},{}]},{},[16])(16)
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2019, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -30,16 +30,21 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var text;
     var hovertext;
 
+    var nI = col2vals.length;
+    var nJ = col1vals.length;
+
     for(i = 0; i < arrayVarNames.length; i++) {
-        newArrays[i] = Lib.init2dArray(col2vals.length, col1vals.length);
+        newArrays[i] = Lib.init2dArray(nI, nJ);
     }
 
     if(hasColumnText) {
-        text = Lib.init2dArray(col2vals.length, col1vals.length);
+        text = Lib.init2dArray(nI, nJ);
     }
     if(hasColumnHoverText) {
-        hovertext = Lib.init2dArray(col2vals.length, col1vals.length);
+        hovertext = Lib.init2dArray(nI, nJ);
     }
+
+    var after2before = Lib.init2dArray(nI, nJ);
 
     for(i = 0; i < colLen; i++) {
         if(col1[i] !== BADNUM && col2[i] !== BADNUM) {
@@ -51,6 +56,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
                 var arrayVar = trace[arrayVarName];
                 var newArray = newArrays[j];
                 newArray[i2][i1] = arrayVar[i];
+                after2before[i2][i1] = i;
             }
 
             if(hasColumnText) text[i2][i1] = textCol[i];
@@ -73,4 +79,6 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(ax2 && ax2.type === 'category') {
         trace['_' + var2Name + 'CategoryMap'] = col2vals.map(function(v) { return ax2._categories[v];});
     }
+
+    trace._after2before = after2before;
 };
