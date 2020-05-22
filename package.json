@@ -132,7 +132,7 @@
     "deep-equal": "^2.0.2",
     "derequire": "^2.1.0",
     "ecstatic": "^4.1.2",
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "espree": "^6.2.1",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.0",
