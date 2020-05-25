@@ -331,11 +331,11 @@ function convertPlotlyOptions(scene, data) {
     return params;
 }
 
-function arrayToColor(color) {
-    if(Array.isArray(color)) {
+function _arrayToColor(color) {
+    if(Lib.isArrayOrTypedArray(color)) {
         var c = color[0];
 
-        if(Array.isArray(c)) color = c;
+        if(Lib.isArrayOrTypedArray(c)) color = c;
 
         return 'rgb(' + color.slice(0, 3).map(function(x) {
             return Math.round(x * 255);
@@ -343,6 +343,16 @@ function arrayToColor(color) {
     }
 
     return null;
+}
+
+function arrayToColor(colors) {
+    if(!Lib.isArrayOrTypedArray(colors)) {
+        return _arrayToColor(colors);
+    }
+
+    return colors.map(function(color) {
+        return _arrayToColor(color);
+    });
 }
 
 proto.update = function(data) {
