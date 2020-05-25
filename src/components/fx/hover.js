@@ -1105,7 +1105,7 @@ function createHoverText(hoverData, opts, gd) {
 
         var dColor = d.color;
         if(Array.isArray(dColor)) {
-            dColor = dColor[d.index];
+            dColor = dColor[d.eventData[0].pointNumber];
         }
 
         // combine possible non-opaque trace color with bgColor
