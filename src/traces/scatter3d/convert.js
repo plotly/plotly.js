@@ -350,6 +350,10 @@ function arrayToColor(colors) {
         return _arrayToColor(colors);
     }
 
+    if((colors.length === 4) && (typeof colors[0] === 'number')) {
+        return _arrayToColor(colors);
+    }
+
     return colors.map(function(color) {
         return _arrayToColor(color);
     });
