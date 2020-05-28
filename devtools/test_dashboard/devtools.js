@@ -2,7 +2,7 @@
 
 /* global Plotly:false */
 
-var Fuse = require('fuse.js');
+var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
@@ -160,7 +160,17 @@ setInterval(function() {
 }, 1000);
 
 // Mocks search and plotting
-var f = new Fuse(mocks, {
+var fuse = new Fuse(mocks, {
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
+    // includeMatches: false,
+    // findAllMatches: false,
+    // minMatchCharLength: 1,
+    // location: 0,
+    // threshold: 0.6,
+    // distance: 100,
+    // useExtendedSearch: false,
     keys: [{
         name: 'name',
         weight: 0.7
@@ -198,15 +208,15 @@ function searchMocks(e) {
         mocksList.removeChild(mocksList.firstChild);
     }
 
-    var results = f.search(e.target.value);
+    var results = fuse.search(e.target.value);
 
     results.forEach(function(r) {
+        var mockName = r.item.name;
         var result = document.createElement('span');
-        result.className = getResultClass(r.name);
-        result.innerText = r.name;
+        result.className = getResultClass(mockName);
+        result.innerText = mockName;
 
         result.addEventListener('click', function() {
-            var mockName = r.file.slice(0, -5);
             window.location.hash = mockName;
 
             // Clear plots and plot selected.
