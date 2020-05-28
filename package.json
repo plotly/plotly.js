@@ -136,7 +136,7 @@
     "espree": "^7.0.0",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.0",
-    "fuse.js": "^3.6.1",
+    "fuse.js": "^6.0.0",
     "glob": "^7.1.6",
     "gzip-size": "^5.1.1",
     "image-size": "^0.7.5",
