@@ -686,7 +686,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var isNewBreak = true;
             for(var j = 0; j < rangebreaksOut.length; j++) {
                 var brkj = rangebreaksOut[j];
-                if(min > brkj.max || max < brkj.min) {
+                if(min >= brkj.max || max < brkj.min) {
                     // potentially a new break
                 } else {
                     if(min < brkj.min) {

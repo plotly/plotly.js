@@ -62,6 +62,7 @@ var list = [
     'axes_breaks-heatmap2d',
     'axes_breaks-histogram2d',
     'axes_breaks-night_autorange-reversed',
+    'axes_breaks-overlap',
     'axes_breaks-rangeslider',
     'axes_breaks-reversed-without-pattern',
     'axes_breaks-round-weekdays',
@@ -1099,6 +1100,7 @@ figs['axes_breaks-heatmap1d'] = require('@mocks/axes_breaks-heatmap1d');
 figs['axes_breaks-heatmap2d'] = require('@mocks/axes_breaks-heatmap2d');
 figs['axes_breaks-histogram2d'] = require('@mocks/axes_breaks-histogram2d');
 figs['axes_breaks-night_autorange-reversed'] = require('@mocks/axes_breaks-night_autorange-reversed');
+figs['axes_breaks-overlap'] = require('@mocks/axes_breaks-overlap');
 figs['axes_breaks-rangeslider'] = require('@mocks/axes_breaks-rangeslider');
 figs['axes_breaks-reversed-without-pattern'] = require('@mocks/axes_breaks-reversed-without-pattern');
 figs['axes_breaks-round-weekdays'] = require('@mocks/axes_breaks-round-weekdays');

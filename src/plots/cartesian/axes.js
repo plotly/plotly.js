@@ -645,7 +645,12 @@ axes.calcTicks = function calcTicks(ax) {
                 }
 
                 var pos = ax.c2p(tickVal.value);
-                if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
+
+                if(pos === prevPos) {
+                    if(newTickVals[newTickVals.length - 1].value < tickVal.value) {
+                        newTickVals[newTickVals.length - 1] = tickVal;
+                    }
+                } else if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
                     prevPos = pos;
                     newTickVals.push(tickVal);
                 }
