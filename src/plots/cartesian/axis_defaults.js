@@ -135,22 +135,32 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(!containerOut.rangebreaks.length) {
             delete containerOut.rangebreaks;
         } else {
-            var n = 0;
             for(var k = 0; k < containerOut.rangebreaks.length; k++) {
                 var brk = containerOut.rangebreaks[k];
                 if(brk.pattern === DAY_OF_WEEK) {
                     containerOut._hasDayOfWeekBreaks = true;
-                    n++;
                 }
 
                 if(brk.pattern === HOUR) {
                     containerOut._hasHourBreaks = true;
-                    containerOut._dayHours = Math.round((brk.bounds[1] - brk.bounds[0] + 24) % 24);
-                    n++;
-                }
 
-                // break when found all types
-                if(n === 2) break;
+                    var startHour = Math.max((brk.bounds[0] % 24), (brk.bounds[1] % 24));
+                    if(containerOut._startHour === undefined) {
+                        containerOut._startHour = startHour;
+                    } else {
+                        containerOut._startHour = Math.max(containerOut._startHour, startHour);
+                    }
+
+                    var dayHours = (brk.bounds[1] - brk.bounds[0] + 24) % 24;
+                    if(containerOut._dayHours === undefined) {
+                        containerOut._dayHours = dayHours;
+                    } else {
+                        containerOut._dayHours += dayHours;
+                    }
+                }
+            }
+            if(containerOut._dayHours !== undefined) {
+                containerOut._dayHours = Math.ceil(containerOut._dayHours);
             }
 
             setConvert(containerOut, layoutOut);

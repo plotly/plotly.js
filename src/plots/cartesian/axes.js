@@ -638,7 +638,10 @@ axes.calcTicks = function calcTicks(ax) {
                 if(ax.maskBreaks(tickVal.value) === BADNUM) {
                     tickVal.value = moveOutsideBreak(tickVal.value, ax);
 
-                    if(ax._rl && tickVal.value === ax._rl[1]) continue;
+                    if(ax._rl && (
+                        ax._rl[0] === tickVal.value ||
+                        ax._rl[1] === tickVal.value
+                    )) continue;
                 }
 
                 var pos = ax.c2p(tickVal.value);
@@ -992,8 +995,11 @@ axes.tickFirst = function(ax) {
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
 
-    if(ax.tickmode === 'auto' && ax.rangebreaks && ax.maskBreaks(tick0) === BADNUM) {
-        tick0 = moveOutsideBreak(tick0, ax);
+    if(ax._dayHours && ax.tickmode === 'auto') {
+        var tick0Hour = Math.floor(tick0 / ONEHOUR) % 24;
+        if(tick0Hour === 0 && tick0Hour < ax._startHour) {
+            tick0 += ONEHOUR * ax._startHour;
+        }
     }
 
     if(isNumeric(dtick)) {
