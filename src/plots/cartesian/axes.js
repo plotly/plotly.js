@@ -785,10 +785,8 @@ axes.autoTicks = function(ax, roughDTick) {
         var roughX2 = 2 * roughDTick;
 
         var oneDay = ONEDAY;
-        var dayRatio = 1;
         if(ax._hasHourBreaks) {
             oneDay = ax._dayHours * ONEHOUR;
-            dayRatio = Math.round(ax._dayHours / 24 * 7) / 7; // we use this in week context
         }
 
         if(roughX2 > ONEAVGYEAR) {
@@ -800,7 +798,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > oneDay) {
             ax.dtick = roundDTick(roughDTick, oneDay, ax._hasDayOfWeekBreaks ?
-                [1, 2 * dayRatio, 7 * dayRatio, 14 * dayRatio] :
+                [1, 2, 7, 14] :
                 roundDays
             );
             // get week ticks on sunday
