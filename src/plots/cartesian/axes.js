@@ -624,7 +624,7 @@ axes.calcTicks = function calcTicks(ax) {
         // replace ticks inside breaks that would get a tick
         // and reduce ticks
         var len = tickVals.length;
-        if(len > 2) {
+        if(len) {
             var tf = 0;
             if(ax.tickmode === 'auto') {
                 tf =
