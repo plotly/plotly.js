@@ -136,24 +136,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
             delete containerOut.rangebreaks;
         } else {
             for(var k = 0; k < containerOut.rangebreaks.length; k++) {
-                var brk = containerOut.rangebreaks[k];
-                if(brk.pattern === DAY_OF_WEEK) {
+                if(containerOut.rangebreaks[k].pattern === DAY_OF_WEEK) {
                     containerOut._hasDayOfWeekBreaks = true;
+                    break;
                 }
-
-                if(brk.pattern === HOUR) {
-                    containerOut._hasHourBreaks = true;
-
-                    var dayHours = (brk.bounds[1] - brk.bounds[0] + 24) % 24;
-                    if(containerOut._dayHours === undefined) {
-                        containerOut._dayHours = dayHours;
-                    } else {
-                        containerOut._dayHours += dayHours;
-                    }
-                }
-            }
-            if(containerOut._dayHours !== undefined) {
-                containerOut._dayHours = Math.ceil(containerOut._dayHours);
             }
 
             setConvert(containerOut, layoutOut);
