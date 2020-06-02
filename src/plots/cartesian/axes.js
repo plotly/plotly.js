@@ -635,9 +635,9 @@ axes.calcTicks = function calcTicks(ax) {
             var newTickVals = [];
             var prevPos;
 
-            var dir = axrev ? -1 : 1;
-            var first = axrev ? len - 1 : 0;
-            var last = axrev ? 0 : len - 1;
+            var dir = axrev ? 1 : -1;
+            var first = axrev ? 0 : len - 1;
+            var last = axrev ? len - 1 : 0;
             for(var q = first; dir * q <= dir * last; q += dir) {
                 var tickVal = tickVals[q];
                 if(ax.maskBreaks(tickVal.value) === BADNUM) {
@@ -660,7 +660,7 @@ axes.calcTicks = function calcTicks(ax) {
                     newTickVals.push(tickVal);
                 }
             }
-            tickVals = newTickVals;
+            tickVals = newTickVals.reverse();
         }
     }
 
