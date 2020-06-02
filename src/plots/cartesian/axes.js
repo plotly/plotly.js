@@ -784,11 +784,6 @@ axes.autoTicks = function(ax, roughDTick) {
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
 
-        var oneDay = ONEDAY;
-        if(ax._hasHourBreaks) {
-            oneDay = ax._dayHours * ONEHOUR;
-        }
-
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
@@ -796,11 +791,8 @@ axes.autoTicks = function(ax, roughDTick) {
         } else if(roughX2 > ONEAVGMONTH) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
-        } else if(roughX2 > oneDay) {
-            ax.dtick = roundDTick(roughDTick, oneDay, ax._hasDayOfWeekBreaks ?
-                [1, 2, 7, 14] :
-                roundDays
-            );
+        } else if(roughX2 > ONEDAY) {
+            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
