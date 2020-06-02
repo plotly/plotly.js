@@ -739,25 +739,6 @@ function arrayTicks(ax) {
     return ticksOut;
 }
 
-function roundBaseDay(dayHours) {
-    switch(dayHours) {
-        case 4: return [1, 2];
-        case 6: return [1, 2, 3];
-        case 8: return [1, 2, 4];
-        case 9: return [1, 3];
-        case 10: return [1, 2, 5];
-        case 12: return [1, 2, 3, 4, 6];
-        case 14: return [1, 2, 7];
-        case 15: return [1, 3, 5];
-        case 16: return [1, 2, 4, 8];
-        case 18: return [1, 2, 3, 6, 9];
-        case 20: return [1, 2, 4, 5, 10];
-        case 21: return [1, 3, 7];
-        case 22: return [1, 2, 11];
-    }
-    return [1];
-}
-
 var roundBase10 = [2, 5, 10];
 var roundBase24 = [1, 2, 3, 6, 12];
 var roundBase60 = [1, 2, 5, 10, 15, 30];
@@ -827,10 +808,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
         } else if(roughX2 > ONEHOUR) {
-            ax.dtick = roundDTick(roughDTick, ONEHOUR, ax._hasHourBreaks ?
-                roundBaseDay(ax._dayHours) :
-                roundBase24
-            );
+            ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
             ax.dtick = roundDTick(roughDTick, ONEMIN, roundBase60);
         } else if(roughX2 > ONESEC) {
