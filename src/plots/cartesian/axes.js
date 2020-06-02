@@ -968,13 +968,6 @@ axes.tickFirst = function(ax) {
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
 
-    if(ax._dayHours && ax.tickmode === 'auto') {
-        var tick0Hour = Math.floor(tick0 / ONEHOUR) % 24;
-        if(tick0Hour === 0 && tick0Hour < ax._startHour) {
-            tick0 += ONEHOUR * ax._startHour;
-        }
-    }
-
     if(isNumeric(dtick)) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 

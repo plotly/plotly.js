@@ -144,13 +144,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
                 if(brk.pattern === HOUR) {
                     containerOut._hasHourBreaks = true;
 
-                    var startHour = Math.max((brk.bounds[0] % 24), (brk.bounds[1] % 24));
-                    if(containerOut._startHour === undefined) {
-                        containerOut._startHour = startHour;
-                    } else {
-                        containerOut._startHour = Math.max(containerOut._startHour, startHour);
-                    }
-
                     var dayHours = (brk.bounds[1] - brk.bounds[0] + 24) % 24;
                     if(containerOut._dayHours === undefined) {
                         containerOut._dayHours = dayHours;
