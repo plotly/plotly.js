@@ -625,7 +625,12 @@ axes.calcTicks = function calcTicks(ax) {
         // and reduce ticks
         var len = tickVals.length;
         if(len > 2) {
-            var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
+            var tf = 0;
+            if(ax.tickmode === 'auto') {
+                tf =
+                    (ax._id.charAt(0) === 'y' ? 2 : 5) *
+                    (ax.tickfont ? ax.tickfont.size : 12);
+            }
 
             var newTickVals = [];
             var prevPos;
@@ -650,7 +655,7 @@ axes.calcTicks = function calcTicks(ax) {
                     if(newTickVals[newTickVals.length - 1].value < tickVal.value) {
                         newTickVals[newTickVals.length - 1] = tickVal;
                     }
-                } else if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
+                } else if(prevPos === undefined || Math.abs(pos - prevPos) > tf) {
                     prevPos = pos;
                     newTickVals.push(tickVal);
                 }
