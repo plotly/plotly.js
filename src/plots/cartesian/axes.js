@@ -536,7 +536,7 @@ axes.prepTicks = function(ax) {
         if(ax.tickmode === 'array') nt *= 100;
 
 
-        ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
+        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt;
         axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
@@ -628,7 +628,7 @@ axes.calcTicks = function calcTicks(ax) {
             var tf = 0;
             if(ax.tickmode === 'auto') {
                 tf =
-                    (ax._id.charAt(0) === 'y' ? 2 : 5) *
+                    (ax._id.charAt(0) === 'y' ? 2 : 6) *
                     (ax.tickfont ? ax.tickfont.size : 12);
             }
 

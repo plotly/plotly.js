@@ -5016,7 +5016,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('with two rangebreaks', {
-                        tickVals: [0, 89, 189, 200]
+                        tickVals: [0, 5, 90, 95, 190, 195, 200]
                     });
                 })
                 .catch(failTest)
