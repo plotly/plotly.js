@@ -137,6 +137,7 @@ var list = [
     'bar-like_traces_tozero',
     'bar-marker-line-colorscales',
     'bar-offsetgroups',
+    'bar-with-milliseconds',
     'basic_area',
     'basic_bar',
     'basic_error_bar',
@@ -1176,6 +1177,7 @@ figs['bar-like_traces_no-tozero_stack'] = require('@mocks/bar-like_traces_no-toz
 figs['bar-like_traces_tozero'] = require('@mocks/bar-like_traces_tozero');
 figs['bar-marker-line-colorscales'] = require('@mocks/bar-marker-line-colorscales');
 figs['bar-offsetgroups'] = require('@mocks/bar-offsetgroups');
+figs['bar-with-milliseconds'] = require('@mocks/bar-with-milliseconds');
 figs['basic_area'] = require('@mocks/basic_area');
 figs['basic_bar'] = require('@mocks/basic_bar');
 figs['basic_error_bar'] = require('@mocks/basic_error_bar');
