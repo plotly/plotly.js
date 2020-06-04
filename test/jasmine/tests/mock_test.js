@@ -111,6 +111,7 @@ var list = [
     'bar_display_height_zero_no_line_width',
     'bar_display_height_zero_only_line_width',
     'bar_errorbars_inherit_color',
+    'bar_gantt-chart',
     'bar_group_percent',
     'bar_hide_nulls',
     'bar_line',
@@ -1151,6 +1152,7 @@ figs['bar_display_height_zero'] = require('@mocks/bar_display_height_zero');
 figs['bar_display_height_zero_no_line_width'] = require('@mocks/bar_display_height_zero_no_line_width');
 figs['bar_display_height_zero_only_line_width'] = require('@mocks/bar_display_height_zero_only_line_width');
 figs['bar_errorbars_inherit_color'] = require('@mocks/bar_errorbars_inherit_color');
+figs['bar_gantt-chart'] = require('@mocks/bar_gantt-chart');
 figs['bar_group_percent'] = require('@mocks/bar_group_percent');
 figs['bar_hide_nulls'] = require('@mocks/bar_hide_nulls');
 figs['bar_line'] = require('@mocks/bar_line');
