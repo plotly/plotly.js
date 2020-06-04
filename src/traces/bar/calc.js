@@ -19,12 +19,14 @@ module.exports = function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var size, pos;
 
+    var msUTC = !!(trace.base || trace.base === 0);
+
     if(trace.orientation === 'h') {
-        size = xa.makeCalcdata(trace, 'x');
-        pos = ya.makeCalcdata(trace, 'y');
+        size = xa.makeCalcdata(trace, 'x', msUTC);
+        pos = ya.makeCalcdata(trace, 'y', msUTC);
     } else {
-        size = ya.makeCalcdata(trace, 'y');
-        pos = xa.makeCalcdata(trace, 'x');
+        size = ya.makeCalcdata(trace, 'y', msUTC);
+        pos = xa.makeCalcdata(trace, 'x', msUTC);
     }
 
     // create the "calculated data" to plot
