@@ -23,10 +23,10 @@ module.exports = function calc(gd, trace) {
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x', msUTC);
-        pos = ya.makeCalcdata(trace, 'y', msUTC);
+        pos = ya.makeCalcdata(trace, 'y');
     } else {
         size = ya.makeCalcdata(trace, 'y', msUTC);
-        pos = xa.makeCalcdata(trace, 'x', msUTC);
+        pos = xa.makeCalcdata(trace, 'x');
     }
 
     // create the "calculated data" to plot
