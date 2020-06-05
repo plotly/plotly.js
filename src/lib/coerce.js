@@ -412,6 +412,15 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
     var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
     var valIn = propIn.get();
 
+    var attr = attributes[attribute];
+    var theDefault = (dflt !== undefined) ? dflt : (attr || {}).dflt;
+    if(
+        theDefault !== undefined &&
+        theDefault !== propOut
+    ) {
+        return propOut;
+    }
+
     return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
 
