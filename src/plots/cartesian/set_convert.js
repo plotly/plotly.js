@@ -90,7 +90,7 @@ module.exports = function setConvert(ax, fullLayout) {
      * - inserts a dummy arg so calendar is the 3rd arg (see notes below).
      * - defaults to ax.calendar
      */
-    function dt2ms(v, _, calendar) {
+    function dt2ms(v, _, calendar, msUTC) {
         // NOTE: Changed this behavior: previously we took any numeric value
         // to be a ms, even if it was a string that could be a bare year.
         // Now we convert it as a date if at all possible, and only try
@@ -99,6 +99,13 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ms === BADNUM) {
             if(isNumeric(v)) {
                 v = +v;
+                if(msUTC) {
+                    // For now it is only used
+                    // to fix bar length in milliseconds.
+                    // It could be applied in other places in v2
+                    return v;
+                }
+
                 // keep track of tenths of ms, that `new Date` will drop
                 // same logic as in Lib.ms2DateTime
                 var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
@@ -791,7 +798,7 @@ module.exports = function setConvert(ax, fullLayout) {
     //          the first letter of ax._id?)
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
-    ax.makeCalcdata = function(trace, axLetter) {
+    ax.makeCalcdata = function(trace, axLetter, msUTC) {
         var arrayIn, arrayOut, i, len;
 
         var axType = ax.type;
@@ -815,10 +822,10 @@ module.exports = function setConvert(ax, fullLayout) {
 
             arrayOut = new Array(len);
             for(i = 0; i < len; i++) {
-                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal, msUTC);
             }
         } else {
-            var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal) : 0;
+            var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal, false) : 0;
             var dv = (trace['d' + axLetter]) ? Number(trace['d' + axLetter]) : 1;
 
             // the opposing data, for size if we have x and dx etc

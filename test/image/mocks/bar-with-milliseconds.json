@@ -1,0 +1,51 @@
+{
+    "data": [
+        {
+            "base": [
+                "2020-02-02 00:00"
+            ],
+            "orientation": "h",
+            "type": "bar",
+            "x": [
+                86400000
+            ],
+            "y": [
+                1
+            ],
+            "yaxis": "y"
+        },
+        {
+            "base": [
+                "2020-02-02 00:00"
+            ],
+            "orientation": "h",
+            "type": "bar",
+            "x": [
+                "1970-01-02 00:00"
+            ],
+            "y": [
+                1
+            ],
+            "yaxis": "y2"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 400,
+        "xaxis": {
+            "type": "date"
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}

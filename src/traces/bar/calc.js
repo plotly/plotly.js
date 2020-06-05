@@ -19,11 +19,13 @@ module.exports = function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var size, pos;
 
+    var msUTC = !!(trace.base || trace.base === 0);
+
     if(trace.orientation === 'h') {
-        size = xa.makeCalcdata(trace, 'x');
+        size = xa.makeCalcdata(trace, 'x', msUTC);
         pos = ya.makeCalcdata(trace, 'y');
     } else {
-        size = ya.makeCalcdata(trace, 'y');
+        size = ya.makeCalcdata(trace, 'y', msUTC);
         pos = xa.makeCalcdata(trace, 'x');
     }
 

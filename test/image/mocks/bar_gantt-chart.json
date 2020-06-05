@@ -1,0 +1,90 @@
+{
+    "data": [
+        {
+            "base": [
+                "2020-03-01",
+                "2020-03-05",
+                "2020-03-05",
+                "2020-03-01",
+                "2020-03-06",
+                "2020-03-01",
+                "2020-03-07",
+                "2020-03-08",
+                "2020-03-09"
+            ],
+            "orientation": "h",
+            "type": "bar",
+            "x": [
+                345600000,
+                172800000,
+                259200000,
+                432000000,
+                86400000,
+                518400000,
+                302400000,
+                86400000,
+                172800000
+            ],
+            "marker": {
+                "colorscale": "Portland",
+                "color": [
+                    1,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0.9,
+                    0.3,
+                    1,
+                    1
+                ]
+            },
+            "y": [
+                "Activity A",
+                "Activity B",
+                "Activity C",
+                "Activity D",
+                "Activity E",
+                "Activity F",
+                "Activity X",
+                "Activity Y",
+                "Activity Z"
+            ],
+            "text": [
+                "4 days",
+                "2 days",
+                "3 days",
+                "5 days",
+                "1 day",
+                "6 days",
+                "3½ days",
+                "1 day",
+                "2 days"
+            ],
+            "textfont": { "size": 16 },
+            "textposition": "inside",
+            "insidetextanchor": "middle",
+            "hovertemplate": "%{y}<br>start: %{base}<br>duration: %{text}<br>end: %{x}"
+        }
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 500,
+        "title": {
+            "text": "Gantt chart using Plotly.js bar"
+        },
+        "xaxis": {
+            "gridwidth": 5,
+            "tickwidth": 5,
+            "ticklen": 10,
+            "type": "date"
+        },
+        "yaxis": {
+            "tickfont": {
+                "family": "Times New Roman",
+                "size": 16
+            },
+            "autorange": "reversed"
+        }
+    }
+}

@@ -2600,6 +2600,26 @@ describe('bar hover', function() {
             });
         });
     });
+
+    describe('gantt chart using milliseconds from base', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/bar-with-milliseconds.json'));
+
+            Plotly.newPlot(gd, mock.data, mock.layout)
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should display the correct bar length passed in milliseconds from base', function() {
+            var out = _hover(gd, 0.5, 0.75, 'y');
+
+            var xEnd = out.style[2];
+            expect(xEnd).not.toBe(1580670000000);
+            expect(xEnd).toBe(1580688000000);
+        });
+    });
 });
 
 describe('Text templates on bar traces:', function() {
