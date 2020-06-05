@@ -509,8 +509,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ----------------------------------------------------
 
 // ensure we have tick0, dtick, and tick rounding calculated
-axes.prepTicks = function(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
+axes.prepTicks = function(ax, opts) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -563,16 +563,16 @@ axes.prepTicks = function(ax) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax) {
-    axes.prepTicks(ax);
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
+axes.calcTicks = function calcTicks(ax, opts) {
+    axes.prepTicks(ax, opts);
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     // now that we've figured out the auto values for formatting
     // in case we're missing some ticktext, we can break out for array ticks
     if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // find the first tick
-    ax._tmin = axes.tickFirst(ax);
+    ax._tmin = axes.tickFirst(ax, opts);
 
     // add a tiny bit so we get ticks which may have rounded out
     var exRng = expandRange(rng);
@@ -962,9 +962,9 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
 };
 
 // calculate the first tick on an axis
-axes.tickFirst = function(ax) {
+axes.tickFirst = function(ax, opts) {
     var r2l = ax.r2l || Number;
-    var rng = Lib.simpleMap(ax.range, r2l);
+    var rng = Lib.simpleMap(ax.range, r2l, undefined, undefined, opts);
     var axrev = rng[1] < rng[0];
     var sRound = axrev ? Math.floor : Math.ceil;
     // add a tiny extra bit to make sure we get ticks
