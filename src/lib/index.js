@@ -257,10 +257,10 @@ lib.bBoxIntersect = function(a, b, pad) {
  * func: the function to apply
  * x1, x2: optional extra args
  */
-lib.simpleMap = function(array, func, x1, x2) {
+lib.simpleMap = function(array, func, x1, x2, opts) {
     var len = array.length;
     var out = new Array(len);
-    for(var i = 0; i < len; i++) out[i] = func(array[i], x1, x2);
+    for(var i = 0; i < len; i++) out[i] = func(array[i], x1, x2, opts);
     return out;
 };
 

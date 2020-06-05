@@ -69,7 +69,7 @@ function computeTickMarks(scene) {
                 var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
                 Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
             }
-            var dataTicks = Axes.calcTicks(axes);
+            var dataTicks = Axes.calcTicks(axes, { msUTC: true });
             for(var j = 0; j < dataTicks.length; ++j) {
                 dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
 
