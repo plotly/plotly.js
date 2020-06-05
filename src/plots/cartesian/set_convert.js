@@ -99,19 +99,18 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ms === BADNUM) {
             if(isNumeric(v)) {
                 v = +v;
-                // keep track of tenths of ms, that `new Date` will drop
-                // same logic as in Lib.ms2DateTime
-                var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
-                var msRounded = Math.round(v - msecTenths / 10);
-
-                var d = new Date(msRounded);
-                ms = dateTime2ms(d) + msecTenths / 10;
                 if(msUTC) {
                     // For now it is only used
                     // to fix bar length in milliseconds.
                     // It could be applied in other places in v2
-                    ms += d.getTimezoneOffset() * ONEMIN;
+                    return v;
                 }
+
+                // keep track of tenths of ms, that `new Date` will drop
+                // same logic as in Lib.ms2DateTime
+                var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
+                var msRounded = Math.round(v - msecTenths / 10);
+                ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
             } else return BADNUM;
         }
         return ms;
