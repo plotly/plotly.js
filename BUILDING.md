@@ -42,7 +42,7 @@ browserify index.js > bundle.js
 
 ## Angular CLI
 
-Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration. There is some work needed using a custom-webpack builder to get things going.
+Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
 
 1. Install [`@angular-builders/custom-webpack`](https://www.npmjs.com/package/@angular-builders/custom-webpack) and [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader)
 2. Create a new `extra-webpack.config.js` beside `angular.json`.
