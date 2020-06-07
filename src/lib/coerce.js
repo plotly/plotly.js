@@ -389,15 +389,15 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
     var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
     coerceFunction(valIn, propOut, dflt, opts);
 
-    var out = propOut.get();
+    var valOut = propOut.get();
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
-    if(template && out === dflt && !validate(valIn, opts)) {
+    if(template && valOut === dflt && !validate(valIn, opts)) {
         valIn = nestedProperty(template, attribute).get();
         coerceFunction(valIn, propOut, dflt, opts);
-        out = propOut.get();
+        valOut = propOut.get();
     }
-    return out;
+    return valOut;
 };
 
 /**
