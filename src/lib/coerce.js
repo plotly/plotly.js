@@ -408,9 +408,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var propIn = nestedProperty(containerIn, attribute);
     var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
-    var valIn = propIn.get();
 
     var attr = attributes[attribute];
     var theDefault = (dflt !== undefined) ? dflt : (attr || {}).dflt;
@@ -421,6 +419,7 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
         return propOut;
     }
 
+    var valIn = nestedProperty(containerIn, attribute).get();
     return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
 
