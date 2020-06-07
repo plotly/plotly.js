@@ -361,6 +361,10 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
+    return _coerce(containerIn, containerOut, attributes, attribute, dflt).value;
+};
+
+function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     var opts = nestedProperty(attributes, attribute).get();
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
@@ -383,7 +387,10 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
      */
     if(opts.arrayOk && isArrayOrTypedArray(valIn)) {
         propOut.set(valIn);
-        return valIn;
+        return {
+            value: valIn,
+            default: dflt
+        };
     }
 
     var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
@@ -397,8 +404,11 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
         coerceFunction(valIn, propOut, dflt, opts);
         valOut = propOut.get();
     }
-    return valOut;
-};
+    return {
+        value: valOut,
+        default: dflt
+    };
+}
 
 /**
  * Variation on coerce
@@ -408,11 +418,11 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var valOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
-
-    var attr = attributes[attribute];
-    var theDefault = (dflt !== undefined) ? dflt : (attr || {}).dflt;
+    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var valOut = out.value;
+    var theDefault = out.default;
     if(
+        valOut !== undefined &&
         theDefault !== undefined &&
         theDefault !== valOut
     ) {
