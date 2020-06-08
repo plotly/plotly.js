@@ -420,11 +420,9 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
     var out = _coerce(containerIn, containerOut, attributes, attribute, dflt);
     var valOut = out.value;
-    var theDefault = out.default;
     if(
         valOut !== undefined &&
-        theDefault !== undefined &&
-        theDefault !== valOut
+        valOut !== out.default
     ) {
         return valOut;
     }
