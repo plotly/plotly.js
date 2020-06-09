@@ -361,11 +361,14 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    return _coerce(containerIn, containerOut, attributes, attribute, dflt).value;
+    return _coerce(containerIn, containerOut, attributes, attribute, dflt).val;
 };
 
 function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     var opts = nestedProperty(attributes, attribute).get();
+    if(dflt === undefined) dflt = opts.dflt;
+    var src = ''; // i.e. default
+
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
     var valIn = propIn.get();
@@ -373,11 +376,11 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     var template = containerOut._template;
     if(valIn === undefined && template) {
         valIn = nestedProperty(template, attribute).get();
+        if(valIn !== undefined) src = 't'; // template
+
         // already used the template value, so short-circuit the second check
         template = 0;
     }
-
-    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking
@@ -388,8 +391,9 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     if(opts.arrayOk && isArrayOrTypedArray(valIn)) {
         propOut.set(valIn);
         return {
-            value: valIn,
-            default: dflt
+            inp: valIn,
+            val: valIn,
+            src: 'c' // container
         };
     }
 
@@ -397,16 +401,22 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     coerceFunction(valIn, propOut, dflt, opts);
 
     var valOut = propOut.get();
+    if(valOut !== undefined) src = 'c'; // container
+
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
     if(template && valOut === dflt && !validate(valIn, opts)) {
         valIn = nestedProperty(template, attribute).get();
         coerceFunction(valIn, propOut, dflt, opts);
         valOut = propOut.get();
+
+        if(valOut !== undefined) src = 't'; // template
     }
+
     return {
-        value: valOut,
-        default: dflt
+        inp: valIn,
+        val: valOut,
+        src: src
     };
 }
 
@@ -419,16 +429,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
     var out = _coerce(containerIn, containerOut, attributes, attribute, dflt);
-    var valOut = out.value;
-    if(
-        valOut !== undefined &&
-        valOut !== out.default
-    ) {
-        return valOut;
-    }
-
-    var valIn = nestedProperty(containerIn, attribute).get();
-    return (valIn !== undefined && valIn !== null) ? valOut : false;
+    return (out.src && out.inp !== undefined) ? out.val : false;
 };
 
 /*
