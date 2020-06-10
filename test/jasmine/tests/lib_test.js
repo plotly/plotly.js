@@ -778,7 +778,7 @@ describe('Test lib.js:', function() {
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
 
-            it('should set and return the default if the user input is not valid', function() {
+            it('should set the default and return false if the user input is not valid', function() {
                 var colVal = 'r';
                 var sizeVal = 'aaaaah!';
                 var attrs = {
@@ -793,7 +793,7 @@ describe('Test lib.js:', function() {
                 var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
                 expect(colOut).toBe('rgba(0, 0, 0, 0)');
-                expect(sizeOut).toBe(outObj.testMarker.testSize);
+                expect(colOut).toBe(outObj.testMarker.testColor);
                 expect(sizeOut).toBe(20);
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
