@@ -798,6 +798,74 @@ describe('Test lib.js:', function() {
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
 
+            it('should set the user input', function() {
+                var colVal = 'red';
+                var sizeVal = '1e2';
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('red');
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(100);
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
+            it('should set to template if the container input is not valid', function() {
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {
+                    testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                };
+                var outObj = {
+                    _template: {
+                        testMarker: {testColor: 'red', testSize: '1e2'}
+                    }
+                };
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('red');
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(100);
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
+            it('should set to default if the both container and template inputs are not valid', function() {
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {
+                    testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                };
+                var outObj = {
+                    _template: {
+                        testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                    }
+                };
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('rgba(0, 0, 0, 0)');
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(20);
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
             it('should return false if there is no user input', function() {
                 var colVal = null;
                 var sizeVal; // undefined
