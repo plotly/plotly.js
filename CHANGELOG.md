@@ -9,6 +9,30 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.2] -- 2020-06-10
+### Changed
+ - Bump `regl` dependency to v1.6.1 [#4881]
+ - Bump `ndarray` dependency to v1.0.19 [#4910]
+ - Bump `mapbox-gl` dependency to v1.10.1 [#4859]
+ - Improve docs about building Plotly with Angular [#4182]
+
+### Fixed
+ - Fix wheel event for IE-11 [#4385]
+ - Fix `plot_bgcolor` react [#4816]
+ - Fix `legend.title` react [#4827]
+ - Fix `rangebreaks` on `candlestick` & `ohlc` traces [#4814]
+ - Fix `rangebreaks` on `heatmap` traces with 2-D `z` array [#4821]
+ - Fix `rangebreaks` on `histogram2d` traces [#4829]
+ - Fix `rangebreaks` overlapping and tick positions [#4831]
+ - Fix "array" `tickmode` on date & log axes [#4851]
+ - Fix category order of matching axes when calling react [#4832]
+ - Fix for bypassing non-string ids during matching axes [#4858]
+ - Fix selection of single value `dimensions` in `parcoords` traces [#4878]
+ - Fix `bar` lengths in milliseconds from `base` [#4900]
+ - Fix gl3d ticks when converting dates to milliseconds
+   (regression introduced in 1.21.0) [#4903]
+
+
 ## [1.54.1] -- 2020-05-04
 
 ### Changed
