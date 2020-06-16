@@ -9,6 +9,11 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.3] -- 2020-06-16
+### Fixed
+ - Fix `autosize` case of hidden div with non-px size [#4925]
+
+
 ## [1.54.2] -- 2020-06-10
 ### Changed
  - Bump `regl` dependency to v1.6.1 [#4881]
