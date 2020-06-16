@@ -364,7 +364,9 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
     return _coerce(containerIn, containerOut, attributes, attribute, dflt).val;
 };
 
-function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
+function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
+    var shouldValidate = (opts || {}).shouldValidate;
+
     var attr = nestedProperty(attributes, attribute).get();
     if(dflt === undefined) dflt = attr.dflt;
     var src = ''; // i.e. default
@@ -376,7 +378,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     var template = containerOut._template;
     if(valIn === undefined && template) {
         valIn = nestedProperty(template, attribute).get();
-        if(valIn !== undefined) src = 't'; // template
+        if(valIn !== undefined && shouldValidate && validate(valIn, attr)) src = 't'; // template
 
         // already used the template value, so short-circuit the second check
         template = 0;
@@ -401,7 +403,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
     coerceFunction(valIn, propOut, dflt, attr);
 
     var valOut = propOut.get();
-    if(valOut !== undefined) src = 'c'; // container
+    if(valOut !== undefined && shouldValidate && validate(valIn, attr)) src = 'c'; // container
 
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
@@ -410,7 +412,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
         coerceFunction(valIn, propOut, dflt, attr);
         valOut = propOut.get();
 
-        if(valOut !== undefined) src = 't'; // template
+        if(valOut !== undefined && shouldValidate && validate(valIn, attr)) src = 't'; // template
     }
 
     return {
@@ -422,13 +424,17 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
 
 /**
  * Variation on coerce
+ * useful when setting an attribute to a valid value
+ * can change the default for another attribute.
  *
  * Uses coerce to get attribute value if user input is valid,
  * returns attribute default if user input it not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt, {
+        shouldValidate: true
+    });
     return (out.src && out.inp !== undefined) ? out.val : false;
 };
 
