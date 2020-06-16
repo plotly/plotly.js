@@ -365,8 +365,8 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
 };
 
 function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
-    var opts = nestedProperty(attributes, attribute).get();
-    if(dflt === undefined) dflt = opts.dflt;
+    var attr = nestedProperty(attributes, attribute).get();
+    if(dflt === undefined) dflt = attr.dflt;
     var src = ''; // i.e. default
 
     var propIn = nestedProperty(containerIn, attribute);
@@ -388,7 +388,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(opts.arrayOk && isArrayOrTypedArray(valIn)) {
+    if(attr.arrayOk && isArrayOrTypedArray(valIn)) {
         propOut.set(valIn);
         return {
             inp: valIn,
@@ -397,17 +397,17 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt) {
         };
     }
 
-    var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
-    coerceFunction(valIn, propOut, dflt, opts);
+    var coerceFunction = exports.valObjectMeta[attr.valType].coerceFunction;
+    coerceFunction(valIn, propOut, dflt, attr);
 
     var valOut = propOut.get();
     if(valOut !== undefined) src = 'c'; // container
 
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
-    if(template && valOut === dflt && !validate(valIn, opts)) {
+    if(template && valOut === dflt && !validate(valIn, attr)) {
         valIn = nestedProperty(template, attribute).get();
-        coerceFunction(valIn, propOut, dflt, opts);
+        coerceFunction(valIn, propOut, dflt, attr);
         valOut = propOut.get();
 
         if(valOut !== undefined) src = 't'; // template
