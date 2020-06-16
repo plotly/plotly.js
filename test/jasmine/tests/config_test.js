@@ -193,6 +193,33 @@ describe('config argument', function() {
 
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
+
+        [
+            {display: 'none', dflt: true},
+            {display: '', dflt: false}
+        ].forEach(function(spec) {
+            it('ignores percent sizes when container is hidden', function(done) {
+                gd.style.width = '100%';
+                gd.style.height = '100%';
+                gd.style.display = spec.display;
+
+                var dfltWidth = Plots.layoutAttributes.width.dflt;
+                var dfltHeight = Plots.layoutAttributes.height.dflt;
+
+                Plotly.plot(gd, data, {autosize: true})
+                .then(function() {
+                    if(spec.dflt) {
+                        expect(gd._fullLayout.width).toBe(dfltWidth);
+                        expect(gd._fullLayout.height).toBe(dfltHeight);
+                    } else {
+                        expect(gd._fullLayout.width).not.toBe(dfltWidth);
+                        expect(gd._fullLayout.height).not.toBe(dfltHeight);
+                    }
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 
     describe('showLink attribute', function() {
