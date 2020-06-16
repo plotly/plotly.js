@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.54.2
+* plotly.js (cartesian) v1.54.3
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -65402,6 +65402,15 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     )(layoutIn, layoutOut, coerce);
 };
 
+function getComputedSize(attr) {
+    return (
+        (typeof attr === 'string') &&
+        (attr.substr(attr.length - 2) === 'px') &&
+        parseFloat(attr)
+    );
+}
+
+
 plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
     var context = gd._context || {};
     var frameMargins = context.frameMargins;
@@ -65428,8 +65437,8 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         // but don't enforce any ratio restrictions
         var computedStyle = isPlotDiv ? window.getComputedStyle(gd) : {};
 
-        newWidth = parseFloat(computedStyle.width) || parseFloat(computedStyle.maxWidth) || fullLayout.width;
-        newHeight = parseFloat(computedStyle.height) || parseFloat(computedStyle.maxHeight) || fullLayout.height;
+        newWidth = getComputedSize(computedStyle.width) || getComputedSize(computedStyle.maxWidth) || fullLayout.width;
+        newHeight = getComputedSize(computedStyle.height) || getComputedSize(computedStyle.maxHeight) || fullLayout.height;
 
         if(isNumeric(frameMargins) && frameMargins > 0) {
             var factor = 1 - 2 * frameMargins;
@@ -89947,7 +89956,7 @@ module.exports = function style(gd) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.2';
+exports.version = '1.54.3';
 
 },{}]},{},[11])(11)
 });
