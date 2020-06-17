@@ -369,7 +369,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
 
     var attr = nestedProperty(attributes, attribute).get();
     if(dflt === undefined) dflt = attr.dflt;
-    var src = ''; // i.e. default
+    var src = false;
 
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
@@ -378,7 +378,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
     var template = containerOut._template;
     if(valIn === undefined && template) {
         valIn = nestedProperty(template, attribute).get();
-        if(valIn !== undefined && shouldValidate && validate(valIn, attr)) src = 't'; // template
+        src = (valIn !== undefined);
 
         // already used the template value, so short-circuit the second check
         template = 0;
@@ -395,7 +395,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
         return {
             inp: valIn,
             val: valIn,
-            src: 'c' // container
+            src: true
         };
     }
 
@@ -403,7 +403,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
     coerceFunction(valIn, propOut, dflt, attr);
 
     var valOut = propOut.get();
-    if(valOut !== undefined && shouldValidate && validate(valIn, attr)) src = 'c'; // container
+    src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
 
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
@@ -412,7 +412,7 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
         coerceFunction(valIn, propOut, dflt, attr);
         valOut = propOut.get();
 
-        if(valOut !== undefined && shouldValidate && validate(valIn, attr)) src = 't'; // template
+        src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
     }
 
     return {
