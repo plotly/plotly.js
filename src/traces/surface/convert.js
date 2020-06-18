@@ -13,7 +13,6 @@ var createSurface = require('gl-surface3d');
 
 var ndarray = require('ndarray');
 var homography = require('ndarray-homography');
-var fill = require('ndarray-fill');
 
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
@@ -511,9 +510,13 @@ proto.update = function(data) {
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
     ];
-    fill(coords[0], function(row, col) { return rawCoords[0][row][col]; });
-    fill(coords[1], function(row, col) { return rawCoords[1][row][col]; });
-    fill(coords[2], function(row, col) { return rawCoords[2][row][col]; });
+    for(i = 0; i < 3; i++) {
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                coords[i].set(j, k, rawCoords[i][j][k]);
+            }
+        }
+    }
     rawCoords = []; // free memory
 
     var params = {
@@ -543,9 +546,11 @@ proto.update = function(data) {
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 
-        fill(intensity, function(row, col) {
-            return data.surfacecolor[col][row];
-        });
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                intensity.set(j, k, data.surfacecolor[k][j]);
+            }
+        }
 
         coords.push(intensity);
     } else {
