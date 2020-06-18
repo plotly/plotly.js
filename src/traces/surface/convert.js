@@ -12,7 +12,6 @@
 var createSurface = require('gl-surface3d');
 
 var ndarray = require('ndarray');
-var invert = require('gl-matrix-invert');
 var ndarrayInterp2d = require('ndarray-linear-interpolate').d2;
 
 var interp2d = require('../heatmap/interp2d');
@@ -324,22 +323,9 @@ proto.estimateScale = function(resSrc, axis) {
 // see https://github.com/scijs/ndarray-homography
 
 function fnHomography(out, inp, X) {
-    var n = 2; // we only use 2 dimensions here
-    var i, j;
-    for(i = 0; i < n; ++i) {
-        out[i] = X[(n + 1) * n + i];
-        for(j = 0; j < n; ++j) {
-            out[i] += X[(n + 1) * j + i] * inp[j];
-        }
-    }
-    var w = X[(n + 1) * (n + 1) - 1];
-    for(j = 0; j < n; ++j) {
-        w += X[(n + 1) * j + n] * inp[j];
-    }
-    var wr = 1 / w;
-    for(i = 0; i < n; ++i) {
-        out[i] *= wr;
-    }
+    var w = X[8] + X[2] * inp[0] + X[5] * inp[1];
+    out[0] = (X[6] + X[0] * inp[0] + X[3] * inp[1]) / w;
+    out[1] = (X[7] + X[1] * inp[0] + X[4] * inp[1]) / w;
     return out;
 }
 
@@ -378,11 +364,11 @@ proto.refineCoords = function(coords) {
     var padWidth = 1 + width + 1;
     var padHeight = 1 + height + 1;
     var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
-    var X = invert([], [
-        scaleW, 0, 0,
-        0, scaleH, 0,
+    var X = [
+        1 / scaleW, 0, 0,
+        0, 1 / scaleH, 0,
         0, 0, 1
-    ]);
+    ];
 
     for(var i = 0; i < coords.length; ++i) {
         this.surface.padField(padImg, coords[i]);
