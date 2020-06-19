@@ -100,7 +100,7 @@
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",
     "ndarray": "^1.0.19",
-    "ndarray-homography": "^1.0.0",
+    "ndarray-linear-interpolate": "^1.0.0",
     "parse-svg-path": "^0.1.2",
     "point-cluster": "^3.1.8",
     "polybooljs": "^1.2.0",
