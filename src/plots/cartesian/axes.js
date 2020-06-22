@@ -2100,8 +2100,7 @@ function getDividerVals(ax, vals) {
     var out = [];
     var i, current;
 
-    var xvals = vals.map(a => a.x);
-    var reversed = (xvals[1] < xvals[0]);
+    var reversed = (vals[vals.length - 1].x < vals[0].x);
 
     // never used for labels;
     // no need to worry about the other tickTextObj keys
