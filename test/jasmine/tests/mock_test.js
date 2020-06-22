@@ -2078,7 +2078,7 @@ describe('@noCI mock validation', function() {
             it('validating mock: "' + name + '"', function() {
                 var out = Plotly.validate(
                     figure.data,
-                    figure.layout || {} // shouldn't Plotly.validate handle undefined layout?
+                    figure.layout
                 );
                 assert(name, out);
             });
