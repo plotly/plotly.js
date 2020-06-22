@@ -9,6 +9,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.4] -- 2020-06-22
+### Changed
+ - Bump `ecstatic`, `gl-selet-static`, `gl-plot2d` & `gl-plot3d` and drop `cwise` to simplify build process & address security warnings [#4929, #4930, #4934]
+
+### Fixed
+ - Fix setting width and color of lines via template various attributes namely `tickcolor`, `tickwidth`, `ticklen`, `linecolor`, `linewidth`, `zerolinecolor`, `zerolinewidth`, `gridcolor`, `gridwidth`, etc. [#4904]
+
+
 ## [1.54.3] -- 2020-06-16
 ### Fixed
  - Fix `autosize` case of hidden div with non-px size [#4925]
