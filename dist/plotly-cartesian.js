@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.54.3
+* plotly.js (cartesian) v1.54.4
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -37441,19 +37441,28 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var opts = nestedProperty(attributes, attribute).get();
+    return _coerce(containerIn, containerOut, attributes, attribute, dflt).val;
+};
+
+function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
+    var shouldValidate = (opts || {}).shouldValidate;
+
+    var attr = nestedProperty(attributes, attribute).get();
+    if(dflt === undefined) dflt = attr.dflt;
+    var src = false;
+
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
-    var v = propIn.get();
+    var valIn = propIn.get();
 
     var template = containerOut._template;
-    if(v === undefined && template) {
-        v = nestedProperty(template, attribute).get();
+    if(valIn === undefined && template) {
+        valIn = nestedProperty(template, attribute).get();
+        src = (valIn !== undefined);
+
         // already used the template value, so short-circuit the second check
         template = 0;
     }
-
-    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking
@@ -37461,38 +37470,52 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(opts.arrayOk && isArrayOrTypedArray(v)) {
-        propOut.set(v);
-        return v;
+    if(attr.arrayOk && isArrayOrTypedArray(valIn)) {
+        propOut.set(valIn);
+        return {
+            inp: valIn,
+            val: valIn,
+            src: true
+        };
     }
 
-    var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
-    coerceFunction(v, propOut, dflt, opts);
+    var coerceFunction = exports.valObjectMeta[attr.valType].coerceFunction;
+    coerceFunction(valIn, propOut, dflt, attr);
 
-    var out = propOut.get();
+    var valOut = propOut.get();
+    src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
+
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
-    if(template && out === dflt && !validate(v, opts)) {
-        v = nestedProperty(template, attribute).get();
-        coerceFunction(v, propOut, dflt, opts);
-        out = propOut.get();
+    if(template && valOut === dflt && !validate(valIn, attr)) {
+        valIn = nestedProperty(template, attribute).get();
+        coerceFunction(valIn, propOut, dflt, attr);
+        valOut = propOut.get();
+
+        src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
     }
-    return out;
-};
+
+    return {
+        inp: valIn,
+        val: valOut,
+        src: src
+    };
+}
 
 /**
  * Variation on coerce
+ * useful when setting an attribute to a valid value
+ * can change the default for another attribute.
  *
  * Uses coerce to get attribute value if user input is valid,
  * returns attribute default if user input it not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var propIn = nestedProperty(containerIn, attribute);
-    var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
-    var valIn = propIn.get();
-
-    return (valIn !== undefined && valIn !== null) ? propOut : false;
+    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt, {
+        shouldValidate: true
+    });
+    return (out.src && out.inp !== undefined) ? out.val : false;
 };
 
 /*
@@ -89956,7 +89979,7 @@ module.exports = function style(gd) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.3';
+exports.version = '1.54.4';
 
 },{}]},{},[11])(11)
 });
