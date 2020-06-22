@@ -52,8 +52,11 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
 }
 
 function plotBoxAndWhiskers(sel, axes, trace, t) {
-    var posAxis = axes.pos;
+    var isHorizontal = trace.orientation === 'h';
     var valAxis = axes.val;
+    var posAxis = axes.pos;
+    var posHasRangeBreaks = !!posAxis.rangebreaks;
+
     var bPos = t.bPos;
     var wdPos = t.wdPos || 0;
     var bPosPxOffset = t.bPosPxOffset || 0;
@@ -87,11 +90,15 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         if(d.empty) return 'M0,0Z';
 
         var lcenter = posAxis.c2l(d.pos + bPos, true);
-        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+
         var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
         var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
-        var posw0 = posAxis.l2p(lcenter - wdPos) + bPosPxOffset;
-        var posw1 = posAxis.l2p(lcenter + wdPos) + bPosPxOffset;
+        var posc = posHasRangeBreaks ? (pos0 + pos1) / 2 : posAxis.l2p(lcenter) + bPosPxOffset;
+
+        var r = trace.whiskerwidth;
+        var posw0 = posHasRangeBreaks ? pos0 * r + (1 - r) * posc : posAxis.l2p(lcenter - wdPos) + bPosPxOffset;
+        var posw1 = posHasRangeBreaks ? pos1 * r + (1 - r) * posc : posAxis.l2p(lcenter + wdPos) + bPosPxOffset;
+
         var posm0 = posAxis.l2p(lcenter - bdPos0 * nw) + bPosPxOffset;
         var posm1 = posAxis.l2p(lcenter + bdPos1 * nw) + bPosPxOffset;
         var q1 = valAxis.c2p(d.q1, true);
@@ -115,30 +122,45 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         var ln = valAxis.c2p(d.ln, true);
         var un = valAxis.c2p(d.un, true);
 
-        if(trace.orientation === 'h') {
+        if(isHorizontal) {
             d3.select(this).attr('d',
                 'M' + m + ',' + posm0 + 'V' + posm1 + // median line
                 'M' + q1 + ',' + pos0 + 'V' + pos1 + // left edge
-                (notched ? 'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 : '') + // top notched edge
+                (notched ?
+                    'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 :
+                    ''
+                ) + // top notched edge
                 'H' + q3 + // end of the top edge
                 'V' + pos0 + // right edge
                 (notched ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
                 'Z' + // end of the box
                 'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
-                ((whiskerWidth === 0) ? '' : // whisker caps
-                    'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1));
+                (whiskerWidth === 0 ?
+                    '' : // whisker caps
+                    'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1
+                )
+            );
         } else {
             d3.select(this).attr('d',
                 'M' + posm0 + ',' + m + 'H' + posm1 + // median line
                 'M' + pos0 + ',' + q1 + 'H' + pos1 + // top of the box
-                (notched ? 'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un : '') + // notched right edge
+                (notched ?
+                    'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un :
+                    ''
+                ) + // notched right edge
                 'V' + q3 + // end of the right edge
                 'H' + pos0 + // bottom of the box
-                (notched ? 'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln : '') + // notched left edge
+                (notched ?
+                    'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln :
+                    ''
+                ) + // notched left edge
                 'Z' + // end of the box
                 'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
-                ((whiskerWidth === 0) ? '' : // whisker caps
-                    'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1));
+                (whiskerWidth === 0 ?
+                    '' : // whisker caps
+                    'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1
+                )
+            );
         }
     });
 }
@@ -254,8 +276,10 @@ function plotPoints(sel, axes, trace, t) {
 }
 
 function plotBoxMean(sel, axes, trace, t) {
-    var posAxis = axes.pos;
     var valAxis = axes.val;
+    var posAxis = axes.pos;
+    var posHasRangeBreaks = !!posAxis.rangebreaks;
+
     var bPos = t.bPos;
     var bPosPxOffset = t.bPosPxOffset || 0;
 
@@ -289,9 +313,11 @@ function plotBoxMean(sel, axes, trace, t) {
 
     paths.each(function(d) {
         var lcenter = posAxis.c2l(d.pos + bPos, true);
-        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+
         var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
         var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
+        var posc = posHasRangeBreaks ? (pos0 + pos1) / 2 : posAxis.l2p(lcenter) + bPosPxOffset;
+
         var m = valAxis.c2p(d.mean, true);
         var sl = valAxis.c2p(d.mean - d.sd, true);
         var sh = valAxis.c2p(d.mean + d.sd, true);

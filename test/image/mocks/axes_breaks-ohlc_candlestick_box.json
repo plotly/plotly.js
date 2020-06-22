@@ -1,0 +1,156 @@
+{
+    "data": [
+        {
+            "name": "candlestick",
+            "type": "candlestick",
+            "x": [
+                "2017-01-09 00:00",
+                "2017-01-16 00:00"
+            ],
+            "high": [
+                3,
+                4
+            ],
+            "open": [
+                2,
+                3
+            ],
+            "close": [
+                1,
+                2
+            ],
+            "low": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "box",
+            "type": "box",
+            "yaxis": "y2",
+            "x": [
+                "2017-01-09 00:00",
+                "2017-01-16 00:00"
+            ],
+            "upperfence": [
+                4,
+                5
+            ],
+            "q3": [
+                3,
+                4
+            ],
+            "median": [
+                2,
+                3
+            ],
+            "q1": [
+                1,
+                2
+            ],
+            "lowerfence": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "box",
+            "type": "box",
+            "yaxis": "y3",
+            "whiskerwidth": 1,
+            "x": [
+                "2017-01-09 00:00",
+                "2017-01-16 00:00"
+            ],
+            "upperfence": [
+                4,
+                5
+            ],
+            "q3": [
+                3,
+                4
+            ],
+            "median": [
+                2,
+                3
+            ],
+            "q1": [
+                1,
+                2
+            ],
+            "lowerfence": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "ohlc",
+            "type": "ohlc",
+            "yaxis": "y4",
+            "x": [
+                "2017-01-09 00:00",
+                "2017-01-16 00:00"
+            ],
+            "high": [
+                3,
+                4
+            ],
+            "open": [
+                2,
+                3
+            ],
+            "close": [
+                1,
+                2
+            ],
+            "low": [
+                0,
+                1
+            ]
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 800,
+        "showlegend": false,
+        "xaxis": {
+            "rangebreaks": [
+                {
+                    "pattern": "day of week",
+                    "bounds": [
+                        6,
+                        1
+                    ]
+                }
+            ]
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [
+                0.225,
+                0.375
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x",
+            "domain": [
+                0.425,
+                0.575
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x",
+            "domain": [
+                0.625,
+                0.775
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x",
+            "domain": [
+                0.825,
+                1
+            ]
+        }
+    }
+}
