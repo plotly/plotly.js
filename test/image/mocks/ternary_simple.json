@@ -33,7 +33,7 @@
                 "ticks": "outside",
                 "showgrid": true,
                 "color": "#0f0",
-                "title": "chocolate",
+                "title": {"text": "chocolate"},
                 "min": 0.2
             },
             "caxis": {

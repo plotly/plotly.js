@@ -34,11 +34,16 @@ and more.
 
 ### Install with npm
 
-```bash
+```sh
 npm install plotly.js-dist
 ```
 
-and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = require('plotly.js-dist');`.
+and import plotly.js as 
+```js
+import Plotly from 'plotly.js-dist'
+// Or using require,
+var Plotly = require('plotly.js-dist')
+```
 
 ### Use the plotly.js CDN hosted by Fastly
 

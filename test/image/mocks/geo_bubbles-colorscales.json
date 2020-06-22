@@ -270,7 +270,7 @@
         }
     ],
     "layout": {
-        "title": "scattergeo trace with colorscales for both marker color and marker line color",
+        "title": {"text": "scattergeo trace with colorscales for both marker color and marker line color"},
         "showlegend": true
     }
 }

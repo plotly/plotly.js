@@ -14,14 +14,14 @@
         "eye": {"x": 2.1, "y": 0.1, "z": 0.9}
       },
       "xaxis": {
-        "title": ""
+        "title": {"text": ""}
       },
       "yaxis": {
-        "title": ""
+        "title": {"text": ""}
       },
       "zaxis": {
         "type": "log",
-        "title": ""
+        "title": {"text": ""}
       },
       "annotations": [{
         "showarrow": false,

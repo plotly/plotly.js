@@ -48,7 +48,7 @@
         }
     ],
     "layout": {
-        "title": "Bar stack toggle legend group",
+        "title": {"text": "Bar stack toggle legend group"},
         "barmode": "stack",
         "legend": {},
         "xaxis": {

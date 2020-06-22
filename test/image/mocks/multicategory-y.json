@@ -40,13 +40,13 @@
       "ygap": 0.2
     },
     "yaxis": {
-      "title": "MULTI-CATEGORY",
+      "title": {"text": "MULTI-CATEGORY"},
       "tickfont": {"size": 16},
       "ticks": "outside",
       "tickson": "boundaries"
     },
     "yaxis2": {
-      "title": "MULTI-CATEGORY",
+      "title": {"text": "MULTI-CATEGORY"},
       "tickfont": {"size": 12},
       "ticks": "outside",
       "tickson": "boundaries"

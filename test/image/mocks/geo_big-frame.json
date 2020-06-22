@@ -38,7 +38,7 @@
         }
     ],
     "layout": {
-        "title": "Big frame / up-side down map",
+        "title": {"text": "Big frame / up-side down map"},
         "geo": {
             "projection": {
                 "rotation": {

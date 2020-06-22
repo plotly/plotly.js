@@ -112,7 +112,7 @@
       },
       "yaxis":{
          "zeroline":false,
-         "title":"normalized moisture"
+         "title":{"text":"normalized moisture"}
       },
       "boxmode":"group"
    }

@@ -235,8 +235,31 @@ module.exports = templatedArray('shape', {
         role: 'info',
         editType: 'arraydraw',
         description: [
-            'Sets the color filling the shape\'s interior.'
+            'Sets the color filling the shape\'s interior. Only applies to closed shapes.'
         ].join(' ')
     },
+    fillrule: {
+        valType: 'enumerated',
+        values: ['evenodd', 'nonzero'],
+        dflt: 'evenodd',
+        role: 'info',
+        editType: 'arraydraw',
+        description: [
+            'Determines which regions of complex paths constitute the interior.',
+            'For more info please visit https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule'
+        ].join(' ')
+    },
+    editable: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: false,
+        editType: 'calc+arraydraw',
+        description: [
+            'Determines whether the shape could be activated for edit or not.',
+            'Has no effect when the older editable shapes mode is enabled via',
+            '`config.editable` or `config.edits.shapePosition`.'
+        ].join(' ')
+    },
+
     editType: 'arraydraw'
 });

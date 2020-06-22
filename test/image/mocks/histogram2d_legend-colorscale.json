@@ -138,7 +138,7 @@
         }
     ],
     "layout": {
-        "title": "<b>histogram2dcontour legends</b><br>red-blue should be equal to reversed blue-red.<br>i.e. display identical legends for identical graphs",
+        "title": {"text": "<b>histogram2dcontour legends</b><br>red-blue should be equal to reversed blue-red.<br>i.e. display identical legends for identical graphs"},
         "margin": {
             "t": 125,
             "b": 25

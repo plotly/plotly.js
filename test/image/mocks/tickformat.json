@@ -6,7 +6,7 @@
         }
     ],
     "layout": {
-        "title": "tickformat",
+        "title": {"text": "tickformat"},
         "xaxis": {
             "tickformat": "%b %y",
             "tickprefix": "~~ ",

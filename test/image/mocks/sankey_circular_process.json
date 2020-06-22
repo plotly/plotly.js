@@ -20,7 +20,7 @@
     }
   }],
   "layout": {
-    "title": "Example process",
+    "title": {"text": "Example process"},
     "margin": {"t": 100, "b": 0, "l": 25, "r": 25},
     "width": 1000,
     "height": 800

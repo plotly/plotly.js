@@ -1946,7 +1946,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         hasDragData: true,
                         selectingCnt: 1,
                         selectedCnt: 0,
-                        selectOutline: 'M20,20L20,220L220,220L220,20L20,20Z'
+                        selectOutline: 'M20,20L20,220L220,220L220,20Z'
                     }))
                     .then(delay(100))
                     .then(_assert('while holding on mouse', {
@@ -1954,7 +1954,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         hasDragData: true,
                         selectingCnt: 1,
                         selectedCnt: 0,
-                        selectOutline: 'M20,20L20,220L220,220L220,20L20,20Z'
+                        selectOutline: 'M20,20L20,220L220,220L220,20Z'
                     }))
                     .then(drag.end);
             })

@@ -73,12 +73,14 @@
         }
     ],
     "layout": {
-        "title": "Canadian cities",
+        "title": {
+            "text": "Canadian cities",
+            "font": {
+                "size": 28
+            }
+        },
         "font": {
             "family": "Droid Serif, serif"
-        },
-        "titlefont": {
-            "size": 28
         },
         "geo": {
             "scope": "north america",

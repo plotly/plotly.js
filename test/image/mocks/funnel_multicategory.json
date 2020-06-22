@@ -43,7 +43,9 @@
     "height": 600,
     "margin": { "l": 50, "r": 50, "t": 50, "b": 50 },
     "xaxis": {
-      "title": "MULTI-CATEGORY two stacked funnels with arrayOK text and one waterfall with textinfo",
+      "title": {
+        "text": "MULTI-CATEGORY two stacked funnels with arrayOK text and one waterfall with textinfo"
+      },
       "tickfont": {"size": 16},
       "ticks": "outside",
       "tickprefix": "[",

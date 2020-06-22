@@ -25,6 +25,6 @@
     "name": "gap in x"
   }],
   "layout": {
-    "title": "connect gaps test"
+    "title": {"text": "connect gaps test"}
   }
 }

@@ -178,7 +178,9 @@
         }
     ],
     "layout": {
-        "title": "scaled bubbles with non-numeric marker sizes",
+        "title": {
+            "text": "scaled bubbles with non-numeric marker sizes"
+        },
         "showlegend": true
     }
 }

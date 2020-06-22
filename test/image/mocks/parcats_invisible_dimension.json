@@ -4,7 +4,7 @@
       "domain": {"x": [0.125, 0.625],"y": [0.25, 0.75]},
       "dimensions":[
         {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1]},
-        {"label": "Two",
+        {
           "values": ["A", "B", "A", "B", "C", "C", "A", "B", "C"],
           "visible": false},
         {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11]}]}

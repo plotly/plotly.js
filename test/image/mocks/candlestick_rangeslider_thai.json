@@ -1951,7 +1951,9 @@
         "2559-08-15 01:54:22.978"
       ],
       "calendar": "thai",
-      "title": "Thai dates"
+      "title": {
+        "text": "Thai dates"
+      }
     },
     "yaxis": {
       "tickprefix": "$",

@@ -19,6 +19,7 @@ var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
 var findEmpties = require('./find_empties');
 var makeBoundArray = require('./make_bound_array');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function calc(gd, trace) {
     // prepare the raw data
@@ -70,11 +71,23 @@ module.exports = function calc(gd, trace) {
         dy = trace.dy;
 
         z = clean2dArray(zIn, trace, xa, ya);
+    }
 
-        if(isContour || trace.connectgaps) {
-            trace._emptypoints = findEmpties(z);
-            interp2d(z, trace._emptypoints);
+    if(xa.rangebreaks || ya.rangebreaks) {
+        z = dropZonBreaks(x, y, z);
+
+        if(!isHist) {
+            x = skipBreaks(x);
+            y = skipBreaks(y);
+
+            trace._x = x;
+            trace._y = y;
         }
+    }
+
+    if(!isHist && (isContour || trace.connectgaps)) {
+        trace._emptypoints = findEmpties(z);
+        interp2d(z, trace._emptypoints);
     }
 
     function noZsmooth(msg) {
@@ -156,3 +169,29 @@ module.exports = function calc(gd, trace) {
 
     return [cd0];
 };
+
+function skipBreaks(a) {
+    var b = [];
+    var len = a.length;
+    for(var i = 0; i < len; i++) {
+        var v = a[i];
+        if(v !== BADNUM) b.push(v);
+    }
+    return b;
+}
+
+function dropZonBreaks(x, y, z) {
+    var newZ = [];
+    var k = -1;
+    for(var i = 0; i < z.length; i++) {
+        if(y[i] === BADNUM) continue;
+        k++;
+        newZ[k] = [];
+        for(var j = 0; j < z[i].length; j++) {
+            if(x[j] === BADNUM) continue;
+
+            newZ[k].push(z[i][j]);
+        }
+    }
+    return newZ;
+}

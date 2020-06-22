@@ -12,7 +12,7 @@
     "vertexcolor": ["#F00", "#FF0", "#0F0", "#0FF", "#00F", "#F0F"],
     "type": "mesh3d",
     "name": "mesh3d",
-    "scene": "scene1"
+    "scene": "scene"
   }, {
     "x": [0, 1, 0, 1, 0, 1, 0, 1],
     "y": [0, 0, 1, 1, 0, 0, 1, 1],
@@ -38,7 +38,7 @@
     },
     "width": 250,
     "height": 500,
-    "scene1": {
+    "scene": {
       "domain": {
         "x": [0, 1],
         "y": [0, 0.5]

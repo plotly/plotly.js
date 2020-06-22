@@ -43,6 +43,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
+        coerce('marker.allowoverlap');
+        coerce('marker.angle');
+
         // array marker.size and marker.color are only supported with circles
         var marker = traceOut.marker;
         if(marker.symbol !== 'circle') {

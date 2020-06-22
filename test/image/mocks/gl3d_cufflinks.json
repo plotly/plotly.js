@@ -6777,14 +6777,18 @@
         }
     ],
     "layout": {
-        "title": "Cufflinks - Surface Plot",
-        "titlefont": {
-            "color": "#D9D9D9"
+        "title": {
+            "text": "Cufflinks - Surface Plot",
+            "font": {
+                "color": "#D9D9D9"
+            }
         },
         "xaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "#D9D9D9"
+            "title": {
+                "text": "",
+                "font": {
+                    "color": "#D9D9D9"
+                }
             },
             "tickfont": {
                 "color": "#C2C2C2"
@@ -6793,9 +6797,11 @@
             "zerolinecolor": "#666570"
         },
         "yaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "#D9D9D9"
+            "title": {
+                "text": "",
+                "font": {
+                    "color": "#D9D9D9"
+                }
             },
             "tickfont": {
                 "color": "#C2C2C2"

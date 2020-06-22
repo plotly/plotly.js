@@ -87,6 +87,25 @@ module.exports = overrideAll({
                 'are only available for *circle* symbols.'
             ].join(' ')
         },
+        angle: {
+            valType: 'number',
+            dflt: 'auto',
+            role: 'style',
+            arrayOk: true,
+            description: [
+                'Sets the marker orientation from true North, in degrees clockwise.',
+                'When using the *auto* default, no rotation would be applied',
+                'in perspective views which is different from using a zero angle.'
+            ].join(' ')
+        },
+        allowoverlap: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'style',
+            description: [
+                'Flag to draw all symbols, even if they overlap.'
+            ].join(' ')
+        },
         opacity: markerAttrs.opacity,
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,

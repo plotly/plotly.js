@@ -10416,6 +10416,6 @@
         }
     ],
     "layout": {
-        "title": "transposed contour plot"
+        "title": {"text": "transposed contour plot"}
     }
 }

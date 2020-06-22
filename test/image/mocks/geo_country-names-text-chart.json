@@ -785,7 +785,7 @@
         }
     ],
     "layout": {
-        "title": "The World's countries",
+        "title": {"text": "The World's countries"},
         "geo": {
             "domain": {
                 "x": [
@@ -809,7 +809,7 @@
                     30
                 ]
             },
-            "resolution": 100
+            "resolution": 110
         },
         "geo2": {
             "domain": {

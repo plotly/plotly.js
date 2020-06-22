@@ -69,7 +69,7 @@
 
         }],
     "layout": {
-        "title": "Sankey diagram with links colored based on their concentration within a flow",
+        "title": {"text": "Sankey diagram with links colored based on their concentration within a flow"},
         "width": 800,
         "height": 800,
         "updatemenus": [{

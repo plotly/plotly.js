@@ -15,7 +15,7 @@ var failTest = require('../assets/fail_test');
 var negateIf = require('../assets/negate_if');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('../../../src/components/color');
+var color = require('@src/components/color');
 var rgb = color.rgb;
 
 var checkEventData = require('../assets/check_event_data');
@@ -2598,6 +2598,26 @@ describe('bar hover', function() {
                 .catch(failTest)
                 .then(done);
             });
+        });
+    });
+
+    describe('gantt chart using milliseconds from base', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/bar-with-milliseconds.json'));
+
+            Plotly.newPlot(gd, mock.data, mock.layout)
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should display the correct bar length passed in milliseconds from base', function() {
+            var out = _hover(gd, 0.5, 0.75, 'y');
+
+            var xEnd = out.style[2];
+            expect(xEnd).not.toBe(1580670000000);
+            expect(xEnd).toBe(1580688000000);
         });
     });
 });

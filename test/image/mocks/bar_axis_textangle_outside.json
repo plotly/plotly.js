@@ -20,8 +20,7 @@
             ],
             "textposition": "outside",
             "cliponaxis": false,
-            "textangle": -15,
-            "textinfo": "value+percent initial+percent previous+percent total"
+            "textangle": -15
         },
         {
             "type": "bar",
@@ -44,7 +43,6 @@
             "textposition": "outside",
             "cliponaxis": false,
             "textangle": 135,
-            "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x2",
             "yaxis": "y2"
         },
@@ -69,7 +67,6 @@
             "textposition": "outside",
             "cliponaxis": false,
             "textangle": 30,
-            "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x3",
             "yaxis": "y3"
         },
@@ -94,7 +91,6 @@
             "textposition": "outside",
             "cliponaxis": false,
             "textangle": -90,
-            "textinfo": "value+percent initial+percent previous+percent total",
             "xaxis": "x4",
             "yaxis": "y4"
         }

@@ -22,19 +22,19 @@
             "x": [1, 2, 3, 1, null, 4, 5, 6],
             "y": [2, 3, 2, 2, null, 3, 4, 3],
             "fill": "tonext","fillcolor":"#282",  "line": { "color": "#8c8" },
-            "type": "scatter", "showlegend": true, "xaxis": "x2", "yaxis": "y2" 
+            "type": "scatter", "showlegend": true, "xaxis": "x2", "yaxis": "y2"
         },
         {
             "x": [-1, 4, 9, null, 0, 1, 2],
             "y": [1, 6, 1, null, 5, 6, 5],
             "fill": "tonext","fillcolor":"#822",  "line": { "color": "#c88" },
-            "type": "scatter", "showlegend": true, "xaxis": "x2", "yaxis": "y2" 
+            "type": "scatter", "showlegend": true, "xaxis": "x2", "yaxis": "y2"
         },
         {
             "x": [2, 7, 9],
             "y": [2, 4, 2],
             "fill": "toself","fillcolor":"#228",  "line": { "color": "#88c" },
-            "type": "scatter","showlegend": true, "xaxis": "x2", "yaxis": "y2" 
+            "type": "scatter","showlegend": true, "xaxis": "x2", "yaxis": "y2"
         },
         {
             "x": [1, 2, 3, 1, null, 4, 5, 6],
@@ -94,17 +94,17 @@
         }
     ],
     "layout":{
-        "title": "Fill toself and tonext",
+        "title": {"text": "Fill toself and tonext"},
         "width": 600,"height": 600,
         "margin": {"l": 20, "r": 40, "t": 40, "b": 40},
         "grid": {"columns": 2, "rows": 2, "pattern": "independent", "roworder": "bottom to top"} ,
-        "xaxis" : { "title": "GL" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
-        "xaxis2": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
-        "yaxis" : { "title": "" , "type": "linear", "range": [0,9], "nticks": 3 },
-        "yaxis2": { "title": "" , "type": "linear", "range": [0,9], "nticks": 3 },
-        "xaxis3": { "title": "GL" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
-        "xaxis4": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
-        "yaxis3": { "title": "" , "type": "linear", "range": [0,9], "nticks": 3 },
-        "yaxis4": { "title": "" , "type": "linear", "range": [0,9], "nticks": 3 }
-    }    
+        "xaxis" : { "title": {"text": "GL"} , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+        "xaxis2": { "title": {"text": ""} , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+        "yaxis" : { "title": {"text": ""} , "type": "linear", "range": [0,9], "nticks": 3 },
+        "yaxis2": { "title": {"text": ""} , "type": "linear", "range": [0,9], "nticks": 3 },
+        "xaxis3": { "title": {"text": "GL"} , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+        "xaxis4": { "title": {"text": ""} , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+        "yaxis3": { "title": {"text": ""} , "type": "linear", "range": [0,9], "nticks": 3 },
+        "yaxis4": { "title": {"text": ""} , "type": "linear", "range": [0,9], "nticks": 3 }
+    }
 }

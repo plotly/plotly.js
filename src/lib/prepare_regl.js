@@ -49,6 +49,8 @@ module.exports = function prepareRegl(gd, extensions) {
             success = false;
         }
 
+        if(!d.regl) success = false;
+
         if(success) {
             this.addEventListener('webglcontextlost', function(event) {
                 if(gd && gd.emit) {

@@ -23,13 +23,13 @@
         "z": [[1,2],[3,4]],
         "xaxis": "x2",
         "yaxis": "y2",
-        "colorbar": {"title": "He^{i\\pi}=-1H", "y": 0.225, "len": 0.45}
+        "colorbar": {"title": {"text": "He^{i\\pi}=-1H"}, "y": 0.225, "len": 0.45}
     }],
     "layout": {
-        "yaxis":{"domain": [0, 0.45], "title": "$y=\\sin{2 \\theta}$"},
+        "yaxis":{"domain": [0, 0.45], "title": {"text": "$y=\\sin{2 \\theta}$"}},
         "xaxis":{
             "domain": [0, 0.45],
-            "title": "$x=\\int_0^a a^2+1$",
+            "title": {"text": "$x=\\int_0^a a^2+1$"},
             "tickvals": [0, 1],
             "ticktext": ["$\\frac{0}{100}$", "$\\frac{100}{100}$"]
         },
@@ -39,12 +39,12 @@
             "anchor": "x2",
             "tickvals": [0, 1],
             "ticktext": ["Ha+b+c+dH", "He+f+g+hH"],
-            "title": "$(||01\\rangle+|10\\rangle)/\\sqrt2$"
+            "title": {"text": "$(||01\\rangle+|10\\rangle)/\\sqrt2$"}
         },
         "height":500,
         "width":800,
         "margin": {"r": 250},
-        "title": "$i\\hbar\\frac{d\\Psi}{dt}=-[V-\\frac{-\\hbar^2}{2m}\\nabla^2]\\Psi$",
+        "title": {"text": "$i\\hbar\\frac{d\\Psi}{dt}=-[V-\\frac{-\\hbar^2}{2m}\\nabla^2]\\Psi$"},
         "annotations":[
             {
                 "text": "H is substituted for $<br>where we would like<br>math but do not yet<br>fully support it",

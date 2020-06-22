@@ -24,7 +24,7 @@
                     0.149294
                 ]
             ],
-            "scl": "Jet",
+            "colorscale": "Jet",
             "zsmooth": "best",
             "type": "heatmap",
             "xaxis": "x",
@@ -54,7 +54,7 @@
                     0.149294
                 ]
             ],
-            "scl": "Jet",
+            "colorscale": "Jet",
             "zsmooth": "fast",
             "type": "heatmap",
             "xaxis": "x2",
@@ -84,7 +84,7 @@
                     0.149294
                 ]
             ],
-            "scl": "Jet",
+            "colorscale": "Jet",
             "zsmooth": false,
             "type": "heatmap",
             "xaxis": "x3",
@@ -92,7 +92,7 @@
         }
     ],
     "layout": {
-        "title": "zsmooth: best, fast, false",
+        "title": {"text": "zsmooth: best, fast, false"},
         "width": 800,
         "height": 350,
         "xaxis": {

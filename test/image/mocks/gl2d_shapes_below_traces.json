@@ -120,7 +120,7 @@
             }
         ],
         "showlegend": false,
-        "title": "shape shading a region",
+        "title": {"text": "shape shading a region"},
         "xaxis": {
             "domain": [
                 0,

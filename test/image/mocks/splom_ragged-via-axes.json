@@ -52,7 +52,7 @@
     }
   ],
   "layout": {
-    "title": "ragged sploms using trace xaxes yaxes",
+    "title": {"text": "ragged sploms using trace xaxes yaxes"},
     "showlegend": false
   }
 }

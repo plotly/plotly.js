@@ -7844,7 +7844,14 @@
       "family": "\"Open sans\", verdana, arial, sans-serif",
       "size": 12
     },
-    "title": "Click to enter Plot title",
+    "title": {
+      "font": {
+        "color": "#444",
+        "family": "\"Open sans\", verdana, arial, sans-serif",
+        "size": 17
+      },
+      "text": "Click to enter Plot title"
+    },
     "paper_bgcolor": "#fff",
     "plot_bgcolor": "#fff",
     "dragmode": "zoom",
@@ -7861,17 +7868,19 @@
       },
       "yaxis": {
         "showticklabels": false,
-        "titlefont": {
-          "color": "#444",
-          "family": "\"Open sans\", verdana, arial, sans-serif",
-          "size": 14
-        },
         "autotick": true,
         "rangemode": "normal",
         "autorange": true,
         "nticks": 0,
         "showspikes": true,
-        "title": "y",
+        "title": {
+          "font": {
+            "color": "#444",
+            "family": "\"Open sans\", verdana, arial, sans-serif",
+            "size": 14
+          },
+          "text": "y"
+        },
         "spikecolor": "rgb(0,0,0)",
         "ticks": "",
         "spikesides": true,
@@ -7907,17 +7916,19 @@
       "bgcolor": "rgb(67, 67, 67)",
       "zaxis": {
         "showticklabels": false,
-        "titlefont": {
-          "color": "#444",
-          "family": "\"Open sans\", verdana, arial, sans-serif",
-          "size": 14
-        },
         "autotick": true,
         "rangemode": "normal",
         "autorange": true,
         "nticks": 0,
         "showspikes": true,
-        "title": "z",
+        "title": {
+          "font": {
+            "color": "#444",
+            "family": "\"Open sans\", verdana, arial, sans-serif",
+            "size": 14
+          },
+          "text": "z"
+        },
         "spikecolor": "rgb(0,0,0)",
         "ticks": "",
         "spikesides": true,
@@ -7938,17 +7949,19 @@
       },
       "xaxis": {
         "showticklabels": false,
-        "titlefont": {
-          "color": "#444",
-          "family": "\"Open sans\", verdana, arial, sans-serif",
-          "size": 14
-        },
         "autotick": true,
         "rangemode": "normal",
         "autorange": true,
         "nticks": 0,
         "showspikes": true,
-        "title": "x",
+        "title": {
+          "font": {
+            "color": "#444",
+            "family": "\"Open sans\", verdana, arial, sans-serif",
+            "size": 14
+          },
+          "text": "x"
+        },
         "spikecolor": "rgb(0,0,0)",
         "ticks": "",
         "spikesides": true,
@@ -7971,11 +7984,6 @@
     "separators": ".,",
     "height": 758,
     "width": 1310,
-    "titlefont": {
-      "color": "#444",
-      "family": "\"Open sans\", verdana, arial, sans-serif",
-      "size": 17
-    },
     "annotations": [
       {
         "opacity": 1,

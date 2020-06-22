@@ -60,13 +60,15 @@
             },
             "showexponent": "All",
             "showticklabels": true,
-            "title": "AXIS TITLE",
-            "tickangle": 45,
-            "titlefont": {
-                "color": "lightgrey",
-                "family": "Arial, sans-serif",
-                "size": 18
+            "title": {
+                "text": "AXIS TITLE",
+                "font": {
+                    "color": "lightgrey",
+                    "family": "Arial, sans-serif",
+                    "size": 18
+                }
             },
+            "tickangle": 45,
             "exponentformat": "e"
         },
         "yaxis": {
@@ -77,13 +79,15 @@
             },
             "showexponent": "All",
             "showticklabels": true,
-            "title": "AXIS TITLE",
-            "tickangle": 45,
-            "titlefont": {
-                "color": "lightgrey",
-                "family": "Arial, sans-serif",
-                "size": 18
+            "title": {
+                "text": "AXIS TITLE",
+                "font": {
+                    "color": "lightgrey",
+                    "family": "Arial, sans-serif",
+                    "size": 18
+                }
             },
+            "tickangle": 45,
             "exponentformat": "e"
         }
     }

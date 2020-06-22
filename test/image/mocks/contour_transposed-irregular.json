@@ -227,7 +227,7 @@
     ],
     "layout": {
         "autosize": true,
-        "title": "transposing irregular contour data",
+        "title": {"text": "transposing irregular contour data"},
         "xaxis": {
             "domain": [
                 0,

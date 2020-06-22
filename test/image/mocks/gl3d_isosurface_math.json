@@ -6,9 +6,9 @@
         "surface": { "show": true, "fill": 0.4 },
         "spaceframe": { "show": true, "fill": 0.1 },
         "slices": {
-            "x": { "show": false, "fill": 0.5 },
-            "y": { "show": false, "fill": 0.5 },
-            "z": { "show": false, "fill": 0.5 }
+            "x": { "show": false },
+            "y": { "show": false },
+            "z": { "show": false }
         },
         "caps": {
             "x": { "show": true, "fill": 1 },
@@ -16,8 +16,7 @@
             "z": { "show": true, "fill": 1 }
         },
         "contour": {
-            "show": false,
-            "width": 4
+            "show": false
         },
         "isomin": 4.0,
         "isomax": 40.0,

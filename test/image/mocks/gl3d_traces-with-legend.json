@@ -12,7 +12,7 @@
     "lightposition": { "x": 1000, "y": 1000, "z": 0 },
     "type": "mesh3d",
     "name": "mesh3d",
-    "scene": "scene1"
+    "scene": "scene"
   }, {
     "showlegend": true,
     "x":[0, -1, -2, 0],
@@ -171,7 +171,7 @@
           }
       }
     },
-    "scene1": {
+    "scene": {
       "domain": {
         "x": [0, 0.2],
         "y": [0, 0.5]

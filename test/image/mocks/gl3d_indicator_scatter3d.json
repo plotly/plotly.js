@@ -8,10 +8,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "delta": {"reference": 9},
-    "ticker": {
-      "showticker": true,
-      "showpercentage": true
-    },
     "value": 10
   }, {
     "type": "scatter3d",
@@ -37,7 +33,6 @@
       "family": "Dosis"
     },
     "paper_bgcolor": "black",
-    "plot_bgcolor": "black",
     "margin": {
       "t": 25,
       "r": 25,

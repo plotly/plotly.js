@@ -3,7 +3,6 @@
         {
             "text":"50%",
             "textposition":"inside",
-            "outsidetextfont": {"size":32},
             "base":[100,40,25,10],
             "x":[-50,10,25,40],
             "type":"bar"

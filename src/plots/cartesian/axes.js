@@ -56,6 +56,15 @@ var autorange = require('./autorange');
 axes.getAutoRange = autorange.getAutoRange;
 axes.findExtremes = autorange.findExtremes;
 
+var epsilon = 0.0001;
+function expandRange(range) {
+    var delta = (range[1] - range[0]) * epsilon;
+    return [
+        range[0] - delta,
+        range[1] + delta
+    ];
+}
+
 /*
  * find the list of possible axes to reference with an xref or yref attribute
  * and coerce it to that list
@@ -500,8 +509,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ----------------------------------------------------
 
 // ensure we have tick0, dtick, and tick rounding calculated
-axes.prepTicks = function(ax) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
+axes.prepTicks = function(ax, opts) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -554,20 +563,21 @@ axes.prepTicks = function(ax) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax) {
-    axes.prepTicks(ax);
-    var rng = Lib.simpleMap(ax.range, ax.r2l);
+axes.calcTicks = function calcTicks(ax, opts) {
+    axes.prepTicks(ax, opts);
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     // now that we've figured out the auto values for formatting
     // in case we're missing some ticktext, we can break out for array ticks
     if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // find the first tick
-    ax._tmin = axes.tickFirst(ax);
+    ax._tmin = axes.tickFirst(ax, opts);
 
     // add a tiny bit so we get ticks which may have rounded out
-    var startTick = rng[0] * 1.0001 - rng[1] * 0.0001;
-    var endTick = rng[1] * 1.0001 - rng[0] * 0.0001;
+    var exRng = expandRange(rng);
+    var startTick = exRng[0];
+    var endTick = exRng[1];
     // check for reversed axis
     var axrev = (rng[1] < rng[0]);
 
@@ -612,26 +622,15 @@ axes.calcTicks = function calcTicks(ax) {
 
     if(ax.rangebreaks) {
         // replace ticks inside breaks that would get a tick
-        if(ax.tickmode === 'auto') {
-            for(var t = 0; t < tickVals.length; t++) {
-                var value = tickVals[t].value;
-                if(ax.maskBreaks(value) === BADNUM) {
-                    // find which break we are in
-                    for(var k = 0; k < ax._rangebreaks.length; k++) {
-                        var brk = ax._rangebreaks[k];
-                        if(value >= brk.min && value < brk.max) {
-                            tickVals[t].value = brk.max; // replace with break end
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // reduce ticks
+        // and reduce ticks
         var len = tickVals.length;
-        if(len > 2) {
-            var tf2 = 2 * (ax.tickfont ? ax.tickfont.size : 12);
+        if(len) {
+            var tf = 0;
+            if(ax.tickmode === 'auto') {
+                tf =
+                    (ax._id.charAt(0) === 'y' ? 2 : 6) *
+                    (ax.tickfont ? ax.tickfont.size : 12);
+            }
 
             var newTickVals = [];
             var prevPos;
@@ -639,12 +638,26 @@ axes.calcTicks = function calcTicks(ax) {
             var dir = axrev ? 1 : -1;
             var first = axrev ? 0 : len - 1;
             var last = axrev ? len - 1 : 0;
-            for(var q = first; dir * q <= dir * last; q += dir) { // apply reverse loop to pick greater values in breaks first
-                var pos = ax.c2p(tickVals[q].value);
+            for(var q = first; dir * q <= dir * last; q += dir) {
+                var tickVal = tickVals[q];
+                if(ax.maskBreaks(tickVal.value) === BADNUM) {
+                    tickVal.value = moveOutsideBreak(tickVal.value, ax);
 
-                if(prevPos === undefined || Math.abs(pos - prevPos) > tf2) {
+                    if(ax._rl && (
+                        ax._rl[0] === tickVal.value ||
+                        ax._rl[1] === tickVal.value
+                    )) continue;
+                }
+
+                var pos = ax.c2p(tickVal.value);
+
+                if(pos === prevPos) {
+                    if(newTickVals[newTickVals.length - 1].value < tickVal.value) {
+                        newTickVals[newTickVals.length - 1] = tickVal;
+                    }
+                } else if(prevPos === undefined || Math.abs(pos - prevPos) > tf) {
                     prevPos = pos;
-                    newTickVals.push(tickVals[q]);
+                    newTickVals.push(tickVal);
                 }
             }
             tickVals = newTickVals.reverse();
@@ -691,10 +704,9 @@ function arrayTicks(ax) {
     var text = ax.ticktext;
     var ticksOut = new Array(vals.length);
     var rng = Lib.simpleMap(ax.range, ax.r2l);
-    var r0expanded = rng[0] * 1.0001 - rng[1] * 0.0001;
-    var r1expanded = rng[1] * 1.0001 - rng[0] * 0.0001;
-    var tickMin = Math.min(r0expanded, r1expanded);
-    var tickMax = Math.max(r0expanded, r1expanded);
+    var exRng = expandRange(rng);
+    var tickMin = Math.min(exRng[0], exRng[1]);
+    var tickMax = Math.max(exRng[0], exRng[1]);
     var j = 0;
 
     // without a text array, just format the given values as any other ticks
@@ -785,8 +797,7 @@ axes.autoTicks = function(ax, roughDTick) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 7, 14] : roundDays);
-
+            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
@@ -934,29 +945,31 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     if(tType === 'M') return Lib.incrementMonth(x, dtSigned, calendar);
 
     // Log scales: Linear, Digits
-    else if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
+    if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
 
     // log10 of 2,5,10, or all digits (logs just have to be
     // close enough to round)
-    else if(tType === 'D') {
+    if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1;
         var x2 = x + axSign * 0.01;
         var frac = Lib.roundUp(Lib.mod(x2, 1), tickset, axrev);
 
         return Math.floor(x2) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
-    } else throw 'unrecognized dtick ' + String(dtick);
+    }
+
+    throw 'unrecognized dtick ' + String(dtick);
 };
 
 // calculate the first tick on an axis
-axes.tickFirst = function(ax) {
+axes.tickFirst = function(ax, opts) {
     var r2l = ax.r2l || Number;
-    var rng = Lib.simpleMap(ax.range, r2l);
+    var rng = Lib.simpleMap(ax.range, r2l, undefined, undefined, opts);
     var axrev = rng[1] < rng[0];
     var sRound = axrev ? Math.floor : Math.ceil;
     // add a tiny extra bit to make sure we get ticks
     // that may have been rounded out
-    var r0 = rng[0] * 1.0001 - rng[1] * 0.0001;
+    var r0 = expandRange(rng)[0];
     var dtick = ax.dtick;
     var tick0 = r2l(ax.tick0);
 
@@ -3157,4 +3170,15 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
 
 function isAngular(ax) {
     return ax._id === 'angularaxis';
+}
+
+function moveOutsideBreak(v, ax) {
+    var len = ax._rangebreaks.length;
+    for(var k = 0; k < len; k++) {
+        var brk = ax._rangebreaks[k];
+        if(v >= brk.min && v < brk.max) {
+            return brk.max;
+        }
+    }
+    return v;
 }

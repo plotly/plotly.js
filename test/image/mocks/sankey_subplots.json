@@ -43,7 +43,7 @@
         }
     ],
     "layout": {
-        "title": "Multiple Sankey plots",
+        "title": {"text": "Multiple Sankey plots"},
         "autosize": true,
         "showlegend": false
     }

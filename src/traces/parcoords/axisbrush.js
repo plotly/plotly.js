@@ -453,6 +453,15 @@ function dedupeRealRanges(intervals) {
         }
         result.push(currentInterval);
     }
+
+    if(
+        result.length === 1 &&
+        result[0][0] > result[0][1]
+    ) {
+        // discard result
+        result = [];
+    }
+
     return result;
 }
 

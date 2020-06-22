@@ -12,7 +12,7 @@
     }
   ],
   "layout": {
-    "title": "Custom Trace Color Defaults",
+    "title": {"text": "Custom Trace Color Defaults"},
     "colorway": [
       "#DE5845",
       "#E83898",

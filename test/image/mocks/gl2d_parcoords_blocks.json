@@ -7,9 +7,6 @@
   "data": [
     {
       "type" : "parcoords",
-      "line" : {
-        "colorscale" : "Jet"
-      },
       "dimensions" : [
         {
           "label" : "Dimension A",

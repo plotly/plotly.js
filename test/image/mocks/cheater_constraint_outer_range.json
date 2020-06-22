@@ -227,7 +227,9 @@
     }
   ],
   "layout": {
-    "title": "Outer range constraint",
+    "title": {
+      "text": "Outer range constraint"
+    },
     "width": 600,
     "height": 800,
     "dragmode": "pan",

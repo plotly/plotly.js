@@ -87,7 +87,7 @@
         }
     ],
     "layout": {
-        "title": "Parametric surface using 2D input arrays and data precision limits",
+        "title": {"text": "Parametric surface using 2D input arrays and data precision limits"},
         "width": 800,
         "height": 600,
         "scene": {

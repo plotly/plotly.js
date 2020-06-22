@@ -29,23 +29,23 @@
     "height": 400,
     "xaxis": {
       "domain": [0, 0.48],
-      "title": "gregorian date axis",
+      "title": {"text": "gregorian date axis"},
       "range": ["2017-11-1", "2017-11-7"]
     },
     "yaxis": {
       "type": "log" ,
-      "title": "log axis"
+      "title": {"text": "log axis"}
     },
     "xaxis2": {
       "type": "log",
       "domain": [0.52, 1],
-      "title": "log axis",
+      "title": {"text": "log axis"},
       "anchor": "y2"
     },
     "yaxis2": {
       "anchor": "x2",
       "side": "right",
-      "title": "gregorian date axis",
+      "title": {"text": "gregorian date axis"},
       "range": ["2017-11-14", "2017-11-20"]
     },
     "legend": {

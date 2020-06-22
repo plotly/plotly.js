@@ -23,7 +23,6 @@
                     4,
                     2
                 ],
-                "value": 2,
                 "width": 10
             },
             "error_x": {
@@ -33,7 +32,7 @@
         }
     ],
     "layout": {
-        "title": "sqrt errorbars",
+        "title": {"text": "sqrt errorbars"},
         "scene": {
             "camera": {
                 "eye": {

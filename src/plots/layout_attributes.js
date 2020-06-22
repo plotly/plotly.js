@@ -11,6 +11,7 @@
 var fontAttrs = require('./font_attributes');
 var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
+var drawNewShapeAttrs = require('../components/shapes/draw_newshape/attributes');
 var padAttrs = require('./pad_attributes');
 var extendFlat = require('../lib/extend').extendFlat;
 
@@ -443,6 +444,9 @@ module.exports = {
         },
         editType: 'modebar'
     },
+
+    newshape: drawNewShapeAttrs.newshape,
+    activeshape: drawNewShapeAttrs.activeshape,
 
     meta: {
         valType: 'any',

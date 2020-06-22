@@ -2060,11 +2060,13 @@
             0.652173913043478,
             0.869565217391304
           ],
-          "title": "value",
-          "titlefont": {
-            "color": "rgba(0, 0, 0, 1)",
-            "family": "",
-            "size": 15.9402241594022
+          "title": {
+            "text": "value",
+            "font": {
+              "color": "rgba(0, 0, 0, 1)",
+              "family": "",
+              "size": 15.9402241594022
+            }
           }
         },
         "colorscale": [
@@ -3697,10 +3699,11 @@
         11
       ],
       "tickwidth": 0.66417600664176,
-      "titlefont": {
-        "color": "rgba(0, 0, 0, 1)",
-        "family": "",
-        "size": 15.9402241594022
+      "title": {
+        "font": {
+          "color": "rgba(0, 0, 0, 1)",
+          "size": 15.9402241594022
+        }
       },
       "zeroline": false
     },
@@ -3743,9 +3746,6 @@
         400
       ],
       "tickwidth": 0,
-      "titlefont": {
-        "size": 0
-      },
       "zeroline": false
     },
     "yaxis": {
@@ -3783,9 +3783,6 @@
         1000
       ],
       "tickwidth": 0,
-      "titlefont": {
-        "size": 0
-      },
       "zeroline": false
     },
     "yaxis2": {
@@ -3884,10 +3881,11 @@
         32
       ],
       "tickwidth": 0.66417600664176,
-      "titlefont": {
-        "color": "rgba(0, 0, 0, 1)",
-        "family": "",
-        "size": 15.9402241594022
+      "title" : {
+        "font": {
+          "color": "rgba(0, 0, 0, 1)",
+          "size": 15.9402241594022
+        }
       },
       "zeroline": false
     },

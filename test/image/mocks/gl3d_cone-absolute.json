@@ -1368,7 +1368,9 @@
   ],
   "layout": {
     "width": 900,
-    "title": "",
+    "title": {
+      "text": ""
+    },
     "scene": {
       "aspectratio": {
         "y": 1,

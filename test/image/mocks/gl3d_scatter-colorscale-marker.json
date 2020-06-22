@@ -173,7 +173,7 @@
     }
   ],
   "layout": {
-    "title": "Scatter colorscale marker cauto, constrained and expanded variations",
+    "title": {"text": "Scatter colorscale marker cauto, constrained and expanded variations"},
     "height":758,
     "width":1310
   }

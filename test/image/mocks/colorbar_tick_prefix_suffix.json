@@ -16,6 +16,6 @@
         }
     ],
     "layout": {
-        "title": "colorbar tick label prefix and suffix"
+        "title": {"text": "colorbar tick label prefix and suffix"}
     }
 }

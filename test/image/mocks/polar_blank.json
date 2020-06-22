@@ -34,7 +34,7 @@
         "y": [0.56, 1]
       },
       "radialaxis": {
-        "title": "blank",
+        "title": {"text": "blank"},
         "angle": 180
       }
     },
@@ -62,7 +62,7 @@
         "y": [0.56, 1]
       },
       "radialaxis": {
-        "title": "blank",
+        "title": {"text": "blank"},
         "side": "counterclockwise"
       },
       "angularaxis": {"visible": false}

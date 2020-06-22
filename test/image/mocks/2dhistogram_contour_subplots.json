@@ -8021,7 +8021,7 @@
       ],
       "name": "density",
       "ncontours": 20,
-      "scl": "Hot",
+      "colorscale": "Hot",
       "reversescl": true,
       "showscale": false,
       "type": "histogram2dcontour"

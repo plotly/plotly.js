@@ -2603,11 +2603,11 @@
           100
         ]
       ],
-      "scl": "Picnic",
+      "colorscale": "Picnic",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Picnic"
+    "title": {"text": "Picnic"}
   }
 }

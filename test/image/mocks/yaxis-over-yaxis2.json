@@ -60,15 +60,15 @@
       "pad": 10
     },
     "xaxis": {
-      "title": "x1"
+      "title": {"text": "x1"}
     },
     "yaxis": {
-      "title": "y1",
+      "title": {"text": "y1"},
       "overlaying": "y2"
     },
     "yaxis2": {
       "side": "right",
-      "title": "y2"
+      "title": {"text": "y2"}
     },
     "legend": {
       "x": 1.1,

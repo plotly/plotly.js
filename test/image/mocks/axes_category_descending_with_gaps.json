@@ -19,7 +19,9 @@
         }
     ],
     "layout": {
-        "title": "category descending",
+        "title": {
+            "text": "category descending"
+        },
         "xaxis": {
             "type": "category",
             "categoryorder": "category descending",

@@ -87,7 +87,7 @@
                     62.44997998398398
                 ],
                 "colorbar": {
-                    "title": "WOW"
+                    "title": {"text": "WOW"}
                 }
             },
             "y": [
@@ -146,7 +146,7 @@
         }
     ],
     "layout": {
-        "title": "scatter + colorbar = <3",
+        "title": {"text": "scatter + colorbar = <3"},
         "xaxis": {
             "type": "linear",
             "range": [

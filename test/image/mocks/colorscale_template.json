@@ -148,7 +148,7 @@
         }]
       },
       "layout": {
-        "title": "heatmap template",
+        "title": {"text": "heatmap template"},
         "colorscale": {
           "sequential": [
             [0, "rgb(0,0,0)"],

@@ -35,20 +35,22 @@
     }
   ],
   "layout": {
-    "title": "Double Y Axis Example",
+    "title": {"text": "Double Y Axis Example"},
     "xaxis": {
-      "title": "Wavelength (nm)",
+      "title": {"text": "Wavelength (nm)"},
       "rangeslider": {
         "thickness": 0.2
       }
     },
     "yaxis": {
-      "title": "yaxis title"
+      "title": {"text": "yaxis title"}
     },
     "yaxis2": {
-      "title": "yaxis2 title",
-      "titlefont": {
-        "color": "rgb(148, 103, 189)"
+      "title": {
+        "text": "yaxis2 title",
+        "font": {
+          "color": "rgb(148, 103, 189)"
+        }
       },
       "tickfont": {
         "color": "rgb(148, 103, 189)"

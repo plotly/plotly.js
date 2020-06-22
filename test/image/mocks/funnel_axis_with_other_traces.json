@@ -100,7 +100,6 @@
         },
         {
             "type": "scatter",
-            "orientation": "h",
             "x": [
                 5,
                 4,

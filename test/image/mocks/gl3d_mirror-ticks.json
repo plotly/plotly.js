@@ -21,28 +21,6 @@
     }
   ],
   "layout": {
-    "yaxis": {
-      "type": "linear",
-      "ticks": "outside",
-      "ticklen": 10,
-      "tickwidth": 5.3,
-      "tickcolor": "rgb(214, 39, 40)",
-      "showline": true,
-      "mirror": "ticks",
-      "linecolor": "rgb(0, 255, 0)",
-      "linewidth": 4.2
-    },
-    "xaxis": {
-      "type": "linear",
-      "ticks": "outside",
-      "ticklen": 10,
-      "tickwidth": 5.3,
-      "tickcolor": "rgb(214, 39, 40)",
-      "showline": true,
-      "mirror": "ticks",
-      "linecolor": "rgb(0, 255, 0)",
-      "linewidth": 4.2
-    },
     "scene": {
       "xaxis": {
         "type": "linear",

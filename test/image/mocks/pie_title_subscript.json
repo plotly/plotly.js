@@ -6,11 +6,13 @@
       "type": "pie",
       "name": "Prime numbers",
       "textinfo": "none",
-      "title": "CO<sub>2</sub><BR>H<sub>2</sub>O",
-      "titlefont": {
-        "size": 14
-      },
-      "titleposition": "top center"
+      "title": {
+        "text": "CO<sub>2</sub><BR>H<sub>2</sub>O",
+        "font": {
+          "size": 14
+        },
+        "position": "top center"
+      }
     }
   ],
   "layout": {

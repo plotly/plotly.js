@@ -33,10 +33,10 @@
     ],
     "layout":{
         "autosize":false,
-        "xaxis2":{"domain":[0.55,1],"type":"linear","range":[-0.5,7.5],"autorange":true,"title":"connectgaps=true"},
-        "yaxis":{"range":[-0.5,6.5],"type":"linear","autorange":true,"domain":[0,0.45],"title":"heatmap"},
+        "xaxis2":{"domain":[0.55,1],"type":"linear","range":[-0.5,7.5],"autorange":true,"title":{"text":"connectgaps=true"}},
+        "yaxis":{"range":[-0.5,6.5],"type":"linear","autorange":true,"domain":[0,0.45],"title":{"text":"heatmap"}},
         "showlegend":false,"height":500,"width":800,
-        "yaxis2":{"domain":[0.55,1],"type":"linear","range":[0,6],"autorange":true,"title":"contour map"},
-        "xaxis":{"range":[-0.5,7.5],"type":"linear","autorange":true,"domain":[0,0.45],"title":"connectgaps=false"}
+        "yaxis2":{"domain":[0.55,1],"type":"linear","range":[0,6],"autorange":true,"title":{"text":"contour map"}},
+        "xaxis":{"range":[-0.5,7.5],"type":"linear","autorange":true,"domain":[0,0.45],"title":{"text":"connectgaps=false"}}
     }
 }

@@ -185,10 +185,10 @@
     },
     "width": 700,"height": 700,
     "grid": {"columns": 1, "rows": 2, "pattern": "independent", "roworder": "bottom to top"} ,
-    "xaxis": {	"title": "GL x"     },
-    "yaxis": {  "title": "GL y"     },
-    "xaxis2": {	"title": "REG x"     },
-    "yaxis2": {  "title": "REG y"     },
+    "xaxis": {	"title": {"text": "GL x"}     },
+    "yaxis": {  "title": {"text": "GL y"}     },
+    "xaxis2": {	"title": {"text": "REG x"}     },
+    "yaxis2": {  "title": {"text": "REG y"}     },
     "dragmode": "zoom"
   }
 }

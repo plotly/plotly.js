@@ -12,16 +12,15 @@
 var createSurface = require('gl-surface3d');
 
 var ndarray = require('ndarray');
-var homography = require('ndarray-homography');
-var fill = require('ndarray-fill');
+var ndarrayInterp2d = require('ndarray-linear-interpolate').d2;
+
+var interp2d = require('../heatmap/interp2d');
+var findEmpties = require('../heatmap/find_empties');
 
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var extractOpts = require('../../components/colorscale').extractOpts;
-
-var interp2d = require('../heatmap/interp2d');
-var findEmpties = require('../heatmap/find_empties');
 
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
@@ -320,6 +319,37 @@ proto.estimateScale = function(resSrc, axis) {
     return (scale > 1) ? scale : 1;
 };
 
+// based on Mikola Lysenko's ndarray-homography
+// see https://github.com/scijs/ndarray-homography
+
+function fnHomography(out, inp, X) {
+    var w = X[8] + X[2] * inp[0] + X[5] * inp[1];
+    out[0] = (X[6] + X[0] * inp[0] + X[3] * inp[1]) / w;
+    out[1] = (X[7] + X[1] * inp[0] + X[4] * inp[1]) / w;
+    return out;
+}
+
+function homography(dest, src, X) {
+    warp(dest, src, fnHomography, X);
+    return dest;
+}
+
+// based on Mikola Lysenko's ndarray-warp
+// see https://github.com/scijs/ndarray-warp
+
+function warp(dest, src, func, X) {
+    var warped = [0, 0];
+    var ni = dest.shape[0];
+    var nj = dest.shape[1];
+    for(var i = 0; i < ni; i++) {
+        for(var j = 0; j < nj; j++) {
+            func(warped, [i, j], X);
+            dest.set(i, j, ndarrayInterp2d(src, warped[0], warped[1]));
+        }
+    }
+    return dest;
+}
+
 proto.refineCoords = function(coords) {
     var scaleW = this.dataScaleX;
     var scaleH = this.dataScaleY;
@@ -334,18 +364,17 @@ proto.refineCoords = function(coords) {
     var padWidth = 1 + width + 1;
     var padHeight = 1 + height + 1;
     var padImg = ndarray(new Float32Array(padWidth * padHeight), [padWidth, padHeight]);
+    var X = [
+        1 / scaleW, 0, 0,
+        0, 1 / scaleH, 0,
+        0, 0, 1
+    ];
 
     for(var i = 0; i < coords.length; ++i) {
         this.surface.padField(padImg, coords[i]);
 
         var scaledImg = ndarray(new Float32Array(newWidth * newHeight), [newWidth, newHeight]);
-        homography(scaledImg, padImg,
-            [
-                scaleW, 0, 0,
-                0, scaleH, 0,
-                0, 0, 1
-            ]
-        );
+        homography(scaledImg, padImg, X);
         coords[i] = scaledImg;
     }
 };
@@ -511,9 +540,13 @@ proto.update = function(data) {
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
         ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
     ];
-    fill(coords[0], function(row, col) { return rawCoords[0][row][col]; });
-    fill(coords[1], function(row, col) { return rawCoords[1][row][col]; });
-    fill(coords[2], function(row, col) { return rawCoords[2][row][col]; });
+    for(i = 0; i < 3; i++) {
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                coords[i].set(j, k, rawCoords[i][j][k]);
+            }
+        }
+    }
     rawCoords = []; // free memory
 
     var params = {
@@ -543,9 +576,11 @@ proto.update = function(data) {
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 
-        fill(intensity, function(row, col) {
-            return data.surfacecolor[col][row];
-        });
+        for(j = 0; j < xlen; j++) {
+            for(k = 0; k < ylen; k++) {
+                intensity.set(j, k, data.surfacecolor[k][j]);
+            }
+        }
 
         coords.push(intensity);
     } else {

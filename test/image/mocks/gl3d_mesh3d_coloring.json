@@ -13,7 +13,7 @@
     "lightposition": { "x": 1000, "y": 1000, "z": 0 },
     "type": "mesh3d",
     "name": "vertex color",
-    "scene": "scene1"
+    "scene": "scene"
   }, {
     "showlegend": true,
     "x": [0, 1, 0, 1, 0, 1, 0, 1],
@@ -51,7 +51,9 @@
     "showscale": true,
     "colorscale": "Portland",
     "colorbar": {
-      "title": "vertex<br>intensity",
+      "title": {
+        "text": "vertex<br>intensity"
+      },
       "len": 0.5,
       "y": 0,
       "yanchor": "bottom"
@@ -81,7 +83,9 @@
     "hovertemplate": "x: %{x}<br>y: %{y}<br>z: %{z}<br>cell intensity: %{intensity}",
     "showscale": true,
     "colorbar": {
-      "title": "cell<br>intensity",
+      "title": {
+        "text": "cell<br>intensity"
+      },
       "len": 0.5,
       "y": 0.5,
       "yanchor": "bottom"
@@ -103,7 +107,7 @@
         "side": "top left"
       }
     },
-    "scene1": {
+    "scene": {
       "bgcolor": "#eee",
       "domain": {
         "x": [0, 0.5],

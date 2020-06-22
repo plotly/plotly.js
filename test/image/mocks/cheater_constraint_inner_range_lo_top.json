@@ -182,7 +182,9 @@
     }
   ],
   "layout": {
-    "title": "Inner range constraint",
+    "title": {
+      "text": "Inner range constraint"
+    },
     "width": 600,
     "height": 800,
     "dragmode": "pan",

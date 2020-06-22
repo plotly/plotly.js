@@ -19,8 +19,10 @@
       ],
       "type": "funnelarea",
       "name": "Year 2013",
-      "title": "Year<br>2013",
-      "titleposition": "top left",
+      "title": {
+        "text": "Year<br>2013",
+        "position": "top left"
+      },
       "domain": {
         "x": [
           0,
@@ -53,8 +55,10 @@
       ],
       "type": "funnelarea",
       "name": "Year 2014",
-      "title": "Year<br>2014",
-      "titleposition": "top right",
+      "title": {
+        "text": "Year<br>2014",
+        "position": "top right"
+      },
       "domain": {
         "x": [
           0.51,
@@ -87,7 +91,9 @@
       ],
       "type": "funnelarea",
       "name": "Year 2015",
-      "title": "Year<br>2015",
+      "title": {
+        "text": "Year<br>2015"
+      },
       "domain": {
         "x": [
           0,
@@ -120,7 +126,9 @@
       ],
       "type": "funnelarea",
       "name": "Year 2016",
-      "title": "Year<br>2016",
+      "title": {
+        "text": "Year<br>2016"
+      },
       "domain": {
         "x": [
           0.51,
@@ -136,7 +144,9 @@
     }
   ],
   "layout": {
-    "title": "U.S. Imports for Platinum-group Metals",
+    "title": {
+      "text": "U.S. Imports for Platinum-group Metals"
+    },
     "height": 400,
     "width": 500
   }

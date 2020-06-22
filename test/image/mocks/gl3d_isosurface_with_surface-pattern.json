@@ -16,8 +16,7 @@
             "z": { "show": true, "fill": 1 }
         },
         "contour": {
-            "show": false,
-            "width": 4
+            "show": false
         },
         "isomin": 1000,
         "isomax": 1500,

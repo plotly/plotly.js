@@ -6,8 +6,8 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var isPlainObject = require('../../../src/lib/is_plain_object');
-var extendDeep = require('../../../src/lib/extend').extendDeep;
+var isPlainObject = require('@src/lib/is_plain_object');
+var extendDeep = require('@src/lib/extend').extendDeep;
 var deepEqual = require('deep-equal');
 
 var matchers = {

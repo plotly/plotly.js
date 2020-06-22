@@ -1,5 +1,5 @@
 var mouseEvent = require('./mouse_event');
-var Lib = require('../../../src/lib');
+var Lib = require('@src/lib');
 
 /*
  * simulated click event at screen pixel position x, y

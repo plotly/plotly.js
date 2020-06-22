@@ -11,7 +11,7 @@ module.exports = function updateVersion(pathToFile) {
             if(isVersionNode(node)) node.update('\'' + pkg.version + '\'');
         });
 
-        fs.writeFile(pathToFile, out, function(err) {
+        fs.writeFile(pathToFile, out.toString(), function(err) {
             if(err) throw err;
         });
     });

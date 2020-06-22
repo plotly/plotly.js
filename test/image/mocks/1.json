@@ -722,11 +722,11 @@
         }
     ],
     "layout": {
-        "title": "Spectral<br>Box Plot",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 18
+        "title": {
+            "text": "Spectral<br>Box Plot",
+            "font": {
+                "size": 18
+            }
         },
         "font": {
             "family": "Arial, sans-serif",
@@ -738,11 +738,8 @@
         "width": 600,
         "height": 400,
         "xaxis": {
-            "title": "Wavelength (nm)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Wavelength (nm)"
             },
             "range": [
                 -0.5,
@@ -753,45 +750,22 @@
                 1
             ],
             "type": "category",
-            "rangemode": "normal",
             "showgrid": false,
             "zeroline": true,
             "showline": false,
-            "autotick": false,
-            "nticks": 0,
             "ticks": "",
             "showticklabels": true,
             "tick0": 0,
             "dtick": 1,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "rgb(204, 204, 204)",
             "tickangle": 90,
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "exponentformat": "e",
-            "showexponent": "all",
-            "gridcolor": "rgb(255, 255, 255)",
-            "gridwidth": 1,
             "zerolinecolor": "#000",
             "zerolinewidth": 1,
-            "linecolor": "rgba(0, 0, 0, 0)",
-            "linewidth": 1,
             "anchor": "y",
-            "position": 0,
-            "mirror": false,
-            "overlaying": false,
             "autorange": true
         },
         "yaxis": {
-            "title": "Response (mV)",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 0
+            "title": {
+                "text": "Response (mV)"
             },
             "range": [
                 -3.919824016319688,
@@ -802,52 +776,18 @@
                 1
             ],
             "type": "linear",
-            "rangemode": "normal",
             "showgrid": true,
             "zeroline": false,
             "showline": false,
-            "autotick": true,
-            "nticks": 0,
             "ticks": "",
             "showticklabels": true,
             "tick0": 0,
             "dtick": 2,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "#000",
             "tickangle": 0,
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "exponentformat": "none",
-            "showexponent": "all",
             "gridcolor": "rgb(255, 255, 255)",
             "gridwidth": 1.5,
-            "zerolinecolor": "#000",
-            "zerolinewidth": 1,
-            "linecolor": "rgba(0, 0, 0, 0)",
-            "linewidth": 1,
             "anchor": "x",
-            "position": 0,
-            "mirror": false,
-            "overlaying": false,
             "autorange": true
-        },
-        "legend": {
-            "x": 1.0402836879432624,
-            "y": 0.98,
-            "traceorder": "normal",
-            "font": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "bgcolor": "#fff",
-            "bordercolor": "#000",
-            "borderwidth": 1,
-            "showlegend": false
         },
         "margin": {
             "l": 50,
@@ -861,9 +801,6 @@
         "plot_bgcolor": "rgb(233, 233, 233)",
         "hovermode": "x",
         "dragmode": "zoom",
-        "barmode": "stack",
-        "bargap": 0.2,
-        "bargroupgap": 0,
         "boxmode": "overlay",
         "separators": ".,",
         "hidesources": false

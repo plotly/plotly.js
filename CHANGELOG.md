@@ -9,6 +9,77 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.4] -- 2020-06-22
+### Changed
+ - Bump `ecstatic`, `gl-selet-static`, `gl-plot2d` & `gl-plot3d` and drop `cwise` to simplify build process & address security warnings [#4929, #4930, #4934]
+
+### Fixed
+ - Fix setting width and color of lines via template various attributes namely `tickcolor`, `tickwidth`, `ticklen`, `linecolor`, `linewidth`, `zerolinecolor`, `zerolinewidth`, `gridcolor`, `gridwidth`, etc. [#4904]
+
+
+## [1.54.3] -- 2020-06-16
+### Fixed
+ - Fix `autosize` case of hidden div with non-px size [#4925]
+
+
+## [1.54.2] -- 2020-06-10
+### Changed
+ - Bump `regl` dependency to v1.6.1 [#4881]
+ - Bump `ndarray` dependency to v1.0.19 [#4910]
+ - Bump `mapbox-gl` dependency to v1.10.1 [#4859]
+ - Improve docs about building Plotly with Angular [#4182]
+
+### Fixed
+ - Fix wheel event for IE-11 [#4385]
+ - Fix `plot_bgcolor` react [#4816]
+ - Fix `legend.title` react [#4827]
+ - Fix `rangebreaks` on `candlestick` & `ohlc` traces [#4814]
+ - Fix `rangebreaks` on `heatmap` traces with 2-D `z` array [#4821]
+ - Fix `rangebreaks` on `histogram2d` traces [#4829]
+ - Fix `rangebreaks` overlapping and tick positions [#4831]
+ - Fix "array" `tickmode` on date & log axes [#4851]
+ - Fix category order of matching axes when calling react [#4832]
+ - Fix for bypassing non-string ids during matching axes [#4858]
+ - Fix selection of single value `dimensions` in `parcoords` traces [#4878]
+ - Fix `bar` lengths in milliseconds from `base` [#4900]
+ - Fix gl3d ticks when converting dates to milliseconds
+   (regression introduced in 1.21.0) [#4903]
+
+
+## [1.54.1] -- 2020-05-04
+
+### Changed
+ - Update dependencies in package.json & package-lock.json [#4799, #4800, #4802, #4805, #4811]
+
+### Fixed
+ - Set pointer-events only for editable shapes to allow pan, zoom & hover
+   events to work inside shapes (regression introduced in 1.54.0) [#4810]
+ - Update and validate various mocks [#4762]
+
+
+## [1.54.0] -- 2020-04-30
+
+### Added
+ - Introduce new drag modes "drawline", "drawrect", "drawcircle", "drawopenpath", "drawclosedpath" &
+   add optional modebar buttons for drawing & removing new shapes inside cartesian subplots &
+   add `newshape` and `activeshape` attributes to `layout` &
+   add `editable` and `fillrule` attributes to `layout.shapes` [#4775]
+ - Add `angle` and `allowoverlap` attributes to `marker` of `scattermapbox` traces [#4575, #4794]
+ - Add Portuguese (Portugal) `pt-pt` locale [#4736]
+
+### Changed
+ - Bump WebGL modules including mapbox-gl and is-mobile [#4731, #4752, #4791]
+ - Bump jsdom, d3-force, minify-stream, topojson-client and es6-promise [#4751, #4768, #4772, #4773, #4774]
+
+### Fixed
+ - Sanitize `sourceattribution` in mapbox `layers` [#4793]
+ - Fix `react`to mapbox `style` changes [#4720]
+ - Fix transform sort order with gaps [#4783]
+ - Fix autorange for `bar` and `waterfall` when `base` is present [#4714]
+ - Fix "extremes" `opacityscale` option for `volume` and `surface` [#4725]
+ - Fix no-WebGL warning for `scattergl` and `splom` traces [#4777]
+ - Fix notifier CSS to have a fallback in font stack [#4778]
+
 
 ## [1.53.0] -- 2020-03-31
 

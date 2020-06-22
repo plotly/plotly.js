@@ -1555,6 +1555,50 @@ describe('parcoords constraint interactions - without defined axis ranges', func
         .catch(failTest)
         .then(done);
     });
+
+    it('@noCI @gl should keep single point dimension selected', function(done) {
+        var testLayer = '.gl-canvas-focus';
+
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'parcoords',
+                    line: {
+                        color: 'blue'
+                    },
+
+                    dimensions: [{
+                        label: 'A',
+                        values: [0, 1]
+                    }, {
+                        label: 'B',
+                        values: [2, 2],
+                        tickvals: [2],
+                        ticktext: ['single point']
+                    }]
+                }
+            ],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100}
+            }
+        })
+        .then(function() {
+            // select
+            mostOfDrag(295, 250, 295, 150);
+            mouseEvent('mouseup', 295, 150);
+        })
+        .then(delay(snapDelay))
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[2]).not.toBe(0, 'all blue');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('parcoords constraint interactions - with defined axis ranges', function() {

@@ -2603,11 +2603,13 @@
           100
         ]
       ],
-      "scl": "Bluered",
+      "colorscale": "Bluered",
       "type": "heatmap"
     }
   ],
   "layout": {
-    "title": "Bluered"
+    "title": {
+      "text": "Bluered"
+    }
   }
 }
