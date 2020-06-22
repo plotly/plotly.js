@@ -2100,6 +2100,9 @@ function getDividerVals(ax, vals) {
     var out = [];
     var i, current;
 
+    var xvals = vals.map(a => a.x);
+    var reversed = (xvals[1] < xvals[0]);
+
     // never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
@@ -2113,11 +2116,11 @@ function getDividerVals(ax, vals) {
         for(i = 0; i < vals.length; i++) {
             var d = vals[i];
             if(d.text2 !== current) {
-                _push(d, 0);
+                _push(d, reversed ? 1 : 0);
             }
             current = d.text2;
         }
-        _push(vals[i - 1], 1);
+        _push(vals[i - 1], reversed ? 0 : 1);
     }
 
     return out;
