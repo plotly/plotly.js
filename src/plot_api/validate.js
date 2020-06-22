@@ -39,6 +39,9 @@ var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
  *      error message (shown in console in logger config argument is enable)
  */
 module.exports = function validate(data, layout) {
+    if(data === undefined) data = [];
+    if(layout === undefined) layout = {};
+
     var schema = PlotSchema.get();
     var errorList = [];
     var gd = {_context: Lib.extendFlat({}, dfltConfig)};
