@@ -13,8 +13,9 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 
 module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
-    var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var posHasRangeBreaks = !!xa.rangebreaks;
 
     Lib.makeTraceGroups(ohlcLayer, cdOHLC, 'trace ohlc').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -38,9 +39,9 @@ module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
         paths.attr('d', function(d) {
             if(d.empty) return 'M0,0Z';
 
-            var x = xa.c2p(d.pos, true);
             var xo = xa.c2p(d.pos - tickLen, true);
             var xc = xa.c2p(d.pos + tickLen, true);
+            var x = posHasRangeBreaks ? (xo + xc) / 2 : xa.c2p(d.pos, true);
 
             var yo = ya.c2p(d.o, true);
             var yh = ya.c2p(d.h, true);

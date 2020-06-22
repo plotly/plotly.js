@@ -52,8 +52,11 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
 }
 
 function plotBoxAndWhiskers(sel, axes, trace, t) {
-    var posAxis = axes.pos;
+    var isHorizontal = trace.orientation === 'h';
     var valAxis = axes.val;
+    var posAxis = axes.pos;
+    var posHasRangeBreaks = !!posAxis.rangebreaks;
+
     var bPos = t.bPos;
     var wdPos = t.wdPos || 0;
     var bPosPxOffset = t.bPosPxOffset || 0;
@@ -87,11 +90,15 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         if(d.empty) return 'M0,0Z';
 
         var lcenter = posAxis.c2l(d.pos + bPos, true);
-        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+
         var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
         var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
-        var posw0 = posAxis.l2p(lcenter - wdPos) + bPosPxOffset;
-        var posw1 = posAxis.l2p(lcenter + wdPos) + bPosPxOffset;
+        var posc = posHasRangeBreaks ? (pos0 + pos1) / 2 : posAxis.l2p(lcenter) + bPosPxOffset;
+
+        var r = trace.whiskerwidth;
+        var posw0 = posHasRangeBreaks ? pos0 * r + (1 - r) * posc : posAxis.l2p(lcenter - wdPos) + bPosPxOffset;
+        var posw1 = posHasRangeBreaks ? pos1 * r + (1 - r) * posc : posAxis.l2p(lcenter + wdPos) + bPosPxOffset;
+
         var posm0 = posAxis.l2p(lcenter - bdPos0 * nw) + bPosPxOffset;
         var posm1 = posAxis.l2p(lcenter + bdPos1 * nw) + bPosPxOffset;
         var q1 = valAxis.c2p(d.q1, true);
@@ -115,7 +122,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         var ln = valAxis.c2p(d.ln, true);
         var un = valAxis.c2p(d.un, true);
 
-        if(trace.orientation === 'h') {
+        if(isHorizontal) {
             d3.select(this).attr('d',
                 'M' + m + ',' + posm0 + 'V' + posm1 + // median line
                 'M' + q1 + ',' + pos0 + 'V' + pos1 + // left edge
@@ -269,8 +276,10 @@ function plotPoints(sel, axes, trace, t) {
 }
 
 function plotBoxMean(sel, axes, trace, t) {
-    var posAxis = axes.pos;
     var valAxis = axes.val;
+    var posAxis = axes.pos;
+    var posHasRangeBreaks = !!posAxis.rangebreaks;
+
     var bPos = t.bPos;
     var bPosPxOffset = t.bPosPxOffset || 0;
 
@@ -304,9 +313,11 @@ function plotBoxMean(sel, axes, trace, t) {
 
     paths.each(function(d) {
         var lcenter = posAxis.c2l(d.pos + bPos, true);
-        var posc = posAxis.l2p(lcenter) + bPosPxOffset;
+
         var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
         var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
+        var posc = posHasRangeBreaks ? (pos0 + pos1) / 2 : posAxis.l2p(lcenter) + bPosPxOffset;
+
         var m = valAxis.c2p(d.mean, true);
         var sl = valAxis.c2p(d.mean - d.sd, true);
         var sh = valAxis.c2p(d.mean + d.sd, true);
