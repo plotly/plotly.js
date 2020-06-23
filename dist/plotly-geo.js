@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.54.4
+* plotly.js (geo) v1.54.5
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -54222,6 +54222,9 @@ var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
  *      error message (shown in console in logger config argument is enable)
  */
 module.exports = function validate(data, layout) {
+    if(data === undefined) data = [];
+    if(layout === undefined) layout = {};
+
     var schema = PlotSchema.get();
     var errorList = [];
     var gd = {_context: Lib.extendFlat({}, dfltConfig)};
@@ -57600,6 +57603,8 @@ function getDividerVals(ax, vals) {
     var out = [];
     var i, current;
 
+    var reversed = (vals.length && vals[vals.length - 1].x < vals[0].x);
+
     // never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
@@ -57613,11 +57618,11 @@ function getDividerVals(ax, vals) {
         for(i = 0; i < vals.length; i++) {
             var d = vals[i];
             if(d.text2 !== current) {
-                _push(d, 0);
+                _push(d, reversed ? 1 : 0);
             }
             current = d.text2;
         }
-        _push(vals[i - 1], 1);
+        _push(vals[i - 1], reversed ? 0 : 1);
     }
 
     return out;
@@ -80684,7 +80689,7 @@ function styleTrace(gd, calcTrace) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.4';
+exports.version = '1.54.5';
 
 },{}]},{},[4])(4)
 });
