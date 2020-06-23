@@ -9,6 +9,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.5] -- 2020-06-23
+
+### Fixed
+ - Fix placement of dividers on reversed-range `multicategory` axes [#4939]
+ - Fix placement of `candlestick`, `ohlc` and `box` plots on axes with `rangebreaks` [#4937]
+ - Handle undefined layout and data arguments in `Plotly.validate` [#4938]
+
+
 ## [1.54.4] -- 2020-06-22
 ### Changed
  - Bump `ecstatic`, `gl-selet-static`, `gl-plot2d` & `gl-plot3d` and drop `cwise` to simplify build process & address security warnings [#4929, #4930, #4934]
