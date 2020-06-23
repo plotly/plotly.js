@@ -1,0 +1,47 @@
+{
+    "data": [{
+        "type": "bar",
+        "y": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+        ],
+        "x": [
+            [
+                "1st",
+                "1st",
+                "2nd",
+                "2nd",
+                "3rd",
+                "3rd",
+                "4th",
+                "4th"
+            ],
+            [
+                "Yes",
+                "No",
+                "Yes",
+                "No",
+                "Yes",
+                "No",
+                "Yes",
+                "No"
+            ]
+        ]
+    }],
+    "layout": {
+        "width": 800,
+        "height": 400,
+        "title": {
+            "text": "Reverse-Autoranged X-Axis"
+        },
+        "xaxis": {
+            "autorange": "reversed"
+        }
+    }
+}
