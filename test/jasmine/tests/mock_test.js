@@ -375,6 +375,7 @@ var list = [
     'gl2d_fill-ordering',
     'gl2d_fonts',
     'gl2d_heatmapgl',
+    'gl2d_heatmapgl_discrete',
     'gl2d_horiz-lines',
     'gl2d_layout_image',
     'gl2d_line_aligned',
@@ -1417,6 +1418,7 @@ figs['gl2d_error_bars_log'] = require('@mocks/gl2d_error_bars_log');
 figs['gl2d_fill-ordering'] = require('@mocks/gl2d_fill-ordering');
 // figs['gl2d_fonts'] = require('@mocks/gl2d_fonts');
 figs['gl2d_heatmapgl'] = require('@mocks/gl2d_heatmapgl');
+figs['gl2d_heatmapgl_discrete'] = require('@mocks/gl2d_heatmapgl_discrete');
 figs['gl2d_horiz-lines'] = require('@mocks/gl2d_horiz-lines');
 // figs['gl2d_layout_image'] = require('@mocks/gl2d_layout_image');
 figs['gl2d_line_aligned'] = require('@mocks/gl2d_line_aligned');
