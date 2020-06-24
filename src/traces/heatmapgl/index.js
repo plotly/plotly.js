@@ -10,7 +10,7 @@
 
 module.exports = {
     attributes: require('./attributes'),
-    supplyDefaults: require('../heatmap/defaults'),
+    supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
 
     calc: require('../heatmap/calc'),
