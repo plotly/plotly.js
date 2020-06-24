@@ -1,11 +1,16 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var d3 = require('d3');
+var supplyDefaults = require('@src/traces/heatmapgl').supplyDefaults;
+var Plots = require('@src/plots/plots');
 
 // contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
     require('@lib/contourgl')
 ]);
+
+var schema = Plotly.PlotSchema.get();
+var attributeList = Object.getOwnPropertyNames(schema.traces.heatmapgl.attributes);
 
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
@@ -247,6 +252,39 @@ describe('contourgl plots', function() {
             expect(scene2d.xaxis.range).toEqual([1, -1]);
 
             done();
+        });
+    });
+});
+
+describe('heatmapgl supplyDefaults', function() {
+    'use strict';
+
+    var traceIn;
+    var traceOut;
+
+    var defaultColor = '#444';
+    var layout = {
+        font: Plots.layoutAttributes.font,
+        _dfltTitle: {colorbar: 'cb'},
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+    };
+
+    beforeEach(function() {
+        traceOut = {};
+    });
+
+    it('should only coerce attributes that are part of scheme', function() {
+        traceIn = {
+            type: 'contourgl',
+            z: [[0, 1], [1, 0]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        var allKeys = Object.getOwnPropertyNames(traceOut);
+        allKeys.forEach(function(key) {
+            if(key[0] !== '_') {
+                expect(attributeList.indexOf(key)).not.toBe(-1, key);
+            }
         });
     });
 });
