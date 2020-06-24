@@ -131,11 +131,11 @@
     "deep-equal": "^2.0.3",
     "derequire": "^2.1.1",
     "ecstatic": "^4.1.4",
-    "eslint": "^7.3.0",
+    "eslint": "^7.3.1",
     "espree": "^7.1.0",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.1",
-    "fuse.js": "^6.2.1",
+    "fuse.js": "^6.3.1",
     "glob": "^7.1.6",
     "gzip-size": "^5.1.1",
     "image-size": "^0.7.5",
@@ -165,7 +165,7 @@
     "requirejs": "^2.3.6",
     "run-series": "^1.1.8",
     "static-eval": "^2.0.5",
-    "through2": "^3.0.1",
+    "through2": "^3.0.2",
     "true-case-path": "^2.2.1",
     "watchify": "^3.11.1"
   }
