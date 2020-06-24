@@ -44,6 +44,8 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         traceOut._length = null;
     }
 
+    if(traceIn.type === 'heatmapgl') return true; // until we handle calendars for heatmapgl
+
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
