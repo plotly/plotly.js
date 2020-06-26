@@ -13,6 +13,7 @@ var d3 = require('d3');
 module.exports = function style(gd) {
     d3.select(gd).selectAll('.im image')
         .style('opacity', function(d) {
-            return d.trace.opacity;
+            if(d && d.hidden) return 0;
+            return d[0].trace.opacity;
         });
 };

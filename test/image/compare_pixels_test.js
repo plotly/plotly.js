@@ -93,7 +93,8 @@ if(allMock || argv.filter) {
     allMockList = allMockList.filter(function(mockName) {
         var cond = !(
             mockName === 'font-wishlist' ||
-            mockName.indexOf('mapbox_') !== -1
+            mockName.indexOf('mapbox_') !== -1 ||
+            mockName.match(/image_.*source/)
         );
         if(!cond) console.log(' -', mockName);
         return cond;

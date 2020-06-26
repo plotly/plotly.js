@@ -13,6 +13,10 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var Fx = require('@src/components/fx');
+var drag = require('../assets/drag');
+var delay = require('../assets/delay');
+
+var incompatibleUserAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15';
 
 describe('image supplyDefaults', function() {
     'use strict';
@@ -52,6 +56,21 @@ describe('image supplyDefaults', function() {
         traceIn = {
             type: 'image',
             z: [[[255, 0, 0]]]
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
+        expect(traceOut.visible).toBe(true);
+    });
+
+    it('should set visible to false when source is empty', function() {
+        traceIn = {
+            source: null
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            type: 'image',
+            source: 'base64'
         };
         traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
         expect(traceOut.visible).toBe(true);
@@ -98,6 +117,28 @@ describe('image supplyDefaults', function() {
         supplyDefaults(traceIn, traceOut);
         expect(traceOut.zmin).toEqual([0, 10, 0, 0], 'zmin default');
         expect(traceOut.zmax).toEqual([20, 100, 100, 1], 'zmax default');
+    });
+
+    it('should set colormodel to rgba when source is defined', function() {
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,asdf'
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.colormodel).toBe('rgba');
+    });
+
+    it('should override zmin/zmax when source is defined', function() {
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,asdf',
+            zmin: 100,
+            zmax: 50
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.colormodel).toBe('rgba');
+        expect(traceOut.zmin).toEqual([0, 0, 0, 0]);
+        expect(traceOut.zmax).toEqual([255, 255, 255, 1]);
     });
 });
 
@@ -320,7 +361,7 @@ describe('image plot', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.im image').each(function(d) { out.push(d.trace.index); });
+            d3.selectAll('.im image').each(function(d) { if(d[0].trace) out.push(d[0].trace.index); });
             return out;
         }
 
@@ -346,6 +387,81 @@ describe('image plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('renders pixelated image when source is defined', function(done) {
+        var mock = require('@mocks/image_labuda_droplets_source.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.newPlot(gd, mockCopy)
+        .then(function(gd) {
+            expect(gd.calcdata[0][0].trace._fastImage).toBeTruthy();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    [
+        incompatibleUserAgent
+    ].forEach(function(userAgent) {
+        it('does not render pixelated image when browser is not compatible', function(done) {
+            var mock = require('@mocks/image_labuda_droplets_source.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+            var spyObj = spyOnProperty(window.navigator, 'userAgent').and.returnValue(userAgent);
+
+            Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                expect(gd.calcdata[0][0].trace._fastImage).toBe(false);
+                // Clear spy
+                spyObj.and.callThrough();
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    [
+      ['yaxis.type', 'log'],
+      ['xaxis.type', 'log'],
+      ['xaxis.range', [50, 0]],
+      ['yaxis.range', [0, 50]]
+    ].forEach(function(attr) {
+        it('does not renders pixelated image when the axes are not compatible', function(done) {
+            var mock = require('@mocks/image_labuda_droplets_source.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                expect(gd.calcdata[0][0].trace._fastImage).toBe(true);
+                return Plotly.relayout(gd, attr[0], attr[1]);
+            })
+            .then(function(gd) {
+                expect(gd.calcdata[0][0].trace._fastImage).toBe(false, 'when ' + attr[0] + ' is ' + attr[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    it('only keeps 2 images around to render magnified pixel from a source image', function(done) {
+        var mock = require('@mocks/image_labuda_droplets_source.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        var spyObj = spyOnProperty(window.navigator, 'userAgent').and.returnValue(incompatibleUserAgent);
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function(gd) {
+            expect(gd.calcdata[0][0].trace._fastImage).toBe(false);
+            return drag({pos0: [350, 250], dpos: [100, 0]});
+        })
+        .then(function() {
+            return drag({pos0: [350, 250], dpos: [100, 0]});
+        })
+        .then(function() {
+            var imgs = document.querySelectorAll('image');
+            expect(imgs.length).toBe(2);
+            // Clear spy
+            spyObj.and.callThrough();
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('image hover:', function() {
@@ -353,7 +469,7 @@ describe('image hover:', function() {
 
     var gd;
 
-    describe('for `image_cat`', function() {
+    describe('for `image_cat` defined by z', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -398,7 +514,7 @@ describe('image hover:', function() {
         });
     });
 
-    describe('for `image_adventurer`', function() {
+    describe('for `image_adventurer` defined by z', function() {
         var mock = require('@mocks/image_adventurer.json');
         beforeAll(function() {
             gd = createGraphDiv();
@@ -533,6 +649,44 @@ describe('image hover:', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+    });
+
+    describe('for `image_labuda_droplets_source` defined by source', function() {
+        var mock = require('@mocks/image_labuda_droplets_source.json');
+        beforeAll(function() {
+            gd = createGraphDiv();
+        });
+
+        afterAll(destroyGraphDiv);
+
+        function _hover(x, y) {
+            var evt = { xpx: x, ypx: y };
+            return Fx.hover('graph', evt, 'xy');
+        }
+
+        [
+          ['x', '205'],
+          ['y', '125'],
+          ['color', '[78, 77, 83, 1]'],
+          ['color[0]', '78'],
+        ].forEach(function(test) {
+            it('should support hovertemplate variable ' + test[0], function(done) {
+                var mockCopy = Lib.extendDeep({}, mock);
+                mockCopy.data[0].colormodel = 'rgba';
+                mockCopy.data[0].hovertemplate = '%{' + test[0] + '}<extra></extra>';
+                Plotly.newPlot(gd, mockCopy)
+                .then(delay(100)) // wait for the image to be loaded into canvas
+                .then(function() {_hover(205, 125);})
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: test[1],
+                        name: ''
+                    }, 'variable `' + test[0] + '` should be available!');
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 });

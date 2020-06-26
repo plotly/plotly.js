@@ -16,8 +16,12 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
+    var source = coerce('source');
+    traceOut._isFromSource = !!source;
+
     var z = coerce('z');
-    if(z === undefined || !z.length || !z[0] || !z[0].length) {
+    traceOut._isFromZ = !(z === undefined || !z.length || !z[0] || !z[0].length);
+    if(!traceOut._isFromZ && !traceOut._isFromSource) {
         traceOut.visible = false;
         return;
     }
@@ -26,10 +30,16 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('y0');
     coerce('dx');
     coerce('dy');
-    var colormodel = coerce('colormodel');
 
-    coerce('zmin', constants.colormodel[colormodel].min);
-    coerce('zmax', constants.colormodel[colormodel].max);
+    if(traceOut._isFromZ) {
+        coerce('colormodel');
+        coerce('zmin', constants.colormodel[traceOut.colormodel].min);
+        coerce('zmax', constants.colormodel[traceOut.colormodel].max);
+    } else if(traceOut._isFromSource) {
+        traceOut.colormodel = 'rgba';
+        traceOut.zmin = constants.colormodel[traceOut.colormodel].min;
+        traceOut.zmax = constants.colormodel[traceOut.colormodel].max;
+    }
 
     coerce('text');
     coerce('hovertext');

@@ -22,6 +22,15 @@ for(var i = 0; i < cm.length; i++) {
 }
 
 module.exports = extendFlat({
+    source: {
+        valType: 'string',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Specifies the data URI of the image to be visualized.',
+            'The URI consists of "data:[<media type>][;base64],<data>"'
+        ].join(' ')
+    },
     z: {
         valType: 'data_array',
         role: 'info',
