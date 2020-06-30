@@ -374,7 +374,7 @@ function getAggregateFunction(opts, conversions) {
                     if(vi !== BADNUM) sortCalc.push(vi);
                 }
                 if(!sortCalc.length) return BADNUM;
-                sortCalc.sort();
+                sortCalc.sort(Lib.sorterAsc);
                 var mid = (sortCalc.length - 1) / 2;
                 return c2d((sortCalc[Math.floor(mid)] + sortCalc[Math.ceil(mid)]) / 2);
             };
