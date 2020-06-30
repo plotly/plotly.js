@@ -360,4 +360,28 @@ describe('aggregate', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('use numeric sort function for median', function() {
+        var subject = ['M', 'M', 'M'];
+        var score = [2, 10, 11];
+
+        var data = [{
+            type: 'scatter',
+            x: subject,
+            y: score,
+            mode: 'markers',
+            transforms: [{
+                type: 'aggregate',
+                groups: subject,
+                aggregations: [
+                    { target: 'y', func: 'median' },
+                ]
+            }]
+        }];
+
+        Plotly.newPlot(gd, data);
+
+        var traceOut = gd._fullData[0];
+        expect(traceOut.y[0]).toBe(10);
+    });
 });
