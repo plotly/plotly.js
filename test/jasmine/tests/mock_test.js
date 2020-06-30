@@ -743,6 +743,7 @@ var list = [
     'parcats_hoveron_color',
     'parcats_hoveron_dimension',
     'parcats_invisible_dimension',
+    'parcats_numeric_sort',
     'parcats_reordered',
     'parcats_unbundled',
     'percent_error_bar',
@@ -1785,6 +1786,7 @@ figs['parcats_grid_subplots'] = require('@mocks/parcats_grid_subplots');
 figs['parcats_hoveron_color'] = require('@mocks/parcats_hoveron_color');
 figs['parcats_hoveron_dimension'] = require('@mocks/parcats_hoveron_dimension');
 figs['parcats_invisible_dimension'] = require('@mocks/parcats_invisible_dimension');
+figs['parcats_numeric_sort'] = require('@mocks/parcats_numeric_sort');
 figs['parcats_reordered'] = require('@mocks/parcats_reordered');
 figs['parcats_unbundled'] = require('@mocks/parcats_unbundled');
 figs['percent_error_bar'] = require('@mocks/percent_error_bar');
