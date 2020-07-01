@@ -16,6 +16,7 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var isNumeric = require('fast-isnumeric');
 
 /**
  * Create a wrapped ParcatsModel object from trace
@@ -40,9 +41,19 @@ module.exports = function calc(gd, trace) {
             // then add extra to the end in trace order
             categoryValues = dim.categoryarray;
         } else {
-            // Get all categories up front so we can order them
-            // Should we check for numbers as sort numerically?
-            categoryValues = filterUnique(dim.values).sort();
+            // Get all categories up front
+            categoryValues = filterUnique(dim.values);
+
+            // order them
+            var allNumeric = true;
+            for(var i = 0; i < categoryValues.length; i++) {
+                if(!isNumeric(categoryValues[i])) {
+                    allNumeric = false;
+                    break;
+                }
+            }
+            categoryValues.sort(allNumeric ? Lib.sorterAsc : undefined);
+
             if(dim.categoryorder === 'category descending') {
                 categoryValues = categoryValues.reverse();
             }
