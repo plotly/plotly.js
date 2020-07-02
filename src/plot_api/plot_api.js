@@ -2712,6 +2712,16 @@ function react(gd, data, layout, config) {
 
         applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
+        var allNames = Object.getOwnPropertyNames(oldFullLayout);
+        for(var q = 0; q < allNames.length; q++) {
+            var name = allNames[q];
+            var start = name.substring(0, 5);
+            if(start === 'xaxis' || start === 'yaxis') {
+                var emptyCategories = oldFullLayout[name]._emptyCategories;
+                if(emptyCategories) emptyCategories();
+            }
+        }
+
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do
         // if the diff (which we haven't determined yet) says we'll recalc
