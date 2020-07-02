@@ -7,6 +7,7 @@ build/*
 npm-debug.log*
 *.sublime*
 *~
+tags
 
 .*
 !.circleci

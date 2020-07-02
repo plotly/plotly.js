@@ -64,11 +64,15 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var coerceRefExtras=['paper'];
         // extract axis if domain specified
         var xAx = function (ar) {
-            var mtch = ar.match(/^([xyz][0-9]*) domain/);
+            var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
             if (mtch) { return mtch[1]; }
             return ar;
         }
-        var axNumMatch = shapeIn[axLetter+'ref'].match(/[xyz]([0-9]*)/);
+        var axNumMatch = (
+            shapeIn[axLetter+'ref'] ?
+            shapeIn[axLetter+'ref'].match(/[xyz]([0-9]*)/) :
+            undefined
+        );
         if (axNumMatch) {
             let axNum = axNumMatch[1];
             coerceRefExtras = coerceRefExtras.concat(
