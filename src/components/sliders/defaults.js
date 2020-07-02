@@ -18,19 +18,19 @@ var name = constants.name;
 var stepAttrs = attributes.steps;
 
 
-module.exports = function slidersDefaults(layoutIn, layoutOut) {
-    handleArrayContainerDefaults(layoutIn, layoutOut, {
+module.exports = function slidersDefaults(gd, layoutIn, layoutOut) {
+    handleArrayContainerDefaults(gd, layoutIn, layoutOut, {
         name: name,
         handleItemDefaults: sliderDefaults
     });
 };
 
-function sliderDefaults(sliderIn, sliderOut, layoutOut) {
+function sliderDefaults(gd, sliderIn, sliderOut, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
 
-    var steps = handleArrayContainerDefaults(sliderIn, sliderOut, {
+    var steps = handleArrayContainerDefaults(gd, sliderIn, sliderOut, {
         name: 'steps',
         handleItemDefaults: stepDefaults
     });
@@ -93,7 +93,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('minorticklen');
 }
 
-function stepDefaults(valueIn, valueOut) {
+function stepDefaults(gd, valueIn, valueOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
     }

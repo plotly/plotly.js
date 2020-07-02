@@ -14,12 +14,12 @@ var handleRThetaDefaults = require('../scatterpolar/defaults').handleRThetaDefau
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleRThetaDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -51,7 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     //     coerce('cliponaxis');
     // }
 
-    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+    handleStyleDefaults(gd, traceIn, traceOut, coerce, defaultColor, layout);
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

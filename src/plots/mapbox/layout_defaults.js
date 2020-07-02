@@ -15,8 +15,8 @@ var handleArrayContainerDefaults = require('../array_container_defaults');
 var layoutAttributes = require('./layout_attributes');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
+    handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, {
         type: 'mapbox',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
@@ -25,7 +25,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce, opts) {
+function handleDefaults(gd, containerIn, containerOut, coerce, opts) {
     coerce('accesstoken', opts.accessToken);
     coerce('style');
     coerce('center.lon');
@@ -34,7 +34,7 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
-    handleArrayContainerDefaults(containerIn, containerOut, {
+    handleArrayContainerDefaults(gd, containerIn, containerOut, {
         name: 'layers',
         handleItemDefaults: handleLayerDefaults
     });
@@ -43,7 +43,7 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     containerOut._input = containerIn;
 }
 
-function handleLayerDefaults(layerIn, layerOut) {
+function handleLayerDefaults(gd, layerIn, layerOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
     }
@@ -71,7 +71,7 @@ function handleLayerDefaults(layerIn, layerOut) {
 
         if(mustBeRasterLayer && type !== 'raster') {
             type = layerOut.type = 'raster';
-            Lib.log('Source types *raster* and *image* must drawn *raster* layer type.');
+            Lib.log(gd, 'Source types *raster* and *image* must drawn *raster* layer type.');
         }
 
         coerce('below');

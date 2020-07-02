@@ -20,14 +20,14 @@ var filterOps = require('../../constants/filter_ops');
 var CONSTRAINT_REDUCTION = filterOps.CONSTRAINT_REDUCTION;
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 
-module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, opts) {
+module.exports = function handleConstraintDefaults(gd, traceIn, traceOut, coerce, layout, defaultColor, opts) {
     var contours = traceOut.contours;
     var showLines, lineColor, fillColor;
 
     var operation = coerce('contours.operation');
     contours._operation = CONSTRAINT_REDUCTION[operation];
 
-    handleConstraintValueDefaults(coerce, contours);
+    handleConstraintValueDefaults(gd, coerce, contours);
 
     if(operation === '=') {
         showLines = contours.showlines = true;
@@ -49,10 +49,10 @@ module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, la
 
     coerce('line.smoothing');
 
-    handleLabelDefaults(coerce, layout, lineColor, opts);
+    handleLabelDefaults(gd, coerce, layout, lineColor, opts);
 };
 
-function handleConstraintValueDefaults(coerce, contours) {
+function handleConstraintValueDefaults(gd, coerce, contours) {
     var zvalue;
 
     if(COMPARISON_OPS2.indexOf(contours.operation) === -1) {

@@ -274,7 +274,7 @@ lib.simpleMap = function(array, func, x1, x2, opts) {
  * @param {int} base
  *     base of string representation, default 16. Should be a power of 2.
  */
-lib.randstr = function randstr(existing, bits, base, _recursion) {
+lib.randstr = function randstr(gd, existing, bits, base, _recursion) {
     if(!base) base = 16;
     if(bits === undefined) bits = 24;
     if(bits <= 0) return '0';
@@ -304,10 +304,10 @@ lib.randstr = function randstr(existing, bits, base, _recursion) {
     if((existing && existing[res]) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         if(_recursion > 10) {
-            lib.warn('randstr failed uniqueness');
+            lib.warn(gd, 'randstr failed uniqueness');
             return res;
         }
-        return randstr(existing, bits, base, (_recursion || 0) + 1);
+        return randstr(gd, existing, bits, base, (_recursion || 0) + 1);
     } else return res;
 };
 
@@ -759,7 +759,7 @@ lib.ensureSingle = function(parent, nodeType, className, enterFn) {
 };
 
 /**
- * Same as Lib.ensureSingle, but using id as selector.
+ * Same as lib.ensureSingle, but using id as selector.
  * This version is mostly used for clipPath nodes.
  *
  * @param {d3 selection} parent : parent selection of the element in question
@@ -975,8 +975,8 @@ var SIMPLE_PROPERTY_REGEX = /^\w*$/;
  * Substitute values from an object into a string
  *
  * Examples:
- *  Lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
- *  Lib.templateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *  lib.templateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
+ *  lib.templateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
  *
  * @param {string}  input string containing %{...} template strings
  * @param {obj}     data object containing substitution values
@@ -1024,9 +1024,9 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
  * or fallback to associated labels.
  *
  * Examples:
- *  Lib.hovertemplateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
- *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
- *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
+ *  lib.hovertemplateString(gd, 'name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
+ *  lib.hovertemplateString(gd, 'name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
+ *  lib.hovertemplateString(gd, 'price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
  *
  * @param {string}  input string containing %{...:...} template strings
  * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
@@ -1035,7 +1035,7 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
  *
  * @return {string} templated string
  */
-function templateFormatString(string, labels, d3locale) {
+function templateFormatString(gd, string, labels, d3locale) {
     var opts = this;
     var args = arguments;
     if(!labels) labels = {};
@@ -1045,7 +1045,7 @@ function templateFormatString(string, labels, d3locale) {
 
     return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
         var obj, value, i;
-        for(i = 3; i < args.length; i++) {
+        for(i = 4; i < args.length; i++) {
             obj = args[i];
             if(!obj) continue;
             if(obj.hasOwnProperty(key)) {
@@ -1062,12 +1062,12 @@ function templateFormatString(string, labels, d3locale) {
 
         if(value === undefined && opts) {
             if(opts.count < opts.max) {
-                lib.warn('Variable \'' + key + '\' in ' + opts.name + ' could not be found!');
+                lib.warn(gd, 'Variable \'' + key + '\' in ' + opts.name + ' could not be found!');
                 value = match;
             }
 
             if(opts.count === opts.max) {
-                lib.warn('Too many ' + opts.name + ' warnings - additional warnings will be suppressed');
+                lib.warn(gd, 'Too many ' + opts.name + ' warnings - additional warnings will be suppressed');
             }
             opts.count++;
 

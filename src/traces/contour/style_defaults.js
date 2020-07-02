@@ -13,7 +13,7 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleLabelDefaults = require('./label_defaults');
 
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, opts) {
+module.exports = function handleStyleDefaults(gd, traceIn, traceOut, coerce, layout, opts) {
     var coloring = coerce('contours.coloring');
 
     var showLines;
@@ -33,11 +33,11 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
         traceOut._dfltShowLegend = false;
 
         colorscaleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+            gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }
 
     coerce('line.smoothing');
 
-    handleLabelDefaults(coerce, layout, lineColor, opts);
+    handleLabelDefaults(gd, coerce, layout, lineColor, opts);
 };

@@ -37,7 +37,7 @@ function appendList(cont, k, item) {
     else cont[k] = [item];
 }
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     var ax2traces = {};
     var xaMayHide = {};
     var yaMayHide = {};
@@ -207,7 +207,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    var hovermode = handleHoverModeDefaults(layoutIn, layoutOut, fullData);
+    var hovermode = handleHoverModeDefaults(gd, layoutIn, layoutOut, fullData);
     var unifiedHover = isUnifiedHover(hovermode);
 
     // first pass creates the containers, determines types, and handles most of the settings
@@ -251,8 +251,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         coerce('uirevision', layoutOut.uirevision);
 
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
-        handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
+        handleTypeDefaults(gd, axLayoutIn, axLayoutOut, coerce, defaultOptions);
+        handleAxisDefaults(gd, axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var unifiedSpike = unifiedHover && axLetter === hovermode.charAt(0);
         var spikecolor = coerce2('spikecolor', unifiedHover ? axLayoutOut.color : undefined);
@@ -270,7 +270,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikesnap;
         }
 
-        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
+        handlePositionDefaults(gd, axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: getOverlayableAxes(axLetter, axName),
@@ -317,9 +317,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         axLayoutOut.type = missingMatchedAxisIdsLookup[axId] || 'linear';
 
-        handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions2, layoutOut);
+        handleAxisDefaults(gd, axLayoutIn, axLayoutOut, coerce, defaultOptions2, layoutOut);
 
-        handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
+        handlePositionDefaults(gd, axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: getOverlayableAxes(axLetter, axName),
@@ -342,10 +342,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        rangeSliderDefaults(layoutIn, layoutOut, axName);
+        rangeSliderDefaults(gd, layoutIn, layoutOut, axName);
 
         if(axLayoutOut.type === 'date') {
             rangeSelectorDefaults(
+                gd,
                 axLayoutIn,
                 axLayoutOut,
                 layoutOut,
@@ -404,7 +405,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             constrainDflt = undefined;
         }
 
-        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
+        handleConstraintDefaults(gd, axLayoutIn, axLayoutOut, coerce, {
             allAxisIds: allAxisIdsIncludingMissing,
             layoutOut: layoutOut,
             scaleanchorDflt: scaleanchorDflt,
@@ -452,7 +453,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                     var group2 = constraintGroups[j];
                     for(var axId2 in group2) {
                         if(axId === axId2) {
-                            Lib.warn('Axis ' + axId2 + ' is set with both ' +
+                            Lib.warn(gd, 'Axis ' + axId2 + ' is set with both ' +
                                 'a *scaleanchor* and *matches* constraint; ' +
                                 'ignoring the scale constraint.');
 

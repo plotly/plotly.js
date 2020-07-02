@@ -35,7 +35,7 @@ function npMaybe(parentCont, prefix) {
  * - prefix {string} : attr string prefix to colorscale container from parent root
  * - cLetter {string} : 'c or 'z' color letter
  */
-module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout, coerce, opts) {
+module.exports = function colorScaleDefaults(gd, parentContIn, parentContOut, layout, coerce, opts) {
     var prefix = opts.prefix;
     var cLetter = opts.cLetter;
     var inTrace = '_module' in parentContOut;
@@ -48,7 +48,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     var thisFn = function() {
         delete parentContIn.coloraxis;
         delete parentContOut.coloraxis;
-        return colorScaleDefaults(parentContIn, parentContOut, layout, coerce, opts);
+        return colorScaleDefaults(gd, parentContIn, parentContOut, layout, coerce, opts);
     };
 
     if(inTrace) {
@@ -68,7 +68,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
 
                 if(stash[0] !== colorbarVisuals) {
                     stash[0] = false;
-                    Lib.warn([
+                    Lib.warn(gd, [
                         'Ignoring coloraxis:', colorAx, 'setting',
                         'as it is linked to incompatible colorscales.'
                     ].join(' '));
@@ -117,7 +117,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
         var showScale = coerce(prefix + 'showscale', showScaleDflt);
         if(showScale) {
             if(prefix && template) containerOut._template = template;
-            colorbarDefaults(containerIn, containerOut, layout);
+            colorbarDefaults(gd, containerIn, containerOut, layout);
         }
     }
 };

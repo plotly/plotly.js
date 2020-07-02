@@ -27,7 +27,7 @@ var setConvert = require('./set_convert');
 var constants = require('./constants');
 var axisNames = constants.axisNames;
 
-function handleDefaults(contIn, contOut, coerce, opts) {
+function handleDefaults(gd, contIn, contOut, coerce, opts) {
     var bgColor = coerce('bgcolor');
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
@@ -57,9 +57,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
-        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
+        var axType = handleAxisTypeDefaults(gd, axIn, axOut, coerceAxis, subplotData, dataAttr);
 
-        handleCategoryOrderDefaults(axIn, axOut, coerceAxis, {
+        handleCategoryOrderDefaults(gd, axIn, axOut, coerceAxis, {
             axData: subplotData,
             dataAttr: dataAttr
         });
@@ -122,7 +122,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 // when we do add support for data angular axes, the new
                 // behavior won't conflict with existing behavior
                 if(axType === 'date') {
-                    Lib.log('Polar plots do not support date angular axes yet.');
+                    Lib.log(gd, 'Polar plots do not support date angular axes yet.');
 
                     for(var j = 0; j < subplotData.length; j++) {
                         subplotData[j].visible = false;
@@ -145,11 +145,11 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         if(visible) {
-            handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+            handleTickValueDefaults(gd, axIn, axOut, coerceAxis, axOut.type);
+            handleTickLabelDefaults(gd, axIn, axOut, coerceAxis, axOut.type, {
                 tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
             });
-            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
+            handleTickMarkDefaults(gd, axIn, axOut, coerceAxis, {outerTicks: true});
 
             var showTickLabels = coerceAxis('showticklabels');
             if(showTickLabels) {
@@ -162,7 +162,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 coerceAxis('tickformat');
             }
 
-            handleLineGridDefaults(axIn, axOut, coerceAxis, {
+            handleLineGridDefaults(gd, axIn, axOut, coerceAxis, {
                 dfltColor: dfltColor,
                 bgColor: opts.bgColor,
                 // default grid color is darker here (60%, vs cartesian default ~91%)
@@ -187,7 +187,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     }
 }
 
-function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
+function handleAxisTypeDefaults(gd, axIn, axOut, coerce, subplotData, dataAttr) {
     var axType = coerce('type');
 
     if(axType === '-') {
@@ -218,8 +218,8 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
     return axOut.type;
 }
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
+    handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, {
         type: constants.name,
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,

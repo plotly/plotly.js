@@ -18,7 +18,7 @@ var DIRSYMBOL = {
     decreasing: delta.DECREASING.SYMBOL
 };
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+module.exports = function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var point = hoverOnBars(pointData, xval, yval, hovermode);
     if(!point) return;
 

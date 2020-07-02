@@ -87,12 +87,12 @@ module.exports = function calc(gd, trace) {
 
     if(!isHist && (isContour || trace.connectgaps)) {
         trace._emptypoints = findEmpties(z);
-        interp2d(z, trace._emptypoints);
+        interp2d(gd, z, trace._emptypoints);
     }
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Lib.warn('cannot use zsmooth: "fast": ' + msg);
+        Lib.warn(gd, 'cannot use zsmooth: "fast": ' + msg);
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)

@@ -176,7 +176,7 @@ function getAxes(layout, grid, axLetter) {
 
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
-function sizeDefaults(layoutIn, layoutOut) {
+function sizeDefaults(gd, layoutIn, layoutOut) {
     var gridIn = layoutIn.grid || {};
     var xAxes = getAxes(layoutOut, gridIn, 'x');
     var yAxes = getAxes(layoutOut, gridIn, 'y');
@@ -258,7 +258,7 @@ function fillGridPositions(axLetter, coerce, dfltGap, dfltSide, len, reversed) {
 
 // the (cartesian) contents of the grid - this needs to happen AFTER supplyDataDefaults
 // so that we know what cartesian subplots are available
-function contentDefaults(layoutIn, layoutOut) {
+function contentDefaults(gd, layoutIn, layoutOut) {
     var gridOut = layoutOut.grid;
     // make sure we got to the end of handleGridSizing
     if(!gridOut || !gridOut._domains) return;

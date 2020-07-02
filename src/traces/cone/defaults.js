@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -49,7 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('lightposition.y');
     coerce('lightposition.z');
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+    colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 
     coerce('text');
     coerce('hovertext');

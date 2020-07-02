@@ -14,15 +14,15 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var handleAnnotationCommonDefaults = require('../annotations/common_defaults');
 var attributes = require('./attributes');
 
-module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
-    handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
+module.exports = function handleDefaults(gd, sceneLayoutIn, sceneLayoutOut, opts) {
+    handleArrayContainerDefaults(gd, sceneLayoutIn, sceneLayoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,
         fullLayout: opts.fullLayout
     });
 };
 
-function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
+function handleAnnotationDefaults(gd, annIn, annOut, sceneLayout, opts) {
     function coerce(attr, dflt) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
@@ -41,7 +41,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     var visible = coerce('visible');
     if(!visible) return;
 
-    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
+    handleAnnotationCommonDefaults(gd, annIn, annOut, opts.fullLayout, coerce);
 
     coercePosition('x');
     coercePosition('y');

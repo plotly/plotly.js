@@ -15,7 +15,7 @@ var handleABDefaults = require('./ab_defaults');
 var attributes = require('./attributes');
 var colorAttrs = require('../../components/color/attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, dfltColor, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -27,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
 
     coerce('carpet');
 
-    handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
+    handleABDefaults(gd, traceIn, traceOut, fullLayout, coerce, defaultColor);
 
     if(!traceOut.a || !traceOut.b) {
         traceOut.visible = false;
@@ -46,7 +46,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     // corresponds to b and the second to a. This sounds backwards but ends up making sense
     // the important part to know is that when you write y[j][i], j goes from 0 to b.length - 1
     // and i goes from 0 to a.length - 1.
-    var validData = handleXYDefaults(traceIn, traceOut, coerce);
+    var validData = handleXYDefaults(gd, traceIn, traceOut, coerce);
     if(!validData) {
         traceOut.visible = false;
     }

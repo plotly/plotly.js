@@ -15,17 +15,17 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var attributes = require('./attributes');
 var name = 'images';
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut) {
     var opts = {
         name: name,
         handleItemDefaults: imageDefaults
     };
 
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
+    handleArrayContainerDefaults(gd, layoutIn, layoutOut, opts);
 };
 
 
-function imageDefaults(imageIn, imageOut, fullLayout) {
+function imageDefaults(gd, imageIn, imageOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }

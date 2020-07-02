@@ -41,7 +41,7 @@ module.exports = function calc(gd, trace) {
         if(!tracedata.a) tracedata.a = carpetdata.a;
         if(!tracedata.b) tracedata.b = carpetdata.b;
 
-        supplyDefaults(tracedata, trace, trace._defaultColor, gd._fullLayout);
+        supplyDefaults(gd, tracedata, trace, trace._defaultColor, gd._fullLayout);
     }
 
     var cd = heatmappishCalc(gd, trace);
@@ -82,7 +82,7 @@ function heatmappishCalc(gd, trace) {
     z = trace._z = clean2dArray(trace._z || trace.z, trace.transpose);
 
     trace._emptypoints = findEmpties(z);
-    interp2d(z, trace._emptypoints);
+    interp2d(gd, z, trace._emptypoints);
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
     var xlen = Lib.maxRowLength(z);

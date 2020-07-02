@@ -713,8 +713,8 @@ function mockColorBarAxis(gd, opts, zrange) {
         return Lib.coerce(cbAxisIn, cbAxisOut, axisLayoutAttrs, attr, dflt);
     }
 
-    handleAxisDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
-    handleAxisPositionDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
+    handleAxisDefaults(gd, cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
+    handleAxisPositionDefaults(gd, cbAxisIn, cbAxisOut, coerce, axisOptions);
 
     return cbAxisOut;
 }

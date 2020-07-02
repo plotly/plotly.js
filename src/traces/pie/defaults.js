@@ -43,7 +43,7 @@ function handleLabelsAndValues(labels, values) {
     };
 }
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -107,7 +107,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     var hole = coerce('hole');
     var title = coerce('title.text');

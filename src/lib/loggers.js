@@ -27,7 +27,7 @@ loggers.log = function() {
 
     if(dfltConfig.logging > 1) {
         var messages = ['LOG:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.trace || console.log, messages);
@@ -35,7 +35,7 @@ loggers.log = function() {
 
     if(dfltConfig.notifyOnLogging > 1) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'long');
@@ -47,7 +47,7 @@ loggers.warn = function() {
 
     if(dfltConfig.logging > 0) {
         var messages = ['WARN:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.trace || console.log, messages);
@@ -55,7 +55,7 @@ loggers.warn = function() {
 
     if(dfltConfig.notifyOnLogging > 0) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'stick');
@@ -67,7 +67,7 @@ loggers.error = function() {
 
     if(dfltConfig.logging > 0) {
         var messages = ['ERROR:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.error, messages);
@@ -75,7 +75,7 @@ loggers.error = function() {
 
     if(dfltConfig.notifyOnLogging > 0) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'stick');

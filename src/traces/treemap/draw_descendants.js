@@ -171,7 +171,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             if(isHeader) {
                 pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
             } else {
-                pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
+                pt._text = formatSliceLabel(gd, pt, entry, trace, cd, fullLayout) || '';
             }
         }
 

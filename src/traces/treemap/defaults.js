@@ -19,7 +19,7 @@ var Colorscale = require('../../components/colorscale');
 var hasColorscale = Colorscale.hasColorscale;
 var colorscaleDefaults = Colorscale.handleDefaults;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -81,7 +81,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
     );
     if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+        colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     } else {
         coerce('marker.depthfade', !(colors || []).length);
     }
@@ -94,7 +94,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
 
     if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+        colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
     traceOut._hovered = {
@@ -114,7 +114,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('pathbar.edgeshape');
     }
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     // do not support transforms for now
     traceOut._length = null;

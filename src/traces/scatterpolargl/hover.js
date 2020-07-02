@@ -11,13 +11,13 @@
 var hover = require('../scattergl/hover');
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var stash = cd[0].t;
     var rArray = stash.r;
     var thetaArray = stash.theta;
 
-    var scatterPointData = hover.hoverPoints(pointData, xval, yval, hovermode);
+    var scatterPointData = hover.hoverPoints(gd, pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
     var newPointData = scatterPointData[0];

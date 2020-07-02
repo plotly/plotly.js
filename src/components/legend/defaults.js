@@ -17,7 +17,7 @@ var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
 
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function legendDefaults(gd, layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {};
 
     var legendTraceCount = 0;

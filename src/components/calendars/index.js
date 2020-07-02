@@ -24,16 +24,16 @@ var attributes = {
     dflt: 'gregorian'
 };
 
-var handleDefaults = function(contIn, contOut, attr, dflt) {
+var handleDefaults = function(gd, contIn, contOut, attr, dflt) {
     var attrs = {};
     attrs[attr] = attributes;
 
     return Lib.coerce(contIn, contOut, attrs, attr, dflt);
 };
 
-var handleTraceDefaults = function(traceIn, traceOut, coords, layout) {
+var handleTraceDefaults = function(gd, traceIn, traceOut, coords, layout) {
     for(var i = 0; i < coords.length; i++) {
-        handleDefaults(traceIn, traceOut, coords[i] + 'calendar', layout.calendar);
+        handleDefaults(gd, traceIn, traceOut, coords[i] + 'calendar', layout.calendar);
     }
 };
 

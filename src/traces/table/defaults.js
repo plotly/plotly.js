@@ -24,12 +24,12 @@ function defaultColumnOrder(traceOut, coerce) {
     coerce('columnorder', oneStepped);
 }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     coerce('columnwidth');
 

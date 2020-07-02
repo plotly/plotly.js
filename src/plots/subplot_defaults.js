@@ -41,7 +41,7 @@ var handleDomainDefaults = require('./domain').defaults;
  *      additional items needed by this function here as well
  * }
  */
-module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
+module.exports = function handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, opts) {
     var subplotType = opts.type;
     var subplotAttributes = opts.attributes;
     var handleDefaults = opts.handleDefaults;
@@ -75,9 +75,9 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
 
         var dfltDomains = {};
         dfltDomains[partition] = [i / idsLength, (i + 1) / idsLength];
-        handleDomainDefaults(subplotLayoutOut, layoutOut, coerce, dfltDomains);
+        handleDomainDefaults(gd, subplotLayoutOut, layoutOut, coerce, dfltDomains);
 
         opts.id = id;
-        handleDefaults(subplotLayoutIn, subplotLayoutOut, coerce, opts);
+        handleDefaults(gd, subplotLayoutIn, subplotLayoutOut, coerce, opts);
     }
 };

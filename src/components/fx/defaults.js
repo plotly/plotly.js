@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleHoverLabelDefaults = require('./hoverlabel_defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -20,5 +20,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var opts = Lib.extendFlat({}, layout.hoverlabel);
     if(traceOut.hovertemplate) opts.namelength = -1;
 
-    handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
+    handleHoverLabelDefaults(gd, traceIn, traceOut, coerce, opts);
 };

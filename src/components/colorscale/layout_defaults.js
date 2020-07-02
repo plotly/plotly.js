@@ -14,7 +14,7 @@ var Template = require('../../plot_api/plot_template');
 var colorScaleAttrs = require('./layout_attributes');
 var colorScaleDefaults = require('./defaults');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, colorScaleAttrs, attr, dflt);
     }
@@ -37,7 +37,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
             colorAxIn = layoutIn[k] || {};
             colorAxOut = Template.newContainer(layoutOut, k, 'coloraxis');
             colorAxOut._name = k;
-            colorScaleDefaults(colorAxIn, colorAxOut, layoutOut, coerceAx, {prefix: '', cLetter: 'c'});
+            colorScaleDefaults(gd, colorAxIn, colorAxOut, layoutOut, coerceAx, {prefix: '', cLetter: 'c'});
         } else {
             // re-coerce colorscale attributes w/o coloraxis
             for(var i = 0; i < stash[2].length; i++) {

@@ -11,7 +11,7 @@
 
 
 // common to 'scatter' and 'scatterternary'
-module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleLineShapeDefaults(gd, traceIn, traceOut, coerce) {
     var shape = coerce('line.shape');
     if(shape === 'spline') coerce('line.smoothing');
 };

@@ -19,12 +19,12 @@ var attributes = require('./attributes');
 
 var coerceFont = Lib.coerceFont;
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleXYDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -49,19 +49,19 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         moduleHasInsideanchor: true
     });
 
-    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+    handleStyleDefaults(gd, traceIn, traceOut, coerce, defaultColor, layout);
 
     var lineColor = (traceOut.marker.line || {}).color;
 
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
-function handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce) {
+function handleGroupingDefaults(gd, traceIn, traceOut, fullLayout, coerce) {
     var orientation = traceOut.orientation;
     // N.B. grouping is done across all trace types that support it
     var posAxId = traceOut[{v: 'x', h: 'y'}[orientation] + 'axis'];
@@ -100,7 +100,7 @@ function handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce) {
     }
 }
 
-function crossTraceDefaults(fullData, fullLayout) {
+function crossTraceDefaults(gd, fullData, fullLayout) {
     var traceIn, traceOut;
 
     function coerce(attr) {
@@ -113,7 +113,7 @@ function crossTraceDefaults(fullData, fullLayout) {
 
             if(traceOut.type === 'bar') {
                 traceIn = traceOut._input;
-                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+                handleGroupingDefaults(gd, traceIn, traceOut, fullLayout, coerce);
             }
         }
     }

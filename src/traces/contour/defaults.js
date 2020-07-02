@@ -17,7 +17,7 @@ var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -26,7 +26,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce2(traceIn, traceOut, attributes, attr);
     }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
+    var len = handleXYZDefaults(gd, traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -41,9 +41,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('connectgaps', Lib.isArray1D(traceOut.z));
 
     if(isConstraint) {
-        handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
+        handleConstraintDefaults(gd, traceIn, traceOut, coerce, layout, defaultColor);
     } else {
-        handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
-        handleStyleDefaults(traceIn, traceOut, coerce, layout);
+        handleContoursDefaults(gd, traceIn, traceOut, coerce, coerce2);
+        handleStyleDefaults(gd, traceIn, traceOut, coerce, layout);
     }
 };

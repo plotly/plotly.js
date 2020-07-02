@@ -11,7 +11,7 @@
 var handleAxisDefaults = require('./axis_defaults');
 var Template = require('../../plot_api/plot_template');
 
-module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
+module.exports = function handleABDefaults(gd, traceIn, traceOut, fullLayout, coerce, dfltColor) {
     var a = coerce('a');
 
     if(!a) {
@@ -26,10 +26,10 @@ module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce
         coerce('b0');
     }
 
-    mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor);
+    mimickAxisDefaults(gd, traceIn, traceOut, fullLayout, dfltColor);
 };
 
-function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
+function mimickAxisDefaults(gd, traceIn, traceOut, fullLayout, dfltColor) {
     var axesList = ['aaxis', 'baxis'];
 
     axesList.forEach(function(axName) {
@@ -50,7 +50,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
             fullLayout: fullLayout
         };
 
-        handleAxisDefaults(axIn, axOut, defaultOptions);
+        handleAxisDefaults(gd, axIn, axOut, defaultOptions);
         axOut._categories = axOut._categories || [];
 
         // so we don't have to repeat autotype unnecessarily,

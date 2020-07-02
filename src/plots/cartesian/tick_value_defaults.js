@@ -11,7 +11,7 @@
 var cleanTicks = require('./clean_ticks');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
+module.exports = function handleTickValueDefaults(gd, containerIn, containerOut, coerce, axType) {
     function readInput(attr) {
         var v = containerIn[attr];
         return (

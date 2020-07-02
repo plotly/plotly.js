@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var constants = require('./constants');
 
-module.exports = function findAllPaths(pathinfo, xtol, ytol) {
+module.exports = function findAllPaths(gd, pathinfo, xtol, ytol) {
     var cnt,
         startLoc,
         i,
@@ -27,16 +27,16 @@ module.exports = function findAllPaths(pathinfo, xtol, ytol) {
 
         for(j = 0; j < pi.starts.length; j++) {
             startLoc = pi.starts[j];
-            makePath(pi, startLoc, 'edge', xtol, ytol);
+            makePath(gd, pi, startLoc, 'edge', xtol, ytol);
         }
 
         cnt = 0;
         while(Object.keys(pi.crossings).length && cnt < 10000) {
             cnt++;
             startLoc = Object.keys(pi.crossings)[0].split(',').map(Number);
-            makePath(pi, startLoc, undefined, xtol, ytol);
+            makePath(gd, pi, startLoc, undefined, xtol, ytol);
         }
-        if(cnt === 10000) Lib.log('Infinite loop in contour?');
+        if(cnt === 10000) Lib.log(gd, 'Infinite loop in contour?');
     }
 };
 
@@ -52,7 +52,7 @@ function ptDist(pt1, pt2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-function makePath(pi, loc, edgeflag, xtol, ytol) {
+function makePath(gd, pi, loc, edgeflag, xtol, ytol) {
     var locStr = loc.join(',');
     var mi = pi.crossings[locStr];
     var marchStep = getStartStep(mi, edgeflag, loc);
@@ -75,7 +75,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 
         marchStep = constants.NEWDELTA[mi];
         if(!marchStep) {
-            Lib.log('Found bad marching index:', mi, loc, pi.level);
+            Lib.log(gd, 'Found bad marching index:', mi, loc, pi.level);
             break;
         }
 
@@ -101,7 +101,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     }
 
     if(cnt === 10000) {
-        Lib.log('Infinite loop in contour?');
+        Lib.log(gd, 'Infinite loop in contour?');
     }
     var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol);
     var totaldist = 0;
@@ -185,7 +185,7 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         pi.paths.push(pts);
     } else {
         if(!edgeflag) {
-            Lib.log('Unclosed interior contour?',
+            Lib.log(gd, 'Unclosed interior contour?',
                 pi.level, startLoc.join(','), pts.join('L'));
         }
 

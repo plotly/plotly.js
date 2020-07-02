@@ -18,7 +18,7 @@ var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults
 
 var attributes = require('./attributes');
 
-module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
+module.exports = function colorbarDefaults(gd, containerIn, containerOut, layout) {
     var colorbarOut = Template.newContainer(containerOut, 'colorbar');
     var colorbarIn = containerIn.colorbar || {};
 
@@ -52,11 +52,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
+    handleTickValueDefaults(gd, colorbarIn, colorbarOut, coerce, 'linear');
 
     var opts = {outerTicks: false, font: layout.font};
-    handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
-    handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
+    handleTickLabelDefaults(gd, colorbarIn, colorbarOut, coerce, 'linear', opts);
+    handleTickMarkDefaults(gd, colorbarIn, colorbarOut, coerce, 'linear', opts);
 
     coerce('title.text', layout._dfltTitle.colorbar);
     Lib.coerceFont(coerce, 'title.font', layout.font);

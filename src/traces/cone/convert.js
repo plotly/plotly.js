@@ -114,7 +114,7 @@ function convert(scene, trace) {
     return meshData;
 }
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     this.data = data;
 
     var meshData = convert(this.scene, data);
@@ -126,7 +126,7 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createConeTrace(scene, data) {
+function createConeTrace(gd, scene, data) {
     var gl = scene.glplot.gl;
 
     var meshData = convert(scene, data);

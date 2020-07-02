@@ -17,12 +17,12 @@ var handleMarkerDefaults = require('../scatter/marker_defaults');
 var mergeLength = require('../parcoords/merge_length');
 var isOpenSymbol = require('../scattergl/helpers').isOpenSymbol;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+    var dimensions = handleArrayContainerDefaults(gd, traceIn, traceOut, {
         name: 'dimensions',
         handleItemDefaults: dimensionDefaults
     });
@@ -42,18 +42,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
-    handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
 
     var isOpen = isOpenSymbol(traceOut.marker.symbol);
     var isBubble = subTypes.isBubble(traceOut);
     coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
 
-    handleAxisDefaults(traceIn, traceOut, layout, coerce);
+    handleAxisDefaults(gd, traceIn, traceOut, layout, coerce);
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-function dimensionDefaults(dimIn, dimOut) {
+function dimensionDefaults(gd, dimIn, dimOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimIn, dimOut, attributes.dimensions, attr, dflt);
     }
@@ -68,7 +68,7 @@ function dimensionDefaults(dimIn, dimOut) {
     coerce('axis.matches');
 }
 
-function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
+function handleAxisDefaults(gd, traceIn, traceOut, layout, coerce) {
     var dimensions = traceOut.dimensions;
     var dimLength = dimensions.length;
     var showUpper = traceOut.showupperhalf;

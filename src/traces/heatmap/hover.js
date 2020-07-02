@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extractOpts = require('../../components/colorscale').extractOpts;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
+module.exports = function hoverPoints(gd, pointData, xval, yval, hovermode, hoverLayer, contour) {
     var cd0 = pointData.cd[0];
     var trace = cd0.trace;
     var xa = pointData.xa;
@@ -35,7 +35,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
             nx = Math.round(pointData.index[1]);
             ny = Math.round(pointData.index[0]);
         } catch(e) {
-            Lib.error('Error hovering on heatmap, ' +
+            Lib.error(gd, 'Error hovering on heatmap, ' +
                 'pointNumber must be [row,col], found:', pointData.index);
             return;
         }

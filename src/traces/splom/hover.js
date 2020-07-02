@@ -11,7 +11,7 @@
 var helpers = require('./helpers');
 var calcHover = require('../scattergl/hover').calcHover;
 
-function hoverPoints(pointData, xval, yval) {
+function hoverPoints(gd, pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var scene = pointData.scene;
@@ -51,7 +51,7 @@ function hoverPoints(pointData, xval, yval) {
 
     if(id === undefined) return [pointData];
 
-    return [calcHover(pointData, x, y, trace)];
+    return [calcHover(gd, pointData, x, y, trace)];
 }
 
 module.exports = {

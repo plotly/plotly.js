@@ -13,8 +13,8 @@ var Color = require('../../components/color');
 
 var heatmapHoverPoints = require('../heatmap/hover');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer) {
-    var hoverData = heatmapHoverPoints(pointData, xval, yval, hovermode, hoverLayer, true);
+module.exports = function hoverPoints(gd, pointData, xval, yval, hovermode, hoverLayer) {
+    var hoverData = heatmapHoverPoints(gd, pointData, xval, yval, hovermode, hoverLayer, true);
 
     if(hoverData) {
         hoverData.forEach(function(hoverPt) {

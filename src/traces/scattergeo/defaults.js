@@ -18,7 +18,7 @@ var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -59,22 +59,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode');
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce);
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce);
     }
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);

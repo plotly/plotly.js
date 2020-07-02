@@ -18,21 +18,21 @@ var name = constants.name;
 var buttonAttrs = attributes.buttons;
 
 
-module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
+module.exports = function updateMenusDefaults(gd, layoutIn, layoutOut) {
     var opts = {
         name: name,
         handleItemDefaults: menuDefaults
     };
 
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
+    handleArrayContainerDefaults(gd, layoutIn, layoutOut, opts);
 };
 
-function menuDefaults(menuIn, menuOut, layoutOut) {
+function menuDefaults(gd, menuIn, menuOut, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
 
-    var buttons = handleArrayContainerDefaults(menuIn, menuOut, {
+    var buttons = handleArrayContainerDefaults(gd, menuIn, menuOut, {
         name: 'buttons',
         handleItemDefaults: buttonDefaults
     });
@@ -64,7 +64,7 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('borderwidth');
 }
 
-function buttonDefaults(buttonIn, buttonOut) {
+function buttonDefaults(gd, buttonIn, buttonOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }

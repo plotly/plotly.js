@@ -56,8 +56,8 @@ module.exports = function calc(gd, trace) {
     // into account the spacing of the values. That is, the derivatives should
     // be modified to use a and b values. It's not that hard, but this is already
     // moderate overkill for just filling in missing values.
-    smoothFill2dArray(x, a, b);
-    smoothFill2dArray(y, a, b);
+    smoothFill2dArray(gd, x, a, b);
+    smoothFill2dArray(gd, y, a, b);
 
     setConvert(trace);
 

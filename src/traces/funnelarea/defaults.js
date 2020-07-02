@@ -14,7 +14,7 @@ var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 var handleLabelsAndValues = require('../pie/defaults').handleLabelsAndValues;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -67,7 +67,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         });
     }
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     var title = coerce('title.text');
     if(title) {

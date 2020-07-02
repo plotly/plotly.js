@@ -35,7 +35,7 @@ function correctionOvershoot(maxFractionalChange) {
  *      of neighbors that are *not* missing. Assumed to be sorted from most to
  *      least neighbors, as produced by heatmap/find_empties.
  */
-module.exports = function interp2d(z, emptyPoints) {
+module.exports = function interp2d(gd, z, emptyPoints) {
     var maxFractionalChange = 1;
     var i;
 
@@ -55,7 +55,7 @@ module.exports = function interp2d(z, emptyPoints) {
             correctionOvershoot(maxFractionalChange));
     }
     if(maxFractionalChange > INTERPTHRESHOLD) {
-        Lib.log('interp2d didn\'t converge quickly', maxFractionalChange);
+        Lib.log(gd, 'interp2d didn\'t converge quickly', maxFractionalChange);
     }
 
     return z;

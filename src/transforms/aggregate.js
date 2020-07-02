@@ -133,7 +133,7 @@ var aggAttrs = attrs.aggregations;
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, traceOut) {
+exports.supplyDefaults = function(gd, transformIn, traceOut) {
     var transformOut = {};
     var i;
 

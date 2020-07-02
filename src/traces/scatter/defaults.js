@@ -22,17 +22,17 @@ var handleLineShapeDefaults = require('./line_shape_defaults');
 var handleTextDefaults = require('./text_defaults');
 var handleFillColorDefaults = require('./fillcolor_defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleXYDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) traceOut.visible = false;
 
     if(!traceOut.visible) return;
 
-    var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
+    var stackGroupOpts = handleStackDefaults(gd, traceIn, traceOut, layout, coerce);
 
     var defaultMode = !stackGroupOpts && (len < constants.PTS_LINESONLY) ?
         'lines+markers' : 'lines';
@@ -41,19 +41,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        handleLineShapeDefaults(traceIn, traceOut, coerce);
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineShapeDefaults(gd, traceIn, traceOut, coerce);
         coerce('connectgaps');
         coerce('line.simplify');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce);
     }
 
     var dfltHoverOn = [];
@@ -68,8 +68,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // We handle that case in some hacky code inside handleStackDefaults.
     coerce('fill', stackGroupOpts ? stackGroupOpts.fillDflt : 'none');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        handleFillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce);
+        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(gd, traceIn, traceOut, coerce);
     }
 
     var lineColor = (traceOut.line || {}).color;
@@ -81,8 +81,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

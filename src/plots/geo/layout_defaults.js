@@ -17,8 +17,8 @@ var layoutAttributes = require('./layout_attributes');
 
 var axesNames = constants.axesNames;
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
+    handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, {
         type: 'geo',
         attributes: layoutAttributes,
         handleDefaults: handleGeoDefaults,
@@ -27,7 +27,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
+function handleGeoDefaults(gd, geoLayoutIn, geoLayoutOut, coerce, opts) {
     var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
     var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 

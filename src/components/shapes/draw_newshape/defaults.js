@@ -12,7 +12,7 @@
 var Color = require('../../color');
 
 
-module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
+module.exports = function supplyDrawNewShapeDefaults(gd, layoutIn, layoutOut, coerce) {
     coerce('newshape.drawdirection');
     coerce('newshape.layer');
     coerce('newshape.fillcolor');

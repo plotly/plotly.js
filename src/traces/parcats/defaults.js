@@ -17,7 +17,7 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
 
-function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+function handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce) {
     coerce('line.shape');
     coerce('line.hovertemplate');
 
@@ -25,7 +25,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
             coerce('line.colorscale');
-            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+            colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
             return lineColor.length;
         } else {
             traceOut.line.color = defaultColor;
@@ -34,7 +34,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     return Infinity;
 }
 
-function dimensionDefaults(dimensionIn, dimensionOut) {
+function dimensionDefaults(gd, dimensionIn, dimensionOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
@@ -74,19 +74,19 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
     }
 }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+    var dimensions = handleArrayContainerDefaults(gd, traceIn, traceOut, {
         name: 'dimensions',
         handleItemDefaults: dimensionDefaults
     });
 
-    var len = handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    var len = handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;

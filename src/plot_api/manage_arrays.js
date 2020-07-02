@@ -99,7 +99,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
 
         if(replotLater) return false;
 
-        supplyComponentDefaults(layout, fullLayout);
+        supplyComponentDefaults(gd, layout, fullLayout);
         draw(gd);
         return true;
     }
@@ -179,7 +179,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
 
     if(replotLater) return false;
 
-    supplyComponentDefaults(layout, fullLayout);
+    supplyComponentDefaults(gd, layout, fullLayout);
 
     // finally draw all the components we need to
     // if we added or removed any, redraw all after it

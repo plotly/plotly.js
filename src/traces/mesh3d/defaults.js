@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -51,7 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     // Coerce remaining properties
     [
@@ -80,7 +80,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if('intensity' in traceIn) {
         coerce('intensity');
         coerce('intensitymode');
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+        colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
     } else {
         traceOut.showscale = false;
 

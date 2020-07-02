@@ -1006,7 +1006,7 @@ axes.tickFirst = function(ax, opts) {
             t0 = axes.tickIncrement(t0, newDTick, mult < 0 ? !axrev : axrev, ax.calendar);
             cnt++;
         }
-        Lib.error('tickFirst did not converge', ax);
+        Lib.error(gd, 'tickFirst did not converge', ax);
         return t0;
     } else if(tType === 'L') {
         // Log scales: Linear, Digits

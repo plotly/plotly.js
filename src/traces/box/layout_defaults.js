@@ -12,7 +12,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
-function _supply(layoutIn, layoutOut, fullData, coerce, traceType) {
+function _supply(gd, layoutIn, layoutOut, fullData, coerce, traceType) {
     var category = traceType + 'Layout';
     var hasTraceType = false;
 
@@ -31,11 +31,11 @@ function _supply(layoutIn, layoutOut, fullData, coerce, traceType) {
     coerce(traceType + 'groupgap');
 }
 
-function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
-    _supply(layoutIn, layoutOut, fullData, coerce, 'box');
+    _supply(gd, layoutIn, layoutOut, fullData, coerce, 'box');
 }
 
 module.exports = {

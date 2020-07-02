@@ -12,7 +12,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var stash = cd[0].t;
     var trace = cd[0].trace;
@@ -84,10 +84,10 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     if(id === undefined) return [pointData];
 
-    return [calcHover(pointData, x, y, trace)];
+    return [calcHover(gd, pointData, x, y, trace)];
 }
 
-function calcHover(pointData, x, y, trace) {
+function calcHover(gd, pointData, x, y, trace) {
     var xa = pointData.xa;
     var ya = pointData.ya;
     var minDist = pointData.distance;

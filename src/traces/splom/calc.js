@@ -56,7 +56,7 @@ module.exports = function calc(gd, trace) {
 
             // if corresponding x & y axes don't have matching types, skip dim
             if(xa && ya && xa.type !== ya.type) {
-                Lib.log('Skipping splom dimension ' + i + ' with conflicting axis types');
+                Lib.log(gd, 'Skipping splom dimension ' + i + ' with conflicting axis types');
                 continue;
             }
 

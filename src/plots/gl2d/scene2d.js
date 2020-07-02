@@ -579,6 +579,7 @@ proto.draw = function() {
 
     requestAnimationFrame(this.redraw);
 
+    var gd = this.graphDiv;
     var glplot = this.glplot;
     var camera = this.camera;
     var mouseListener = camera.mouseListener;
@@ -691,7 +692,7 @@ proto.draw = function() {
                     textAlign: Fx.castHoverOption(trace, ptNumber, 'align')
                 }, {
                     container: this.svgContainer,
-                    gd: this.graphDiv
+                    gd: gd
                 });
             }
         }

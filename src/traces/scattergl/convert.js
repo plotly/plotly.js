@@ -132,7 +132,7 @@ function convertTextStyle(gd, trace) {
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, i);
             var meta = trace._meta || {};
-            optsOut.text.push(Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta));
+            optsOut.text.push(Lib.texttemplateString(gd, txt(i), labels, d3locale, pointValues, d, meta));
         }
     } else {
         if(Array.isArray(trace.text) && trace.text.length < count) {

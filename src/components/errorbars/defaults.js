@@ -17,7 +17,7 @@ var Template = require('../../plot_api/plot_template');
 var attributes = require('./attributes');
 
 
-module.exports = function(traceIn, traceOut, defaultColor, opts) {
+module.exports = function supplyLayoutDefault(gd, traceIn, traceOut, defaultColor, opts) {
     var objName = 'error_' + opts.axis;
     var containerOut = Template.newContainer(traceOut, objName);
     var containerIn = traceIn[objName] || {};

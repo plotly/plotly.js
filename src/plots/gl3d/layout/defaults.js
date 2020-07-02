@@ -20,7 +20,7 @@ var getSubplotData = require('../../get_data').getSubplotData;
 
 var GL3D = 'gl3d';
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     var hasNon3D = layoutOut._basePlotModules.length > 1;
 
     // some layout-wide attribute are used in all scenes
@@ -32,7 +32,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         if(isValid) return layoutIn[attr];
     }
 
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+    handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, {
         type: GL3D,
         attributes: layoutAttributes,
         handleDefaults: handleGl3dDefaults,
@@ -45,7 +45,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
+function handleGl3dDefaults(gd, sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     /*
      * Scene numbering proceeds as follows
      * scene
@@ -103,7 +103,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 
     var fullGl3dData = getSubplotData(opts.fullData, GL3D, opts.id);
 
-    supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
+    supplyGl3dAxisLayoutDefaults(gd, sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
         data: fullGl3dData,
@@ -113,7 +113,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     });
 
     Registry.getComponentMethod('annotations3d', 'handleDefaults')(
-        sceneLayoutIn, sceneLayoutOut, opts
+        gd, sceneLayoutIn, sceneLayoutOut, opts
     );
 
     var dragmode = opts.getDfltFromLayout('dragmode');

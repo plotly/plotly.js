@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var attrs = require('./layout_attributes');
 
-module.exports = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     var subplotsDone = {};
     var sp;
 

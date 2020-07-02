@@ -158,9 +158,9 @@ exports.newContainer = function(container, name, baseName) {
  *         specific template items that have not already beeen included,
  *         also as bare output items ready for supplyDefaults.
  */
-exports.arrayTemplater = function(container, name, inclusionAttr) {
+exports.arrayTemplater = function(gd, container, name, inclusionAttr) {
     var template = container._template;
-    var defaultsTemplate = template && template[arrayDefaultKey(name)];
+    var defaultsTemplate = template && template[arrayDefaultKey(gd, name)];
     var templateItems = template && template[name];
     if(!Array.isArray(templateItems) || !templateItems.length) {
         templateItems = [];
@@ -238,10 +238,10 @@ function validItemName(name) {
     return name && typeof name === 'string';
 }
 
-function arrayDefaultKey(name) {
+function arrayDefaultKey(gd, name) {
     var lastChar = name.length - 1;
     if(name.charAt(lastChar) !== 's') {
-        Lib.warn('bad argument to arrayDefaultKey: ' + name);
+        Lib.warn(gd, 'bad argument to arrayDefaultKey: ' + name);
     }
     return name.substr(0, name.length - 1) + 'defaults';
 }

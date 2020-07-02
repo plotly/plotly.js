@@ -52,7 +52,7 @@ function isValidScaleArray(scl) {
     return true;
 }
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     var i, j;
 
     function coerce(attr, dflt) {
@@ -75,7 +75,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     traceOut._ylength = z.length;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     coerce('text');
     coerce('hovertext');
@@ -137,17 +137,17 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     // the colorbar shouldn't be shown by default
 
     colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
+        gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
     );
 
-    opacityscaleDefaults(traceIn, traceOut, layout, coerce);
+    opacityscaleDefaults(gd, traceIn, traceOut, layout, coerce);
 
     // disable 1D transforms - currently surface does NOT support column data like heatmap does
     // you can use mesh3d for this use case, but not surface
     traceOut._length = null;
 }
 
-function opacityscaleDefaults(traceIn, traceOut, layout, coerce) {
+function opacityscaleDefaults(gd, traceIn, traceOut, layout, coerce) {
     var opacityscale = coerce('opacityscale');
     if(opacityscale === 'max') {
         traceOut.opacityscale = [[0, MIN], [1, 1]];

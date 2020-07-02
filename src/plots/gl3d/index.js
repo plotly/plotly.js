@@ -88,7 +88,7 @@ exports.plot = function plot(gd) {
             };
         }
 
-        scene.plot(fullSceneData, fullLayout, gd.layout);
+        scene.plot(gd, fullSceneData, fullLayout);
     }
 };
 

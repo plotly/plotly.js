@@ -15,7 +15,7 @@ var Color = require('../../components/color');
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -49,7 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = len;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y'], layout);
 
     var hasAggregationData = traceOut[aggLetter];
     if(hasAggregationData) coerce('histfunc');
@@ -59,7 +59,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // autobin(x|y) are only included here to appease Plotly.validate
     coerce('autobin' + sampleLetter);
 
-    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+    handleStyleDefaults(gd, traceIn, traceOut, coerce, defaultColor, layout);
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 
@@ -67,6 +67,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 };

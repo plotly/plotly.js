@@ -13,7 +13,7 @@ var Axes = require('../../plots/cartesian/axes');
 var boxHoverPoints = require('../box/hover');
 var helpers = require('./helpers');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer) {
+module.exports = function hoverPoints(gd, pointData, xval, yval, hovermode, hoverLayer) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var hoveron = trace.hoveron;
@@ -24,7 +24,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var violinLineAttrs;
 
     if(hasHoveronViolins || hasHoveronKDE) {
-        var closeBoxData = boxHoverPoints.hoverOnBoxes(pointData, xval, yval, hovermode);
+        var closeBoxData = boxHoverPoints.hoverOnBoxes(gd, pointData, xval, yval, hovermode);
 
         if(hasHoveronKDE && closeBoxData.length > 0) {
             var xa = pointData.xa;
@@ -85,7 +85,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     }
 
     if(hoveron.indexOf('points') !== -1) {
-        closePtData = boxHoverPoints.hoverOnPoints(pointData, xval, yval);
+        closePtData = boxHoverPoints.hoverOnPoints(gd, pointData, xval, yval);
     }
 
     // update violin line (if any)

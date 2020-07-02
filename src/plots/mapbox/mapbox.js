@@ -710,7 +710,7 @@ proto.addLayer = function(opts, below) {
             }
         }
 
-        Lib.warn([
+        Lib.warn(gd, [
             'Trying to add layer with *below* value',
             below,
             'referencing a layer that does not exist',

@@ -111,10 +111,10 @@ exports.calc = function(gd, trace) {
                 label: k
             });
         } else {
-            return Lib.warn('Multiple implied roots, cannot build ' + trace.type + ' hierarchy.');
+            return Lib.warn(gd, 'Multiple implied roots, cannot build ' + trace.type + ' hierarchy.');
         }
     } else if(parent2children[''].length > 1) {
-        var dummyId = Lib.randstr();
+        var dummyId = Lib.randstr(gd);
 
         // if multiple rows linked to the root node,
         // add dummy "root of roots" node to make d3 build the hierarchy successfully
@@ -140,7 +140,7 @@ exports.calc = function(gd, trace) {
             .id(function(d) { return d.id; })
             .parentId(function(d) { return d.pid; })(cd);
     } catch(e) {
-        return Lib.warn('Failed to build ' + trace.type + ' hierarchy. Error: ' + e.message);
+        return Lib.warn(gd, 'Failed to build ' + trace.type + ' hierarchy. Error: ' + e.message);
     }
 
     var hierarchy = d3Hierarchy.hierarchy(root);
@@ -169,7 +169,7 @@ exports.calc = function(gd, trace) {
 
                         if(v < partialSum * ALMOST_EQUAL) {
                             failed = true;
-                            return Lib.warn([
+                            return Lib.warn(gd, [
                                 'Total value for node', d.data.data.id,
                                 'is smaller than the sum of its children.',
                                 '\nparent value =', v,

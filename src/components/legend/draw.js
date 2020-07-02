@@ -146,10 +146,10 @@ module.exports = function draw(gd, opts) {
                 ly = Lib.constrain(ly, 0, fullLayout.height - opts._effHeight);
 
                 if(lx !== lx0) {
-                    Lib.log('Constrain legend.x to make legend fit inside graph');
+                    Lib.log(gd, 'Constrain legend.x to make legend fit inside graph');
                 }
                 if(ly !== ly0) {
-                    Lib.log('Constrain legend.y to make legend fit inside graph');
+                    Lib.log(gd, 'Constrain legend.y to make legend fit inside graph');
                 }
             }
 

@@ -31,7 +31,7 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  data: the plot data to use in choosing auto type
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
+module.exports = function handleAxisDefaults(gd, containerIn, containerOut, options) {
     var letter = options.letter;
     var font = options.font || {};
     var attributes = carpetAttrs[letter + 'axis'];
@@ -99,7 +99,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
-        handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+        handleCalendarDefaults(gd, containerIn, containerOut, 'calendar', options.calendar);
     }
 
     // we need some of the other functions setConvert attaches, but for
@@ -133,9 +133,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     coerce('fixedrange');
 
-    handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce, {
+    handleTickValueDefaults(gd, containerIn, containerOut, coerce, axType);
+    handleTickLabelDefaults(gd, containerIn, containerOut, coerce, axType, options);
+    handleCategoryOrderDefaults(gd, containerIn, containerOut, coerce, {
         data: options.data,
         dataAttr: letter
     });

@@ -234,7 +234,7 @@ function findAccessToken(gd, mapboxIds) {
                 Lib.pushUnique(tokensUseful, token);
             } else {
                 if(isMapboxStyle(opts._input.style)) {
-                    Lib.error('Uses Mapbox map style, but did not set an access token.');
+                    Lib.error(gd, 'Uses Mapbox map style, but did not set an access token.');
                     hasOneSetMapboxStyle = true;
                 }
                 wontWork = true;
@@ -250,18 +250,18 @@ function findAccessToken(gd, mapboxIds) {
         var msg = hasOneSetMapboxStyle ?
             constants.noAccessTokenErrorMsg :
             constants.missingStyleErrorMsg;
-        Lib.error(msg);
+        Lib.error(gd, msg);
         throw new Error(msg);
     }
 
     if(tokensUseful.length) {
         if(tokensUseful.length > 1) {
-            Lib.warn(constants.multipleTokensErrorMsg);
+            Lib.warn(gd, constants.multipleTokensErrorMsg);
         }
         return tokensUseful[0];
     } else {
         if(tokensListed.length) {
-            Lib.log([
+            Lib.log(gd, [
                 'Listed mapbox access token(s)', tokensListed.join(','),
                 'but did not use a Mapbox map style, ignoring token(s).'
             ].join(' '));

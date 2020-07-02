@@ -15,7 +15,7 @@ var fillText = Lib.fillText;
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
 var isPtInsidePolygon = require('../../plots/polar/helpers').isPtInsidePolygon;
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+module.exports = function hoverPoints(gd, pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
 

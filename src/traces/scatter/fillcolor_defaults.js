@@ -12,7 +12,7 @@
 var Color = require('../../components/color');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
+module.exports = function fillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce) {
     var inheritColorFromMarker = false;
 
     if(traceOut.marker) {

@@ -607,7 +607,7 @@ function getPathString(gd, options) {
     if(type === 'path') {
         if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
         if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
-        return convertPath(options, x2p, y2p);
+        return convertPath(gd, options, x2p, y2p);
     }
 
     if(options.xsizemode === 'pixel') {
@@ -644,7 +644,7 @@ function getPathString(gd, options) {
 }
 
 
-function convertPath(options, x2p, y2p) {
+function convertPath(gd, options, x2p, y2p) {
     var pathIn = options.path;
     var xSizemode = options.xsizemode;
     var ySizemode = options.ysizemode;
@@ -674,7 +674,7 @@ function convertPath(options, x2p, y2p) {
 
         if(paramNumber > nParams) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
-            Lib.log('Ignoring extra params in segment ' + segment);
+            Lib.log(gd, 'Ignoring extra params in segment ' + segment);
         }
 
         return segmentType + paramString;

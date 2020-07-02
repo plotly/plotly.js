@@ -64,7 +64,7 @@ proto.handlePick = function(selection) {
     }
 };
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     var scene = this.scene;
     var layout = scene.fullSceneLayout;
 
@@ -117,13 +117,13 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createVolumeTrace(scene, data) {
+function createVolumeTrace(gd, scene, data) {
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new VolumeTrace(scene, mesh, data.uid);
 
     mesh._trace = result;
-    result.update(data);
+    result.update(gd, data);
     scene.glplot.add(mesh);
     return result;
 }

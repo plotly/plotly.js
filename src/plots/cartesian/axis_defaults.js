@@ -44,7 +44,7 @@ var HOUR = require('./constants').HOUR_PATTERN;
  *  reverseDflt: boolean
  *  automargin: boolean
  */
-module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
+module.exports = function handleAxisDefaults(gd, containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
     var splomStash = options.splomStash || {};
@@ -56,7 +56,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
-        handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+        handleCalendarDefaults(gd, containerIn, containerOut, 'calendar', options.calendar);
     }
 
     setConvert(containerOut, layoutOut);
@@ -69,7 +69,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('range');
     containerOut.cleanRange();
 
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
+    handleCategoryOrderDefaults(gd, containerIn, containerOut, coerce, options);
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
@@ -82,7 +82,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
+    handleTickLabelDefaults(gd, containerIn, containerOut, coerce, axType, options, {pass: 1});
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
@@ -92,10 +92,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
-    handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
-    handleTickMarkDefaults(containerIn, containerOut, coerce, options);
-    handleLineGridDefaults(containerIn, containerOut, coerce, {
+    handleTickValueDefaults(gd, containerIn, containerOut, coerce, axType);
+    handleTickLabelDefaults(gd, containerIn, containerOut, coerce, axType, options, {pass: 2});
+    handleTickMarkDefaults(gd, containerIn, containerOut, coerce, options);
+    handleLineGridDefaults(gd, containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         showGrid: options.showGrid,
@@ -126,7 +126,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        handleArrayContainerDefaults(containerIn, containerOut, {
+        handleArrayContainerDefaults(gd, containerIn, containerOut, {
             name: 'rangebreaks',
             inclusionAttr: 'enabled',
             handleItemDefaults: rangebreaksDefaults
@@ -149,7 +149,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
                     var trace = options.data[i];
                     if(trace.type === 'scattergl' || trace.type === 'splom') {
                         trace.visible = false;
-                        Lib.warn(trace.type +
+                        Lib.warn(gd, trace.type +
                             ' traces do not work on axes with rangebreaks.' +
                             ' Setting trace ' + trace.index + ' to `visible: false`.');
                     }
@@ -161,7 +161,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     return containerOut;
 };
 
-function rangebreaksDefaults(itemIn, itemOut, containerOut) {
+function rangebreaksDefaults(gd, itemIn, itemOut, containerOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(itemIn, itemOut, layoutAttributes.rangebreaks, attr, dflt);
     }

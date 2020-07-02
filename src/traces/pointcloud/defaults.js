@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

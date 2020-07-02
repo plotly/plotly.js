@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
-module.exports = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     var hasTraceType = false;
 
     function coerce(attr, dflt) {

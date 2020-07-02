@@ -17,7 +17,7 @@ var attributes = require('./attributes');
 var constants = require('./constants');
 
 
-module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
+module.exports = function handleDefaults(gd, containerIn, containerOut, layout, counterAxes, calendar) {
     var selectorIn = containerIn.rangeselector || {};
     var selectorOut = Template.newContainer(containerOut, 'rangeselector');
 
@@ -25,7 +25,7 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
         return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
     }
 
-    var buttons = handleArrayContainerDefaults(selectorIn, selectorOut, {
+    var buttons = handleArrayContainerDefaults(gd, selectorIn, selectorOut, {
         name: 'buttons',
         handleItemDefaults: buttonDefaults,
         calendar: calendar
@@ -50,7 +50,7 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
     }
 };
 
-function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
+function buttonDefaults(gd, buttonIn, buttonOut, selectorOut, opts) {
     var calendar = opts.calendar;
 
     function coerce(attr, dflt) {

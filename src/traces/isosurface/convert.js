@@ -77,7 +77,7 @@ proto.handlePick = function(selection) {
     }
 };
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     var scene = this.scene;
     var layout = scene.fullSceneLayout;
 
@@ -1036,13 +1036,13 @@ function generateIsoMeshes(data) {
     return data;
 }
 
-function createIsosurfaceTrace(scene, data) {
+function createIsosurfaceTrace(gd, scene, data) {
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new IsosurfaceTrace(scene, mesh, data.uid);
 
     mesh._trace = result;
-    result.update(data);
+    result.update(gd, data);
     scene.glplot.add(mesh);
     return result;
 }

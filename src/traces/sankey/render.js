@@ -27,7 +27,7 @@ var Registry = require('../../registry');
 
 // view models
 
-function sankeyModel(layout, d, traceIndex) {
+function sankeyModel(gd, layout, d, traceIndex) {
     var calcData = unwrap(d);
     var trace = calcData.trace;
     var domain = trace.domain;
@@ -66,7 +66,7 @@ function sankeyModel(layout, d, traceIndex) {
     var graph = sankey();
 
     if(sankey.nodePadding() < nodePad) {
-        Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
+        Lib.warn(gd, 'node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
     // Counters for nested loops
@@ -261,7 +261,7 @@ function sankeyModel(layout, d, traceIndex) {
         circular: circular,
         key: traceIndex,
         trace: trace,
-        guid: Lib.randstr(),
+        guid: Lib.randstr(gd),
         horizontal: horizontal,
         width: width,
         height: height,
@@ -465,7 +465,7 @@ function linkPath() {
     return path;
 }
 
-function nodeModel(d, n) {
+function nodeModel(gd, d, n) {
     var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
@@ -477,7 +477,7 @@ function nodeModel(d, n) {
     var key = 'node_' + n.pointNumber;
     // If it's a group, it's mutable and should be unique
     if(n.group) {
-        key = Lib.randstr();
+        key = Lib.randstr(gd);
     }
 
     // for event data
@@ -819,7 +819,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     var styledData = calcData
             .filter(function(d) {return unwrap(d).trace.visible;})
-            .map(sankeyModel.bind(null, layout));
+            .map(sankeyModel.bind(null, gd, layout));
 
     var sankey = svg.selectAll('.' + c.cn.sankey)
         .data(styledData, keyFun);
@@ -932,7 +932,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             var nodes = d.graph.nodes;
             persistOriginalPlace(nodes);
             return nodes
-              .map(nodeModel.bind(null, d));
+              .map(nodeModel.bind(null, gd, d));
         }, keyFun);
 
     sankeyNode.enter()

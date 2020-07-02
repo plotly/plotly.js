@@ -17,14 +17,14 @@ var attributes = require('./attributes');
 var helpers = require('./helpers');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
-    handleArrayContainerDefaults(layoutIn, layoutOut, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut) {
+    handleArrayContainerDefaults(gd, layoutIn, layoutOut, {
         name: 'shapes',
         handleItemDefaults: handleShapeDefaults
     });
 };
 
-function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
+function handleShapeDefaults(gd, shapeIn, shapeOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }

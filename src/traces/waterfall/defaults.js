@@ -27,12 +27,12 @@ function handleDirection(coerce, direction, defaultColor) {
     coerce(direction + '.marker.line.width');
 }
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleXYDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -81,7 +81,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 }
 
-function crossTraceDefaults(fullData, fullLayout) {
+function crossTraceDefaults(gd, fullData, fullLayout) {
     var traceIn, traceOut;
 
     function coerce(attr) {
@@ -93,7 +93,7 @@ function crossTraceDefaults(fullData, fullLayout) {
             traceOut = fullData[i];
             traceIn = traceOut._input;
 
-            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            handleGroupingDefaults(gd, traceIn, traceOut, fullLayout, coerce);
         }
     }
 }

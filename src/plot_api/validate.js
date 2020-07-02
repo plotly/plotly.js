@@ -54,7 +54,7 @@ module.exports = function validate(data, layout) {
     } else {
         gd.data = [];
         dataIn = [];
-        errorList.push(format('array', 'data'));
+        errorList.push(format(gd, 'array', 'data'));
     }
 
     if(isPlainObject(layout)) {
@@ -64,7 +64,7 @@ module.exports = function validate(data, layout) {
         gd.layout = {};
         layoutIn = {};
         if(arguments.length > 1) {
-            errorList.push(format('object', 'layout'));
+            errorList.push(format(gd, 'object', 'layout'));
         }
     }
 
@@ -82,7 +82,7 @@ module.exports = function validate(data, layout) {
         var base = ['data', i];
 
         if(!isPlainObject(traceIn)) {
-            errorList.push(format('object', base));
+            errorList.push(format(gd, 'object', base));
             continue;
         }
 
@@ -98,17 +98,17 @@ module.exports = function validate(data, layout) {
         };
 
         if(traceOut.visible === false && traceIn.visible !== false) {
-            errorList.push(format('invisible', base));
+            errorList.push(format(gd, 'invisible', base));
         }
 
-        crawl(traceIn, traceOut, traceSchema, errorList, base);
+        crawl(gd, traceIn, traceOut, traceSchema, errorList, base);
 
         var transformsIn = traceIn.transforms;
         var transformsOut = traceOut.transforms;
 
         if(transformsIn) {
             if(!isArray(transformsIn)) {
-                errorList.push(format('array', base, ['transforms']));
+                errorList.push(format(gd, 'array', base, ['transforms']));
             }
 
             base.push('transforms');
@@ -118,7 +118,7 @@ module.exports = function validate(data, layout) {
                 var transformType = transformsIn[j].type;
 
                 if(!isPlainObject(transformsIn[j])) {
-                    errorList.push(format('object', base, path));
+                    errorList.push(format(gd, 'object', base, path));
                     continue;
                 }
 
@@ -132,7 +132,7 @@ module.exports = function validate(data, layout) {
                     values: Object.keys(schema.transforms)
                 };
 
-                crawl(transformsIn[j], transformsOut[j], transformSchema, errorList, base, path);
+                crawl(gd, transformsIn[j], transformsOut[j], transformSchema, errorList, base, path);
             }
         }
     }
@@ -140,13 +140,13 @@ module.exports = function validate(data, layout) {
     var layoutOut = gd._fullLayout;
     var layoutSchema = fillLayoutSchema(schema, dataOut);
 
-    crawl(layoutIn, layoutOut, layoutSchema, errorList, 'layout');
+    crawl(gd, layoutIn, layoutOut, layoutSchema, errorList, 'layout');
 
     // return undefined if no validation errors were found
     return (errorList.length === 0) ? void(0) : errorList;
 };
 
-function crawl(objIn, objOut, schema, list, base, path) {
+function crawl(gd, objIn, objOut, schema, list, base, path) {
     path = path || [];
 
     var keys = Object.keys(objIn);
@@ -170,12 +170,12 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var items = (nestedSchema || {}).items;
 
         if(!isInSchema(schema, k)) {
-            list.push(format('schema', base, p));
+            list.push(format(gd, 'schema', base, p));
         } else if(isPlainObject(valIn) && isPlainObject(valOut) && nestedValType !== 'any') {
-            crawl(valIn, valOut, nestedSchema, list, base, p);
+            crawl(gd, valIn, valOut, nestedSchema, list, base, p);
         } else if(isInfoArray && isArray(valIn)) {
             if(valIn.length > valOut.length) {
-                list.push(format('unused', base, p.concat(valOut.length)));
+                list.push(format(gd, 'unused', base, p.concat(valOut.length)));
             }
             var len = valOut.length;
             var arrayItems = Array.isArray(items);
@@ -185,7 +185,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
                 for(n = 0; n < len; n++) {
                     if(isArray(valIn[n])) {
                         if(valIn[n].length > valOut[n].length) {
-                            list.push(format('unused', base, p.concat(n, valOut[n].length)));
+                            list.push(format(gd, 'unused', base, p.concat(n, valOut[n].length)));
                         }
                         var len2 = valOut[n].length;
                         for(m = 0; m < (arrayItems ? Math.min(len2, items[n].length) : len2); m++) {
@@ -193,13 +193,13 @@ function crawl(objIn, objOut, schema, list, base, path) {
                             valInPart = valIn[n][m];
                             valOutPart = valOut[n][m];
                             if(!Lib.validate(valInPart, item)) {
-                                list.push(format('value', base, p.concat(n, m), valInPart));
+                                list.push(format(gd, 'value', base, p.concat(n, m), valInPart));
                             } else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
-                                list.push(format('dynamic', base, p.concat(n, m), valInPart, valOutPart));
+                                list.push(format(gd, 'dynamic', base, p.concat(n, m), valInPart, valOutPart));
                             }
                         }
                     } else {
-                        list.push(format('array', base, p.concat(n), valIn[n]));
+                        list.push(format(gd, 'array', base, p.concat(n), valIn[n]));
                     }
                 }
             } else {
@@ -208,9 +208,9 @@ function crawl(objIn, objOut, schema, list, base, path) {
                     valInPart = valIn[n];
                     valOutPart = valOut[n];
                     if(!Lib.validate(valInPart, item)) {
-                        list.push(format('value', base, p.concat(n), valInPart));
+                        list.push(format(gd, 'value', base, p.concat(n), valInPart));
                     } else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
-                        list.push(format('dynamic', base, p.concat(n), valInPart, valOutPart));
+                        list.push(format(gd, 'dynamic', base, p.concat(n), valInPart, valOutPart));
                     }
                 }
             }
@@ -233,8 +233,8 @@ function crawl(objIn, objOut, schema, list, base, path) {
                     var valInj = valIn[_index];
                     var valOutj = valOut[j];
                     if(isPlainObject(valInj) && valInj.visible !== false && valOutj.visible === false) {
-                        list.push(format('invisible', base, _p));
-                    } else crawl(valInj, valOutj, _nestedSchema, list, base, _p);
+                        list.push(format(gd, 'invisible', base, _p));
+                    } else crawl(gd, valInj, valOutj, _nestedSchema, list, base, _p);
                 }
             }
 
@@ -244,23 +244,23 @@ function crawl(objIn, objOut, schema, list, base, path) {
                 _p.push(j);
 
                 if(!isPlainObject(valIn[j])) {
-                    list.push(format('object', base, _p, valIn[j]));
+                    list.push(format(gd, 'object', base, _p, valIn[j]));
                 } else if(indexList.indexOf(j) === -1) {
-                    list.push(format('unused', base, _p));
+                    list.push(format(gd, 'unused', base, _p));
                 }
             }
         } else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
-            list.push(format('object', base, p, valIn));
+            list.push(format(gd, 'object', base, p, valIn));
         } else if(!isArrayOrTypedArray(valIn) && isArrayOrTypedArray(valOut) && !isInfoArray && !isColorscale) {
-            list.push(format('array', base, p, valIn));
+            list.push(format(gd, 'array', base, p, valIn));
         } else if(!(k in objOut)) {
-            list.push(format('unused', base, p, valIn));
+            list.push(format(gd, 'unused', base, p, valIn));
         } else if(!Lib.validate(valIn, nestedSchema)) {
-            list.push(format('value', base, p, valIn));
+            list.push(format(gd, 'value', base, p, valIn));
         } else if(nestedSchema.valType === 'enumerated' &&
             ((nestedSchema.coerceNumber && valIn !== +valOut) || valIn !== valOut)
         ) {
-            list.push(format('dynamic', base, p, valIn, valOut));
+            list.push(format(gd, 'dynamic', base, p, valIn, valOut));
         }
     }
 
@@ -345,7 +345,7 @@ function inBase(base) {
     return 'In ' + base + ', ';
 }
 
-function format(code, base, path, valIn, valOut) {
+function format(gd, code, base, path, valIn, valOut) {
     path = path || '';
 
     var container, trace;
@@ -365,7 +365,7 @@ function format(code, base, path, valIn, valOut) {
     var msg = code2msgFunc[code](base, astr, valIn, valOut);
 
     // log to console if logger config option is enabled
-    Lib.log(msg);
+    Lib.log(gd, msg);
 
     return {
         code: code,

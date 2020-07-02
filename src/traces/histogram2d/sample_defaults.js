@@ -11,7 +11,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
-module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
+module.exports = function handleSampleDefaults(gd, traceIn, traceOut, coerce, layout) {
     var x = coerce('x');
     var y = coerce('y');
     var xlen = Lib.minRowLength(x);
@@ -28,7 +28,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     traceOut._length = Math.min(xlen, ylen);
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y'], layout);
 
     // if marker.color is an array, we can use it in aggregation instead of z
     var hasAggregationData = coerce('z') || coerce('marker.color');

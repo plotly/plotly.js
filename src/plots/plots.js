@@ -348,14 +348,14 @@ plots.supplyDefaults = function(gd, opts) {
         var oldWidth = oldFullLayout.width;
         var oldHeight = oldFullLayout.height;
 
-        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
+        plots.supplyLayoutGlobalDefaults(gd, newLayout, newFullLayout, formatObj);
 
         if(!newLayout.width) newFullLayout.width = oldWidth;
         if(!newLayout.height) newFullLayout.height = oldHeight;
         plots.sanitizeMargins(newFullLayout);
     } else {
         // coerce the updated layout and autosize if needed
-        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
+        plots.supplyLayoutGlobalDefaults(gd, newLayout, newFullLayout, formatObj);
 
         var missingWidthOrHeight = (!newLayout.width || !newLayout.height);
         var autosize = newFullLayout.autosize;
@@ -406,18 +406,18 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._requestRangeslider = {};
 
     // pull uids from old data to use as new defaults
-    newFullLayout._traceUids = getTraceUids(oldFullData, newData);
+    newFullLayout._traceUids = getTraceUids(gd, oldFullData, newData);
 
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
-    plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
+    plots.supplyDataDefaults(gd, newData, newFullData, newLayout, newFullLayout);
 
     // redo grid size defaults with info about splom x/y axes,
     // and fill in generated cartesian axes and subplots
     var splomXa = Object.keys(splomAxes.x);
     var splomYa = Object.keys(splomAxes.y);
     if(splomXa.length > 1 && splomYa.length > 1) {
-        Registry.getComponentMethod('grid', 'sizeDefaults')(newLayout, newFullLayout);
+        Registry.getComponentMethod('grid', 'sizeDefaults')(gd, newLayout, newFullLayout);
 
         for(i = 0; i < splomXa.length; i++) {
             Lib.pushUnique(subplots.xaxis, splomXa[i]);
@@ -440,7 +440,7 @@ plots.supplyDefaults = function(gd, opts) {
     }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
+    plots.supplyLayoutModuleDefaults(gd, newLayout, newFullLayout, newFullData, gd._transitionData);
 
     // Special cases that introduce interactions between traces.
     // This is after relinkPrivateKeys so we can use those in crossTraceDefaults
@@ -453,7 +453,7 @@ plots.supplyDefaults = function(gd, opts) {
         if(funci) Lib.pushUnique(crossTraceDefaultsFuncs, funci);
     }
     for(i = 0; i < crossTraceDefaultsFuncs.length; i++) {
-        crossTraceDefaultsFuncs[i](newFullData, newFullLayout);
+        crossTraceDefaultsFuncs[i](gd, newFullData, newFullLayout);
     }
 
     // turn on flag to optimize large splom-only graphs
@@ -477,7 +477,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._hasPie = newFullLayout._has('pie');
 
     // relink / initialize subplot axis objects
-    plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.linkSubplots(gd, newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
@@ -515,7 +515,7 @@ plots.supplyDefaults = function(gd, opts) {
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     // colorscale crossTraceDefaults needs newFullLayout with relinked keys
-    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(newFullData, newFullLayout);
+    Registry.getComponentMethod('colorscale', 'crossTraceDefaults')(gd, newFullData, newFullLayout);
 
     // For persisting GUI-driven changes in layout
     // _preGUI and _tracePreGUI were already copied over in relinkPrivateKeys
@@ -574,7 +574,7 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
  * 2. matches input uids if provided
  * 3. matches previous data uids
  */
-function getTraceUids(oldFullData, newData) {
+function getTraceUids(gd, oldFullData, newData) {
     var len = newData.length;
     var oldFullInput = [];
     var i, prevFullInput;
@@ -605,7 +605,7 @@ function getTraceUids(oldFullData, newData) {
 
         if(tryUid(newUid, i)) continue;
         if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
-        setUid(Lib.randstr(seenUids), i);
+        setUid(Lib.randstr(gd, seenUids), i);
     }
 
     return out;
@@ -850,7 +850,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
     }
 };
 
-plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.linkSubplots = function(gd, newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var oldSubplots = oldFullLayout._plots || {};
@@ -1054,7 +1054,7 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 };
 
 
-plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
+plots.supplyDataDefaults = function(gd, dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
     var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
@@ -1098,7 +1098,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         // Note: templater supplies trace type
         fullTrace = templater.newTrace(trace);
         fullTrace.uid = fullLayout._traceUids[i];
-        plots.supplyTraceDefaults(trace, fullTrace, colorCnt, fullLayout, i);
+        plots.supplyTraceDefaults(gd, trace, fullTrace, colorCnt, fullLayout, i);
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -1131,7 +1131,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
                     delete expandedTrace.visible;
                 }
 
-                plots.supplyTraceDefaults(expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
+                plots.supplyTraceDefaults(gd, expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
 
                 // relink private (i.e. underscore) keys expanded trace to full expanded trace so
                 // that transform supply-default methods can set _ keys for future use.
@@ -1183,7 +1183,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     }
 };
 
-plots.supplyAnimationDefaults = function(opts) {
+plots.supplyAnimationDefaults = function(gd, opts) {
     opts = opts || {};
     var i;
     var optsOut = {};
@@ -1199,25 +1199,25 @@ plots.supplyAnimationDefaults = function(opts) {
     if(Array.isArray(opts.frame)) {
         optsOut.frame = [];
         for(i = 0; i < opts.frame.length; i++) {
-            optsOut.frame[i] = plots.supplyAnimationFrameDefaults(opts.frame[i] || {});
+            optsOut.frame[i] = plots.supplyAnimationFrameDefaults(gd, opts.frame[i] || {});
         }
     } else {
-        optsOut.frame = plots.supplyAnimationFrameDefaults(opts.frame || {});
+        optsOut.frame = plots.supplyAnimationFrameDefaults(gd, opts.frame || {});
     }
 
     if(Array.isArray(opts.transition)) {
         optsOut.transition = [];
         for(i = 0; i < opts.transition.length; i++) {
-            optsOut.transition[i] = plots.supplyAnimationTransitionDefaults(opts.transition[i] || {});
+            optsOut.transition[i] = plots.supplyAnimationTransitionDefaults(gd, opts.transition[i] || {});
         }
     } else {
-        optsOut.transition = plots.supplyAnimationTransitionDefaults(opts.transition || {});
+        optsOut.transition = plots.supplyAnimationTransitionDefaults(gd, opts.transition || {});
     }
 
     return optsOut;
 };
 
-plots.supplyAnimationFrameDefaults = function(opts) {
+plots.supplyAnimationFrameDefaults = function(gd, opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
@@ -1230,7 +1230,7 @@ plots.supplyAnimationFrameDefaults = function(opts) {
     return optsOut;
 };
 
-plots.supplyAnimationTransitionDefaults = function(opts) {
+plots.supplyAnimationTransitionDefaults = function(gd, opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
@@ -1243,7 +1243,7 @@ plots.supplyAnimationTransitionDefaults = function(opts) {
     return optsOut;
 };
 
-plots.supplyFrameDefaults = function(frameIn) {
+plots.supplyFrameDefaults = function(gd, frameIn) {
     var frameOut = {};
 
     function coerce(attr, dflt) {
@@ -1260,7 +1260,7 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, traceInIndex) {
+plots.supplyTraceDefaults = function(gd, traceIn, traceOut, colorIndex, layout, traceInIndex) {
     var colorway = layout.colorway || Color.defaults;
     var defaultColor = colorway[colorIndex % colorway.length];
 
@@ -1335,7 +1335,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         if(_module) {
-            _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            _module.supplyDefaults(gd, traceIn, traceOut, defaultColor, layout);
         }
 
         if(!Registry.traceIs(traceOut, 'noOpacity')) {
@@ -1353,7 +1353,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
 
             // parcats support hover, but not hoverlabel stylings (yet)
             if(traceOut.type !== 'parcats') {
-                Registry.getComponentMethod('fx', 'supplyDefaults')(traceIn, traceOut, defaultColor, layout);
+                Registry.getComponentMethod('fx', 'supplyDefaults')(gd, traceIn, traceOut, defaultColor, layout);
             }
         }
 
@@ -1361,7 +1361,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             coerce('selectedpoints');
         }
 
-        plots.supplyTransformDefaults(traceIn, traceOut, layout);
+        plots.supplyTransformDefaults(gd, traceIn, traceOut, layout);
     }
 
     return traceOut;
@@ -1387,7 +1387,7 @@ function hasMakesDataTransform(trace) {
 
 plots.hasMakesDataTransform = hasMakesDataTransform;
 
-plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
+plots.supplyTransformDefaults = function(gd, traceIn, traceOut, layout) {
     // For now we only allow transforms on 1D traces, ie those that specify a _length.
     // If we were to implement 2D transforms, we'd need to have each transform
     // describe its own applicability and disable itself when it doesn't apply.
@@ -1421,10 +1421,10 @@ plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
         var isFirstStage = !(transformIn._module && transformIn._module === _module);
         var doLaterStages = _module && typeof _module.transform === 'function';
 
-        if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
+        if(!_module) Lib.warn(gd, 'Unrecognized transform type ' + type + '.');
 
         if(_module && _module.supplyDefaults && (isFirstStage || doLaterStages)) {
-            transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
+            transformOut = _module.supplyDefaults(gd, transformIn, traceOut, layout, traceIn);
             transformOut.type = type;
             transformOut._module = _module;
 
@@ -1460,7 +1460,7 @@ function applyTransforms(fullTrace, fullData, layout, fullLayout) {
     return dataOut;
 }
 
-plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
+plots.supplyLayoutGlobalDefaults = function(gd, layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
@@ -1520,7 +1520,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
-    Registry.getComponentMethod('grid', 'sizeDefaults')(layoutIn, layoutOut);
+    Registry.getComponentMethod('grid', 'sizeDefaults')(gd, layoutIn, layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -1544,7 +1544,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     Registry.getComponentMethod(
         'shapes',
         'supplyDrawNewShapeDefaults'
-    )(layoutIn, layoutOut, coerce);
+    )(gd, layoutIn, layoutOut, coerce);
 
     coerce('meta');
 
@@ -1558,12 +1558,12 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     Registry.getComponentMethod(
         'calendars',
         'handleDefaults'
-    )(layoutIn, layoutOut, 'calendar');
+    )(gd, layoutIn, layoutOut, 'calendar');
 
     Registry.getComponentMethod(
         'fx',
         'supplyLayoutGlobalDefaults'
-    )(layoutIn, layoutOut, coerce);
+    )(gd, layoutIn, layoutOut, coerce);
 };
 
 function getComputedSize(attr) {
@@ -1635,7 +1635,7 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
     plots.sanitizeMargins(fullLayout);
 };
 
-plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
+plots.supplyLayoutModuleDefaults = function(gd, layoutIn, layoutOut, fullData, transitionData) {
     var componentsRegistry = Registry.componentsRegistry;
     var basePlotModules = layoutOut._basePlotModules;
     var component, i, _module;
@@ -1659,7 +1659,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // ensure all cartesian axes have at least one subplot
     if(layoutOut._has('cartesian')) {
-        Registry.getComponentMethod('grid', 'contentDefaults')(layoutIn, layoutOut);
+        Registry.getComponentMethod('grid', 'contentDefaults')(gd, layoutIn, layoutOut);
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
     }
 
@@ -1674,7 +1674,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
         // e.g. pie does not have a layout-defaults step
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData);
         }
     }
 
@@ -1687,7 +1687,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         _module = modules[i];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData);
         }
     }
 
@@ -1697,7 +1697,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         _module = transformModules[i];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+            _module.supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
@@ -1705,7 +1705,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         _module = componentsRegistry[component];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData);
         }
     }
 };
@@ -1897,11 +1897,11 @@ plots.autoMargin = function(gd, id, o) {
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
             if(o.l + o.r > fullLayout.width * 0.5) {
-                Lib.log('Margin push', id, 'is too big in x, dropping');
+                Lib.log(gd, 'Margin push', id, 'is too big in x, dropping');
                 o.l = o.r = 0;
             }
             if(o.b + o.t > fullLayout.height * 0.5) {
-                Lib.log('Margin push', id, 'is too big in y, dropping');
+                Lib.log(gd, 'Margin push', id, 'is too big in y, dropping');
                 o.b = o.t = 0;
             }
 
@@ -2028,7 +2028,7 @@ plots.doAutoMargin = function(gd) {
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
             return Registry.call('plot', gd);
         } else {
-            Lib.warn('Too many auto-margin redraws.');
+            Lib.warn(gd, 'Too many auto-margin redraws.');
         }
     }
 };

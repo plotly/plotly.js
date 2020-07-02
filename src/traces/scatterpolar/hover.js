@@ -10,8 +10,8 @@
 
 var scatterHover = require('../scatter/hover');
 
-function hoverPoints(pointData, xval, yval, hovermode) {
-    var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
+    var scatterPointData = scatterHover(gd, pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
     var newPointData = scatterPointData[0];

@@ -58,7 +58,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
         _context.text('')
             .style('white-space', 'pre');
 
-        var hasLink = buildSVGText(_context.node(), str);
+        var hasLink = buildSVGText(gd, _context.node(), str);
 
         if(hasLink) {
             // at least in Chrome, pointer-events does not seem
@@ -79,7 +79,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
             var fontSize = parseInt(_context.node().style.fontSize, 10);
             var config = {fontSize: fontSize};
 
-            texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
+            texToSVG(gd, tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
                 parent.selectAll('g.' + svgClass + '-group').remove();
 
@@ -159,7 +159,7 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
-function texToSVG(_texString, _config, _callback) {
+function texToSVG(gd, _texString, _config, _callback) {
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
@@ -191,7 +191,7 @@ function texToSVG(_texString, _config, _callback) {
         }
     },
     function() {
-        var randomID = 'math-output-' + Lib.randstr({}, 64);
+        var randomID = 'math-output-' + Lib.randstr(gd, {}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({visibility: 'hidden', position: 'absolute'})
@@ -204,7 +204,7 @@ function texToSVG(_texString, _config, _callback) {
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
-            Lib.log('There was an error in the tex syntax.', _texString);
+            Lib.log(gd, 'There was an error in the tex syntax.', _texString);
             _callback();
         } else {
             var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
@@ -446,7 +446,7 @@ function fromCodePoint(code) {
  * @returns {bool}: does the result contain any links? We need to handle the text element
  *   somewhat differently if it does, so just keep track of this when it happens.
  */
-function buildSVGText(containerNode, str) {
+function buildSVGText(gd, containerNode, str) {
     /*
      * Normalize behavior between IE and others wrt newlines and whitespace:pre
      * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
@@ -545,14 +545,14 @@ function buildSVGText(containerNode, str) {
         // A bare closing tag can't close the root node. If we encounter this it
         // means there's an extra closing tag that can just be ignored:
         if(nodeStack.length === 1) {
-            Lib.log('Ignoring unexpected end tag </' + type + '>.', str);
+            Lib.log(gd, 'Ignoring unexpected end tag </' + type + '>.', str);
             return;
         }
 
         var innerNode = nodeStack.pop();
 
         if(type !== innerNode.type) {
-            Lib.log('Start tag <' + innerNode.type + '> doesnt match end tag <' +
+            Lib.log(gd, 'Start tag <' + innerNode.type + '> doesnt match end tag <' +
                 type + '>. Pretending it did match.', str);
         }
         currentNode = nodeStack[nodeStack.length - 1].node;
