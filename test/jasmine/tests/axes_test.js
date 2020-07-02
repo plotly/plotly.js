@@ -5580,7 +5580,7 @@ describe('more react tests', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should sort catgories on matching axes using react', function(done) {
+    it('should sort catgories on matching axes using react and relink using relayout', function(done) {
         var fig = {
             data: [{
                 yaxis: 'y',
@@ -5689,6 +5689,16 @@ describe('more react tests', function() {
         .then(function() {
             // should get the same order with newPlot
             return Plotly.newPlot(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['Z', '0', 'A']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+            expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
+        })
+        .then(function() {
+            // should get the same order with relayout
+            return Plotly.relayout(gd, 'width', 600);
         })
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['Z', '0', 'A']);
