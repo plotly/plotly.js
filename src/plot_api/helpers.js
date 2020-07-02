@@ -217,7 +217,7 @@ exports.cleanLayout = function(layout) {
 function cleanAxRef(container, attr) {
     var valIn = container[attr];
     var axLetter = attr.charAt(0);
-    if(valIn && valIn !== 'paper') {
+    if(valIn && valIn !== 'paper' && !valIn.endsWith("domain")) {
         container[attr] = cleanId(valIn, axLetter);
     }
 }

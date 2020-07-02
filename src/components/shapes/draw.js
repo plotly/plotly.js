@@ -183,7 +183,7 @@ function setClipPath(shapePath, gd, shapeOptions) {
     // note that for layer="below" the clipAxes can be different from the
     // subplot we're drawing this in. This could cause problems if the shape
     // spans two subplots. See https://github.com/plotly/plotly.js/issues/1452
-    var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, '');
+    var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, '').replace(/ *domain/g,'');
 
     Drawing.setClipUrl(
         shapePath,
@@ -584,22 +584,32 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
 function getPathString(gd, options) {
     var type = options.type;
-    var xa = Axes.getFromId(gd, options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
+    var xref_opt = options.xref.split(' ');
+    var yref_opt = options.yref.split(' ');
+    var xa = Axes.getFromId(gd, xref_opt[0]);
+    var ya = Axes.getFromId(gd, yref_opt[0]);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
     var x0, x1, y0, y1;
 
     if(xa) {
-        x2r = helpers.shapePositionToRange(xa);
-        x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
+        if(xref_opt[1] === "domain") {
+            x2p = function (v) { return xa._offset + xa._length * v; };
+        } else {
+            x2r = helpers.shapePositionToRange(xa);
+            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
+        }
     } else {
         x2p = function(v) { return gs.l + gs.w * v; };
     }
 
     if(ya) {
-        y2r = helpers.shapePositionToRange(ya);
-        y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
+        if(yref_opt[1] === "domain") {
+            y2p = function (v) { return ya._offset + ya._length * v; };
+        } else {
+            y2r = helpers.shapePositionToRange(ya);
+            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
+        }
     } else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
     }

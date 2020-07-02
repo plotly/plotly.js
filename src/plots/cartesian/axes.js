@@ -87,9 +87,16 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 
     // data-ref annotations are not supported in gl2d yet
 
+    var extraOptionAsList = extraOption;
+    if (extraOption) {
+        if (typeof(extraOption)=='string') {
+            extraOptionAsList = [extraOption];
+        }
+    }
+
     attrDef[refAttr] = {
         valType: 'enumerated',
-        values: axlist.concat(extraOption ? [extraOption] : []),
+        values: axlist.concat(extraOptionAsList ? extraOptionAsList : []),
         dflt: dflt
     };
 

@@ -6,6 +6,7 @@ build/*
 
 npm-debug.log*
 *.sublime*
+*~
 
 .*
 !.circleci
