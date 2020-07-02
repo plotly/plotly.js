@@ -870,13 +870,13 @@ module.exports = function setConvert(ax, fullLayout) {
         }
     };
 
+    ax._emptyCategories = function() {
+        ax._categories = [];
+        ax._categoriesMap = {};
+    };
+
     // should skip if not category nor multicategory
     ax.clearCalc = function() {
-        var emptyCategories = function() {
-            ax._categories = [];
-            ax._categoriesMap = {};
-        };
-
         var matchGroups = fullLayout._axisMatchGroups;
 
         if(matchGroups && matchGroups.length) {
@@ -903,14 +903,14 @@ module.exports = function setConvert(ax, fullLayout) {
                         ax._categories = categories;
                         ax._categoriesMap = categoriesMap;
                     } else {
-                        emptyCategories();
+                        ax._emptyCategories();
                     }
                     break;
                 }
             }
-            if(!found) emptyCategories();
+            if(!found) ax._emptyCategories();
         } else {
-            emptyCategories();
+            ax._emptyCategories();
         }
 
         if(ax._initialCategories) {
@@ -924,12 +924,8 @@ module.exports = function setConvert(ax, fullLayout) {
     // returns the indices of the traces affected by the reordering
     ax.sortByInitialCategories = function() {
         var affectedTraces = [];
-        var emptyCategories = function() {
-            ax._categories = [];
-            ax._categoriesMap = {};
-        };
 
-        emptyCategories();
+        ax._emptyCategories();
 
         if(ax._initialCategories) {
             for(var j = 0; j < ax._initialCategories.length; j++) {
