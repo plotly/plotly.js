@@ -586,8 +586,8 @@ function getPathString(gd, options) {
     var type = options.type;
     var xref_opt = options.xref.split(' ');
     var yref_opt = options.yref.split(' ');
-    var xa = Axes.getFromId(gd, xref_opt[0]);
-    var ya = Axes.getFromId(gd, yref_opt[0]);
+    var xa = Axes.getFromId(gd, options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
     var x0, x1, y0, y1;

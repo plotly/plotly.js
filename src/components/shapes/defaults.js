@@ -72,7 +72,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         if (axNumMatch) {
             let axNum = axNumMatch[1];
             coerceRefExtras = coerceRefExtras.concat(
-                    axNum ? [axLetter + axNum + ' domain'] : []);
+                    (axNum != undefined) ? [axLetter + axNum + ' domain'] : []);
         }
 
         // xref, yref

@@ -82,6 +82,8 @@ exports.listIds = function(gd, axLetter) {
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
 exports.getFromId = function(gd, id, type) {
     var fullLayout = gd._fullLayout;
+    // remove "domain" suffix
+    id = id.replace(/ *domain/,'');
 
     if(type === 'x') id = id.replace(/y[0-9]*/, '');
     else if(type === 'y') id = id.replace(/x[0-9]*/, '');
