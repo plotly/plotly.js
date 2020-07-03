@@ -557,7 +557,7 @@ describe('Test volume grid', function() {
                 cellsLength: 0
             });
         }).then(function() {
-            expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
+            expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(), 'Encountered arbitrary coordinates! Unable to input data grid.');
         })
         .catch(failTest)
         .then(done);

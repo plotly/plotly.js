@@ -21,7 +21,7 @@ describe('Test surface', function() {
         it('should set \'visible\' to false if \'z\' isn\'t provided', function() {
             traceIn = {};
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -31,7 +31,7 @@ describe('Test surface', function() {
                 z: [[1, 2, 3], [2, 1, 2]]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.x).toBeUndefined();
             expect(traceOut.y).toBeUndefined();
         });
@@ -54,7 +54,7 @@ describe('Test surface', function() {
                 highlightwidth: 2
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.contours.x).toEqual(fullOpts);
             expect(traceOut.contours.y).toEqual(Lib.extendDeep({}, fullOpts, {
                 show: true,
@@ -73,7 +73,7 @@ describe('Test surface', function() {
                 }
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.contours.x.color).toEqual('#444');
             expect(traceOut.contours.x.width).toEqual(2);
             expect(traceOut.contours.x.usecolormap).toEqual(false);
@@ -90,7 +90,7 @@ describe('Test surface', function() {
                 z: [[1, 2, 3], [2, 1, 2]]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toBe(true);
             expect(traceOut.cmin).toBeUndefined();
             expect(traceOut.cmax).toBeUndefined();
@@ -115,7 +115,7 @@ describe('Test surface', function() {
                 zmax: 10
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toEqual(false);
             expect(traceOut.cmin).toEqual(0);
             expect(traceOut.cmax).toEqual(10);
@@ -130,7 +130,7 @@ describe('Test surface', function() {
                 cmax: 20
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toEqual(false);
             expect(traceOut.cmin).toEqual(-10);
             expect(traceOut.cmax).toEqual(20);
@@ -145,7 +145,7 @@ describe('Test surface', function() {
                 zmax: 10
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toEqual(true);
             expect(traceOut.cmin).toBeUndefined();
             expect(traceOut.cmax).toBeUndefined();
@@ -155,7 +155,7 @@ describe('Test surface', function() {
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.
@@ -172,7 +172,7 @@ describe('Test surface', function() {
                 zcalendar: 'mayan'
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
             expect(traceOut.zcalendar).toBe('mayan');

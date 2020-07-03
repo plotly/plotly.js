@@ -49,14 +49,14 @@ describe('Bar.supplyDefaults', function() {
 
     it('should set visible to false when x and y are empty', function() {
         traceIn = {};
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -64,27 +64,27 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             x: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [1, 2, 3],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -96,7 +96,7 @@ describe('Bar.supplyDefaults', function() {
         it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
             traceIn = {};
             traceIn[l] = [1, 2];
-            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
             expect(traceOut._length).toBe(2, l);
             expect(traceOut[c0]).toBe(0, c0);
@@ -109,7 +109,7 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.base).toBeUndefined();
         expect(traceOut.offset).toBeUndefined();
         expect(traceOut.width).toBeUndefined();
@@ -120,7 +120,7 @@ describe('Bar.supplyDefaults', function() {
             width: -1,
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.width).toBeUndefined();
     });
 
@@ -128,7 +128,7 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.textposition).toBe('none');
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
@@ -146,7 +146,7 @@ describe('Bar.supplyDefaults', function() {
         };
         var layoutFontMinusColor = {family: 'arial', size: 13};
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.textposition).toBe('inside');
         expect(traceOut.textfont).toEqual(layout.font);
@@ -167,7 +167,7 @@ describe('Bar.supplyDefaults', function() {
             font: {family: 'arial', color: '#AAA', size: 13}
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.insidetextfont.family).toBe('arial');
         expect(traceOut.insidetextfont.color).toBeUndefined();
@@ -181,7 +181,7 @@ describe('Bar.supplyDefaults', function() {
             textfont: {family: 'arial', color: '#09F', size: 20}
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
 
         expect(traceOut.insidetextfont.family).toBe('arial');
         expect(traceOut.insidetextfont.color).toBe('#09F');
@@ -193,7 +193,7 @@ describe('Bar.supplyDefaults', function() {
             x: [1, 2, 3],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -208,7 +208,7 @@ describe('Bar.supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
@@ -2260,7 +2260,7 @@ describe('bar hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Bar.hoverPoints(gd, pointData, xval, yval, hovermode);
         if(!pts) return false;
 
         var pt = pts[0];
@@ -2589,8 +2589,8 @@ describe('bar hover', function() {
                     barmode: m
                 })
                 .then(function() {
-                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x')[0];
-                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x')[0];
+                    var pt0 = Bar.hoverPoints(gd, getPointData(gd, 0), 0, 1, 'x')[0];
+                    var pt1 = Bar.hoverPoints(gd, getPointData(gd, 1), 0, 1, 'x')[0];
 
                     expect(pt0.yLabelVal).toBe(0, 'y label value for data[0]');
                     expect(pt1.yLabelVal).toBe(1, 'y label value for data[1]');

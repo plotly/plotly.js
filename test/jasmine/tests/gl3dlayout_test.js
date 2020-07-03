@@ -80,7 +80,7 @@ describe('Test gl3d axes defaults', function() {
                 return true;
             }
 
-            supplyLayoutDefaults(layoutIn, layoutOut, options);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, options);
             ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
                 checkKeys(expected[axis], layoutOut[axis]);
             });
@@ -94,7 +94,7 @@ describe('Test gl3d axes defaults', function() {
             };
             options.calendar = 'taiwan';
 
-            supplyLayoutDefaults(layoutIn, layoutOut, options);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, options);
 
             expect(layoutOut.xaxis.calendar).toBe('taiwan');
             expect(layoutOut.yaxis.calendar).toBe('taiwan');
@@ -109,7 +109,7 @@ describe('Test gl3d axes defaults', function() {
             };
             options.calendar = 'taiwan';
 
-            supplyLayoutDefaults(layoutIn, layoutOut, options);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, options);
 
             expect(layoutOut.xaxis.calendar).toBe('hebrew');
             expect(layoutOut.yaxis.calendar).toBe('ummalqura');
@@ -159,7 +159,7 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.aspectmode).toBe(expected.scene.aspectmode);
             expect(layoutOut.scene.aspectratio).toEqual(expected.scene.aspectratio);
             expect(layoutOut.scene.bgcolor).toBe(expected.scene.bgcolor);
@@ -187,7 +187,7 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.aspectmode).toBe(expected.scene.aspectmode);
             expect(layoutOut.scene.aspectratio).toEqual(expected.scene.aspectratio);
         });
@@ -214,7 +214,7 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.aspectmode).toBe(expected.scene.aspectmode);
             expect(layoutOut.scene.aspectratio).toEqual(expected.scene.aspectratio);
         });
@@ -241,7 +241,7 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.aspectmode).toBe(expected.scene.aspectmode);
             expect(layoutOut.scene.aspectratio).toEqual(expected.scene.aspectratio);
         });
@@ -268,73 +268,73 @@ describe('Test Gl3d layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.aspectmode).toBe(expected.scene.aspectmode);
             expect(layoutOut.scene.aspectratio).toEqual(expected.scene.aspectratio);
         });
 
         it('should coerce dragmode', function() {
             layoutIn = { scene: {} };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to turntable by default');
 
             layoutIn = { scene: { dragmode: 'orbit' } };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('orbit', 'to user val if valid');
 
             layoutIn = { scene: {}, dragmode: 'orbit' };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('orbit', 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'invalid' };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to turntable if invalid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'orbit' };
             layoutOut._basePlotModules.push({ name: 'cartesian' });
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not 3d only');
 
             layoutIn = { scene: {}, dragmode: 'not gonna work' };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not valid');
         });
 
         it('should coerce hovermode', function() {
             layoutIn = { scene: {} };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to closest by default');
 
             layoutIn = { scene: { hovermode: false } };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe(false, 'to user val if valid');
 
             layoutIn = { scene: {}, hovermode: false };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe(false, 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, hovermode: 'invalid' };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to closest if invalid and 3d only');
 
             layoutIn = { scene: {}, hovermode: false };
             layoutOut._basePlotModules.push({ name: 'cartesian' });
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not 3d only');
 
             layoutIn = { scene: {}, hovermode: 'not gonna work' };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not valid');
         });
@@ -343,7 +343,7 @@ describe('Test Gl3d layout defaults', function() {
             layoutIn = {};
             fullData = [{ type: 'scatter3d', scene: 'scene' }];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toEqual({
                 aspectratio: { x: 1, y: 1, z: 1 },
                 aspectmode: 'auto'
@@ -355,7 +355,7 @@ describe('Test Gl3d layout defaults', function() {
             layoutOut._subplots.gl3d = [];
             fullData = [{ type: 'scatter' }];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toBe(undefined);
         });
 
@@ -373,7 +373,7 @@ describe('Test Gl3d layout defaults', function() {
             var bgColor = Color.combine('yellow', 'green');
             var frac = 100 * (204 - 0x44) / (255 - 0x44);
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.xaxis.gridcolor)
                 .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
             expect(layoutOut.scene.yaxis.gridcolor).toEqual('blue');

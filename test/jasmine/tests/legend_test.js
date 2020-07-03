@@ -54,7 +54,7 @@ describe('legend defaults', function() {
             {type: 'contour', _dfltShowLegend: false, showlegend: false} // hidden by default
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(false);
     });
 
@@ -64,7 +64,7 @@ describe('legend defaults', function() {
             {type: 'scatter', showlegend: false} // not shown but still triggers legend
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(true);
     });
 
@@ -74,7 +74,7 @@ describe('legend defaults', function() {
             {type: 'scatter', showlegend: false}
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(false);
     });
 
@@ -83,7 +83,7 @@ describe('legend defaults', function() {
             {type: 'pie'}
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(true);
     });
 
@@ -92,7 +92,7 @@ describe('legend defaults', function() {
             {type: 'pie', showlegend: false}
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(false);
     });
 
@@ -101,7 +101,7 @@ describe('legend defaults', function() {
             {type: 'contour', _dfltShowLegend: false, _input: {showlegend: true}}
         ]);
 
-        supplyLayoutDefaults({}, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, {}, layoutOut, fullData);
         expect(layoutOut.showlegend).toBe(true);
     });
 
@@ -112,12 +112,12 @@ describe('legend defaults', function() {
             {type: 'scatter'}
         ]);
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
 
         layoutOut.barmode = 'stack';
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
@@ -127,7 +127,7 @@ describe('legend defaults', function() {
             {type: 'scatter', fill: 'tonexty'}
         ]);
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
@@ -137,12 +137,12 @@ describe('legend defaults', function() {
             {type: 'scatter'}
         ]);
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('grouped');
 
         fullData[1].fill = 'tonextx';
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
     });
 
@@ -155,7 +155,7 @@ describe('legend defaults', function() {
 
         layoutOut.barmode = 'stack';
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
 
         fullData = allShown([
@@ -163,12 +163,12 @@ describe('legend defaults', function() {
             {type: 'scatter'}
         ]);
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
     });
 
     it('should default orientation to vertical', function() {
-        supplyLayoutDefaults(layoutIn, layoutOut, []);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, []);
         expect(layoutOut.legend.orientation).toEqual('v');
     });
 
@@ -180,7 +180,7 @@ describe('legend defaults', function() {
                 }
             }
         }, layoutIn);
-        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        supplyLayoutDefaults(void 0, layoutWithTitle, layoutOut, []);
         expect(layoutOut.legend.title.font).toEqual(undefined);
         expect(layoutOut.legend.title.side).toEqual(undefined);
     });
@@ -193,7 +193,7 @@ describe('legend defaults', function() {
                 }
             }
         }, layoutIn);
-        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        supplyLayoutDefaults(void 0, layoutWithTitle, layoutOut, []);
         expect(layoutOut.legend.title.side).toEqual('top');
     });
 
@@ -206,7 +206,7 @@ describe('legend defaults', function() {
                 }
             }
         }, layoutIn);
-        supplyLayoutDefaults(layoutWithTitle, layoutOut, []);
+        supplyLayoutDefaults(void 0, layoutWithTitle, layoutOut, []);
         expect(layoutOut.legend.title.side).toEqual('left');
     });
 
@@ -227,7 +227,7 @@ describe('legend defaults', function() {
         });
 
         it('should default position to bottom left', function() {
-            supplyLayoutDefaults(layoutInForHorizontalLegends, layoutOut, []);
+            supplyLayoutDefaults(void 0, layoutInForHorizontalLegends, layoutOut, []);
             expect(layoutOut.legend.x).toEqual(0);
             expect(layoutOut.legend.xanchor).toEqual('left');
             expect(layoutOut.legend.y).toEqual(-0.1);
@@ -238,7 +238,7 @@ describe('legend defaults', function() {
             var mockLayoutIn = Lib.extendDeep({}, layoutInForHorizontalLegends);
             mockLayoutIn.xaxis.rangeslider.visible = true;
 
-            supplyLayoutDefaults(mockLayoutIn, layoutOut, []);
+            supplyLayoutDefaults(void 0, mockLayoutIn, layoutOut, []);
             expect(layoutOut.legend.x).toEqual(0);
             expect(layoutOut.legend.xanchor).toEqual('left');
             expect(layoutOut.legend.y).toEqual(1.1);

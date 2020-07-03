@@ -32,7 +32,7 @@ describe('Layout images', function() {
         it('should reject when there is no `source`', function() {
             layoutIn.images[0] = { opacity: 0.5, sizex: 0.2, sizey: 0.2 };
 
-            Images.supplyLayoutDefaults(layoutIn, layoutOut);
+            Images.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
 
             expect(layoutOut.images).toEqual([jasmine.objectContaining({
                 visible: false,
@@ -49,7 +49,7 @@ describe('Layout images', function() {
                 sizey: 0.2
             };
 
-            Images.supplyLayoutDefaults(layoutIn, layoutOut);
+            Images.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
 
             expect(layoutOut.images).toEqual([]);
         });
@@ -77,7 +77,7 @@ describe('Layout images', function() {
                 _index: 0
             };
 
-            Images.supplyLayoutDefaults(layoutIn, layoutOut);
+            Images.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
 
             expect(layoutOut.images[0]).toEqual(jasmine.objectContaining(expected));
         });

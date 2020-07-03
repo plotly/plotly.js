@@ -28,7 +28,7 @@ describe('range selector defaults:', function() {
 
         var counterAxes = ['yaxis'];
 
-        handleDefaults(containerIn, containerOut, layout, counterAxes, calendar);
+        handleDefaults(void 0, containerIn, containerOut, layout, counterAxes, calendar);
     }
 
     it('should set \'visible\' to false when no buttons are present', function() {
@@ -146,7 +146,7 @@ describe('range selector defaults:', function() {
         };
         var counterAxes = ['yaxis'];
 
-        handleDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(void 0, containerIn, containerOut, layout, counterAxes);
 
         expect(containerOut.rangeselector.x).toEqual(0);
         expect(containerOut.rangeselector.y).toBeCloseTo(0.47);
@@ -177,7 +177,7 @@ describe('range selector defaults:', function() {
         };
         var counterAxes = ['yaxis', 'yaxis2', 'yaxis3'];
 
-        handleDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(void 0, containerIn, containerOut, layout, counterAxes);
 
         expect(containerOut.rangeselector.x).toEqual(0.5);
         expect(containerOut.rangeselector.y).toBeCloseTo(0.87);

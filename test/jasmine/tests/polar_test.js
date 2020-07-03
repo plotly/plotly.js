@@ -54,7 +54,7 @@ describe('Test legacy polar plots logs:', function() {
             Plotly.plot(gd, s.data)
             .then(function() {
                 expect(Lib.log).toHaveBeenCalledTimes(1);
-                expect(Lib.log).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
+                expect(Lib.log).toHaveBeenCalledWith(jasmine.anything(), 'Legacy polar charts are deprecated!');
             })
             .catch(failTest)
             .then(done);
@@ -78,7 +78,7 @@ describe('Test polar plots defaults:', function() {
             _subplots: {polar: ['polar']}
         };
 
-        Polar.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        Polar.supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
     }
 
     it('should default *radialaxis.angle* to first sector angle', function() {
@@ -169,7 +169,7 @@ describe('Test polar plots defaults:', function() {
             subplot: 'polar'
         }]);
 
-        expect(Lib.log).toHaveBeenCalledWith('Polar plots do not support date angular axes yet.');
+        expect(Lib.log).toHaveBeenCalledWith(void 0, 'Polar plots do not support date angular axes yet.');
         expect(layoutOut.polar.angularaxis.type).toBe('linear');
     });
 

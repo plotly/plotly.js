@@ -35,32 +35,32 @@ describe('heatmap supplyDefaults', function() {
         traceIn = {
             z: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[], [], []]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             type: 'heatmap',
             z: [[1, 2], []]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'heatmap'}, 0, layout);
 
         traceIn = {
             type: 'heatmap',
             z: [[], [1, 2], [1, 2, 3]]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'heatmap'}, 0, layout);
         expect(traceOut.visible).toBe(true);
         expect(traceOut.visible).toBe(true);
     });
@@ -70,7 +70,7 @@ describe('heatmap supplyDefaults', function() {
             type: 'heatmap',
             z: [['a', 'b'], ['c', 'd']]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -80,7 +80,7 @@ describe('heatmap supplyDefaults', function() {
             y: [1, 2, 3, 1, 2],
             z: [1, ['this is considered a column'], 1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(false);
 
         traceIn = {
@@ -88,7 +88,7 @@ describe('heatmap supplyDefaults', function() {
             y: [1, 2, 3, 1, 2],
             z: [[0], ['this is not considered a column'], 1, ['nor 2d']]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -98,7 +98,7 @@ describe('heatmap supplyDefaults', function() {
             z: [[1, 2], [3, 4]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.xgap).toBe(0);
         expect(traceOut.ygap).toBe(0);
     });
@@ -110,7 +110,7 @@ describe('heatmap supplyDefaults', function() {
             z: [[1, 2], [3, 4]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.xgap).toBe(10);
         expect(traceOut.ygap).toBe(0);
     });
@@ -123,7 +123,7 @@ describe('heatmap supplyDefaults', function() {
             z: [[1, 2], [3, 4]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.xgap).toBe(undefined);
         expect(traceOut.ygap).toBe(undefined);
     });
@@ -134,7 +134,7 @@ describe('heatmap supplyDefaults', function() {
             z: [[0, null], [1, 2]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.connectgaps).toBe(false);
     });
 
@@ -147,7 +147,7 @@ describe('heatmap supplyDefaults', function() {
             z: [1, null, 4, 5, 6]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.connectgaps).toBe(true);
     });
 
@@ -160,7 +160,7 @@ describe('heatmap supplyDefaults', function() {
             z: [1, null, 4, 5, 6]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.connectgaps).toBe(false);
     });
 
@@ -170,7 +170,7 @@ describe('heatmap supplyDefaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -186,7 +186,7 @@ describe('heatmap supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -852,7 +852,7 @@ describe('heatmap hover', function() {
                 ya: fullLayout.yaxis
             };
 
-            var hoverPoint = Heatmap.hoverPoints(pointData, xval, yval);
+            var hoverPoint = Heatmap.hoverPoints(gd, pointData, xval, yval);
             if(hoverPoint) hoverData.push(hoverPoint[0]);
         }
 

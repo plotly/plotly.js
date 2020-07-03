@@ -210,11 +210,11 @@ describe('Test Plots', function() {
 
         var formatObj = require('@src/locale-en').format;
 
-        function supplyLayoutDefaults(layoutIn, layoutOut) {
+        function supplyLayoutDefaults(gd, layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
                 plot: 'ppplot'
             };
-            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut, formatObj);
+            return Plots.supplyLayoutGlobalDefaults(gd, layoutIn, layoutOut, formatObj);
         }
 
         beforeEach(function() {
@@ -239,7 +239,7 @@ describe('Test Plots', function() {
                 autoexpand: true
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut);
             expect(layoutOut.margin).toEqual(expected);
         });
 
@@ -263,7 +263,7 @@ describe('Test Plots', function() {
                 autoexpand: true
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut);
             expect(layoutOut.margin).toEqual(expected);
         });
     });
@@ -279,11 +279,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
+                traceOut = supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('x+y+z+text');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
+                traceOut = supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
@@ -291,11 +291,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 2;
 
                 traceIn = {};
-                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
+                traceOut = supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('all');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
+                traceOut = supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
@@ -303,7 +303,7 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter', hovertemplate: '%{y}'}, 0, layout);
+                traceOut = supplyTraceDefaults(void 0, traceIn, {type: 'scatter', hovertemplate: '%{y}'}, 0, layout);
                 expect(traceOut.hoverinfo).toBeUndefined();
             });
         });
@@ -312,7 +312,7 @@ describe('Test Plots', function() {
     describe('Plots.supplyTransformDefaults', function() {
         it('should accept an empty layout when transforms present', function() {
             var traceOut = {y: [1], _length: 1};
-            Plots.supplyTransformDefaults({}, traceOut, {
+            Plots.supplyTransformDefaults(void 0, {}, traceOut, {
                 _globalTransforms: [{ type: 'filter'}]
             });
 

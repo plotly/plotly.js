@@ -34,26 +34,26 @@ describe('image supplyDefaults', function() {
         traceIn = {
             z: []
         };
-        supplyDefaults(traceIn, traceOut);
+        supplyDefaults(void 0, traceIn, traceOut);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[]]
         };
-        supplyDefaults(traceIn, traceOut);
+        supplyDefaults(void 0, traceIn, traceOut);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[], [], []]
         };
-        supplyDefaults(traceIn, traceOut);
+        supplyDefaults(void 0, traceIn, traceOut);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             type: 'image',
             z: [[[255, 0, 0]]]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'image'}, 0, layout);
         expect(traceOut.visible).toBe(true);
     });
 
@@ -72,10 +72,10 @@ describe('image supplyDefaults', function() {
                 z: [[[1, 1, 1, 1]]],
                 colormodel: test[0]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(void 0, traceIn, traceOut);
             expect(traceOut.zmin).toEqual(test[1], 'default zmin for ' + test[0]);
             expect(traceOut.zmax).toEqual(test[2], 'default zmax for ' + test[0]);
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(void 0, traceIn, traceOut);
         });
     });
 
@@ -85,7 +85,7 @@ describe('image supplyDefaults', function() {
             zmin: [10, 10],
             zmax: [null, 20]
         };
-        supplyDefaults(traceIn, traceOut);
+        supplyDefaults(void 0, traceIn, traceOut);
         expect(traceOut.zmin).toEqual([10, 10, 0], 'zmin default');
         expect(traceOut.zmax).toEqual([255, 20, 255], 'zmax default');
 
@@ -95,7 +95,7 @@ describe('image supplyDefaults', function() {
             zmin: [null, 10, null, null, 100],
             zmax: [20]
         };
-        supplyDefaults(traceIn, traceOut);
+        supplyDefaults(void 0, traceIn, traceOut);
         expect(traceOut.zmin).toEqual([0, 10, 0, 0], 'zmin default');
         expect(traceOut.zmax).toEqual([20, 100, 100, 1], 'zmax default');
     });
@@ -380,7 +380,7 @@ describe('image hover:', function() {
                     ya: fullLayout.yaxis
                 };
 
-                var hoverPoint = Image.hoverPoints(pointData, xval, yval);
+                var hoverPoint = Image.hoverPoints(gd, pointData, xval, yval);
                 if(hoverPoint) hoverData.push(hoverPoint[0]);
             }
 

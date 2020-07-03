@@ -49,7 +49,7 @@ describe('contour defaults', function() {
                 // even though in calc we set an autosize.
             }
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.autocontour).toBe(false);
 
         traceIn = {
@@ -60,7 +60,7 @@ describe('contour defaults', function() {
                 [0.625, 1.25, 3.125, 6.25]],
             contours: {start: 4} // you need at least start and end
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.autocontour).toBe(true);
     });
 
@@ -70,7 +70,7 @@ describe('contour defaults', function() {
             z: [[0, null], [1, 2]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.connectgaps).toBe(false);
     });
 
@@ -82,7 +82,7 @@ describe('contour defaults', function() {
             z: [0, null, 1, 2]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.connectgaps).toBe(true);
     });
 
@@ -92,7 +92,7 @@ describe('contour defaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -108,7 +108,7 @@ describe('contour defaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -612,7 +612,7 @@ describe('contour hover', function() {
                 ya: fullLayout.yaxis
             };
 
-            var hoverPoint = Contour.hoverPoints(pointData, xval, yval);
+            var hoverPoint = Contour.hoverPoints(gd, pointData, xval, yval);
             if(hoverPoint) hoverData.push(hoverPoint[0]);
         }
 

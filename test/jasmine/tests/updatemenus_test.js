@@ -16,7 +16,9 @@ var delay = require('../assets/delay');
 describe('update menus defaults', function() {
     'use strict';
 
-    var supply = UpdateMenus.supplyLayoutDefaults;
+    function supply(layoutIn, layoutOut) {
+        return UpdateMenus.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
+    }
 
     var layoutIn, layoutOut;
 

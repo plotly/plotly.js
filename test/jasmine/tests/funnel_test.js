@@ -40,14 +40,14 @@ describe('Funnel.supplyDefaults', function() {
 
     it('should set visible to false when x and y are empty', function() {
         traceIn = {};
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -55,27 +55,27 @@ describe('Funnel.supplyDefaults', function() {
         traceIn = {
             x: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [1, 2, 3],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -87,7 +87,7 @@ describe('Funnel.supplyDefaults', function() {
         it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
             traceIn = {};
             traceIn[l] = [1, 2];
-            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
             expect(traceOut._length).toBe(2, l);
             expect(traceOut[c0]).toBe(0, c0);
@@ -100,7 +100,7 @@ describe('Funnel.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.base).toBeUndefined();
         expect(traceOut.offset).toBeUndefined();
         expect(traceOut.width).toBeUndefined();
@@ -111,7 +111,7 @@ describe('Funnel.supplyDefaults', function() {
             width: -1,
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.width).toBeUndefined();
     });
 
@@ -119,7 +119,7 @@ describe('Funnel.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.textposition).toBe('auto');
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
@@ -133,7 +133,7 @@ describe('Funnel.supplyDefaults', function() {
             textposition: 'none',
             textinfo: 'text'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.textinfo).toBeUndefined();
     });
 
@@ -142,7 +142,7 @@ describe('Funnel.supplyDefaults', function() {
             y: [1, 2, 3],
             textinfo: 'text'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.textinfo).not.toBeUndefined();
     });
 
@@ -156,7 +156,7 @@ describe('Funnel.supplyDefaults', function() {
         };
         var layoutFontMinusColor = {family: 'arial', size: 13};
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.textposition).toBe('inside');
         expect(traceOut.textfont).toEqual(layout.font);
@@ -177,7 +177,7 @@ describe('Funnel.supplyDefaults', function() {
             font: {family: 'arial', color: '#AAA', size: 13}
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.insidetextfont.family).toBe('arial');
         expect(traceOut.insidetextfont.color).toBeUndefined();
@@ -191,7 +191,7 @@ describe('Funnel.supplyDefaults', function() {
             textfont: {family: 'arial', color: '#09F', size: 20}
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
 
         expect(traceOut.insidetextfont.family).toBe('arial');
         expect(traceOut.insidetextfont.color).toBe('#09F');
@@ -203,7 +203,7 @@ describe('Funnel.supplyDefaults', function() {
             x: [1, 2, 3],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -218,7 +218,7 @@ describe('Funnel.supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
@@ -1321,7 +1321,7 @@ describe('funnel hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Funnel.hoverPoints(gd, pointData, xval, yval, hovermode);
         if(!pts) return false;
 
         var pt = pts[0];

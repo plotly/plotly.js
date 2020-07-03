@@ -3,8 +3,9 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var Carpet = require('@src/traces/carpet');
-var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
+var smoothFill2DRaw = require('@src/traces/carpet/smooth_fill_2d_array');
+function smoothFill2D(data, a, b) { return smoothFill2DRaw(void 0, data, a, b); }
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -42,7 +43,7 @@ describe('carpet supplyDefaults', function() {
             y: [[2, 3, 4], [5, 6, 7]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.a).toEqual([0, 1]);
         expect(traceOut.b).toEqual([0, 1, 2]);
@@ -59,7 +60,7 @@ describe('carpet supplyDefaults', function() {
             y: [[2, 3, 4], [5, 6, 7]],
             b: [0, 1]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.da).not.toBeUndefined();
         expect(traceOut.a0).not.toBeUndefined();
@@ -72,7 +73,7 @@ describe('carpet supplyDefaults', function() {
             y: [[2, 3, 4], [5, 6, 7]],
             a: [0, 1, 2]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.da).toBeUndefined();
         expect(traceOut.a0).toBeUndefined();
@@ -82,13 +83,13 @@ describe('carpet supplyDefaults', function() {
 
     it('sets visible = false when x is not valid', function() {
         traceIn = {y: [[1, 2], [3, 4]], x: [4]};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
     it('sets visible = false when y is not valid', function() {
         traceIn = {y: [1, 2]};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -97,19 +98,19 @@ describe('carpet supplyDefaults', function() {
             x: [[1, 2], [3, 4]],
             y: [[1, 2, 3], [4, 5, 6]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
     /* it('sets _cheater = true when x is provided', function() {
         traceIn = {y: [[1, 2], [3, 4]]};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut._cheater).toBe(true);
     });
 
     it('sets cheater = false when x is not valid', function() {
         traceIn = {y: [[1, 2], [3, 4]], x: [[3, 4], [1, 2]]};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut._cheater).toBe(false);
     });*/
 });

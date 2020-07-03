@@ -203,7 +203,7 @@ describe('Test axes', function() {
                     trace
                 );
                 layoutIn = {xaxis: {}, yaxis: {}};
-                supplyLayoutDefaults(layoutIn, layoutOut, [fullTrace]);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, [fullTrace]);
             }
 
             function checkTypes(xType, yType, msg) {
@@ -337,7 +337,7 @@ describe('Test axes', function() {
                 xaxis: {},
                 yaxis: {}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linewidth).toBe(undefined);
             expect(layoutOut.xaxis.linecolor).toBe(undefined);
             expect(layoutOut.yaxis.linewidth).toBe(undefined);
@@ -348,7 +348,7 @@ describe('Test axes', function() {
             layoutIn = {
                 xaxis: {showline: true}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linewidth).toBe(1);
             expect(layoutOut.xaxis.linecolor).toBe(Color.defaultLine);
         });
@@ -357,7 +357,7 @@ describe('Test axes', function() {
             layoutIn = {
                 xaxis: { linecolor: 'black' }
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linecolor).toBe('black');
             expect(layoutOut.xaxis.linewidth).toBe(1);
         });
@@ -366,7 +366,7 @@ describe('Test axes', function() {
             layoutIn = {
                 yaxis: { linewidth: 2 }
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.linewidth).toBe(2);
             expect(layoutOut.yaxis.linecolor).toBe(Color.defaultLine);
         });
@@ -376,7 +376,7 @@ describe('Test axes', function() {
                 xaxis: {},
                 yaxis: {}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             var lightLine = tinycolor(Color.lightLine).toRgbString();
             expect(layoutOut.xaxis.gridwidth).toBe(1);
             expect(tinycolor(layoutOut.xaxis.gridcolor).toRgbString()).toBe(lightLine);
@@ -388,7 +388,7 @@ describe('Test axes', function() {
             layoutIn = {
                 yaxis: {showgrid: false}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.gridwidth).toBe(undefined);
             expect(layoutOut.yaxis.gridcolor).toBe(undefined);
         });
@@ -398,7 +398,7 @@ describe('Test axes', function() {
                 xaxis: {},
                 yaxis: {}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinewidth).toBe(1);
             expect(layoutOut.xaxis.zerolinecolor).toBe(Color.defaultLine);
             expect(layoutOut.yaxis.zerolinewidth).toBe(1);
@@ -409,7 +409,7 @@ describe('Test axes', function() {
             layoutIn = {
                 xaxis: {zeroline: false}
             };
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinewidth).toBe(undefined);
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
         });
@@ -425,7 +425,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.title.font.color).toEqual('red');
             expect(layoutOut.yaxis.title.font.color).toEqual('blue');
             expect(layoutOut.yaxis2.title.font.color).toEqual('yellow');
@@ -440,7 +440,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linecolor).toEqual('red');
             expect(layoutOut.yaxis.linecolor).toEqual('blue');
             expect(layoutOut.yaxis2.linecolor).toEqual('#444');
@@ -455,7 +455,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinecolor).toEqual('red');
             expect(layoutOut.yaxis.zerolinecolor).toEqual('blue');
             expect(layoutOut.yaxis2.zerolinecolor).toEqual('#444');
@@ -475,7 +475,7 @@ describe('Test axes', function() {
             var bgColor = Color.combine('yellow', 'green');
             var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.gridcolor)
                 .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
             expect(layoutOut.yaxis.gridcolor).toEqual('blue');
@@ -491,7 +491,7 @@ describe('Test axes', function() {
                 yaxis: {type: 'date'}
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.calendar).toBe('nepali');
             expect(layoutOut.yaxis.calendar).toBe('nepali');
@@ -505,7 +505,7 @@ describe('Test axes', function() {
                 yaxis: {type: 'date', calendar: 'thai'}
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.calendar).toBe('coptic');
             expect(layoutOut.yaxis.calendar).toBe('thai');
@@ -522,7 +522,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2', 'xy3');
             layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(true, ax._name);
@@ -539,7 +539,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(false, ax._name);
@@ -556,7 +556,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangemode).toBeUndefined();
             expect(layoutOut.yaxis.rangemode).toBeUndefined();
@@ -580,7 +580,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y3', 'x5y3');
             layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'x5', 'y2', 'y3');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([
                 {x: 1, y: 2, x2: 2 * 3, y2: 2 * 3 * 5},
@@ -594,7 +594,7 @@ describe('Test axes', function() {
 
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
+            spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
                 warnings.push(msg);
             });
 
@@ -613,7 +613,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
             layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'y2', 'y3', 'y4');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([
                 {x: 2, y: 1, x4: 2 * 13, y4: 17},
@@ -628,7 +628,7 @@ describe('Test axes', function() {
 
         it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
+            spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
                 warnings.push(msg);
             });
 
@@ -640,7 +640,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y');
             layoutOut._subplots.yaxis.push('x2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
             expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"' + warnTxt]);
@@ -661,7 +661,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
 
@@ -681,7 +681,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups).toEqual([]);
 
@@ -698,7 +698,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y');
             layoutOut._subplots.xaxis.push('x2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis2.matches).toBe('x');
             expect(layoutOut.xaxis2.scaleanchor).toBe(undefined);
@@ -724,7 +724,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis.push('x2', 'x3');
             layoutOut._subplots.yaxis.push('y2', 'y3');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(1);
             expect(layoutOut._axisMatchGroups).toContain({x2: 1, y2: 1});
@@ -742,7 +742,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y');
             layoutOut._subplots.xaxis.push('x2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(1);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, y: 1});
@@ -764,7 +764,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([{x2: 1, y: 3}]);
 
@@ -787,7 +787,7 @@ describe('Test axes', function() {
             layoutOut._subplots.cartesian.push('x2y2');
             layoutOut._subplots.yaxis.push('x2', 'y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups).toEqual([{x2: 1, y: 1}]);
             expect(layoutOut.yaxis.matches).toBe('x2');
@@ -805,7 +805,7 @@ describe('Test axes', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.hoverformat).toEqual('g');
         });
 
@@ -824,7 +824,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis.push('x2', 'x3');
             layoutOut._subplots.yaxis.push('y2', 'y3');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(2);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1});
@@ -846,7 +846,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis = ['x2', 'x3', 'x4'];
             layoutOut._subplots.yaxis = ['y2', 'y3', 'y4'];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(2);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
@@ -876,7 +876,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis = ['x3', 'x4'];
             layoutOut._subplots.yaxis = ['y3', 'y4'];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(2);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
@@ -912,7 +912,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
             layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(4);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1});
@@ -945,7 +945,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis = ['x2', 'x4'];
             layoutOut._subplots.yaxis = ['y2', 'y4'];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(1);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x4: 1});
@@ -968,7 +968,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis = ['x3', 'x4'];
             layoutOut._subplots.yaxis = ['y3', 'y4'];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(1);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1, x3: 1, x4: 1});
@@ -988,7 +988,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis = ['x2'];
             layoutOut._subplots.yaxis = ['y'];
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisMatchGroups.length).toBe(2);
             expect(layoutOut._axisMatchGroups).toContain({x: 1, x2: 1});
@@ -1011,7 +1011,7 @@ describe('Test axes', function() {
             layoutOut._subplots.xaxis.push('x2');
             layoutOut._subplots.yaxis.push('y2');
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.range).withContext('xaxis range').toEqual([0, 6]);
             expect(layoutOut.xaxis2.range).withContext('xaxis2 range').toEqual([0, 6]);
@@ -1030,7 +1030,7 @@ describe('Test axes', function() {
                 xaxis6: {rangebreaks: [{bounds: bounds}], type: 'multicategory'}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(Array.isArray(layoutOut.xaxis.rangebreaks) && layoutOut.xaxis.rangebreaks.length)
                 .toBe(1, 'xaxis.rangebreaks is array of length 1');
@@ -1049,7 +1049,7 @@ describe('Test axes', function() {
                 xaxis4: {type: 'date'}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(Array.isArray(layoutOut.xaxis.rangebreaks) && layoutOut.xaxis.rangebreaks.length)
                 .toBe(1, 'xaxis.rangebreaks is array of length 1');
@@ -1066,7 +1066,7 @@ describe('Test axes', function() {
                 xaxis4: {type: 'date', rangebreaks: [{bounds: ['2020-01-10', '2020-01-11', '2020-01-12']}]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(false, 'invalid *bounds*');
             expect(layoutOut.xaxis2.rangebreaks[0].enabled).toBe(true, 'invalid *bounds*, valid *values*');
@@ -1083,7 +1083,7 @@ describe('Test axes', function() {
                 xaxis4: {type: 'date', range: ['2020-01-12', '2020-01-11'], rangebreaks: [{bounds: ['2020-01-14', '2020-01-10']}]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(true, '*bounds* within set range');
             expect(layoutOut.xaxis2.rangebreaks[0].enabled).toBe(false, '*bounds* bigger than set range');
@@ -1099,7 +1099,7 @@ describe('Test axes', function() {
                 xaxis4: {type: 'date', rangebreaks: [{bounds: false, values: ['2020-01-10', '2020-01-12', '2020-01-14'], dvalue: 2}]},
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             var xaBreak = layoutOut.xaxis.rangebreaks[0];
             expect(xaBreak.bounds).withContext('valid *bounds*').toEqual(['2020-01-10', '2020-01-11']);
@@ -1129,7 +1129,7 @@ describe('Test axes', function() {
                 xaxis3: {type: 'date', rangebreaks: [{values: ['2020-01-04', '2020-01-05'], pattern: 'NOP'}]},
             };
             layoutOut._subplots.xaxis.push('x2', 'x3');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].pattern).toBe('', 'coerced to dflt value');
             expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('day of week', 'coerced');
@@ -1149,7 +1149,7 @@ describe('Test axes', function() {
                 ]}
             };
             layoutOut._subplots.xaxis.push('x2');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].pattern).toBe('day of week', 'complete Capital');
             expect(layoutOut.xaxis2.rangebreaks[0].pattern).toBe('day of week', '3-letter case');
@@ -1178,7 +1178,7 @@ describe('Test axes', function() {
                 xaxis11: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, true] }]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x10', 'x11');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(true, 'valid');
             expect(layoutOut.xaxis.rangebreaks[0].bounds[0]).toBe(6, 'cast float to int');
@@ -1211,7 +1211,7 @@ describe('Test axes', function() {
                 xaxis11: {type: 'date', rangebreaks: [{pattern: 'day of week', bounds: [1, true] }]}
             };
             layoutOut._subplots.xaxis.push('x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x10', 'x11');
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
             expect(layoutOut.xaxis.rangebreaks[0].enabled).toBe(true, 'valid');
             expect(layoutOut.xaxis.rangebreaks[0].bounds[0]).toBe(24, 'accept 24');
@@ -1854,7 +1854,7 @@ describe('Test axes', function() {
     describe('handleTickValueDefaults', function() {
         var viaTemplate;
 
-        function mockSupplyDefaults(axIn, axOut, axType) {
+        function mockSupplyDefaults(gd, axIn, axOut, axType) {
             if(viaTemplate) {
                 axOut._template = axIn;
                 axIn = {};
@@ -1864,7 +1864,7 @@ describe('Test axes', function() {
                 return Lib.coerce(axIn, axOut, Cartesian.layoutAttributes, attr, dflt);
             }
 
-            handleTickValueDefaults(axIn, axOut, coerce, axType);
+            handleTickValueDefaults(gd, axIn, axOut, coerce, axType);
         }
 
         [
@@ -1876,32 +1876,32 @@ describe('Test axes', function() {
             it(woTemplate + 'should set default tickmode correctly', function() {
                 var axIn = {};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('auto');
                 // and not push it back to axIn (which we used to do)
                 expect(axIn.tickmode).toBeUndefined();
 
                 axIn = {tickmode: 'array', tickvals: 'stuff'};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('auto');
                 expect(axIn.tickmode).toBe('array');
 
                 axIn = {tickvals: [1, 2, 3]};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'date');
+                mockSupplyDefaults(void 0, axIn, axOut, 'date');
                 expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBeUndefined();
 
                 axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'date');
+                mockSupplyDefaults(void 0, axIn, axOut, 'date');
                 expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBe('array');
 
                 axIn = {tickvals: [1, 2, 3]};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBeUndefined();
 
@@ -1910,13 +1910,13 @@ describe('Test axes', function() {
                 arr[1] = 1;
                 axIn = {tickvals: arr};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('array');
                 expect(axIn.tickmode).toBeUndefined();
 
                 axIn = {dtick: 1};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickmode).toBe('linear');
                 expect(axIn.tickmode).toBeUndefined();
             });
@@ -1924,42 +1924,42 @@ describe('Test axes', function() {
             it(woTemplate + 'should set nticks if tickmode=auto', function() {
                 var axIn = {};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.nticks).toBe(0);
 
                 axIn = {tickmode: 'auto', nticks: 5};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.nticks).toBe(5);
 
                 axIn = {tickmode: 'linear', nticks: 15};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.nticks).toBe(undefined);
             });
 
             it(woTemplate + 'should set tick0 and dtick if tickmode=linear', function() {
                 var axIn = {tickmode: 'auto', tick0: 1, dtick: 1};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tick0).toBe(undefined);
                 expect(axOut.dtick).toBe(undefined);
 
                 axIn = {tickvals: [1, 2, 3], tick0: 1, dtick: 1};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tick0).toBe(undefined);
                 expect(axOut.dtick).toBe(undefined);
 
                 axIn = {tick0: 2.71, dtick: 0.00828};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tick0).toBe(2.71);
                 expect(axOut.dtick).toBe(0.00828);
 
                 axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tick0).toBe(3.14);
                 expect(axOut.dtick).toBe(0.00159);
             });
@@ -1970,21 +1970,21 @@ describe('Test axes', function() {
                 var oneDay = 24 * 3600 * 1000;
                 var axIn = {tick0: someMs, dtick: String(3 * oneDay)};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'date');
+                mockSupplyDefaults(void 0, axIn, axOut, 'date');
                 expect(axOut.tick0).toBe(someMsDate);
                 expect(axOut.dtick).toBe(3 * oneDay);
 
                 var someDate = '2011-12-15 13:45:56';
                 axIn = {tick0: someDate, dtick: 'M15'};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'date');
+                mockSupplyDefaults(void 0, axIn, axOut, 'date');
                 expect(axOut.tick0).toBe(someDate);
                 expect(axOut.dtick).toBe('M15');
 
                 // dtick without tick0: get the right default
                 axIn = {dtick: 'M12'};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'date');
+                mockSupplyDefaults(void 0, axIn, axOut, 'date');
                 expect(axOut.tick0).toBe('2000-01-01');
                 expect(axOut.dtick).toBe('M12');
 
@@ -2003,7 +2003,7 @@ describe('Test axes', function() {
                 ].forEach(function(v, i) {
                     axIn = {tick0: v[0], dtick: v[1]};
                     axOut = {};
-                    mockSupplyDefaults(axIn, axOut, 'date');
+                    mockSupplyDefaults(void 0, axIn, axOut, 'date');
                     expect(axOut.tick0).toBe('2000-01-01');
                     expect(axOut.dtick).toBe(oneDay);
                     expect(errors.length).toBe(i + 1);
@@ -2013,14 +2013,14 @@ describe('Test axes', function() {
             it(woTemplate + 'should handle tick0 and dtick for log axes', function() {
                 var axIn = {tick0: '0.2', dtick: 0.3};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'log');
+                mockSupplyDefaults(void 0, axIn, axOut, 'log');
                 expect(axOut.tick0).toBe(0.2);
                 expect(axOut.dtick).toBe(0.3);
 
                 ['D1', 'D2'].forEach(function(v) {
                     axIn = {tick0: -1, dtick: v};
                     axOut = {};
-                    mockSupplyDefaults(axIn, axOut, 'log');
+                    mockSupplyDefaults(void 0, axIn, axOut, 'log');
                     // tick0 gets ignored for D<n>
                     expect(axOut.tick0).toBeUndefined(v);
                     expect(axOut.dtick).toBe(v);
@@ -2034,7 +2034,7 @@ describe('Test axes', function() {
                 ].forEach(function(v) {
                     axIn = {tick0: v[0], dtick: v[1]};
                     axOut = {};
-                    mockSupplyDefaults(axIn, axOut, 'log');
+                    mockSupplyDefaults(void 0, axIn, axOut, 'log');
                     expect(axOut.tick0).toBe(Number(v[0]));
                     expect(axOut.dtick).toBe((+v[1]) ? Number(v[1]) : v[1]);
                 });
@@ -2049,7 +2049,7 @@ describe('Test axes', function() {
                 ].forEach(function(v) {
                     axIn = {tick0: v[0], dtick: v[1]};
                     axOut = {};
-                    mockSupplyDefaults(axIn, axOut, 'log');
+                    mockSupplyDefaults(void 0, axIn, axOut, 'log');
                     expect(axOut.tick0).toBe(0);
                     expect(axOut.dtick).toBe(1);
                 });
@@ -2058,13 +2058,13 @@ describe('Test axes', function() {
             it(woTemplate + 'should set tickvals and ticktext if tickmode=array', function() {
                 var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickvals).toBe(undefined);
                 expect(axOut.ticktext).toBe(undefined);
 
                 axIn = {tickvals: [2, 4, 6, 8], ticktext: ['who', 'do', 'we', 'appreciate']};
                 axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'linear');
+                mockSupplyDefaults(void 0, axIn, axOut, 'linear');
                 expect(axOut.tickvals).toEqual([2, 4, 6, 8]);
                 expect(axOut.ticktext).toEqual(['who', 'do', 'we', 'appreciate']);
             });
@@ -2072,7 +2072,7 @@ describe('Test axes', function() {
             it(woTemplate + 'should not coerce ticktext/tickvals on multicategory axes', function() {
                 var axIn = {tickvals: [1, 2, 3], ticktext: ['4', '5', '6']};
                 var axOut = {};
-                mockSupplyDefaults(axIn, axOut, 'multicategory');
+                mockSupplyDefaults(void 0, axIn, axOut, 'multicategory');
                 expect(axOut.tickvals).toBe(undefined);
                 expect(axOut.ticktext).toBe(undefined);
             });
@@ -5186,7 +5186,7 @@ describe('Test axes', function() {
             .then(function() {
                 expect(gd._fullData[0].visible).toBe(false, 'sets visible:false');
                 expect(Lib.warn).toHaveBeenCalledTimes(1);
-                expect(Lib.warn).toHaveBeenCalledWith('scattergl traces do not work on axes with rangebreaks. Setting trace 0 to `visible: false`.');
+                expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(), 'scattergl traces do not work on axes with rangebreaks. Setting trace 0 to `visible: false`.');
             })
             .catch(failTest)
             .then(function() {

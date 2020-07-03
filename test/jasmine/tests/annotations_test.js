@@ -36,7 +36,7 @@ describe('Test annotations', function() {
                 Axes.setConvert(layoutOut[axName]);
             });
 
-            Annotations.supplyLayoutDefaults(layoutIn, layoutOut);
+            Annotations.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
 
             return layoutOut.annotations;
         }

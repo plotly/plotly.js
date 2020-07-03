@@ -19,7 +19,7 @@ describe('Test violin defaults', function() {
 
     function _supply(traceIn, layout) {
         traceOut = {};
-        Violin.supplyDefaults(traceIn, traceOut, '#444', layout || {});
+        Violin.supplyDefaults(void 0, traceIn, traceOut, '#444', layout || {});
     }
 
     it('should set visible to false when x and y are empty', function() {

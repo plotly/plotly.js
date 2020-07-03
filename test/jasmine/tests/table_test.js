@@ -70,7 +70,7 @@ describe('table initialization tests', function() {
             var defaultColor = '#777';
             var layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
 
-            Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Table.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
             return traceOut;
         }

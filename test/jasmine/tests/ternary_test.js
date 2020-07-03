@@ -577,7 +577,7 @@ describe('ternary defaults', function() {
     it('should fill empty containers', function() {
         layoutIn = {};
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutIn).toEqual({ ternary: {} });
         expect(layoutOut.ternary.aaxis.type).toEqual('linear');
         expect(layoutOut.ternary.baxis.type).toEqual('linear');
@@ -594,7 +594,7 @@ describe('ternary defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.ternary.aaxis.min).toEqual(0);
         expect(layoutOut.ternary.baxis.min).toEqual(0);
         expect(layoutOut.ternary.caxis.min).toEqual(0);
@@ -607,7 +607,7 @@ describe('ternary defaults', function() {
     it('should default \'title\' to Component + _name', function() {
         layoutIn = {};
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.ternary.aaxis.title.text).toEqual('Component A');
         expect(layoutOut.ternary.baxis.title.text).toEqual('Component B');
         expect(layoutOut.ternary.caxis.title.text).toEqual('Component C');
@@ -624,7 +624,7 @@ describe('ternary defaults', function() {
             paper_bgcolor: 'green'
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.ternary.aaxis.gridcolor).toEqual('rgb(102, 0, 153)');
         expect(layoutOut.ternary.baxis.gridcolor).toEqual('rgb(27, 27, 180)');
         expect(layoutOut.ternary.caxis.gridcolor).toEqual('black');

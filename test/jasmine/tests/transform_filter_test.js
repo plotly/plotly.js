@@ -30,7 +30,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -53,7 +53,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -79,7 +79,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms[0].target).toEqual('x');
         expect(traceOut.transforms[1].target).toEqual('x');
@@ -98,7 +98,7 @@ describe('filter transforms defaults:', function() {
                 target: []
             }]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
         expect(traceOut.transforms[0].target).toEqual([]);
         expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
 
@@ -109,7 +109,7 @@ describe('filter transforms defaults:', function() {
                 target: new Float32Array()
             }]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
         expect(traceOut.transforms[0].target).toEqual(new Float32Array());
         expect(traceOut.transforms[0].enabled).toBe(false, 'set to false!');
     });

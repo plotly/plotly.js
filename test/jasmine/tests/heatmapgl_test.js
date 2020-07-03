@@ -25,33 +25,33 @@ describe('heatmapgl supplyDefaults', function() {
         traceIn = {
             z: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             z: [[], [], []]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             type: 'heatmapgl',
             z: [[1, 2], []]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             type: 'heatmapgl',
             z: [[], [1, 2], [1, 2, 3]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -60,7 +60,7 @@ describe('heatmapgl supplyDefaults', function() {
             type: 'heatmapgl',
             z: [['a', 'b'], ['c', 'd']]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -70,7 +70,7 @@ describe('heatmapgl supplyDefaults', function() {
             y: [1, 2, 3, 1, 2],
             z: [1, ['this is considered a column'], 1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(false);
 
         traceIn = {
@@ -78,7 +78,7 @@ describe('heatmapgl supplyDefaults', function() {
             y: [1, 2, 3, 1, 2],
             z: [[0], ['this is not considered a column'], 1, ['nor 2d']]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -88,7 +88,7 @@ describe('heatmapgl supplyDefaults', function() {
             z: [[0, 1], [1, 0]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         var allKeys = Object.getOwnPropertyNames(traceOut);
         allKeys.forEach(function(key) {
             if(key[0] !== '_') {

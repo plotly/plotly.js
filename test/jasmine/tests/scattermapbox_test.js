@@ -35,7 +35,7 @@ describe('scattermapbox defaults', function() {
         var defaultColor = '#444';
         var layout = { _dataLength: 1 };
 
-        ScatterMapbox.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterMapbox.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         return traceOut;
     }
@@ -712,7 +712,7 @@ describe('@noCI scattermapbox hover', function() {
         var xval = 11;
         var yval = 11;
 
-        var out = hoverPoints(getPointData(gd), xval, yval)[0];
+        var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
@@ -725,7 +725,7 @@ describe('@noCI scattermapbox hover', function() {
     it('@gl should generate hover label info (lon > 180 case)', function() {
         var xval = 301;
         var yval = 11;
-        var out = hoverPoints(getPointData(gd), xval, yval)[0];
+        var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
         expect(out.index).toEqual(3);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
@@ -741,25 +741,25 @@ describe('@noCI scattermapbox hover', function() {
         var out;
 
         Plotly.restyle(gd, 'text', [['', 'B', 'C']]).then(function() {
-            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)');
 
             return Plotly.restyle(gd, 'text', [[null, 'B', 'C']]);
         })
         .then(function() {
-            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)');
 
             return Plotly.restyle(gd, 'text', [[false, 'B', 'C']]);
         })
         .then(function() {
-            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)');
 
             return Plotly.restyle(gd, 'text', [['A', 'B', 'C']]);
         })
         .then(function() {
-            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)<br>A');
         })
         .then(done);
@@ -769,7 +769,7 @@ describe('@noCI scattermapbox hover', function() {
         var xval = 11 + 720;
         var yval = 11;
 
-        var out = hoverPoints(getPointData(gd), xval, yval)[0];
+        var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
@@ -783,7 +783,7 @@ describe('@noCI scattermapbox hover', function() {
         var xval = 11 - 1080;
         var yval = 11;
 
-        var out = hoverPoints(getPointData(gd), xval, yval)[0];
+        var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
@@ -798,7 +798,7 @@ describe('@noCI scattermapbox hover', function() {
             var xval = 11;
             var yval = 11;
 
-            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+            var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('lon: 10°');
             done();
@@ -810,7 +810,7 @@ describe('@noCI scattermapbox hover', function() {
             var xval = 11;
             var yval = 11;
 
-            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+            var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('lat: 10°');
             done();
@@ -822,7 +822,7 @@ describe('@noCI scattermapbox hover', function() {
             var xval = 11;
             var yval = 11;
 
-            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+            var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('A');
             done();
@@ -834,7 +834,7 @@ describe('@noCI scattermapbox hover', function() {
             var xval = 11;
             var yval = 11;
 
-            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+            var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('Apple');
             done();
@@ -843,7 +843,7 @@ describe('@noCI scattermapbox hover', function() {
 
     it('@gl should generate hover label (\'marker.color\' array case)', function(done) {
         Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]).then(function() {
-            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+            var out = hoverPoints(gd, getPointData(gd), 11, 11)[0];
 
             expect(out.color).toEqual('red');
         })
@@ -852,7 +852,7 @@ describe('@noCI scattermapbox hover', function() {
 
     it('@gl should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
         Plotly.restyle(gd, 'marker.color', [[10, 5, 30]]).then(function() {
-            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+            var out = hoverPoints(gd, getPointData(gd), 11, 11)[0];
 
             expect(out.color).toEqual('rgb(245, 195, 157)');
         })
@@ -861,7 +861,7 @@ describe('@noCI scattermapbox hover', function() {
 
     it('@gl should generate hover label (\'hoverinfo\' array case)', function(done) {
         function check(expected) {
-            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+            var out = hoverPoints(gd, getPointData(gd), 11, 11)[0];
             expect(out.extraText).toEqual(expected);
         }
 
@@ -889,7 +889,7 @@ describe('@noCI scattermapbox hover', function() {
             var xval = 11;
             var yval = 11;
 
-            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+            var out = hoverPoints(gd, getPointData(gd), xval, yval)[0];
 
             expect(out.hovertemplate).toEqual('tpl');
             done();

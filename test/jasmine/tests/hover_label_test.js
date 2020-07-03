@@ -67,7 +67,7 @@ describe('Fx.hover:', function() {
         .then(function() {
             Fx.hover(gd, {xpx: 300, ypx: 100}, 'x2y2');
             expect(gd._hoverdata).toBe(undefined, 'did not generate hoverdata');
-            expect(Lib.warn).toHaveBeenCalledWith('Unrecognized subplot: x2y2');
+            expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(), 'Unrecognized subplot: x2y2');
         })
         .catch(failTest)
         .then(done);

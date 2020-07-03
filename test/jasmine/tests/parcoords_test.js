@@ -125,7 +125,7 @@ describe('parcoords initialization tests', function() {
             var defaultColor = '#444';
             var layout = { font: Plots.layoutAttributes.font };
 
-            Parcoords.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Parcoords.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
             return traceOut;
         }

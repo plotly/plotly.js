@@ -39,7 +39,7 @@ describe('Test frame api', function() {
     describe('#addFrames', function() {
         it('issues a warning if a number-named frame would overwrite a frame', function(done) {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
+            spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
                 warnings.push(msg);
             });
 

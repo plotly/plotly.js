@@ -27,7 +27,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -40,7 +40,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -53,7 +53,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -66,7 +66,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -79,7 +79,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -92,7 +92,7 @@ describe('Test mesh3d', function() {
                 j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -109,7 +109,7 @@ describe('Test mesh3d', function() {
                 }
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.contour.color).toEqual('#444');
             expect(traceOut.contour.width).toEqual(2);
         });
@@ -127,7 +127,7 @@ describe('Test mesh3d', function() {
                 }
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.contour.color).toBeUndefined();
             expect(traceOut.contour.width).toBeUndefined();
         });
@@ -143,7 +143,7 @@ describe('Test mesh3d', function() {
                 intensity: [1, 2, 3, 4, 5, 6, 7, 8]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toBe(true);
             expect(traceOut.cmin).toBeUndefined();
             expect(traceOut.cmax).toBeUndefined();
@@ -171,7 +171,7 @@ describe('Test mesh3d', function() {
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.cauto).toBeUndefined();
             expect(traceOut.cmin).toBeUndefined();
             expect(traceOut.cmax).toBeUndefined();
@@ -191,7 +191,7 @@ describe('Test mesh3d', function() {
                 j: [1, 2, 5, 6, 2, 4, 3, 5, 4, 1, 6, 3],
                 k: [3, 0, 7, 4, 6, 0, 7, 1, 5, 0, 7, 2]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.
@@ -213,7 +213,7 @@ describe('Test mesh3d', function() {
                 zcalendar: 'mayan'
             };
 
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
             expect(traceOut.zcalendar).toBe('mayan');

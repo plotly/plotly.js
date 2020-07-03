@@ -37,7 +37,7 @@ describe('scatterternary defaults', function() {
             c: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(true);
     });
 
@@ -47,7 +47,7 @@ describe('scatterternary defaults', function() {
             b: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(true);
     });
 
@@ -57,7 +57,7 @@ describe('scatterternary defaults', function() {
             c: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(true);
     });
 
@@ -67,7 +67,7 @@ describe('scatterternary defaults', function() {
             c: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).not.toBe(true);
     });
 
@@ -76,7 +76,7 @@ describe('scatterternary defaults', function() {
             a: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -85,7 +85,7 @@ describe('scatterternary defaults', function() {
             b: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -94,14 +94,14 @@ describe('scatterternary defaults', function() {
             c: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
     it('should allow one of \'a\', \'b\' or \'c\' to be missing (all are missing case)', function() {
         traceIn = {};
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
     });
 
@@ -113,7 +113,7 @@ describe('scatterternary defaults', function() {
             c: [1]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.a).toEqual([1, 2, 3]);
         expect(traceOut.b).toEqual([1, 2]);
         expect(traceOut.c).toEqual([1]);
@@ -128,7 +128,7 @@ describe('scatterternary defaults', function() {
             c: [1, 2]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.a).toEqual([1]);
         expect(traceOut.b).toEqual([1, 2, 3]);
         expect(traceOut.c).toEqual([1, 2]);
@@ -143,7 +143,7 @@ describe('scatterternary defaults', function() {
             c: [1, 2, 3]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.a).toEqual([1, 2]);
         expect(traceOut.b).toEqual([1]);
         expect(traceOut.c).toEqual([1, 2, 3]);
@@ -160,7 +160,7 @@ describe('scatterternary defaults', function() {
         ['a', 'b', 'c'].forEach(function(letter) {
             traceIn = Lib.extendDeep({}, trace0);
             traceIn[letter] = [];
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false, letter);
         });
     });
@@ -206,14 +206,14 @@ describe('scatterternary defaults', function() {
         // you need visible: true here, as that normally gets set
         // outside of the module supplyDefaults
         traceOut = {visible: true};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.hoveron).toBe('points+fills');
 
         // but with only lines (or just fill) and fill tonext or toself
         // you get fills
         traceIn.mode = 'lines';
         traceOut = {visible: true};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.hoveron).toBe('fills');
 
         // without a fill you always get points. For scatterternary, unlike
@@ -222,7 +222,7 @@ describe('scatterternary defaults', function() {
         // hoveron points.
         traceIn.fill = 'none';
         traceOut = {visible: true};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.hoveron).toBe('points');
     });
 });
@@ -374,7 +374,7 @@ describe('scatterternary hover', function() {
             subplot: ternary
         };
 
-        return ScatterTernary.hoverPoints(pointData, xval, yval, hovermode);
+        return ScatterTernary.hoverPoints(gd, pointData, xval, yval, hovermode);
     }
 
     it('should generate extra text field on hover', function(done) {

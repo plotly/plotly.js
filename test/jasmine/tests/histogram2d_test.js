@@ -16,10 +16,10 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 describe('Test histogram2d', function() {
     'use strict';
 
-    function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
         layout._dfltTitle = {colorbar: 'cb'};
 
-        return supplyDefaultsRaw(traceIn, traceOut, defaultColor, layout);
+        return supplyDefaultsRaw(gd, traceIn, traceOut, defaultColor, layout);
     }
 
     describe('supplyDefaults', function() {
@@ -32,7 +32,7 @@ describe('Test histogram2d', function() {
 
         it('should quit early if there is no data', function() {
             traceIn = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
             ['zsmooth', 'xgap', 'ygap', 'calendar'].forEach(function(v) {
                 expect(traceOut[v]).toBeUndefined(v);
@@ -41,7 +41,7 @@ describe('Test histogram2d', function() {
 
         it('should set zsmooth to false when zsmooth is empty', function() {
             traceIn = {x: [1, 2], y: [1, 2]};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).not.toBe(false);
             expect(traceOut.zsmooth).toBe(false);
         });
@@ -52,13 +52,13 @@ describe('Test histogram2d', function() {
                 y: [1, 2],
                 zsmooth: 'fast'
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.zsmooth).toBe('fast');
         });
 
         it('should set xgap and ygap to 0 when xgap and ygap are empty', function() {
             traceIn = {x: [1, 2], y: [1, 2]};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(0);
             expect(traceOut.ygap).toBe(0);
         });
@@ -70,7 +70,7 @@ describe('Test histogram2d', function() {
                 xgap: 10,
                 ygap: 5
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(10);
             expect(traceOut.ygap).toBe(5);
         });
@@ -83,7 +83,7 @@ describe('Test histogram2d', function() {
                 ygap: 5,
                 zsmooth: 'best'
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(undefined);
             expect(traceOut.ygap).toBe(undefined);
         });
@@ -94,7 +94,7 @@ describe('Test histogram2d', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, '', {calendar: 'islamic'});
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.
@@ -109,7 +109,7 @@ describe('Test histogram2d', function() {
                 xcalendar: 'coptic',
                 ycalendar: 'ethiopian'
             };
-            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, '', {calendar: 'islamic'});
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.

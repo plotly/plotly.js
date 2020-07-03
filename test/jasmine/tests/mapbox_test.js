@@ -42,7 +42,7 @@ describe('mapbox defaults', function() {
     it('should fill empty containers', function() {
         layoutIn = {};
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutIn).toEqual({ mapbox: {} });
     });
 
@@ -51,7 +51,7 @@ describe('mapbox defaults', function() {
 
         layoutIn = { mapbox: mapbox };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox._input).toBe(mapbox);
     });
 
@@ -69,7 +69,7 @@ describe('mapbox defaults', function() {
         fullData.push({ type: 'scattermapbox', subplot: 'mapbox2' });
         layoutOut._subplots.mapbox.push('mapbox2');
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox.style).toEqual('light');
         expect(layoutOut.mapbox2.style).toBe(mapboxStyleJSON);
     });
@@ -81,7 +81,7 @@ describe('mapbox defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox.layers[0].sourcetype).toEqual('geojson');
         expect(layoutOut.mapbox.layers[1].sourcetype).toEqual('geojson');
     });
@@ -93,7 +93,7 @@ describe('mapbox defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox.layers).toEqual([jasmine.objectContaining({
             sourcetype: 'geojson',
             _index: 0
@@ -120,7 +120,7 @@ describe('mapbox defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox.layers[0].sourcelayer).toEqual('layer0');
         expect(layoutOut.mapbox.layers[1].sourcelayer).toBeUndefined();
     });
@@ -156,7 +156,7 @@ describe('mapbox defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
         expect(layoutOut.mapbox.layers[0].color).toEqual('red');
         expect(layoutOut.mapbox.layers[0].line.width).toEqual(3);
@@ -199,10 +199,10 @@ describe('mapbox defaults', function() {
                 }]
             }
         };
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
         expect(Lib.log).toHaveBeenCalledTimes(2);
-        expect(Lib.log).toHaveBeenCalledWith('Source types *raster* and *image* must drawn *raster* layer type.');
+        expect(Lib.log).toHaveBeenCalledWith(void 0, 'Source types *raster* and *image* must drawn *raster* layer type.');
 
         expect(layoutOut.mapbox.layers[0].type).toBe('raster');
         expect(layoutOut.mapbox.layers[1].type).toBe('raster');
@@ -222,7 +222,7 @@ describe('mapbox defaults', function() {
                 }]
             }
         };
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
         expect(Lib.log).toHaveBeenCalledTimes(0);
         expect(layoutOut.mapbox.layers[0].type).toBe('raster');
@@ -295,7 +295,7 @@ describe('mapbox credentials', function() {
             }]);
         }).toThrow(new Error(constants.missingStyleErrorMsg));
 
-        expect(Lib.error).toHaveBeenCalledWith(constants.missingStyleErrorMsg);
+        expect(Lib.error).toHaveBeenCalledWith(jasmine.anything(), constants.missingStyleErrorMsg);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should throw error when setting a Mapbox style w/o a registered token', function() {
@@ -311,7 +311,7 @@ describe('mapbox credentials', function() {
             });
         }).toThrow(new Error(constants.noAccessTokenErrorMsg));
 
-        expect(Lib.error).toHaveBeenCalledWith('Uses Mapbox map style, but did not set an access token.');
+        expect(Lib.error).toHaveBeenCalledWith(jasmine.anything(), 'Uses Mapbox map style, but did not set an access token.');
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should throw error if token is invalid', function(done) {
@@ -377,7 +377,7 @@ describe('mapbox credentials', function() {
         }).then(function() {
             expect(cnt).toEqual(0);
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
-            expect(Lib.warn).toHaveBeenCalledWith(constants.multipleTokensErrorMsg);
+            expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(), constants.multipleTokensErrorMsg);
             done();
         });
     }, LONG_TIMEOUT_INTERVAL);
@@ -438,7 +438,7 @@ describe('mapbox credentials', function() {
             cnt++;
         }).then(function() {
             expect(cnt).toEqual(0);
-            expect(Lib.log).toHaveBeenCalledWith([
+            expect(Lib.log).toHaveBeenCalledWith(jasmine.anything(), [
                 'Listed mapbox access token(s)',
                 MAPBOX_ACCESS_TOKEN,
                 'but did not use a Mapbox map style, ignoring token(s).'
@@ -1929,7 +1929,7 @@ describe('@noCI test mapbox trace/layout *below* interactions', function() {
 
             if(allArgs.length === exp.warnCnt) {
                 for(var i = 0; i < exp.warnCnt; i++) {
-                    expect(allArgs[i][0]).toBe(arg, 'Lib.warn call #' + i);
+                    expect(allArgs[i][1]).toBe(arg, 'Lib.warn call #' + i);
                 }
             } else {
                 fail('Incorrect number of Lib.warn calls');
