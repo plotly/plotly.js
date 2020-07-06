@@ -82,14 +82,20 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     var refAttr = attr + 'ref';
     var attrDef = {};
 
-    if(!dflt) dflt = axlist[0] || extraOption;
+    if(!dflt) dflt = axlist[0] || (
+        ((extraOption === undefined) || (typeof(extraOption) === "string")) ?
+            extraOption : 
+            extraOption[0]
+        );
+    // so in the end, if dflt, axlist[], and extraOption were undefined, they
+    // are still undefined
     if(!extraOption) extraOption = dflt;
 
     // data-ref annotations are not supported in gl2d yet
 
     var extraOptionAsList = extraOption;
     if (extraOption) {
-        if (typeof(extraOption)=='string') {
+        if (typeof(extraOption)==='string') {
             extraOptionAsList = [extraOption];
         }
     }
