@@ -61,22 +61,22 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var ax;
         var pos2r;
         var r2pos;
-        var coerceRefExtras=['paper'];
+        var coerceRefExtras = ['paper'];
         // extract axis if domain specified
-        var xAx = function (ar) {
+        var xAx = function(ar) {
             var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
-            if (mtch) { return mtch[1]; }
+            if(mtch) { return mtch[1]; }
             return ar;
-        }
+        };
         var axNumMatch = (
-            shapeIn[axLetter+'ref'] ?
-            shapeIn[axLetter+'ref'].match(/[xyz]([0-9]*)/) :
+            shapeIn[axLetter + 'ref'] ?
+            shapeIn[axLetter + 'ref'].match(/[xyz]([0-9]*)/) :
             undefined
         );
-        if (axNumMatch) {
+        if(axNumMatch) {
             var axNum = axNumMatch[1];
             coerceRefExtras = coerceRefExtras.concat(
-                    (axNum != undefined) ? [axLetter + axNum + ' domain'] : []);
+                    (axNum !== undefined) ? [axLetter + axNum + ' domain'] : []);
         }
 
         // xref, yref
