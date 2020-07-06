@@ -83,7 +83,7 @@ exports.listIds = function(gd, axLetter) {
 exports.getFromId = function(gd, id, type) {
     var fullLayout = gd._fullLayout;
     // remove "domain" suffix
-    id = (id === undefined) ? id : id.replace(/ *domain/, '');
+    id = ((id === undefined) || (typeof(id) !== "string")) ? id : id.replace(/ *domain/, '');
 
     if(type === 'x') id = id.replace(/y[0-9]*/, '');
     else if(type === 'y') id = id.replace(/x[0-9]*/, '');
