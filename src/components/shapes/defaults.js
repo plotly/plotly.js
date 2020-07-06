@@ -62,28 +62,14 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var pos2r;
         var r2pos;
         var coerceRefExtras = ['paper'];
-        // extract axis if domain specified
-        var xAx = function(ar) {
-            var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
-            if(mtch) { return mtch[1]; }
-            return ar;
-        };
-        var axNumMatch = (
-            shapeIn[axLetter + 'ref'] ?
-            shapeIn[axLetter + 'ref'].match(/[xyz]([0-9]*)/) :
-            undefined
-        );
-        if(axNumMatch) {
-            var axNum = axNumMatch[1];
-            coerceRefExtras = coerceRefExtras.concat(
-                    (axNum !== undefined) ? [axLetter + axNum + ' domain'] : []);
-        }
+        coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(shapeIn,axLetter,coerceRefExtras);
 
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', coerceRefExtras);
+        var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
 
         if(axRef !== 'paper') {
-            ax = Axes.getFromId(gdMock, xAx(axRef));
+            ax = Axes.getFromId(gdMock, axRefAxOnly);
             ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
@@ -111,8 +97,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 coerce(attr0, 0);
                 coerce(attr1, 10);
             } else {
-                Axes.coercePosition(shapeOut, gdMock, coerce, xAx(axRef), attr0, dflt0);
-                Axes.coercePosition(shapeOut, gdMock, coerce, xAx(axRef), attr1, dflt1);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attr0, dflt0);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attr1, dflt1);
             }
 
             // hack part 2
@@ -128,7 +114,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             var inAnchor = shapeIn[attrAnchor];
             shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
 
-            Axes.coercePosition(shapeOut, gdMock, coerce, xAx(axRef), attrAnchor, 0.25);
+            Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attrAnchor, 0.25);
 
             // Hack part 2
             shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);

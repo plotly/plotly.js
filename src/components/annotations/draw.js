@@ -91,6 +91,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var className, containerStr;
 
+    debugger;
     if(subplotId) {
         className = 'annotation-' + subplotId;
         containerStr = subplotId + '.annotations';

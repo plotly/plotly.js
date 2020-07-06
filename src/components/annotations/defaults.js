@@ -45,17 +45,20 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i];
+        var coerceRefExtras = ['paper'];
+        coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(annIn,axLetter,coerceRefExtras);
 
         // xref, yref
-        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
+        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', coerceRefExtras);
+        var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
 
         if(axRef !== 'paper') {
-            var ax = Axes.getFromId(gdMock, axRef);
+            var ax = Axes.getFromId(gdMock, axRefAxOnly);
             ax._annIndices.push(annOut._index);
         }
 
         // x, y
-        Axes.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
+        Axes.coercePosition(annOut, gdMock, coerce, axRefAxOnly, axLetter, 0.5);
 
         if(showArrow) {
             var arrowPosAttr = 'a' + axLetter;
@@ -65,7 +68,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
             // for now the arrow can only be on the same axis or specified as pixels
             // TODO: sometime it might be interesting to allow it to be on *any* axis
             // but that would require updates to drawing & autorange code and maybe more
-            if(aaxRef !== 'pixel' && aaxRef !== axRef) {
+            if(aaxRef !== 'pixel' && aaxRef !== axRefAxOnly) {
                 aaxRef = annOut[arrowPosAttr] = 'pixel';
             }
 

@@ -112,6 +112,43 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
+/* 
+ * An axis reference (e.g., the contents at the 'xref' key of an object) might
+ * have extra information appended. Extract the axis reference only.
+ *
+ * ar: the axis reference string
+ *
+ */
+axes.extractAxisFromAxisRef = function (ar) {
+    var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
+    if(mtch) { return mtch[1]; }
+    return ar;
+};
+
+/*
+ * Add the specified axis letter and number + " domain" to the extras for
+ * coerceRef.
+ *
+ * container: the object holding the [xyz]ref keys, e.g., a shape.
+ * axLetter: the letter of the axis of interest.
+ * coerceRefExtras: the current list of extras for coerceRef that will be
+ * appended to.
+ *
+ */
+axes.addAxRefDomainCoerceRefExtra = function (container, axLetter, coerceRefExtras) {
+        var axNumMatch = (
+            container[axLetter + 'ref'] ?
+            container[axLetter + 'ref'].match(/[xyz]([0-9]*)/) :
+            undefined
+        );
+        if(axNumMatch) {
+            var axNum = axNumMatch[1];
+            coerceRefExtras = coerceRefExtras.concat(
+                    (axNum !== undefined) ? [axLetter + axNum + ' domain'] : []);
+        }
+        return coerceRefExtras;
+};
+
 /*
  * coerce position attributes (range-type) that can be either on axes or absolute
  * (paper or pixel) referenced. The biggest complication here is that we don't know
