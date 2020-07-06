@@ -91,7 +91,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var className, containerStr;
 
-    debugger;
     if(subplotId) {
         className = 'annotation-' + subplotId;
         containerStr = subplotId + '.annotations';
@@ -297,6 +296,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var alignPosition;
             var autoAlignFraction;
             var textShift;
+			var axrefOpt = (typeof(axRef)=="string") ? axRef.split(' ') : undefined;
+			var yrefOpt = options.yref.split(' ');
 
             /*
              * calculate the *primary* pixel position
@@ -316,8 +317,12 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         annotationIsOffscreen = true;
                     }
                 }
-                basePx = ax._offset + ax.r2p(options[axLetter]);
-                autoAlignFraction = 0.5;
+                if((axrefOpt != undefined) && (axrefOpt[1] === 'domain')) {
+                    basePx = ax._offset + ax._length * options[axLetter];
+                } else {
+                    basePx = ax._offset + ax.r2p(options[axLetter]);
+                    autoAlignFraction = 0.5;
+                }
             } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
