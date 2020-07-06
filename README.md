@@ -11,8 +11,9 @@ and more.
 
 <p align="center">
     <a href="https://plotly.com/javascript/" target="_blank">
-    <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
-</a></p>
+        <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
+    </a>
+</p>
 
 [Contact us](https://plotly.com/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 
@@ -29,7 +30,6 @@ and more.
 * [Creators](#creators)
 * [Copyright and license](#copyright-and-license)
 
-
 ## Quick start options
 
 ### Install with npm
@@ -38,7 +38,8 @@ and more.
 npm install plotly.js-dist
 ```
 
-and import plotly.js as 
+and import plotly.js as
+
 ```js
 import Plotly from 'plotly.js-dist'
 // Or using require,
@@ -60,7 +61,7 @@ var Plotly = require('plotly.js-dist')
 
 and use the `Plotly` object in the window scope.
 
-Fastly supports Plotly.js with free CDN service. Read more at https://www.fastly.com/open-source
+Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>
 
 ### Download the latest release
 
@@ -69,7 +70,6 @@ Fastly supports Plotly.js with free CDN service. Read more at https://www.fastly
 and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
 
 #### Read the [Getting started page](https://plotly.com/javascript/getting-started/) for more examples.
-
 
 ## Modules
 
@@ -149,6 +149,7 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plotly/python/getting-started](https://plotly.com/python/getting-started) |
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plotly/matlab/getting-started](https://plotly.com/matlab/getting-started) |
 |**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
+
 ## Creators
 
 ### Active
@@ -175,7 +176,6 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | |
-
 
 ## Copyright and license
 

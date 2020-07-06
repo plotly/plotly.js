@@ -35,7 +35,6 @@ var Plotly = require('plotly.js');
 
 then simply run,
 
-
 ```
 browserify index.js > bundle.js
 ```
@@ -92,10 +91,11 @@ module.exports = {
               "path": "./extra-webpack.config.js",
               "replaceDuplicatePlugins": true,
               "mergeStrategies": {"module.rules":  "merge"}
-            }         
+            }
           }
         }
 ...
 ```
+
 It's important to set `projects.x.architect.build.builder` and `projects.x.architect.build.options.customWebpackConfig`.
 If you have more projects in your `angular.json` make sure to adjust their settings accordingly.
