@@ -3,6 +3,7 @@
 Test plotly.js with Plotly's image testing docker container.
 
 Requirements:
+
 - `docker` | [installation guidelines][docker-install]
 - `docker-machine` (for Mac and Windows users only) | [installation guidelines][docker-machine-install]
 
@@ -28,7 +29,6 @@ eval $(docker-machine env default)
 
 the above evaluates the output of `docker-machine env default`.
 
-
 ### Step 1: Setup the testing container
 
 After `cd` into your `plotly.js` directory, pull the latest docker image with
@@ -49,7 +49,6 @@ npm run docker -- run
 which calls [`docker-run`][docker-run] or [`docker-start`][docker-start] with
 the correct arguments.
 
-
 ### Step 2: Run the image tests
 
 The image testing docker container allows plotly.js developers to
@@ -60,7 +59,7 @@ The image testing docker container allows plotly.js developers to
 Before starting, don't forget to [set up your testing environment](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#development):
 
 ```bash
-$ npm run pretest
+npm run pretest
 ```
 
 **IMPORTANT:** the image tests scripts do **not** bundle the source files before
@@ -91,10 +90,10 @@ For example,
 
 ```bash
 # Run one test (e.g. the 'contour_nolines' test):
-$ npm run test-image -- contour_nolines
+npm run test-image -- contour_nolines
 
 # Run all gl3d image tests in batch:
-$ npm run test-image -- gl3d_*
+npm run test-image -- gl3d_*
 
 # Run all image tests that are not gl3d in batch:
 npm run test-image --  "\!\(gl3d_\)*"
@@ -106,7 +105,7 @@ comparison tests in queue (i.e. with no concurrency) is recommended:
 
 ```bash
 # Run all gl3d image test in queue:
-$ npm run test-image -- gl3d_* --queue
+npm run test-image -- gl3d_* --queue
 ```
 
 ##### B: Run image export tests
@@ -140,7 +139,6 @@ To update existing baseline image(s), run
 ```bash
 npm run baseline -- <glob-of-mocks-to-update>
 ```
-
 
 ### Step 3: Stop your testing container
 
@@ -204,11 +202,11 @@ If named `default`:
 docker-machine kill default
 ```
 
-For more comprehensive information about docker, please refer to the [docker docs](http://docs.docker.com/).
+For more comprehensive information about docker, please refer to the [docker docs](https://docs.docker.com/).
 
 [mocks]: https://github.com/plotly/plotly.js/tree/master/test/image/mocks
 [baselines]: https://github.com/plotly/plotly.js/tree/master/test/image/baselines
-[docker-install]: http://docs.docker.com/engine/installation/
+[docker-install]: https://docs.docker.com/engine/installation/
 [docker-machine-install]: https://docs.docker.com/machine/install-machine/
 [docker-hub]: https://hub.docker.com/r/plotly/testbed/tags/
 [docker-pull]: https://docs.docker.com/engine/reference/commandline/pull/
