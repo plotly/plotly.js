@@ -112,14 +112,14 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-/* 
+/*
  * An axis reference (e.g., the contents at the 'xref' key of an object) might
  * have extra information appended. Extract the axis reference only.
  *
  * ar: the axis reference string
  *
  */
-axes.extractAxisFromAxisRef = function (ar) {
+axes.extractAxisFromAxisRef = function(ar) {
     var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
     if(mtch) { return mtch[1]; }
     return ar;
@@ -135,18 +135,18 @@ axes.extractAxisFromAxisRef = function (ar) {
  * appended to.
  *
  */
-axes.addAxRefDomainCoerceRefExtra = function (container, axLetter, coerceRefExtras) {
-        var axNumMatch = (
+axes.addAxRefDomainCoerceRefExtra = function(container, axLetter, coerceRefExtras) {
+    var axNumMatch = (
             container[axLetter + 'ref'] ?
             container[axLetter + 'ref'].match(/[xyz]([0-9]*)/) :
             undefined
         );
-        if(axNumMatch) {
-            var axNum = axNumMatch[1];
-            coerceRefExtras = coerceRefExtras.concat(
+    if(axNumMatch) {
+        var axNum = axNumMatch[1];
+        coerceRefExtras = coerceRefExtras.concat(
                     (axNum !== undefined) ? [axLetter + axNum + ' domain'] : []);
-        }
-        return coerceRefExtras;
+    }
+    return coerceRefExtras;
 };
 
 /*

@@ -296,8 +296,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var alignPosition;
             var autoAlignFraction;
             var textShift;
-			var axrefOpt = (typeof(axRef)=="string") ? axRef.split(' ') : undefined;
-			var yrefOpt = options.yref.split(' ');
+            var axrefOpt = (typeof(axRef) === 'string') ? axRef.split(' ') : undefined;
 
             /*
              * calculate the *primary* pixel position
@@ -317,7 +316,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         annotationIsOffscreen = true;
                     }
                 }
-                if((axrefOpt != undefined) && (axrefOpt[1] === 'domain')) {
+                if((axrefOpt !== undefined) && (axrefOpt[1] === 'domain')) {
                     basePx = ax._offset + ax._length * options[axLetter];
                 } else {
                     basePx = ax._offset + ax.r2p(options[axLetter]);
