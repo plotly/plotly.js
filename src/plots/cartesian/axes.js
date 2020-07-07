@@ -120,7 +120,9 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *
  */
 axes.extractAxisFromAxisRef = function(ar) {
-    var mtch = ar ? ar.match(/^([xyz][0-9]*) domain/) : undefined;
+    var mtch = (((ar !== undefined) && (typeof(ar) === 'string')) ?
+                ar.match(/^([xyz][0-9]*) domain/) :
+                undefined);
     if(mtch) { return mtch[1]; }
     return ar;
 };

@@ -52,7 +52,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
         var coerceRefExtras = ['paper'];
         coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(imageIn, axLetter,
                                                             coerceRefExtras);
-        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, coerceRefExtras);
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, '', coerceRefExtras);
         var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
 
         if(axRef !== 'paper') {
