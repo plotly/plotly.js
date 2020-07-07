@@ -209,11 +209,13 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
+    var xrefOpt = Axes.extractInfoFromAxisRef(shapeOptions.xref)
     var ya = Axes.getFromId(gd, shapeOptions.yref);
-    var x2p = helpers.getDataToPixel(gd, xa);
-    var y2p = helpers.getDataToPixel(gd, ya, true);
-    var p2x = helpers.getPixelToData(gd, xa);
-    var p2y = helpers.getPixelToData(gd, ya, true);
+    var yrefOpt = Axes.extractInfoFromAxisRef(shapeOptions.yref)
+    var x2p = helpers.getDataToPixel(gd, xa, false, xrefOpt);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yrefOpt);
+    var p2x = helpers.getPixelToData(gd, xa, false, xrefOpt);
+    var p2y = helpers.getPixelToData(gd, ya, true, yrefOpt);
 
     var sensoryElement = obtainSensoryElement();
     var dragOptions = {

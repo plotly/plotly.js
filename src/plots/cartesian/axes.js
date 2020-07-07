@@ -120,12 +120,29 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *
  */
 axes.extractAxisFromAxisRef = function(ar) {
+    // TODO extractAxisFromAxisRef is more generic than this, this could be made
+    // more generic too
     var mtch = (((ar !== undefined) && (typeof(ar) === 'string')) ?
                 ar.match(/^([xyz][0-9]*) domain/) :
                 undefined);
     if(mtch) { return mtch[1]; }
     return ar;
 };
+
+/*
+/*
+ * An axis reference (e.g., the contents at the 'xref' key of an object) might
+ * have extra information appended. Extract the extra information.
+ *
+ * ar: the axis reference string
+ *
+ */
+axes.extractInfoFromAxisRef = function(ar) {
+    if ((ar !== undefined) && (typeof(ar) === 'string')) {
+        return ar.split(' ').slice(1).join(' ');
+    }
+    return ar;
+}
 
 /*
  * Add the specified axis letter and number + " domain" to the extras for
