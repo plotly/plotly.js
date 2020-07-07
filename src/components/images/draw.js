@@ -133,20 +133,20 @@ module.exports = function draw(gd) {
 
         var size = fullLayout._size;
         var width, height;
-        if (xa !== undefined) {
-            if ((typeof(d.xref) === 'string') && d.xref.endsWith(" domain")) {
+        if(xa !== undefined) {
+            if((typeof(d.xref) === 'string') && d.xref.endsWith(' domain')) {
                 width = xa._length * d.sizex;
             } else {
-                width = Math.abs(xa.l2p(d.sizex) - xa.l2p(0))
+                width = Math.abs(xa.l2p(d.sizex) - xa.l2p(0));
             }
         } else {
             width = d.sizex * size.w;
         }
-        if (ya !== undefined) {
-            if ((typeof(d.yref) === 'string') && d.yref.endsWith(" domain")) {
+        if(ya !== undefined) {
+            if((typeof(d.yref) === 'string') && d.yref.endsWith(' domain')) {
                 height = ya._length * d.sizey;
             } else {
-                height = Math.abs(ya.l2p(d.sizey) - ya.l2p(0))
+                height = Math.abs(ya.l2p(d.sizey) - ya.l2p(0));
             }
         } else {
             height = d.sizey * size.h;
@@ -160,8 +160,8 @@ module.exports = function draw(gd) {
 
         // Final positions
         var xPos, yPos;
-        if (xa !== undefined) {
-            if ((typeof(d.xref) === 'string') && d.xref.endsWith(" domain")) {
+        if(xa !== undefined) {
+            if((typeof(d.xref) === 'string') && d.xref.endsWith(' domain')) {
                 xPos = xa._length * d.x + xa._offset;
             } else {
                 xPos = xa.r2p(d.x) + xa._offset;
@@ -170,8 +170,8 @@ module.exports = function draw(gd) {
             xPos = d.x * size.w + size.l;
         }
         xPos += xOffset;
-        if (ya !== undefined) {
-            if ((typeof(d.yref) === 'string') && d.yref.endsWith(" domain")) {
+        if(ya !== undefined) {
+            if((typeof(d.yref) === 'string') && d.yref.endsWith(' domain')) {
                 // consistent with "paper" yref value, where positive values
                 // move up the page
                 yPos = ya._length * (1 - d.y) + ya._offset;
