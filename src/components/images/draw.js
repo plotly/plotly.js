@@ -132,8 +132,25 @@ module.exports = function draw(gd) {
         var ya = Axes.getFromId(gd, d.yref);
 
         var size = fullLayout._size;
-        var width = xa ? Math.abs(xa.l2p(d.sizex) - xa.l2p(0)) : d.sizex * size.w;
-        var height = ya ? Math.abs(ya.l2p(d.sizey) - ya.l2p(0)) : d.sizey * size.h;
+        var width, height;
+        if (xa !== undefined) {
+            if ((typeof(d.xref) === 'string') && d.xref.endsWith(" domain")) {
+                width = xa._length * d.sizex;
+            } else {
+                width = Math.abs(xa.l2p(d.sizex) - xa.l2p(0))
+            }
+        } else {
+            width = d.sizex * size.w;
+        }
+        if (ya !== undefined) {
+            if ((typeof(d.yref) === 'string') && d.yref.endsWith(" domain")) {
+                height = ya._length * d.sizey;
+            } else {
+                height = Math.abs(ya.l2p(d.sizey) - ya.l2p(0))
+            }
+        } else {
+            height = d.sizey * size.h;
+        }
 
         // Offsets for anchor positioning
         var xOffset = width * anchors.x[d.xanchor].offset;
@@ -142,8 +159,29 @@ module.exports = function draw(gd) {
         var sizing = anchors.x[d.xanchor].sizing + anchors.y[d.yanchor].sizing;
 
         // Final positions
-        var xPos = (xa ? xa.r2p(d.x) + xa._offset : d.x * size.w + size.l) + xOffset;
-        var yPos = (ya ? ya.r2p(d.y) + ya._offset : size.h - d.y * size.h + size.t) + yOffset;
+        var xPos, yPos;
+        if (xa !== undefined) {
+            if ((typeof(d.xref) === 'string') && d.xref.endsWith(" domain")) {
+                xPos = xa._length * d.x + xa._offset;
+            } else {
+                xPos = xa.r2p(d.x) + xa._offset;
+            }
+        } else {
+            xPos = d.x * size.w + size.l;
+        }
+        xPos += xOffset;
+        if (ya !== undefined) {
+            if ((typeof(d.yref) === 'string') && d.yref.endsWith(" domain")) {
+                // consistent with "paper" yref value, where positive values
+                // move up the page
+                yPos = ya._length * (1 - d.y) + ya._offset;
+            } else {
+                yPos = ya.r2p(d.y) + ya._offset;
+            }
+        } else {
+            yPos = size.h - d.y * size.h + size.t;
+        }
+        yPos += yOffset;
 
         // Construct the proper aspectRatio attribute
         switch(d.sizing) {

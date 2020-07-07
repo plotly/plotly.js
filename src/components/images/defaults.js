@@ -49,14 +49,18 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
         var axLetter = axLetters[i];
-        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+        var coerceRefExtras = ['paper'];
+        coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(imageIn, axLetter,
+                                                            coerceRefExtras);
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, coerceRefExtras);
+        var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
 
         if(axRef !== 'paper') {
-            var ax = Axes.getFromId(gdMock, axRef);
+            var ax = Axes.getFromId(gdMock, axRefAxOnly);
             ax._imgIndices.push(imageOut._index);
         }
 
-        Axes.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
+        Axes.coercePosition(imageOut, gdMock, coerce, axRefAxOnly, axLetter, 0);
     }
 
     return imageOut;
