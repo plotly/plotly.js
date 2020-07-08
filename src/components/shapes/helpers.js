@@ -63,10 +63,10 @@ exports.getDataToPixel = function(gd, axis, isVertical, opt) {
     var dataToPixel;
 
     if(axis) {
-        if (opt === 'domain') {
-            dataToPixel = function (v) { 
+        if(opt === 'domain') {
+            dataToPixel = function(v) {
                 return axis._length * v + axis._offset;
-            }
+            };
         } else {
             var d2r = exports.shapePositionToRange(axis);
 
@@ -90,8 +90,8 @@ exports.getPixelToData = function(gd, axis, isVertical, opt) {
     var pixelToData;
 
     if(axis) {
-        if (opt === 'domain') {
-            pixelToData = function(p) { return (p - axis._offset) / axis._length; }
+        if(opt === 'domain') {
+            pixelToData = function(p) { return (p - axis._offset) / axis._length; };
         } else {
             var r2d = exports.rangeToShapePosition(axis);
             pixelToData = function(p) { return r2d(axis.p2r(p - axis._offset)); };

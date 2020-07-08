@@ -138,11 +138,11 @@ axes.extractAxisFromAxisRef = function(ar) {
  *
  */
 axes.extractInfoFromAxisRef = function(ar) {
-    if ((ar !== undefined) && (typeof(ar) === 'string')) {
+    if((ar !== undefined) && (typeof(ar) === 'string')) {
         return ar.split(' ').slice(1).join(' ');
     }
     return ar;
-}
+};
 
 /*
  * Add the specified axis letter and number + " domain" to the extras for
