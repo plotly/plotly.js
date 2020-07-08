@@ -73,6 +73,23 @@ function drawOne(gd, index) {
     drawRaw(gd, options, index, false, xa, ya);
 }
 
+// A set of instructions that is written everywhere, so for ease of maintenance
+// it is collected here. It seems to convert data coordinates to drawing
+// coordinates.
+// axDomainRef: if true and axa defined, draws relative to axis domain,
+// otherwise draws relative to data (if axa defined) or paper (if not).
+function p2rR2p(axa,optAx,dAx,gsDim,vertical,axDomainRef) {
+    if (optAx) {
+        if (axDomainRef) {
+            return axa._length * (vertical ? (1 - optAx) : optAx) + axa._offset + dAx;
+        } else {
+            return axa.p2r(axa.r2p(optAx) + dAx);
+        }
+    } else {
+        return optAx + (vertical ? -(dAx / gsDim) : dAx / gsDim);
+    }
+}
+
 /**
  * drawRaw: draw a single annotation, potentially with modifications
  *
@@ -562,24 +579,30 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
                     },
                     moveFn: function(dx, dy) {
+                        // TODO: Needs to be axis domain ref compatible
                         var annxy0 = applyTransform(annx0, anny0);
                         var xcenter = annxy0[0] + dx;
                         var ycenter = annxy0[1] + dy;
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
-                        modifyItem('x', xa ?
-                            xa.p2r(xa.r2p(options.x) + dx) :
-                            (options.x + (dx / gs.w)));
-                        modifyItem('y', ya ?
-                            ya.p2r(ya.r2p(options.y) + dy) :
-                            (options.y - (dy / gs.h)));
+                        var xAxOpt = Axes.extractInfoFromAxisRef(options.xref),
+                            yAxOpt = Axes.extractInfoFromAxisRef(options.yref);
+                        modifyItem('x',
+                            p2rR2p(xa,options.x,dx,gs.w,false,xAxOpt==='domain'));
+                        modifyItem('y',
+                            p2rR2p(ya,options.y,dy,gs.h,true,yAxOpt==='domain'));
 
+                        // for these 2 calls to p2rR2p, it is assumed xa, ya are
+                        // defined, so gsDim will not be used, but we put it in
+                        // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
+                            modifyItem('ax', p2rR2p(xa,options.ax,dx,gs.h,false,
+                                       xAxOpt==='domain'));
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
+                            modifyItem('ay', p2rR2p(ya,options.ay,dy,gs.w,true,
+                                       yAxOpt==='domain'));
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -612,16 +635,24 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     baseTextTransform = annTextGroup.attr('transform');
                 },
                 moveFn: function(dx, dy) {
+                    // TODO: Needs to be axis domain ref compatible
                     var csr = 'pointer';
+                    var xAxOpt = Axes.extractInfoFromAxisRef(options.xref),
+                        yAxOpt = Axes.extractInfoFromAxisRef(options.yref);
                     if(options.showarrow) {
+                        // for these 2 calls to p2rR2p, it is assumed xa, ya are
+                        // defined, so gsDim will not be used, but we put it in
+                        // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
+                            modifyItem('ax', p2rR2p(xa,options.ax,dx,gs.h,false,
+                                       xAxOpt==='domain'));
                         } else {
                             modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
+                            modifyItem('ay', p2rR2p(ya,options.ay,dy,gs.w,true,
+                                       yAxOpt==='domain'));
                         } else {
                             modifyItem('ay', options.ay + dy);
                         }
@@ -630,7 +661,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     } else if(!subplotId) {
                         var xUpdate, yUpdate;
                         if(xa) {
-                            xUpdate = xa.p2r(xa.r2p(options.x) + dx);
+                            // p2rR2p will not execute code where xa was
+                            // undefined, so we use to calculate xUpdate too
+                            xUpdate = p2rR2p(xa,options.x,dx,gs.h,false,
+                                       xAxOpt==='domain');
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -640,7 +674,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
 
                         if(ya) {
-                            yUpdate = ya.p2r(ya.r2p(options.y) + dy);
+                            // p2rR2p will not execute code where ya was
+                            // undefined, so we use to calculate yUpdate too
+                            yUpdate = p2rR2p(ya,options.y,dy,gs.w,true,
+                                       yAxOpt==='domain');
                         } else {
                             var heightFraction = options._ysize / gs.h;
                             var yBottom = options.y - (options._yshift + options.yshift) / gs.h - heightFraction / 2;
