@@ -73,15 +73,18 @@ function drawOne(gd, index) {
     drawRaw(gd, options, index, false, xa, ya);
 }
 
-// A set of instructions that is written everywhere, so for ease of maintenance
-// it is collected here. It seems to convert data coordinates to drawing
-// coordinates.
+// Convert pixels to the coordinates relevant for the axis referred to. For
+// example, for paper it would convert to a value normalized by the dimension of
+// the plot.
 // axDomainRef: if true and axa defined, draws relative to axis domain,
 // otherwise draws relative to data (if axa defined) or paper (if not).
 function p2rR2p(axa,optAx,dAx,gsDim,vertical,axDomainRef) {
-    if (optAx) {
+    if (axa) {
         if (axDomainRef) {
-            return axa._length * (vertical ? (1 - optAx) : optAx) + axa._offset + dAx;
+            // here optAx normalized to length of axis (e.g., normally in range
+            // 0 to 1). But dAx is in pixels. So we normalize dAx to length of
+            // axis before doing the math.
+            return optAx + dAx / axa._length;
         } else {
             return axa.p2r(axa.r2p(optAx) + dAx);
         }
@@ -579,7 +582,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
                     },
                     moveFn: function(dx, dy) {
-                        // TODO: Needs to be axis domain ref compatible
                         var annxy0 = applyTransform(annx0, anny0);
                         var xcenter = annxy0[0] + dx;
                         var ycenter = annxy0[1] + dy;
@@ -635,7 +637,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     baseTextTransform = annTextGroup.attr('transform');
                 },
                 moveFn: function(dx, dy) {
-                    // TODO: Needs to be axis domain ref compatible
                     var csr = 'pointer';
                     var xAxOpt = Axes.extractInfoFromAxisRef(options.xref),
                         yAxOpt = Axes.extractInfoFromAxisRef(options.yref);
