@@ -152,6 +152,7 @@
     "karma-spec-reporter": "0.0.32",
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.6",
+    "lodash": "^4.17.18",
     "madge": "^3.9.2",
     "minify-stream": "^2.0.1",
     "minimist": "^1.2.5",
