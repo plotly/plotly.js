@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.54.5
+* plotly.js (cartesian) v1.54.6
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -41771,7 +41771,6 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
         var toVal = toContainer[k];
 
         if(toVal === fromVal) continue;
-        if(toContainer.matches && k === '_categoriesMap') continue;
 
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
             // if it already exists at this point, it's something
@@ -47055,6 +47054,16 @@ function react(gd, data, layout, config) {
         helpers.cleanLayout(gd.layout);
 
         applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
+
+        var allNames = Object.getOwnPropertyNames(oldFullLayout);
+        for(var q = 0; q < allNames.length; q++) {
+            var name = allNames[q];
+            var start = name.substring(0, 5);
+            if(start === 'xaxis' || start === 'yaxis') {
+                var emptyCategories = oldFullLayout[name]._emptyCategories;
+                if(emptyCategories) emptyCategories();
+            }
+        }
 
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do
@@ -62014,13 +62023,13 @@ module.exports = function setConvert(ax, fullLayout) {
         }
     };
 
+    ax._emptyCategories = function() {
+        ax._categories = [];
+        ax._categoriesMap = {};
+    };
+
     // should skip if not category nor multicategory
     ax.clearCalc = function() {
-        var emptyCategories = function() {
-            ax._categories = [];
-            ax._categoriesMap = {};
-        };
-
         var matchGroups = fullLayout._axisMatchGroups;
 
         if(matchGroups && matchGroups.length) {
@@ -62047,14 +62056,14 @@ module.exports = function setConvert(ax, fullLayout) {
                         ax._categories = categories;
                         ax._categoriesMap = categoriesMap;
                     } else {
-                        emptyCategories();
+                        ax._emptyCategories();
                     }
                     break;
                 }
             }
-            if(!found) emptyCategories();
+            if(!found) ax._emptyCategories();
         } else {
-            emptyCategories();
+            ax._emptyCategories();
         }
 
         if(ax._initialCategories) {
@@ -62068,12 +62077,8 @@ module.exports = function setConvert(ax, fullLayout) {
     // returns the indices of the traces affected by the reordering
     ax.sortByInitialCategories = function() {
         var affectedTraces = [];
-        var emptyCategories = function() {
-            ax._categories = [];
-            ax._categoriesMap = {};
-        };
 
-        emptyCategories();
+        ax._emptyCategories();
 
         if(ax._initialCategories) {
             for(var j = 0; j < ax._initialCategories.length; j++) {
@@ -70132,7 +70137,7 @@ proto.initInteractions = function() {
             b: mins0.b + (dxScaled + dyScaled) / 2,
             c: mins0.c - (dxScaled - dyScaled) / 2
         };
-        var minsorted = [mins.a, mins.b, mins.c].sort();
+        var minsorted = [mins.a, mins.b, mins.c].sort(Lib.sorterAsc);
         var minindices = {
             a: minsorted.indexOf(mins.a),
             b: minsorted.indexOf(mins.b),
@@ -80582,6 +80587,11 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         traceOut._length = null;
     }
 
+    if(
+        traceIn.type === 'heatmapgl' ||
+        traceIn.type === 'contourgl'
+    ) return true; // skip calendars until we handle them in those traces
+
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
@@ -90010,7 +90020,7 @@ module.exports = function style(gd) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.5';
+exports.version = '1.54.6';
 
 },{}]},{},[11])(11)
 });
