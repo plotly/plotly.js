@@ -9,6 +9,21 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.6] -- 2020-07-09
+
+### Fixed
+ - Link matching axes categories during `Plotly.relayout` calls
+   (regression introduced in 1.54.2) [#4977]
+ - Fix "median" aggregation transforms [#4969]
+ - Fix `parcats` category order when the dimension only includes numbers [#4973]
+ - Fix numeric sort in `ternary` drag [#4975]
+ - Fix `heatmapgl` supply defaults not to add unimplemented attributes
+   `xcalendar`, `ycalendar`, `xgap`, `ygap`, `zsmooth`, `zhoverformat`,
+   `hoverongaps` and `hovertemplate` to `gd._fullData`  [#4950]
+ - Fix `contourgl` supply defaults not to add unimplemented attributes
+   `xcalendar`, `ycalendar` to `gd._fullData`  [#4951]
+
+
 ## [1.54.5] -- 2020-06-23
 
 ### Fixed
