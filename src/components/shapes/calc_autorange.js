@@ -25,9 +25,9 @@ module.exports = function calcAutorange(gd) {
         var shape = shapeList[i];
         shape._extremes = {};
 
-        var ax, bounds,
-            xrefInfo = Axes.extractInfoFromAxisRef(shape.xref),
-            yrefInfo = Axes.extractInfoFromAxisRef(shape.yref);
+        var ax; var bounds;
+        var xrefInfo = Axes.extractInfoFromAxisRef(shape.xref);
+        var yrefInfo = Axes.extractInfoFromAxisRef(shape.yref);
 
         // paper and axis domain referenced shapes don't affect autorange
         if(shape.xref !== 'paper' && xrefInfo !== 'domain') {
