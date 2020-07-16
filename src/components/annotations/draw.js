@@ -316,14 +316,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var alignPosition;
             var autoAlignFraction;
             var textShift;
-            var axrefOpt = (typeof(axRef) === 'string') ? axRef.split(' ') : undefined;
+            var axrefOpt = Axes.extractInfoFromAxisRef(axRef);
 
             /*
              * calculate the *primary* pixel position
              * which is the arrowhead if there is one,
              * otherwise the text anchor point
              */
-            if(ax) {
+            if(ax && (axrefOpt !== 'domain')) {
                 // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
                 if(posFraction < 0 || posFraction > 1) {
@@ -336,19 +336,23 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         annotationIsOffscreen = true;
                     }
                 }
-                if((axrefOpt !== undefined) && (axrefOpt[1] === 'domain')) {
-                    basePx = ax._offset + ax._length * options[axLetter];
-                } else {
-                    basePx = ax._offset + ax.r2p(options[axLetter]);
-                    autoAlignFraction = 0.5;
-                }
+                basePx = ax._offset + ax.r2p(options[axLetter]);
+                autoAlignFraction = 0.5;
             } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
-                    basePx = gs.l + gs.w * alignPosition;
+                    if (axrefOpt === 'domain') {
+                        basePx = ax._offset + ax._length * options[axLetter];
+                    } else {
+                        basePx = gs.l + gs.w * alignPosition;
+                    }
                 } else {
                     alignPosition = 1 - options[axLetter];
-                    basePx = gs.t + gs.h * alignPosition;
+                    if (axrefOpt === 'domain') {
+                        basePx = ax._offset + ax._length * options[axLetter];
+                    } else {
+                        basePx = gs.t + gs.h * alignPosition;
+                    }
                 }
                 autoAlignFraction = options.showarrow ? 0.5 : alignPosition;
             }
