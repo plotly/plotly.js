@@ -341,14 +341,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
-                    if (axrefOpt === 'domain') {
+                    if(axrefOpt === 'domain') {
                         basePx = ax._offset + ax._length * options[axLetter];
                     } else {
                         basePx = gs.l + gs.w * alignPosition;
                     }
                 } else {
                     alignPosition = 1 - options[axLetter];
-                    if (axrefOpt === 'domain') {
+                    if(axrefOpt === 'domain') {
                         basePx = ax._offset + ax._length * options[axLetter];
                     } else {
                         basePx = gs.t + gs.h * alignPosition;
