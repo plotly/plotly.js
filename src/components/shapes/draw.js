@@ -589,8 +589,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
 function getPathString(gd, options) {
     var type = options.type;
-    var xrefOpt = options.xref.split(' ');
-    var yrefOpt = options.yref.split(' ');
+    var xrefOpt = Axes.extractInfoFromAxisRef(options.xref);
+    var yrefOpt = Axes.extractInfoFromAxisRef(options.yref);
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
@@ -598,7 +598,7 @@ function getPathString(gd, options) {
     var x0, x1, y0, y1;
 
     if(xa) {
-        if(xrefOpt[1] === 'domain') {
+        if(xrefOpt === 'domain') {
             x2p = function(v) { return xa._offset + xa._length * v; };
         } else {
             x2r = helpers.shapePositionToRange(xa);
@@ -609,7 +609,7 @@ function getPathString(gd, options) {
     }
 
     if(ya) {
-        if(yrefOpt[1] === 'domain') {
+        if(yrefOpt === 'domain') {
             y2p = function(v) { return ya._offset + ya._length * v; };
         } else {
             y2r = helpers.shapePositionToRange(ya);

@@ -67,8 +67,9 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', coerceRefExtras);
         var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
+        var axRefInfo = Axes.extractInfoFromAxisRef(axRef);
 
-        if(axRef !== 'paper') {
+        if(axRef !== 'paper' && axRefInfo !== 'domain') {
             ax = Axes.getFromId(gdMock, axRefAxOnly);
             ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
