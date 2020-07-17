@@ -610,7 +610,7 @@ function getPathString(gd, options) {
 
     if(ya) {
         if(yrefOpt === 'domain') {
-            y2p = function(v) { return ya._offset + ya._length * v; };
+            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
         } else {
             y2r = helpers.shapePositionToRange(ya);
             y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };

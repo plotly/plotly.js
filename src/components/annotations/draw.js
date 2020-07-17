@@ -84,12 +84,12 @@ function p2rR2p(axa, optAx, dAx, gsDim, vertical, axDomainRef) {
             // here optAx normalized to length of axis (e.g., normally in range
             // 0 to 1). But dAx is in pixels. So we normalize dAx to length of
             // axis before doing the math.
-            return optAx + dAx / axa._length;
+            return optAx + (vertical ? -dAx : dAx) / axa._length;
         } else {
             return axa.p2r(axa.r2p(optAx) + dAx);
         }
     } else {
-        return optAx + (vertical ? -(dAx / gsDim) : dAx / gsDim);
+        return optAx + (vertical ? -dAx : dAx) / gsDim;
     }
 }
 
@@ -342,14 +342,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
                     if(axrefOpt === 'domain') {
-                        basePx = ax._offset + ax._length * options[axLetter];
+                        basePx = ax._offset + ax._length * alignPosition;
                     } else {
                         basePx = gs.l + gs.w * alignPosition;
                     }
                 } else {
                     alignPosition = 1 - options[axLetter];
                     if(axrefOpt === 'domain') {
-                        basePx = ax._offset + ax._length * options[axLetter];
+                        basePx = ax._offset + ax._length * alignPosition;
                     } else {
                         basePx = gs.t + gs.h * alignPosition;
                     }
