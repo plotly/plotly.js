@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.54.5",
+  "version": "1.54.6",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -135,7 +135,7 @@
     "espree": "^7.1.0",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.1",
-    "fuse.js": "^6.3.1",
+    "fuse.js": "^6.4.0",
     "glob": "^7.1.6",
     "gzip-size": "^5.1.1",
     "image-size": "^0.7.5",
@@ -152,6 +152,7 @@
     "karma-spec-reporter": "0.0.32",
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.6",
+    "lodash": "^4.17.19",
     "madge": "^3.9.2",
     "minify-stream": "^2.0.1",
     "minimist": "^1.2.5",
@@ -165,7 +166,7 @@
     "requirejs": "^2.3.6",
     "run-series": "^1.1.8",
     "static-eval": "^2.0.5",
-    "through2": "^3.0.2",
+    "through2": "^4.0.2",
     "true-case-path": "^2.2.1",
     "watchify": "^3.11.1"
   }

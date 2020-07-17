@@ -75,7 +75,6 @@ test dashboard, inspect and debug the changes, then repeat. The test dashboard
 comes bundled with some useful tools while developing - all bundled under the
 `Tabs` object:
 
-
 | Method/Property        | Description |
 |------------------------|-------------|
 | `Tabs.fresh([id])` | Creates a fresh graph div and returns it (default id of `graph`). |
@@ -101,8 +100,8 @@ image mocks based on their file name and trace type.
 
 Use the [`plotly-mock-viewer`](https://github.com/rreusser/plotly-mock-viewer)
 which has live-reloading and a bunch of other cool features.
-An online version of `plotly-mock-viewer` is available at https://rreusser.github.io/plotly-mock-viewer/
-which uses https://cdn.plot.ly/plotly-latest.min.js
+An online version of `plotly-mock-viewer` is available at <https://rreusser.github.io/plotly-mock-viewer/>
+which uses <https://cdn.plot.ly/plotly-latest.min.js>
 
 #### Other npm scripts
 
@@ -179,6 +178,7 @@ To view the image pixel comparison test results, run
 ```
 npm run start-image_viewer
 ```
+
 which shows the baseline image, the generated image, the diff and the json mocks of test cases that failed.
 
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
@@ -196,7 +196,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 
 ### Writing jasmine interaction tests
 
-Keep in mind that the interaction coordinates are relative to the top-left corner of the plot, including the margins. To produce a reliable interaction test, 
+Keep in mind that the interaction coordinates are relative to the top-left corner of the plot, including the margins. To produce a reliable interaction test,
 it may be necessary to fix the width, height, margins, X axis range and Y axis range of the plot. For example:
 
 ```js

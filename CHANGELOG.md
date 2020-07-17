@@ -5,9 +5,24 @@ For more context information, please read through the
 
 To see all merged commits on the master branch that will be part of the next plotly.js release, go to:
 
-https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
+<https://github.com/plotly/plotly.js/compare/vX.Y.Z...master>
 
 where X.Y.Z is the semver of most recent plotly.js release.
+
+## [1.54.6] -- 2020-07-09
+
+### Fixed
+ - Link matching axes categories during `Plotly.relayout` calls
+   (regression introduced in 1.54.2) [#4977]
+ - Fix "median" aggregation transforms [#4969]
+ - Fix `parcats` category order when the dimension only includes numbers [#4973]
+ - Fix numeric sort in `ternary` drag [#4975]
+ - Fix `heatmapgl` supply defaults not to add unimplemented attributes
+   `xcalendar`, `ycalendar`, `xgap`, `ygap`, `zsmooth`, `zhoverformat`,
+   `hoverongaps` and `hovertemplate` to `gd._fullData`  [#4950]
+ - Fix `contourgl` supply defaults not to add unimplemented attributes
+   `xcalendar`, `ycalendar` to `gd._fullData`  [#4951]
+
 
 ## [1.54.5] -- 2020-06-23
 
@@ -249,7 +264,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [1.51.1] -- 2019-11-04
 
 ### Fixed
-- Fix `scattergl` mising points plot and react (bug introduced in 1.33.0) [#4323]
+- Fix `scattergl` missing points plot and react (bug introduced in 1.33.0) [#4323]
 - Skip non-numeric values in `image` trace plot [#4325]
 
 
@@ -989,7 +1004,7 @@ First 2019 release.
 - Improve `splom` first-render, axis range relayout and marker restyle
   performance [#3057, #3161]
 - Make `splom` `xaxes` and `yaxes` list always have same length as the trace
-  `dimensions` regardless of their partial visiblities [#3057]
+  `dimensions` regardless of their partial visibilities [#3057]
 - Improve axis `overlaying` documentation [#3082]
 
 ### Fixed
@@ -1325,7 +1340,7 @@ First 2019 release.
 - Fix "sloppy click" event emission during cartesian zoom [#2649]
 - Fix layout `grid` validation which lead to exceptions [#2638]
 - Fix `parcoords` rendering in old Safari version [#2612]
-- Link to https://get.webgl.org instead of http version in no WebGL message [#2617]
+- Link to <https://get.webgl.org> instead of http version in no WebGL message [#2617]
 
 
 ## [1.37.1] -- 2018-05-02
@@ -1563,9 +1578,9 @@ First 2019 release.
 - Fix `gl2d` tick label on pan interaction regression [#2258]
 - Fix `candlestick` hover label regression (bug introduced in v1.32.0) [#2264]
 - Fix several `gl2d` axis related bugs with new regl-based `scattergl` [#2258]
-  See full list under the On-par gl2d milestone https://github.com/plotly/plotly.js/milestone/3
+  See full list under the On-par gl2d milestone <https://github.com/plotly/plotly.js/milestone/3>
 - Fix several polar bugs with `scatterpolar` [#2200].
-  See full list under the On-par polar milestone https://github.com/plotly/plotly.js/milestone/2
+  See full list under the On-par polar milestone <https://github.com/plotly/plotly.js/milestone/2>
 - Fix `scattergl` marker.colorscale handling [#2258]
 - Fix ternary relayout calls involving axis tick styles and titles [#2200]
 - Fix decimal and thousands settings in `de` locale [#2246]
@@ -1945,7 +1960,7 @@ First 2019 release.
 
 ### Fixed
 - rm `const` token from dist bundles that depend on `big-rat`,
-  see https://github.com/rat-nest/big-rat/pull/4 for more details.
+  see <https://github.com/rat-nest/big-rat/pull/4> for more details.
 
 
 ## [1.25.1] -- 2017-03-28
@@ -2174,7 +2189,7 @@ First 2019 release.
 - Fix 1.20.0 regression in handling numerical strings including commas and spaces
   [#1185]
 - Fix 1.20.0 regression involving date histograms [#1186]
-- Fix numerous  tickvals` and `ticktext` edge cases [#1191]
+- Fix numerous `tickvals` and `ticktext` edge cases [#1191]
 
 
 ## [1.20.4] -- 2016-11-21
@@ -2495,7 +2510,7 @@ First 2019 release.
 - Fix mapbox layer relayout starting from invisible layer [#693]
 - Hover labels when `hoveron: 'fills'` are now constrained to the viewports
   [#688]
-- Fix `surface` countours description [#696]
+- Fix `surface` contours description [#696]
 - Fix `mapbox.layers.line` description [#690]
 
 
@@ -2741,8 +2756,8 @@ First 2019 release.
 ## [1.6.3] -- 2016-03-07
 
 ### Fixed
--  Argument parsing for vertex and face colors of mesh3d traces is now
-   functional [#287]
+- Argument parsing for vertex and face colors of mesh3d traces is now
+  functional [#287]
 
 
 ## [1.6.2] -- 2016-03-03
@@ -2889,7 +2904,7 @@ First 2019 release.
 - Improve XSS check in anchor href [#100]
 
 ### Fixed
-- Fix Fifefox 42 to-image failures [#104]
+- Fix Firefox 42 to-image failures [#104]
 - Fix error bar with type 'sqrt' logic making them visible without
   specifying the 'value' field [#91]
 - Fix cartesian zoom/drag cover attributes for Firefox 31 [#92]

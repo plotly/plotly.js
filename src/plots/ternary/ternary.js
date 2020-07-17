@@ -689,7 +689,7 @@ proto.initInteractions = function() {
             b: mins0.b + (dxScaled + dyScaled) / 2,
             c: mins0.c - (dxScaled - dyScaled) / 2
         };
-        var minsorted = [mins.a, mins.b, mins.c].sort();
+        var minsorted = [mins.a, mins.b, mins.c].sort(Lib.sorterAsc);
         var minindices = {
             a: minsorted.indexOf(mins.a),
             b: minsorted.indexOf(mins.b),
