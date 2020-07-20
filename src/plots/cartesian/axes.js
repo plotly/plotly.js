@@ -688,9 +688,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
             return ax.tickformat.indexOf(str) !== -1;
         };
 
-        if(_has('%d')) definedDelta = ONEDAY;
-        else if(_has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
-        else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+        if(
+            !_has('%f') &&
+            !_has('%H') &&
+            !_has('%I') &&
+            !_has('%L') &&
+            !_has('%Q') &&
+            !_has('%S') &&
+            !_has('%s') &&
+            !_has('%X')
+        ) {
+            if(_has('%x') || _has('%d') || _has('%e') || _has('%j')) definedDelta = ONEDAY;
+            else if(_has('%B') || _has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
+            else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+        }
     }
 
     var ticksOut = new Array(tickVals.length);
