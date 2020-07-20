@@ -713,18 +713,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var sign = A > B ? -1 : 1;
             var half = sign / 2;
 
-            if(delta >= ONEAVGYEAR) {
+            if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
                 v += half * ONEAVGYEAR;
-            } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH
+            } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
                 v += half * ONEAVGMONTH;
             } else if(delta >= ONEDAY) {
                 v += half * ONEDAY;
-            } else if(delta >= ONEHOUR) {
-                v += half * ONEHOUR;
-            } else if(delta >= ONEMIN) {
-                v += half * ONEMIN;
-            } else if(delta >= ONESEC) {
-                v += half * ONESEC;
             }
 
             ticksOut[i].periodX = v;
