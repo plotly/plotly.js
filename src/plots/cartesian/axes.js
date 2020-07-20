@@ -682,6 +682,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._inCalcTicks = true;
 
     var isPeriod = ax.ticklabelmode === 'period';
+    var definedDelta;
+    if(isPeriod && ax.tickformat) {
+        var _has = function(str) {
+            return ax.tickformat.indexOf(str) !== -1;
+        };
+
+        if(_has('%d')) definedDelta = ONEDAY;
+        else if(_has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
+        else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+    }
 
     var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
@@ -709,7 +719,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var A = tickVals[a].value;
             var B = tickVals[b].value;
 
-            var delta = Math.abs(B - A);
+            var delta = definedDelta || Math.abs(B - A);
             var sign = A > B ? -1 : 1;
             var half = sign / 2;
 
