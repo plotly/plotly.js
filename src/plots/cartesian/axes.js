@@ -696,10 +696,38 @@ axes.calcTicks = function calcTicks(ax, opts) {
         );
 
         if(isPeriod) {
-            ticksOut[i].periodX = i ? (
-                tickVals[i].value +
-                tickVals[i - 1].value
-            ) / 2 : false;
+            var v = tickVals[i].value;
+
+            var a, b;
+            if(i === tickVals.length - 1) {
+                a = i - 1;
+                b = i;
+            } else {
+                a = i;
+                b = i + 1;
+            }
+            var A = tickVals[a].value;
+            var B = tickVals[b].value;
+
+            var delta = Math.abs(B - A);
+            var sign = A > B ? -1 : 1;
+            var half = sign / 2;
+
+            if(delta >= ONEAVGYEAR) {
+                v += half * ONEAVGYEAR;
+            } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH
+                v += half * ONEAVGMONTH;
+            } else if(delta >= ONEDAY) {
+                v += half * ONEDAY;
+            } else if(delta >= ONEHOUR) {
+                v += half * ONEHOUR;
+            } else if(delta >= ONEMIN) {
+                v += half * ONEMIN;
+            } else if(delta >= ONESEC) {
+                v += half * ONESEC;
+            }
+
+            ticksOut[i].periodX = v;
         }
     }
 
@@ -2532,13 +2560,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
-    if(
-        ax.showticklabels &&
-        ax.ticklabelmode === 'period'
-    ) {
-        vals = vals.slice();
-        vals.shift();
-    }
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
