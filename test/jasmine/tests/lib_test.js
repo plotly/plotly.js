@@ -1922,6 +1922,58 @@ describe('Test lib.js:', function() {
                 _run([]);
             });
         });
+
+        describe('should log message in notifier div in accordance notifyOnLogging config option set via newPlot', function() {
+            var query = '.notifier-note';
+
+            var gd;
+
+            beforeEach(function(done) {
+                gd = createGraphDiv();
+
+                d3.selectAll(query).each(function() {
+                    d3.select(this).select('button').node().click();
+                });
+                setTimeout(done, 1000);
+            });
+
+            afterEach(function() {
+                destroyGraphDiv();
+            });
+
+            function _run(notifyOnLogging, exp) {
+                Plotly.newPlot(gd, [], {}, {
+                    notifyOnLogging: notifyOnLogging,
+                    logging: 0
+                }).then(function() {
+                    Lib.log(gd, 'log');
+                    Lib.warn(gd, 'warn');
+                    Lib.error(gd, 'error!');
+
+                    var notes = d3.selectAll(query);
+
+                    expect(notes.size()).toBe(exp.length, '# of notifier notes');
+
+                    var actual = [];
+                    notes.each(function() {
+                        actual.push(d3.select(this).select('p').text());
+                    });
+                    expect(actual).toEqual(exp);
+                });
+            }
+
+            it('with level 2', function() {
+                _run(2, ['log', 'warn', 'error!']);
+            });
+
+            it('with level 1', function() {
+                _run(1, ['warn', 'error!']);
+            });
+
+            it('with level 0', function() {
+                _run(0, []);
+            });
+        });
     });
 
     describe('keyedContainer', function() {
