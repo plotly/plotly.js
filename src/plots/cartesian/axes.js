@@ -681,6 +681,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var isPeriod = ax.ticklabelmode === 'period';
+
     var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
@@ -693,7 +695,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             _minor // noSuffixPrefix
         );
 
-        if(ax.ticklabelmode) {
+        if(isPeriod) {
             ticksOut[i].periodX = i ? (
                 tickVals[i].value +
                 tickVals[i - 1].value
@@ -1792,7 +1794,7 @@ axes.drawOne = function(gd, ax, opts) {
     if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
-    var transTickLabelFn = ax.ticklabelmode ?
+    var transTickLabelFn = ax.ticklabelmode === 'period' ?
         axes.makeTransPeriodFn(ax) :
         axes.makeTransFn(ax);
 
@@ -2532,7 +2534,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var vals = opts.vals;
     if(
         ax.showticklabels &&
-        ax.ticklabelmode // === 'period'
+        ax.ticklabelmode === 'period'
     ) {
         vals = vals.slice();
         vals.shift();

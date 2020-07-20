@@ -480,8 +480,8 @@ module.exports = {
     },
     ticklabelmode: {
         valType: 'enumerated',
-        values: ['', 'period'],
-        dflt: '',
+        values: ['instant', 'period'],
+        dflt: 'instant',
         role: 'info',
         editType: 'ticks',
         description: [
