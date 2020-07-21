@@ -681,6 +681,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var minRange = Math.min(rng[0], rng[1]);
+    var maxRange = Math.max(rng[0], rng[1]);
+
     var isPeriod = ax.ticklabelmode === 'period';
     var definedDelta;
     if(isPeriod && ax.tickformat) {
@@ -743,6 +746,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
 
             ticksOut[i].periodX = v;
+
+            if(v > maxRange || v < minRange) { // hide label if outside the range
+                ticksOut[i].text = '';
+            }
         }
     }
 
