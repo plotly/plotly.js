@@ -592,7 +592,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
-
     var tickVals;
     function generateTicks() {
         var xPrevious = null;
@@ -619,6 +618,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     generateTicks();
+
+    var isPeriod = ax.ticklabelmode === 'period';
+    var addOneTickToStart = isPeriod && tickVals.length > 2;
+
+    if(addOneTickToStart) {
+        tickVals.push({
+            minor: false,
+            value: 2 * tickVals[0].value - tickVals[1].value
+        });
+    }
 
     if(ax.rangebreaks) {
         // replace ticks inside breaks that would get a tick
@@ -684,7 +693,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var isPeriod = ax.ticklabelmode === 'period';
     var definedDelta;
     if(isPeriod && ax.tickformat) {
         var _has = function(str) {
@@ -722,14 +730,23 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(isPeriod) {
             var v = tickVals[i].value;
 
-            var a, b;
-            if(i === tickVals.length - 1) {
-                a = i - 1;
-                b = i;
+            var a = i;
+            var b = i + 1;
+            if(addOneTickToStart) {
+                if(i === tickVals.length - 1) {
+                    a = i;
+                    b = 0;
+                } else if(i === tickVals.length - 2) {
+                    a = i - 1;
+                    b = i;
+                }
             } else {
-                a = i;
-                b = i + 1;
+                if(i === tickVals.length - 1) {
+                    a = i - 1;
+                    b = i;
+                }
             }
+
             var A = tickVals[a].value;
             var B = tickVals[b].value;
 
