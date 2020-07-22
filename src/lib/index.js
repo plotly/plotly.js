@@ -274,7 +274,7 @@ lib.simpleMap = function(array, func, x1, x2, opts) {
  * @param {int} base
  *     base of string representation, default 16. Should be a power of 2.
  */
-lib.randstr = function randstr(gd, existing, bits, base, _recursion) {
+lib.randstr = function randstr(existing, bits, base, _recursion) {
     if(!base) base = 16;
     if(bits === undefined) bits = 24;
     if(bits <= 0) return '0';
@@ -304,10 +304,9 @@ lib.randstr = function randstr(gd, existing, bits, base, _recursion) {
     if((existing && existing[res]) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         if(_recursion > 10) {
-            lib.warn(gd, 'randstr failed uniqueness');
-            return res;
+            throw new Error('randstr failed uniqueness');
         }
-        return randstr(gd, existing, bits, base, (_recursion || 0) + 1);
+        return randstr(existing, bits, base, (_recursion || 0) + 1);
     } else return res;
 };
 

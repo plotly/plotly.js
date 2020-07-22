@@ -191,7 +191,7 @@ function texToSVG(gd, _texString, _config, _callback) {
         }
     },
     function() {
-        var randomID = 'math-output-' + Lib.randstr(gd, {}, 64);
+        var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({visibility: 'hidden', position: 'absolute'})

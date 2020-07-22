@@ -3757,7 +3757,7 @@ function makePlotFramework(gd) {
         d3.selectAll('defs').each(function() {
             if(this.id) otherUids[this.id.split('-')[1]] = 1;
         });
-        fullLayout._uid = Lib.randstr(gd, otherUids);
+        fullLayout._uid = Lib.randstr(otherUids);
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')

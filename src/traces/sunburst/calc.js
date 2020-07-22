@@ -114,7 +114,7 @@ exports.calc = function(gd, trace) {
             return Lib.warn(gd, 'Multiple implied roots, cannot build ' + trace.type + ' hierarchy.');
         }
     } else if(parent2children[''].length > 1) {
-        var dummyId = Lib.randstr(gd);
+        var dummyId = Lib.randstr();
 
         // if multiple rows linked to the root node,
         // add dummy "root of roots" node to make d3 build the hierarchy successfully

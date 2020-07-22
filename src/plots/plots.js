@@ -605,7 +605,7 @@ function getTraceUids(gd, oldFullData, newData) {
 
         if(tryUid(newUid, i)) continue;
         if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
-        setUid(Lib.randstr(gd, seenUids), i);
+        setUid(Lib.randstr(seenUids), i);
     }
 
     return out;

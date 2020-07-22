@@ -200,7 +200,7 @@ function toImage(gd, opts) {
             }
 
             var canvas = document.createElement('canvas');
-            canvas.id = Lib.randstr(gd);
+            canvas.id = Lib.randstr();
 
             svgToImg({
                 format: format,

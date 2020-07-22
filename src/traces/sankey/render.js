@@ -261,7 +261,7 @@ function sankeyModel(gd, layout, d, traceIndex) {
         circular: circular,
         key: traceIndex,
         trace: trace,
-        guid: Lib.randstr(gd),
+        guid: Lib.randstr(),
         horizontal: horizontal,
         width: width,
         height: height,
@@ -477,7 +477,7 @@ function nodeModel(gd, d, n) {
     var key = 'node_' + n.pointNumber;
     // If it's a group, it's mutable and should be unique
     if(n.group) {
-        key = Lib.randstr(gd);
+        key = Lib.randstr();
     }
 
     // for event data

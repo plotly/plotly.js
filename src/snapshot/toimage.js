@@ -42,7 +42,7 @@ function toImage(gd, opts) {
             var svg = toSVG(clonedGd);
 
             var canvas = document.createElement('canvas');
-            canvas.id = Lib.randstr(gd);
+            canvas.id = Lib.randstr();
 
             ev = svgToImg({
                 format: opts.format,
