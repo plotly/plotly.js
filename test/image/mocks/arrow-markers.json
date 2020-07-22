@@ -1,0 +1,171 @@
+{
+    "data": [
+        {
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "width": 5,
+                "color": "black"
+            },
+            "marker": {
+                "line": {
+                    "width": 5,
+                    "color": "black"
+                },
+                "color": "yellow",
+                "size": [
+                    40,
+                    40,
+                    40
+                ],
+                "symbol": [
+                    0,
+                    "arrow-up",
+                    "arrow-down"
+                ]
+            },
+            "x": [
+                0,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                1,
+                -1
+            ]
+        },
+        {
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "width": 5,
+                "color": "black"
+            },
+            "marker": {
+                "line": {
+                    "width": 5,
+                    "color": "black"
+                },
+                "color": "yellow",
+                "size": [
+                    40,
+                    40,
+                    40
+                ],
+                "symbol": [
+                    0,
+                    "arrow-to-bar-up",
+                    "arrow-to-bar-down"
+                ]
+            },
+            "x": [
+                0,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                1,
+                -1
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "width": 5,
+                "color": "black"
+            },
+            "marker": {
+                "line": {
+                    "width": 5,
+                    "color": "black"
+                },
+                "color": "yellow",
+                "size": [
+                    40,
+                    40,
+                    40
+                ],
+                "symbol": [
+                    0,
+                    "arrow-right",
+                    "arrow-left"
+                ]
+            },
+            "y": [
+                0,
+                0,
+                0
+            ],
+            "x": [
+                0,
+                1,
+                -1
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "width": 5,
+                "color": "black"
+            },
+            "marker": {
+                "line": {
+                    "width": 5,
+                    "color": "black"
+                },
+                "color": "yellow",
+                "size": [
+                    40,
+                    40,
+                    40
+                ],
+                "symbol": [
+                    0,
+                    "arrow-to-bar-right",
+                    "arrow-to-bar-left"
+                ]
+            },
+            "y": [
+                0,
+                0,
+                0
+            ],
+            "x": [
+                0,
+                1,
+                -1
+            ],
+            "xaxis": "x4",
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "<b>arrow</b> and <b>arrow-to-bar</b> markers"
+        },
+        "showlegend": false,
+        "width": 800,
+        "height": 800,
+        "margin": {
+            "t": 80,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        },
+        "grid": {
+            "rows": 2,
+            "columns": 2,
+            "xgap": 0.1,
+            "ygap": 0.1,
+            "pattern": "independent"
+        }
+    }
+}
