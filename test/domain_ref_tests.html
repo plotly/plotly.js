@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html:charset=utf-8' />
+<script src="../build/plotly.js"></script>
+<script src="../node_modules/d3/d3.min.js"></script>
+</head>
+<body>
+<div id="tester"></div>
+<script>
+
+function zip(a,b) {
+    return a.map((x,i) => [x,b[i]]);
+}
+
+function getShapeNodes() {
+    return d3.selectAll('.shapelayer path');
+}
+
+function getFirstGridNode(axis) {
+    return d3.selectAll('.gridlayer .'+axis+' .'+axis+'grid.crisp').node();
+}
+
+var nm="([0-9]+[.]?[0-9]*)";
+var bm="M"+nm+","+nm;
+
+function trianglePathMatches(path) {
+    var matches = path.match(`^${bm}L${nm},${nm}L${nm},${nm}Z`);
+    // we can't match every possible shape so we just see if a triangle is
+    // drawn correctly
+    matches=matches.map(Number);
+    return [[matches[1],matches[2]],
+           [matches[3],matches[4]],
+           [matches[5],matches[6]]];
+}
+
+function svgShapeToCoords(d) {
+    var ret;
+    if (matches = d.match("^"+bm+"V"+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[1],
+        matches[3]]];
+    } else if (matches = d.match("^"+bm+"H"+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[3],
+        matches[2]]];
+    } else if (matches = d.match("^"+bm+"v"+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[1],
+        matches[2]+matches[3]]];
+    } else if (matches = d.match("^"+bm+"h"+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[1]+matches[3],
+        matches[2]]];
+    } else if (matches = d.match("^"+bm+"L"+nm+","+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[3],
+        matches[4]]];
+    } else if (matches = d.match("^"+bm+"l"+nm+","+nm+"$")) {
+        // matches a line
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[1]+matches[3],
+        matches[2]+matches[4]]];
+    } else if (matches = d.match("^"+bm+"H"+nm+"V"+nm+"H"+nm+"Z$")) {
+        // matches a rect, there are many ways possible, but this is how plotly
+        // rects are drawn
+        matches=matches.map(Number);
+        ret = [[matches[1],
+        matches[2]],
+        [matches[3],
+        matches[4]]];
+    } else if (matches = d.match(
+        `^${bm}A${nm},${nm} ${nm} ${nm},${nm} ${nm},${nm}A${nm},${nm} ${nm} ${nm},${nm} ${nm},${nm}Z\$`)) {
+        // matches an ellipse
+        matches=matches.map(Number);
+        ret = [[matches[1] - 2*matches[3],
+        matches[2] + matches[4]],
+        [matches[1],
+        matches[2] - matches[4]]];
+    } else if (matches = d.match(`^${bm}L${nm},${nm}L${nm},${nm}Z`)) {
+        // we can't match every possible shape so we just see if a triangle is
+        // drawn correctly
+        ret = trianglePathMatches(d);
+    } else {
+        return null;
+    }
+    return ret;
+}
+
+function sortCoords(a) {
+    // a is an array of x,y pairs, i.e., [[x0,y0],[x1,y1],...,[xn,yn]]
+    return a.sort()
+}
+
+function coordsEq(a,b) {
+    var tol = 1e-6;
+    a = sortCoords(a);
+    b = sortCoords(b);
+    ret = true;
+    ret = zip(a,b).reduce(function (acc,cv) {
+        var l = cv[0];
+        var r = cv[1];
+        acc = acc && (Math.abs(l[0] - r[0]) < tol);
+        acc = acc && (Math.abs(l[1] - r[1]) < tol);
+        return acc;
+    },true);
+    return ret;
+}
+
+TESTER = document.getElementById('tester');
+data = [{
+    x: [1, 5],
+    y: [1, 10],
+    type: 'scatter'
+}];
+layout = {
+    title: 'Axis domain referenced shape',
+    width: 0.3,
+    height: 0.2,
+    xaxis: {
+        domain: [0.2,0.9]
+    },
+    yaxis: {
+        domain: [0.1,0.8]
+    }
+};
+
+var domainRefShapes = [
+{
+type: 'line',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0,
+          x1: 1,
+          y0: 0.25,
+          y1: 0.25,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'line',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.25,
+          x1: 0.25,
+          y0: 0,
+          y1: 1,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'line',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.3,
+          x1: 0.8,
+          y0: 0.6,
+          y1: 0.6 ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'line',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.7,
+          x1: 0.7,
+          y0: 0.2,
+          y1: 0.7
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'rect',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.3,
+          x1: 0.8,
+          y0: 0.2,
+          y1: 0.7
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'rect',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.2,
+          x1: 0.7,
+          y0: 0.3,
+          y1: 0.8
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'rect',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: .3,
+          x1: .8,
+          y0: 0.2,
+          y1: 0.7
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'rect',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.2,
+          x1: 0.7,
+          y0: .8,
+          y1: .3
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'circle',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.1,
+          x1: 0.8,
+          y0: 0.2,
+          y1: 0.9
+              ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'circle',
+          xref: 'x domain',
+          yref: 'y domain',
+          xsizemode: 'scaled',
+          ysizemode: 'scaled',
+          x0: 0.7,
+          x1: 0.3,
+          y0: 0.75,
+          y1: 0.15 ,
+          line: { color: 'rgb(0,0,0)' }
+},{
+type: 'path',
+          path: 'M0.1,0.1L0.1,0.3L0.4,0.1Z',
+          xref: 'x domain',
+          yref: 'y domain',
+          line: { color: 'rgb(0,0,0)' }
+}
+];
+
+var hlineVlineShapes = [
+// hline
+{
+    type: 'line',
+    xref: 'x domain',
+    yref: 'y',
+    xsizemode: 'scaled',
+    ysizemode: 'scaled',
+    x0: 0,
+    x1: 1,
+    y0: 10,
+    y1: 10,
+    line: { color: 'rgb(255, 105, 180)' }
+},
+// vline
+{
+    type: 'line',
+    xref: 'x',
+    yref: 'y domain',
+    xsizemode: 'scaled',
+    ysizemode: 'scaled',
+    x0: 5,
+    x1: 5,
+    y0: 0,
+    y1: 1,
+    line: { color: 'rgb(255, 105, 180)' }
+}
+];
+
+var hrectVrectShapes = [
+// hrect
+{
+    type: 'rect',
+    xref: 'x domain',
+    yref: 'y',
+    xsizemode: 'scaled',
+    ysizemode: 'scaled',
+    x0: 0,
+    x1: 1,
+    y0: 1,
+    y1: 10,
+    line: { color: 'rgb(255, 127, 80)' }
+},
+// vrect
+{
+    type: 'rect',
+    xref: 'x',
+    yref: 'y domain',
+    xsizemode: 'scaled',
+    ysizemode: 'scaled',
+    x0: 1,
+    x1: 5,
+    y0: 0,
+    y1: 1,
+    line: { color: 'rgb(255, 127, 80)' }
+}
+];
+
+layout.shapes=domainRefShapes.concat(hlineVlineShapes).concat(hrectVrectShapes);
+
+Plotly.plot(TESTER, data, layout);
+
+function xyPairToBoxCoords(x,y,plotdims) {
+    return [(x * plotdims.width + plotdims.xoffset),
+            ((1 - y) * plotdims.height + plotdims.yoffset)];
+}
+
+// convert a shape to its bounding box SVG coordinates
+function shapeBoundingBoxCoords(shape,plotdims) {
+    if (shape.type === 'path') {
+        // we use the same regex as above
+        return trianglePathMatches(shape.path).map(
+            p=>xyPairToBoxCoords(p[0],p[1],plotdims));
+    }
+    return [
+        xyPairToBoxCoords(shape.x0,shape.y0,plotdims),
+        xyPairToBoxCoords(shape.x1,shape.y1,plotdims),
+    ];
+}
+
+function assertCorrectLineOrRect(
+    linec, // line coordinates as extracted from the svg
+    lines, // line shape as stored in layout
+    // object that looks like
+    // {
+    //  xoffset, // distance from edge of graph to beginning of x axis in svg coordinates
+    //  width, // length of x axis
+    //  yoffset, // same as above but for y axis
+    //  height, // length of y axis
+    // }
+    plotdims,
+) {
+    var b = shapeBoundingBoxCoords(lines,plotdims);;
+    return coordsEq(linec,b);
+}
+
+// we use this to get the axis sizes in SVG coordinates instead, because the
+// lines given by the 'showline' argument to the axes were slightly off (perhaps by
+// half the stroke width?).
+function plotDimsFromGridLines(xgridlinec,ygridlinec) {
+    var r = {
+        xoffset: ygridlinec[0][0],
+        width: ygridlinec[1][0] - ygridlinec[0][0],
+        yoffset: xgridlinec[0][1],
+        height: xgridlinec[1][1] - xgridlinec[0][1]
+    };
+    return r;
+}
+
+
+//// TEST: Check the drawing of a bunch of shapes
+//// Draws shapes and checks their positioning against the axes' dimensions by
+//// extracting this information from the grid lines.
+function checkDomainRefShapes() {
+    // full span horizontal (vertical) line should have same length as y (x) grid line
+    var ygridlinec = svgShapeToCoords(getFirstGridNode('y').getAttribute('d'));
+    var xgridlinec = svgShapeToCoords(getFirstGridNode('x').getAttribute('d'));
+    var plotdims = plotDimsFromGridLines(xgridlinec,ygridlinec);
+    console.log("checking domain referenced shapes");
+    zip(getShapeNodes()[0].filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(0, 0, 0\)/)),domainRefShapes).forEach(function (args) {
+        var shapec_ = args[0], shapes = args[1];
+        var shapec =svgShapeToCoords(shapec_.getAttribute('d'));
+        console.log('Correct line',assertCorrectLineOrRect(
+            shapec,shapes,plotdims));
+    });
+}
+checkDomainRefShapes();
+
+function getPlotTransformCoords() {
+    // returns x,y coordinates as a pair
+    var matches=d3.selectAll('.plot').node().getAttribute('transform').match(
+        `translate\\(${nm}, ${nm}\\)`);
+    matches=matches.map(Number);
+    return [matches[1],matches[2]];
+}
+
+function svgLineCoords(d) {
+    var matches = d.match("^"+bm+"L"+nm+","+nm+"$");
+    // matches a line
+    matches=matches.map(Number);
+    ret = [[matches[1],
+    matches[2]],
+    [matches[3],
+    matches[4]]];
+    return ret;
+}
+
+function svgRectCoords(d) {
+    matches = d.match("^"+bm+"H"+nm+"V"+nm+"H"+nm+"Z$")
+    // matches a rect, there are many ways possible, but this is how plotly
+    // rects are drawn
+    matches=matches.map(Number);
+    ret = [[matches[1],
+    matches[2]],
+    [matches[3],
+    matches[4]]];
+    return ret;
+}
+
+//// TEST: Check the drawing of lines that reference axis domains in 1 dimension
+//// and data in the other
+//// Strategy is to compare the coordinates that should equal data coordinates
+//// with the corresponding endpoint of the scatter plot generated by data
+function checkHlineVlineShapes () {
+    console.log("Checking hline and vline shapes");
+    // extract the shapes from the plot
+    var svgShapes=getShapeNodes()[0].filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(255, 105, 180\)/));
+    var dataLine=d3.selectAll('.js-line').node();
+    var transCoords=getPlotTransformCoords();
+    // first compare hline shape's y with y coordinate of point on plot
+    var hlineCoords=svgLineCoords(svgShapes[0].getAttribute('d'));
+    var dataLineCoords=svgLineCoords(dataLine.getAttribute('d'));
+    console.log('y matches for hline',
+        hlineCoords[0][1]==(dataLineCoords[1][1]+transCoords[1]));
+    // then compare vline shape's x with x coordinate of point on plot
+    var vlineCoords=svgLineCoords(svgShapes[1].getAttribute('d'));
+    console.log('x matches for vline',
+        vlineCoords[0][0]==(dataLineCoords[1][0]+transCoords[0]));
+}
+checkHlineVlineShapes();
+
+//// TEST: Check the drawing of rectangles that reference axis domains in 1 dimension
+//// and data in the other
+//// Similar strategy to previous test.
+function checkHrectVrectShapes() {
+    console.log("Checking hrect and vline shapes");
+    // extract the shapes from the plot
+    var svgShapes=getShapeNodes()[0].filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(255, 127, 80\)/));
+    var dataLine=d3.selectAll('.js-line').node();
+    var transCoords=getPlotTransformCoords();
+    // first compare hrect shape's y with y coordinate of point on plot
+    var hrectCoords=svgRectCoords(svgShapes[0].getAttribute('d'));
+    var dataLineCoords=svgLineCoords(dataLine.getAttribute('d'));
+    console.log('y matches for hrect',
+        (hrectCoords[1][1]==(dataLineCoords[1][1]+transCoords[1])) && (hrectCoords[0][1]==(dataLineCoords[0][1]+transCoords[1])));
+    // then compare vrect shape's x with x coordinate of point on plot
+    var vrectCoords=svgRectCoords(svgShapes[1].getAttribute('d'));
+    console.log('x matches for vrect',
+        (vrectCoords[0][0]==(dataLineCoords[0][0]+transCoords[0])) && (vrectCoords[1][0]==(dataLineCoords[1][0]+transCoords[0])));
+}
+checkHrectVrectShapes();
+
+//// TEST positions are still correct after relayout of axis
+
+Plotly.relayout(TESTER,{
+    xaxis: {
+        domain: [0.1,0.8]
+    },
+    yaxis: {
+        domain: [0.2,0.9]
+    }
+});
+
+checkDomainRefShapes();
+checkHlineVlineShapes();
+checkHrectVrectShapes();
+
+//// TEST You can drag an axis referenced shape to any place on the paper and it will
+//// be visible.
+//// TODO
+//// TEST The shape stays the correct size when one or more of its points are outside
+//// of a log-axis domain.
+//// TODO
+
+</script>
+</body>
+
+</html>
+
