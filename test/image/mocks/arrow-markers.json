@@ -16,20 +16,36 @@
                 "size": [
                     40,
                     40,
+                    40,
+                    null,
+                    40,
+                    40,
                     40
                 ],
                 "symbol": [
                     0,
                     "arrow-up",
-                    "arrow-down"
+                    "arrow-down",
+                    null,
+                    100,
+                    145,
+                    146
                 ]
             },
             "x": [
                 0,
                 0,
-                0
+                0,
+                null,
+                1,
+                1,
+                1
             ],
             "y": [
+                0,
+                1,
+                -1,
+                null,
                 0,
                 1,
                 -1
@@ -51,20 +67,36 @@
                 "size": [
                     40,
                     40,
+                    40,
+                    null,
+                    40,
+                    40,
                     40
                 ],
                 "symbol": [
                     0,
-                    "arrow-to-bar-up",
-                    "arrow-to-bar-down"
+                    "arrow-bar-up",
+                    "arrow-bar-down",
+                    null,
+                    100,
+                    149,
+                    150
                 ]
             },
             "x": [
                 0,
                 0,
-                0
+                0,
+                null,
+                1,
+                1,
+                1
             ],
             "y": [
+                0,
+                1,
+                -1,
+                null,
                 0,
                 1,
                 -1
@@ -88,20 +120,36 @@
                 "size": [
                     40,
                     40,
+                    40,
+                    null,
+                    40,
+                    40,
                     40
                 ],
                 "symbol": [
                     0,
                     "arrow-right",
-                    "arrow-left"
+                    "arrow-left",
+                    null,
+                    100,
+                    148,
+                    147
                 ]
             },
             "y": [
                 0,
                 0,
-                0
+                0,
+                null,
+                1,
+                1,
+                1
             ],
             "x": [
+                0,
+                1,
+                -1,
+                null,
                 0,
                 1,
                 -1
@@ -125,20 +173,36 @@
                 "size": [
                     40,
                     40,
+                    40,
+                    null,
+                    40,
+                    40,
                     40
                 ],
                 "symbol": [
                     0,
-                    "arrow-to-bar-right",
-                    "arrow-to-bar-left"
+                    "arrow-bar-right",
+                    "arrow-bar-left",
+                    null,
+                    100,
+                    152,
+                    151
                 ]
             },
             "y": [
                 0,
                 0,
-                0
+                0,
+                null,
+                1,
+                1,
+                1
             ],
             "x": [
+                0,
+                1,
+                -1,
+                null,
                 0,
                 1,
                 -1
@@ -149,7 +213,7 @@
     ],
     "layout": {
         "title": {
-            "text": "<b>arrow</b> and <b>arrow-to-bar</b> markers"
+            "text": "<b>arrow</b> and <b>arrow-bar</b> markers"
         },
         "showlegend": false,
         "width": 800,
