@@ -596,6 +596,7 @@ var list = [
     'heatmap_xyz-gaps-on-sides',
     'heatmap-reverse-autocolorscale',
     'heatmap-with-zero-category',
+    'hide_gridline-template_color',
     'hist_0_to_093',
     'hist_0_to_1_midpoints',
     'hist_003_to_093',
@@ -1639,6 +1640,7 @@ figs['heatmap_xyz-dates-and-categories'] = require('@mocks/heatmap_xyz-dates-and
 figs['heatmap_xyz-gaps-on-sides'] = require('@mocks/heatmap_xyz-gaps-on-sides');
 figs['heatmap-reverse-autocolorscale'] = require('@mocks/heatmap-reverse-autocolorscale');
 figs['heatmap-with-zero-category'] = require('@mocks/heatmap-with-zero-category');
+figs['hide_gridline-template_color'] = require('@mocks/hide_gridline-template_color');
 figs['hist_0_to_093'] = require('@mocks/hist_0_to_093');
 figs['hist_0_to_1_midpoints'] = require('@mocks/hist_0_to_1_midpoints');
 figs['hist_003_to_093'] = require('@mocks/hist_003_to_093');
