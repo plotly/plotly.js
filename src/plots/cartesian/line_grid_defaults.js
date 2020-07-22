@@ -42,6 +42,12 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
 
     var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || lightFraction).toRgbString();
     var gridColor = coerce2('gridcolor', gridColorDflt);
+    if( // reject template color to hide the grid when requested by hideGrid flag
+        gridColor && opts.hideGrid &&
+        containerOut.gridcolor !== containerIn.gridcolor &&
+        containerOut.gridcolor === containerOut._template.gridcolor
+    ) gridColor = false;
+
     var gridWidth = coerce2('gridwidth');
     var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth);
 
@@ -52,6 +58,12 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
 
     if(!opts.noZeroLine) {
         var zeroLineColor = coerce2('zerolinecolor', dfltColor);
+        if( // reject template color to hide the grid when requested by hideGrid flag
+            zeroLineColor && opts.hideGrid &&
+            containerOut.zerolinecolor !== containerIn.zerolinecolor &&
+            containerOut.zerolinecolor === containerOut._template.zerolinecolor
+        ) zeroLineColor = false;
+
         var zeroLineWidth = coerce2('zerolinewidth');
         var showZeroLine = coerce('zeroline', opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
 

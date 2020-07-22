@@ -99,6 +99,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         showGrid: options.showGrid,
+        hideGrid: options.hideGrid,
         attributes: layoutAttributes
     });
 
