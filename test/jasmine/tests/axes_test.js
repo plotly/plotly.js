@@ -1803,10 +1803,10 @@ describe('Test axes', function() {
             Plotly.plot(gd, data, layout);
 
             var yaxis = gd._fullLayout.yaxis;
-            expect(yaxis.ticklen).toBe(5);
-            expect(yaxis.tickwidth).toBe(1);
-            expect(yaxis.tickcolor).toBe('#444');
-            expect(yaxis.ticks).toBe('outside');
+            expect(yaxis.ticklen).toBe(undefined);
+            expect(yaxis.tickwidth).toBe(undefined);
+            expect(yaxis.tickcolor).toBe(undefined);
+            expect(yaxis.ticks).toBe('');
             expect(yaxis.showticklabels).toBe(true);
             expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
             expect(yaxis.tickangle).toBe('auto');
