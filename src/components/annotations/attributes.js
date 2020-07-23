@@ -316,7 +316,7 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.AX_ID_EXTRAS_PATTERN
+            cartesianConstants.AX_ID_EXTRAS_PATTERN.toString()
         ],
         role: 'info',
         editType: 'calc',
@@ -379,7 +379,7 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.AX_ID_EXTRAS_PATTERN
+            cartesianConstants.AX_ID_EXTRAS_PATTERN.toString()
         ],
         role: 'info',
         editType: 'calc',
