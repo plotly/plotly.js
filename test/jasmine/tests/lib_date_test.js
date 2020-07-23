@@ -82,6 +82,9 @@ describe('dates', function() {
                 ['2014-03-04 08:15:00.00z', new Date(2014, 2, 4, 8, 15)],
                 ['2014-03-04 08:15:34+1200', new Date(2014, 2, 4, 8, 15, 34)],
                 ['2014-03-04 08:15:34.567-05:45', new Date(2014, 2, 4, 8, 15, 34, 567)],
+
+                // iso8601 short time offset
+                ['2014-03-04T08:15:34-05', new Date(2014, 2, 4, 8, 15, 34)],
             ].forEach(function(v) {
                 // just for sub-millisecond precision tests, use timezoneoffset
                 // from the previous date object
@@ -157,7 +160,7 @@ describe('dates', function() {
                 '2015-01-01 12:60', '2015-01-01 12:-1', '2015-01-01 12:001', '2015-01-01 12:1', // bad minute
                 '2015-01-01 12:00:60', '2015-01-01 12:00:-1', '2015-01-01 12:00:001', '2015-01-01 12:00:1', // bad second
                 '2015-01-01T', '2015-01-01TT12:34', // bad ISO separators
-                '2015-01-01Z', '2015-01-01T12Z', '2015-01-01T12:34Z05:00', '2015-01-01 12:34+500', '2015-01-01 12:34-5:00' // bad TZ info
+                '2015-01-01Z', '2015-01-01T12Z', '2015-01-01T12:34Z05:00', '2015-01-01 12:34+500', '2015-01-01 12:34-5:00', '2015-01-01 12:34+5' // bad TZ info
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v)).toBeUndefined(v);
             });
