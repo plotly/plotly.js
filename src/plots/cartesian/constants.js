@@ -26,6 +26,7 @@ module.exports = {
     // note that this is more permissive than counterRegex, as
     // id2name, name2id, and cleanId accept "x1" etc
     AX_ID_PATTERN: /^[xyz][0-9]*$/,
+    AX_ID_EXTRAS_PATTERN: /^[xyz]([2-9]|[1-9][0-9]+)?( domain)?$/,
     AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
 
     // and for 2D subplots

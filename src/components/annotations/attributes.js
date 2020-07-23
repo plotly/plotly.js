@@ -316,7 +316,7 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.idRegex.x.toString()+"( domain)?"
+            cartesianConstants.AX_ID_EXTRAS_PATTERN
         ],
         role: 'info',
         editType: 'calc',
@@ -379,7 +379,7 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.idRegex.y.toString()+"( domain)?"
+            cartesianConstants.AX_ID_EXTRAS_PATTERN
         ],
         role: 'info',
         editType: 'calc',

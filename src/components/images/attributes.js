@@ -143,7 +143,7 @@ module.exports = templatedArray('image', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.idRegex.x.toString()
+            cartesianConstants.AX_ID_EXTRAS_PATTERN
         ],
         dflt: 'paper',
         role: 'info',
@@ -162,7 +162,7 @@ module.exports = templatedArray('image', {
         valType: 'enumerated',
         values: [
             'paper',
-            cartesianConstants.idRegex.y.toString()
+            cartesianConstants.AX_ID_EXTRAS_PATTERN
         ],
         dflt: 'paper',
         role: 'info',
