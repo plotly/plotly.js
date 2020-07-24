@@ -9,6 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
+var numberFormat = require('d3-format').format;
 var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
@@ -85,7 +86,7 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
     if(tickvals) {
         return d3.scale.ordinal()
-            .domain(tickvals.map(toText(d3.format(dimension.tickformat), ticktext)))
+            .domain(tickvals.map(toText(numberFormat(dimension.tickformat), ticktext)))
             .range(tickvals
                 .map(function(d) {
                     var unitVal = (d - extent[0]) / (extent[1] - extent[0]);
@@ -272,7 +273,7 @@ function viewModel(state, callbacks, model) {
 
             // ensure ticktext and tickvals have same length
             if(!Array.isArray(ticktext) || !ticktext.length) {
-                ticktext = tickvals.map(d3.format(dimension.tickformat));
+                ticktext = tickvals.map(numberFormat(dimension.tickformat));
             } else if(ticktext.length > tickvals.length) {
                 ticktext = ticktext.slice(0, tickvals.length);
             } else if(tickvals.length > ticktext.length) {

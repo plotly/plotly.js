@@ -9,6 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
+var numberFormat = require('d3-format').format;
 var render = require('./render');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
@@ -200,7 +201,7 @@ module.exports = function plot(gd, calcData) {
             link.fullData = link.trace;
             obj = d.link.trace.link;
             var hoverCenter = hoverCenterPosition(link);
-            var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(link.value) + d.valueSuffix};
+            var hovertemplateLabels = {valueLabel: numberFormat(d.valueFormat)(link.value) + d.valueSuffix};
 
             hoverItems.push({
                 x: hoverCenter[0],
@@ -210,7 +211,7 @@ module.exports = function plot(gd, calcData) {
                     link.label || '',
                     sourceLabel + link.source.label,
                     targetLabel + link.target.label,
-                    link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(link.flow.labelConcentration) : ''
+                    link.concentrationscale ? concentrationLabel + numberFormat('%0.2f')(link.flow.labelConcentration) : ''
                 ].filter(renderableValuePresent).join('<br>'),
                 color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(link.color, 1),
                 borderColor: castHoverOption(obj, 'bordercolor'),
@@ -289,14 +290,14 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;
         var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
 
-        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
+        var hovertemplateLabels = {valueLabel: numberFormat(d.valueFormat)(d.node.value) + d.valueSuffix};
         d.node.fullData = d.node.trace;
 
         var tooltip = Fx.loneHover({
             x0: hoverCenterX0,
             x1: hoverCenterX1,
             y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
+            name: numberFormat(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
                 incomingLabel + d.node.targetLinks.length,
