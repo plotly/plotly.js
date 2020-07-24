@@ -623,10 +623,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isPeriod = ax.ticklabelmode === 'period';
     if(isPeriod) {
         // add one label to show pre tick0 period
-        tickVals = [{
+        tickVals.unshift({
             minor: false,
             value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
-        }].concat(tickVals);
+        });
     }
 
     if(ax.rangebreaks) {
@@ -745,12 +745,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var B = tickVals[b].value;
 
             var delta = definedDelta || Math.abs(B - A);
+            var half = axrev ? -0.5 : 0.5;
             if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
-                v += ONEAVGYEAR / 2;
+                v += half * ONEAVGYEAR;
             } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
-                v += ONEAVGMONTH / 2;
+                v += half * ONEAVGMONTH;
             } else if(delta >= ONEDAY) {
-                v += ONEDAY / 2;
+                v += half * ONEDAY;
             }
 
             ticksOut[i].periodX = v;
