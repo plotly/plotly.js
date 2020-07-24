@@ -620,6 +620,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     generateTicks();
 
+    var isPeriod = ax.ticklabelmode === 'period';
+    if(isPeriod) {
+        // add one label to show pre tick0 period
+        tickVals.unshift({
+            minor: false,
+            value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
+        });
+    }
+
     if(ax.rangebreaks) {
         // replace ticks inside breaks that would get a tick
         // and reduce ticks
@@ -681,6 +690,32 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var minRange = Math.min(rng[0], rng[1]);
+    var maxRange = Math.max(rng[0], rng[1]);
+
+    var definedDelta;
+    if(isPeriod && ax.tickformat) {
+        var _has = function(str) {
+            return ax.tickformat.indexOf(str) !== -1;
+        };
+
+        if(
+            !_has('%f') &&
+            !_has('%H') &&
+            !_has('%I') &&
+            !_has('%L') &&
+            !_has('%Q') &&
+            !_has('%S') &&
+            !_has('%s') &&
+            !_has('%X')
+        ) {
+            if(_has('%x') || _has('%d') || _has('%e') || _has('%j')) definedDelta = ONEDAY;
+            else if(_has('%B') || _has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
+            else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+        }
+    }
+
+    var removedPreTick0Label = false;
     var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
@@ -692,6 +727,46 @@ axes.calcTicks = function calcTicks(ax, opts) {
             false, // hover
             _minor // noSuffixPrefix
         );
+
+        if(isPeriod) {
+            var v = tickVals[i].value;
+
+            var a = i;
+            var b = i + 1;
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
+            } else {
+                a = i - 1;
+                b = i;
+            }
+
+            var A = tickVals[a].value;
+            var B = tickVals[b].value;
+
+            var delta = definedDelta || Math.abs(B - A);
+            var half = axrev ? -0.5 : 0.5;
+            if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
+                v += half * ONEAVGYEAR;
+            } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
+                v += half * ONEAVGMONTH;
+            } else if(delta >= ONEDAY) {
+                v += half * ONEDAY;
+            }
+
+            ticksOut[i].periodX = v;
+
+            if(v > maxRange || v < minRange) { // hide label if outside the range
+                ticksOut[i].text = '';
+                if(i === 0) removedPreTick0Label = true;
+            }
+        }
+    }
+
+    if(removedPreTick0Label && ticksOut.length > 1) {
+        // redo tick0 text
+        ax._prevDateHead = '';
+        ticksOut[1].text = axes.tickText(ax, tickVals[1].value).text;
     }
 
     ax._inCalcTicks = false;
@@ -1785,6 +1860,10 @@ axes.drawOne = function(gd, ax, opts) {
     if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
+    var transTickLabelFn = ax.ticklabelmode === 'period' ?
+        axes.makeTransPeriodFn(ax) :
+        axes.makeTransFn(ax);
+
     var tickVals;
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
     // The key case here is removing zero lines when the axis bound is zero
@@ -1903,7 +1982,7 @@ axes.drawOne = function(gd, ax, opts) {
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
-            transFn: transFn,
+            transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
     });
@@ -2213,6 +2292,14 @@ axes.makeTransFn = function(ax) {
         function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
 };
 
+axes.makeTransPeriodFn = function(ax) {
+    var axLetter = ax._id.charAt(0);
+    var offset = ax._offset;
+    return axLetter === 'x' ?
+        function(d) { return 'translate(' + (offset + ax.l2p(d.periodX)) + ',0)'; } :
+        function(d) { return 'translate(0,' + (offset + ax.l2p(d.periodX)) + ')'; };
+};
+
 /**
  * Make axis tick path string
  *
@@ -2511,6 +2598,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
+
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
     var prevAngle = (ax._prevTickAngles || {})[cls];
