@@ -625,7 +625,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     if(addOneTickToStart) {
         tickVals.push({
             minor: false,
-            value: 2 * tickVals[0].value - tickVals[1].value
+            value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
         });
     }
 
