@@ -482,5 +482,81 @@ module.exports = {
         needLine: true,
         noDot: true,
         noFill: true
+    },
+    'arrow-up': {
+        n: 45,
+        f: function(r) {
+            var rx = d3.round(r, 2);
+            var ry = d3.round(r * 2, 2);
+            return 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z';
+        },
+        noDot: true
+    },
+    'arrow-down': {
+        n: 46,
+        f: function(r) {
+            var rx = d3.round(r, 2);
+            var ry = d3.round(r * 2, 2);
+            return 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z';
+        },
+        noDot: true
+    },
+    'arrow-left': {
+        n: 47,
+        f: function(r) {
+            var rx = d3.round(r * 2, 2);
+            var ry = d3.round(r, 2);
+            return 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z';
+        },
+        noDot: true
+    },
+    'arrow-right': {
+        n: 48,
+        f: function(r) {
+            var rx = d3.round(r * 2, 2);
+            var ry = d3.round(r, 2);
+            return 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z';
+        },
+        noDot: true
+    },
+    'arrow-bar-up': {
+        n: 49,
+        f: function(r) {
+            var rx = d3.round(r, 2);
+            var ry = d3.round(r * 2, 2);
+            return 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z';
+        },
+        needLine: true,
+        noDot: true
+    },
+    'arrow-bar-down': {
+        n: 50,
+        f: function(r) {
+            var rx = d3.round(r, 2);
+            var ry = d3.round(r * 2, 2);
+            return 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z';
+        },
+        needLine: true,
+        noDot: true
+    },
+    'arrow-bar-left': {
+        n: 51,
+        f: function(r) {
+            var rx = d3.round(r * 2, 2);
+            var ry = d3.round(r, 2);
+            return 'M0,-' + ry + 'V' + ry + 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z';
+        },
+        needLine: true,
+        noDot: true
+    },
+    'arrow-bar-right': {
+        n: 52,
+        f: function(r) {
+            var rx = d3.round(r * 2, 2);
+            var ry = d3.round(r, 2);
+            return 'M0,-' + ry + 'V' + ry + 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z';
+        },
+        needLine: true,
+        noDot: true
     }
 };
