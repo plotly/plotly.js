@@ -592,6 +592,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+
     var tickVals;
     function generateTicks() {
         var xPrevious = null;
@@ -620,13 +621,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
     generateTicks();
 
     var isPeriod = ax.ticklabelmode === 'period';
-    var addOneTickToStart = isPeriod && tickVals.length > 2;
-
-    if(addOneTickToStart) {
-        tickVals.push({
+    if(isPeriod) {
+        // add one label to show pre tick0 period
+        tickVals = [{
             minor: false,
             value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
-        });
+        }].concat(tickVals);
     }
 
     if(ax.rangebreaks) {
@@ -715,6 +715,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    var removedPreTick0Label = false;
     var ticksOut = new Array(tickVals.length);
     for(var i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
@@ -732,19 +733,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             var a = i;
             var b = i + 1;
-            if(addOneTickToStart) {
-                if(i === tickVals.length - 1) {
-                    a = i;
-                    b = 0;
-                } else if(i === tickVals.length - 2) {
-                    a = i - 1;
-                    b = i;
-                }
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
             } else {
-                if(i === tickVals.length - 1) {
-                    a = i - 1;
-                    b = i;
-                }
+                a = i - 1;
+                b = i;
             }
 
             var A = tickVals[a].value;
@@ -763,8 +757,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             if(v > maxRange || v < minRange) { // hide label if outside the range
                 ticksOut[i].text = '';
+                if(i === 0) removedPreTick0Label = true;
             }
         }
+    }
+
+    if(removedPreTick0Label && ticksOut.length > 1) {
+        // redo tick0 text
+        ax._prevDateHead = '';
+        ticksOut[1].text = axes.tickText(ax, tickVals[1].value).text;
     }
 
     ax._inCalcTicks = false;
