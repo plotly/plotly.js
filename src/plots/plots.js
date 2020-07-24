@@ -9,6 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
+var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../registry');
@@ -723,7 +724,7 @@ function getFormatter(formatObj, separators) {
     formatObj.decimal = separators.charAt(0);
     formatObj.thousands = separators.charAt(1);
 
-    return d3.locale(formatObj);
+    return timeFormatLocale(formatObj);
 }
 
 function fillMetaTextHelpers(newFullData, newFullLayout) {

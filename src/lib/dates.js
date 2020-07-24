@@ -25,7 +25,7 @@ var EPOCHJD = constants.EPOCHJD;
 
 var Registry = require('../registry');
 
-var utcFormat = d3.time.format.utc;
+var utcFormat = require('d3-time-format').utcFormat;
 
 var DATETIME_REGEXP = /^\s*(-?\d\d\d\d|\d\d)(-(\d?\d)(-(\d?\d)([ Tt]([01]?\d|2[0-3])(:([0-5]\d)(:([0-5]\d(\.\d+)?))?(Z|z|[+\-]\d\d(:?\d\d)?)?)?)?)?)?\s*$/m;
 // special regex for chinese calendars to support yyyy-mmi-dd etc for intercalary months
