@@ -17,7 +17,7 @@
         "Toronto",
         "Vancouver"
       ],
-      "texttemplate": "%{text}: (%{lon:.0f}, %{lat:0.f}): %{customdata:.2s}",
+      "texttemplate": "%{text}: (%{lon:.0f}, %{lat:~f}): %{customdata:.2s}",
       "textposition": "top center",
       "customdata": [1780000, 2930000, 675218],
       "geo": "geo"
