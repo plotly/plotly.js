@@ -64,7 +64,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         }
         coerce('delta.reference', traceOut.value);
         coerce('delta.relative');
-        coerce('delta.valueformat', traceOut.delta.relative ? '2%' : '');
+        coerce('delta.valueformat', traceOut.delta.relative ? '.0%' : '');
         coerce('delta.increasing.symbol');
         coerce('delta.increasing.color');
         coerce('delta.decreasing.symbol');

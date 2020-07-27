@@ -48,7 +48,7 @@ describe('Indicator defaults', function() {
 
     it('defaults to displaying relative changes in percentage', function() {
         var out = _supply({type: 'indicator', mode: 'delta', delta: {relative: true}, value: 1});
-        expect(out.delta.valueformat).toBe('2%');
+        expect(out.delta.valueformat).toBe('.0%');
     });
 
     it('should not ignore empty valueformat', function() {
@@ -164,7 +164,7 @@ describe('Indicator plot', function() {
             Plotly.newPlot(gd, [{
                 type: 'indicator',
                 value: 500,
-                number: {valueformat: '0.f'}
+                number: {valueformat: '~f'}
             }], {width: 400, height: 400})
             .then(function() {
                 checkNumbersScale(1, 'initialy at normal scale');
@@ -185,7 +185,7 @@ describe('Indicator plot', function() {
             Plotly.newPlot(gd, [{
                 type: 'indicator',
                 value: 1,
-                number: {valueformat: '0.f'}
+                number: {valueformat: '~f'}
             }], {width: 400, height: 400})
             .then(function() {
                 checkNumbersScale(1, 'initialy at normal scale');
@@ -208,7 +208,7 @@ describe('Indicator plot', function() {
                     type: 'indicator',
                     mode: 'number+delta',
                     value: 1,
-                    number: {valueformat: '0.f'}
+                    number: {valueformat: '~f'}
                 };
                 figure[numberType] = {font: {size: 100}};
                 Plotly.newPlot(gd, [figure], {width: 400, height: 400})
