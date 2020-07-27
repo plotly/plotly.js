@@ -307,15 +307,10 @@ describe('localization', function() {
         .then(function() {
             expect(firstYLabel()).toBe('0p5');
 
-            return Plotly.relayout(gd, {'yaxis.tickformat': '.3f'});
-        })
-        .then(function() {
-            expect(firstYLabel()).toBe('0p500');
-
             return Plotly.relayout(gd, {separators: null});
         })
         .then(function() {
-            expect(firstYLabel()).toBe('0D500');
+            expect(firstYLabel()).toBe('0D5');
         })
         .catch(failTest)
         .then(done);
