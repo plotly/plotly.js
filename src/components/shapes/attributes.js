@@ -13,6 +13,7 @@ var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects.js');
 
 module.exports = templatedArray('shape', {
     visible: {
@@ -63,15 +64,7 @@ module.exports = templatedArray('shape', {
     xref: extendFlat({}, annAttrs.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
-            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x coordinate.',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left side of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right) side.',
-            'If set to an x axis id followed by *domain* (separated by a space),',
-            'the position behaves like for *paper*, but refers to the distance',
-            'from the left of the domain of that axis: e.g., *x2 domain* refers',
-            'to the domain of the second x axis.',
+            axisPlaceableObjs.axisRefDescription('x','left','right'),
             'If the axis `type` is *log*, then you must take the',
             'log of your desired range.',
             'If the axis `type` is *date*, then you must convert',
@@ -130,18 +123,7 @@ module.exports = templatedArray('shape', {
     yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
-            'If set to a y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to a y coordinate',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the bottom (top).',
-            'If set to a y axis id followed by *domain* (separated by a space),',
-            'the position behaves like for *paper*, but refers to the distance',
-            'in fractions of the domain length',
-            'from the bottom of the domain of that axis: e.g., *y2 domain*',
-            'refers to the domain of the second y axis and a y position of',
-            '0.5 refers to the point between the bottom and the top of the',
-            'domain of the second y axis.',
+            axisPlaceableObjs.axisRefDescription('y','bottom','top'),
         ].join(' ')
     }),
     ysizemode: {

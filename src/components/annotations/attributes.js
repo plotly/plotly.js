@@ -12,6 +12,7 @@ var ARROWPATHS = require('./arrow_paths');
 var fontAttrs = require('../../plots/font_attributes');
 var cartesianConstants = require('../../plots/cartesian/constants');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects.js');
 
 
 module.exports = templatedArray('annotation', {
@@ -322,11 +323,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s x coordinate axis.',
-            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x coordinate',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left side of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the left (right) side.'
+            axisPlaceableObjs.axisRefDescription('x','left','right'),
         ].join(' ')
     },
     x: {
@@ -385,11 +382,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s y coordinate axis.',
-            'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to an y coordinate',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the bottom (top).'
+            axisPlaceableObjs.axisRefDescription('y','bottom','top'),
         ].join(' ')
     },
     y: {
