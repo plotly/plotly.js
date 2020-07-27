@@ -300,7 +300,7 @@ type: 'path',
     x1: 1.1,
     y0: 0.1,
     y1: 1.1,
-    line: { color: 'rgb(0,0,0)' }
+    line: { color: 'rgb(1,1,1)' }
 }
 ];
 
@@ -369,7 +369,8 @@ layout.annotations=[{
     xref: 'x domain',
     yref: 'y',
     showarrow: true,
-    arrowhead: 0
+    arrowhead: 0,
+    arrowcolor: 'rgb(0,0,0)'
   },{
     text: 'B',
     x: 1,
@@ -377,7 +378,17 @@ layout.annotations=[{
     xref: 'x',
     yref: 'y domain',
     showarrow: true,
-    arrowhead: 0
+    arrowhead: 0,
+    arrowcolor: 'rgb(0,0,0)'
+  },{
+    text: 'C',
+    x: 1.1,
+    y: 1.1,
+    xref: 'x2 domain',
+    yref: 'y2 domain',
+    showarrow: true,
+    arrowhead: 0,
+    arrowcolor: 'rgb(127,255,0)'
   }
 ];
 
@@ -439,7 +450,7 @@ function checkDomainRefShapes() {
     console.log("checking domain referenced shapes");
     zip(getShapeNodes()[0].filter(
                 sh=>sh.getAttribute('style').match(
-                /stroke: rgb\(0, 0, 0\)/)),domainRefShapes).forEach(function (args) {
+                /stroke: rgb\([01], [01], [01]\)/)),domainRefShapes).forEach(function (args) {
         var shapec_ = args[0], shapes = args[1];
         var xref = shapes.xref.match(/([xyz][2-9]?).*$/)[1];
         var yref = shapes.yref.match(/([xyz][2-9]?).*$/)[1];
@@ -540,7 +551,9 @@ checkHrectVrectShapes();
 function checkAnnotations () {
     console.log("Checking annotations");
     // extract the annotations from the plot
-    var svgAnnos=getAnnotationNodes();
+    var svgAnnos=getAnnotationNodes().filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(0, 0, 0\)/));
     var dataLine=d3.selectAll('.js-line').node();
     var transCoords=getPlotTransformCoords();
     // first compare ann1's y with y coordinate of point on plot
@@ -554,6 +567,28 @@ function checkAnnotations () {
         ann2Coords[1][0]==(dataLineCoords[0][0]+transCoords[0]));
 }
 checkAnnotations();
+
+// Check annotation remains visibile when domain referenced and outside of the domain on a log axis
+function checkLogDomainRefAnnotation() {
+    console.log("Checking domain referenced annotation on log axes");
+    // extract the annotations from the plot
+    var svgAnnos=getAnnotationNodes().filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(127, 255, 0\)/));
+    var shapes = getShapeNodes()[0].filter(
+                sh=>sh.getAttribute('style').match(
+                /stroke: rgb\(1, 1, 1\)/));
+    zip(shapes,svgAnnos).forEach(function (args) {
+        var shapec_ = args[0], anno = args[1];
+        var xref = 'x2';
+        var yref = 'x2';
+        var shapec = svgShapeToCoords(shapec_.getAttribute('d'));
+        var annCoords=svgLineCoords(anno.getAttribute('d'));
+        console.log('x,y matches for anno',
+        coordsEq([annCoords[1]],[shapec[1]]));
+    });
+}
+checkLogDomainRefAnnotation();
 
 //// TEST positions are still correct after relayout of axis
 
@@ -582,6 +617,7 @@ window.setTimeout(function () {
     checkHlineVlineShapes();
     checkHrectVrectShapes();
     checkAnnotations();
+    checkLogDomainRefAnnotation();
 },2000);
 
 //// TEST You can drag an axis referenced shape to any place on the paper and it will
@@ -589,9 +625,6 @@ window.setTimeout(function () {
 //// TODO
 
 
-//// TEST The shape stays the correct size when one or more of its points are outside
-//// of a log-axis domain.
-//// TODO
 
 </script>
 </body>
