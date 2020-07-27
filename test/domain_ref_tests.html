@@ -17,8 +17,12 @@ function getShapeNodes() {
     return d3.selectAll('.shapelayer path');
 }
 
-function getFirstGridNode(axis) {
-    return d3.selectAll('.gridlayer .'+axis+' .'+axis+'grid.crisp').node();
+function getFirstGridNode(axis,subplot) {
+    return d3.selectAll(`.subplot.${subplot} .gridlayer .${axis} .${axis}grid.crisp`).node();
+}
+
+function getAnnotationNodes() {
+    return d3.selectAll('.annotation-arrow-g path')[0];
 }
 
 var nm="([0-9]+[.]?[0-9]*)";
@@ -129,16 +133,35 @@ data = [{
     x: [1, 5],
     y: [1, 10],
     type: 'scatter'
+},{
+    x: [10, 100],
+    y: [1, 10],
+    type: 'scatter',
+    xaxis: 'x2',
+    yaxis: 'y2'
 }];
 layout = {
     title: 'Axis domain referenced shape',
+    grid: {rows: 1, columns: 2, pattern: 'independant'},
     width: 0.3,
     height: 0.2,
+
     xaxis: {
-        domain: [0.2,0.9]
+        domain: [0.2,0.4]
     },
     yaxis: {
-        domain: [0.1,0.8]
+        domain: [0.1,0.5]
+    },
+    xaxis2: {
+        domain: [0.6,0.8],
+        type: 'log',
+        autorange: true
+    },
+    yaxis2: {
+        domain: [0.1,0.5],
+        anchor: 'x2',
+        type: 'log',
+        autorange: true
     }
 };
 
@@ -265,6 +288,19 @@ type: 'path',
           xref: 'x domain',
           yref: 'y domain',
           line: { color: 'rgb(0,0,0)' }
+},
+// rect on log axis
+{
+    type: 'rect',
+    xref: 'x2 domain',
+    yref: 'y2 domain',
+    xsizemode: 'scaled',
+    ysizemode: 'scaled',
+    x0: 0.1,
+    x1: 1.1,
+    y0: 0.1,
+    y1: 1.1,
+    line: { color: 'rgb(0,0,0)' }
 }
 ];
 
@@ -323,10 +359,27 @@ var hrectVrectShapes = [
     y0: 0,
     y1: 1,
     line: { color: 'rgb(255, 127, 80)' }
-}
-];
+}];
 
 layout.shapes=domainRefShapes.concat(hlineVlineShapes).concat(hrectVrectShapes);
+layout.annotations=[{
+    text: 'A',
+    x: 0.75,
+    y: 10,
+    xref: 'x domain',
+    yref: 'y',
+    showarrow: true,
+    arrowhead: 0
+  },{
+    text: 'B',
+    x: 1,
+    y: 0.75,
+    xref: 'x',
+    yref: 'y domain',
+    showarrow: true,
+    arrowhead: 0
+  }
+];
 
 Plotly.plot(TESTER, data, layout);
 
@@ -383,16 +436,21 @@ function plotDimsFromGridLines(xgridlinec,ygridlinec) {
 //// extracting this information from the grid lines.
 function checkDomainRefShapes() {
     // full span horizontal (vertical) line should have same length as y (x) grid line
-    var ygridlinec = svgShapeToCoords(getFirstGridNode('y').getAttribute('d'));
-    var xgridlinec = svgShapeToCoords(getFirstGridNode('x').getAttribute('d'));
-    var plotdims = plotDimsFromGridLines(xgridlinec,ygridlinec);
     console.log("checking domain referenced shapes");
     zip(getShapeNodes()[0].filter(
                 sh=>sh.getAttribute('style').match(
                 /stroke: rgb\(0, 0, 0\)/)),domainRefShapes).forEach(function (args) {
         var shapec_ = args[0], shapes = args[1];
-        var shapec =svgShapeToCoords(shapec_.getAttribute('d'));
-        console.log('Correct line',assertCorrectLineOrRect(
+        var xref = shapes.xref.match(/([xyz][2-9]?).*$/)[1];
+        var yref = shapes.yref.match(/([xyz][2-9]?).*$/)[1];
+        var shapec = svgShapeToCoords(shapec_.getAttribute('d'));
+        var ygridlinec = svgShapeToCoords(
+            getFirstGridNode(yref,xref+yref).getAttribute('d'));
+        var xgridlinec = svgShapeToCoords(
+            getFirstGridNode(xref,xref+yref).getAttribute('d'));
+        var plotdims = plotDimsFromGridLines(xgridlinec,ygridlinec);
+
+        console.log('Correct shape',assertCorrectLineOrRect(
             shapec,shapes,plotdims));
     });
 }
@@ -476,24 +534,61 @@ function checkHrectVrectShapes() {
 }
 checkHrectVrectShapes();
 
+// Check annotations that are aligned to data coordinate on one axis and axis
+// domain on the other axis (A realistic application e.g., for hline annotations).
+// This compares the position of the point of the arrow.
+function checkAnnotations () {
+    console.log("Checking annotations");
+    // extract the annotations from the plot
+    var svgAnnos=getAnnotationNodes();
+    var dataLine=d3.selectAll('.js-line').node();
+    var transCoords=getPlotTransformCoords();
+    // first compare ann1's y with y coordinate of point on plot
+    var ann1Coords=svgLineCoords(svgAnnos[0].getAttribute('d'));
+    var dataLineCoords=svgLineCoords(dataLine.getAttribute('d'));
+    console.log('y matches for ann1',
+        ann1Coords[1][1]==(dataLineCoords[1][1]+transCoords[1]));
+    // then compare ann2's x with x coordinate of point on plot
+    var ann2Coords=svgLineCoords(svgAnnos[1].getAttribute('d'));
+    console.log('x matches for ann2',
+        ann2Coords[1][0]==(dataLineCoords[0][0]+transCoords[0]));
+}
+checkAnnotations();
+
 //// TEST positions are still correct after relayout of axis
 
-Plotly.relayout(TESTER,{
-    xaxis: {
-        domain: [0.1,0.8]
-    },
-    yaxis: {
-        domain: [0.2,0.9]
-    }
-});
+window.setTimeout(function () {
+    Plotly.relayout(TESTER,{
+        xaxis: {
+            domain: [0.1,0.4]
+        },
+        yaxis: {
+            domain: [0.2,0.9]
+        },
+        xaxis2: {
+            domain: [0.6,0.9],
+            type: 'log',
+            autorange: true
+        },
+        yaxis2: {
+            domain: [0.3,0.5],
+            anchor: 'x2',
+            type: 'log',
+            autorange: true
+        }
+    });
 
-checkDomainRefShapes();
-checkHlineVlineShapes();
-checkHrectVrectShapes();
+    checkDomainRefShapes();
+    checkHlineVlineShapes();
+    checkHrectVrectShapes();
+    checkAnnotations();
+},2000);
 
 //// TEST You can drag an axis referenced shape to any place on the paper and it will
-//// be visible.
+//// be visible. (Not needed: drags are tested at a higher level)
 //// TODO
+
+
 //// TEST The shape stays the correct size when one or more of its points are outside
 //// of a log-axis domain.
 //// TODO
