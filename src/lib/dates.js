@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var timeFormat = require('d3-time-format').timeFormat;
 var isNumeric = require('fast-isnumeric');
 
 var Loggers = require('./loggers');
@@ -25,7 +25,7 @@ var EPOCHJD = constants.EPOCHJD;
 
 var Registry = require('../registry');
 
-var utcFormat = d3.time.format.utc;
+var utcFormat = require('d3-time-format').utcFormat;
 
 var DATETIME_REGEXP = /^\s*(-?\d\d\d\d|\d\d)(-(\d?\d)(-(\d?\d)([ Tt]([01]?\d|2[0-3])(:([0-5]\d)(:([0-5]\d(\.\d+)?))?(Z|z|[+\-]\d\d(:?\d\d)?)?)?)?)?)?\s*$/m;
 // special regex for chinese calendars to support yyyy-mmi-dd etc for intercalary months
@@ -306,7 +306,7 @@ exports.ms2DateTimeLocal = function(ms) {
 
     var msecTenths = Math.floor(mod(ms + 0.05, 1) * 10);
     var d = new Date(Math.round(ms - msecTenths / 10));
-    var dateStr = d3.time.format('%Y-%m-%d')(d);
+    var dateStr = timeFormat('%Y-%m-%d')(d);
     var h = d.getHours();
     var m = d.getMinutes();
     var s = d.getSeconds();
