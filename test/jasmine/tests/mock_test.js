@@ -803,6 +803,7 @@ var list = [
     'polar_wind-rose',
     'portland_heatmap',
     'pseudo_html',
+    'quarters_and_week_formats',
     'range_selector',
     'range_selector_style',
     'range_slider',
@@ -1850,6 +1851,7 @@ figs['polar_ticks'] = require('@mocks/polar_ticks');
 figs['polar_wind-rose'] = require('@mocks/polar_wind-rose');
 figs['portland_heatmap'] = require('@mocks/portland_heatmap');
 figs['pseudo_html'] = require('@mocks/pseudo_html');
+figs['quarters_and_week_formats'] = require('@mocks/quarters_and_week_formats');
 figs['range_selector'] = require('@mocks/range_selector');
 figs['range_selector_style'] = require('@mocks/range_selector_style');
 figs['range_slider'] = require('@mocks/range_slider');
