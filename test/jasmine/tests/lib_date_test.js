@@ -580,6 +580,11 @@ describe('dates', function() {
                     'Mesori \'28 QOY:3 WOY:48 DOW:1'
                 ],
                 [
+                    'seconds: %s and milliseconds: %Q since UNIX epoch',
+                    'seconds: 1344838774 and milliseconds: 1344838774567 since UNIX epoch',
+                    'seconds: 1344838774 and milliseconds: 1344838774567 since UNIX epoch'
+                ],
+                [
                     '%c && %x && .%2f .%f', // %<n>f is our addition
                     '8/13/2012, 6:19:34 AM && 8/13/2012 && .57 .5678',
                     'Pes Meso 7 6:19:34 AM 1728 && 12/07/1728 && .57 .5678'
