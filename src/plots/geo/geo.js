@@ -11,6 +11,10 @@
 /* global PlotlyGeoAssets:false */
 
 var d3 = require('@plotly/d3');
+var geo = require('d3-geo');
+var geoPath = require('d3-geo').geoPath;
+var geoDistance = require('d3-geo').geoDistance;
+var geoProjection = require('d3-geo-projection');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -32,8 +36,6 @@ var constants = require('./constants');
 var geoUtils = require('../../lib/geo_location_utils');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
-
-require('./projections')(d3);
 
 function Geo(opts) {
     this.id = opts.id;
@@ -656,7 +658,7 @@ proto.render = function() {
     }
 };
 
-// Helper that wraps d3.geo[/* projection name /*]() which:
+// Helper that wraps d3[geo + /* Projection name /*]() which:
 //
 // - adds 'fitExtent' (available in d3 v4)
 // - adds 'getPath', 'getBounds' convenience methods
@@ -671,7 +673,11 @@ function getProjection(geoLayout) {
     var projLayout = geoLayout.projection;
     var projType = projLayout.type;
 
-    var projection = d3.geo[constants.projNames[projType]]();
+    var projName = constants.projNames[projType];
+    // uppercase the first letter and add geo to the start of method name
+    projName = 'geo' + projName.charAt(0).toUpperCase() + projName.slice(1);
+    var projFn = geo[projName] || geoProjection[projName];
+    var projection = projFn();
 
     var clipAngle = geoLayout._isClipped ?
         constants.lonaxisSpan[projType] / 2 :
@@ -694,7 +700,7 @@ function getProjection(geoLayout) {
 
         if(clipAngle) {
             var r = projection.rotate();
-            var angle = d3.geo.distance(lonlat, [-r[0], -r[1]]);
+            var angle = geoDistance(lonlat, [-r[0], -r[1]]);
             var maxAngle = clipAngle * Math.PI / 180;
             return angle > maxAngle;
         } else {
@@ -703,7 +709,7 @@ function getProjection(geoLayout) {
     };
 
     projection.getPath = function() {
-        return d3.geo.path().projection(projection);
+        return geoPath().projection(projection);
     };
 
     projection.getBounds = function(object) {
