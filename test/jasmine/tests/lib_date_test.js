@@ -571,15 +571,19 @@ describe('dates', function() {
                 ],
                 [
                     '%B \'%y WOY:%U DOW:%w',
-                    'August \'12 WOY:32 DOW:1',
+                    'August \'12 WOY:33 DOW:1',
                     'Mesori \'28 WOY:## DOW:##' // world-cals doesn't support U or w
                 ],
                 [
+                    '%B \'%y QOY:%q WOY:%W DOW:%u',
+                    'August \'12 QOY:3 WOY:33 DOW:1',
+                    'Mesori \'28 QOY:3 WOY:48 DOW:1'
+                ],
+                [
                     '%c && %x && .%2f .%f', // %<n>f is our addition
-                    'Mon Aug 13 06:19:34 2012 && 08/13/2012 && .57 .5678',
-                    'Pes Meso 7 06:19:34 1728 && 12/07/1728 && .57 .5678'
+                    '8/13/2012, 6:19:34 AM && 8/13/2012 && .57 .5678',
+                    'Pes Meso 7 6:19:34 AM 1728 && 12/07/1728 && .57 .5678'
                 ]
-
             ].forEach(function(v) {
                 var fmt = v[0];
                 var expectedGregorian = v[1];
