@@ -7,7 +7,7 @@ var calComponent = require('@src/components/calendars');
 // use only the parts of world-calendars that we've imported for our tests
 var calendars = require('@src/components/calendars/calendars');
 
-var utcFormat = require('d3').time.format.utc;
+var utcFormat = require('d3-time-format').utcFormat;
 
 describe('dates', function() {
     'use strict';
