@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var d3 = require('d3');
+var utcFormat = require('d3-time-format').utcFormat;
 
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
@@ -5206,7 +5207,7 @@ function getZoomOutButton(gd) {
 }
 
 function getFormatter(format) {
-    return d3.time.format.utc(format);
+    return utcFormat(format);
 }
 
 describe('Test Axes.getTickformat', function() {
