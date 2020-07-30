@@ -7,7 +7,7 @@ var calComponent = require('@src/components/calendars');
 // use only the parts of world-calendars that we've imported for our tests
 var calendars = require('@src/components/calendars/calendars');
 
-var utcFormat = require('d3').time.format.utc;
+var utcFormat = require('d3-time-format').utcFormat;
 
 describe('dates', function() {
     'use strict';
@@ -82,6 +82,9 @@ describe('dates', function() {
                 ['2014-03-04 08:15:00.00z', new Date(2014, 2, 4, 8, 15)],
                 ['2014-03-04 08:15:34+1200', new Date(2014, 2, 4, 8, 15, 34)],
                 ['2014-03-04 08:15:34.567-05:45', new Date(2014, 2, 4, 8, 15, 34, 567)],
+
+                // iso8601 short time offset
+                ['2014-03-04T08:15:34-05', new Date(2014, 2, 4, 8, 15, 34)],
             ].forEach(function(v) {
                 // just for sub-millisecond precision tests, use timezoneoffset
                 // from the previous date object
@@ -157,7 +160,7 @@ describe('dates', function() {
                 '2015-01-01 12:60', '2015-01-01 12:-1', '2015-01-01 12:001', '2015-01-01 12:1', // bad minute
                 '2015-01-01 12:00:60', '2015-01-01 12:00:-1', '2015-01-01 12:00:001', '2015-01-01 12:00:1', // bad second
                 '2015-01-01T', '2015-01-01TT12:34', // bad ISO separators
-                '2015-01-01Z', '2015-01-01T12Z', '2015-01-01T12:34Z05:00', '2015-01-01 12:34+500', '2015-01-01 12:34-5:00' // bad TZ info
+                '2015-01-01Z', '2015-01-01T12Z', '2015-01-01T12:34Z05:00', '2015-01-01 12:34+500', '2015-01-01 12:34-5:00', '2015-01-01 12:34+5' // bad TZ info
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v)).toBeUndefined(v);
             });
@@ -568,15 +571,24 @@ describe('dates', function() {
                 ],
                 [
                     '%B \'%y WOY:%U DOW:%w',
-                    'August \'12 WOY:32 DOW:1',
+                    'August \'12 WOY:33 DOW:1',
                     'Mesori \'28 WOY:## DOW:##' // world-cals doesn't support U or w
                 ],
                 [
+                    '%B \'%y QOY:%q WOY:%W DOW:%u',
+                    'August \'12 QOY:3 WOY:33 DOW:1',
+                    'Mesori \'28 QOY:3 WOY:48 DOW:1'
+                ],
+                [
+                    'seconds: %s and milliseconds: %Q since UNIX epoch',
+                    'seconds: 1344838774 and milliseconds: 1344838774567 since UNIX epoch',
+                    'seconds: 1344838774 and milliseconds: 1344838774567 since UNIX epoch'
+                ],
+                [
                     '%c && %x && .%2f .%f', // %<n>f is our addition
-                    'Mon Aug 13 06:19:34 2012 && 08/13/2012 && .57 .5678',
-                    'Pes Meso 7 06:19:34 1728 && 12/07/1728 && .57 .5678'
+                    '8/13/2012, 6:19:34 AM && 8/13/2012 && .57 .5678',
+                    'Pes Meso 7 6:19:34 AM 1728 && 12/07/1728 && .57 .5678'
                 ]
-
             ].forEach(function(v) {
                 var fmt = v[0];
                 var expectedGregorian = v[1];

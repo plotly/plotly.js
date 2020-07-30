@@ -126,6 +126,8 @@ module.exports = function handleAxisDefaults(gd, containerIn, containerOut, coer
     }
 
     if(axType === 'date') {
+        if(!options.noTicklabelmode) coerce('ticklabelmode');
+
         handleArrayContainerDefaults(gd, containerIn, containerOut, {
             name: 'rangebreaks',
             inclusionAttr: 'enabled',

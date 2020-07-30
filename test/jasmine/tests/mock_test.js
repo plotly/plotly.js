@@ -38,6 +38,7 @@ var list = [
     'animation_bar',
     'annotations',
     'annotations-autorange',
+    'arrow-markers',
     'automargin-mirror-all',
     'automargin-mirror-allticks',
     'automargin-multiline-titles',
@@ -253,6 +254,8 @@ var list = [
     'custom_colorscale',
     'custom_size_subplot',
     'date_axes',
+    'date_axes_period',
+    'date_axes_period2',
     'date_histogram',
     'dendrogram',
     'display-text_zero-number',
@@ -375,6 +378,7 @@ var list = [
     'gl2d_fill-ordering',
     'gl2d_fonts',
     'gl2d_heatmapgl',
+    'gl2d_heatmapgl_discrete',
     'gl2d_horiz-lines',
     'gl2d_layout_image',
     'gl2d_line_aligned',
@@ -1081,6 +1085,7 @@ figs['animation'] = require('@mocks/animation');
 figs['animation_bar'] = require('@mocks/animation_bar');
 // figs['annotations'] = require('@mocks/annotations');
 // figs['annotations-autorange'] = require('@mocks/annotations-autorange');
+figs['arrow-markers'] = require('@mocks/arrow-markers');
 figs['automargin-mirror-all'] = require('@mocks/automargin-mirror-all');
 figs['automargin-mirror-allticks'] = require('@mocks/automargin-mirror-allticks');
 figs['automargin-multiline-titles'] = require('@mocks/automargin-multiline-titles');
@@ -1296,6 +1301,8 @@ figs['contour-heatmap-coloring-set-contours'] = require('@mocks/contour-heatmap-
 figs['custom_colorscale'] = require('@mocks/custom_colorscale');
 figs['custom_size_subplot'] = require('@mocks/custom_size_subplot');
 figs['date_axes'] = require('@mocks/date_axes');
+figs['date_axes_period'] = require('@mocks/date_axes_period');
+figs['date_axes_period2'] = require('@mocks/date_axes_period2');
 figs['date_histogram'] = require('@mocks/date_histogram');
 // figs['dendrogram'] = require('@mocks/dendrogram');
 figs['display-text_zero-number'] = require('@mocks/display-text_zero-number');
@@ -1418,6 +1425,7 @@ figs['gl2d_error_bars_log'] = require('@mocks/gl2d_error_bars_log');
 figs['gl2d_fill-ordering'] = require('@mocks/gl2d_fill-ordering');
 // figs['gl2d_fonts'] = require('@mocks/gl2d_fonts');
 figs['gl2d_heatmapgl'] = require('@mocks/gl2d_heatmapgl');
+figs['gl2d_heatmapgl_discrete'] = require('@mocks/gl2d_heatmapgl_discrete');
 figs['gl2d_horiz-lines'] = require('@mocks/gl2d_horiz-lines');
 // figs['gl2d_layout_image'] = require('@mocks/gl2d_layout_image');
 figs['gl2d_line_aligned'] = require('@mocks/gl2d_line_aligned');

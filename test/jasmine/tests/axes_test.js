@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var d3 = require('d3');
+var utcFormat = require('d3-time-format').utcFormat;
 
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
@@ -1803,10 +1804,10 @@ describe('Test axes', function() {
             Plotly.plot(gd, data, layout);
 
             var yaxis = gd._fullLayout.yaxis;
-            expect(yaxis.ticklen).toBe(undefined);
-            expect(yaxis.tickwidth).toBe(undefined);
-            expect(yaxis.tickcolor).toBe(undefined);
-            expect(yaxis.ticks).toBe('');
+            expect(yaxis.ticklen).toBe(5);
+            expect(yaxis.tickwidth).toBe(1);
+            expect(yaxis.tickcolor).toBe('#444');
+            expect(yaxis.ticks).toBe('outside');
             expect(yaxis.showticklabels).toBe(true);
             expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
             expect(yaxis.tickangle).toBe('auto');
@@ -5206,7 +5207,7 @@ function getZoomOutButton(gd) {
 }
 
 function getFormatter(format) {
-    return d3.time.format.utc(format);
+    return utcFormat(format);
 }
 
 describe('Test Axes.getTickformat', function() {

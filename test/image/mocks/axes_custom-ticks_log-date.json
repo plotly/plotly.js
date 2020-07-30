@@ -15,48 +15,44 @@
     "layout": {
         "width": 500,
         "height": 300,
-        "template": {
-            "layout": {
-                "title": {
-                    "text": "custom ticks on date & log axes"
-                },
-                "paper_bgcolor": "lightblue",
-                "plot_bgcolor": "#ddd",
-                "yaxis": {
-                    "type": "log",
-                    "tickmode": "array",
-                    "tickvals": [
-                        1,
-                        10,
-                        100
-                    ],
-                    "ticktext": [
-                        "one",
-                        "ten",
-                        "one<br>hundred"
-                    ],
-                    "gridwidth": 2,
-                    "tickwidth": 15,
-                    "tickcolor": "green",
-                    "gridcolor": "green"
-                },
-                "xaxis": {
-                    "type": "date",
-                    "tickmode": "array",
-                    "tickvals": [
-                        "2010-01-16",
-                        "2010-02-14"
-                    ],
-                    "ticktext": [
-                        "Jan 16",
-                        "Feb 14"
-                    ],
-                    "gridwidth": 10,
-                    "tickwidth": 50,
-                    "tickcolor": "rgba(255,0,0,0.75)",
-                    "gridcolor": "rgba(255,0,0,0.25)"
-                }
-            }
+        "title": {
+            "text": "custom ticks on date & log axes"
+        },
+        "paper_bgcolor": "lightblue",
+        "plot_bgcolor": "#ddd",
+        "yaxis": {
+            "type": "log",
+            "tickmode": "array",
+            "tickvals": [
+                1,
+                10,
+                100
+            ],
+            "ticktext": [
+                "one",
+                "ten",
+                "one<br>hundred"
+            ],
+            "gridwidth": 2,
+            "tickwidth": 15,
+            "tickcolor": "green",
+            "gridcolor": "green"
+        },
+        "xaxis": {
+            "type": "date",
+            "tickmode": "array",
+            "tickvals": [
+                "2010-01-16",
+                "2010-02-14"
+            ],
+            "ticktext": [
+                "Jan 16",
+                "Feb 14"
+            ],
+            "gridwidth": 10,
+            "tickwidth": 50,
+            "tickcolor": "rgba(255,0,0,0.75)",
+            "gridcolor": "rgba(255,0,0,0.25)"
         }
     }
 }

@@ -28,6 +28,7 @@ module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, la
     }
 
     coerce('text');
+    coerce('zsmooth');
 
     colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };

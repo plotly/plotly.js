@@ -52,6 +52,7 @@ module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, options)
                 data: options.data,
                 showGrid: true,
                 noTickson: true,
+                noTicklabelmode: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },
