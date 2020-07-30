@@ -230,7 +230,7 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
 
             var projType = projLayout.type;
             var lonHalfSpan = (constants.lonaxisSpan[projType] / 2) || 180;
-            var latHalfSpan = (constants.lataxisSpan[projType] / 2) || 180;
+            var latHalfSpan = (constants.lataxisSpan[projType] / 2) || 90;
 
             lonaxisRange = [midLon - lonHalfSpan, midLon + lonHalfSpan];
             lataxisRange = [midLat - latHalfSpan, midLat + latHalfSpan];
