@@ -236,21 +236,24 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
     var grabAreaMin = rangeSlider.select('rect.' + constants.grabAreaMinClassName).node();
     var grabAreaMax = rangeSlider.select('rect.' + constants.grabAreaMaxClassName).node();
 
-    rangeSlider.on('mousedown', function() {
+    function mouseDownHandler() {
         var event = d3.event;
         var target = event.target;
-        var startX = event.clientX;
+        var startX = event.clientX || event.touches[0].clientX;
         var offsetX = startX - rangeSlider.node().getBoundingClientRect().left;
         var minVal = opts.d2p(axisOpts._rl[0]);
         var maxVal = opts.d2p(axisOpts._rl[1]);
 
         var dragCover = dragElement.coverSlip();
 
+        this.addEventListener('touchmove', mouseMove);
+        this.addEventListener('touchend', mouseUp);
         dragCover.addEventListener('mousemove', mouseMove);
         dragCover.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e) {
-            var delta = +e.clientX - startX;
+            var clientX = e.clientX || e.touches[0].clientX;
+            var delta = +clientX - startX;
             var pixelMin, pixelMax, cursor;
 
             switch(target) {
@@ -295,9 +298,14 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
         function mouseUp() {
             dragCover.removeEventListener('mousemove', mouseMove);
             dragCover.removeEventListener('mouseup', mouseUp);
+            this.removeEventListener('touchmove', mouseMove);
+            this.removeEventListener('touchend', mouseUp);
             Lib.removeElement(dragCover);
         }
-    });
+    }
+
+    rangeSlider.on('mousedown', mouseDownHandler);
+    rangeSlider.on('touchstart', mouseDownHandler);
 }
 
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
