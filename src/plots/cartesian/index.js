@@ -412,7 +412,7 @@ function makeSubplotData(gd) {
             overlays.push(id);
         } else {
             plotinfo.mainplot = undefined;
-            plotinfo.mainPlotinfo = undefined;
+            plotinfo.mainplotinfo = undefined;
             regulars.push(id);
         }
     }
