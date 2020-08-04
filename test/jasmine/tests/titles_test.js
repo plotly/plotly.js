@@ -621,6 +621,63 @@ describe('Titles can be updated', function() {
     }
 });
 
+describe('Titles and labels', function() {
+    'use strict';
+
+    var gd;
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    it('should react with transition', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    x: ['a', 'b'],
+                    y: [1, 2],
+                }
+            ],
+            layout: {
+                title: {
+                    text: 'OLD'
+                },
+                xaxis: {
+                    title: {
+                        text: 'x-old'
+                    }
+                }
+            }
+        }).then(function() {
+            Plotly.react(gd, {
+                data: [
+                    {
+                        type: 'bar',
+                        x: ['b', 'a'],
+                        y: [3, 2],
+                    }
+                ],
+                layout: {
+                    title: {
+                        text: 'NEW'
+                    },
+                    xaxis: {
+                        title: {
+                            text: 'x-new'
+                        }
+                    },
+                    transition: { duration: 500 }
+                }
+            });
+        }).then(function() {
+            expectTitle('NEW');
+            expect(xTitleSel().text()).toBe('x-new');
+            expect(d3.select('.xtick').text()).toBe('b');
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
 describe('Titles support setting custom font properties', function() {
     'use strict';
 
