@@ -38,12 +38,18 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var z = coerce('z');
     var value = coerce('value');
 
-    if(
-        !x || !x.length ||
-        !y || !y.length ||
-        !z || !z.length ||
-        !value || !value.length
-    ) {
+    var len = 0;
+
+    if(x && y && z && value) {
+        len = Math.min(
+            (x.shape ? x.shape[0] : x.length) || 0,
+            (y.shape ? y.shape[0] : y.length) || 0,
+            (z.shape ? z.shape[0] : z.length) || 0,
+            (value.shape ? value.shape[0] : value.length) || 0
+        );
+    }
+
+    if(!len) {
         traceOut.visible = false;
         return;
     }

@@ -19,19 +19,25 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
     yName = yName || 'y';
     var x, y;
 
-    if(z === undefined || !z.length) return 0;
+    var shapeX = x ? (x.shape ? x.shape[0] : x.length) || 0 : 0;
+    var shapeY = y ? (y.shape ? y.shape[0] : y.length) || 0 : 0;
+    var shapeZ = z ? (z.shape ? z.shape[0] : z.length) || 0 : 0;
 
-    if(Lib.isArray1D(traceIn.z)) {
+    var zlen = shapeZ || (z && z.length) || 0;
+
+    if(z === undefined || !zlen) return 0;
+
+    if(Lib.isArray1D(traceIn.z) || (z && z.shape && z.shape.length === 1)) {
         x = coerce(xName);
         y = coerce(yName);
 
-        var xlen = Lib.minRowLength(x);
-        var ylen = Lib.minRowLength(y);
+        var xlen = shapeX || Lib.minRowLength(x);
+        var ylen = shapeY || Lib.minRowLength(y);
 
         // column z must be accompanied by xName and yName arrays
         if(xlen === 0 || ylen === 0) return 0;
 
-        traceOut._length = Math.min(xlen, ylen, z.length);
+        traceOut._length = Math.min(xlen, ylen, zlen);
     } else {
         x = coordDefaults(xName, coerce);
         y = coordDefaults(yName, coerce);

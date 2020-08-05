@@ -78,8 +78,12 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
+        var shapeX = (x.shape ? x.shape[0] : x.length) || 0;
+        var shapeY = (y.shape ? y.shape[0] : y.length) || 0;
+        var shapeZ = (z.shape ? z.shape[0] : z.length) || 0;
+
         // TODO: what happens if one is missing?
-        len = Math.min(x.length, y.length, z.length);
+        len = Math.min(shapeX, shapeY, shapeZ);
         traceOut._length = traceOut._xlength = traceOut._ylength = traceOut._zlength = len;
     }
 

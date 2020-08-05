@@ -19,19 +19,22 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
+    var shapeX = x && x.shape ? x.shape[0] : 0;
+    var shapeY = y && y.shape ? y.shape[0] : 0;
+
     if(x) {
-        var xlen = Lib.minRowLength(x);
+        var xlen = shapeX || Lib.minRowLength(x);
         if(y) {
-            len = Math.min(xlen, Lib.minRowLength(y));
+            len = shapeY || Math.min(xlen, Lib.minRowLength(y));
         } else {
-            len = xlen;
+            len = shapeX || xlen;
             coerce('y0');
             coerce('dy');
         }
     } else {
         if(!y) return 0;
 
-        len = Lib.minRowLength(y);
+        len = shapeY || Lib.minRowLength(y);
         coerce('x0');
         coerce('dx');
     }

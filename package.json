@@ -63,6 +63,7 @@
     "@turf/bbox": "^6.0.1",
     "@turf/centroid": "^6.0.2",
     "alpha-shape": "^1.0.0",
+    "base64-arraybuffer": "^0.2.0",
     "canvas-fit": "^1.5.0",
     "color-alpha": "1.0.4",
     "color-normalize": "1.5.0",
