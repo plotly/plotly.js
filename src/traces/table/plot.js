@@ -57,7 +57,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .classed(c.cn.tableControlView, true)
         .style('box-sizing', 'content-box');
     if(dynamic) {
-        let wheelEvent = 'onwheel' in document ? 'wheel' : 'mousewheel'
+        var wheelEvent = 'onwheel' in document ? 'wheel' : 'mousewheel';
         cvEnter
             .on('mousemove', function(d) {
                 tableControlView
