@@ -2440,8 +2440,17 @@ axes.drawTicks = function(gd, ax, opts) {
 
     var cls = ax._id + 'tick';
 
+    var vals = opts.vals;
+    if(
+        ax.ticklabelmode === 'period'
+    ) {
+        // drop very first tick that we added to handle period
+        vals = vals.slice();
+        vals.shift();
+    }
+
     var ticks = opts.layer.selectAll('path.' + cls)
-        .data(ax.ticks ? opts.vals : [], tickDataFn);
+        .data(ax.ticks ? vals : [], tickDataFn);
 
     ticks.exit().remove();
 

@@ -130,6 +130,8 @@
             ]
         },
         "xaxis": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2019-12-24",
                 "2020-01-06"
@@ -138,6 +140,8 @@
             "tickformat": "%b %d, %Y"
         },
         "xaxis2": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2019-12-29",
                 "2020-01-04"
@@ -146,6 +150,8 @@
             "anchor": "y2"
         },
         "xaxis3": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2020-01-03",
                 "2019-12-28"
@@ -154,6 +160,8 @@
             "anchor": "y3"
         },
         "xaxis4": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2020-03-01",
                 "2020-11-01"
@@ -162,6 +170,8 @@
             "anchor": "y4"
         },
         "xaxis5": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2016-09-01",
                 "2017-06-01"
@@ -170,6 +180,8 @@
             "anchor": "y5"
         },
         "xaxis6": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2016-05-01",
                 "2019-09-01"
@@ -178,6 +190,8 @@
             "anchor": "y6"
         },
         "xaxis7": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
             "range": [
                 "2016-05-01",
                 "2021-09-01"
