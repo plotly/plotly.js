@@ -423,6 +423,33 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
     });
+
+    it('should translate sizes e.g. 2000 to milliseconds not to year when base is present (vertical case)', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            base: [0],
+            y: [2000],
+            x: ['A']
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[0]]);
+        assertPointField(cd, 's', [[2000]]);
+    });
+
+    it('should translate sizes e.g. 2000 to milliseconds not to year when base is present (horizontal case)', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            orientation: 'h',
+            base: [0],
+            x: [2000],
+            y: ['A']
+        }], {});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[0]]);
+        assertPointField(cd, 's', [[2000]]);
+    });
 });
 
 describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
