@@ -717,7 +717,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var removedPreTick0Label = false;
     var ticksOut = new Array(tickVals.length);
-    for(var i = 0; i < tickVals.length; i++) {
+    var i;
+    for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
@@ -757,15 +758,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             if(v > maxRange || v < minRange) { // hide label if outside the range
                 ticksOut[i].text = '';
-                if(i === 0) removedPreTick0Label = true;
+                removedPreTick0Label = true;
             }
         }
     }
 
-    if(removedPreTick0Label && ticksOut.length > 1) {
-        // redo tick0 text
-        ax._prevDateHead = '';
-        ticksOut[1].text = axes.tickText(ax, tickVals[1].value).text;
+    if(removedPreTick0Label) {
+        for(i = 1; i < ticksOut.length; i++) {
+            if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
+                // redo first visible tick
+                ax._prevDateHead = '';
+                ticksOut[i].text = axes.tickText(ax, tickVals[i].value).text;
+                break;
+            }
+        }
     }
 
     ax._inCalcTicks = false;
