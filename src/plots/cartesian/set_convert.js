@@ -92,6 +92,13 @@ module.exports = function setConvert(ax, fullLayout) {
      * - defaults to ax.calendar
      */
     function dt2ms(v, _, calendar, opts) {
+        if((opts || {}).msUTC && isNumeric(v)) {
+            // For now it is only used
+            // to fix bar length in milliseconds & gl3d ticks
+            // It could be applied in other places in v2
+            return +v;
+        }
+
         // NOTE: Changed this behavior: previously we took any numeric value
         // to be a ms, even if it was a string that could be a bare year.
         // Now we convert it as a date if at all possible, and only try
@@ -100,13 +107,6 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ms === BADNUM) {
             if(isNumeric(v)) {
                 v = +v;
-                if((opts || {}).msUTC) {
-                    // For now it is only used
-                    // to fix bar length in milliseconds.
-                    // It could be applied in other places in v2
-                    return v;
-                }
-
                 // keep track of tenths of ms, that `new Date` will drop
                 // same logic as in Lib.ms2DateTime
                 var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
