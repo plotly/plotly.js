@@ -745,13 +745,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var B = tickVals[b].value;
 
             var delta = definedDelta || Math.abs(B - A);
-            var half = axrev ? -0.5 : 0.5;
             if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
-                v += half * ONEAVGYEAR;
+                v += ONEAVGYEAR / 2;
             } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
-                v += half * ONEAVGMONTH;
+                v += ONEAVGMONTH / 2;
             } else if(delta >= ONEDAY) {
-                v += half * ONEDAY;
+                v += ONEDAY / 2;
             }
 
             ticksOut[i].periodX = v;
