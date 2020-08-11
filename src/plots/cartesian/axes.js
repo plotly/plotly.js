@@ -700,18 +700,44 @@ axes.calcTicks = function calcTicks(ax, opts) {
         };
 
         if(
-            !_has('%f') &&
-            !_has('%H') &&
-            !_has('%I') &&
-            !_has('%L') &&
-            !_has('%Q') &&
-            !_has('%S') &&
-            !_has('%s') &&
-            !_has('%X')
+            !_has('%f') && // microseconds as a decimal number [000000, 999999]
+            !_has('%L') && // milliseconds as a decimal number [000, 999]
+            !_has('%Q') && // milliseconds since UNIX epoch
+            !_has('%s') && // seconds since UNIX epoch
+            !_has('%S') && // second as a decimal number [00,61]
+            !_has('%M') && // minute as a decimal number [00,59]
+            !_has('%H') && // hour (24-hour clock) as a decimal number [00,23]
+            !_has('%I') && // hour (12-hour clock) as a decimal number [01,12]
+            !_has('%p') && // either AM or PM
+            !_has('%X')    // the locale’s time, such as %-I:%M:%S %p
         ) {
-            if(_has('%x') || _has('%d') || _has('%e') || _has('%j')) definedDelta = ONEDAY;
-            else if(_has('%B') || _has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
-            else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+            if(
+                _has('%d') || // zero-padded day of the month as a decimal number [01,31]
+                _has('%e') || // space-padded day of the month as a decimal number [ 1,31]
+                _has('%j') || // day of the year as a decimal number [001,366]
+                _has('%u') || // Monday-based (ISO 8601) weekday as a decimal number [1,7]
+                _has('%w') || // Sunday-based weekday as a decimal number [0,6]
+                _has('%x')    // the locale’s date, such as %-m/%-d/%Y
+            ) definedDelta = ONEDAY;
+            else if(
+                _has('%A') || // full weekday name
+                _has('%a') || // abbreviated weekday name
+                _has('%U') || // Sunday-based week of the year as a decimal number [00,53]
+                _has('%V') || // ISO 8601 week of the year as a decimal number [01, 53]
+                _has('%W')    // Monday-based week of the year as a decimal number [00,53]
+            ) definedDelta = ONEDAY * 7;
+            else if(
+                _has('%B') || // full month name
+                _has('%b') || // abbreviated month name
+                _has('%m')    // month as a decimal number [01,12]
+            ) definedDelta = ONEAVGMONTH;
+            else if(
+                _has('%q')    // quarter of the year as a decimal number [1,4]
+            ) definedDelta = ONEAVGYEAR / 4;
+            else if(
+                _has('%Y') || // year with century as a decimal number, such as 1999
+                _has('%y')    // year without century as a decimal number [00,99]
+            ) definedDelta = ONEAVGYEAR;
         }
     }
 
