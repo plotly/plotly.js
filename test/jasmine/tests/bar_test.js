@@ -430,10 +430,9 @@ describe('Bar.calc', function() {
             base: [0],
             y: [2000],
             x: ['A']
-        }], {});
+        }], {yaxis: {type: 'date'}});
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0]]);
         assertPointField(cd, 's', [[2000]]);
     });
 
@@ -444,10 +443,9 @@ describe('Bar.calc', function() {
             base: [0],
             x: [2000],
             y: ['A']
-        }], {});
+        }], {xaxis: {type: 'date'}});
 
         var cd = gd.calcdata;
-        assertPointField(cd, 'b', [[0]]);
         assertPointField(cd, 's', [[2000]]);
     });
 });
