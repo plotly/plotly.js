@@ -57,13 +57,14 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .classed(c.cn.tableControlView, true)
         .style('box-sizing', 'content-box');
     if(dynamic) {
+        var wheelEvent = 'onwheel' in document ? 'wheel' : 'mousewheel';
         cvEnter
             .on('mousemove', function(d) {
                 tableControlView
                     .filter(function(dd) {return d === dd;})
                     .call(renderScrollbarKit, gd);
             })
-            .on('mousewheel', function(d) {
+            .on(wheelEvent, function(d) {
                 if(d.scrollbarState.wheeling) return;
                 d.scrollbarState.wheeling = true;
                 var newY = d.scrollY + d3.event.deltaY;
