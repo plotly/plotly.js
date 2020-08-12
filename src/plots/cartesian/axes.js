@@ -24,7 +24,9 @@ var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEAVGQUARTER = constants.ONEAVGYEAR / 4;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEWEEK = constants.ONEDAY * 7;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
@@ -725,7 +727,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 _has('%U') || // Sunday-based week of the year as a decimal number [00,53]
                 _has('%V') || // ISO 8601 week of the year as a decimal number [01, 53]
                 _has('%W')    // Monday-based week of the year as a decimal number [00,53]
-            ) definedDelta = ONEDAY * 7;
+            ) definedDelta = ONEWEEK;
             else if(
                 _has('%B') || // full month name
                 _has('%b') || // abbreviated month name
@@ -733,7 +735,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ) definedDelta = ONEAVGMONTH;
             else if(
                 _has('%q')    // quarter of the year as a decimal number [1,4]
-            ) definedDelta = ONEAVGYEAR / 4;
+            ) definedDelta = ONEAVGQUARTER;
             else if(
                 _has('%Y') || // year with century as a decimal number, such as 1999
                 _has('%y')    // year without century as a decimal number [00,99]
@@ -774,8 +776,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var delta = definedDelta || Math.abs(B - A);
             if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
                 v += ONEAVGYEAR / 2;
+            } else if(delta >= ONEAVGQUARTER) {
+                v += ONEAVGQUARTER / 2;
             } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
                 v += ONEAVGMONTH / 2;
+            } else if(delta >= ONEWEEK) {
+                v += ONEWEEK / 2;
             } else if(delta >= ONEDAY) {
                 v += ONEDAY / 2;
             }
