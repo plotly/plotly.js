@@ -1,4 +1,27 @@
-# Contributing to plotly.js
+# Contributing to Plotly.js
+
+### How do changes get made to Plotly.js?
+
+The basic architecture of Plotly.js is to accept JSON representation of figures that adhere to the figure schema and draw graphical representations of these figures. Adding new attributes to the schema or new allowable values to existing attributes and adding the associated drawing code generally comprises a **new feature**. This project has a strong commitment to backwards-compatibility,  so changing the graphical output for existing schema attributes and values, or changing the default value of an attribute, is generally only done as a mostly-backwards-compatible **bug fix**, for cases when the current graphical output is incorrect, non-sensical or otherwise very problematic.  Non-schema-related features and bug fixes are possible as well, usually around performance, security, bundling, function signatures etc, and generally follow the same principles.
+
+The basic process for adding new features or fixing bugs is as follows:
+
+1. **Discussion** - A community member or maintainer creates an issue to discuss the use-case for the new feature. This usually entails describing the desired graphical output and discussing how close the current system can get to specifying or drawing such a figure. If the issue is percieved to be a bug, the discussion revolves around understanding how the current behaviour is incorrect or problematic, and how existing users of the system would be impacted by a change in this behaviour.
+2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, the next step is to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change.
+3. **Iteration** - The maintainers of the library or any other interested community member will then give feedback on the proposal, usually focused on consistency with the rest of the schema, and helping define a test plan to further elaborate potential edge cases.
+4. **Approval** - After a number of iterations, the maintainers of the library will generally approve a proposal with an informal "this seems like something we would accept a pull request for" comment in the issue.
+5. **Development** - A community member or maintainer creates a branch and makes the appropriate modifications to the code and tests and opens a pull request.
+6. **Review** - The maintainers of the library will review the pull request, working with the original authors to ensure the code is ready for merging.
+7. **Long-term Maintenance** - Once the code is merged, the maintainers of the library are accountable for its maintance, performance, security, bug fixes etc, although the original author of a feature is always welcome and encouraged to participate in this process!
+
+### The Plotly.js Maintainers
+The current Plotly.js maintainers are all employees of Plotly (the company) and one of their primary responsibilities is ensuring the process above runs smoothly. It is worth noting that maintainers and non-maintainer Plotly employees all follow the process above: proposing changes, iterating on proposals and eventually developing and reviewing each other's pull requests. As mentioned above, maintainers are also accountable for bug fixes, performance, security, documentation and concerns that impact the long-term prospects for this library.  In terms of development work, maintainers tend to prioritize issues that do or are likely to impact Plotly customers, as well as on sponsored features or bug fixes. Sponsored work proceeds via the process listed above, albeit with the option of conducting portions of the "discussion" step in a confidential setting if desired.
+
+### The Plotly.js Community
+The Plotly.js community, construed fairly broadly, includes the maintainers and all users of Plotly.js and associated projects (Plotly.py, Dash, Plotly.R, Chart Studio and many others). The community includes people from any background, domain, affiliation and level of technical expertise, for example (but not limited to!) employees of small or large companies or startups; employees or students of universities or other educational institutions; government employees and contractors; employees and volunteers of non-profits; individual hobbyists etc.
+
+**Anyone in the community is encouraged to contribute to every step of the process described above!**  Creating issues to report bugs or suggest new behaviours is a valuable contribution to this project, as is proposing a concrete set of changes to address issues created by anyone at any time. In  the same way, giving feedback on proposals created by anyone in the community is valuable, as is, of course, development and review work. Proposing changes to the documentation of Plotly.js or associated projects is an extremely valuable form of contribution, as is asking or answering questions on our community forum, as it creates a record of a question and discussion, which others can stumble across later and use to futher their own work.
+
 
 ## Opening issues
 
