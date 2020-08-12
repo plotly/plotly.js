@@ -5196,6 +5196,243 @@ describe('Test axes', function() {
             });
         });
     });
+
+    describe('label positioning using *ticklabelmode*: "period"', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _assert(msg, exp) {
+            var labelPositions = gd._fullLayout.xaxis._vals.map(function(d) { return d.periodX; });
+            expect(labelPositions).withContext(msg).toEqual(exp);
+        }
+
+        ['%Y', '%y'].forEach(function(tickformat) {
+            it('should respect yearly tickformat that includes ' + tickformat, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: ['2020-01-01', '2026-01-01']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        1562079600000,
+                        1593615600000,
+                        1625238000000,
+                        1656774000000,
+                        1688310000000,
+                        1719846000000,
+                        1751468400000,
+                        1783004400000
+                    ]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        it('should respect quarters tickformat that includes %q', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2020-01-01', '2022-01-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        ticklabelmode: 'period',
+                        tickformat: '%Y-%q'
+                    }
+                }
+            })
+            .then(function() {
+                _assert('', [
+                    1573832700000,
+                    1581781500000,
+                    1589643900000,
+                    1597506300000,
+                    1605455100000,
+                    1613403900000,
+                    1621179900000,
+                    1629042300000,
+                    1636991100000,
+                    1644939900000
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        ['%B', '%b', '%m'].forEach(function(tickformat) {
+            it('should respect monthly tickformat that includes ' + tickformat, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: ['2020-01-01', '2020-07-01']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: '%q-' + tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        1576473300000,
+                        1579151700000,
+                        1581830100000,
+                        1584335700000,
+                        1587014100000,
+                        1589606100000,
+                        1592284500000,
+                        1594876500000
+                    ]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        it('should respect Sunday-based week tickformat that includes %U', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2020-02-01', '2020-04-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        ticklabelmode: 'period',
+                        tickformat: '%b-%U'
+                    }
+                }
+            })
+            .then(function() {
+                _assert('', [
+                    1580299200000,
+                    1580904000000,
+                    1581508800000,
+                    1582113600000,
+                    1582718400000,
+                    1583323200000,
+                    1583928000000,
+                    1584532800000,
+                    1585137600000,
+                    1585742400000
+                ]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        ['%V', '%W'].forEach(function(tickformat) {
+            it('should respect Monday-based week tickformat that includes ' + tickformat, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: ['2020-02-01', '2020-04-01']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: '%b-' + tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        1580385600000,
+                        1580990400000,
+                        1581595200000,
+                        1582200000000,
+                        1582804800000,
+                        1583409600000,
+                        1584014400000,
+                        1584619200000,
+                        1585224000000,
+                        1585828800000
+                    ]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(tickformat) {
+            it('should respect daily tickformat that includes ' + tickformat, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: ['2020-01-01', '2020-01-08']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: '%b-' + tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        1577793600000,
+                        1577880000000,
+                        1577966400000,
+                        1578052800000,
+                        1578139200000,
+                        1578225600000,
+                        1578312000000,
+                        1578398400000,
+                        1578484800000
+                    ]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(tickformat) {
+            it('should respect daily tickformat that includes ' + tickformat, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: ['2020-01-01', '2020-01-02']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: '%a-' + tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        1577826000000,
+                        1577836800000,
+                        1577847600000,
+                        1577858400000,
+                        1577869200000,
+                        1577880000000,
+                        1577890800000,
+                        1577901600000,
+                        1577912400000,
+                        1577923200000
+                    ]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
 });
 
 function getZoomInButton(gd) {
