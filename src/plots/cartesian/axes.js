@@ -798,7 +798,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     if(removedPreTick0Label) {
-        for(i = 1; i < ticksOut.length; i++) {
+        for(i = 0; i < ticksOut.length; i++) {
             if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
                 // redo first visible tick
                 ax._prevDateHead = '';
