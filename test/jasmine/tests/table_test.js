@@ -415,7 +415,7 @@ describe('table', function() {
             gdWheelEventCount = 0;
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
-                gd.addEventListener('mousewheel', function(evt) {
+                gd.addEventListener('wheel', function(evt) {
                     gdWheelEventCount++;
                     // make sure we don't *really* scroll the page.
                     // that would be annoying!
@@ -440,7 +440,7 @@ describe('table', function() {
 
         function scroll(pos, dy) {
             mouseEvent('mousemove', pos.x, pos.y);
-            mouseEvent('mousewheel', pos.x, pos.y, {deltaX: 0, deltaY: dy});
+            mouseEvent('wheel', pos.x, pos.y, {deltaX: 0, deltaY: dy});
         }
 
         it('bubbles scroll events iff they did not scroll a table', function() {
