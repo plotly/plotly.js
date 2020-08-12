@@ -1,6 +1,6 @@
 # Contributing to Plotly.js
 
-Thanks for your interesting in contributing to Plotly.js!
+Thanks for your interest in contributing to Plotly.js!
 
 ## Plotly.js vs Plotly.py and Plotly.R
 
