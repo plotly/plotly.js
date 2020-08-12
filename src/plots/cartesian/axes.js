@@ -24,9 +24,9 @@ var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
-var ONEAVGQUARTER = constants.ONEAVGYEAR / 4;
+var ONEAVGQUARTER = constants.ONEAVGQUARTER;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
-var ONEWEEK = constants.ONEDAY * 7;
+var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
