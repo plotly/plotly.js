@@ -712,6 +712,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             !_has('%X')    // the locale’s time, such as %-I:%M:%S %p
         ) {
             if(
+                _has('%A') || // full weekday name
+                _has('%a') || // abbreviated weekday name
                 _has('%d') || // zero-padded day of the month as a decimal number [01,31]
                 _has('%e') || // space-padded day of the month as a decimal number [ 1,31]
                 _has('%j') || // day of the year as a decimal number [001,366]
@@ -720,8 +722,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 _has('%x')    // the locale’s date, such as %-m/%-d/%Y
             ) definedDelta = ONEDAY;
             else if(
-                _has('%A') || // full weekday name
-                _has('%a') || // abbreviated weekday name
                 _has('%U') || // Sunday-based week of the year as a decimal number [00,53]
                 _has('%V') || // ISO 8601 week of the year as a decimal number [01, 53]
                 _has('%W')    // Monday-based week of the year as a decimal number [00,53]
