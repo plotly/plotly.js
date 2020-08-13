@@ -5,7 +5,7 @@ diverse contributors, with diverse background and skills.
 
 ## Code of Conduct
 
-Please check out our [Code of Conduct](CODE_OF_CONDUCT.md). Don't tl:dr; it
+Please check out our [Code of Conduct](code_of_conduct.md). Don't tl:dr; it
 but the general idea is to be nice.
 
 ## Plotly.js vs Plotly.py and Plotly.R
