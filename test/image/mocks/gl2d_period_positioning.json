@@ -1,0 +1,28 @@
+{
+    "data": [
+        {
+            "name": "scattergl",
+            "type": "scattergl",
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiodalignment": "middle",
+            "yperiodalignment": "middle"
+        }
+    ],
+    "layout": {
+        "width": 500,
+        "height": 250,
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black"
+        },
+
+        "yaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black"
+        }
+    }
+}
