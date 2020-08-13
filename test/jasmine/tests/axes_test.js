@@ -5206,13 +5206,19 @@ describe('Test axes', function() {
 
         afterEach(destroyGraphDiv);
 
-        function _assert(msg, exp) {
+        function _assertPositions(msg, exp) {
             var ax = gd._fullLayout.xaxis;
-            var labelPositions = ax._vals.map(function(d) { return ax.c2d(d.periodX); });
-            expect(labelPositions).withContext(msg).toEqual(exp);
+            var positions = ax._vals.map(function(d) { return ax.c2d(d.periodX); });
+            expect(positions).withContext(msg).toEqual(exp);
         }
 
-        ['%Y', '%y'].forEach(function(tickformat) {
+        function _assertLabels(msg, exp) {
+            var ax = gd._fullLayout.xaxis;
+            var labels = ax._vals.map(function(d) { return d.text; });
+            expect(labels).withContext(msg).toEqual(exp);
+        }
+
+        ['%Y', '%y'].forEach(function(tickformat, i) {
             it('should respect yearly tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5227,7 +5233,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assert('', [
+                    _assertPositions('', [
                         '2019-07-02 15:00',
                         '2020-07-01 15:00',
                         '2021-07-02 15:00',
@@ -5237,6 +5243,12 @@ describe('Test axes', function() {
                         '2025-07-02 15:00',
                         '2026-07-02 15:00'
                     ]);
+                })
+                .then(function() {
+                    _assertLabels('', [
+                        ['', '2020', '2021', '2022', '2023', '2024', '2025', ''],
+                        ['', '20', '21', '22', '23', '24', '25', '']
+                    ][i]);
                 })
                 .catch(failTest)
                 .then(done);
@@ -5257,7 +5269,7 @@ describe('Test axes', function() {
                 }
             })
             .then(function() {
-                _assert('', [
+                _assertPositions('', [
                     '2019-11-15 15:45',
                     '2020-02-15 15:45',
                     '2020-05-16 15:45',
@@ -5270,11 +5282,14 @@ describe('Test axes', function() {
                     '2022-02-15 15:45'
                 ]);
             })
+            .then(function() {
+                _assertLabels('', ['', '2020-1', '2020-2', '2020-3', '2020-4', '2021-1', '2021-2', '2021-3', '2021-4', '']);
+            })
             .catch(failTest)
             .then(done);
         });
 
-        ['%B', '%b', '%m'].forEach(function(tickformat) {
+        ['%B', '%b', '%m'].forEach(function(tickformat, i) {
             it('should respect monthly tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5289,7 +5304,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assert('', [
+                    _assertPositions('', [
                         '2019-12-16 05:15',
                         '2020-01-16 05:15',
                         '2020-02-16 05:15',
@@ -5299,6 +5314,13 @@ describe('Test axes', function() {
                         '2020-06-16 05:15',
                         '2020-07-16 05:15'
                     ]);
+                })
+                .then(function() {
+                    _assertLabels('', [
+                        ['', '1-January', '1-February', '1-March', '2-April', '2-May', '2-June', ''],
+                        ['', '1-Jan', '1-Feb', '1-Mar', '2-Apr', '2-May', '2-Jun', ''],
+                        ['', '1-01', '1-02', '1-03', '2-04', '2-05', '2-06', '']
+                    ][i]);
                 })
                 .catch(failTest)
                 .then(done);
@@ -5319,7 +5341,7 @@ describe('Test axes', function() {
                 }
             })
             .then(function() {
-                _assert('', [
+                _assertPositions('', [
                     '2020-01-29 12:00',
                     '2020-02-05 12:00',
                     '2020-02-12 12:00',
@@ -5332,11 +5354,14 @@ describe('Test axes', function() {
                     '2020-04-01 12:00'
                 ]);
             })
+            .then(function() {
+                _assertLabels('', ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']);
+            })
             .catch(failTest)
             .then(done);
         });
 
-        ['%V', '%W'].forEach(function(tickformat) {
+        ['%V', '%W'].forEach(function(tickformat, i) {
             it('should respect Monday-based week tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5351,7 +5376,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assert('', [
+                    _assertPositions('', [
                         '2020-01-30 12:00',
                         '2020-02-06 12:00',
                         '2020-02-13 12:00',
@@ -5364,12 +5389,18 @@ describe('Test axes', function() {
                         '2020-04-02 12:00'
                     ]);
                 })
+                .then(function() {
+                    _assertLabels('', [
+                        ['Jan-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Feb-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13', 'Mar-14'],
+                        ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']
+                    ][i]);
+                })
                 .catch(failTest)
                 .then(done);
             });
         });
 
-        ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(tickformat) {
+        ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(tickformat, i) {
             it('should respect daily tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5384,7 +5415,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assert('', [
+                    _assertPositions('', [
                         '2019-12-31 12:00',
                         '2020-01-01 12:00',
                         '2020-01-02 12:00',
@@ -5396,12 +5427,24 @@ describe('Test axes', function() {
                         '2020-01-08 12:00'
                     ]);
                 })
+                .then(function() {
+                    _assertLabels('', [
+                        ['', 'Jan-Wednesday', 'Jan-Thursday', 'Jan-Friday', 'Jan-Saturday', 'Jan-Sunday', 'Jan-Monday', 'Jan-Tuesday', ''],
+                        ['', 'Jan-Wed', 'Jan-Thu', 'Jan-Fri', 'Jan-Sat', 'Jan-Sun', 'Jan-Mon', 'Jan-Tue', ''],
+                        ['', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05', 'Jan-06', 'Jan-07', ''],
+                        ['', 'Jan- 1', 'Jan- 2', 'Jan- 3', 'Jan- 4', 'Jan- 5', 'Jan- 6', 'Jan- 7', ''],
+                        ['', 'Jan-001', 'Jan-002', 'Jan-003', 'Jan-004', 'Jan-005', 'Jan-006', 'Jan-007', ''],
+                        ['', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-7', 'Jan-1', 'Jan-2', ''],
+                        ['', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-0', 'Jan-1', 'Jan-2', ''],
+                        ['', 'Jan-01/01/2020', 'Jan-01/02/2020', 'Jan-01/03/2020', 'Jan-01/04/2020', 'Jan-01/05/2020', 'Jan-01/06/2020', 'Jan-01/07/2020', '']
+                    ][i]);
+                })
                 .catch(failTest)
                 .then(done);
             });
         });
 
-        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(tickformat) {
+        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(tickformat, i) {
             it('should respect daily tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5416,7 +5459,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assert('', [
+                    _assertPositions('', [
                         '2019-12-31 21:00',
                         '2020-01-01',
                         '2020-01-01 03:00',
@@ -5428,6 +5471,20 @@ describe('Test axes', function() {
                         '2020-01-01 21:00',
                         '2020-01-02'
                     ]);
+                })
+                .then(function() {
+                    _assertLabels('', [
+                        ['', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Thu-0'],
+                        ['', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Thu-000'],
+                        ['', 'Wed-1577836800000', 'Wed-1577847600000', 'Wed-1577858400000', 'Wed-1577869200000', 'Wed-1577880000000', 'Wed-1577890800000', 'Wed-1577901600000', 'Wed-1577912400000', 'Thu-1577923200000'],
+                        ['', 'Wed-1577836800', 'Wed-1577847600', 'Wed-1577858400', 'Wed-1577869200', 'Wed-1577880000', 'Wed-1577890800', 'Wed-1577901600', 'Wed-1577912400', 'Thu-1577923200'],
+                        ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00'],
+                        ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00'],
+                        ['', 'Wed-00', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-15', 'Wed-18', 'Wed-21', 'Thu-00'],
+                        ['', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Thu-12'],
+                        ['', 'Wed-AM', 'Wed-AM', 'Wed-AM', 'Wed-AM', 'Wed-PM', 'Wed-PM', 'Wed-PM', 'Wed-PM', 'Thu-AM'],
+                        ['', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
+                    ][i]);
                 })
                 .catch(failTest)
                 .then(done);
