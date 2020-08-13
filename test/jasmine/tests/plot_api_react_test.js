@@ -2365,9 +2365,13 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             expect(gd._fullLayout._preGUI).toEqual({});
         })
         .then(function() { return _drag([200, 200], [250, 250]); })
-        .then(function() { _assertGUI('before'); })
+        .then(
+            gd.on('plotly_relayout', function() { _assertGUI('before'); })
+        )
         .then(_react)
-        .then(function() { _assertGUI('after'); })
+        .then(
+            gd.on('plotly_relayout', function() { _assertGUI('after'); })
+        )
         .catch(failTest)
         .then(done);
     });
