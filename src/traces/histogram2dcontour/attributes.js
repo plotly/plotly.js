@@ -15,6 +15,11 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = extendFlat({
+    xperiod: histogram2dAttrs.xperiod,
+    yperiod: histogram2dAttrs.yperiod,
+    xperiodalignment: histogram2dAttrs.xperiodalignment,
+    yperiodalignment: histogram2dAttrs.yperiodalignment,
+
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,

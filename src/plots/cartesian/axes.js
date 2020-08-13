@@ -1266,6 +1266,10 @@ function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
+    if(ax.ticklabelmode === 'period') {
+        extraPrecision = false;
+    }
+
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
         // for other fields, extra precision just adds one field.

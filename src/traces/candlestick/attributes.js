@@ -27,6 +27,9 @@ function directionAttrs(lineColorDefault) {
 }
 
 module.exports = {
+    xperiod: OHLCattrs.xperiod,
+    xperiodalignment: OHLCattrs.xperiodalignment,
+
     x: OHLCattrs.x,
     open: OHLCattrs.open,
     high: OHLCattrs.high,

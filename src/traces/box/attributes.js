@@ -76,6 +76,11 @@ module.exports = {
         ].join(' ')
     },
 
+    xperiod: scatterAttrs.xperiod,
+    yperiod: scatterAttrs.yperiod,
+    xperiodalignment: scatterAttrs.xperiodalignment,
+    yperiodalignment: scatterAttrs.yperiodalignment,
+
     name: {
         valType: 'string',
         role: 'info',

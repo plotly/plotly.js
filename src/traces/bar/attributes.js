@@ -59,6 +59,11 @@ module.exports = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
 
+    xperiod: scatterAttrs.xperiod,
+    yperiod: scatterAttrs.yperiod,
+    xperiodalignment: scatterAttrs.xperiodalignment,
+    yperiodalignment: scatterAttrs.yperiodalignment,
+
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
         keys: constants.eventDataKeys

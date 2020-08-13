@@ -22,6 +22,11 @@ module.exports = extendFlat(
         x: histogramAttrs.x,
         y: histogramAttrs.y,
 
+        xperiod: histogramAttrs.xperiod,
+        yperiod: histogramAttrs.yperiod,
+        xperiodalignment: histogramAttrs.xperiodalignment,
+        yperiodalignment: histogramAttrs.yperiodalignment,
+
         z: {
             valType: 'data_array',
             editType: 'calc',

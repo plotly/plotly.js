@@ -30,6 +30,7 @@ var ONEMIN = numConstants.ONEMIN;
 var ONESEC = numConstants.ONESEC;
 
 var axisIds = require('./axis_ids');
+var alignPeriod = require('./align_period');
 
 var constants = require('./constants');
 var HOUR_PATTERN = constants.HOUR_PATTERN;
@@ -845,6 +846,10 @@ module.exports = function setConvert(ax, fullLayout) {
             for(i = 0; i < len; i++) {
                 arrayOut[i] = ax.maskBreaks(arrayOut[i]);
             }
+        }
+
+        if(axType === 'date') {
+            arrayOut = alignPeriod(trace, axLetter, arrayOut);
         }
 
         return arrayOut;

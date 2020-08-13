@@ -30,6 +30,11 @@ module.exports = {
         ].join(' ')
     },
 
+    xperiod: barAttrs.xperiod,
+    yperiod: barAttrs.yperiod,
+    xperiodalignment: barAttrs.xperiodalignment,
+    yperiodalignment: barAttrs.yperiodalignment,
+
     text: extendFlat({}, barAttrs.text, {
         description: [
             'Sets hover text elements associated with each bar.',

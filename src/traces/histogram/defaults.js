@@ -12,6 +12,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
@@ -45,6 +46,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     traceOut._length = len;
 

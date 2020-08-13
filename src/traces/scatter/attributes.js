@@ -16,6 +16,8 @@ var dash = require('../../components/drawing/attributes').dash;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
+var ONEAVGYEAR = require('../../constants/numerical').ONEAVGYEAR;
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
@@ -77,6 +79,60 @@ module.exports = {
         description: [
             'Sets the y coordinate step.',
             'See `y0` for more info.'
+        ].join(' ')
+    },
+
+    xperiod: {
+        valType: 'number',
+        dflt: ONEAVGYEAR,
+        min: 0,
+        role: 'info',
+        editType: 'calc',
+        anim: true,
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the period positioning in milliseconds',
+            'on the x axis.'
+        ].join(' ')
+    },
+    xperiodalignment: {
+        valType: 'enumerated',
+        values: [
+            'start', 'middle', 'end'
+        ],
+        dflt: 'start',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the alignment of data points',
+            'on the x axis.'
+        ].join(' ')
+    },
+    yperiod: {
+        valType: 'number',
+        dflt: ONEAVGYEAR,
+        min: 0,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the period positioning in milliseconds',
+            'on the y axis.'
+        ].join(' ')
+    },
+    yperiodalignment: {
+        valType: 'enumerated',
+        values: [
+            'start', 'middle', 'end'
+        ],
+        dflt: 'start',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the alignment of data points',
+            'on the y axis.'
         ].join(' ')
     },
 

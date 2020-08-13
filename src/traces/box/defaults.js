@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
@@ -22,6 +23,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     var hasPreCompStats = traceOut._hasPreCompStats;
 

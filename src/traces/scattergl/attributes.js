@@ -28,6 +28,11 @@ var attrs = module.exports = overrideAll({
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
 
+    xperiod: scatterAttrs.xperiod,
+    yperiod: scatterAttrs.yperiod,
+    xperiodalignment: scatterAttrs.xperiodalignment,
+    yperiodalignment: scatterAttrs.yperiodalignment,
+
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
 

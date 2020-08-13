@@ -34,6 +34,9 @@ function directionAttrs(lineColorDefault) {
 
 module.exports = {
 
+    xperiod: scatterAttrs.xperiod,
+    xperiodalignment: scatterAttrs.xperiodalignment,
+
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',

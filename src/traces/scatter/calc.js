@@ -25,6 +25,7 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var x = xa.makeCalcdata(trace, 'x');
     var y = ya.makeCalcdata(trace, 'y');
+
     var serieslen = trace._length;
     var cd = new Array(serieslen);
     var ids = trace.ids;
