@@ -153,8 +153,8 @@ Open-source clients to the plotly.js APIs are available at these links:
 
 |   | GitHub | Twitter | Status |
 |---|--------|---------|--------|
-|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | | Active, Maintainer |
+|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
 |**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Active, Maintainer |
 |**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Active |
 |**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Active |
