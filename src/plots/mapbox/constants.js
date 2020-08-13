@@ -8,7 +8,7 @@
 
 'use strict';
 
-var requiredVersion = '1.10.1';
+var requiredVersion = '1.12.0';
 
 var stylesNonMapbox = {
     'open-street-map': {
