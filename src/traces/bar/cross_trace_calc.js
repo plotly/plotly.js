@@ -59,6 +59,9 @@ function crossTraceCalc(gd, plotinfo) {
     }
 
     var opts = {
+        xCat: xa.type === 'category' || xa.type === 'multicategory',
+        yCat: ya.type === 'category' || ya.type === 'multicategory',
+
         mode: fullLayout.barmode,
         norm: fullLayout.barnorm,
         gap: fullLayout.bargap,
@@ -172,14 +175,20 @@ function initBase(sa, calcTraces) {
 }
 
 function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
+    var sieve;
+    var sieveOpts = {
+        sepNegVal: false,
+        overlapNoMerge: !opts.norm
+    };
+
+    var categoryOverlay = opts.xCat || opts.yCat;
+    if(categoryOverlay) {
+        sieve = new Sieve(calcTraces, sieveOpts);
+    }
+
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
-        var calcTrace = calcTraces[i];
-
-        var sieve = new Sieve([calcTrace], {
-            sepNegVal: false,
-            overlapNoMerge: !opts.norm
-        });
+        if(!categoryOverlay) sieve = new Sieve([calcTraces[i]], sieveOpts);
 
         // set bar offsets and widths, and update position axis
         setOffsetAndWidth(pa, sieve, opts);
