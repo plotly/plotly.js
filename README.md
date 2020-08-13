@@ -149,33 +149,27 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plotly/matlab/getting-started](https://plotly.com/matlab/getting-started) |
 |**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
 
-## Maintainers
+## Notable Contributors
 
-### Active
-
-|   | GitHub | Twitter |
-|---|--------|---------|
-|**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
-|**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | |
-|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) |
-|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) |
-
-### Hall of Fame
-
-|   | GitHub | Twitter |
-|---|--------|---------|
-|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
-|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
-|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
-|**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)|
-|**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) |
-|**Robert Möstl** | [@rmoestl](https://github.com/rmoestl) | [@rmoestl](https://twitter.com/rmoestl) |
-|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | |
-|**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)|
-|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
-|**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
-|**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | |
-|**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | |
+|   | GitHub | Twitter | Status |
+|---|--------|---------|--------|
+|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
+|**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | | Active, Maintainer |
+|**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Active, Maintainer |
+|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Active |
+|**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Active |
+|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | Hall of Fame |
+|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) | Hall of Fame |
+|**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)| Hall of Fame |
+|**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) | Hall of Fame |
+|**Robert Möstl** | [@rmoestl](https://github.com/rmoestl) | [@rmoestl](https://twitter.com/rmoestl) | Hall of Fame |
+|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | | Hall of Fame |
+|**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)| Hall of Fame |
+|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | | Hall of Fame |
+|**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | | Hall of Fame |
+|**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | | Hall of Fame |
+|**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | | Hall of Fame |
 
 ## Copyright and license
 
