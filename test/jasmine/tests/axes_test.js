@@ -5206,16 +5206,14 @@ describe('Test axes', function() {
 
         afterEach(destroyGraphDiv);
 
-        function _assertPositions(msg, exp) {
+        function _assert(msg, expPositions, expLabels) {
             var ax = gd._fullLayout.xaxis;
-            var positions = ax._vals.map(function(d) { return ax.c2d(d.periodX); });
-            expect(positions).withContext(msg).toEqual(exp);
-        }
 
-        function _assertLabels(msg, exp) {
-            var ax = gd._fullLayout.xaxis;
+            var positions = ax._vals.map(function(d) { return ax.c2d(d.periodX); });
+            expect(positions).withContext(msg).toEqual(expPositions);
+
             var labels = ax._vals.map(function(d) { return d.text; });
-            expect(labels).withContext(msg).toEqual(exp);
+            expect(labels).withContext(msg).toEqual(expLabels);
         }
 
         ['%Y', '%y'].forEach(function(tickformat, i) {
@@ -5233,7 +5231,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assertPositions('', [
+                    _assert('', [
                         '2019-07-02 15:00',
                         '2020-07-01 15:00',
                         '2021-07-02 15:00',
@@ -5242,10 +5240,7 @@ describe('Test axes', function() {
                         '2024-07-01 15:00',
                         '2025-07-02 15:00',
                         '2026-07-02 15:00'
-                    ]);
-                })
-                .then(function() {
-                    _assertLabels('', [
+                    ], [
                         ['', '2020', '2021', '2022', '2023', '2024', '2025', ''],
                         ['', '20', '21', '22', '23', '24', '25', '']
                     ][i]);
@@ -5269,7 +5264,7 @@ describe('Test axes', function() {
                 }
             })
             .then(function() {
-                _assertPositions('', [
+                _assert('', [
                     '2019-11-15 15:45',
                     '2020-02-15 15:45',
                     '2020-05-16 15:45',
@@ -5280,10 +5275,7 @@ describe('Test axes', function() {
                     '2021-08-15 15:45',
                     '2021-11-15 15:45',
                     '2022-02-15 15:45'
-                ]);
-            })
-            .then(function() {
-                _assertLabels('', ['', '2020-1', '2020-2', '2020-3', '2020-4', '2021-1', '2021-2', '2021-3', '2021-4', '']);
+                ], ['', '2020-1', '2020-2', '2020-3', '2020-4', '2021-1', '2021-2', '2021-3', '2021-4', '']);
             })
             .catch(failTest)
             .then(done);
@@ -5304,7 +5296,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assertPositions('', [
+                    _assert('', [
                         '2019-12-16 05:15',
                         '2020-01-16 05:15',
                         '2020-02-16 05:15',
@@ -5313,10 +5305,7 @@ describe('Test axes', function() {
                         '2020-05-16 05:15',
                         '2020-06-16 05:15',
                         '2020-07-16 05:15'
-                    ]);
-                })
-                .then(function() {
-                    _assertLabels('', [
+                    ], [
                         ['', '1-January', '1-February', '1-March', '2-April', '2-May', '2-June', ''],
                         ['', '1-Jan', '1-Feb', '1-Mar', '2-Apr', '2-May', '2-Jun', ''],
                         ['', '1-01', '1-02', '1-03', '2-04', '2-05', '2-06', '']
@@ -5341,7 +5330,7 @@ describe('Test axes', function() {
                 }
             })
             .then(function() {
-                _assertPositions('', [
+                _assert('', [
                     '2020-01-29 12:00',
                     '2020-02-05 12:00',
                     '2020-02-12 12:00',
@@ -5352,10 +5341,7 @@ describe('Test axes', function() {
                     '2020-03-18 12:00',
                     '2020-03-25 12:00',
                     '2020-04-01 12:00'
-                ]);
-            })
-            .then(function() {
-                _assertLabels('', ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']);
+                ], ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']);
             })
             .catch(failTest)
             .then(done);
@@ -5376,7 +5362,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assertPositions('', [
+                    _assert('', [
                         '2020-01-30 12:00',
                         '2020-02-06 12:00',
                         '2020-02-13 12:00',
@@ -5387,10 +5373,7 @@ describe('Test axes', function() {
                         '2020-03-19 12:00',
                         '2020-03-26 12:00',
                         '2020-04-02 12:00'
-                    ]);
-                })
-                .then(function() {
-                    _assertLabels('', [
+                    ], [
                         ['Jan-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Feb-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13', 'Mar-14'],
                         ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']
                     ][i]);
@@ -5415,7 +5398,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assertPositions('', [
+                    _assert('', [
                         '2019-12-31 12:00',
                         '2020-01-01 12:00',
                         '2020-01-02 12:00',
@@ -5425,10 +5408,7 @@ describe('Test axes', function() {
                         '2020-01-06 12:00',
                         '2020-01-07 12:00',
                         '2020-01-08 12:00'
-                    ]);
-                })
-                .then(function() {
-                    _assertLabels('', [
+                    ], [
                         ['', 'Jan-Wednesday', 'Jan-Thursday', 'Jan-Friday', 'Jan-Saturday', 'Jan-Sunday', 'Jan-Monday', 'Jan-Tuesday', ''],
                         ['', 'Jan-Wed', 'Jan-Thu', 'Jan-Fri', 'Jan-Sat', 'Jan-Sun', 'Jan-Mon', 'Jan-Tue', ''],
                         ['', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05', 'Jan-06', 'Jan-07', ''],
@@ -5459,7 +5439,7 @@ describe('Test axes', function() {
                     }
                 })
                 .then(function() {
-                    _assertPositions('', [
+                    _assert('', [
                         '2019-12-31 21:00',
                         '2020-01-01',
                         '2020-01-01 03:00',
@@ -5470,10 +5450,7 @@ describe('Test axes', function() {
                         '2020-01-01 18:00',
                         '2020-01-01 21:00',
                         '2020-01-02'
-                    ]);
-                })
-                .then(function() {
-                    _assertLabels('', [
+                    ], [
                         ['', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Thu-0'],
                         ['', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Thu-000'],
                         ['', 'Wed-1577836800000', 'Wed-1577847600000', 'Wed-1577858400000', 'Wed-1577869200000', 'Wed-1577880000000', 'Wed-1577890800000', 'Wed-1577901600000', 'Wed-1577912400000', 'Thu-1577923200000'],
