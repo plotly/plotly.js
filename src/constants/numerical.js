@@ -32,7 +32,9 @@ module.exports = {
      * have the same length
      */
     ONEAVGYEAR: 31557600000, // 365.25 days
+    ONEAVGQUARTER: 7889400000, // 1/4 of ONEAVGYEAR
     ONEAVGMONTH: 2629800000, // 1/12 of ONEAVGYEAR
+    ONEWEEK: 604800000, // 7 * ONEDAY
     ONEDAY: 86400000,
     ONEHOUR: 3600000,
     ONEMIN: 60000,

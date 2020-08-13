@@ -24,7 +24,9 @@ var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEAVGQUARTER = constants.ONEAVGQUARTER;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
@@ -695,23 +697,51 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var definedDelta;
     if(isPeriod && ax.tickformat) {
-        var _has = function(str) {
-            return ax.tickformat.indexOf(str) !== -1;
-        };
-
         if(
-            !_has('%f') &&
-            !_has('%H') &&
-            !_has('%I') &&
-            !_has('%L') &&
-            !_has('%Q') &&
-            !_has('%S') &&
-            !_has('%s') &&
-            !_has('%X')
+            !(/%[fLQsSMHIpX]/.test(ax.tickformat))
+            // %f: microseconds as a decimal number [000000, 999999]
+            // %L: milliseconds as a decimal number [000, 999]
+            // %Q: milliseconds since UNIX epoch
+            // %s: seconds since UNIX epoch
+            // %S: second as a decimal number [00,61]
+            // %M: minute as a decimal number [00,59]
+            // %H: hour (24-hour clock) as a decimal number [00,23]
+            // %I: hour (12-hour clock) as a decimal number [01,12]
+            // %p: either AM or PM
+            // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
-            if(_has('%x') || _has('%d') || _has('%e') || _has('%j')) definedDelta = ONEDAY;
-            else if(_has('%B') || _has('%b') || _has('%m')) definedDelta = ONEAVGMONTH;
-            else if(_has('%Y') || _has('%y')) definedDelta = ONEAVGYEAR;
+            if(
+                /%[Aadejuwx]/.test(ax.tickformat)
+                // %A: full weekday name
+                // %a: abbreviated weekday name
+                // %d: zero-padded day of the month as a decimal number [01,31]
+                // %e: space-padded day of the month as a decimal number [ 1,31]
+                // %j: day of the year as a decimal number [001,366]
+                // %u: Monday-based (ISO 8601) weekday as a decimal number [1,7]
+                // %w: Sunday-based weekday as a decimal number [0,6]
+                // %x: the locale’s date, such as %-m/%-d/%Y
+            ) definedDelta = ONEDAY;
+            else if(
+                /%[UVW]/.test(ax.tickformat)
+                // %U: Sunday-based week of the year as a decimal number [00,53]
+                // %V: ISO 8601 week of the year as a decimal number [01, 53]
+                // %W: Monday-based week of the year as a decimal number [00,53]
+            ) definedDelta = ONEWEEK;
+            else if(
+                /%[Bbm]/.test(ax.tickformat)
+                // %B: full month name
+                // %b: abbreviated month name
+                // %m: month as a decimal number [01,12]
+            ) definedDelta = ONEAVGMONTH;
+            else if(
+                /%[q]/.test(ax.tickformat)
+                // %q: quarter of the year as a decimal number [1,4]
+            ) definedDelta = ONEAVGQUARTER;
+            else if(
+                /%[Yy]/.test(ax.tickformat)
+                // %Y: year with century as a decimal number, such as 1999
+                // %y: year without century as a decimal number [00,99]
+            ) definedDelta = ONEAVGYEAR;
         }
     }
 
@@ -748,8 +778,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var delta = definedDelta || Math.abs(B - A);
             if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
                 v += ONEAVGYEAR / 2;
+            } else if(delta >= ONEAVGQUARTER) {
+                v += ONEAVGQUARTER / 2;
             } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
                 v += ONEAVGMONTH / 2;
+            } else if(delta >= ONEWEEK) {
+                v += ONEWEEK / 2;
             } else if(delta >= ONEDAY) {
                 v += ONEDAY / 2;
             }
@@ -764,7 +798,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     if(removedPreTick0Label) {
-        for(i = 1; i < ticksOut.length; i++) {
+        for(i = 0; i < ticksOut.length; i++) {
             if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
                 // redo first visible tick
                 ax._prevDateHead = '';
@@ -882,6 +916,13 @@ axes.autoTicks = function(ax, roughDTick) {
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
+
+            if(/%[uVW]/.test(ax.tickformat)) {
+                // replace Sunday with Monday for ISO and Monday-based formats
+                var len = ax.tick0.length;
+                var lastD = +ax.tick0[len - 1];
+                ax.tick0 = ax.tick0.substring(0, len - 2) + String(lastD + 1);
+            }
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {

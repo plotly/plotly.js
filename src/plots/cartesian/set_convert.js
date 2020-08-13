@@ -23,6 +23,7 @@ var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
+var ONEWEEK = numConstants.ONEWEEK;
 var ONEDAY = numConstants.ONEDAY;
 var ONEHOUR = numConstants.ONEHOUR;
 var ONEMIN = numConstants.ONEMIN;
@@ -734,7 +735,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     switch(brk.pattern) {
                         case WEEKDAY_PATTERN:
-                            step = 7 * ONEDAY;
+                            step = ONEWEEK;
 
                             bndDelta = (
                                 (b1 < b0 ? 7 : 0) +
