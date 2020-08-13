@@ -12,8 +12,8 @@ var counterRegex = require('../../lib/regex').counter;
 
 module.exports = {
     idRegex: {
-        x: counterRegex('x'),
-        y: counterRegex('y')
+        x: counterRegex('x','( domain)?'),
+        y: counterRegex('y','( domain)?')
     },
 
     attrRegex: counterRegex('[xy]axis'),
