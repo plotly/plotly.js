@@ -70,7 +70,23 @@ describe('image supplyDefaults', function() {
 
         traceIn = {
             type: 'image',
-            source: 'base64'
+            source: 'data:image/png;base64,somedata'
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
+        expect(traceOut.visible).toBe(true);
+    });
+
+    it('should set visible to false when source is a URL', function() {
+        traceIn = {
+            source: 'https://antrg.com/assets/img/portrait_2013_circle_200px.png'
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.visible).toBe(false);
+        expect(traceOut.source).toBe(null);
+
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,somedata'
         };
         traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
         expect(traceOut.visible).toBe(true);

@@ -11,13 +11,15 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var constants = require('./constants');
+var dataUri = require('../../snapshot/helpers').IMAGE_URL_PREFIX;
 
 module.exports = function supplyDefaults(traceIn, traceOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
-    var source = coerce('source');
-    traceOut._isFromSource = !!source;
+    coerce('source');
+    if(traceOut.source && !traceOut.source.match(dataUri)) traceOut.source = null;
+    traceOut._isFromSource = !!traceOut.source;
 
     var z = coerce('z');
     traceOut._isFromZ = !(z === undefined || !z.length || !z[0] || !z[0].length);
