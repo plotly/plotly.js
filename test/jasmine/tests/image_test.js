@@ -14,7 +14,6 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var Fx = require('@src/components/fx');
 var drag = require('../assets/drag');
-var delay = require('../assets/delay');
 
 var incompatibleUserAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15';
 
@@ -694,7 +693,6 @@ describe('image hover:', function() {
                 mockCopy.data[0].colormodel = 'rgba';
                 mockCopy.data[0].hovertemplate = '%{' + test[0] + '}<extra></extra>';
                 Plotly.newPlot(gd, mockCopy)
-                .then(delay(100)) // wait for the image to be loaded into canvas
                 .then(function() {_hover(205, 125);})
                 .then(function() {
                     assertHoverLabelContent({

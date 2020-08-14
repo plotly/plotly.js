@@ -155,7 +155,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         image3
             .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
 
-        new Promise(function(resolve) {
+        var p = new Promise(function(resolve) {
             if(trace._isFromZ) {
                 resolve();
             } else if(trace._isFromSource) {
@@ -177,11 +177,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 var image = sel.node();
                 image.onload = function() {
                     context.drawImage(image, 0, 0);
-                    // we need to wait for the image to be loaded in order to redraw it from the canvas
-                    if(!fastImage) resolve();
+                    resolve();
                 };
                 sel.attr('xlink:href', trace.source);
-                if(fastImage) resolve();
             }
         })
         .then(function() {
@@ -208,5 +206,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 displayImage.attr('xlink:href', href);
             }
         });
+
+        gd._promises.push(p);
     });
 };
