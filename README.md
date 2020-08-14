@@ -150,6 +150,16 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plotly/matlab/getting-started](https://plotly.com/matlab/getting-started) |
 |**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
 
+## Related third-party projects
+
+[TypeScript](https://www.typescriptlang.org/) bindings are provided by the [DefinitelyTyped](https://definitelytyped.org/) project: run `npm install @types/plotly.js` and – when using `plotly.js-dist`, provide a `plotly.js-dist.d.ts` file in your project with the following content:
+
+```typescript
+declare module "plotly.js-dist" {
+  export * from "plotly.js";
+}
+```
+
 ## Creators
 
 ### Active
