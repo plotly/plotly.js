@@ -3,6 +3,10 @@
 Thanks for your interest in contributing to Plotly.js! We are actively looking for
 diverse contributors, with diverse background and skills.
 
+This document outlines the general way that changes get made to this library and by whom, 
+and then provides specific technical information about how to set up a development 
+environment for doing development and running tests.
+
 ## Code of Conduct
 
 Please check out our [Code of Conduct](code_of_conduct.md). Don't tl:dr; it
@@ -18,14 +22,14 @@ The basic architecture of Plotly.js is to accept [JSON](https://json.org/) repre
 
  A **new feature** is composed of additions to the schema - adding new attributes, adding entire new trace types, or just adding new values to existing attributes - along with the associated drawing code. This project has a strong commitment to backwards-compatibility,  so changing the graphical output for existing schema attributes and values, or changing the default value of an attribute, is generally only done as a mostly-backwards-compatible **bug fix**, for cases when the current graphical output is incorrect, nonsensical or otherwise very problematic.  Non-schema-related features and bug fixes are possible as well, usually around performance, security, bundling, function signatures etc, and generally follow the same principles.
 
-The basic process for adding new features or fixing bugs is as follows:
+The basic process for adding new features or fixing bugs is as follows. Please note that this is a bit of an idealized outline and that things often don't proceed in a clean/linear fashion and that's ok :)
 
 1. **Discussion** - A community member or maintainer creates an issue to discuss the use-case for the new feature. This usually entails describing the desired graphical output and discussing how close the current system can get to specifying or drawing such a figure. If the issue is perceived to be a bug, the discussion revolves around understanding how the current behaviour is incorrect or problematic, and how existing users of the system would be impacted by a change in this behaviour.
-2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, the next step is to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change. A good proposal includes discussion of whether or not existing attributes can be modified rather than adding new attributes and details about which trace types or subplot types are impacted by the change.
+2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, a good next step would be to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change. A good proposal includes discussion of whether or not existing attributes can be modified rather than adding new attributes and details about which trace types or subplot types are impacted by the change. Note: sometimes community contributors skip this step and go straight to development & review (below), but going through a proposal can help speed along the review process! 
 3. **Iteration** - The maintainers of the library or any other interested community member will then give feedback on the proposal, usually focused on consistency with the rest of the schema, and helping define a test plan to further elaborate potential edge cases.
 4. **Approval** - After a number of iterations, the maintainers of the library will generally approve a proposal with an informal "this seems like something we would accept a pull request for" comment in the issue.
-5. **Development** - A community member or maintainer creates a branch and makes the appropriate modifications to the code and tests and opens a pull request.
-6. **Review** - The maintainers of the library will review the pull request, working with the original authors to ensure the code is ready for merging.
+5. **Development** - A community member or maintainer creates a branch and makes the appropriate modifications to the code and tests and opens a pull request. This can be more or less time-consuming and challenging, depending on the nature of the change.
+6. **Review** - The maintainers of the library will review the pull request, working with the original authors to ensure the code is ready for merging. This can involve quite a few iterations and exploration of edge cases, additions of tests etc, but the maintainers are very happy to have outside contributors and will try to make this as painless as possible. Starting out with a previously-discussed proposal (see above) generally helps make this smoother as it reduces the likelihood of overlooked requirements that would prevent a merge.
 7. **Long-term Maintenance** - Once the code is merged, the maintainers of the library will generally look after its maintenance, performance, security, bug fixes etc, although the original author of a feature is always welcome and encouraged to participate in this process!
 
 ### The Plotly.js Maintainers
