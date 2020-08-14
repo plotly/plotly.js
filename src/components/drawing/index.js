@@ -220,8 +220,11 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     var n = symDef.n;
     drawing.symbolList.push(
         n,
+        String(n),
         k,
+
         n + 100,
+        String(n + 100),
         k + '-open'
     );
     drawing.symbolNames[n] = k;
@@ -237,6 +240,7 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
             n + 200,
             String(n + 200),
             k + '-dot',
+
             n + 300,
             String(n + 300),
             k + '-open-dot'

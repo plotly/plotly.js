@@ -905,6 +905,7 @@ var list = [
     'sunburst_values_colorscale',
     'sunburst_with-without_values',
     'sunburst_zero_values_textfit',
+    'symbols_string-numbers',
     'table_latex_multitrace_scatter',
     'table_plain_birds',
     'table_ragged',
@@ -1952,6 +1953,7 @@ figs['sunburst_values'] = require('@mocks/sunburst_values');
 figs['sunburst_values_colorscale'] = require('@mocks/sunburst_values_colorscale');
 figs['sunburst_with-without_values'] = require('@mocks/sunburst_with-without_values');
 figs['sunburst_zero_values_textfit'] = require('@mocks/sunburst_zero_values_textfit');
+figs['symbols_string-numbers'] = require('@mocks/symbols_string-numbers');
 figs['table_latex_multitrace_scatter'] = require('@mocks/table_latex_multitrace_scatter');
 // figs['table_plain_birds'] = require('@mocks/table_plain_birds');
 figs['table_ragged'] = require('@mocks/table_ragged');
