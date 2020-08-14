@@ -25,8 +25,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Documentation](#documentation)
 * [Contributing](#contributing)
 * [Community](#community)
-* [Clients for R, Python, Node, and MATLAB](#clients-for-r-python-node-and-matlab)
-* [Creators](#creators)
+* [Notable Contributors](#creators)
 * [Copyright and license](#copyright-and-license)
 
 ## Quick start options
