@@ -61,11 +61,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var ax;
         var pos2r;
         var r2pos;
-        var coerceRefExtras = ['paper'];
-        coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(shapeIn, axLetter, coerceRefExtras);
 
         // xref, yref
-        var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', coerceRefExtras);
+        var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
+            'paper', true);
         var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
         var axRefInfo = Axes.extractInfoFromAxisRef(axRef);
 

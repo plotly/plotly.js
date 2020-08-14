@@ -35,6 +35,13 @@ module.exports = function makeIncludeComponents(containerArrayName) {
         var yaList = subplots.yaxis;
         var cartesianList = subplots.cartesian;
         var hasCartesianOrGL2D = layoutOut._has('cartesian') || layoutOut._has('gl2d');
+        // Test if the axRef looks like "x", "x2", etc. and has nothing
+        // appended, e.g., this will return false if axRef "x2 domain".
+        var hasOnlyAxRef = function (axLetter,axRef) {
+            var axRefMatch = axRef.match(idRegex[axLetter]);
+            if (axRefMatch) { return axRefMatch[0].split(' ') === axRefMatch[0]; }
+            return false;
+        }
 
         for(var i = 0; i < array.length; i++) {
             var itemi = array[i];
@@ -43,8 +50,8 @@ module.exports = function makeIncludeComponents(containerArrayName) {
             var xref = itemi.xref;
             var yref = itemi.yref;
 
-            var hasXref = idRegex.x.test(xref);
-            var hasYref = idRegex.y.test(yref);
+            var hasXref = hasOnlyAxRef('x',xref);
+            var hasYref = hasOnlyAxRef('y',yref);
             if(hasXref || hasYref) {
                 if(!hasCartesianOrGL2D) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
 

@@ -19,7 +19,8 @@ var constants = require('./constants');
 exports.id2name = function id2name(id) {
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
     var axNum = id.substr(1);
-    if(axNum === '1') axNum = '';
+    // axNum could be ' ' if domain specified and axis omitted number
+    if(axNum === '1' || axNum === ' ') axNum = '';
     return id.charAt(0) + 'axis' + axNum;
 };
 

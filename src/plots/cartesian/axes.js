@@ -76,35 +76,21 @@ function expandRange(range) {
  * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
  *     Only required if it's different from `dflt`
  */
-axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
+axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption, domainRef) {
     var axLetter = attr.charAt(attr.length - 1);
     var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
     var refAttr = attr + 'ref';
     var attrDef = {};
 
-    if(!dflt) {
-        dflt = axlist[0] || (
-        ((extraOption === undefined) || (typeof(extraOption) === 'string')) ?
-            extraOption :
-            extraOption[0]
-        );
-    }
-    // so in the end, if dflt, axlist[], and extraOption were undefined, they
-    // are still undefined
+    if(!dflt) dflt = axlist[0] || extraOption;
     if(!extraOption) extraOption = dflt;
+    if(domainRef) axlist = axlist.concat([axlist[0]+' domain']);
 
     // data-ref annotations are not supported in gl2d yet
 
-    var extraOptionAsList = extraOption;
-    if(extraOption) {
-        if(typeof(extraOption) === 'string') {
-            extraOptionAsList = [extraOption];
-        }
-    }
-
     attrDef[refAttr] = {
         valType: 'enumerated',
-        values: axlist.concat(extraOptionAsList ? extraOptionAsList : []),
+        values: axlist.concat(extraOption ? [extraOption] : []),
         dflt: dflt
     };
 

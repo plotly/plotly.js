@@ -45,11 +45,9 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i];
-        var coerceRefExtras = ['paper'];
-        coerceRefExtras = Axes.addAxRefDomainCoerceRefExtra(annIn, axLetter, coerceRefExtras);
 
         // xref, yref
-        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', coerceRefExtras);
+        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, undefined, 'paper', true);
         var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
 
         if(axRef !== 'paper') {
