@@ -18,7 +18,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
     coerce('source');
-    if(traceOut.source && !traceOut.source.match(dataUri)) traceOut.source = null;
+    if(traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
     traceOut._isFromSource = !!traceOut.source;
 
     var z = coerce('z');
