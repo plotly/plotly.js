@@ -220,8 +220,11 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     var n = symDef.n;
     drawing.symbolList.push(
         n,
+        String(n),
         k,
+
         n + 100,
+        String(n + 100),
         k + '-open'
     );
     drawing.symbolNames[n] = k;
@@ -235,8 +238,11 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     } else {
         drawing.symbolList.push(
             n + 200,
+            String(n + 200),
             k + '-dot',
+
             n + 300,
+            String(n + 300),
             k + '-open-dot'
         );
     }
@@ -250,7 +256,9 @@ var MAXSYMBOL = drawing.symbolNames.length;
 var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
 
 drawing.symbolNumber = function(v) {
-    if(typeof v === 'string') {
+    if(isNumeric(v)) {
+        v = +v;
+    } else if(typeof v === 'string') {
         var vbase = 0;
         if(v.indexOf('-open') > 0) {
             vbase = 100;
