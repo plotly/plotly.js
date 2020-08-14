@@ -686,6 +686,8 @@ describe('image hover:', function() {
           ['y', '125'],
           ['color', '[78, 77, 83, 1]'],
           ['color[0]', '78'],
+          ['z', '[78, 77, 83, 255]'],
+          ['z[0]', '78']
         ].forEach(function(test) {
             it('should support hovertemplate variable ' + test[0], function(done) {
                 var mockCopy = Lib.extendDeep({}, mock);
