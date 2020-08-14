@@ -4,10 +4,9 @@
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
-Built on top of [d3.js](https://d3js.org/) and [stack.gl](http://stack.gl/),
-plotly.js is a high-level, declarative charting library. plotly.js ships with over 40
-chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
-and more.
+[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
+
+Plotly.js can be used to produce dozens of chart types and visualizations, including statistical charts, 3D graphs, scientific charts, SVG and tile maps, financial charts and more.
 
 <p align="center">
     <a href="https://plotly.com/javascript/" target="_blank">
@@ -138,18 +137,9 @@ This project is maintained under the [Semantic Versioning guidelines](https://se
 
 See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
 
-## Clients for R, Python, Node, and MATLAB
-
-Open-source clients to the plotly.js APIs are available at these links:
-
-|   | GitHub repo | Getting started |
-|---|--------|---------|
-|**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plotly/python/getting-started](https://plotly.com/python/getting-started) |
-|**R / RStudio**| [ropensci/plotly](https://github.com/ropensci/plotly) | [plotly/r/getting-started](https://plotly.com/r/getting-started) |
-|**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plotly/matlab/getting-started](https://plotly.com/matlab/getting-started) |
-|**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
-
 ## Notable Contributors
+
+Plotly.js is at the core of a large and dynamic ecosystem with many contributors who file issues, reproduce bugs, suggest improvements, write code in this repo (and other upstream or downstream ones) and help users in the Plotly community forum. The following people deserve special recognition for their outsized contributions to this ecosystem:
 
 |   | GitHub | Twitter | Status |
 |---|--------|---------|--------|
