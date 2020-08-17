@@ -157,7 +157,6 @@
     "lodash": "^4.17.20",
     "madge": "^3.9.2",
     "minify-stream": "^2.0.1",
-    "minimist": "^1.2.5",
     "mkdirp": "^1.0.4",
     "node-sass": "^4.14.1",
     "npm-link-check": "^4.0.0",
