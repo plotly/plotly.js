@@ -167,7 +167,6 @@
     "read-last-lines": "^1.7.2",
     "requirejs": "^2.3.6",
     "run-series": "^1.1.8",
-    "static-eval": "^2.0.5",
     "through2": "^4.0.2",
     "true-case-path": "^2.2.1",
     "watchify": "^3.11.1"
