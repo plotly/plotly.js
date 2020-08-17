@@ -584,6 +584,8 @@ function checkLogDomainRefAnnotation() {
         var yref = 'x2';
         var shapec = svgShapeToCoords(shapec_.getAttribute('d'));
         var annCoords=svgLineCoords(anno.getAttribute('d'));
+        // NOTE: This test depends on the position of shapes being correct,
+        // which is the case if the test for drawing shapes passes.
         console.log('x,y matches for anno',
         coordsEq([annCoords[1]],[shapec[1]]));
     });

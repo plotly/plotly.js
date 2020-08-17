@@ -75,6 +75,8 @@ function expandRange(range) {
  *     extraOption if there is no axis)
  * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
  *     Only required if it's different from `dflt`
+ * domainRef: true if ' domain' should be appended to the axis items in the list
+ *     of possible values for this axis reference.
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption, domainRef) {
     var axLetter = attr.charAt(attr.length - 1);
@@ -84,7 +86,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 
     if(!dflt) dflt = axlist[0] || extraOption;
     if(!extraOption) extraOption = dflt;
-    if(domainRef) axlist = axlist.concat([axlist[0]+' domain']);
+    if(domainRef) axlist = axlist.concat(axlist.map(function (x) { return x + ' domain'; }));
 
     // data-ref annotations are not supported in gl2d yet
 
