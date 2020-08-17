@@ -159,27 +159,41 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             if(trace._isFromZ) {
                 resolve();
             } else if(trace._isFromSource) {
-                // Transfer image to a canvas to access pixel information
-                trace._canvas = trace._canvas || document.createElement('canvas');
-                trace._canvas.width = w;
-                trace._canvas.height = h;
-                var context = trace._canvas.getContext('2d');
-
-                var sel;
-                if(fastImage) {
-                    // Use the displayed image
-                    sel = image3;
-                } else {
-                    // Use the hidden image
-                    sel = d3.select(image3[0][1]);
-                }
-
-                var image = sel.node();
-                image.onload = function() {
-                    context.drawImage(image, 0, 0);
+                // Check if canvas already exists
+                if(
+                    trace._canvas &&
+                    trace._canvas.el.width === w &&
+                    trace._canvas.el.height === h &&
+                    trace._canvas.source === trace.source
+                ) {
                     resolve();
-                };
-                sel.attr('xlink:href', trace.source);
+                } else {
+                    // Create a canvas and transfer image onto it to access pixel information
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    var context = canvas.getContext('2d');
+
+                    var sel;
+                    if(fastImage) {
+                        // Use the displayed image
+                        sel = image3;
+                    } else {
+                        // Use the hidden image
+                        sel = d3.select(image3[0][1]);
+                    }
+
+                    var image = sel.node();
+                    image.onload = function() {
+                        context.drawImage(image, 0, 0);
+                        trace._canvas = {
+                            el: canvas,
+                            source: trace.source
+                        };
+                        resolve();
+                    };
+                    sel.attr('xlink:href', trace.source);
+                }
             }
         })
         .then(function() {
@@ -188,7 +202,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 if(trace._isFromZ) {
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
                 } else if(trace._isFromSource) {
-                    var context = trace._canvas.getContext('2d');
+                    var context = trace._canvas.el.getContext('2d');
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                         var index = 4 * (j * w + i);
