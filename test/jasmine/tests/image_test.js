@@ -81,7 +81,7 @@ describe('image supplyDefaults', function() {
         };
         supplyDefaults(traceIn, traceOut);
         expect(traceOut.visible).toBe(false);
-        expect(traceOut.source).toBe(null);
+        expect(traceOut.source).toBe(undefined);
 
         traceIn = {
             type: 'image',
