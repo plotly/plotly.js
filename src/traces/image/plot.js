@@ -193,7 +193,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                         var index = 4 * (j * w + i);
                         return [
-                            data[index + 0],
+                            data[index],
                             data[index + 1],
                             data[index + 2],
                             data[index + 3]
@@ -201,7 +201,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     });
                 }
                 var href = canvas.toDataURL('image/png');
-                var displayImage = d3.select(image3[0][0]);
+                var displayImage = d3.select(image3.node());
                 sizeImage(displayImage);
                 displayImage.attr('xlink:href', href);
             }
