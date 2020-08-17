@@ -316,7 +316,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var alignPosition;
             var autoAlignFraction;
             var textShift;
-            var axrefOpt = Axes.extractInfoFromAxisRef(axRef);
+            var axrefOpt = Axes.getRefType(axRef);
 
             /*
              * calculate the *primary* pixel position
@@ -591,8 +591,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var ycenter = annxy0[1] + dy;
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
-                        var xAxOpt = Axes.extractInfoFromAxisRef(options.xref);
-                        var yAxOpt = Axes.extractInfoFromAxisRef(options.yref);
+                        var xAxOpt = Axes.getRefType(options.xref);
+                        var yAxOpt = Axes.getRefType(options.yref);
                         modifyItem('x',
                             p2rR2p(xa, options.x, dx, gs.w, false, xAxOpt === 'domain'));
                         modifyItem('y',
@@ -642,8 +642,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 },
                 moveFn: function(dx, dy) {
                     var csr = 'pointer';
-                    var xAxOpt = Axes.extractInfoFromAxisRef(options.xref);
-                    var yAxOpt = Axes.extractInfoFromAxisRef(options.yref);
+                    var xAxOpt = Axes.getRefType(options.xref);
+                    var yAxOpt = Axes.getRefType(options.yref);
                     if(options.showarrow) {
                         // for these 2 calls to p2rR2p, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in

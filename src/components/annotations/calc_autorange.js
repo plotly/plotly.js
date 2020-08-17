@@ -34,8 +34,8 @@ function annAutorange(gd) {
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
         var xa = Axes.getFromId(gd, ann.xref);
         var ya = Axes.getFromId(gd, ann.yref);
-        var xrefInfo = Axes.extractInfoFromAxisRef(ann.xref);
-        var yrefInfo = Axes.extractInfoFromAxisRef(ann.yref);
+        var xrefInfo = Axes.getRefType(ann.xref);
+        var yrefInfo = Axes.getRefType(ann.yref);
 
         ann._extremes = {};
         if(xa && (xrefInfo !== 'domain')) calcAxisExpansion(ann, xa);

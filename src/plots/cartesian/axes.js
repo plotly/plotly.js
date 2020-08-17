@@ -118,18 +118,18 @@ axes.extractAxisFromAxisRef = function(ar) {
 };
 
 /*
-/*
- * An axis reference (e.g., the contents at the 'xref' key of an object) might
- * have extra information appended. Extract the extra information.
+ * Get the type of an axis reference. This can be 'range', 'domain', or 'paper'.
+ * This assumes ar is a valid axis reference and returns 'range' if it doesn't
+ * match the patterns for 'paper' or 'domain'.
  *
  * ar: the axis reference string
  *
  */
-axes.extractInfoFromAxisRef = function(ar) {
-    if((ar !== undefined) && (typeof(ar) === 'string')) {
-        return ar.split(' ').slice(1).join(' ');
-    }
-    return ar;
+axes.getRefType = function(ar) {
+    if (ar === undefined) { return ar; }
+    if (ar === 'paper') { return 'paper'; }
+    if (/( domain)$/.test(ar)) { return 'domain'; }
+    else { return 'range'; }
 };
 
 /*

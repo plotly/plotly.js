@@ -66,7 +66,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
             'paper', true);
         var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
-        var axRefInfo = Axes.extractInfoFromAxisRef(axRef);
+        var axRefInfo = Axes.getRefType(axRef);
 
         if(axRef !== 'paper' && axRefInfo !== 'domain') {
             ax = Axes.getFromId(gdMock, axRefAxOnly);

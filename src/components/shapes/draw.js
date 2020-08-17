@@ -212,9 +212,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
-    var xrefOpt = Axes.extractInfoFromAxisRef(shapeOptions.xref);
+    var xrefOpt = Axes.getRefType(shapeOptions.xref);
     var ya = Axes.getFromId(gd, shapeOptions.yref);
-    var yrefOpt = Axes.extractInfoFromAxisRef(shapeOptions.yref);
+    var yrefOpt = Axes.getRefType(shapeOptions.yref);
     var x2p = helpers.getDataToPixel(gd, xa, false, xrefOpt);
     var y2p = helpers.getDataToPixel(gd, ya, true, yrefOpt);
     var p2x = helpers.getPixelToData(gd, xa, false, xrefOpt);
@@ -589,8 +589,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
 function getPathString(gd, options) {
     var type = options.type;
-    var xrefOpt = Axes.extractInfoFromAxisRef(options.xref);
-    var yrefOpt = Axes.extractInfoFromAxisRef(options.yref);
+    var xrefOpt = Axes.getRefType(options.xref);
+    var yrefOpt = Axes.getRefType(options.yref);
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
