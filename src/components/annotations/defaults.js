@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var AxisIds = require('../../plots/cartesian/axis_ids');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var handleAnnotationCommonDefaults = require('./common_defaults');
@@ -48,7 +49,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
         // xref, yref
         var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, undefined, 'paper', true);
-        var axRefAxOnly = Axes.extractAxisFromAxisRef(axRef);
+        var axRefAxOnly = AxisIds.ref2id(axRef);
 
         if(axRef !== 'paper') {
             var ax = Axes.getFromId(gdMock, axRefAxOnly);

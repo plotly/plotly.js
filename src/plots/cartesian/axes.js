@@ -101,23 +101,6 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 };
 
 /*
- * An axis reference (e.g., the contents at the 'xref' key of an object) might
- * have extra information appended. Extract the axis reference only.
- *
- * ar: the axis reference string
- *
- */
-axes.extractAxisFromAxisRef = function(ar) {
-    // TODO extractAxisFromAxisRef is more generic than this, this could be made
-    // more generic too
-    var mtch = (((ar !== undefined) && (typeof(ar) === 'string')) ?
-                ar.match(/^([xyz][0-9]*) domain/) :
-                undefined);
-    if(mtch) { return mtch[1]; }
-    return ar;
-};
-
-/*
  * Get the type of an axis reference. This can be 'range', 'domain', or 'paper'.
  * This assumes ar is a valid axis reference and returns 'range' if it doesn't
  * match the patterns for 'paper' or 'domain'.
