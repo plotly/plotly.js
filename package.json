@@ -91,7 +91,7 @@
     "gl-streamtube3d": "^1.4.1",
     "gl-surface3d": "^1.5.2",
     "gl-text": "^1.1.8",
-    "glslify": "^7.0.0",
+    "glslify": "^7.1.0",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^2.2.2",
