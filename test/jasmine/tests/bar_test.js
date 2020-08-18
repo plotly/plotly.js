@@ -969,6 +969,23 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
         assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
     });
 
+    it('should set unit width for categories in overlay mode', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            x: ['a', 'b', 'c'],
+            y: [2, 2, 2]
+        },
+        {
+            type: 'bar',
+            x: ['a', 'c'],
+            y: [1, 1]
+        }], {
+            barmode: 'overlay'
+        });
+
+        expect(gd.calcdata[1][0].t.bardelta).toBe(1);
+    });
+
     describe('should relative-stack bar within the same trace that overlap under barmode=group', function() {
         it('- base case', function() {
             var gd = mockBarPlot([{
