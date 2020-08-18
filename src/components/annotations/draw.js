@@ -612,24 +612,24 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var ycenter = annxy0[1] + dy;
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
-                        var xAxOpt = Axes.getRefType(options.xref);
-                        var yAxOpt = Axes.getRefType(options.yref);
+                        var xRefType = Axes.getRefType(options.xref);
+                        var yRefType = Axes.getRefType(options.yref);
                         modifyItem('x',
-                            shiftPosition(xa, options.x, dx, gs.w, false, xAxOpt === 'domain'));
+                            shiftPosition(xa, options.x, dx, gs.w, false, xRefType === 'domain'));
                         modifyItem('y',
-                            shiftPosition(ya, options.y, dy, gs.h, true, yAxOpt === 'domain'));
+                            shiftPosition(ya, options.y, dy, gs.h, true, yRefType === 'domain'));
 
                         // for these 2 calls to shiftPosition, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
                             modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.w, false,
-                                       xAxOpt === 'domain'));
+                                       xRefType === 'domain'));
                         }
 
                         if(options.ayref === options.yref) {
                             modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.h, true,
-                                       yAxOpt === 'domain'));
+                                       yRefType === 'domain'));
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -663,22 +663,22 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 },
                 moveFn: function(dx, dy) {
                     var csr = 'pointer';
-                    var xAxOpt = Axes.getRefType(options.xref);
-                    var yAxOpt = Axes.getRefType(options.yref);
+                    var xRefType = Axes.getRefType(options.xref);
+                    var yRefType = Axes.getRefType(options.yref);
                     if(options.showarrow) {
                         // for these 2 calls to shiftPosition, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
                             modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.h, false,
-                                       xAxOpt === 'domain'));
+                                       xRefType === 'domain'));
                         } else {
                             modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
                             modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.w, true,
-                                       yAxOpt === 'domain'));
+                                       yRefType === 'domain'));
                         } else {
                             modifyItem('ay', options.ay + dy);
                         }
@@ -690,7 +690,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                             // shiftPosition will not execute code where xa was
                             // undefined, so we use to calculate xUpdate too
                             xUpdate = shiftPosition(xa, options.x, dx, gs.h, false,
-                                       xAxOpt === 'domain');
+                                       xRefType === 'domain');
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -703,7 +703,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                             // shiftPosition will not execute code where ya was
                             // undefined, so we use to calculate yUpdate too
                             yUpdate = shiftPosition(ya, options.y, dy, gs.w, true,
-                                       yAxOpt === 'domain');
+                                       yRefType === 'domain');
                         } else {
                             var heightFraction = options._ysize / gs.h;
                             var yBottom = options.y - (options._yshift + options.yshift) / gs.h - heightFraction / 2;

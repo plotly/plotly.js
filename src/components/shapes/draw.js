@@ -212,13 +212,13 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
-    var xrefOpt = Axes.getRefType(shapeOptions.xref);
+    var xRefType = Axes.getRefType(shapeOptions.xref);
     var ya = Axes.getFromId(gd, shapeOptions.yref);
-    var yrefOpt = Axes.getRefType(shapeOptions.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xrefOpt);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yrefOpt);
-    var p2x = helpers.getPixelToData(gd, xa, false, xrefOpt);
-    var p2y = helpers.getPixelToData(gd, ya, true, yrefOpt);
+    var yRefType = Axes.getRefType(shapeOptions.yref);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    var p2x = helpers.getPixelToData(gd, xa, false, xRefType);
+    var p2y = helpers.getPixelToData(gd, ya, true, yRefType);
 
     var sensoryElement = obtainSensoryElement();
     var dragOptions = {
@@ -589,8 +589,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
 function getPathString(gd, options) {
     var type = options.type;
-    var xrefOpt = Axes.getRefType(options.xref);
-    var yrefOpt = Axes.getRefType(options.yref);
+    var xRefType = Axes.getRefType(options.xref);
+    var yRefType = Axes.getRefType(options.yref);
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
@@ -598,7 +598,7 @@ function getPathString(gd, options) {
     var x0, x1, y0, y1;
 
     if(xa) {
-        if(xrefOpt === 'domain') {
+        if(xRefType === 'domain') {
             x2p = function(v) { return xa._offset + xa._length * v; };
         } else {
             x2r = helpers.shapePositionToRange(xa);
@@ -609,7 +609,7 @@ function getPathString(gd, options) {
     }
 
     if(ya) {
-        if(yrefOpt === 'domain') {
+        if(yRefType === 'domain') {
             y2p = function(v) { return ya._offset + ya._length * (1 - v); };
         } else {
             y2r = helpers.shapePositionToRange(ya);
