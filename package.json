@@ -123,7 +123,6 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "acorn": "^6.4.1",
     "brfs": "^2.0.2",
     "browserify": "^16.5.2",
     "browserify-transform-tools": "^1.7.0",
@@ -134,7 +133,7 @@
     "derequire": "^2.1.1",
     "ecstatic": "^4.1.4",
     "elliptic": "^6.5.3",
-    "eslint": "^7.6.0",
+    "eslint": "^7.7.0",
     "espree": "^7.2.0",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.1",
@@ -144,7 +143,7 @@
     "image-size": "^0.7.5",
     "into-stream": "^6.0.0",
     "jasmine-core": "^3.5.0",
-    "jsdom": "^16.3.0",
+    "jsdom": "^16.4.0",
     "karma": "^5.1.1",
     "karma-browserify": "^7.0.0",
     "karma-chrome-launcher": "^3.1.0",
