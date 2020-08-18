@@ -90,6 +90,15 @@ describe('image supplyDefaults', function() {
         expect(traceOut.visible).toBe(true);
     });
 
+    it('should not accept source attribute that is not a data URI of an image', function() {
+        traceIn = {
+            source: 'javascript:alert(\'attack\')'
+        };
+
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.source).toBe(undefined);
+    });
+
     it('should set proper zmin/zmax depending on colormodel', function() {
         var tests = [
           ['rgb', [0, 0, 0], [255, 255, 255]],

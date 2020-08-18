@@ -18,6 +18,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
     coerce('source');
+    // sanitize source to only allow for data URI representing images
     if(traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
     traceOut._isFromSource = !!traceOut.source;
 

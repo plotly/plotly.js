@@ -13,6 +13,8 @@ var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
+var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
+
 function compatibleAxis(ax) {
     return ax.type === 'linear' &&
         // y axis must be reversed but x axis mustn't be
@@ -23,7 +25,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !Lib.isIOS() && !Lib.isSafari() && !Lib.isIE() && !gd._context._exportedPlot;
+    var supportsPixelatedImage = !(unsupportedBrowsers || gd._context._exportedPlot);
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
