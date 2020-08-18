@@ -715,7 +715,7 @@ lib.isSafari = function() {
 var IS_IOS_REGEX = /iPad|iPhone|iPod/;
 lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
-}
+};
 
 /**
  * Duck typing to recognize a d3 selection, mostly for IE9's benefit
