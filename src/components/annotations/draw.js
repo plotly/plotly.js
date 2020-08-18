@@ -623,12 +623,12 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.h, false,
+                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.w, false,
                                        xAxOpt === 'domain'));
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.w, true,
+                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.h, true,
                                        yAxOpt === 'domain'));
                         }
 
