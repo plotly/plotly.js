@@ -23,7 +23,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !Lib.isIOS() && !Lib.isSafari() && !gd._context._exportedPlot;
+    var supportsPixelatedImage = !Lib.isIOS() && !Lib.isSafari() && !Lib.isIE && !gd._context._exportedPlot;
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
