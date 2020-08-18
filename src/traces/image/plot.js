@@ -23,7 +23,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !Lib.isIOS() && !Lib.isSafari() && !Lib.isIE && !gd._context._exportedPlot;
+    var supportsPixelatedImage = !Lib.isIOS() && !Lib.isSafari() && !Lib.isIE() && !gd._context._exportedPlot;
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
@@ -128,25 +128,14 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             return canvas;
         }
 
-        function sizeImage(image) {
-            image.attr({
-                height: imageHeight,
-                width: imageWidth,
-                x: left,
-                y: top
-            });
-        }
-
-        var data = (trace._isFromSource && !fastImage) ? [cd, {hidden: true}] : [cd];
         var image3 = plotGroup.selectAll('image')
-            .data(data);
+            .data([cd]);
 
         image3.enter().append('svg:image').attr({
             xmlns: xmlnsNamespaces.svg,
             preserveAspectRatio: 'none'
         });
 
-        if(fastImage) sizeImage(image3);
         image3.exit().remove();
 
         // Pixelated image rendering
@@ -159,7 +148,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             if(trace._isFromZ) {
                 resolve();
             } else if(trace._isFromSource) {
-                // Check if canvas already exists
+                // Check if canvas already exists and has the right data
                 if(
                     trace._canvas &&
                     trace._canvas.el.width === w &&
@@ -174,16 +163,8 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     canvas.height = h;
                     var context = canvas.getContext('2d');
 
-                    var sel;
-                    if(fastImage) {
-                        // Use the displayed image
-                        sel = image3;
-                    } else {
-                        // Use the hidden image
-                        sel = d3.select(image3[0][1]);
-                    }
-
-                    var image = sel.node();
+                    trace._image = trace._image || new Image();
+                    var image = trace._image;
                     image.onload = function() {
                         context.drawImage(image, 0, 0);
                         trace._canvas = {
@@ -192,12 +173,15 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                         };
                         resolve();
                     };
-                    sel.attr('xlink:href', trace.source);
+                    image.setAttribute('src', trace.source);
                 }
             }
         })
         .then(function() {
-            if(!fastImage) {
+            var href;
+            if(fastImage) {
+                href = trace.source;
+            } else {
                 var canvas;
                 if(trace._isFromZ) {
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
@@ -214,11 +198,16 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                         ];
                     });
                 }
-                var href = canvas.toDataURL('image/png');
-                var displayImage = d3.select(image3.node());
-                sizeImage(displayImage);
-                displayImage.attr('xlink:href', href);
+                href = canvas.toDataURL('image/png');
             }
+
+            image3.attr({
+                'xlink:href': href,
+                height: imageHeight,
+                width: imageWidth,
+                x: left,
+                y: top
+            });
         });
 
         gd._promises.push(p);

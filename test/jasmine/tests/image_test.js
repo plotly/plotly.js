@@ -13,7 +13,6 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var Fx = require('@src/components/fx');
-var drag = require('../assets/drag');
 
 var incompatibleUserAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15';
 
@@ -453,29 +452,6 @@ describe('image plot', function() {
             .catch(failTest)
             .then(done);
         });
-    });
-
-    it('only keeps 2 images around to render magnified pixel from a source image', function(done) {
-        var mock = require('@mocks/image_labuda_droplets_source.json');
-        var mockCopy = Lib.extendDeep({}, mock);
-        var spyObj = spyOnProperty(window.navigator, 'userAgent').and.returnValue(incompatibleUserAgent);
-
-        Plotly.newPlot(gd, mockCopy)
-        .then(function(gd) {
-            expect(gd.calcdata[0][0].trace._fastImage).toBe(false);
-            return drag({pos0: [350, 250], dpos: [100, 0]});
-        })
-        .then(function() {
-            return drag({pos0: [350, 250], dpos: [100, 0]});
-        })
-        .then(function() {
-            var imgs = document.querySelectorAll('image');
-            expect(imgs.length).toBe(2);
-            // Clear spy
-            spyObj.and.callThrough();
-        })
-        .catch(failTest)
-        .then(done);
     });
 });
 
