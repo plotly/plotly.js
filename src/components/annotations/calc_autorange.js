@@ -38,8 +38,8 @@ function annAutorange(gd) {
         var yrefInfo = Axes.getRefType(ann.yref);
 
         ann._extremes = {};
-        if(xa && (xrefInfo !== 'domain')) calcAxisExpansion(ann, xa);
-        if(ya && (yrefInfo !== 'domain')) calcAxisExpansion(ann, ya);
+        if(xRefType === 'range') calcAxisExpansion(ann, xa);
+        if(yRefType === 'range') calcAxisExpansion(ann, ya);
     });
 }
 
