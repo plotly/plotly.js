@@ -174,6 +174,16 @@ exports.cleanLayout = function(layout) {
         cleanAxRef(shape, 'yref');
     }
 
+    var imagesLen = Array.isArray(layout.images) ? layout.images.length : 0;
+    for(i = 0; i < imagesLen; i++) {
+        var image = layout.images[i];
+
+        if(!Lib.isPlainObject(image)) continue;
+
+        cleanAxRef(image, 'xref');
+        cleanAxRef(image, 'yref');
+    }
+
     var legend = layout.legend;
     if(legend) {
         // check for old-style legend positioning (x or y is +/- 100)
@@ -217,8 +227,8 @@ exports.cleanLayout = function(layout) {
 function cleanAxRef(container, attr) {
     var valIn = container[attr];
     var axLetter = attr.charAt(0);
-    if(valIn && valIn !== 'paper' && !valIn.endsWith('domain')) {
-        container[attr] = cleanId(valIn, axLetter);
+    if(valIn && valIn !== 'paper') {
+        container[attr] = cleanId(valIn, axLetter, true);
     }
 }
 
