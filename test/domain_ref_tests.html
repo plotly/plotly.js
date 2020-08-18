@@ -361,7 +361,33 @@ var hrectVrectShapes = [
     line: { color: 'rgb(255, 127, 80)' }
 }];
 
-layout.shapes=domainRefShapes.concat(hlineVlineShapes).concat(hrectVrectShapes);
+var imageCheckingShapes = [
+    // box around first image
+    {
+        type: 'rect',
+        xref: 'x2 domain',
+        yref: 'y2 domain',
+        x0: 0.25,
+        y0: 0.1,
+        x1: 0.45,
+        y1: 0.3,
+        line: { color: 'rgb(255, 255, 2)' }
+    },
+    // box around second image
+    {
+        type: 'rect',
+        xref: 'x domain',
+        yref: 'y domain',
+        x0: 0.1,
+        y0: 0.25,
+        x1: 0.6,
+        y1: 0.75,
+        line: { color: 'rgb(255, 255, 3)' }
+    },
+];
+
+
+layout.shapes=domainRefShapes.concat(hlineVlineShapes).concat(hrectVrectShapes).concat(imageCheckingShapes);
 layout.annotations=[{
     text: 'A',
     x: 0.75,
@@ -376,7 +402,8 @@ layout.annotations=[{
     x: 1,
     y: 0.75,
     xref: 'x',
-    yref: 'y domain',
+    // cleanId should correct this
+    yref: 'y1 domain',
     showarrow: true,
     arrowhead: 0,
     arrowcolor: 'rgb(0,0,0)'
@@ -391,6 +418,30 @@ layout.annotations=[{
     arrowcolor: 'rgb(127,255,0)'
   }
 ];
+
+layout.images=[{
+  x: 0.25,
+  y: 0.1,
+  sizex: 0.2,
+  sizey: 0.2,
+  source: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Mysovskiy_Sergey_surfing_Nazare.jpg/1024px-Mysovskiy_Sergey_surfing_Nazare.jpg",
+  xanchor: "left",
+  xref: "x2 domain",
+  yanchor: "bottom",
+  yref: "y2 domain",
+  sizing: "stretch"
+},{
+  x: 0.1,
+  y: 0.25,
+  sizex: 0.5,
+  sizey: 0.5,
+  source: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Mysovskiy_Sergey_surfing_Nazare.jpg/1024px-Mysovskiy_Sergey_surfing_Nazare.jpg",
+  xanchor: "left",
+  xref: "x domain",
+  yanchor: "bottom",
+  yref: "y domain",
+  sizing: "stretch"
+}]
 
 Plotly.plot(TESTER, data, layout);
 
@@ -440,7 +491,6 @@ function plotDimsFromGridLines(xgridlinec,ygridlinec) {
     };
     return r;
 }
-
 
 //// TEST: Check the drawing of a bunch of shapes
 //// Draws shapes and checks their positioning against the axes' dimensions by
@@ -497,6 +547,19 @@ function svgRectCoords(d) {
     matches[4]]];
     return ret;
 }
+
+function imageCoords(imageNode) {
+    var x = Number(imageNode.getAttribute('x'));
+    var y = Number(imageNode.getAttribute('y'));
+    var width = Number(imageNode.getAttribute('width'));
+    var height = Number(imageNode.getAttribute('height'));
+    // Change the corners of the rectangle to make it compatible with Plotly's
+    // rectangles so they can be compared.
+    var ret = [[x,y+height],
+               [x+width,y]];
+    return ret;
+}
+
 
 //// TEST: Check the drawing of lines that reference axis domains in 1 dimension
 //// and data in the other
@@ -592,6 +655,33 @@ function checkLogDomainRefAnnotation() {
 }
 checkLogDomainRefAnnotation();
 
+function checkImagePosition(imageIndex, shapeColor) {
+    // Check the position of an image by comparing its bounding box with the
+    // coordinates of a rectangle
+    // imageIndex: the index of the image when selecting using d3
+    // shapeColor: the color of the shape that is the bounding box of the shape
+
+    // escape () in shapeColor so it can be used in regexp
+    shapeColor = shapeColor.replaceAll(/[()]/g, "\\$&");
+    var imageNode = d3.selectAll('.layer-above .imagelayer image')[0][imageIndex];
+    var shapeNode = getShapeNodes()[0].filter(
+        sh=>sh.getAttribute('style').match(
+        RegExp('stroke: ' + shapeColor)))[0];
+    var imageCrds = imageCoords(imageNode);
+    var shapeCrds = svgRectCoords(shapeNode.getAttribute('d'));
+    return coordsEq(imageCrds,shapeCrds);
+}
+
+function imagePositionTest() {
+    ['rgb(255, 255, 2)', 'rgb(255, 255, 3)'].forEach(
+        function (c,i) {
+            console.log("Checking image position: ",
+                        checkImagePosition(i,c));
+        }
+    );
+}
+imagePositionTest();
+
 //// TEST positions are still correct after relayout of axis
 
 window.setTimeout(function () {
@@ -620,6 +710,7 @@ window.setTimeout(function () {
     checkHrectVrectShapes();
     checkAnnotations();
     checkLogDomainRefAnnotation();
+    imagePositionTest();
 },2000);
 
 //// TEST You can drag an axis referenced shape to any place on the paper and it will
