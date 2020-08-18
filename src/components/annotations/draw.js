@@ -78,7 +78,7 @@ function drawOne(gd, index) {
 // the plot.
 // axDomainRef: if true and axa defined, draws relative to axis domain,
 // otherwise draws relative to data (if axa defined) or paper (if not).
-function p2rR2p(axa, optAx, dAx, gsDim, vertical, axDomainRef) {
+function shiftPosition(axa, optAx, dAx, gsDim, vertical, axDomainRef) {
     if(axa) {
         if(axDomainRef) {
             // here optAx normalized to length of axis (e.g., normally in range
@@ -316,14 +316,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var alignPosition;
             var autoAlignFraction;
             var textShift;
-            var axrefOpt = Axes.getRefType(axRef);
+            var axRefType = Axes.getRefType(axRef);
 
             /*
              * calculate the *primary* pixel position
              * which is the arrowhead if there is one,
              * otherwise the text anchor point
              */
-            if(ax && (axrefOpt !== 'domain')) {
+            if(ax && (axRefType !== 'domain')) {
                 // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
                 if(posFraction < 0 || posFraction > 1) {
@@ -341,14 +341,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             } else {
                 if(axLetter === 'x') {
                     alignPosition = options[axLetter];
-                    if(axrefOpt === 'domain') {
+                    if(axRefType === 'domain') {
                         basePx = ax._offset + ax._length * alignPosition;
                     } else {
                         basePx = gs.l + gs.w * alignPosition;
                     }
                 } else {
                     alignPosition = 1 - options[axLetter];
-                    if(axrefOpt === 'domain') {
+                    if(axRefType === 'domain') {
                         basePx = ax._offset + ax._length * alignPosition;
                     } else {
                         basePx = gs.t + gs.h * alignPosition;
@@ -369,8 +369,29 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     annSizeFromHeight * shiftFraction(0.5, options.yanchor);
 
                 if(tailRef === axRef) {
-                    posPx.tail = ax._offset + ax.r2p(arrowLength);
-                    // tail is data-referenced: autorange pads the text in px from the tail
+                    // In the case tailRefType is 'domain' or 'paper', the arrow's
+                    // position is set absolutely, which is consistent with how
+                    // it behaves when its position is set in data ('range')
+                    // coordinates.
+                    var tailRefType = Axes.getRefType(tailRef);
+                    if (tailRefType === 'domain') {
+                        if (axLetter === 'y') {
+                            arrowLength = 1 - arrowLength;
+                        }
+                        posPx.tail = ax._offset + ax._length * arrowLength;
+                    } else if (tailRefType === 'paper') {
+                        if (axLetter == 'y') {
+                            arrowLength = 1 - arrowLength;
+                            posPx.tail = gs.t + gs.h * arrowLength;
+                        } else {
+                            posPx.tail = gs.l + gs.w * arrowLength;
+                        }
+                    } else {
+                        // assumed tailRef is range or paper referenced
+                        posPx.tail = ax._offset + ax.r2p(arrowLength);
+                    }
+                    // tail is range- or domain-referenced: autorange pads the
+                    // text in px from the tail
                     textPadShift = textShift;
                 } else {
                     posPx.tail = basePx + arrowLength;
@@ -594,20 +615,20 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         var xAxOpt = Axes.getRefType(options.xref);
                         var yAxOpt = Axes.getRefType(options.yref);
                         modifyItem('x',
-                            p2rR2p(xa, options.x, dx, gs.w, false, xAxOpt === 'domain'));
+                            shiftPosition(xa, options.x, dx, gs.w, false, xAxOpt === 'domain'));
                         modifyItem('y',
-                            p2rR2p(ya, options.y, dy, gs.h, true, yAxOpt === 'domain'));
+                            shiftPosition(ya, options.y, dy, gs.h, true, yAxOpt === 'domain'));
 
-                        // for these 2 calls to p2rR2p, it is assumed xa, ya are
+                        // for these 2 calls to shiftPosition, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', p2rR2p(xa, options.ax, dx, gs.h, false,
+                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.h, false,
                                        xAxOpt === 'domain'));
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', p2rR2p(ya, options.ay, dy, gs.w, true,
+                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.w, true,
                                        yAxOpt === 'domain'));
                         }
 
@@ -645,18 +666,18 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     var xAxOpt = Axes.getRefType(options.xref);
                     var yAxOpt = Axes.getRefType(options.yref);
                     if(options.showarrow) {
-                        // for these 2 calls to p2rR2p, it is assumed xa, ya are
+                        // for these 2 calls to shiftPosition, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', p2rR2p(xa, options.ax, dx, gs.h, false,
+                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.h, false,
                                        xAxOpt === 'domain'));
                         } else {
                             modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', p2rR2p(ya, options.ay, dy, gs.w, true,
+                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.w, true,
                                        yAxOpt === 'domain'));
                         } else {
                             modifyItem('ay', options.ay + dy);
@@ -666,9 +687,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     } else if(!subplotId) {
                         var xUpdate, yUpdate;
                         if(xa) {
-                            // p2rR2p will not execute code where xa was
+                            // shiftPosition will not execute code where xa was
                             // undefined, so we use to calculate xUpdate too
-                            xUpdate = p2rR2p(xa, options.x, dx, gs.h, false,
+                            xUpdate = shiftPosition(xa, options.x, dx, gs.h, false,
                                        xAxOpt === 'domain');
                         } else {
                             var widthFraction = options._xsize / gs.w;
@@ -679,9 +700,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
 
                         if(ya) {
-                            // p2rR2p will not execute code where ya was
+                            // shiftPosition will not execute code where ya was
                             // undefined, so we use to calculate yUpdate too
-                            yUpdate = p2rR2p(ya, options.y, dy, gs.w, true,
+                            yUpdate = shiftPosition(ya, options.y, dy, gs.w, true,
                                        yAxOpt === 'domain');
                         } else {
                             var heightFraction = options._ysize / gs.h;
