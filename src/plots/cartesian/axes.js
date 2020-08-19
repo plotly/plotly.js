@@ -812,7 +812,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 periodLength = ONEDAY;
             }
 
-            if(ax.rangebreaks) {
+            if(periodLength && ax.rangebreaks) {
                 var nOut = 0;
                 var nAll = 2 * 3 * 5 * 7; // number of samples
                 for(var c = 0; c < nAll; c++) {
