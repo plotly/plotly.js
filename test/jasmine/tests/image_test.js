@@ -410,7 +410,7 @@ describe('image plot', function() {
     });
 
     it('renders pixelated image when source is defined', function(done) {
-        var mock = require('@mocks/image_labuda_droplets_source.json');
+        var mock = require('@mocks/image_astronaut_source.json');
         var mockCopy = Lib.extendDeep({}, mock);
         Plotly.newPlot(gd, mockCopy)
         .then(function(gd) {
@@ -427,7 +427,7 @@ describe('image plot', function() {
       ['yaxis.range', [0, 50]]
     ].forEach(function(attr) {
         it('does not renders pixelated image when the axes are not compatible', function(done) {
-            var mock = require('@mocks/image_labuda_droplets_source.json');
+            var mock = require('@mocks/image_astronaut_source.json');
             var mockCopy = Lib.extendDeep({}, mock);
             Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
@@ -631,8 +631,8 @@ describe('image hover:', function() {
         });
     });
 
-    describe('for `image_labuda_droplets_source` defined by source', function() {
-        var mock = require('@mocks/image_labuda_droplets_source.json');
+    describe('for `image_astronaut_source` defined by source', function() {
+        var mock = require('@mocks/image_astronaut_source.json');
         beforeAll(function() {
             gd = createGraphDiv();
         });
@@ -647,10 +647,10 @@ describe('image hover:', function() {
         [
           ['x', '205'],
           ['y', '125'],
-          ['color', '[78, 77, 83, 1]'],
-          ['color[0]', '78'],
-          ['z', '[78, 77, 83, 255]'],
-          ['z[0]', '78']
+          ['color', '[202, 148, 125, 1]'],
+          ['color[0]', '202'],
+          ['z', '[202, 148, 125, 255]'],
+          ['z[0]', '202']
         ].forEach(function(test) {
             it('should support hovertemplate variable ' + test[0], function(done) {
                 var mockCopy = Lib.extendDeep({}, mock);
