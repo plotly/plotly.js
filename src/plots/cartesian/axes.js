@@ -702,9 +702,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxRange = Math.max(rng[0], rng[1]);
 
     var definedDelta;
-    if(isPeriod && ax.tickformat) {
+    var tickformat = axes.getTickFormat(ax); // don't use ax.tickformat directly
+    if(isPeriod) {
         if(
-            !(/%[fLQsSMHIpX]/.test(ax.tickformat))
+            !(/%[fLQsSMHIpX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
             // %L: milliseconds as a decimal number [000, 999]
             // %Q: milliseconds since UNIX epoch
@@ -717,7 +718,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
             if(
-                /%[Aadejuwx]/.test(ax.tickformat)
+                /%[Aadejuwx]/.test(tickformat)
                 // %A: full weekday name
                 // %a: abbreviated weekday name
                 // %d: zero-padded day of the month as a decimal number [01,31]
@@ -728,23 +729,23 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %x: the locale’s date, such as %-m/%-d/%Y
             ) definedDelta = ONEDAY;
             else if(
-                /%[UVW]/.test(ax.tickformat)
+                /%[UVW]/.test(tickformat)
                 // %U: Sunday-based week of the year as a decimal number [00,53]
                 // %V: ISO 8601 week of the year as a decimal number [01, 53]
                 // %W: Monday-based week of the year as a decimal number [00,53]
             ) definedDelta = ONEWEEK;
             else if(
-                /%[Bbm]/.test(ax.tickformat)
+                /%[Bbm]/.test(tickformat)
                 // %B: full month name
                 // %b: abbreviated month name
                 // %m: month as a decimal number [01,12]
             ) definedDelta = ONEAVGMONTH;
             else if(
-                /%[q]/.test(ax.tickformat)
+                /%[q]/.test(tickformat)
                 // %q: quarter of the year as a decimal number [1,4]
             ) definedDelta = ONEAVGQUARTER;
             else if(
-                /%[Yy]/.test(ax.tickformat)
+                /%[Yy]/.test(tickformat)
                 // %Y: year with century as a decimal number, such as 1999
                 // %y: year without century as a decimal number [00,99]
             ) definedDelta = ONEAVGYEAR;
@@ -945,7 +946,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
 
-            if(/%[uVW]/.test(ax.tickformat)) {
+            if(/%[uVW]/.test(ax.tickformat)) { // should we use axes.getTickFormat(ax) instead here?
                 // replace Sunday with Monday for ISO and Monday-based formats
                 var len = ax.tick0.length;
                 var lastD = +ax.tick0[len - 1];
