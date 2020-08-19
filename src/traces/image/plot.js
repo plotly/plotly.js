@@ -31,7 +31,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && trace._isFromSource && compatibleAxis(xa) && compatibleAxis(ya);
+        var fastImage = supportsPixelatedImage && trace._hasSource && compatibleAxis(xa) && compatibleAxis(ya);
         trace._fastImage = fastImage;
 
         var z = cd0.z;
@@ -147,9 +147,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
 
         var p = new Promise(function(resolve) {
-            if(trace._isFromZ) {
+            if(trace._hasZ) {
                 resolve();
-            } else if(trace._isFromSource) {
+            } else if(trace._hasSource) {
                 // Check if canvas already exists and has the right data
                 if(
                     trace._canvas &&
@@ -185,9 +185,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 href = trace.source;
             } else {
                 var canvas;
-                if(trace._isFromZ) {
+                if(trace._hasZ) {
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
-                } else if(trace._isFromSource) {
+                } else if(trace._hasSource) {
                     var context = trace._canvas.el.getContext('2d');
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {

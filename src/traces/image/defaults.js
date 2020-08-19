@@ -20,11 +20,11 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('source');
     // sanitize source to only allow for data URI representing images
     if(traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
-    traceOut._isFromSource = !!traceOut.source;
+    traceOut._hasSource = !!traceOut.source;
 
     var z = coerce('z');
-    traceOut._isFromZ = !(z === undefined || !z.length || !z[0] || !z[0].length);
-    if(!traceOut._isFromZ && !traceOut._isFromSource) {
+    traceOut._hasZ = !(z === undefined || !z.length || !z[0] || !z[0].length);
+    if(!traceOut._hasZ && !traceOut._hasSource) {
         traceOut.visible = false;
         return;
     }
@@ -34,11 +34,11 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('dx');
     coerce('dy');
 
-    if(traceOut._isFromZ) {
+    if(traceOut._hasZ) {
         coerce('colormodel');
         coerce('zmin', constants.colormodel[traceOut.colormodel].min);
         coerce('zmax', constants.colormodel[traceOut.colormodel].max);
-    } else if(traceOut._isFromSource) {
+    } else if(traceOut._hasSource) {
         traceOut.colormodel = 'rgba';
         traceOut.zmin = constants.colormodel[traceOut.colormodel].min;
         traceOut.zmax = constants.colormodel[traceOut.colormodel].max;

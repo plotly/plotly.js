@@ -20,10 +20,10 @@ var Buffer = require('buffer/').Buffer;  // note: the trailing slash is importan
 module.exports = function calc(gd, trace) {
     var h;
     var w;
-    if(trace._isFromZ) {
+    if(trace._hasZ) {
         h = trace.z.length;
         w = maxRowLength(trace.z);
-    } else if(trace._isFromSource) {
+    } else if(trace._hasSource) {
         var size = getImageSize(trace.source);
         h = size.height;
         w = size.width;

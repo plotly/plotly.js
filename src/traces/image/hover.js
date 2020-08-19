@@ -29,9 +29,9 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var ny = Math.floor(Math.abs(yval - cd0.y0) / trace.dy);
 
     var pixel;
-    if(trace._isFromZ) {
+    if(trace._hasZ) {
         pixel = cd0.z[ny][nx];
-    } else if(trace._isFromSource) {
+    } else if(trace._hasSource) {
         pixel = trace._canvas.el.getContext('2d').getImageData(nx, ny, 1, 1).data;
     }
 
