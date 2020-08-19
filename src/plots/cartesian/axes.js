@@ -790,7 +790,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     v += ONEAVGYEAR / 2;
                 }
             } else if(delta >= ONEMINQUARTER) {
-                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+                if(
+                    definedDelta && // case of specified by tickfomat
+                    actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER
+                ) {
                     v += actualDelta / 2;
                 } else {
                     v += ONEAVGQUARTER / 2;
@@ -803,8 +806,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
             } else if(delta >= ONEWEEK) {
                 v += ONEWEEK / 2;
-                if(actualDelta === ONEWEEK && ax._hasDayOfWeekBreaks) {
-                    v -= ONEDAY; // half of two days which is a good approximate for the number of week-end days
+                if(
+                    definedDelta && // case of specified by tickfomat
+                    actualDelta === ONEWEEK && ax._hasDayOfWeekBreaks
+                ) {
+                    v -= ONEDAY; // half of two days which is a good approximation for the number of week-end days
                 }
             } else if(delta >= ONEDAY) {
                 v += ONEDAY / 2;
