@@ -947,7 +947,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
 
             var tickformat = axes.getTickFormat(ax);
-            if(/%[uVW]/.test(tickformat)) { // should we use axes.getTickFormat(ax) instead here?
+            if(/%[uVW]/.test(tickformat)) {
                 // replace Sunday with Monday for ISO and Monday-based formats
                 var len = ax.tick0.length;
                 var lastD = +ax.tick0[len - 1];
