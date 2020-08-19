@@ -702,8 +702,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxRange = Math.max(rng[0], rng[1]);
 
     var definedDelta;
-    var tickformat = axes.getTickFormat(ax); // don't use ax.tickformat directly
-    if(isPeriod) {
+    var tickformat = axes.getTickFormat(ax);
+    if(isPeriod && tickformat) {
         if(
             !(/%[fLQsSMHIpX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
@@ -946,7 +946,8 @@ axes.autoTicks = function(ax, roughDTick) {
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
 
-            if(/%[uVW]/.test(ax.tickformat)) { // should we use axes.getTickFormat(ax) instead here?
+            var tickformat = axes.getTickFormat(ax);
+            if(/%[uVW]/.test(tickformat)) { // should we use axes.getTickFormat(ax) instead here?
                 // replace Sunday with Monday for ISO and Monday-based formats
                 var len = ax.tick0.length;
                 var lastD = +ax.tick0[len - 1];
