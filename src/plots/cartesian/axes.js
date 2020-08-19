@@ -25,7 +25,9 @@ var cleanTicks = require('./clean_ticks');
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 var ONEAVGQUARTER = constants.ONEAVGQUARTER;
+var ONEMAXMONTH = constants.ONEMAXMONTH;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEMINMONTH = constants.ONEMINMONTH;
 var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
@@ -780,8 +782,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 v += ONEAVGYEAR / 2;
             } else if(delta >= ONEAVGQUARTER) {
                 v += ONEAVGQUARTER / 2;
-            } else if(delta >= ONEDAY * 28) { // Months could have days less than ONEAVGMONTH period
-                v += ONEAVGMONTH / 2;
+            } else if(delta >= ONEMINMONTH) { // Months could have days less than ONEAVGMONTH period
+                var actualDelta = Math.abs(B - A);
+                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+                    v += actualDelta / 2;
+                } else {
+                    v += ONEAVGMONTH / 2;
+                }
             } else if(delta >= ONEWEEK) {
                 v += ONEWEEK / 2;
             } else if(delta >= ONEDAY) {
