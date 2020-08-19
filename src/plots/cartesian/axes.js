@@ -781,41 +781,48 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             var A = tickVals[a].value;
             var B = tickVals[b].value;
-
             var actualDelta = Math.abs(B - A);
             var delta = definedDelta || actualDelta;
+            var periodLength = 0;
+
             if(delta >= ONEMINYEAR) {
                 if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
-                    v += actualDelta / 2;
+                    periodLength = actualDelta;
                 } else {
-                    v += ONEAVGYEAR / 2;
+                    periodLength = ONEAVGYEAR;
                 }
             } else if(delta >= ONEMINQUARTER) {
                 if(
                     definedDelta && // case of specified by tickfomat
                     actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER
                 ) {
-                    v += actualDelta / 2;
+                    periodLength = actualDelta;
                 } else {
-                    v += ONEAVGQUARTER / 2;
+                    periodLength = ONEAVGQUARTER;
                 }
             } else if(delta >= ONEMINMONTH) {
                 if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
-                    v += actualDelta / 2;
+                    periodLength = actualDelta;
                 } else {
-                    v += ONEAVGMONTH / 2;
+                    periodLength = ONEAVGMONTH;
                 }
             } else if(delta >= ONEWEEK) {
-                v += ONEWEEK / 2;
-                if(
-                    definedDelta && // case of specified by tickfomat
-                    actualDelta === ONEWEEK && ax._hasDayOfWeekBreaks
-                ) {
-                    v -= ONEDAY; // half of two days which is a good approximation for the number of week-end days
-                }
+                periodLength = ONEWEEK;
             } else if(delta >= ONEDAY) {
-                v += ONEDAY / 2;
+                periodLength = ONEDAY;
             }
+
+            if(ax.rangebreaks) {
+                var nOut = 0;
+                var nAll = 2 * 3 * 5 * 7; // number of samples
+                for(var c = 0; c < nAll; c++) {
+                    var r = c / nAll;
+                    if(ax.maskBreaks(A * (1 - r) + B * r) === BADNUM) nOut++;
+                }
+                periodLength *= 1 - nOut / nAll;
+            }
+
+            v += periodLength / 2;
 
             ticksOut[i].periodX = v;
 
