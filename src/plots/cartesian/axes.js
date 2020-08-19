@@ -814,7 +814,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             if(periodLength && ax.rangebreaks) {
                 var nOut = 0;
-                var nAll = 2 * 3 * 5 * 7; // number of samples
+                var nAll = 2 * 3 * 7; // number of samples
                 for(var c = 0; c < nAll; c++) {
                     var r = c / nAll;
                     if(ax.maskBreaks(A * (1 - r) + B * r) === BADNUM) nOut++;
