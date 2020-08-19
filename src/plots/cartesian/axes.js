@@ -23,8 +23,12 @@ var axAttrs = require('./layout_attributes');
 var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
+var ONEMAXYEAR = constants.ONEMAXYEAR;
 var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEMINYEAR = constants.ONEMINYEAR;
+var ONEMAXQUARTER = constants.ONEMAXQUARTER;
 var ONEAVGQUARTER = constants.ONEAVGQUARTER;
+var ONEMINQUARTER = constants.ONEMINQUARTER;
 var ONEMAXMONTH = constants.ONEMAXMONTH;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEMINMONTH = constants.ONEMINMONTH;
@@ -779,11 +783,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             var actualDelta = Math.abs(B - A);
             var delta = definedDelta || actualDelta;
-            if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
-                v += ONEAVGYEAR / 2;
-            } else if(delta >= ONEAVGQUARTER) {
-                v += ONEAVGQUARTER / 2;
-            } else if(delta >= ONEMINMONTH) { // Months could have days less than ONEAVGMONTH period
+            if(delta >= ONEMINYEAR) {
+                if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
+                    v += actualDelta / 2;
+                } else {
+                    v += ONEAVGYEAR / 2;
+                }
+            } else if(delta >= ONEMINQUARTER) {
+                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+                    v += actualDelta / 2;
+                } else {
+                    v += ONEAVGQUARTER / 2;
+                }
+            } else if(delta >= ONEMINMONTH) {
                 if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
                     v += actualDelta / 2;
                 } else {
