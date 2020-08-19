@@ -791,14 +791,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 } else {
                     periodLength = ONEAVGYEAR;
                 }
-            } else if(delta >= ONEMINQUARTER) {
-                if(
-                    definedDelta && // case of specified by tickfomat
-                    actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER
-                ) {
+            } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
+                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
                     periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGQUARTER;
                 }
             } else if(delta >= ONEMINMONTH) {
                 if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
@@ -806,7 +801,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 } else {
                     periodLength = ONEAVGMONTH;
                 }
-            } else if(delta >= ONEWEEK) {
+            } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
                 periodLength = ONEWEEK;
             } else if(delta >= ONEDAY) {
                 periodLength = ONEDAY;
