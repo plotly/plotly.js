@@ -777,13 +777,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var A = tickVals[a].value;
             var B = tickVals[b].value;
 
-            var delta = definedDelta || Math.abs(B - A);
+            var actualDelta = Math.abs(B - A);
+            var delta = definedDelta || actualDelta;
             if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
                 v += ONEAVGYEAR / 2;
             } else if(delta >= ONEAVGQUARTER) {
                 v += ONEAVGQUARTER / 2;
             } else if(delta >= ONEMINMONTH) { // Months could have days less than ONEAVGMONTH period
-                var actualDelta = Math.abs(B - A);
                 if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
                     v += actualDelta / 2;
                 } else {
@@ -791,6 +791,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
             } else if(delta >= ONEWEEK) {
                 v += ONEWEEK / 2;
+                if(actualDelta === ONEWEEK && ax._hasDayOfWeekBreaks) {
+                    v -= ONEDAY; // half of two days which is a good approximate for the number of week-end days
+                }
             } else if(delta >= ONEDAY) {
                 v += ONEDAY / 2;
             }

@@ -5383,6 +5383,67 @@ describe('Test axes', function() {
             });
         });
 
+        ['%U', '%V', '%W'].forEach(function(tickformat, i) {
+            it('should move weekly labels by one day (i.e. to help center the labels) when *day of week* rangebreak is present', function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: [
+                            '2020-01-01',
+                            '2020-01-02',
+                            '2020-01-03',
+                            '2020-01-04',
+                            '2020-01-05',
+                            '2020-01-06',
+                            '2020-01-07',
+                            '2020-01-08',
+                            '2020-01-09',
+                            '2020-01-10',
+                            '2020-01-11',
+                            '2020-01-12',
+                            '2020-01-13',
+                            '2020-01-14',
+                            '2020-01-15',
+                            '2020-01-16',
+                            '2020-01-17',
+                            '2020-01-18',
+                            '2020-01-19',
+                            '2020-01-20',
+                            '2020-01-21',
+                            '2020-01-22',
+                            '2020-01-23',
+                            '2020-01-24',
+                            '2020-01-25',
+                            '2020-01-26',
+                            '2020-01-27',
+                            '2020-01-28',
+                            '2020-01-29',
+                            '2020-01-30',
+                            '2020-01-31'
+                        ]
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            rangebreaks: [{bounds: ['sat', 'mon']}],
+                            ticklabelmode: 'period',
+                            tickformat: '%b-' + tickformat
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', [
+                        '2020-01-01 12:00', '2020-01-08 12:00', '2020-01-15 12:00', '2020-01-22 12:00', '2020-01-29 12:00'
+                    ], [
+                        ['Dec-52', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04'],
+                        ['Dec-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05'],
+                        ['Dec-52', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04']
+                    ][i]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
         ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(tickformat, i) {
             it('should respect daily tickformat that includes ' + tickformat, function(done) {
                 Plotly.newPlot(gd, {
