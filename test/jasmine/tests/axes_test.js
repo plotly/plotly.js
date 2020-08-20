@@ -5198,6 +5198,7 @@ describe('Test axes', function() {
     });
 
     describe('label positioning using *ticklabelmode*: "period"', function() {
+        var hovertemplate = 'x:%{x|%x %X}'; // to make debugging easier
         var gd;
 
         beforeEach(function() {
@@ -5220,6 +5221,7 @@ describe('Test axes', function() {
             it('should respect yearly tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: ['2020-01-01', '2026-01-01']
                     }],
                     layout: {
@@ -5253,6 +5255,7 @@ describe('Test axes', function() {
         it('should respect quarters tickformat that includes %q', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
+                    hovertemplate: hovertemplate,
                     x: ['2020-01-01', '2022-01-01']
                 }],
                 layout: {
@@ -5285,6 +5288,7 @@ describe('Test axes', function() {
             it('should respect monthly tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: ['2020-01-01', '2020-07-01']
                     }],
                     layout: {
@@ -5319,6 +5323,7 @@ describe('Test axes', function() {
         it('should respect Sunday-based week tickformat that includes %U', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
+                    hovertemplate: hovertemplate,
                     x: ['2020-02-01', '2020-04-01']
                 }],
                 layout: {
@@ -5351,6 +5356,7 @@ describe('Test axes', function() {
             it('should respect Monday-based week tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: ['2020-02-01', '2020-04-01']
                     }],
                     layout: {
@@ -5387,6 +5393,7 @@ describe('Test axes', function() {
             it('should move weekly labels by one day (i.e. to help center the labels) when *day of week* rangebreak is present', function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: [
                             '2020-01-01',
                             '2020-01-02',
@@ -5450,6 +5457,7 @@ describe('Test axes', function() {
             it('should respect daily tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: ['2020-01-01', '2020-01-08']
                     }],
                     layout: {
@@ -5491,6 +5499,7 @@ describe('Test axes', function() {
             it('should respect daily tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: ['2020-01-01', '2020-01-02']
                     }],
                     layout: {
@@ -5606,6 +5615,7 @@ describe('Test axes', function() {
             it('should position auto labels | range:' + t.range, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: [
                             '2020-12-15',
                             '2020-12-15 0:45',
@@ -5701,6 +5711,7 @@ describe('Test axes', function() {
             it('should position auto labels with rangebreaks | range:' + t.range, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
+                        hovertemplate: hovertemplate,
                         x: [
                             '2020-12-14 08:00', '2020-12-14 12:00', '2020-12-14 16:00',
                             '2020-12-15 08:00', '2020-12-15 12:00', '2020-12-15 16:00',
