@@ -5262,7 +5262,7 @@ describe('Test axes', function() {
                     width: 1000,
                     xaxis: {
                         ticklabelmode: 'period',
-                        tickformat: '%Y-%q'
+                        tickformat: '%Y-Q%q'
                     }
                 }
             })
@@ -5278,7 +5278,7 @@ describe('Test axes', function() {
                     '2021-08-16',
                     '2021-11-16',
                     '2022-02-16'
-                ], ['', '2020-1', '2020-2', '2020-3', '2020-4', '2021-1', '2021-2', '2021-3', '2021-4', '']);
+                ], ['', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', '']);
             })
             .catch(failTest)
             .then(done);
@@ -5295,7 +5295,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%q-' + formatter
+                            tickformat: 'Q%q-' + formatter
                         }
                     }
                 })
@@ -5310,9 +5310,9 @@ describe('Test axes', function() {
                         '2020-06-16',
                         '2020-07-16'
                     ], [
-                        ['', '1-January', '1-February', '1-March', '2-April', '2-May', '2-June', ''],
-                        ['', '1-Jan', '1-Feb', '1-Mar', '2-Apr', '2-May', '2-Jun', ''],
-                        ['', '1-01', '1-02', '1-03', '2-04', '2-05', '2-06', '']
+                        ['', 'Q1-January', 'Q1-February', 'Q1-March', 'Q2-April', 'Q2-May', 'Q2-June', ''],
+                        ['', 'Q1-Jan', 'Q1-Feb', 'Q1-Mar', 'Q2-Apr', 'Q2-May', 'Q2-Jun', ''],
+                        ['', 'Q1-01', 'Q1-02', 'Q1-03', 'Q2-04', 'Q2-05', 'Q2-06', '']
                     ][i]);
                 })
                 .catch(failTest)
@@ -5330,7 +5330,7 @@ describe('Test axes', function() {
                     width: 1000,
                     xaxis: {
                         ticklabelmode: 'period',
-                        tickformat: '%b-%U'
+                        tickformat: '%b-W%U'
                     }
                 }
             })
@@ -5346,7 +5346,7 @@ describe('Test axes', function() {
                     '2020-03-18 12:00',
                     '2020-03-25 12:00',
                     '2020-04-01 12:00'
-                ], ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']);
+                ], ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']);
             })
             .catch(failTest)
             .then(done);
@@ -5363,7 +5363,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%b-' + formatter
+                            tickformat: '%b-W' + formatter
                         }
                     }
                 })
@@ -5380,8 +5380,8 @@ describe('Test axes', function() {
                         '2020-03-26 12:00',
                         '2020-04-02 12:00'
                     ], [
-                        ['Jan-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Feb-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13', 'Mar-14'],
-                        ['Jan-04', 'Feb-05', 'Feb-06', 'Feb-07', 'Feb-08', 'Mar-09', 'Mar-10', 'Mar-11', 'Mar-12', 'Mar-13']
+                        ['Jan-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Feb-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13', 'Mar-W14'],
+                        ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']
                     ][i]);
                 })
                 .catch(failTest)
@@ -5433,7 +5433,7 @@ describe('Test axes', function() {
                         xaxis: {
                             rangebreaks: [{bounds: ['sat', 'mon']}],
                             ticklabelmode: 'period',
-                            tickformat: '%b-' + formatter
+                            tickformat: '%b-W' + formatter
                         }
                     }
                 })
@@ -5443,9 +5443,9 @@ describe('Test axes', function() {
                         ['2020-01-01 12:00', '2020-01-08 12:00', '2020-01-15 12:00', '2020-01-22 12:00', '2020-01-29 12:00'],
                         ['2020-01-01 12:00', '2020-01-08 12:00', '2020-01-15 12:00', '2020-01-22 12:00', '2020-01-29 12:00']
                     ][i], [
-                        ['', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04'],
-                        ['Dec-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05'],
-                        ['Dec-52', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04']
+                        ['', 'Jan-W01', 'Jan-W02', 'Jan-W03', 'Jan-W04'],
+                        ['Dec-W01', 'Jan-W02', 'Jan-W03', 'Jan-W04', 'Jan-W05'],
+                        ['Dec-W52', 'Jan-W01', 'Jan-W02', 'Jan-W03', 'Jan-W04']
                     ][i]);
                 })
                 .catch(failTest)
