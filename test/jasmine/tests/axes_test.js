@@ -5216,8 +5216,8 @@ describe('Test axes', function() {
             expect(labels).withContext(msg).toEqual(expLabels);
         }
 
-        ['%Y', '%y'].forEach(function(tickformat, i) {
-            it('should respect yearly tickformat that includes ' + tickformat, function(done) {
+        ['%Y', '%y'].forEach(function(formatter, i) {
+            it('should respect yearly tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
                         x: ['2020-01-01', '2026-01-01']
@@ -5226,7 +5226,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: tickformat
+                            tickformat: formatter
                         }
                     }
                 })
@@ -5281,8 +5281,8 @@ describe('Test axes', function() {
             .then(done);
         });
 
-        ['%B', '%b', '%m'].forEach(function(tickformat, i) {
-            it('should respect monthly tickformat that includes ' + tickformat, function(done) {
+        ['%B', '%b', '%m'].forEach(function(formatter, i) {
+            it('should respect monthly tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
                         x: ['2020-01-01', '2020-07-01']
@@ -5291,7 +5291,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%q-' + tickformat
+                            tickformat: '%q-' + formatter
                         }
                     }
                 })
@@ -5347,8 +5347,8 @@ describe('Test axes', function() {
             .then(done);
         });
 
-        ['%V', '%W'].forEach(function(tickformat, i) {
-            it('should respect Monday-based week tickformat that includes ' + tickformat, function(done) {
+        ['%V', '%W'].forEach(function(formatter, i) {
+            it('should respect Monday-based week tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
                         x: ['2020-02-01', '2020-04-01']
@@ -5357,7 +5357,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%b-' + tickformat
+                            tickformat: '%b-' + formatter
                         }
                     }
                 })
@@ -5383,7 +5383,7 @@ describe('Test axes', function() {
             });
         });
 
-        ['%U', '%V', '%W'].forEach(function(tickformat, i) {
+        ['%U', '%V', '%W'].forEach(function(formatter, i) {
             it('should move weekly labels by one day (i.e. to help center the labels) when *day of week* rangebreak is present', function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5426,7 +5426,7 @@ describe('Test axes', function() {
                         xaxis: {
                             rangebreaks: [{bounds: ['sat', 'mon']}],
                             ticklabelmode: 'period',
-                            tickformat: '%b-' + tickformat
+                            tickformat: '%b-' + formatter
                         }
                     }
                 })
@@ -5446,8 +5446,8 @@ describe('Test axes', function() {
             });
         });
 
-        ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(tickformat, i) {
-            it('should respect daily tickformat that includes ' + tickformat, function(done) {
+        ['%A', '%a', '%d', '%e', '%j', '%u', '%w', '%x'].forEach(function(formatter, i) {
+            it('should respect daily tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
                         x: ['2020-01-01', '2020-01-08']
@@ -5456,7 +5456,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%b-' + tickformat
+                            tickformat: '%b-' + formatter
                         }
                     }
                 })
@@ -5487,8 +5487,8 @@ describe('Test axes', function() {
             });
         });
 
-        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(tickformat, i) {
-            it('should respect daily tickformat that includes ' + tickformat, function(done) {
+        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(formatter, i) {
+            it('should respect daily tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
                         x: ['2020-01-01', '2020-01-02']
@@ -5497,7 +5497,7 @@ describe('Test axes', function() {
                         width: 1000,
                         xaxis: {
                             ticklabelmode: 'period',
-                            tickformat: '%a-' + tickformat
+                            tickformat: '%a-' + formatter
                         }
                     }
                 })
