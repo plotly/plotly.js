@@ -45,7 +45,10 @@ module.exports = extendFlat({
         dflt: 'rgb',
         role: 'info',
         editType: 'calc',
-        description: 'Color model used to map the numerical color components described in `z` into colors.'
+        description: [
+            'Color model used to map the numerical color components described in `z` into colors.',
+            'If `source` is specified, this attribute will be set to `rgba`.'
+        ].join(' ')
     },
     zmin: {
         valType: 'info_array',
