@@ -86,7 +86,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 
     if(!dflt) dflt = axlist[0] || extraOption;
     if(!extraOption) extraOption = dflt;
-    if(domainRef) axlist = axlist.concat(axlist.map(function (x) { return x + ' domain'; }));
+    if(domainRef) axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
 
     // data-ref annotations are not supported in gl2d yet
 
@@ -109,10 +109,9 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *
  */
 axes.getRefType = function(ar) {
-    if (ar === undefined) { return ar; }
-    if (ar === 'paper') { return 'paper'; }
-    if (/( domain)$/.test(ar)) { return 'domain'; }
-    else { return 'range'; }
+    if(ar === undefined) { return ar; }
+    if(ar === 'paper') { return 'paper'; }
+    if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
 };
 
 /*

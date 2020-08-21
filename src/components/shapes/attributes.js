@@ -64,7 +64,7 @@ module.exports = templatedArray('shape', {
     xref: extendFlat({}, annAttrs.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('x','left','right'),
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
             'If the axis `type` is *log*, then you must take the',
             'log of your desired range.',
             'If the axis `type` is *date*, then you must convert',
@@ -123,7 +123,7 @@ module.exports = templatedArray('shape', {
     yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('y','bottom','top'),
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
         ].join(' ')
     }),
     ysizemode: {

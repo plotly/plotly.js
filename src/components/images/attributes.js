@@ -151,7 +151,7 @@ module.exports = templatedArray('image', {
         editType: 'arraydraw',
         description: [
             'Sets the images\'s x coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('x','left','right'),
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
         ].join(' ')
     },
 
@@ -166,7 +166,7 @@ module.exports = templatedArray('image', {
         editType: 'arraydraw',
         description: [
             'Sets the images\'s y coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('y','bottom','top'),
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
         ].join(' ')
     },
     editType: 'arraydraw'

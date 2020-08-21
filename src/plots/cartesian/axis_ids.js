@@ -43,7 +43,7 @@ exports.cleanId = function cleanId(id, axLetter, domainId) {
     if(/( domain)$/.test(id) && (!domainId)) return;
     var axNum = id.split(' ')[0].substr(1).replace(/^0+/, '');
     if(axNum === '1') axNum = '';
-    if (/( domain)$/.test(id) && domainId) {
+    if(/( domain)$/.test(id) && domainId) {
         return id.charAt(0) + axNum + ' domain';
     }
     return id.charAt(0) + axNum;

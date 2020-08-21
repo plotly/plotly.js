@@ -374,13 +374,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     // it behaves when its position is set in data ('range')
                     // coordinates.
                     var tailRefType = Axes.getRefType(tailRef);
-                    if (tailRefType === 'domain') {
-                        if (axLetter === 'y') {
+                    if(tailRefType === 'domain') {
+                        if(axLetter === 'y') {
                             arrowLength = 1 - arrowLength;
                         }
                         posPx.tail = ax._offset + ax._length * arrowLength;
-                    } else if (tailRefType === 'paper') {
-                        if (axLetter == 'y') {
+                    } else if(tailRefType === 'paper') {
+                        if(axLetter == 'y') {
                             arrowLength = 1 - arrowLength;
                             posPx.tail = gs.t + gs.h * arrowLength;
                         } else {

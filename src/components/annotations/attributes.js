@@ -323,7 +323,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s x coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('x','left','right'),
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
         ].join(' ')
     },
     x: {
@@ -382,7 +382,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s y coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('y','bottom','top'),
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
         ].join(' ')
     },
     y: {

@@ -10,7 +10,7 @@
 'use strict';
 
 module.exports = {
-    axisRefDescription: function (axisname,lower,upper) {
+    axisRefDescription: function(axisname, lower, upper) {
         return [
             'If set to a ', axisname, ' axis id (e.g. *', axisname, '* or',
             '*', axisname, '2*), the `', axisname, '` position refers to a',
@@ -27,4 +27,4 @@ module.exports = {
             'second ', axisname, ' axis.',
         ].join(' ');
     }
-}
+};
