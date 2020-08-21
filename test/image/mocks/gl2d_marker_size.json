@@ -71,5 +71,8 @@
     "height": 400,
     "width": 480,
     "showlegend": false
+  },
+  "config": {
+    "plotGlPixelRatio": 4
   }
 }
