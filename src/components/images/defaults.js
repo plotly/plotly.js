@@ -10,7 +10,6 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var AxisIds = require('../../plots/cartesian/axis_ids');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
@@ -50,7 +49,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
         var axLetter = axLetters[i];
-        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, undefined, 'paper',
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper', undefined,
                                    true);
 
         if(axRef !== 'paper') {
