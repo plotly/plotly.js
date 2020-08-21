@@ -361,28 +361,19 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    return _coerce(containerIn, containerOut, attributes, attribute, dflt).val;
-};
-
-function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
-    var shouldValidate = (opts || {}).shouldValidate;
-
-    var attr = nestedProperty(attributes, attribute).get();
-    if(dflt === undefined) dflt = attr.dflt;
-    var src = false;
-
+    var opts = nestedProperty(attributes, attribute).get();
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
-    var valIn = propIn.get();
+    var v = propIn.get();
 
     var template = containerOut._template;
-    if(valIn === undefined && template) {
-        valIn = nestedProperty(template, attribute).get();
-        src = (valIn !== undefined);
-
+    if(v === undefined && template) {
+        v = nestedProperty(template, attribute).get();
         // already used the template value, so short-circuit the second check
         template = 0;
     }
+
+    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking
@@ -390,52 +381,38 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(attr.arrayOk && isArrayOrTypedArray(valIn)) {
-        propOut.set(valIn);
-        return {
-            inp: valIn,
-            val: valIn,
-            src: true
-        };
+    if(opts.arrayOk && isArrayOrTypedArray(v)) {
+        propOut.set(v);
+        return v;
     }
 
-    var coerceFunction = exports.valObjectMeta[attr.valType].coerceFunction;
-    coerceFunction(valIn, propOut, dflt, attr);
+    var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
+    coerceFunction(v, propOut, dflt, opts);
 
-    var valOut = propOut.get();
-    src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
-
+    var out = propOut.get();
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
-    if(template && valOut === dflt && !validate(valIn, attr)) {
-        valIn = nestedProperty(template, attribute).get();
-        coerceFunction(valIn, propOut, dflt, attr);
-        valOut = propOut.get();
-
-        src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
+    if(template && out === dflt && !validate(v, opts)) {
+        v = nestedProperty(template, attribute).get();
+        coerceFunction(v, propOut, dflt, opts);
+        out = propOut.get();
     }
-
-    return {
-        inp: valIn,
-        val: valOut,
-        src: src
-    };
-}
+    return out;
+};
 
 /**
  * Variation on coerce
- * useful when setting an attribute to a valid value
- * can change the default for another attribute.
  *
  * Uses coerce to get attribute value if user input is valid,
  * returns attribute default if user input it not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt, {
-        shouldValidate: true
-    });
-    return (out.src && out.inp !== undefined) ? out.val : false;
+    var propIn = nestedProperty(containerIn, attribute);
+    var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var valIn = propIn.get();
+
+    return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
 
 /*

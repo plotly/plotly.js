@@ -8,7 +8,7 @@
 
 'use strict';
 
-var cluster = require('point-cluster');
+var cluster = require('@plotly/point-cluster');
 
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');

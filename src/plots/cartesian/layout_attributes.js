@@ -478,6 +478,20 @@ module.exports = {
             'to the left/bottom of labels.'
         ].join(' ')
     },
+    ticklabelmode: {
+        valType: 'enumerated',
+        values: ['instant', 'period'],
+        dflt: 'instant',
+        role: 'info',
+        editType: 'ticks',
+        description: [
+            'Determines where tick labels are drawn with respect to their',
+            'corresponding ticks and grid lines.',
+            'Only has an effect for axes of `type` *date*',
+            'When set to *period*, tick labels are drawn in the middle of the period',
+            'between ticks.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

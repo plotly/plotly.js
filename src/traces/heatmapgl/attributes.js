@@ -29,6 +29,15 @@ for(var i = 0; i < commonList.length; i++) {
     attrs[k] = heatmapAttrs[k];
 }
 
+attrs.zsmooth = {
+    valType: 'enumerated',
+    values: ['fast', false],
+    dflt: 'fast',
+    role: 'style',
+    editType: 'calc',
+    description: 'Picks a smoothing algorithm use to smooth `z` data.'
+};
+
 extendFlat(
     attrs,
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})

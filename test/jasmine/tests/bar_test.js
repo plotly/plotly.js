@@ -423,6 +423,31 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'mlw', [[2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 10]]);
     });
+
+    it('should translate sizes e.g. 2000 to milliseconds not to year when base is present (vertical case)', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            base: [0],
+            y: [2000],
+            x: ['A']
+        }], {yaxis: {type: 'date'}});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 's', [[2000]]);
+    });
+
+    it('should translate sizes e.g. 2000 to milliseconds not to year when base is present (horizontal case)', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            orientation: 'h',
+            base: [0],
+            x: [2000],
+            y: ['A']
+        }], {xaxis: {type: 'date'}});
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 's', [[2000]]);
+    });
 });
 
 describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
@@ -942,6 +967,23 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
         expect(gd._fullLayout.xaxis.type).toBe('multicategory');
         assertPointField(gd.calcdata, 'b', [[0, 0, 0, 0]]);
+    });
+
+    it('should set unit width for categories in overlay mode', function() {
+        var gd = mockBarPlot([{
+            type: 'bar',
+            x: ['a', 'b', 'c'],
+            y: [2, 2, 2]
+        },
+        {
+            type: 'bar',
+            x: ['a', 'c'],
+            y: [1, 1]
+        }], {
+            barmode: 'overlay'
+        });
+
+        expect(gd.calcdata[1][0].t.bardelta).toBe(1);
     });
 
     describe('should relative-stack bar within the same trace that overlap under barmode=group', function() {

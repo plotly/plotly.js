@@ -9,6 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
+var utcFormat = require('d3-time-format').utcFormat;
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
@@ -22,6 +23,7 @@ var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
+var ONEWEEK = numConstants.ONEWEEK;
 var ONEDAY = numConstants.ONEDAY;
 var ONEHOUR = numConstants.ONEHOUR;
 var ONEMIN = numConstants.ONEMIN;
@@ -91,6 +93,13 @@ module.exports = function setConvert(ax, fullLayout) {
      * - defaults to ax.calendar
      */
     function dt2ms(v, _, calendar, opts) {
+        if((opts || {}).msUTC && isNumeric(v)) {
+            // For now it is only used
+            // to fix bar length in milliseconds & gl3d ticks
+            // It could be applied in other places in v2
+            return +v;
+        }
+
         // NOTE: Changed this behavior: previously we took any numeric value
         // to be a ms, even if it was a string that could be a bare year.
         // Now we convert it as a date if at all possible, and only try
@@ -99,13 +108,6 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ms === BADNUM) {
             if(isNumeric(v)) {
                 v = +v;
-                if((opts || {}).msUTC) {
-                    // For now it is only used
-                    // to fix bar length in milliseconds.
-                    // It could be applied in other places in v2
-                    return v;
-                }
-
                 // keep track of tenths of ms, that `new Date` will drop
                 // same logic as in Lib.ms2DateTime
                 var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
@@ -733,7 +735,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     switch(brk.pattern) {
                         case WEEKDAY_PATTERN:
-                            step = 7 * ONEDAY;
+                            step = ONEWEEK;
 
                             bndDelta = (
                                 (b1 < b0 ? 7 : 0) +
@@ -954,7 +956,7 @@ module.exports = function setConvert(ax, fullLayout) {
     // Fall back on default format for dummy axes that don't care about formatting
     var locale = fullLayout._d3locale;
     if(ax.type === 'date') {
-        ax._dateFormat = locale ? locale.timeFormat.utc : d3.time.format.utc;
+        ax._dateFormat = locale ? locale.timeFormat : utcFormat;
         ax._extraFormat = fullLayout._extraFormat;
     }
     // occasionally we need _numFormat to pass through

@@ -67,7 +67,7 @@ module.exports = function plot(gd, subplot, cdata) {
             scene.line2d = createLine(regl);
         }
         if(scene.scatter2d === true) {
-            scene.scatter2d = createScatter(regl);
+            scene.scatter2d = createScatter(regl, { constPointSize: true });
         }
         if(scene.fill2d === true) {
             scene.fill2d = createLine(regl);

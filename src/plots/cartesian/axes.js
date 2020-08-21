@@ -24,7 +24,11 @@ var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
 var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEAVGQUARTER = constants.ONEAVGQUARTER;
+var ONEMAXMONTH = constants.ONEMAXMONTH;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEMINMONTH = constants.ONEMINMONTH;
+var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
@@ -661,6 +665,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     generateTicks();
 
+    var isPeriod = ax.ticklabelmode === 'period';
+    if(isPeriod) {
+        // add one label to show pre tick0 period
+        tickVals.unshift({
+            minor: false,
+            value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
+        });
+    }
+
     if(ax.rangebreaks) {
         // replace ticks inside breaks that would get a tick
         // and reduce ticks
@@ -722,8 +735,63 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var minRange = Math.min(rng[0], rng[1]);
+    var maxRange = Math.max(rng[0], rng[1]);
+
+    var definedDelta;
+    if(isPeriod && ax.tickformat) {
+        if(
+            !(/%[fLQsSMHIpX]/.test(ax.tickformat))
+            // %f: microseconds as a decimal number [000000, 999999]
+            // %L: milliseconds as a decimal number [000, 999]
+            // %Q: milliseconds since UNIX epoch
+            // %s: seconds since UNIX epoch
+            // %S: second as a decimal number [00,61]
+            // %M: minute as a decimal number [00,59]
+            // %H: hour (24-hour clock) as a decimal number [00,23]
+            // %I: hour (12-hour clock) as a decimal number [01,12]
+            // %p: either AM or PM
+            // %X: the locale’s time, such as %-I:%M:%S %p
+        ) {
+            if(
+                /%[Aadejuwx]/.test(ax.tickformat)
+                // %A: full weekday name
+                // %a: abbreviated weekday name
+                // %d: zero-padded day of the month as a decimal number [01,31]
+                // %e: space-padded day of the month as a decimal number [ 1,31]
+                // %j: day of the year as a decimal number [001,366]
+                // %u: Monday-based (ISO 8601) weekday as a decimal number [1,7]
+                // %w: Sunday-based weekday as a decimal number [0,6]
+                // %x: the locale’s date, such as %-m/%-d/%Y
+            ) definedDelta = ONEDAY;
+            else if(
+                /%[UVW]/.test(ax.tickformat)
+                // %U: Sunday-based week of the year as a decimal number [00,53]
+                // %V: ISO 8601 week of the year as a decimal number [01, 53]
+                // %W: Monday-based week of the year as a decimal number [00,53]
+            ) definedDelta = ONEWEEK;
+            else if(
+                /%[Bbm]/.test(ax.tickformat)
+                // %B: full month name
+                // %b: abbreviated month name
+                // %m: month as a decimal number [01,12]
+            ) definedDelta = ONEAVGMONTH;
+            else if(
+                /%[q]/.test(ax.tickformat)
+                // %q: quarter of the year as a decimal number [1,4]
+            ) definedDelta = ONEAVGQUARTER;
+            else if(
+                /%[Yy]/.test(ax.tickformat)
+                // %Y: year with century as a decimal number, such as 1999
+                // %y: year without century as a decimal number [00,99]
+            ) definedDelta = ONEAVGYEAR;
+        }
+    }
+
+    var removedPreTick0Label = false;
     var ticksOut = new Array(tickVals.length);
-    for(var i = 0; i < tickVals.length; i++) {
+    var i;
+    for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
@@ -733,6 +801,59 @@ axes.calcTicks = function calcTicks(ax, opts) {
             false, // hover
             _minor // noSuffixPrefix
         );
+
+        if(isPeriod) {
+            var v = tickVals[i].value;
+
+            var a = i;
+            var b = i + 1;
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
+            } else {
+                a = i - 1;
+                b = i;
+            }
+
+            var A = tickVals[a].value;
+            var B = tickVals[b].value;
+
+            var delta = definedDelta || Math.abs(B - A);
+            if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
+                v += ONEAVGYEAR / 2;
+            } else if(delta >= ONEAVGQUARTER) {
+                v += ONEAVGQUARTER / 2;
+            } else if(delta >= ONEMINMONTH) { // Months could have days less than ONEAVGMONTH period
+                var actualDelta = Math.abs(B - A);
+                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+                    v += actualDelta / 2;
+                } else {
+                    v += ONEAVGMONTH / 2;
+                }
+            } else if(delta >= ONEWEEK) {
+                v += ONEWEEK / 2;
+            } else if(delta >= ONEDAY) {
+                v += ONEDAY / 2;
+            }
+
+            ticksOut[i].periodX = v;
+
+            if(v > maxRange || v < minRange) { // hide label if outside the range
+                ticksOut[i].text = '';
+                removedPreTick0Label = true;
+            }
+        }
+    }
+
+    if(removedPreTick0Label) {
+        for(i = 0; i < ticksOut.length; i++) {
+            if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
+                // redo first visible tick
+                ax._prevDateHead = '';
+                ticksOut[i].text = axes.tickText(ax, tickVals[i].value).text;
+                break;
+            }
+        }
     }
 
     ax._inCalcTicks = false;
@@ -843,6 +964,13 @@ axes.autoTicks = function(ax, roughDTick) {
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
+
+            if(/%[uVW]/.test(ax.tickformat)) {
+                // replace Sunday with Monday for ISO and Monday-based formats
+                var len = ax.tick0.length;
+                var lastD = +ax.tick0[len - 1];
+                ax.tick0 = ax.tick0.substring(0, len - 2) + String(lastD + 1);
+            }
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
@@ -1826,6 +1954,10 @@ axes.drawOne = function(gd, ax, opts) {
     if(!ax.visible) return;
 
     var transFn = axes.makeTransFn(ax);
+    var transTickLabelFn = ax.ticklabelmode === 'period' ?
+        axes.makeTransPeriodFn(ax) :
+        axes.makeTransFn(ax);
+
     var tickVals;
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
     // The key case here is removing zero lines when the axis bound is zero
@@ -1944,7 +2076,7 @@ axes.drawOne = function(gd, ax, opts) {
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
-            transFn: transFn,
+            transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
     });
@@ -2254,6 +2386,14 @@ axes.makeTransFn = function(ax) {
         function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
 };
 
+axes.makeTransPeriodFn = function(ax) {
+    var axLetter = ax._id.charAt(0);
+    var offset = ax._offset;
+    return axLetter === 'x' ?
+        function(d) { return 'translate(' + (offset + ax.l2p(d.periodX)) + ',0)'; } :
+        function(d) { return 'translate(0,' + (offset + ax.l2p(d.periodX)) + ')'; };
+};
+
 /**
  * Make axis tick path string
  *
@@ -2394,8 +2534,17 @@ axes.drawTicks = function(gd, ax, opts) {
 
     var cls = ax._id + 'tick';
 
+    var vals = opts.vals;
+    if(
+        ax.ticklabelmode === 'period'
+    ) {
+        // drop very first tick that we added to handle period
+        vals = vals.slice();
+        vals.shift();
+    }
+
     var ticks = opts.layer.selectAll('path.' + cls)
-        .data(ax.ticks ? opts.vals : [], tickDataFn);
+        .data(ax.ticks ? vals : [], tickDataFn);
 
     ticks.exit().remove();
 
@@ -2552,6 +2701,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
     var vals = opts.vals;
+
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
     var prevAngle = (ax._prevTickAngles || {})[cls];

@@ -1,0 +1,203 @@
+{
+    "data": [
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ]
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x4",
+            "yaxis": "y4"
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x5",
+            "yaxis": "y5"
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x6",
+            "yaxis": "y6"
+        },
+        {
+            "x": [
+                "2017-01-01",
+                "2023-01-01"
+            ],
+            "y": [
+                0,
+                1
+            ],
+            "xaxis": "x7",
+            "yaxis": "y7"
+        }
+    ],
+    "layout": {
+        "showlegend": false,
+        "width": 600,
+        "height": 500,
+        "yaxis": {
+            "domain": [
+                0,
+                0.04
+            ]
+        },
+        "yaxis2": {
+            "domain": [
+                0.16,
+                0.2
+            ]
+        },
+        "yaxis3": {
+            "domain": [
+                0.32,
+                0.36
+            ]
+        },
+        "yaxis4": {
+            "domain": [
+                0.48,
+                0.52
+            ]
+        },
+        "yaxis5": {
+            "domain": [
+                0.64,
+                0.68
+            ]
+        },
+        "yaxis6": {
+            "domain": [
+                0.80,
+                0.84
+            ]
+        },
+        "yaxis7": {
+            "domain": [
+                0.96,
+                1
+            ]
+        },
+        "xaxis": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2019-12-24",
+                "2020-01-06"
+            ],
+            "ticklabelmode": "period",
+            "tickformat": "%b %d, %Y"
+        },
+        "xaxis2": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2019-12-29",
+                "2020-01-04"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y2"
+        },
+        "xaxis3": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2020-01-03",
+                "2019-12-28"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y3"
+        },
+        "xaxis4": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2020-03-01",
+                "2020-11-01"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y4"
+        },
+        "xaxis5": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2016-09-01",
+                "2017-06-01"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y5"
+        },
+        "xaxis6": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2016-05-01",
+                "2019-09-01"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y6"
+        },
+        "xaxis7": {
+            "tickcolor": "black",
+            "gridcolor": "orange",
+            "range": [
+                "2016-05-01",
+                "2021-09-01"
+            ],
+            "ticklabelmode": "period",
+            "anchor": "y7"
+        }
+    }
+}

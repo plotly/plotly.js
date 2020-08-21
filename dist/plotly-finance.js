@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.54.6
+* plotly.js (finance) v1.54.7
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -37397,28 +37397,19 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    return _coerce(containerIn, containerOut, attributes, attribute, dflt).val;
-};
-
-function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
-    var shouldValidate = (opts || {}).shouldValidate;
-
-    var attr = nestedProperty(attributes, attribute).get();
-    if(dflt === undefined) dflt = attr.dflt;
-    var src = false;
-
+    var opts = nestedProperty(attributes, attribute).get();
     var propIn = nestedProperty(containerIn, attribute);
     var propOut = nestedProperty(containerOut, attribute);
-    var valIn = propIn.get();
+    var v = propIn.get();
 
     var template = containerOut._template;
-    if(valIn === undefined && template) {
-        valIn = nestedProperty(template, attribute).get();
-        src = (valIn !== undefined);
-
+    if(v === undefined && template) {
+        v = nestedProperty(template, attribute).get();
         // already used the template value, so short-circuit the second check
         template = 0;
     }
+
+    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking
@@ -37426,52 +37417,38 @@ function _coerce(containerIn, containerOut, attributes, attribute, dflt, opts) {
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(attr.arrayOk && isArrayOrTypedArray(valIn)) {
-        propOut.set(valIn);
-        return {
-            inp: valIn,
-            val: valIn,
-            src: true
-        };
+    if(opts.arrayOk && isArrayOrTypedArray(v)) {
+        propOut.set(v);
+        return v;
     }
 
-    var coerceFunction = exports.valObjectMeta[attr.valType].coerceFunction;
-    coerceFunction(valIn, propOut, dflt, attr);
+    var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
+    coerceFunction(v, propOut, dflt, opts);
 
-    var valOut = propOut.get();
-    src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
-
+    var out = propOut.get();
     // in case v was provided but invalid, try the template again so it still
     // overrides the regular default
-    if(template && valOut === dflt && !validate(valIn, attr)) {
-        valIn = nestedProperty(template, attribute).get();
-        coerceFunction(valIn, propOut, dflt, attr);
-        valOut = propOut.get();
-
-        src = (valOut !== undefined) && shouldValidate && validate(valIn, attr);
+    if(template && out === dflt && !validate(v, opts)) {
+        v = nestedProperty(template, attribute).get();
+        coerceFunction(v, propOut, dflt, opts);
+        out = propOut.get();
     }
-
-    return {
-        inp: valIn,
-        val: valOut,
-        src: src
-    };
-}
+    return out;
+};
 
 /**
  * Variation on coerce
- * useful when setting an attribute to a valid value
- * can change the default for another attribute.
  *
  * Uses coerce to get attribute value if user input is valid,
  * returns attribute default if user input it not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var out = _coerce(containerIn, containerOut, attributes, attribute, dflt, {
-        shouldValidate: true
-    });
-    return (out.src && out.inp !== undefined) ? out.val : false;
+    var propIn = nestedProperty(containerIn, attribute);
+    var propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    var valIn = propIn.get();
+
+    return (valIn !== undefined && valIn !== null) ? propOut : false;
 };
 
 /*
@@ -37687,14 +37664,14 @@ var MIN_MS, MAX_MS;
  * you can use a gregorian date string prefixed with 'G' or 'g'.
  *
  * Where to cut off 2-digit years between 1900s and 2000s?
- * from http://support.microsoft.com/kb/244664:
+ * from https://docs.microsoft.com/en-us/office/troubleshoot/excel/two-digit-year-numbers#the-2029-rule:
  *   1930-2029 (the most retro of all...)
  * but in my mac chrome from eg. d=new Date(Date.parse('8/19/50')):
  *   1950-2049
  * by Java, from http://stackoverflow.com/questions/2024273/:
  *   now-80 - now+19
  * or FileMaker Pro, from
- *      http://www.filemaker.com/12help/html/add_view_data.4.21.html:
+ *      https://fmhelp.filemaker.com/help/18/fmp/en/index.html#page/FMP_Help/dates-with-two-digit-years.html:
  *   now-70 - now+29
  * but python strptime etc, via
  *      http://docs.python.org/py3k/library/time.html:
@@ -85870,7 +85847,7 @@ module.exports = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.54.6';
+exports.version = '1.54.7';
 
 },{}]},{},[8])(8)
 });

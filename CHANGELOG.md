@@ -9,6 +9,11 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.54.7] -- 2020-07-23
+### Changed
+ - Revert [#4904] to fix a template regression introduced in 1.54.4 [#5016]
+
+
 ## [1.54.6] -- 2020-07-09
 
 ### Fixed
