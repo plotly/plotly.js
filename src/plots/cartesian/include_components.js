@@ -38,7 +38,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
         // Test if the axRef looks like "x", "x2", etc. and has nothing
         // appended, e.g., this will return false if axRef "x2 domain".
         var hasOnlyAxRef = function(axLetter, axRef) {
-            var axRefMatch = axRef.match(idRegex[axLetter]);
+            var axRefMatch = axRef ? axRef.match(idRegex[axLetter]) : false;
             if(axRefMatch) { return axRefMatch[0].split(' ') === axRefMatch[0]; }
             return false;
         };
