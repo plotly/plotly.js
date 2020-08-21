@@ -11,7 +11,6 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var AxisIds = require('../../plots/cartesian/axis_ids');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
@@ -66,11 +65,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
             'paper', true);
-        var axRefAxOnly = AxisIds.ref2id(axRef);
         var axRefType = Axes.getRefType(axRef);
 
-        if(axRef !== 'paper' && axRefType !== 'domain') {
-            ax = Axes.getFromId(gdMock, axRefAxOnly);
+        if(axRefType === 'range') {
+            ax = Axes.getFromId(gdMock, axRef);
             ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
@@ -98,8 +96,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 coerce(attr0, 0);
                 coerce(attr1, 10);
             } else {
-                Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attr0, dflt0);
-                Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attr1, dflt1);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
             }
 
             // hack part 2
@@ -115,7 +113,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             var inAnchor = shapeIn[attrAnchor];
             shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
 
-            Axes.coercePosition(shapeOut, gdMock, coerce, axRefAxOnly, attrAnchor, 0.25);
+            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
 
             // Hack part 2
             shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
