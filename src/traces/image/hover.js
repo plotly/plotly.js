@@ -46,10 +46,11 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         if(parts.indexOf('color') !== -1) fmtColor = true;
     }
 
-    var colormodel = trace.colormodel;
+    var cr = constants.colormodel[trace.colormodel];
+    var colormodel = cr.colormodel || trace.colormodel;
     var dims = colormodel.length;
     var c = trace._scaler(pixel);
-    var s = constants.colormodel[colormodel].suffix;
+    var s = cr.suffix;
 
     var colorstring = [];
     if(trace.hovertemplate || fmtColor) {

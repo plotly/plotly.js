@@ -10,6 +10,8 @@
 
 module.exports = {
     colormodel: {
+        // min and max define the numerical range accepted in CSS
+        // If z(min|max)Dflt are not defined, z(min|max) will default to min/max
         rgb: {
             min: [0, 0, 0],
             max: [255, 255, 255],
@@ -17,6 +19,15 @@ module.exports = {
             suffix: ['', '', '']
         },
         rgba: {
+            min: [0, 0, 0, 0],
+            max: [255, 255, 255, 1],
+            fmt: function(c) {return c.slice(0, 4);},
+            suffix: ['', '', '', '']
+        },
+        rgba256: {
+            colormodel: 'rgba', // because rgba256 is not an accept colormodel in CSS
+            zminDflt: [0, 0, 0, 0],
+            zmaxDflt: [255, 255, 255, 255],
             min: [0, 0, 0, 0],
             max: [255, 255, 255, 1],
             fmt: function(c) {return c.slice(0, 4);},

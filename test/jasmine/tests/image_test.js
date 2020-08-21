@@ -101,6 +101,7 @@ describe('image supplyDefaults', function() {
         var tests = [
           ['rgb', [0, 0, 0], [255, 255, 255]],
           ['rgba', [0, 0, 0, 0], [255, 255, 255, 1]],
+          ['rgba256', [0, 0, 0, 0], [255, 255, 255, 255]],
           ['hsl', [0, 0, 0], [360, 100, 100]],
           ['hsla', [0, 0, 0, 0], [360, 100, 100, 1]]
         ];
@@ -140,13 +141,13 @@ describe('image supplyDefaults', function() {
         expect(traceOut.zmax).toEqual([20, 100, 100, 1], 'zmax default');
     });
 
-    it('should set colormodel to rgba when source is defined', function() {
+    it('should set colormodel to rgba256 when source is defined', function() {
         traceIn = {
             type: 'image',
             source: 'data:image/png;base64,asdf'
         };
         supplyDefaults(traceIn, traceOut);
-        expect(traceOut.colormodel).toBe('rgba');
+        expect(traceOut.colormodel).toBe('rgba256');
     });
 
     it('should override zmin/zmax when source is defined', function() {
@@ -157,9 +158,9 @@ describe('image supplyDefaults', function() {
             zmax: 50
         };
         supplyDefaults(traceIn, traceOut);
-        expect(traceOut.colormodel).toBe('rgba');
+        expect(traceOut.colormodel).toBe('rgba256');
         expect(traceOut.zmin).toEqual([0, 0, 0, 0]);
-        expect(traceOut.zmax).toEqual([255, 255, 255, 1]);
+        expect(traceOut.zmax).toEqual([255, 255, 255, 255]);
     });
 });
 
@@ -543,7 +544,7 @@ describe('image hover:', function() {
             .then(function() {_hover(255, 295);})
             .then(function() {
                 assertHoverLabelContent({
-                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 254]\nRGBA: [128, 77, 54, 1]',
+                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 255]\nRGBA: [128, 77, 54, 1]',
                     name: ''
                 });
             })
@@ -573,7 +574,7 @@ describe('image hover:', function() {
             .then(function() {_hover(255, 295);})
             .then(function() {
                 assertHoverLabelContent({
-                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 254]\nHSLA: [128°, 77%, 54%, 1]',
+                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 255]\nHSLA: [128°, 77%, 54%, 1]',
                     name: ''
                 });
             })

@@ -34,14 +34,17 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('dx');
     coerce('dy');
 
+    var cm;
     if(traceOut._hasZ) {
         coerce('colormodel');
-        coerce('zmin', constants.colormodel[traceOut.colormodel].min);
-        coerce('zmax', constants.colormodel[traceOut.colormodel].max);
+        cm = constants.colormodel[traceOut.colormodel];
+        coerce('zmin', (cm.zminDflt || cm.min));
+        coerce('zmax', (cm.zmaxDflt || cm.max));
     } else if(traceOut._hasSource) {
-        traceOut.colormodel = 'rgba';
-        traceOut.zmin = constants.colormodel[traceOut.colormodel].min;
-        traceOut.zmax = constants.colormodel[traceOut.colormodel].max;
+        traceOut.colormodel = 'rgba256';
+        cm = constants.colormodel[traceOut.colormodel];
+        traceOut.zmin = (cm.zminDflt || cm.min);
+        traceOut.zmax = (cm.zmaxDflt || cm.max);
     }
 
     coerce('text');

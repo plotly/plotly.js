@@ -99,7 +99,6 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
 
         // Create a new canvas and draw magnified pixels on it
         function drawMagnifiedPixelsOnCanvas(readPixel) {
-            var colormodel = trace.colormodel;
             var canvas = document.createElement('canvas');
             canvas.width = imageWidth;
             canvas.height = imageHeight;
@@ -108,7 +107,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
             var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
 
-            var fmt = constants.colormodel[colormodel].fmt;
+            var cr = constants.colormodel[trace.colormodel];
+            var colormodel = (cr.colormodel || trace.colormodel);
+            var fmt = cr.fmt;
             var c;
             for(i = 0; i < cd0.w; i++) {
                 var ipx0 = ipx(i); var ipx1 = ipx(i + 1);

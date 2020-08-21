@@ -67,9 +67,9 @@ function constrain(min, max) {
 
 // Generate a function to scale color components according to zmin/zmax and the colormodel
 function makeScaler(trace) {
-    var colormodel = trace.colormodel;
+    var cr = constants.colormodel[trace.colormodel];
+    var colormodel = (cr.colormodel || trace.colormodel);
     var n = colormodel.length;
-    var cr = constants.colormodel[colormodel];
 
     trace._sArray = [];
     // Loop over all color components
