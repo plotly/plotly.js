@@ -11,7 +11,6 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var AxisIds = require('../../plots/cartesian/axis_ids');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var handleAnnotationCommonDefaults = require('./common_defaults');

@@ -380,7 +380,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
                         posPx.tail = ax._offset + ax._length * arrowLength;
                     } else if(tailRefType === 'paper') {
-                        if(axLetter == 'y') {
+                        if(axLetter === 'y') {
                             arrowLength = 1 - arrowLength;
                             posPx.tail = gs.t + gs.h * arrowLength;
                         } else {
