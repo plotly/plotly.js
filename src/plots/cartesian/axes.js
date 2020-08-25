@@ -171,6 +171,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
         cleanPos = Lib.ensureNumber;
         pos = coerce(attr, dflt);
     } else {
+        // TODO: This doesn't seem to work for dates
         var ax = axes.getFromId(gd, axRef);
         dflt = ax.fraction2r(dflt);
         pos = coerce(attr, dflt);
