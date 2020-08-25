@@ -41,8 +41,8 @@ module.exports = function makeIncludeComponents(containerArrayName) {
             var itemi = array[i];
             if(!Lib.isPlainObject(itemi)) continue;
 
-            // call cleanId because if xref has something appended (e.g., '
-            // domain') this will get removed.
+            // call cleanId because if xref, or yref has something appended
+            // (e.g., ' domain') this will get removed.
             var xref = axisIds.cleanId(itemi.xref, 'x', false);
             var yref = axisIds.cleanId(itemi.yref, 'y', false);
 

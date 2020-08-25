@@ -1,0 +1,40 @@
+{
+    "data": [{
+        "x": [1, 5],
+        "y": [1, 10],
+        "type": "scatter"
+    }, {
+        "x": [1, 5],
+        "y": [0.1, 1.0],
+        "type": "scatter",
+        "yaxis": "y2"
+    }],
+    "layout": {
+        "title": "Axis domain referenced shape",
+        "width": 0.3,
+        "height": 0.2,
+        "xaxis": {
+            "domain": [0.2, 0.9]
+        },
+        "yaxis": {
+            "domain": [0.1, 0.8]
+        },
+        "yaxis2": {
+            "overlaying": "y",
+            "side": "right"
+        },
+        "shapes": [{
+            "type": "rect",
+            "xref": "x domain",
+            "yref": "y domain",
+            "layer": "above",
+            "x0": 0.1,
+            "y0": 0.2,
+            "x1": 0.8,
+            "y1": 0.5
+        }]
+    },
+    "config": {
+        "editable": true
+    }
+}
