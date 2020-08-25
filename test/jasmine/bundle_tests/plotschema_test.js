@@ -14,6 +14,7 @@ var gl3dAttrs = require('@src/plots/gl3d').layoutAttributes;
 var polarLayoutAttrs = require('@src/plots/polar/legacy/axis_attributes');
 var annotationAttrs = require('@src/components/annotations').layoutAttributes;
 var updatemenuAttrs = require('@src/components/updatemenus').layoutAttributes;
+var cartesianIdRegex = require('@src/plots/cartesian/constants').idRegex;
 
 describe('plot schema', function() {
     'use strict';
@@ -363,9 +364,9 @@ describe('plot schema', function() {
         var splomAttrs = plotSchema.traces.splom.attributes;
 
         expect(typeof splomAttrs.xaxes.items.regex).toBe('string');
-        expect(splomAttrs.xaxes.items.regex).toBe('/^x([2-9]|[1-9][0-9]+)?$/');
+        expect(splomAttrs.xaxes.items.regex).toBe(cartesianIdRegex.x.toString());
         expect(typeof splomAttrs.yaxes.items.regex).toBe('string');
-        expect(splomAttrs.yaxes.items.regex).toBe('/^y([2-9]|[1-9][0-9]+)?$/');
+        expect(splomAttrs.yaxes.items.regex).toBe(cartesianIdRegex.y.toString());
     });
 
     it('should prune unsupported global-level trace attributes', function() {
