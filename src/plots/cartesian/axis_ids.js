@@ -18,9 +18,8 @@ var constants = require('./constants');
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
 exports.id2name = function id2name(id) {
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
-    var axNum = id.substr(1);
-    // axNum could be ' ' if domain specified and axis omitted number
-    if(axNum === '1' || axNum === ' ') axNum = '';
+    var axNum = id.split(' ')[0].substr(1);
+    if(axNum === '1') axNum = '';
     return id.charAt(0) + 'axis' + axNum;
 };
 

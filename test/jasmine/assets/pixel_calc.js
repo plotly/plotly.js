@@ -1,7 +1,5 @@
 'use strict'
 
-// TODO: Something is wrong with the y values?
-
 // Calculate the pixel values from various objects
 
 // {layout} is where the margins are obtained from
@@ -29,12 +27,15 @@ function mapToPixelHelper(layout, axis, domain, d) {
         dim = 'height';
         lower = 'b';
         upper = 't';
-        d = 1 - d;
     } else {
         throw "Bad axis letter: " + axis;
     }
     var plotwidth = layout[dim] - layout.margin[lower] - layout.margin[upper];
     var domwidth = (domain[1] - domain[0]) * plotwidth;
+    if (dim === 'height') {
+        // y-axes relative to bottom of plot in plotly.js
+        return layout[dim] - (layout.margin[lower] + domain[0] * plotwidth + domwidth * d);
+    }
     return layout.margin[lower] + domain[0] * plotwidth + domwidth * d;
 }
 
@@ -50,6 +51,9 @@ function mapDomainToPixel(layout, axis, d) {
 
 // Here axis must have the same form as in layout, e.g., xaxis, yaxis2, etc.
 function mapRangeToPixel(layout, axis, r) {
+    if (layout[axis].type === 'log') {
+        r = Math.log10(r);
+    }
     var d = (r - layout[axis].range[0]) / (layout[axis].range[1] - layout[axis].range[0]);
     return mapDomainToPixel(layout, axis, d);
 }

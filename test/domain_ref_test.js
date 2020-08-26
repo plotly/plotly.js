@@ -21,8 +21,16 @@ var dothething = function() {
     };
     Plotly.newPlot(gd,mock)
     .then(function () {
+        var xaxis2 = {...gd.layout.xaxis2};
+        var yaxis2 = {...gd.layout.yaxis2};
+        xaxis2.type = 'log';
+        xaxis2.range = xaxis2.range.map(Math.log10);
+        yaxis2.type = 'log';
+        yaxis2.range = yaxis2.range.map(Math.log10);
         var layout = {
-            shapes: [shape]
+            shapes: [shape],
+            xaxis2: xaxis2,
+            yaxis2: yaxis2
         }
         return layout;
     })
@@ -33,11 +41,17 @@ var dothething = function() {
         var shapePath = d3.selectAll('path').filter(function () {
             return this.style.stroke === shapeColor;
         }).node();
-        console.log(getSVGElemScreenBBox(shapePath));
+        var bbox = getSVGElemScreenBBox(shapePath)
+        console.log(bbox);
+        console.log('property names',Object.keys(bbox));
         console.log('x0',pixelCalc.mapRangeToPixel(gd.layout, 'xaxis2', shape.x0));
         console.log('x1',pixelCalc.mapRangeToPixel(gd.layout, 'xaxis2', shape.x1));
         console.log('y0',pixelCalc.mapRangeToPixel(gd.layout, 'yaxis2', shape.y0));
         console.log('y1',pixelCalc.mapRangeToPixel(gd.layout, 'yaxis2', shape.y1));
+        console.log('bbox.x0 - shape.x0',
+            bbox.x -
+            pixelCalc.mapRangeToPixel(gd.layout, 'xaxis2', shape.x0)
+        );
     });
 }
 
