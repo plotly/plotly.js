@@ -665,7 +665,7 @@ module.exports = {
     },
     exponentformat: {
         valType: 'enumerated',
-        values: ['none', 'e', 'E', 'power', 'SI', 'B'],
+        values: ['none', 'e', 'E', 'power', 'SI', 'B', 'eng'],
         dflt: 'B',
         role: 'style',
         editType: 'ticks',
@@ -677,7 +677,8 @@ module.exports = {
             'If *E*, 1E+9.',
             'If *power*, 1x10^9 (with 9 in a super script).',
             'If *SI*, 1G.',
-            'If *B*, 1B.'
+            'If *B*, 1B.',
+            '*eng* works like *SI*, except it also uses prefixes for milli- and kilo-.'
         ].join(' ')
     },
     separatethousands: {
