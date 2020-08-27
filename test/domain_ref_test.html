@@ -6,5 +6,13 @@
 </head>
 <body>
 <script src="domain_ref_test-min.js"></script>
+<script>
+function findPathWithColor(c) {
+    var aroPath = d3.selectAll('path').filter(function () {
+        return this.style.stroke === c;
+    }).node();
+    return aroPath;
+}
+</script>
 </body>
 </html>

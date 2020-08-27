@@ -1,3 +1,5 @@
+// Test the placement of Axis Referencing Objects (AROs)
+
 var Plotly = require('../lib/index');
 var d3 = require('d3');
 var createGraphDiv = require('../test/jasmine/assets/create_graph_div');
@@ -7,6 +9,7 @@ var getSVGElemScreenBBox = require('../test/jasmine/assets/get_svg_elem_screen_b
 var Lib = require('../src/lib');
 var Axes = require('../src/plots/cartesian/axes');
 var axisIds = require('../src/plots/cartesian/axis_ids');
+var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
@@ -18,17 +21,76 @@ var it = function(s,f) {
     f(function() { console.log(s + ' is done.'); });
 }
 
-// acts on an Object representing a shape which could be a line or a rect
-function shapeFromShapePos(shape,axletter,axnum,shapepos) {
-    shape[axletter+'0'] = shapepos.value[0];
-    shape[axletter+'1'] = shapepos.value[1];
-    if (shapepos.ref === 'range') {
-        shape[axletter+'ref'] = axletter + axnum;
-    } else if (shapepos.ref === 'domain') {
-        shape[axletter+'ref'] = axletter + axnum + ' domain';
-    } else if (shapepos.ref === 'paper') {
-        shape[axletter+'ref'] = 'paper';
+// acts on an Object representing a aro which could be a line or a rect
+// DEPRECATED
+function aroFromAROPos(aro,axletter,axnum,aropos) {
+    aro[axletter+'0'] = aropos.value[0];
+    aro[axletter+'1'] = aropos.value[1];
+    if (aropos.ref === 'range') {
+        aro[axletter+'ref'] = axletter + axnum;
+    } else if (aropos.ref === 'domain') {
+        aro[axletter+'ref'] = axletter + axnum + ' domain';
+    } else if (aropos.ref === 'paper') {
+        aro[axletter+'ref'] = 'paper';
     }
+}
+
+// set common parameters of an ARO
+// {aro} is the object whose parameters to set
+// {axletter} is the axis, x or y
+// {axnum} is the axis number
+// {value} is the value of the first coordinate (e.g., x0 if axletter is x)
+// {ref} is ['range'|'domain'|'paper']
+function aroSetCommonParams(aro,axletter,axnum,value,ref) {
+    aro[axletter+'0'] = value;
+    if (ref === 'range') {
+        aro[axletter+'ref'] = axletter + axnum;
+    } else if (aropos.ref === 'domain') {
+        aro[axletter+'ref'] = axletter + axnum + ' domain';
+    } else if (aropos.ref === 'paper') {
+        aro[axletter+'ref'] = 'paper';
+    }
+}
+
+// shape, annotation and image all take x0, y0, xref, yref, color parameters
+// arotype can be 'shape', 'annotation', or 'image'
+// shapes take type=[line|rect], x1, y1
+// annotations take ax, ay, axref, ayref, (text is just set to "A" and xanchor
+// and yanchor are always set to left because these are text attributes which we
+// don't test)
+// images take xsize, ysize, xanchor, yanchor (sizing is set to stretch for simplicity
+// in computing the bounding box and source is something predetermined)
+function aroFromParams(arotype,x0,y0,xreftype,yreftype,xaxnum,yaxnum,color,opts) {
+    var aro = {};
+    // fill with common values
+    aroSetCommonParams(aro,'x',xaxnum,x0,xreftype);
+    aroSetCommonParams(aro,'y',yaxnum,y0,yreftype);
+    switch (arotype) {
+        case 'shape':
+            aro.x1 = opts.x1;
+            aro.y1 = opts.y1;
+            aro.type = opts.type;
+            aro.line = {color: color};
+        case 'annotation':
+            aro.text = "A";
+            aro.ax = opts.ax;
+            aro.ay = opts.ay;
+            aro.axref = opts.axref;
+            aro.ayref = opts.ayref;
+            aro.showarrow = true;
+            aro.arrowhead = 0;
+            aro.arrowcolor = color;
+        case 'image':
+            aro.sizex = opts.sizex;
+            aro.sizey = opts.sizey;
+            aro.xanchor = opts.xanchor;
+            aro.yanchor = opts.yanchor;
+            aro.sizing = "stretch";
+            aro.source = testImage;
+        default:
+            throw "Bad arotype: " + arotype;
+    }
+    return aro;
 }
 
 // axid is e.g., 'x', 'y2' etc.
@@ -45,37 +107,37 @@ function logAxisIfAxType(layoutIn,layoutOut,axid,axtype) {
 
 // axref can be xref or yref
 // c can be x0, x1, y0, y1
-function mapShapeCoordToPixel(layout,axref,shape,c) {
-    var reftype = Axes.getRefType(shape[axref]);
+function mapAROCoordToPixel(layout,axref,aro,c) {
+    var reftype = Axes.getRefType(aro[axref]);
     var axletter = axref[0];
     var ret;
     if (reftype === 'range') {
-        var axis = axisIds.id2name(shape[axref]);
-        ret = pixelCalc.mapRangeToPixel(layout, axis, shape[c]);
+        var axis = axisIds.id2name(aro[axref]);
+        ret = pixelCalc.mapRangeToPixel(layout, axis, aro[c]);
     } else if (reftype === 'domain') {
-        var axis = axisIds.id2name(shape[axref]);
-        ret = pixelCalc.mapDomainToPixel(layout, axis, shape[c]);
+        var axis = axisIds.id2name(aro[axref]);
+        ret = pixelCalc.mapDomainToPixel(layout, axis, aro[c]);
     } else if (reftype === 'paper') {
         var axis = axref[0];
-        ret = pixelCalc.mapPaperToPixel(layout, axis, shape[c]);
+        ret = pixelCalc.mapPaperToPixel(layout, axis, aro[c]);
     }
     return ret;
 }
 
-// compute the bounding box of the shape so that it can be compared with the SVG
+// compute the bounding box of the aro so that it can be compared with the SVG
 // bounding box
-function shapeToBBox(layout,shape) {
+function aroToBBox(layout,aro) {
     var bbox = {};
     var x1;
     var y1;
     // map x coordinates
-    bbox.x = mapShapeCoordToPixel(layout,'xref',shape,'x0');
-    x1 = mapShapeCoordToPixel(layout,'xref',shape,'x1');
+    bbox.x = mapAROCoordToPixel(layout,'xref',aro,'x0');
+    x1 = mapAROCoordToPixel(layout,'xref',aro,'x1');
     // SVG bounding boxes have x,y referring to top left corner, but here we are
-    // specifying shapes where y0 refers to the bottom left corner like
+    // specifying aros where y0 refers to the bottom left corner like
     // Plotly.js, so we swap y0 and y1
-    bbox.y = mapShapeCoordToPixel(layout,'yref',shape,'y1');
-    y1 = mapShapeCoordToPixel(layout,'yref',shape,'y0');
+    bbox.y = mapAROCoordToPixel(layout,'yref',aro,'y1');
+    y1 = mapAROCoordToPixel(layout,'yref',aro,'y0');
     bbox.width = x1 - bbox.x;
     bbox.height = y1 - bbox.y;
     return bbox;
@@ -92,85 +154,104 @@ function compareBBoxes(a,b) {
             true);
 }
 
-// gets the SVG bounding box of the shape and checks it against what mapToPixel
+// gets the SVG bounding box of the aro and checks it against what mapToPixel
 // gives
-function checkShapePosition(gd,shape) {
-    var shapePath = d3.selectAll('path').filter(function () {
-        return this.style.stroke === shape.line.color;
+function checkAROPosition(gd,aro) {
+    var aroPath = d3.selectAll('path').filter(function () {
+        return this.style.stroke === aro.line.color;
     }).node();
-    var shapePathBBox = getSVGElemScreenBBox(shapePath);
-    var shapeBBox = shapeToBBox(gd.layout,shape);
-    var ret = compareBBoxes(shapeBBox,shapePathBBox);
+    var aroPathBBox = getSVGElemScreenBBox(aroPath);
+    var aroBBox = aroToBBox(gd.layout,aro);
+    var ret = compareBBoxes(aroBBox,aroPathBBox);
     if (DEBUG) {
-        console.log('SVG BBox',shapePathBBox);
-        console.log('shape BBox',shapeBBox);
+        console.log('SVG BBox',aroPathBBox);
+        console.log('aro BBox',aroBBox);
     }
     return ret;
 }
 
 // some made-up values for testing
-var shapePositionsX = [
+var aroPositionsX = [
     {
-        // shapes referring to data
+        // aros referring to data
         ref: 'range',
-        // two values for rects
-        value: [2,3]
+        value: [2,3],
+        // for objects that need a size (i.e., images)
+        size: 1.5
     },
     {
-        // shapes referring to domains
+        // aros referring to domains
         ref: 'domain',
         value: [0.2,0.75],
+        size: 0.3
     },
     {
-        // shapes referring to paper
+        // aros referring to paper
         ref: 'paper',
-        value: [0.25, 0.8]
-    }
+        value: [0.25, 0.8],
+        size: 0.35
+    },
 ];
-var shapePositionsY = [
+var aroRelPixelSizeX [
+    // this means specify the offset with the second value in aroPositions{X,Y}
+    { ref: 'nopixel' },
+    // with this you can specify the arrow in pixels
+    { ref: 'pixel', value: 100 }
+];
+var aroPositionsY = [
     {
-        // shapes referring to data
+        // aros referring to data
         ref: 'range',
         // two values for rects
         value: [1,2]
     },
     {
-        // shapes referring to domains
+        // aros referring to domains
         ref: 'domain',
         value: [0.25,0.7],
     },
     {
-        // shapes referring to paper
+        // aros referring to paper
         ref: 'paper',
         value: [0.2, 0.85]
     }
 ];
+var aroRelPixelSizeY [
+    // this means specify the offset with the second value in aroPositions{X,Y}
+    { ref: 'nopixel' },
+    // with this you can specify the arrow in pixels
+    { ref: 'pixel', value: 200 }
+];
+
+var aroTypes = ['shape', 'annotation', 'image'];
 var axisTypes = [ 'linear', 'log' ];
 // Test on 'x', 'y', 'x2', 'y2' axes
 // TODO the 'paper' position references are tested twice when once would
 // suffice.
 var axNum = ['','2'];
 // only test line and rect for now
-var shapeType = ['line','rect'];
+var aroType = ['line','rect'];
 // this color chosen so it can easily be found with d3
-var shapeColor = 'rgb(50, 100, 150)';
-var testDomRefShapeCombo = function(combo) {
+// NOTE: for images color cannot be set but it will be the only image in the
+// plot so you can use d3.select('g image').node()
+var aroColor = 'rgb(50, 100, 150)';
+var testDomRefAROCombo = function(combo) {
         var xAxNum    = combo[0];
         var xaxisType = combo[1];
-        var xshapePos = combo[2];
+        var xaroPos = combo[2];
         var yAxNum    = combo[3];
         var yaxisType = combo[4];
-        var yshapePos = combo[5];
-        var shapeType = combo[6];
-        it('should draw a ' + shapeType
+        var yaroPos = combo[5];
+        var aroType = combo[6];
+        it('should draw a ' + aroType
            + ' for x' + xAxNum + ' of type '
            + xaxisType
            + ' with a value referencing '
-           + xshapePos.ref
+           + xaroPos.ref
            + ' and for y' + yAxNum + ' of type '
            + yaxisType
            + ' with a value referencing '
-           + yshapePos.ref,
+           + yaroPos.ref,
             function (done) {
                 var gd = createGraphDiv();
                 var mock = Lib.extendDeep({},
@@ -179,32 +260,32 @@ var testDomRefShapeCombo = function(combo) {
                     console.log(combo);
                 }
                 Plotly.newPlot(gd, mock)
-                var shape = {
-                    type: shapeType,
-                    line: { color: shapeColor }
+                var aro = {
+                    type: aroType,
+                    line: { color: aroColor }
                 };
-                shapeFromShapePos(shape,'x',xAxNum,xshapePos);
-                shapeFromShapePos(shape,'y',yAxNum,yshapePos);
-                var layout = {shapes: [shape]};
+                aroFromAROPos(aro,'x',xAxNum,xaroPos);
+                aroFromAROPos(aro,'y',yAxNum,yaroPos);
+                var layout = {shapes: [aro]};
                 // change to log axes if need be
                 logAxisIfAxType(gd.layout,layout,'x'+xAxNum,xaxisType);
                 logAxisIfAxType(gd.layout,layout,'y'+yAxNum,yaxisType);
                 Plotly.relayout(gd,layout);
-                console.log(checkShapePosition(gd,shape));
+                console.log(checkAROPosition(gd,aro));
                 destroyGraphDiv();
             });
 }
 
-// Test correct shape positions
-function test_correct_shape_positions () {
+// Test correct aro positions
+function test_correct_aro_positions () {
     var iterable = require('extra-iterable');
     // for both x and y axes
     var testCombos = [...iterable.cartesianProduct([
-        axNum,axisTypes,shapePositionsX,axNum,axisTypes,shapePositionsY,shapeType
+        axNum,axisTypes,aroPositionsX,axNum,axisTypes,aroPositionsY,aroType
     ])];
-    // map all the combinations to a shape definition and check this shape is
+    // map all the combinations to a aro definition and check this aro is
     // placed properly
-    testCombos.forEach(testDomRefShapeCombo);
+    testCombos.forEach(testDomRefAROCombo);
 }
 
-test_correct_shape_positions();
+test_correct_aro_positions();
