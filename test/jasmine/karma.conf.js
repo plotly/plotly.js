@@ -246,7 +246,13 @@ func.defaultConfig = {
         },
         _Firefox: {
             base: 'Firefox',
-            flags: ['--width=' + argv.width, '--height=' + argv.height]
+            flags: ['--width=' + argv.width, '--height=' + argv.height],
+            prefs: {
+                'devtools.toolbox.zoomValue': '1.5',
+                'devtools.toolbox.host': 'window',
+                'devtools.toolbox.previousHost': 'bottom',
+                'devtools.command-button-rulers.enabled': true
+            }
         }
     },
 
