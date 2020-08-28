@@ -121,6 +121,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('xanchor');
     coerce('y', defaultY);
     coerce('yanchor', defaultYAnchor);
+    coerce('hmaxheightratio');
+    coerce('hmaxheight');
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 

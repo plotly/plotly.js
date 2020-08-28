@@ -602,12 +602,18 @@ function computeLegendDimensions(gd, groups, traces, opts) {
     var isBelowPlotArea = opts.y < 0 || (opts.y === 0 && yanchor === 'top');
     var isAbovePlotArea = opts.y > 1 || (opts.y === 1 && yanchor === 'bottom');
 
-    // - if below/above plot area, give it the maximum potential margin-push value
+    // - if below/above plot area, give it the [user defined] maximum potential margin-push value
     // - otherwise, extend the height of the plot area
-    opts._maxHeight = Math.max(
-        (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
-        30
-    );
+    if (isBelowPlotArea || isAbovePlotArea) {
+        if (opts.hmaxheight !== undefined) {
+            opts._maxHeight = opts.hmaxheight;
+        } else { 
+            opts._maxHeight = fullLayout.height / opts.hmaxheightratio; 
+        }
+    }
+    else { 
+        opts._maxHeight = Math.max(gs.h, 30);
+    }
 
     var toggleRectWidth = 0;
     opts._width = 0;
