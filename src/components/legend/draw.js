@@ -742,6 +742,9 @@ function computeLegendDimensions(gd, groups, traces, opts) {
             opts._titleWidth + 2 * (bw + constants.titlePad)
         )
     );
+    if (!isVertical) {
+        opts._width = gs.w;
+    }
 
     opts._height = Math.ceil(
         Math.max(
