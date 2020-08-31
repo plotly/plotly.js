@@ -752,35 +752,47 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    var removedPreTick0Label = false;
-    var ticksOut = new Array(tickVals.length);
+    var ticksOut = [];
     var i;
+    var prevText;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
-        ticksOut[i] = axes.tickText(
+        var t = axes.tickText(
             ax,
             _value,
             false, // hover
             _minor // noSuffixPrefix
         );
 
-        if(isPeriod) {
-            var v = tickVals[i].value;
+        if(isPeriod && prevText === t.text) continue;
+        prevText = t.text;
+
+        ticksOut.push(t);
+    }
+
+    if(isPeriod) {
+        var removedPreTick0Label = false;
+
+        for(i = 0; i < ticksOut.length; i++) {
+            var v = ticksOut[i].x;
 
             var a = i;
             var b = i + 1;
-            if(i < tickVals.length - 1) {
+            if(i < ticksOut.length - 1) {
                 a = i;
                 b = i + 1;
-            } else {
+            } else if(i > 0) {
                 a = i - 1;
+                b = i;
+            } else {
+                a = i;
                 b = i;
             }
 
-            var A = tickVals[a].value;
-            var B = tickVals[b].value;
+            var A = ticksOut[a].x;
+            var B = ticksOut[b].x;
             var actualDelta = Math.abs(B - A);
             var delta = definedDelta || actualDelta;
             var periodLength = 0;
@@ -828,15 +840,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 removedPreTick0Label = true;
             }
         }
-    }
 
-    if(removedPreTick0Label) {
-        for(i = 0; i < ticksOut.length; i++) {
-            if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
-                // redo first visible tick
-                ax._prevDateHead = '';
-                ticksOut[i].text = axes.tickText(ax, tickVals[i].value).text;
-                break;
+        if(removedPreTick0Label) {
+            for(i = 0; i < ticksOut.length; i++) {
+                if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
+                    // redo first visible tick
+                    ax._prevDateHead = '';
+                    ticksOut[i].text = axes.tickText(ax, ticksOut[i].x).text;
+                    break;
+                }
             }
         }
     }

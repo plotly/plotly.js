@@ -5524,7 +5524,7 @@ describe('Test axes', function() {
             });
         });
 
-        ['%f', '%L', '%Q', '%s', '%S', '%M', '%H', '%I', '%p', '%X'].forEach(function(formatter, i) {
+        ['%Q', '%s', '%H', '%I', '%X'].forEach(function(formatter, i) {
             it('should respect daily tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
                     data: [{
@@ -5552,17 +5552,62 @@ describe('Test axes', function() {
                         '2020-01-01 21:00',
                         '2020-01-02'
                     ], [
-                        ['', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Thu-0'],
-                        ['', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Thu-000'],
                         ['', 'Wed-1577836800000', 'Wed-1577847600000', 'Wed-1577858400000', 'Wed-1577869200000', 'Wed-1577880000000', 'Wed-1577890800000', 'Wed-1577901600000', 'Wed-1577912400000', 'Thu-1577923200000'],
                         ['', 'Wed-1577836800', 'Wed-1577847600', 'Wed-1577858400', 'Wed-1577869200', 'Wed-1577880000', 'Wed-1577890800', 'Wed-1577901600', 'Wed-1577912400', 'Thu-1577923200'],
-                        ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00'],
-                        ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00'],
                         ['', 'Wed-00', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-15', 'Wed-18', 'Wed-21', 'Thu-00'],
                         ['', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Thu-12'],
-                        ['', 'Wed-AM', 'Wed-AM', 'Wed-AM', 'Wed-AM', 'Wed-PM', 'Wed-PM', 'Wed-PM', 'Wed-PM', 'Thu-AM'],
                         ['', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
                     ][i]);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+
+        [
+            {
+                formatter: '%p',
+                positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 12:00', '2020-01-02'],
+                labels: ['', 'Wed-AM', 'Wed-PM', 'Thu-AM']
+            },
+            {
+                formatter: '%M',
+                positions: ['2019-12-31 21:00', '2020-01-01 12:00', '2020-01-02 12:00'],
+                labels: ['', 'Wed-00', '']
+            },
+            {
+                formatter: '%S',
+                positions: ['2019-12-31 21:00', '2020-01-01 12:00', '2020-01-02 12:00'],
+                labels: ['', 'Wed-00', '']
+            },
+            {
+                formatter: '%L',
+                positions: ['2019-12-31 21:00', '2020-01-01 12:00', '2020-01-02 12:00'],
+                labels: ['', 'Wed-000', '']
+            },
+            {
+                formatter: '%f',
+                positions: ['2019-12-31 21:00', '2020-01-01 12:00', '2020-01-02 12:00'],
+                labels: ['', 'Wed-0', '']
+            }
+        ].forEach(function(t) {
+            it('should respect time tickformat that includes ' + t.formatter, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        hovertemplate: hovertemplate,
+                        x: ['2020-01-01', '2020-01-02']
+                    }],
+                    layout: {
+                        width: 1000,
+                        xaxis: {
+                            ticklabelmode: 'period',
+                            tickformat: '%a-' + t.formatter
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', t.positions, t.labels);
                 })
                 .catch(failTest)
                 .then(done);
