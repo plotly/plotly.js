@@ -794,6 +794,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
                 if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
                     periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGQUARTER;
                 }
             } else if(delta >= ONEMINMONTH) {
                 if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {

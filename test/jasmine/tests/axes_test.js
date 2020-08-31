@@ -5284,6 +5284,35 @@ describe('Test axes', function() {
             .then(done);
         });
 
+        it('should position quarters - case of dtick set to M6', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    hovertemplate: hovertemplate,
+                    x: ['2020-01-01', '2022-01-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        dtick: 'M6',
+                        ticklabelmode: 'period',
+                        tickformat: '%Y-Q%q'
+                    }
+                }
+            })
+            .then(function() {
+                _assert('', [
+                    '2019-08-15 15:45',
+                    '2020-02-15 15:45',
+                    '2020-08-15 15:45',
+                    '2021-02-15 15:45',
+                    '2021-08-15 15:45',
+                    '2022-02-15 15:45'
+                ], ['', '2020-Q1', '2020-Q3', '2021-Q1', '2021-Q3', '']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         ['%B', '%b', '%m'].forEach(function(formatter, i) {
             it('should respect monthly tickformat that includes ' + formatter, function(done) {
                 Plotly.newPlot(gd, {
