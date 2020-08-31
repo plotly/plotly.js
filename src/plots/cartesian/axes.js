@@ -831,7 +831,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 periodLength *= 1 - nOut / nAll;
             }
 
-            v += periodLength / 2;
+            if(periodLength <= actualDelta) { // i.e. to ensure new label positions remain between ticks
+                v += periodLength / 2;
+            }
 
             ticksOut[i].periodX = v;
 
