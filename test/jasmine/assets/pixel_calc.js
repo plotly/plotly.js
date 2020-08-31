@@ -50,8 +50,12 @@ function mapDomainToPixel(layout, axis, d) {
 }
 
 // Here axis must have the same form as in layout, e.g., xaxis, yaxis2, etc.
-function mapRangeToPixel(layout, axis, r) {
-    if (layout[axis].type === 'log') {
+// nolog is provided to avoid taking the log of the value even if the axis is a
+// log axis. This is used in the case of layout images, whose corner coordinates
+// and dimensions are specified in powers of 10, e.g., if the corner's x
+// coordinate is at data 10, then the x value passed is 1
+function mapRangeToPixel(layout, axis, r, nolog) {
+    if ((!nolog)&&(layout[axis].type === 'log')) {
         r = Math.log10(r);
     }
     var d = (r - layout[axis].range[0]) / (layout[axis].range[1] - layout[axis].range[0]);
