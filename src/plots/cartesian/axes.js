@@ -706,18 +706,21 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var tickformat = axes.getTickFormat(ax);
     if(isPeriod && tickformat) {
         if(
-            !(/%[fLQsSMHIX]/.test(tickformat))
+            !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
             // %L: milliseconds as a decimal number [000, 999]
             // %Q: milliseconds since UNIX epoch
             // %s: seconds since UNIX epoch
             // %S: second as a decimal number [00,61]
             // %M: minute as a decimal number [00,59]
-            // %H: hour (24-hour clock) as a decimal number [00,23]
-            // %I: hour (12-hour clock) as a decimal number [01,12]
             // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
             if(
+                /%[HI]/.test(tickformat)
+                // %H: hour (24-hour clock) as a decimal number [00,23]
+                // %I: hour (12-hour clock) as a decimal number [01,12]
+            ) definedDelta = ONEHOUR;
+            else if(
                 /%p/.test(tickformat) // %p: either AM or PM
             ) definedDelta = HALFDAY;
             else if(
@@ -824,6 +827,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 periodLength = ONEDAY;
             } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
                 periodLength = HALFDAY;
+            } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
+                periodLength = ONEHOUR;
             }
 
             if(periodLength && ax.rangebreaks) {
