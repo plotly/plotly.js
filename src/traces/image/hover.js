@@ -28,8 +28,15 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var nx = Math.floor((xval - cd0.x0) / trace.dx);
     var ny = Math.floor(Math.abs(yval - cd0.y0) / trace.dy);
 
+    var pixel;
+    if(trace._hasZ) {
+        pixel = cd0.z[ny][nx];
+    } else if(trace._hasSource) {
+        pixel = trace._canvas.el.getContext('2d').getImageData(nx, ny, 1, 1).data;
+    }
+
     // return early if pixel is undefined
-    if(!cd0.z[ny][nx]) return;
+    if(!pixel) return;
 
     var hoverinfo = cd0.hi || trace.hoverinfo;
     var fmtColor;
@@ -39,10 +46,11 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         if(parts.indexOf('color') !== -1) fmtColor = true;
     }
 
-    var colormodel = trace.colormodel;
+    var cr = constants.colormodel[trace.colormodel];
+    var colormodel = cr.colormodel || trace.colormodel;
     var dims = colormodel.length;
-    var c = trace._scaler(cd0.z[ny][nx]);
-    var s = constants.colormodel[colormodel].suffix;
+    var c = trace._scaler(pixel);
+    var s = cr.suffix;
 
     var colorstring = [];
     if(trace.hovertemplate || fmtColor) {
@@ -64,7 +72,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var py = ya.c2p(cd0.y0 + (ny + 0.5) * trace.dy);
     var xVal = cd0.x0 + (nx + 0.5) * trace.dx;
     var yVal = cd0.y0 + (ny + 0.5) * trace.dy;
-    var zLabel = '[' + cd0.z[ny][nx].slice(0, trace.colormodel.length).join(', ') + ']';
+    var zLabel = '[' + pixel.slice(0, trace.colormodel.length).join(', ') + ']';
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         x0: xa.c2p(cd0.x0 + nx * trace.dx),

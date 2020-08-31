@@ -631,6 +631,7 @@ var list = [
     'hists-on-matching-axes',
     'hot_heatmap',
     'image_adventurer',
+    'image_astronaut_source',
     'image_axis_reverse',
     'image_axis_type',
     'image_cat',
@@ -1679,6 +1680,7 @@ figs['histogram2dcontour_legend-coloraxis'] = require('@mocks/histogram2dcontour
 figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
 figs['image_adventurer'] = require('@mocks/image_adventurer');
+figs['image_astronaut_source'] = require('@mocks/image_astronaut_source');
 figs['image_axis_reverse'] = require('@mocks/image_axis_reverse');
 figs['image_axis_type'] = require('@mocks/image_axis_type');
 figs['image_cat'] = require('@mocks/image_cat');

@@ -57,10 +57,51 @@ describe('image supplyDefaults', function() {
         expect(traceOut.visible).toBe(true);
     });
 
+    it('should set visible to false when source is empty', function() {
+        traceIn = {
+            source: null
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,somedata'
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
+        expect(traceOut.visible).toBe(true);
+    });
+
+    it('should set visible to false when source is a URL', function() {
+        traceIn = {
+            source: 'https://antrg.com/assets/img/portrait_2013_circle_200px.png'
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.visible).toBe(false);
+        expect(traceOut.source).toBe(undefined);
+
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,somedata'
+        };
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'image'}, 0, layout);
+        expect(traceOut.visible).toBe(true);
+    });
+
+    it('should not accept source attribute that is not a data URI of an image', function() {
+        traceIn = {
+            source: 'javascript:alert(\'attack\')'
+        };
+
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.source).toBe(undefined);
+    });
+
     it('should set proper zmin/zmax depending on colormodel', function() {
         var tests = [
           ['rgb', [0, 0, 0], [255, 255, 255]],
           ['rgba', [0, 0, 0, 0], [255, 255, 255, 1]],
+          ['rgba256', [0, 0, 0, 0], [255, 255, 255, 255]],
           ['hsl', [0, 0, 0], [360, 100, 100]],
           ['hsla', [0, 0, 0, 0], [360, 100, 100, 1]]
         ];
@@ -98,6 +139,28 @@ describe('image supplyDefaults', function() {
         supplyDefaults(traceIn, traceOut);
         expect(traceOut.zmin).toEqual([0, 10, 0, 0], 'zmin default');
         expect(traceOut.zmax).toEqual([20, 100, 100, 1], 'zmax default');
+    });
+
+    it('should set colormodel to rgba256 when source is defined', function() {
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,asdf'
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.colormodel).toBe('rgba256');
+    });
+
+    it('should override zmin/zmax when source is defined', function() {
+        traceIn = {
+            type: 'image',
+            source: 'data:image/png;base64,asdf',
+            zmin: 100,
+            zmax: 50
+        };
+        supplyDefaults(traceIn, traceOut);
+        expect(traceOut.colormodel).toBe('rgba256');
+        expect(traceOut.zmin).toEqual([0, 0, 0, 0]);
+        expect(traceOut.zmax).toEqual([255, 255, 255, 255]);
     });
 });
 
@@ -320,7 +383,7 @@ describe('image plot', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.im image').each(function(d) { out.push(d.trace.index); });
+            d3.selectAll('.im image').each(function(d) { if(d[0].trace) out.push(d[0].trace.index); });
             return out;
         }
 
@@ -346,6 +409,39 @@ describe('image plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('renders pixelated image when source is defined', function(done) {
+        var mock = require('@mocks/image_astronaut_source.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.newPlot(gd, mockCopy)
+        .then(function(gd) {
+            expect(gd.calcdata[0][0].trace._fastImage).toBeTruthy();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    [
+      ['yaxis.type', 'log'],
+      ['xaxis.type', 'log'],
+      ['xaxis.range', [50, 0]],
+      ['yaxis.range', [0, 50]]
+    ].forEach(function(attr) {
+        it('does not renders pixelated image when the axes are not compatible', function(done) {
+            var mock = require('@mocks/image_astronaut_source.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+            Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                expect(gd.calcdata[0][0].trace._fastImage).toBe(true);
+                return Plotly.relayout(gd, attr[0], attr[1]);
+            })
+            .then(function(gd) {
+                expect(gd.calcdata[0][0].trace._fastImage).toBe(false, 'when ' + attr[0] + ' is ' + attr[1]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('image hover:', function() {
@@ -353,7 +449,7 @@ describe('image hover:', function() {
 
     var gd;
 
-    describe('for `image_cat`', function() {
+    describe('for `image_cat` defined by z', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
@@ -398,7 +494,7 @@ describe('image hover:', function() {
         });
     });
 
-    describe('for `image_adventurer`', function() {
+    describe('for `image_adventurer` defined by z', function() {
         var mock = require('@mocks/image_adventurer.json');
         beforeAll(function() {
             gd = createGraphDiv();
@@ -448,7 +544,7 @@ describe('image hover:', function() {
             .then(function() {_hover(255, 295);})
             .then(function() {
                 assertHoverLabelContent({
-                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 254]\nRGBA: [128, 77, 54, 1]',
+                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 255]\nRGBA: [128, 77, 54, 1]',
                     name: ''
                 });
             })
@@ -478,7 +574,7 @@ describe('image hover:', function() {
             .then(function() {_hover(255, 295);})
             .then(function() {
                 assertHoverLabelContent({
-                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 254]\nHSLA: [128°, 77%, 54%, 1]',
+                    nums: 'x: 31.5\ny: 35.5\nz: [128, 77, 54, 255]\nHSLA: [128°, 77%, 54%, 1]',
                     name: ''
                 });
             })
@@ -533,6 +629,45 @@ describe('image hover:', function() {
             })
             .catch(failTest)
             .then(done);
+        });
+    });
+
+    describe('for `image_astronaut_source` defined by source', function() {
+        var mock = require('@mocks/image_astronaut_source.json');
+        beforeAll(function() {
+            gd = createGraphDiv();
+        });
+
+        afterAll(destroyGraphDiv);
+
+        function _hover(x, y) {
+            var evt = { xpx: x, ypx: y };
+            return Fx.hover('graph', evt, 'xy');
+        }
+
+        [
+          ['x', '205'],
+          ['y', '125'],
+          ['color', '[202, 148, 125, 1]'],
+          ['color[0]', '202'],
+          ['z', '[202, 148, 125, 255]'],
+          ['z[0]', '202']
+        ].forEach(function(test) {
+            it('should support hovertemplate variable ' + test[0], function(done) {
+                var mockCopy = Lib.extendDeep({}, mock);
+                mockCopy.data[0].colormodel = 'rgba';
+                mockCopy.data[0].hovertemplate = '%{' + test[0] + '}<extra></extra>';
+                Plotly.newPlot(gd, mockCopy)
+                .then(function() {_hover(205, 125);})
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: test[1],
+                        name: ''
+                    }, 'variable `' + test[0] + '` should be available!');
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 });
