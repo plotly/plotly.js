@@ -34,6 +34,7 @@ var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEMINMONTH = constants.ONEMINMONTH;
 var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
+var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
@@ -503,7 +504,7 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
             // will always give a somewhat odd-looking label, until we do something
             // smarter like showing the bin boundaries (or the bounds of the actual
             // data in each bin)
-            binStart -= ONEDAY / 2;
+            binStart -= HALFDAY;
         }
         var nextBinStart = axes.tickIncrement(binStart, dtick);
 
@@ -705,7 +706,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var tickformat = axes.getTickFormat(ax);
     if(isPeriod && tickformat) {
         if(
-            !(/%[fLQsSMHIpX]/.test(tickformat))
+            !(/%[fLQsSMHIX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
             // %L: milliseconds as a decimal number [000, 999]
             // %Q: milliseconds since UNIX epoch
@@ -714,10 +715,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             // %M: minute as a decimal number [00,59]
             // %H: hour (24-hour clock) as a decimal number [00,23]
             // %I: hour (12-hour clock) as a decimal number [01,12]
-            // %p: either AM or PM
             // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
             if(
+                /%p/.test(tickformat) // %p: either AM or PM
+            ) definedDelta = HALFDAY;
+            else if(
                 /%[Aadejuwx]/.test(tickformat)
                 // %A: full weekday name
                 // %a: abbreviated weekday name
@@ -819,6 +822,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 periodLength = ONEWEEK;
             } else if(delta >= ONEDAY) {
                 periodLength = ONEDAY;
+            } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
+                periodLength = HALFDAY;
             }
 
             if(periodLength && ax.rangebreaks) {

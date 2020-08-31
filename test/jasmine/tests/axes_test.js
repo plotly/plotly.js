@@ -5568,8 +5568,8 @@ describe('Test axes', function() {
         [
             {
                 formatter: '%p',
-                positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 12:00', '2020-01-02'],
-                labels: ['', 'Wed-AM', 'Wed-PM', 'Thu-AM']
+                positions: ['2019-12-31 21:00', '2020-01-01 06:00', '2020-01-01 18:00', '2020-01-02 06:00'],
+                labels: ['', 'Wed-AM', 'Wed-PM', '']
             },
             {
                 formatter: '%M',
