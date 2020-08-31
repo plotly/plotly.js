@@ -36,7 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
 
     var cm;
     if(traceOut._hasZ) {
-        coerce('colormodel');
+        coerce('colormodel', 'rgb');
         cm = constants.colormodel[traceOut.colormodel];
         coerce('zmin', (cm.zminDflt || cm.min));
         coerce('zmax', (cm.zmaxDflt || cm.max));

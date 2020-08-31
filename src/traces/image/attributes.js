@@ -43,12 +43,12 @@ module.exports = extendFlat({
     colormodel: {
         valType: 'enumerated',
         values: cm,
-        dflt: 'rgb',
         role: 'info',
         editType: 'calc',
         description: [
             'Color model used to map the numerical color components described in `z` into colors.',
-            'If `source` is specified, this attribute will be set to `rgba256`.'
+            'If `source` is specified, this attribute will be set to `rgba256`',
+            'otherwise it defaults to `rgb`.'
         ].join(' ')
     },
     zmin: {
