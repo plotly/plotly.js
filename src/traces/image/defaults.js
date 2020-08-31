@@ -43,8 +43,8 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     } else if(traceOut._hasSource) {
         traceOut.colormodel = 'rgba256';
         cm = constants.colormodel[traceOut.colormodel];
-        traceOut.zmin = (cm.zminDflt || cm.min);
-        traceOut.zmax = (cm.zmaxDflt || cm.max);
+        traceOut.zmin = cm.zminDflt;
+        traceOut.zmax = cm.zmaxDflt;
     }
 
     coerce('text');
