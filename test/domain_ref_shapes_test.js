@@ -358,6 +358,7 @@ function checkImage(layout, imageObj, imageBBox) {}
 
 function imageTest(gd, layout, xaxtype, yaxtype, x, y, sizex, sizey, xanchor,
     yanchor, xref, yref, xid, yid) {
+    console.log('running imageTest on ',gd);
     var image = {
         x: x,
         y: y,
@@ -540,6 +541,9 @@ function test_correct_aro_positions() {
     testCombos.forEach(testDomRefAROCombo);
 }
 
+var testImageComboMock = Lib.extendDeep({},
+    require('../test/image/mocks/domain_ref_base.json'));
+
 function testImageCombo(combo,keep_graph_div) {
         var axistypex = combo[0];
         var axistypey = combo[1];
@@ -553,13 +557,14 @@ function testImageCombo(combo,keep_graph_div) {
         var yid = axispair[1];
         var xref = makeAxRef(xid, aroposx.ref);
         var yref = makeAxRef(yid, aroposy.ref);
-        var gd = createGraphDiv(gd_id);
-        var mock = Lib.extendDeep({},
-            require('../test/image/mocks/domain_ref_base.json'));
         if (DEBUG) {
             console.log(combo);
         }
-        return Plotly.newPlot(gd, mock).then(function (gd) {
+        return new Promise(function(resolve){
+            var gd = createGraphDiv(gd_id);
+            resolve(gd);
+        }).then(function (gd) { return Plotly.newPlot(gd, testImageComboMock); })
+        .then(function (gd) {
             return imageTest(gd, {}, axistypex, axistypey,
                 aroposx.value[0], aroposy.value[0], aroposx.size,
                 aroposy.size,
@@ -575,13 +580,16 @@ function testImageCombo(combo,keep_graph_div) {
                 "yref:", yref, "\n",
             ].join(' '), test_ret);
         }).then( function () {
+            console.log("Hello?", keep_graph_div);
             if (!keep_graph_div) {
+                console.log('destroying graph div ', gd_id);
+                Plotly.purge(gd_id);
                 destroyGraphDiv(gd_id);
             }
         });
 }
 
-function runImageTests() {
+function runImageTests(start_stop,filter) {
     var testCombos = [...iterable.cartesianProduct([
         axisTypes, axisTypes, axisPairs,
         // axis reference types are contained in here
@@ -590,8 +598,26 @@ function runImageTests() {
     ])];
     // add a unique id to each combination so we can instantiate a unique graph
     // each time
-    testCombos=testCombos.map((c,i)=>c.concat(['graph-'+i])).slice(0,20);
-    testCombos.map(testImageCombo).reduce((a,v)=>a.then(v));
+    testCombos=testCombos.map((c,i)=>c.concat(['graph-'+i]));
+    if(filter) {
+        testCombos=testCombos.filter(filter);
+    }
+    if(start_stop) {
+        testCombos=testCombos.slice(start_stop.start,start_stop.stop);
+    }
+    console.log("Executing " + testCombos.length + " tests");
+    var tc = testCombos.map(c=>testImageCombo(c,false)).reduce((a,v)=>a.then(v));
+}
+
+function testAnnotationCombo(combo) {
+    var axistypex = combo[0];
+    var axistypey = combo[1];
+    var axispair = combo[2];
+    var aroposx = combo[3];
+    var aroposy = combo[4];
+    var xanchor = combo[5];
+    var yanchor = combo[6];
+    var gd_id = combo[7];
 }
 
 module.exports = {
