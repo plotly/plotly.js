@@ -838,7 +838,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     var r = c / nAll;
                     if(ax.maskBreaks(A * (1 - r) + B * r) === BADNUM) nOut++;
                 }
-                periodLength *= 1 - nOut / nAll;
+                var ratio = 1 - nOut / nAll;
+                if(ratio > 0.5) {
+                    // case of short gap
+                    periodLength *= ratio;
+                } else {
+                    // case of big gap
+                    periodLength = ratio * actualDelta;
+                }
             }
 
             if(periodLength <= actualDelta) { // i.e. to ensure new label positions remain between ticks
