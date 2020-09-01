@@ -1353,46 +1353,6 @@ describe('Test geo interactions', function() {
         .then(done, done.fail);
     });
 
-    it('should clear hover label when cursor slips off subplot', function(done) {
-        var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
-
-        function _assert(msg, hoverLabelCnt) {
-            expect(d3SelectAll('g.hovertext').size())
-                .toBe(hoverLabelCnt, msg);
-        }
-
-        var px = 390;
-        var py = 290;
-        var cnt = 0;
-
-        Plotly.newPlot(gd, fig).then(function() {
-            gd.on('plotly_unhover', function() { cnt++; });
-
-            mouseEvent('mousemove', px, py);
-            _assert('base state', 1);
-
-            return new Promise(function(resolve) {
-                var interval = setInterval(function() {
-                    px += 2;
-                    mouseEvent('mousemove', px, py);
-
-                    if(px < 402) {
-                        _assert('- px ' + px, 1);
-                        expect(cnt).toBe(0, 'no plotly_unhover event so far');
-                    } else {
-                        _assert('- px ' + px, 0);
-                        expect(cnt).toBe(1, 'plotly_unhover event count');
-
-                        clearInterval(interval);
-                        resolve();
-                    }
-                }, 100);
-            });
-        })
-        .then(done, done.fail);
-    });
-
     it('should not confuse positions on either side of the globe', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
@@ -1417,66 +1377,6 @@ describe('Test geo interactions', function() {
 
             check([px, 163], 0);
             check([px, 360], 1);
-        })
-        .then(done, done.fail);
-    });
-
-    it('should plot to scope defaults when user setting lead to NaN map bounds', function(done) {
-        var gd = createGraphDiv();
-
-        spyOn(Lib, 'warn');
-
-        Plotly.newPlot(gd, [{
-            type: 'scattergeo',
-            lon: [0],
-            lat: [0]
-        }], {
-            geo: {
-                projection: {
-                    type: 'kavrayskiy7',
-                    rotation: {
-                        lat: 38.794799,
-                        lon: -81.622334,
-                    }
-                },
-                center: {
-                    lat: -81
-                },
-                lataxis: {
-                    range: [38.794799, 45.122292]
-                },
-                lonaxis: {
-                    range: [-82.904731, -81.622334]
-                }
-            },
-            width: 700,
-            heigth: 500
-        })
-        .then(function() {
-            var geoLayout = gd._fullLayout.geo;
-            var geo = geoLayout._subplot;
-
-            expect(geoLayout.projection.rotation).toEqual({
-                lon: 0, lat: 0, roll: 0,
-            });
-            expect(geoLayout.center).toEqual({
-                lon: 0, lat: 0
-            });
-            expect(geoLayout.lonaxis.range).toEqual([-180, 180]);
-            expect(geoLayout.lataxis.range).toEqual([-90, 90]);
-
-            expect(geo.viewInitial).toEqual({
-                'fitbounds': false,
-                'projection.rotation.lon': 0,
-                'center.lon': 0,
-                'center.lat': 0,
-                'projection.scale': 1
-            });
-
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
-            expect(Lib.warn).toHaveBeenCalledWith(
-                'Invalid geo settings, relayout\'ing to default view.'
-            );
         })
         .then(done, done.fail);
     });
