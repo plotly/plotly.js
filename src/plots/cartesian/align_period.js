@@ -8,13 +8,31 @@
 
 'use strict';
 
-module.exports = function alignPeriod(trace, axLetter, vals) {
-    var periodAlignment = trace[axLetter + 'periodalignment'];
-    if(!periodAlignment || periodAlignment === 'start') return vals;
+var isNumeric = require('fast-isnumeric');
+var ONEAVGMONTH = require('../../constants/numerical').ONEAVGMONTH;
 
-    var delta = (periodAlignment === 'end' ? 1 : 0.5) * trace[axLetter + 'period'];
-    for(var i = 0; i < vals.length; i++) {
-        vals[i] += delta;
+var M = {};
+for(var n = 1; n <= 12; n++) {
+    M['M' + n] = n * ONEAVGMONTH;
+}
+
+module.exports = function alignPeriod(trace, axLetter, vals) {
+    var alignment = trace[axLetter + 'periodalignment'];
+    if(!alignment || alignment === 'start') return vals;
+
+    var period = trace[axLetter + 'period'];
+    if(isNumeric(period)) {
+        period = +period;
+    } else if(typeof period === 'string') {
+        period = M[period];
+    }
+
+    if(period > 0) {
+        var delta = (alignment === 'end' ? 1 : 0.5) * period;
+        var len = vals.length;
+        for(var i = 0; i < len; i++) {
+            vals[i] += delta;
+        }
     }
     return vals;
 };

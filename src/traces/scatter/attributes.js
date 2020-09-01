@@ -20,6 +20,37 @@ var ONEAVGYEAR = require('../../constants/numerical').ONEAVGYEAR;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
+function axisPeriod(axis) {
+    return {
+        valType: 'any',
+        dflt: ONEAVGYEAR,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the period positioning in milliseconds or *M<n>* on the ' + axis + ' axis.',
+            'Special values in the form of *M<n>* could be used to declare',
+            'the number of "average" months. In this case `n` must be a positive integer.'
+        ].join(' ')
+    };
+}
+
+function axisPeriodAlignment(axis) {
+    return {
+        valType: 'enumerated',
+        values: [
+            'start', 'middle', 'end'
+        ],
+        dflt: 'start',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the alignment of data points on the ' + axis + ' axis.'
+        ].join(' ')
+    };
+}
+
 module.exports = {
     x: {
         valType: 'data_array',
@@ -82,59 +113,10 @@ module.exports = {
         ].join(' ')
     },
 
-    xperiod: {
-        valType: 'number',
-        dflt: ONEAVGYEAR,
-        min: 0,
-        role: 'info',
-        editType: 'calc',
-        anim: true,
-        description: [
-            'Only relevant when the axis `type` is *date*.',
-            'Sets the period positioning in milliseconds',
-            'on the x axis.'
-        ].join(' ')
-    },
-    xperiodalignment: {
-        valType: 'enumerated',
-        values: [
-            'start', 'middle', 'end'
-        ],
-        dflt: 'start',
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Only relevant when the axis `type` is *date*.',
-            'Sets the alignment of data points',
-            'on the x axis.'
-        ].join(' ')
-    },
-    yperiod: {
-        valType: 'number',
-        dflt: ONEAVGYEAR,
-        min: 0,
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Only relevant when the axis `type` is *date*.',
-            'Sets the period positioning in milliseconds',
-            'on the y axis.'
-        ].join(' ')
-    },
-    yperiodalignment: {
-        valType: 'enumerated',
-        values: [
-            'start', 'middle', 'end'
-        ],
-        dflt: 'start',
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Only relevant when the axis `type` is *date*.',
-            'Sets the alignment of data points',
-            'on the y axis.'
-        ].join(' ')
-    },
+    xperiod: axisPeriod('x'),
+    yperiod: axisPeriod('y'),
+    xperiodalignment: axisPeriodAlignment('x'),
+    yperiodalignment: axisPeriodAlignment('y'),
 
     stackgroup: {
         valType: 'string',
