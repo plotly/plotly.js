@@ -1,0 +1,21 @@
+{
+  "data": [{
+    "y": ["This", "is", "s", "tset", "placeholder"],
+    "x": [12, 9, -15, 12, 0],
+    "type": "bar",
+    "orientation": "h"
+  }],
+  "layout": {
+    "width": 400,
+    "xaxis": {
+      "type": "categorical",
+      "showgrid": false,
+      "zeroline": false
+    },
+    "yaxis": {
+      "title": "test",
+      "zeroline": false
+    },
+    "barmode": "overlay"
+  }
+}
