@@ -355,6 +355,7 @@ module.exports = {
             showticksuffix: axesAttrs.showticksuffix,
             separatethousands: axesAttrs.separatethousands,
             exponentformat: axesAttrs.exponentformat,
+            minexponent: axesAttrs.minexponent,
             showexponent: axesAttrs.showexponent,
             editType: 'plot'
         }, 'plot'),
