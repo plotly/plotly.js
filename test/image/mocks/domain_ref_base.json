@@ -21,7 +21,7 @@
                 "range": [1, 3]
             },
             "yaxis": {
-                "domain": [0,.4],
+                "domain": [0,0.4],
                 "range": [1, 4]
             },
             "xaxis2": {
@@ -30,7 +30,7 @@
                 "anchor": "y2"
             },
             "yaxis2": {
-                "domain": [.4,1],
+                "domain": [0.4,1],
                 "range": [1, 3],
                 "anchor": "x2"
             },
