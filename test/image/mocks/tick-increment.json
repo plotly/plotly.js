@@ -1,0 +1,136 @@
+{
+    "data": [
+        {
+            "name": "s & positive",
+            "x": [
+                "2019-12-31 23:59:59.998",
+                "2020-01-01 00:00:00",
+                "2020-01-01 00:00:00.002"
+            ],
+            "y": [
+                "1e-1",
+                "1e-2",
+                "1e-0"
+            ],
+            "type": "scatter"
+        },
+        {
+            "name": "s & negative",
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "x": [
+                "2019-12-31 23:59:59.998",
+                "2020-01-01 00:00:00",
+                "2020-01-01 00:00:00.002"
+            ],
+            "y": [
+                "-1e-1",
+                "-1e-2",
+                "-1e-0"
+            ],
+            "type": "scatter"
+        },
+        {
+            "name": "p & negative",
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "x": [
+                "2019-12-31 23:59:59.998",
+                "2020-01-01 00:00:00",
+                "2020-01-01 00:00:00.002"
+            ],
+            "y": [
+                "-1e-1",
+                "-1e-2",
+                "-1e-0"
+            ],
+            "type": "scatter"
+        },
+        {
+            "name": "p & positive",
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "x": [
+                "2019-12-31 23:59:59.998",
+                "2020-01-01 00:00:00",
+                "2020-01-01 00:00:00.002"
+            ],
+            "y": [
+                "1e-1",
+                "1e-2",
+                "1e-0"
+            ],
+            "type": "scatter"
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "xaxis": {
+            "type": "date",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis2": {
+            "type": "date",
+            "anchor": "y2",
+            "domain": [
+                0.6,
+                1
+            ]
+        },
+        "xaxis3": {
+            "type": "date",
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis4": {
+            "type": "date",
+            "anchor": "y4",
+            "domain": [
+                0.6,
+                1
+            ]
+        },
+        "yaxis": {
+            "nticks": 10,
+            "tickformat": "s",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "nticks": 10,
+            "tickformat": "s",
+            "anchor": "x2",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis3": {
+            "nticks": 10,
+            "tickformat": "p",
+            "anchor": "x3",
+            "domain": [
+                0.6,
+                1
+            ]
+        },
+        "yaxis4": {
+            "nticks": 10,
+            "tickformat": "p",
+            "anchor": "x4",
+            "domain": [
+                0.6,
+                1
+            ]
+        }
+    }
+}

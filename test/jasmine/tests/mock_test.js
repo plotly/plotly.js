@@ -933,6 +933,8 @@ var list = [
     'tick_prefix_suffix',
     'tick_prefix_suffix_exponent',
     'tick-datafn',
+    'tick-increment',
+    'tick-percent',
     'tickformat',
     'tickformatstops',
     'tickson_boundaries',
@@ -1982,6 +1984,8 @@ figs['tick_attributes'] = require('@mocks/tick_attributes');
 figs['tick_prefix_suffix'] = require('@mocks/tick_prefix_suffix');
 figs['tick_prefix_suffix_exponent'] = require('@mocks/tick_prefix_suffix_exponent');
 figs['tick-datafn'] = require('@mocks/tick-datafn');
+figs['tick-increment'] = require('@mocks/tick-increment');
+figs['tick-percent'] = require('@mocks/tick-percent');
 figs['tickformat'] = require('@mocks/tickformat');
 figs['tickformatstops'] = require('@mocks/tickformatstops');
 figs['tickson_boundaries'] = require('@mocks/tickson_boundaries');
