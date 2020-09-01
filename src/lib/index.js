@@ -158,6 +158,8 @@ lib.filterUnique = require('./filter_unique');
 lib.filterVisible = require('./filter_visible');
 lib.pushUnique = require('./push_unique');
 
+lib.increment = require('./increment');
+
 lib.cleanNumber = require('./clean_number');
 
 lib.ensureNumber = function ensureNumber(v) {
