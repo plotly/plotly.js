@@ -9,6 +9,30 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.55.0] -- 2020-09-02
+### Added
+ - Introduce "period" `ticklabelmode` on cartesian date axes [#4993, #5055, #5060, #5065, #5088, #5089]
+ - Add new formatting options for weeks and quarters [#5026]
+ - Add `source` attribute to `image` traces for fast rendering [#5075]
+ - Add `zsmooth` attribute for discrete `heatmapgl` traces [#4953]
+ - Add horizontal and vertical markers for arrow charts [#5010]
+ - Add touch support to `rangeslider` [#5025]
+
+### Changed
+ - Improve contribution guide & readme, add code of conduct [#5068]
+ - Bump various dev-dependencies namely bubleify and glslify [#5084, #5085, #5118]
+
+### Fixed
+ - Fix updating `title` and tick labels during transition with react [#5045]
+ - Fix `table` wheel scroll for Firefox [#5051]
+ - Fix ISO-8601 short time zone format [#5015]
+ - Fix numeric periods on date axes for `bar` with `base` [#5061]
+ - Fix `bar` and `box` widths on categorical axes in "overlay" mode [#5072]
+ - Fix `symbol` numbers in string format [#5073]
+ - Fix gl2d marker sizes [#5093]
+ - Fix default latitude span in `geo` subplots [#5033]
+
+
 ## [1.54.7] -- 2020-07-23
 ### Changed
  - Revert [#4904] to fix a template regression introduced in 1.54.4 [#5016]
