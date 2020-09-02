@@ -768,4 +768,12 @@ describe('increment', function() {
         examine({ start: 12345, step: 0.01, expected: [12345.01, 12345.02, 12345.03] });
         examine({ start: 12345, step: 0.1, expected: [12345.1, 12345.2, 12345.3] });
     });
+
+    it('should not round very big numbers in certain cases', function() {
+        examine({ start: 1e+21, step: 1e+6, expected: [
+            1.000000000000001e+21,
+            1.0000000000000021e+21,
+            1.0000000000000031e+21
+        ]});
+    });
 });
