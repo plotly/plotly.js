@@ -25,12 +25,14 @@ module.exports = function incrementNumeric(x, delta) {
     // Note 2:
     // now we may also consider rounding to cover few more edge cases
     // e.g. 0.3 * 3 = 0.8999999999999999
-    var lenDt = String(delta).length;
-    var lenX0 = String(x).length;
     var lenX1 = String(newX).length;
+    if(lenX1 > 16) {
+        var lenDt = String(delta).length;
+        var lenX0 = String(x).length;
 
-    if(lenX1 >= lenX0 + lenDt) { // likely a rounding error!
-        newX = +parseFloat(newX).toPrecision(12);
+        if(lenX1 >= lenX0 + lenDt) { // likely a rounding error!
+            newX = +parseFloat(newX).toPrecision(12);
+        }
     }
 
     return newX;
