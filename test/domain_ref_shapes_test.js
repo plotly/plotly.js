@@ -136,14 +136,9 @@ function setAxType(layout, axref, axtype) {
 // Calculate the ax value of an annotation given a particular desired scaling K
 // This also works with log axes by taking logs of each part of the sum, so that
 // the length in pixels is multiplied by the scalar
-function annaxscale(ac, axistype, c0, K) {
+function annaxscale(ac, c0, K) {
     var ret;
-    if (axistype === 'log') {
-        ret = Math.pow(10, Math.log10(c0) + 2 * (Math.log10(ac) - Math.log10(
-            c0)));
-    } else {
-        ret = c0 + 2 * (ac - c0);
-    }
+    ret = c0 + 2 * (ac - c0);
     return ret;
 }
 
@@ -157,6 +152,14 @@ function annaxscale(ac, axistype, c0, K) {
 // same for yaxistype and yref
 function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
     xaxistype, yaxistype, xid, yid) {
+    // Take the log of values corresponding to log axes.  This is because the
+    // test is designed to make predicting the pixel positions easy, and it's
+    // easiest when we work with the logarithm of values on log axes (doubling
+    // the log value doubles the pixel value, etc.).
+    x0 = xaxistype === 'log' ? Math.log10(x0) : x0;
+    y0 = yaxistype === 'log' ? Math.log10(y0) : y0;
+    ax = xaxistype === 'log' ? Math.log10(ax) : ax;
+    ay = yaxistype === 'log' ? Math.log10(ay) : ay;
     // if xref != axref or axref === 'pixel' then ax is a value relative to
     // x0 but in pixels. Same for yref
     var xreftype = Axes.getRefType(xref);
@@ -182,8 +185,8 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
         ayref: ayref,
     };
     var opts1 = {
-        ax: axpixels ? 2 * ax : annaxscale(ax, xaxistype, x0, 2),
-        ay: aypixels ? 2 * ay : annaxscale(ay, yaxistype, y0, 2),
+        ax: axpixels ? 2 * ax : annaxscale(ax, x0, 2),
+        ay: aypixels ? 2 * ay : annaxscale(ay, y0, 2),
         axref: axref,
         ayref: ayref,
     };
@@ -195,14 +198,14 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
     layout.annotations = [anno0, anno1];
     return Plotly.relayout(gd, layout).then(function (gd) {
         // the choice of anno1 or anno0 is arbitrary
-        var xabspixels = mapAROCoordToPixel(gd.layout, 'xref', anno1, 'x');
-        var yabspixels = mapAROCoordToPixel(gd.layout, 'yref', anno1, 'y');
+        var xabspixels = mapAROCoordToPixel(gd.layout, 'xref', anno1, 'x', 0, true);
+        var yabspixels = mapAROCoordToPixel(gd.layout, 'yref', anno1, 'y', 0, true);
         if (axpixels) {
             // no need to map the specified values to pixels (because that's what
             // they are already)
             xpixels = ax;
         } else {
-            xpixels = mapAROCoordToPixel(gd.layout, 'xref', anno0, 'ax') -
+            xpixels = mapAROCoordToPixel(gd.layout, 'xref', anno0, 'ax', 0, true) -
                 xabspixels;
         }
         if (aypixels) {
@@ -210,7 +213,7 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
             // they are already)
             ypixels = ay;
         } else {
-            ypixels = mapAROCoordToPixel(gd.layout, 'yref', anno0, 'ay') -
+            ypixels = mapAROCoordToPixel(gd.layout, 'yref', anno0, 'ay', 0, true) -
                 yabspixels;
         }
         var annobbox0 = getSVGElemScreenBBox(findAROByColor(color0,"#"+gd.id));
@@ -252,10 +255,17 @@ function logAxisIfAxType(layoutIn, layoutOut, axid, axtype) {
     }
 }
 
-// axref can be xref or yref
-// c can be x0, x1, y0, y1
-// offset allows adding something to the coordinate before converting, say if
+// {layout} is required to map to pixels using its domain, range and size
+// {axref} can be xref or yref
+// {aro} is the components object where c and axref will be looked up
+// {c} can be x0, x1, y0, y1
+// {offset} allows adding something to the coordinate before converting, say if
 // you want to map the point on the other side of a square
+// {nolog} if set to true, the log of a range value will not be taken before
+// computing its pixel position. This is useful for components whose positions
+// are specified in log coordinates (i.e., images and annotations).
+// You can tell I first wrote this function for shapes only and then learned
+// later this was the case for images and annotations :').
 function mapAROCoordToPixel(layout, axref, aro, c, offset, nolog) {
     var reftype = Axes.getRefType(aro[axref]);
     var axletter = axref[0];
