@@ -17,18 +17,17 @@ module.exports = function incrementNumeric(x, delta) {
     // but 0.3 == (10 * 0.1 + 10 * 0.2) / 10
     // Attempt to use integer steps to increment
     var scale = 1 / Math.abs(delta);
-    if(scale < 1) scale = 1;
-    var newX = (
+    var newX = (scale > 1) ? (
         scale * x +
         scale * delta
-    ) / scale;
+    ) / scale : x + delta;
 
     // Note 2:
     // now we may also consider rounding to cover few more edge cases
     // e.g. 0.3 * 3 = 0.8999999999999999
-    var lenDt = ('' + delta).length;
-    var lenX0 = ('' + x).length;
-    var lenX1 = ('' + newX).length;
+    var lenDt = String(delta).length;
+    var lenX0 = String(x).length;
+    var lenX1 = String(newX).length;
 
     if(lenX1 >= lenX0 + lenDt) { // likely a rounding error!
         newX = +parseFloat(newX).toPrecision(12);
