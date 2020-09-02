@@ -632,6 +632,7 @@ var list = [
     'hists-on-matching-axes',
     'hot_heatmap',
     'image_adventurer',
+    'image_astronaut_source',
     'image_axis_reverse',
     'image_axis_type',
     'image_cat',
@@ -908,6 +909,7 @@ var list = [
     'sunburst_values_colorscale',
     'sunburst_with-without_values',
     'sunburst_zero_values_textfit',
+    'symbols_string-numbers',
     'table_latex_multitrace_scatter',
     'table_plain_birds',
     'table_ragged',
@@ -934,6 +936,8 @@ var list = [
     'tick_prefix_suffix',
     'tick_prefix_suffix_exponent',
     'tick-datafn',
+    'tick-increment',
+    'tick-percent',
     'tickformat',
     'tickformatstops',
     'tickson_boundaries',
@@ -1682,6 +1686,7 @@ figs['histogram2dcontour_legend-coloraxis'] = require('@mocks/histogram2dcontour
 figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
 figs['image_adventurer'] = require('@mocks/image_adventurer');
+figs['image_astronaut_source'] = require('@mocks/image_astronaut_source');
 figs['image_axis_reverse'] = require('@mocks/image_axis_reverse');
 figs['image_axis_type'] = require('@mocks/image_axis_type');
 figs['image_cat'] = require('@mocks/image_cat');
@@ -1958,6 +1963,7 @@ figs['sunburst_values'] = require('@mocks/sunburst_values');
 figs['sunburst_values_colorscale'] = require('@mocks/sunburst_values_colorscale');
 figs['sunburst_with-without_values'] = require('@mocks/sunburst_with-without_values');
 figs['sunburst_zero_values_textfit'] = require('@mocks/sunburst_zero_values_textfit');
+figs['symbols_string-numbers'] = require('@mocks/symbols_string-numbers');
 figs['table_latex_multitrace_scatter'] = require('@mocks/table_latex_multitrace_scatter');
 // figs['table_plain_birds'] = require('@mocks/table_plain_birds');
 figs['table_ragged'] = require('@mocks/table_ragged');
@@ -1984,6 +1990,8 @@ figs['tick_attributes'] = require('@mocks/tick_attributes');
 figs['tick_prefix_suffix'] = require('@mocks/tick_prefix_suffix');
 figs['tick_prefix_suffix_exponent'] = require('@mocks/tick_prefix_suffix_exponent');
 figs['tick-datafn'] = require('@mocks/tick-datafn');
+figs['tick-increment'] = require('@mocks/tick-increment');
+figs['tick-percent'] = require('@mocks/tick-percent');
 figs['tickformat'] = require('@mocks/tickformat');
 figs['tickformatstops'] = require('@mocks/tickformatstops');
 figs['tickson_boundaries'] = require('@mocks/tickson_boundaries');

@@ -158,6 +158,8 @@ lib.filterUnique = require('./filter_unique');
 lib.filterVisible = require('./filter_visible');
 lib.pushUnique = require('./push_unique');
 
+lib.increment = require('./increment');
+
 lib.cleanNumber = require('./clean_number');
 
 lib.ensureNumber = function ensureNumber(v) {
@@ -710,6 +712,11 @@ lib.isIE9orBelow = function() {
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);
+};
+
+var IS_IOS_REGEX = /iPad|iPhone|iPod/;
+lib.isIOS = function() {
+    return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
 
 /**

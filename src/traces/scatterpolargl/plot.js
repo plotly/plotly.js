@@ -8,7 +8,7 @@
 
 'use strict';
 
-var cluster = require('point-cluster');
+var cluster = require('@plotly/point-cluster');
 var isNumeric = require('fast-isnumeric');
 
 var scatterglPlot = require('../scattergl/plot');

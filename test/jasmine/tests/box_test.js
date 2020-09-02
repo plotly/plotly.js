@@ -1534,3 +1534,51 @@ describe('Test box calc', function() {
         });
     });
 });
+
+
+describe('Box crossTraceCalc', function() {
+    'use strict';
+
+    function mockBoxPlot(dataWithoutTraceType, layout) {
+        var traceTemplate = { type: 'box' };
+
+        var dataWithTraceType = dataWithoutTraceType.map(function(trace) {
+            return Lib.extendFlat({}, traceTemplate, trace);
+        });
+
+        var gd = {
+            data: dataWithTraceType,
+            layout: layout || {},
+            calcdata: [],
+            _context: {locale: 'en', locales: {}}
+        };
+
+        supplyAllDefaults(gd);
+        Plots.doCalcdata(gd);
+
+        return gd;
+    }
+
+    it('should set unit width for categories in overlay mode', function() {
+        var gd = mockBoxPlot([{
+            y: [1, 2, 3]
+        },
+        {
+            y: [null, null, null]
+        },
+        {
+            y: [null, null, null]
+        },
+        {
+            y: [4, 5, 6]
+        }], {
+            boxgap: 0,
+            xaxis: {
+                range: [-0.5, 3.5],
+                type: 'category'
+            }
+        });
+
+        expect(gd.calcdata[0][0].t.dPos).toBe(0.5);
+    });
+});
