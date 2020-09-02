@@ -96,7 +96,9 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 
     attrDef[refAttr] = {
         valType: 'enumerated',
-        values: axlist.concat(extraOption ? [extraOption] : []),
+        values: axlist.concat(extraOption ?
+            (typeof extraOption === 'string' ? [extraOption] : extraOption)
+            : []),
         dflt: dflt
     };
 
