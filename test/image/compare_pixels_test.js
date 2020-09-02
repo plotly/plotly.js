@@ -101,10 +101,6 @@ if(allMock || argv.filter) {
 }
 
 var FLAKY_LIST = [
-    'gl2d_parcoords_blocks',
-    'gl3d_directions-streamtube1',
-    'gl3d_traces-with-opacity',
-    'trace_metatext',
     'treemap_coffee',
     'treemap_textposition',
     'treemap_sunburst_marker_colors',
