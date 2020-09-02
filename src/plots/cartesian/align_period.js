@@ -9,29 +9,61 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var ONEAVGMONTH = require('../../constants/numerical').ONEAVGMONTH;
+var ms2DateTime = require('../../lib').ms2DateTime;
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 
 var M = {};
 for(var n = 1; n <= 12; n++) {
-    M['M' + n] = n * ONEAVGMONTH;
+    M['M' + n] = n;
 }
 
-module.exports = function alignPeriod(trace, axLetter, vals) {
+module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var alignment = trace[axLetter + 'periodalignment'];
     if(!alignment || alignment === 'start') return vals;
 
+    var dynamic = false;
     var period = trace[axLetter + 'period'];
     if(isNumeric(period)) {
-        period = +period;
+        period = +period; // milliseconds
     } else if(typeof period === 'string') {
-        period = M[period];
+        period = M[period]; // months
+        dynamic = true;
     }
 
     if(period > 0) {
-        var delta = (alignment === 'end' ? 1 : 0.5) * period;
+        var ratio = (alignment === 'end') ? 1 : 0.5;
+
         var len = vals.length;
         for(var i = 0; i < len; i++) {
-            vals[i] += delta;
+            var delta;
+
+            if(dynamic) {
+                var dateStr = ms2DateTime(vals[i], 0, ax.calendar);
+                var d = new Date(dateStr);
+                var year = d.getFullYear();
+                var month = d.getMonth();
+
+                var totalDaysInMonths = 0;
+                for(var k = 0; k < period; k++) {
+                    month += 1;
+                    if(month > 12) {
+                        month = 1;
+                        year++;
+                    }
+
+                    var monthDays = (
+                        new Date(year, month, 0)
+                    ).getDate();
+
+                    totalDaysInMonths += monthDays;
+                }
+
+                delta = ONEDAY * totalDaysInMonths; // convert to ms
+            } else {
+                delta = period;
+            }
+
+            vals[i] += ratio * delta;
         }
     }
     return vals;

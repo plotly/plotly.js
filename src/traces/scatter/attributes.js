@@ -23,7 +23,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 function axisPeriod(axis) {
     return {
         valType: 'any',
-        dflt: ONEAVGYEAR,
+        dflt: ONEAVGYEAR, // maybe better to use 12M which is more accurate here?
         role: 'info',
         editType: 'calc',
         description: [

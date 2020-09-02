@@ -849,7 +849,7 @@ module.exports = function setConvert(ax, fullLayout) {
         }
 
         if(axType === 'date') {
-            arrayOut = alignPeriod(trace, axLetter, arrayOut);
+            arrayOut = alignPeriod(trace, ax, axLetter, arrayOut);
         }
 
         return arrayOut;

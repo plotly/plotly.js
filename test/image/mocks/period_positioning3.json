@@ -1,0 +1,175 @@
+{
+    "data": [
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": "M1",
+            "name": "bar (M1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2001-02-01", "2001-03-01", "2001-04-01"],
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": "M2",
+            "name": "bar (M2)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2001-03-01", "2001-05-01", "2001-07-01"],
+            "xperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": "M3",
+            "name": "bar (M3)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2001-04-01", "2001-07-01", "2001-10-01"],
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": "M6",
+            "name": "bar (M6)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2001-07-01", "2002-01-01", "2002-07-01"],
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": "M12",
+            "name": "bar (M12)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": 31557600000,
+            "name": "bar (AVG-YEAR)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiodalignment": "middle"
+        }
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 500,
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis2": {
+            "dtick": "M2",
+            "tickcolor": "black",
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis3": {
+            "dtick": "M3",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y3",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis4": {
+            "dtick": "M6",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y4",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis5": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y5",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+        "xaxis6": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y6",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+
+        "yaxis": {
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "tickcolor": "black",
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickcolor": "black",
+            "anchor": "x3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis4": {
+            "tickcolor": "black",
+            "anchor": "x4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis5": {
+            "tickcolor": "black",
+            "anchor": "x5",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis6": {
+            "tickcolor": "black",
+            "anchor": "x6",
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}
