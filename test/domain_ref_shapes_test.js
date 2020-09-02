@@ -425,6 +425,11 @@ function checkAROPosition(gd, aro) {
 }
 
 // some made-up values for testing
+// NOTE: The pixel values are intentionally set so that 2*pixel is never greater
+// than the mock's margin. This is so that annotations are not unintentionally
+// clipped out because they exceed the plotting area. The reason for using twice
+// the pixel value is because the annotation test requires plotting 2
+// annotations, the second having arrow components twice as long as the first.
 var aroPositionsX = [{
         // aros referring to data
         ref: 'range',
@@ -433,21 +438,21 @@ var aroPositionsX = [{
         size: 1.5,
         // for the case when annotations specifies arrow in pixels, this value
         // is read instead of value[1]
-        pixel: 50
+        pixel: 25
     },
     {
         // aros referring to domains
         ref: 'domain',
         value: [0.2, 0.75],
         size: 0.3,
-        pixel: 60
+        pixel: 30
     },
     {
         // aros referring to paper
         ref: 'paper',
         value: [0.25, 0.8],
         size: 0.35,
-        pixel: 70
+        pixel: 35
     },
 ];
 var aroPositionsY = [{
@@ -469,7 +474,7 @@ var aroPositionsY = [{
         // aros referring to paper
         ref: 'paper',
         value: [0.2, 0.85],
-        pixel: 80,
+        pixel: 45,
         size: .3
     }
 ];
@@ -559,7 +564,7 @@ function test_correct_aro_positions() {
     testCombos.forEach(testDomRefAROCombo);
 }
 
-function runComboTests(productItems,testCombo,start_stop,filter) {
+function runComboTests(productItems,testCombo,start_stop,filter,keep_graph_div) {
     var testCombos = [...iterable.cartesianProduct(productItems)];
     testCombos=testCombos.map((c,i)=>c.concat(['graph-'+i]));
     if(filter) {
@@ -569,7 +574,7 @@ function runComboTests(productItems,testCombo,start_stop,filter) {
         testCombos=testCombos.slice(start_stop.start,start_stop.stop);
     }
     console.log("Executing " + testCombos.length + " tests");
-    var tc = testCombos.map(c=>testCombo(c,false)).reduce((a,v)=>a.then(v));
+    var tc = testCombos.map(c=>testCombo(c,keep_graph_div)).reduce((a,v)=>a.then(v));
 }
 
 var testImageComboMock = Lib.extendDeep({},
@@ -674,16 +679,17 @@ function testAnnotationCombo(combo,keep_graph_div) {
     });
 }
 
-function runAnnotationTests(start_stop,filter) {
+function runAnnotationTests(start_stop,filter,keep_graph_div) {
     runComboTests([
         axisTypes, axisTypes, axisPairs, aroPositionsX, aroPositionsY, arrowAxis
     ],
-    testAnnotationCombo,start_stop,filter);
+    testAnnotationCombo,start_stop,filter,keep_graph_div);
 }
 
 module.exports = {
     runImageTests: runImageTests,
     testImageCombo: testImageCombo,
     runAnnotationTests: runAnnotationTests,
-    testAnnotationCombo: testAnnotationCombo
+    testAnnotationCombo: testAnnotationCombo,
+	findAROByColor: findAROByColor
 };
