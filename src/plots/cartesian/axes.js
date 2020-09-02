@@ -844,7 +844,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     periodLength *= ratio;
                 } else {
                     // case of big gap
-                    periodLength = ratio * actualDelta;
+                    if(actualDelta === ax.dtick) {
+                        periodLength = ratio * actualDelta;
+                    } else {
+                        periodLength = ratio * (actualDelta + periodLength) / 2;
+                    }
                 }
             }
 
