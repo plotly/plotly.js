@@ -31,7 +31,13 @@ module.exports = function incrementNumeric(x, delta) {
         var lenX0 = String(x).length;
 
         if(lenX1 >= lenX0 + lenDt) { // likely a rounding error!
-            newX = +parseFloat(newX).toPrecision(12);
+            var s = parseFloat(newX).toPrecision(12);
+            if(
+                s.indexOf('e') === -1 ||
+                s.indexOf('e-') !== -1
+            ) {
+                newX = +s;
+            }
         }
     }
 
