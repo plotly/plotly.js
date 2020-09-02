@@ -1063,7 +1063,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     var axSign = axrev ? -1 : 1;
 
     // includes linear, all dates smaller than month, and pure 10^n in log
-    if(isNumeric(dtick)) return x + axSign * dtick;
+    if(isNumeric(dtick)) return Lib.increment(x, axSign * dtick);
 
     // everything else is a string, one character plus a number
     var tType = dtick.charAt(0);
