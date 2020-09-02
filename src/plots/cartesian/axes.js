@@ -832,23 +832,22 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
 
             if(periodLength && ax.rangebreaks) {
-                var nOut = 0;
+                var nFirstHalf = 0;
+                var nSecondHalf = 0;
                 var nAll = 2 * 3 * 7; // number of samples
                 for(var c = 0; c < nAll; c++) {
                     var r = c / nAll;
-                    if(ax.maskBreaks(A * (1 - r) + B * r) === BADNUM) nOut++;
-                }
-                var ratio = 1 - nOut / nAll;
-                if(ratio > 0.5) {
-                    // case of short gap
-                    periodLength *= ratio;
-                } else {
-                    // case of big gap
-                    if(actualDelta === ax.dtick) {
-                        periodLength = ratio * actualDelta;
-                    } else {
-                        periodLength = ratio * (actualDelta + periodLength) / 2;
+                    if(ax.maskBreaks(A * (1 - r) + B * r) !== BADNUM) {
+                        if(r < 0.5) {
+                            nFirstHalf++;
+                        } else {
+                            nSecondHalf++;
+                        }
                     }
+                }
+
+                if(nSecondHalf) {
+                    periodLength *= (nFirstHalf + nSecondHalf) / nAll;
                 }
             }
 
