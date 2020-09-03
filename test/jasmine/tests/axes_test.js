@@ -2851,6 +2851,57 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('Does not use SI prefixes for 10^n with |n| < minexponent', function() {
+            var textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                minexponent: 5,
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1,
+                range: [-18.5, 18.5]
+            });
+
+            expect(textOut).toEqual([
+                '10<sup>\u221218</sup>',
+                '10<sup>\u221217</sup>',
+                '10<sup>\u221216</sup>',
+                '1f', '10f', '100f', '1p', '10p', '100p', '1n', '10n', '100n',
+                '1μ', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1', '10', '100',
+                '1000', '10,000', '100,000', '1M', '10M', '100M', '1G', '10G', '100G',
+                '1T', '10T', '100T',
+                '10<sup>15</sup>',
+                '10<sup>16</sup>',
+                '10<sup>17</sup>',
+                '10<sup>18</sup>'
+            ]);
+            var textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                minexponent: 0,
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1,
+                range: [-18.5, 18.5]
+            });
+
+            expect(textOut).toEqual([
+                '10<sup>\u221218</sup>',
+                '10<sup>\u221217</sup>',
+                '10<sup>\u221216</sup>',
+                '1f', '10f', '100f', '1p', '10p', '100p', '1n', '10n', '100n',
+                '1μ', '10μ', '100μ', '1m', '10m', '100m', '1', '10', '100',
+                '1k', '10k', '100k', '1M', '10M', '100M', '1G', '10G', '100G',
+                '1T', '10T', '100T',
+                '10<sup>15</sup>',
+                '10<sup>16</sup>',
+                '10<sup>17</sup>',
+                '10<sup>18</sup>'
+            ]);
+        });
+
         it('supports e/E format on log axes', function() {
             ['e', 'E'].forEach(function(e) {
                 var textOut = mockCalc({
