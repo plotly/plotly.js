@@ -2876,7 +2876,8 @@ describe('Test axes', function() {
                 '10<sup>17</sup>',
                 '10<sup>18</sup>'
             ]);
-            var textOut = mockCalc({
+
+            textOut = mockCalc({
                 type: 'log',
                 tickmode: 'linear',
                 exponentformat: 'SI',
