@@ -78,6 +78,7 @@
         },
         "xaxis2": {
             "dtick": "M2",
+            "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "y2",
             "domain": [
