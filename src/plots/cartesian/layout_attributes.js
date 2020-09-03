@@ -683,6 +683,7 @@ module.exports = {
     minexponent: {
         valType: 'number',
         dflt: 3,
+        min: 0,
         role: 'style',
         editType: 'ticks',
         description: [
