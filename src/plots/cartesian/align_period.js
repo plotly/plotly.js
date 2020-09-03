@@ -20,6 +20,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var period = trace[axLetter + 'period'];
     if(isNumeric(period)) {
         period = +period; // milliseconds
+        if(period <= 0) return vals;
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var v = +(period.substring(1));
         if(v > 0 && Math.round(v) === v) period = v; // positive integer months
