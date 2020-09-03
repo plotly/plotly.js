@@ -111,6 +111,7 @@
             "xperiod": 31557600000,
             "name": "bar (AVG-YEAR)",
             "type": "bar",
+            "marker": { "color": "gray" },
             "y": [1, 2, 3, 4],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
             "xperiodalignment": "middle"
@@ -121,6 +122,7 @@
             "xperiod": 31557600000,
             "name": "scatter (AVG-YEAR)",
             "type": "scatter",
+            "marker": { "color": "black" },
             "y": [1, 2, 3, 4],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
             "xperiodalignment": "end"
@@ -152,6 +154,7 @@
         },
         "xaxis3": {
             "dtick": "M3",
+            "tickformat": "Q%q",
             "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "y3",
@@ -162,6 +165,7 @@
         },
         "xaxis4": {
             "dtick": "M6",
+            "tickformat": "%Y",
             "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "y4",
