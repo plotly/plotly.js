@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.55.1] -- 2020-09-02
+
+### Fixed
+ - Install `image-size` module in dependencies [#5119]
+
+
 ## [1.55.0] -- 2020-09-02
 
 ### Added
