@@ -38,6 +38,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Fix `symbol` numbers in string format [#5073]
  - Fix gl2d marker sizes [#5093]
  - Fix default latitude span in `geo` subplots [#5033]
+ - Improve axis tick increment [#5114]
 
 
 ## [1.54.7] -- 2020-07-23
