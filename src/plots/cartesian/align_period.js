@@ -12,11 +12,6 @@ var isNumeric = require('fast-isnumeric');
 var ms2DateTime = require('../../lib').ms2DateTime;
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 
-var M = {};
-for(var n = 1; n <= 12; n++) {
-    M['M' + n] = n;
-}
-
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var alignment = trace[axLetter + 'periodalignment'];
     if(!alignment || alignment === 'start') return vals;
@@ -25,8 +20,11 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var period = trace[axLetter + 'period'];
     if(isNumeric(period)) {
         period = +period; // milliseconds
-    } else if(typeof period === 'string') {
-        period = M[period]; // months
+    } else if(typeof period === 'string' && period.charAt(0) === 'M') {
+        var v = +(period.substring(1));
+        if(v > 0 && Math.round(v) === v) period = v; // positive integer months
+        else return vals;
+
         dynamic = true;
     }
 
