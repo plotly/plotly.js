@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.55.0
+* plotly.js (gl3d) v1.55.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -121955,7 +121955,7 @@ module.exports = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.55.0';
+exports.version = '1.55.1';
 
 },{}]},{},[4])(4)
 });
