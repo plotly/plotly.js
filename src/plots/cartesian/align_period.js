@@ -40,7 +40,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
                 var dateStr = ms2DateTime(vals[i], 0, ax.calendar);
                 var d = new Date(dateStr);
                 var year = d.getFullYear();
-                var month = d.getMonth();
+                var month = d.getMonth() + 1;
 
                 var totalDaysInMonths = 0;
                 for(var k = 0; k < period; k++) {
