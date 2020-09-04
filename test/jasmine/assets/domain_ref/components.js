@@ -259,14 +259,15 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
 }
 
 // axid is e.g., 'x', 'y2' etc.
-function logAxisIfAxType(layoutIn, layoutOut, axid, axtype) {
+// if nologrange is true, log of range is not taken
+function logAxisIfAxType(layoutIn, layoutOut, axid, axtype, nologrange) {
     var axname = axisIds.id2name(axid);
     if ((axtype === 'log') && (axid !== undefined)) {
         var axis = {
             ...layoutIn[axname]
         };
         axis.type = 'log';
-        axis.range = axis.range.map(Math.log10);
+        axis.range = nologrange ? axis.range : axis.range.map(Math.log10);
         layoutOut[axname] = axis;
     }
 }
@@ -398,11 +399,8 @@ function findImage(id) {
     return ret;
 }
 
-function checkImage(layout, imageObj, imageBBox) {}
-
 function imageTest(gd, layout, xaxtype, yaxtype, x, y, sizex, sizey, xanchor,
     yanchor, xref, yref, xid, yid) {
-    console.log('running imageTest on ', gd);
     var image = {
         x: x,
         y: y,
@@ -420,8 +418,8 @@ function imageTest(gd, layout, xaxtype, yaxtype, x, y, sizex, sizey, xanchor,
     var ret;
     // we pass xid, yid because we possibly want to change some axes to log,
     // even if we refer to paper in the end
-    logAxisIfAxType(gd.layout, layout, xid, xaxtype);
-    logAxisIfAxType(gd.layout, layout, yid, yaxtype);
+    logAxisIfAxType(gd.layout, layout, xid, xaxtype, true);
+    logAxisIfAxType(gd.layout, layout, yid, yaxtype, true);
     layout.images = [image];
     return Plotly.relayout(gd, layout)
         .then(function(gd) {
@@ -429,9 +427,6 @@ function imageTest(gd, layout, xaxtype, yaxtype, x, y, sizex, sizey, xanchor,
             var svgImageBBox = getSVGElemScreenBBox(imageElem);
             var imageBBox = imageToBBox(gd.layout, image);
             ret = compareBBoxes(svgImageBBox, imageBBox);
-            //if (!ret) {
-            //    throw 'test failed';
-            //}
             return ret;
         });
 }
@@ -602,7 +597,7 @@ function runComboTests(productItems, testCombo, start_stop, filter, keep_graph_d
     var tc = testCombos.map(c => testCombo(c, keep_graph_div)).reduce((a, v) => a.then(v));
 }
 
-function testImageCombo(combo, keep_graph_div) {
+function describeImageComboTest(combo) {
     var axistypex = combo[0];
     var axistypey = combo[1];
     var axispair = combo[2];
@@ -615,46 +610,45 @@ function testImageCombo(combo, keep_graph_div) {
     var yid = axispair[1];
     var xref = makeAxRef(xid, aroposx.ref);
     var yref = makeAxRef(yid, aroposy.ref);
-    if (DEBUG) {
-        console.log(combo);
-    }
-    return new Promise(function(resolve) {
-            var gd = createGraphDiv(gd_id);
-            resolve(gd);
-        }).then(function(gd) {
-            return Plotly.newPlot(gd, testMock);
-        })
+    // TODO Add image combo test description
+    return [
+        "layout image with graph ID",
+        gd_id,
+        "with parameters:",
+        "x-axis type:", axistypex, "\n",
+        "y-axis type:", axistypey, "\n",
+        "axis pair:", axispair, "\n",
+        "ARO position x:", aroposx, "\n",
+        "ARO position y:", aroposy, "\n",
+        "xanchor:", xanchor, "\n",
+        "yanchor:", yanchor, "\n",
+        "xref:", xref, "\n",
+        "yref:", yref, "\n",
+    ].join(' ');
+}
+
+function testImageCombo(combo, assert, gd) {
+    var axistypex = combo[0];
+    var axistypey = combo[1];
+    var axispair = combo[2];
+    var aroposx = combo[3];
+    var aroposy = combo[4];
+    var xanchor = combo[5];
+    var yanchor = combo[6];
+    var gd_id = combo[7];
+    var xid = axispair[0];
+    var yid = axispair[1];
+    var xref = makeAxRef(xid, aroposx.ref);
+    var yref = makeAxRef(yid, aroposy.ref);
+    return Plotly.newPlot(gd, testMock)
         .then(function(gd) {
             return imageTest(gd, {}, axistypex, axistypey,
                 aroposx.value[0], aroposy.value[0], aroposx.size,
                 aroposy.size,
                 xanchor, yanchor, xref, yref, xid, yid);
         }).then(function(test_ret) {
-            console.log([
-                "Testing layout image with parameters:",
-                "x-axis type:", axistypex, "\n",
-                "y-axis type:", axistypey, "\n",
-                "xanchor:", xanchor, "\n",
-                "yanchor:", yanchor, "\n",
-                "xref:", xref, "\n",
-                "yref:", yref, "\n",
-            ].join(' '), test_ret);
-        }).then(function() {
-            if (!keep_graph_div) {
-                console.log('destroying graph div ', gd_id);
-                Plotly.purge(gd_id);
-                destroyGraphDiv(gd_id);
-            }
+            assert(test_ret);
         });
-}
-
-function runImageTests(start_stop, filter) {
-    runComboTests([
-        axisTypes, axisTypes, axisPairs,
-        // axis reference types are contained in here
-        aroPositionsX, aroPositionsY,
-        xAnchors, yAnchors
-    ], testImageCombo, start_stop, filter);
 }
 
 function describeAnnotationComboTest(combo) {
@@ -708,7 +702,7 @@ function testAnnotationCombo(combo, assert, gd) {
                 ayref, axistypex, axistypey, xid, yid);
         }).then(function(test_ret) {
             assert(test_ret);
-        })
+        });
 }
 
 // return a list of functions, each returning a promise that executes a
@@ -755,11 +749,39 @@ function annotationTestDescriptions() {
     return comboTestDescriptions(testCombos,describeAnnotationComboTest);
 }
 
+
+function imageTestCombos() {
+    var testCombos = [...iterable.cartesianProduct(
+        [
+            axisTypes, axisTypes, axisPairs,
+            // axis reference types are contained in here
+            aroPositionsX, aroPositionsY,
+            xAnchors, yAnchors
+        ]
+    )];
+    testCombos = testCombos.map((c, i) => c.concat(['graph-' + i]));
+    return testCombos;
+}
+
+function imageTests() {
+    var testCombos = imageTestCombos();
+    return comboTests(testCombos,testImageCombo);
+}
+
+function imageTestDescriptions() {
+    var testCombos = imageTestCombos();
+    return comboTestDescriptions(testCombos,describeImageComboTest);
+}
+
 module.exports = {
     // tests
     annotations: {
         descriptions: annotationTestDescriptions,
         tests: annotationTests,
+    },
+    images: {
+        descriptions: imageTestDescriptions,
+        tests: imageTests,
     },
     // utilities
     findAROByColor: findAROByColor

@@ -38,3 +38,9 @@ describe('Test annotations', makeTests(domainRefComponents.annotations,
         if (testNumber === undefined) { return true; }
         return i == testNumber;
     }));
+
+fdescribe('Test images', makeTests(domainRefComponents.images,
+    function(f, i) {
+        if (testNumber === undefined) { return true; }
+        return i == testNumber;
+    }));
