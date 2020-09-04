@@ -289,7 +289,7 @@ module.exports = {
         dflt: 3,
         min: 0,
         role: 'style',
-        editType: 'ticks',
+        editType: 'calc',
         description: [
             'Hide SI prefix for 10^n if |n| is below this number'
         ].join(' ')
