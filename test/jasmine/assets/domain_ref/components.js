@@ -10,21 +10,22 @@
 // promise is followed by .catch(failTest).then(done)
 'use strict'
 
-var Plotly = require('../../../lib/index');
+var Plotly = require('../../../../lib/index');
 var d3 = require('d3');
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
-var pixelCalc = require('../assets/pixel_calc');
+var createGraphDiv = require('../../assets/create_graph_div');
+var destroyGraphDiv = require('../../assets/destroy_graph_div');
+var pixelCalc = require('../../assets/pixel_calc');
 var getSVGElemScreenBBox = require(
-    '../assets/get_svg_elem_screen_bbox');
-var Lib = require('../../../src/lib');
-var Axes = require('../../../src/plots/cartesian/axes');
-var axisIds = require('../../../src/plots/cartesian/axis_ids');
+    '../../assets/get_svg_elem_screen_bbox');
+var Lib = require('../../../../src/lib');
+var Axes = require('../../../../src/plots/cartesian/axes');
+var axisIds = require('../../../../src/plots/cartesian/axis_ids');
 var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var iterable = require('extra-iterable');
+var delay = require('../../assets/delay');
 
 var testMock = Lib.extendDeep({},
-    require('../../image/mocks/domain_ref_base.json'));
+    require('../../../image/mocks/domain_ref_base.json'));
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
@@ -170,22 +171,20 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
     // the log value doubles the pixel value, etc.).
     var xreftype = Axes.getRefType(xref);
     var yreftype = Axes.getRefType(yref);
-    if (xreftype === 'range') {
-        x0 = xaxistype === 'log' ? Math.log10(x0) : x0;
-        ax = xaxistype === 'log' ? Math.log10(ax) : ax;
-    }
-    if (yreftype === 'range') {
-        y0 = yaxistype === 'log' ? Math.log10(y0) : y0;
-        ay = yaxistype === 'log' ? Math.log10(ay) : ay;
-    }
+    var axreftype = Axes.getRefType(axref);
+    var ayreftype = Axes.getRefType(ayref);
+    x0 = xreftype === 'range' && xaxistype === 'log' ? Math.log10(x0) : x0;
+    ax = axreftype === 'range' && xaxistype === 'log' ? Math.log10(ax) : ax;
+    y0 = yreftype === 'range' && yaxistype === 'log' ? Math.log10(y0) : y0;
+    ay = ayreftype === 'range' && yaxistype === 'log' ? Math.log10(ay) : ay;
     // if xref != axref or axref === 'pixel' then ax is a value relative to
     // x0 but in pixels. Same for yref
     var axpixels = false;
-    if ((axref === 'pixel') || (Axes.getRefType(axref) != xreftype)) {
+    if ((axreftype === 'pixel') || (axreftype != xreftype)) {
         axpixels = true;
     }
     var aypixels = false;
-    if ((ayref === 'pixel') || (Axes.getRefType(ayref) != yreftype)) {
+    if ((ayreftype === 'pixel') || (ayreftype != yreftype)) {
         aypixels = true;
     }
     var xaxname;
@@ -212,7 +211,8 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
     var anno0 = aroFromParams('annotation', x0, y0, xref, yref, color0, opts0);
     var anno1 = aroFromParams('annotation', x0, y0, xref, yref, color1, opts1);
     layout.annotations = [anno0, anno1];
-    return Plotly.relayout(gd, layout).then(function(gd) {
+    return Plotly.relayout(gd, layout)
+        .then(function(gd) {
         // the choice of anno1 or anno0 is arbitrary
         var xabspixels = mapAROCoordToPixel(gd.layout, 'xref', anno1, 'x', 0, true);
         var yabspixels = mapAROCoordToPixel(gd.layout, 'yref', anno1, 'y', 0, true);
@@ -232,8 +232,8 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
             ypixels = mapAROCoordToPixel(gd.layout, 'yref', anno0, 'ay', 0, true) -
                 yabspixels;
         }
-        var annobbox0 = getSVGElemScreenBBox(findAROByColor(color0, "#" + gd.id));
-        var annobbox1 = getSVGElemScreenBBox(findAROByColor(color1, "#" + gd.id));
+        var annobbox0 = getSVGElemScreenBBox(findAROByColor(color0));
+        var annobbox1 = getSVGElemScreenBBox(findAROByColor(color1));
         // solve for the arrow length's x coordinate
         var arrowLenX = ((annobbox1.x + annobbox1.width) - (annobbox0.x + annobbox0
             .width));
@@ -684,7 +684,7 @@ function describeAnnotationComboTest(combo) {
     ].join(' ');
 }
 
-function testAnnotationCombo(combo, keep_graph_div, assert) {
+function testAnnotationCombo(combo, assert, gd) {
     var axistypex = combo[0];
     var axistypey = combo[1];
     var axispair = combo[2];
@@ -702,23 +702,13 @@ function testAnnotationCombo(combo, keep_graph_div, assert) {
     var y0 = aroposy.value[0];
     var ax = axref === 'pixel' ? aroposx.pixel : aroposx.value[1];
     var ay = ayref === 'pixel' ? aroposy.pixel : aroposy.value[1];
-    return new Promise(function(resolve) {
-            var gd = createGraphDiv(gd_id);
-            resolve(gd);
-        }).then(function(gd) {
-            return Plotly.newPlot(gd, testMock);
-        })
+    return Plotly.newPlot(gd, testMock)
         .then(function(gd) {
             return annotationTest(gd, {}, x0, y0, ax, ay, xref, yref, axref,
                 ayref, axistypex, axistypey, xid, yid);
         }).then(function(test_ret) {
             assert(test_ret);
-        }).then(function() {
-            if (!keep_graph_div) {
-                Plotly.purge(gd_id);
-                destroyGraphDiv(gd_id);
-            }
-        });
+        })
 }
 
 // return a list of functions, each returning a promise that executes a
@@ -731,8 +721,8 @@ function testAnnotationCombo(combo, keep_graph_div, assert) {
 // {test} is the function returning a Promise that executes this test
 function comboTests(testCombos,test) {
     var ret = testCombos.map(function (combo) {
-        return function (keepGraphDiv, assert) {
-            return test(combo, keepGraphDiv, assert);
+        return function (assert, gd) {
+            return test(combo, assert, gd);
         }
     });
     return ret;
