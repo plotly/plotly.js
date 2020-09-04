@@ -39,7 +39,13 @@ describe('Test annotations', makeTests(domainRefComponents.annotations,
         return i == testNumber;
     }));
 
-fdescribe('Test images', makeTests(domainRefComponents.images,
+describe('Test images', makeTests(domainRefComponents.images,
+    function(f, i) {
+        if (testNumber === undefined) { return true; }
+        return i == testNumber;
+    }));
+
+fdescribe('Test shapes', makeTests(domainRefComponents.shapes,
     function(f, i) {
         if (testNumber === undefined) { return true; }
         return i == testNumber;

@@ -213,49 +213,49 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
     layout.annotations = [anno0, anno1];
     return Plotly.relayout(gd, layout)
         .then(function(gd) {
-        // the choice of anno1 or anno0 is arbitrary
-        var xabspixels = mapAROCoordToPixel(gd.layout, 'xref', anno1, 'x', 0, true);
-        var yabspixels = mapAROCoordToPixel(gd.layout, 'yref', anno1, 'y', 0, true);
-        if (axpixels) {
-            // no need to map the specified values to pixels (because that's what
-            // they are already)
-            xpixels = ax;
-        } else {
-            xpixels = mapAROCoordToPixel(gd.layout, 'xref', anno0, 'ax', 0, true) -
-                xabspixels;
-        }
-        if (aypixels) {
-            // no need to map the specified values to pixels (because that's what
-            // they are already)
-            ypixels = ay;
-        } else {
-            ypixels = mapAROCoordToPixel(gd.layout, 'yref', anno0, 'ay', 0, true) -
-                yabspixels;
-        }
-        var annobbox0 = getSVGElemScreenBBox(findAROByColor(color0));
-        var annobbox1 = getSVGElemScreenBBox(findAROByColor(color1));
-        // solve for the arrow length's x coordinate
-        var arrowLenX = ((annobbox1.x + annobbox1.width) - (annobbox0.x + annobbox0
-            .width));
-        var arrowLenY;
-        var yabspixelscmp;
-        if (aypixels) {
-            // for annotations whose arrows are specified in relative pixels,
-            // positive pixel values on the y axis mean moving down the page like
-            // SVG coordinates, so we have to add height
-            var arrowLenY = (annobbox1.y + annobbox1.height) -
-                (annobbox0.y + annobbox0.height);
-            yabspixelscmp = annobbox0.y;
-        } else {
-            var arrowLenY = annobbox1.y - annobbox0.y;
-            yabspixelscmp = annobbox0.y + annobbox0.height;
-        }
-        var ret = coordsEq(arrowLenX, xpixels) &&
-            coordsEq(arrowLenY, ypixels) &&
-            coordsEq(xabspixels, annobbox0.x) &&
-            coordsEq(yabspixels, yabspixelscmp);
-        return ret;
-    });
+            // the choice of anno1 or anno0 is arbitrary
+            var xabspixels = mapAROCoordToPixel(gd.layout, 'xref', anno1, 'x', 0, true);
+            var yabspixels = mapAROCoordToPixel(gd.layout, 'yref', anno1, 'y', 0, true);
+            if (axpixels) {
+                // no need to map the specified values to pixels (because that's what
+                // they are already)
+                xpixels = ax;
+            } else {
+                xpixels = mapAROCoordToPixel(gd.layout, 'xref', anno0, 'ax', 0, true) -
+                    xabspixels;
+            }
+            if (aypixels) {
+                // no need to map the specified values to pixels (because that's what
+                // they are already)
+                ypixels = ay;
+            } else {
+                ypixels = mapAROCoordToPixel(gd.layout, 'yref', anno0, 'ay', 0, true) -
+                    yabspixels;
+            }
+            var annobbox0 = getSVGElemScreenBBox(findAROByColor(color0));
+            var annobbox1 = getSVGElemScreenBBox(findAROByColor(color1));
+            // solve for the arrow length's x coordinate
+            var arrowLenX = ((annobbox1.x + annobbox1.width) - (annobbox0.x + annobbox0
+                .width));
+            var arrowLenY;
+            var yabspixelscmp;
+            if (aypixels) {
+                // for annotations whose arrows are specified in relative pixels,
+                // positive pixel values on the y axis mean moving down the page like
+                // SVG coordinates, so we have to add height
+                var arrowLenY = (annobbox1.y + annobbox1.height) -
+                    (annobbox0.y + annobbox0.height);
+                yabspixelscmp = annobbox0.y;
+            } else {
+                var arrowLenY = annobbox1.y - annobbox0.y;
+                yabspixelscmp = annobbox0.y + annobbox0.height;
+            }
+            var ret = coordsEq(arrowLenX, xpixels) &&
+                coordsEq(arrowLenY, ypixels) &&
+                coordsEq(xabspixels, annobbox0.x) &&
+                coordsEq(yabspixels, yabspixelscmp);
+            return ret;
+        });
 }
 
 // axid is e.g., 'x', 'y2' etc.
@@ -438,10 +438,6 @@ function checkAROPosition(gd, aro) {
     var aroPathBBox = getSVGElemScreenBBox(aroPath);
     var aroBBox = shapeToBBox(gd.layout, aro);
     var ret = compareBBoxes(aroBBox, aroPathBBox);
-    if (DEBUG) {
-        console.log('SVG BBox', aroPathBBox);
-        console.log('aro BBox', aroBBox);
-    }
     return ret;
 }
 
@@ -528,6 +524,72 @@ var yAnchors = ['top', 'middle', 'bottom'];
 // NOTE: for images color cannot be set but it will be the only image in the
 // plot so you can use d3.select('g image').node()
 var aroColor = 'rgb(50, 100, 150)';
+
+function testShape(
+    gd,
+    xAxNum,
+    xaxisType,
+    xaroPos,
+    yAxNum,
+    yaxisType,
+    yaroPos,
+    aroType
+) {
+    var aro = {
+        type: aroType,
+        line: {
+            color: aroColor
+        }
+    };
+    aroFromAROPos(aro, 'x', xAxNum, xaroPos);
+    aroFromAROPos(aro, 'y', yAxNum, yaroPos);
+    var layout = {
+        shapes: [aro]
+    };
+    // change to log axes if need be
+    logAxisIfAxType(gd.layout, layout, 'x' + xAxNum, xaxisType);
+    logAxisIfAxType(gd.layout, layout, 'y' + yAxNum, yaxisType);
+    return Plotly.relayout(gd, layout)
+        .then(function(gd) {
+            return checkAROPosition(gd, aro);
+        });
+}
+
+function describeShapeComboTest(combo) {
+    var xaxisType = combo[0];
+    var yaxisType = combo[1];
+    var axispair = combo[2];
+    var xaroPos = combo[3];
+    var yaroPos = combo[4];
+    var gd_id = combo[5];
+    return [
+        "should create a plot with graph ID",
+        gd_id,
+        " with parameters:", "\n",
+        "x-axis type:", xaxisType, "\n",
+        "y-axis type:", yaxisType, "\n",
+        "axis pair:", axispair, "\n",
+        "ARO position x:", xaroPos, "\n",
+        "ARO position y:", yaroPos, "\n",
+    ].join(' ');
+}
+
+function testShapeCombo(combo, assert, gd) {
+    var xaxisType = combo[0];
+    var yaxisType = combo[1];
+    var axispair = combo[2];
+    var xaroPos = combo[3];
+    var yaroPos = combo[4];
+    var xAxNum = axispair[0].substr(1);
+    var yAxNum = axispair[1].substr(1);
+    return Plotly.newPlot(gd, testMock)
+        .then(function(gd) {
+            return testShape(gd,xAxNum,xaxisType,xaroPos,yAxNum,yaxisType,yaroPos,'shape');
+        }).then(function(test_ret) {
+            assert(test_ret);
+        });
+}
+
 var testDomRefAROCombo = function(combo) {
     var xAxNum = combo[0];
     var xaxisType = combo[1];
@@ -582,19 +644,6 @@ function test_correct_aro_positions() {
     // map all the combinations to a aro definition and check this aro is
     // placed properly
     testCombos.forEach(testDomRefAROCombo);
-}
-
-function runComboTests(productItems, testCombo, start_stop, filter, keep_graph_div) {
-    var testCombos = [...iterable.cartesianProduct(productItems)];
-    testCombos = testCombos.map((c, i) => c.concat(['graph-' + i]));
-    if (filter) {
-        testCombos = testCombos.filter(filter);
-    }
-    if (start_stop) {
-        testCombos = testCombos.slice(start_stop.start, start_stop.stop);
-    }
-    console.log("Executing " + testCombos.length + " tests");
-    var tc = testCombos.map(c => testCombo(c, keep_graph_div)).reduce((a, v) => a.then(v));
 }
 
 function describeImageComboTest(combo) {
@@ -713,9 +762,9 @@ function testAnnotationCombo(combo, assert, gd) {
 // {testCombos} is a list of combinations each of which will be passed to the
 // test function
 // {test} is the function returning a Promise that executes this test
-function comboTests(testCombos,test) {
-    var ret = testCombos.map(function (combo) {
-        return function (assert, gd) {
+function comboTests(testCombos, test) {
+    var ret = testCombos.map(function(combo) {
+        return function(assert, gd) {
             return test(combo, assert, gd);
         }
     });
@@ -725,28 +774,27 @@ function comboTests(testCombos,test) {
 // return a list of strings, each describing a corresponding test
 // describe is a function taking a combination and returning a description of
 // the test
-function comboTestDescriptions(testCombos,desribe) {
+function comboTestDescriptions(testCombos, desribe) {
     var ret = testCombos.map(desribe);
     return ret;
 }
 
 function annotationTestCombos() {
     var testCombos = [...iterable.cartesianProduct([
-            axisTypes, axisTypes, axisPairs, aroPositionsX, aroPositionsY, arrowAxis
-        ]
-    )];
+        axisTypes, axisTypes, axisPairs, aroPositionsX, aroPositionsY, arrowAxis
+    ])];
     testCombos = testCombos.map((c, i) => c.concat(['graph-' + i]));
     return testCombos;
 }
 
 function annotationTests() {
     var testCombos = annotationTestCombos();
-    return comboTests(testCombos,testAnnotationCombo);
+    return comboTests(testCombos, testAnnotationCombo);
 }
 
 function annotationTestDescriptions() {
     var testCombos = annotationTestCombos();
-    return comboTestDescriptions(testCombos,describeAnnotationComboTest);
+    return comboTestDescriptions(testCombos, describeAnnotationComboTest);
 }
 
 
@@ -765,12 +813,34 @@ function imageTestCombos() {
 
 function imageTests() {
     var testCombos = imageTestCombos();
-    return comboTests(testCombos,testImageCombo);
+    return comboTests(testCombos, testImageCombo);
 }
 
 function imageTestDescriptions() {
     var testCombos = imageTestCombos();
-    return comboTestDescriptions(testCombos,describeImageComboTest);
+    return comboTestDescriptions(testCombos, describeImageComboTest);
+}
+
+function shapeTestCombos() {
+    var testCombos = [...iterable.cartesianProduct(
+        [
+            axisTypes, axisTypes, axisPairs,
+            // axis reference types are contained in here
+            aroPositionsX, aroPositionsY,
+        ]
+    )];
+    testCombos = testCombos.map((c, i) => c.concat(['graph-' + i]));
+    return testCombos;
+}
+
+function shapeTests() {
+    var testCombos = shapeTestCombos();
+    return comboTests(testCombos, testShapeCombo);
+}
+
+function shapeTestDescriptions() {
+    var testCombos = shapeTestCombos();
+    return comboTestDescriptions(testCombos, describeShapeComboTest);
 }
 
 module.exports = {
@@ -782,6 +852,10 @@ module.exports = {
     images: {
         descriptions: imageTestDescriptions,
         tests: imageTests,
+    },
+    shapes: {
+        descriptions: shapeTestDescriptions,
+        tests: shapeTests
     },
     // utilities
     findAROByColor: findAROByColor
