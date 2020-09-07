@@ -1,10 +1,10 @@
 /**
-* plotly.js (gl3d) v1.22.0
-* Copyright 2012-2017, Plotly, Inc.
+* plotly.js (gl3d) v1.22.0-upsight3
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
 var Lib = require('../src/lib');
@@ -68,7 +68,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":365}],2:[function(require,module,exports){
+},{"../src/lib":424}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -190,7 +190,7 @@ module.exports = {
 
 },{}],3:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -201,9 +201,9 @@ module.exports = {
 
 module.exports = require('../src/core');
 
-},{"../src/core":354}],4:[function(require,module,exports){
+},{"../src/core":413}],4:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -224,7 +224,7 @@ module.exports = Plotly;
 
 },{"./core":3,"./mesh3d":5,"./scatter3d":6,"./surface":7}],5:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -235,9 +235,9 @@ module.exports = Plotly;
 
 module.exports = require('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":454}],6:[function(require,module,exports){
+},{"../src/traces/mesh3d":513}],6:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -248,9 +248,9 @@ module.exports = require('../src/traces/mesh3d');
 
 module.exports = require('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":485}],7:[function(require,module,exports){
+},{"../src/traces/scatter3d":544}],7:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -261,7 +261,7 @@ module.exports = require('../src/traces/scatter3d');
 
 module.exports = require('../src/traces/surface');
 
-},{"../src/traces/surface":491}],8:[function(require,module,exports){
+},{"../src/traces/surface":550}],8:[function(require,module,exports){
 'use strict'
 
 module.exports = createCamera
@@ -270,6 +270,8 @@ var now         = require('right-now')
 var createView  = require('3d-view')
 var mouseChange = require('mouse-change')
 var mouseWheel  = require('mouse-wheel')
+var mouseOffset = require('mouse-event-offset')
+var hasPassive  = require('has-passive-events')
 
 function createCamera(element, options) {
   element = element || document.body
@@ -323,8 +325,8 @@ function createCamera(element, options) {
         allEqual = allEqual && (pmatrix[i] === matrix[i])
         pmatrix[i] = matrix[i]
       }
-      var sizeChanged = 
-          element.clientWidth === width && 
+      var sizeChanged =
+          element.clientWidth === width &&
           element.clientHeight === height
       width  = element.clientWidth
       height = element.clientHeight
@@ -420,14 +422,39 @@ function createCamera(element, options) {
       enumerable: true
     }
   })
-  
+
   element.addEventListener('contextmenu', function(ev) {
     ev.preventDefault()
     return false
   })
 
-  var lastX = 0, lastY = 0
-  mouseChange(element, function(buttons, x, y, mods) {
+  var lastX = 0, lastY = 0, lastMods = {shift: false, control: false, alt: false, meta: false}
+  mouseChange(element, handleInteraction)
+
+  //enable simple touch interactions
+  element.addEventListener('touchstart', function (ev) {
+    var xy = mouseOffset(ev.changedTouches[0], element)
+    handleInteraction(0, xy[0], xy[1], lastMods)
+    handleInteraction(1, xy[0], xy[1], lastMods)
+
+    ev.preventDefault()
+  }, hasPassive ? {passive: false} : false)
+
+  element.addEventListener('touchmove', function (ev) {
+    var xy = mouseOffset(ev.changedTouches[0], element)
+    handleInteraction(1, xy[0], xy[1], lastMods)
+
+    ev.preventDefault()
+  }, hasPassive ? {passive: false} : false)
+
+  element.addEventListener('touchend', function (ev) {
+    var xy = mouseOffset(ev.changedTouches[0], element)
+    handleInteraction(0, lastX, lastY, lastMods)
+
+    ev.preventDefault()
+  }, hasPassive ? {passive: false} : false)
+
+  function handleInteraction (buttons, x, y, mods) {
     var scale = 1.0 / element.clientHeight
     var dx    = scale * (x - lastX)
     var dy    = scale * (y - lastY)
@@ -454,7 +481,8 @@ function createCamera(element, options) {
 
     lastX = x
     lastY = y
-  })
+    lastMods = mods
+  }
 
   mouseWheel(element, function(dx, dy, dz) {
     var flipX = camera.flipX ? 1 : -1
@@ -470,7 +498,8 @@ function createCamera(element, options) {
 
   return camera
 }
-},{"3d-view":9,"mouse-change":178,"mouse-wheel":180,"right-now":214}],9:[function(require,module,exports){
+
+},{"3d-view":9,"has-passive-events":218,"mouse-change":236,"mouse-event-offset":237,"mouse-wheel":239,"right-now":273}],9:[function(require,module,exports){
 'use strict'
 
 module.exports = createViewController
@@ -593,7 +622,7 @@ function createViewController(options) {
     matrix: matrix
   }, mode)
 }
-},{"matrix-camera-controller":176,"orbit-camera-controller":196,"turntable-camera-controller":244}],10:[function(require,module,exports){
+},{"matrix-camera-controller":234,"orbit-camera-controller":255,"turntable-camera-controller":303}],10:[function(require,module,exports){
 'use strict'
 
 var weakMap      = typeof WeakMap === 'undefined' ? require('weak-map') : WeakMap
@@ -605,7 +634,8 @@ var TriangleCache = new weakMap()
 function createABigTriangle(gl) {
 
   var triangleVAO = TriangleCache.get(gl)
-  if(!triangleVAO || !gl.isBuffer(triangleVAO._triangleBuffer.buffer)) {
+  var handle = triangleVAO && (triangleVAO._triangleBuffer.handle || triangleVAO._triangleBuffer.buffer)
+  if(!handle || !gl.isBuffer(handle)) {
     var buf = createBuffer(gl, new Float32Array([-1, -1, -1, 4, 4, -1]))
     triangleVAO = createVAO(gl, [
       { buffer: buf,
@@ -623,7 +653,7 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":95,"gl-vao":149,"weak-map":252}],11:[function(require,module,exports){
+},{"gl-buffer":102,"gl-vao":202,"weak-map":311}],11:[function(require,module,exports){
 var padLeft = require('pad-left')
 
 module.exports = addLineNumbers
@@ -641,7 +671,7 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":197}],12:[function(require,module,exports){
+},{"pad-left":256}],12:[function(require,module,exports){
 'use strict'
 
 module.exports = affineHull
@@ -693,7 +723,7 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":220}],13:[function(require,module,exports){
+},{"robust-orientation":279}],13:[function(require,module,exports){
 'use strict'
 
 module.exports = alphaComplex
@@ -710,7 +740,7 @@ function alphaComplex(alpha, points) {
     return circumradius(simplex) * alpha < 1
   })
 }
-},{"circumradius":56,"delaunay-triangulate":75}],14:[function(require,module,exports){
+},{"circumradius":57,"delaunay-triangulate":75}],14:[function(require,module,exports){
 module.exports = alphaShape
 
 var ac = require('alpha-complex')
@@ -719,7 +749,7 @@ var bnd = require('simplicial-complex-boundary')
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
 }
-},{"alpha-complex":13,"simplicial-complex-boundary":227}],15:[function(require,module,exports){
+},{"alpha-complex":13,"simplicial-complex-boundary":286}],15:[function(require,module,exports){
 'use strict';
 
 var arraytools  = function () {
@@ -961,7 +991,7 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":219}],18:[function(require,module,exports){
+},{"robust-linear-solve":278}],18:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -1049,9 +1079,9 @@ function makeRational(numer, denom) {
     b = num2bn(denom)
   }
   if(shift > 0) {
-    a = a.shln(shift)
+    a = a.ushln(shift)
   } else if(shift < 0) {
-    b = b.shln(-shift)
+    b = b.ushln(-shift)
   }
   return rationalize(a, b)
 }
@@ -1070,16 +1100,18 @@ function isRat(x) {
 },{"./lib/is-bn":26}],23:[function(require,module,exports){
 'use strict'
 
-var bn = require('bn.js')
+var BN = require('bn.js')
 
 module.exports = sign
 
-function sign(x) {
-  return x.cmp(new bn(0))
+function sign (x) {
+  return x.cmp(new BN(0))
 }
 
 },{"bn.js":36}],24:[function(require,module,exports){
 'use strict'
+
+var sign = require('./bn-sign')
 
 module.exports = bn2num
 
@@ -1093,16 +1125,15 @@ function bn2num(b) {
   } else if (l === 2) {
     out = words[0] + (words[1] * 0x4000000)
   } else {
-    var out = 0
     for (var i = 0; i < l; i++) {
       var w = words[i]
       out += w * Math.pow(0x4000000, i)
     }
   }
-  return b.sign ? -out : out
+  return sign(b) * out
 }
 
-},{}],25:[function(require,module,exports){
+},{"./bn-sign":23}],25:[function(require,module,exports){
 'use strict'
 
 var db = require('double-bits')
@@ -1149,7 +1180,7 @@ function num2bn(x) {
   if(e < 52) {
     return new BN(x)
   } else {
-    return (new BN(x * Math.pow(2, 52-e))).shln(e-52)
+    return (new BN(x * Math.pow(2, 52-e))).ushln(e-52)
   }
 }
 
@@ -1233,38 +1264,33 @@ var ctz = require('./lib/ctz')
 
 module.exports = roundRat
 
-//Round a rational to the closest float
-function roundRat(f) {
+// Round a rational to the closest float
+function roundRat (f) {
   var a = f[0]
   var b = f[1]
-  if(a.cmpn(0) === 0) {
+  if (a.cmpn(0) === 0) {
     return 0
   }
-  var h = a.divmod(b)
+  var h = a.abs().divmod(b.abs())
   var iv = h.div
   var x = bn2num(iv)
   var ir = h.mod
-  if(ir.cmpn(0) === 0) {
-    return x
+  var sgn = (a.negative !== b.negative) ? -1 : 1
+  if (ir.cmpn(0) === 0) {
+    return sgn * x
   }
-  if(x) {
+  if (x) {
     var s = ctz(x) + 4
-    var y = bn2num(ir.shln(s).divRound(b))
-
-    // flip the sign of y if x is negative
-    if (x<0) {
-      y = -y;
-    }
-
-    return x + y * Math.pow(2, -s)
+    var y = bn2num(ir.ushln(s).divRound(b))
+    return sgn * (x + y * Math.pow(2, -s))
   } else {
     var ybits = b.bitLength() - ir.bitLength() + 53
-    var y = bn2num(ir.shln(ybits).divRound(b))
-    if(ybits < 1023) {
-      return y * Math.pow(2, -ybits)
+    var y = bn2num(ir.ushln(ybits).divRound(b))
+    if (ybits < 1023) {
+      return sgn * y * Math.pow(2, -ybits)
     }
     y *= Math.pow(2, -1023)
-    return y * Math.pow(2, 1023-ybits)
+    return sgn * y * Math.pow(2, 1023 - ybits)
   }
 }
 
@@ -1538,2325 +1564,3440 @@ exports.nextCombination = function(v) {
 
 },{}],36:[function(require,module,exports){
 (function (module, exports) {
+  'use strict';
 
-'use strict';
-
-// Utils
-
-function assert(val, msg) {
-  if (!val)
-    throw new Error(msg || 'Assertion failed');
-}
-
-// Could use `inherits` module, but don't want to move from single file
-// architecture yet.
-function inherits(ctor, superCtor) {
-  ctor.super_ = superCtor;
-  var TempCtor = function () {};
-  TempCtor.prototype = superCtor.prototype;
-  ctor.prototype = new TempCtor();
-  ctor.prototype.constructor = ctor;
-}
-
-// BN
-
-function BN(number, base, endian) {
-  // May be `new BN(bn)` ?
-  if (number !== null &&
-      typeof number === 'object' &&
-      Array.isArray(number.words)) {
-    return number;
+  // Utils
+  function assert (val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
   }
 
-  this.sign = false;
-  this.words = null;
-  this.length = 0;
-
-  // Reduction context
-  this.red = null;
-
-  if (base === 'le' || base === 'be') {
-    endian = base;
-    base = 10;
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits (ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
   }
 
-  if (number !== null)
-    this._init(number || 0, base || 10, endian || 'be');
-}
-if (typeof module === 'object')
-  module.exports = BN;
-else
-  exports.BN = BN;
+  // BN
 
-BN.BN = BN;
-BN.wordSize = 26;
+  function BN (number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
 
-BN.prototype._init = function init(number, base, endian) {
-  if (typeof number === 'number') {
-    return this._initNumber(number, base, endian);
-  } else if (typeof number === 'object') {
-    return this._initArray(number, base, endian);
-  }
-  if (base === 'hex')
-    base = 16;
-  assert(base === (base | 0) && base >= 2 && base <= 36);
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
 
-  number = number.toString().replace(/\s+/g, '');
-  var start = 0;
-  if (number[0] === '-')
-    start++;
+    // Reduction context
+    this.red = null;
 
-  if (base === 16)
-    this._parseHex(number, start);
-  else
-    this._parseBase(number, base, start);
-
-  if (number[0] === '-')
-    this.sign = true;
-
-  this.strip();
-
-  if (endian !== 'le')
-    return;
-
-  this._initArray(this.toArray(), base, endian);
-};
-
-BN.prototype._initNumber = function _initNumber(number, base, endian) {
-  if (number < 0) {
-    this.sign = true;
-    number = -number;
-  }
-  if (number < 0x4000000) {
-    this.words = [ number & 0x3ffffff ];
-    this.length = 1;
-  } else if (number < 0x10000000000000) {
-    this.words = [
-      number & 0x3ffffff,
-      (number / 0x4000000) & 0x3ffffff
-    ];
-    this.length = 2;
-  } else {
-    assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
-    this.words = [
-      number & 0x3ffffff,
-      (number / 0x4000000) & 0x3ffffff,
-      1
-    ];
-    this.length = 3;
-  }
-
-  if (endian !== 'le')
-    return;
-
-  // Reverse the bytes
-  this._initArray(this.toArray(), base, endian);
-};
-
-BN.prototype._initArray = function _initArray(number, base, endian) {
-  // Perhaps a Uint8Array
-  assert(typeof number.length === 'number');
-  if (number.length <= 0) {
-    this.words = [ 0 ];
-    this.length = 1;
-    return this;
-  }
-
-  this.length = Math.ceil(number.length / 3);
-  this.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    this.words[i] = 0;
-
-  var off = 0;
-  if (endian === 'be') {
-    for (var i = number.length - 1, j = 0; i >= 0; i -= 3) {
-      var w = number[i] | (number[i - 1] << 8) | (number[i - 2] << 16);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
-      off += 24;
-      if (off >= 26) {
-        off -= 26;
-        j++;
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
       }
-    }
-  } else if (endian === 'le') {
-    for (var i = 0, j = 0; i < number.length; i += 3) {
-      var w = number[i] | (number[i + 1] << 8) | (number[i + 2] << 16);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
-      off += 24;
-      if (off >= 26) {
-        off -= 26;
-        j++;
-      }
+
+      this._init(number || 0, base || 10, endian || 'be');
     }
   }
-  return this.strip();
-};
-
-function parseHex(str, start, end) {
-  var r = 0;
-  var len = Math.min(str.length, end);
-  for (var i = start; i < len; i++) {
-    var c = str.charCodeAt(i) - 48;
-
-    r <<= 4;
-
-    // 'a' - 'f'
-    if (c >= 49 && c <= 54)
-      r |= c - 49 + 0xa;
-
-    // 'A' - 'F'
-    else if (c >= 17 && c <= 22)
-      r |= c - 17 + 0xa;
-
-    // '0' - '9'
-    else
-      r |= c & 0xf;
-  }
-  return r;
-}
-
-BN.prototype._parseHex = function _parseHex(number, start) {
-  // Create possibly bigger array to ensure that it fits the number
-  this.length = Math.ceil((number.length - start) / 6);
-  this.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    this.words[i] = 0;
-
-  // Scan 24-bit chunks and add them to the number
-  var off = 0;
-  for (var i = number.length - 6, j = 0; i >= start; i -= 6) {
-    var w = parseHex(number, i, i + 6);
-    this.words[j] |= (w << off) & 0x3ffffff;
-    this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-    off += 24;
-    if (off >= 26) {
-      off -= 26;
-      j++;
-    }
-  }
-  if (i + 6 !== start) {
-    var w = parseHex(number, start, i + 6);
-    this.words[j] |= (w << off) & 0x3ffffff;
-    this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-  }
-  this.strip();
-};
-
-function parseBase(str, start, end, mul) {
-  var r = 0;
-  var len = Math.min(str.length, end);
-  for (var i = start; i < len; i++) {
-    var c = str.charCodeAt(i) - 48;
-
-    r *= mul;
-
-    // 'a'
-    if (c >= 49)
-      r += c - 49 + 0xa;
-
-    // 'A'
-    else if (c >= 17)
-      r += c - 17 + 0xa;
-
-    // '0' - '9'
-    else
-      r += c;
-  }
-  return r;
-}
-
-BN.prototype._parseBase = function _parseBase(number, base, start) {
-  // Initialize as zero
-  this.words = [ 0 ];
-  this.length = 1;
-
-  // Find length of limb in base
-  for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base)
-    limbLen++;
-  limbLen--;
-  limbPow = (limbPow / base) | 0;
-
-  var total = number.length - start;
-  var mod = total % limbLen;
-  var end = Math.min(total, total - mod) + start;
-
-  var word = 0;
-  for (var i = start; i < end; i += limbLen) {
-    word = parseBase(number, i, i + limbLen, base);
-
-    this.imuln(limbPow);
-    if (this.words[0] + word < 0x4000000)
-      this.words[0] += word;
-    else
-      this._iaddn(word);
-  }
-
-  if (mod !== 0) {
-    var pow = 1;
-    var word = parseBase(number, i, number.length, base);
-
-    for (var i = 0; i < mod; i++)
-      pow *= base;
-    this.imuln(pow);
-    if (this.words[0] + word < 0x4000000)
-      this.words[0] += word;
-    else
-      this._iaddn(word);
-  }
-};
-
-BN.prototype.copy = function copy(dest) {
-  dest.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    dest.words[i] = this.words[i];
-  dest.length = this.length;
-  dest.sign = this.sign;
-  dest.red = this.red;
-};
-
-BN.prototype.clone = function clone() {
-  var r = new BN(null);
-  this.copy(r);
-  return r;
-};
-
-// Remove leading `0` from `this`
-BN.prototype.strip = function strip() {
-  while (this.length > 1 && this.words[this.length - 1] === 0)
-    this.length--;
-  return this._normSign();
-};
-
-BN.prototype._normSign = function _normSign() {
-  // -0 = 0
-  if (this.length === 1 && this.words[0] === 0)
-    this.sign = false;
-  return this;
-};
-
-BN.prototype.inspect = function inspect() {
-  return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
-};
-
-/*
-
-var zeros = [];
-var groupSizes = [];
-var groupBases = [];
-
-var s = '';
-var i = -1;
-while (++i < BN.wordSize) {
-  zeros[i] = s;
-  s += '0';
-}
-groupSizes[0] = 0;
-groupSizes[1] = 0;
-groupBases[0] = 0;
-groupBases[1] = 0;
-var base = 2 - 1;
-while (++base < 36 + 1) {
-  var groupSize = 0;
-  var groupBase = 1;
-  while (groupBase < (1 << BN.wordSize) / base) {
-    groupBase *= base;
-    groupSize += 1;
-  }
-  groupSizes[base] = groupSize;
-  groupBases[base] = groupBase;
-}
-
-*/
-
-var zeros = [
-  '',
-  '0',
-  '00',
-  '000',
-  '0000',
-  '00000',
-  '000000',
-  '0000000',
-  '00000000',
-  '000000000',
-  '0000000000',
-  '00000000000',
-  '000000000000',
-  '0000000000000',
-  '00000000000000',
-  '000000000000000',
-  '0000000000000000',
-  '00000000000000000',
-  '000000000000000000',
-  '0000000000000000000',
-  '00000000000000000000',
-  '000000000000000000000',
-  '0000000000000000000000',
-  '00000000000000000000000',
-  '000000000000000000000000',
-  '0000000000000000000000000'
-];
-
-var groupSizes = [
-  0, 0,
-  25, 16, 12, 11, 10, 9, 8,
-  8, 7, 7, 7, 7, 6, 6,
-  6, 6, 6, 6, 6, 5, 5,
-  5, 5, 5, 5, 5, 5, 5,
-  5, 5, 5, 5, 5, 5, 5
-];
-
-var groupBases = [
-  0, 0,
-  33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216,
-  43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625,
-  16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632,
-  6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149,
-  24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176
-];
-
-BN.prototype.toString = function toString(base, padding) {
-  base = base || 10;
-  if (base === 16 || base === 'hex') {
-    var out = '';
-    var off = 0;
-    var padding = padding | 0 || 1;
-    var carry = 0;
-    for (var i = 0; i < this.length; i++) {
-      var w = this.words[i];
-      var word = (((w << off) | carry) & 0xffffff).toString(16);
-      carry = (w >>> (24 - off)) & 0xffffff;
-      if (carry !== 0 || i !== this.length - 1)
-        out = zeros[6 - word.length] + word + out;
-      else
-        out = word + out;
-      off += 2;
-      if (off >= 26) {
-        off -= 26;
-        i--;
-      }
-    }
-    if (carry !== 0)
-      out = carry.toString(16) + out;
-    while (out.length % padding !== 0)
-      out = '0' + out;
-    if (this.sign)
-      out = '-' + out;
-    return out;
-  } else if (base === (base | 0) && base >= 2 && base <= 36) {
-    // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
-    var groupSize = groupSizes[base];
-    // var groupBase = Math.pow(base, groupSize);
-    var groupBase = groupBases[base];
-    var out = '';
-    var c = this.clone();
-    c.sign = false;
-    while (c.cmpn(0) !== 0) {
-      var r = c.modn(groupBase).toString(base);
-      c = c.idivn(groupBase);
-
-      if (c.cmpn(0) !== 0)
-        out = zeros[groupSize - r.length] + r + out;
-      else
-        out = r + out;
-    }
-    if (this.cmpn(0) === 0)
-      out = '0' + out;
-    if (this.sign)
-      out = '-' + out;
-    return out;
+  if (typeof module === 'object') {
+    module.exports = BN;
   } else {
-    assert(false, 'Base should be between 2 and 36');
-  }
-};
-
-BN.prototype.toJSON = function toJSON() {
-  return this.toString(16);
-};
-
-BN.prototype.toArray = function toArray(endian) {
-  this.strip();
-  var res = new Array(this.byteLength());
-  res[0] = 0;
-
-  var q = this.clone();
-  if (endian !== 'le') {
-    // Assume big-endian
-    for (var i = 0; q.cmpn(0) !== 0; i++) {
-      var b = q.andln(0xff);
-      q.ishrn(8);
-
-      res[res.length - i - 1] = b;
-    }
-  } else {
-    // Assume little-endian
-    for (var i = 0; q.cmpn(0) !== 0; i++) {
-      var b = q.andln(0xff);
-      q.ishrn(8);
-
-      res[i] = b;
-    }
+    exports.BN = BN;
   }
 
-  return res;
-};
+  BN.BN = BN;
+  BN.wordSize = 26;
 
-if (Math.clz32) {
-  BN.prototype._countBits = function _countBits(w) {
-    return 32 - Math.clz32(w);
+  var Buffer;
+  try {
+    Buffer = require('buffer').Buffer;
+  } catch (e) {
+  }
+
+  BN.isBN = function isBN (num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' &&
+      num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
   };
-} else {
-  BN.prototype._countBits = function _countBits(w) {
-    var t = w;
-    var r = 0;
-    if (t >= 0x1000) {
-      r += 13;
-      t >>>= 13;
-    }
-    if (t >= 0x40) {
-      r += 7;
-      t >>>= 7;
-    }
-    if (t >= 0x8) {
-      r += 4;
-      t >>>= 4;
-    }
-    if (t >= 0x02) {
-      r += 2;
-      t >>>= 2;
-    }
-    return r + t;
+
+  BN.max = function max (left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
   };
-}
 
-BN.prototype._zeroBits = function _zeroBits(w) {
-  // Short-cut
-  if (w === 0)
-    return 26;
+  BN.min = function min (left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
 
-  var t = w;
-  var r = 0;
-  if ((t & 0x1fff) === 0) {
-    r += 13;
-    t >>>= 13;
-  }
-  if ((t & 0x7f) === 0) {
-    r += 7;
-    t >>>= 7;
-  }
-  if ((t & 0xf) === 0) {
-    r += 4;
-    t >>>= 4;
-  }
-  if ((t & 0x3) === 0) {
-    r += 2;
-    t >>>= 2;
-  }
-  if ((t & 0x1) === 0)
-    r++;
-  return r;
-};
-
-// Return number of used bits in a BN
-BN.prototype.bitLength = function bitLength() {
-  var hi = 0;
-  var w = this.words[this.length - 1];
-  var hi = this._countBits(w);
-  return (this.length - 1) * 26 + hi;
-};
-
-// Number of trailing zero bits
-BN.prototype.zeroBits = function zeroBits() {
-  if (this.cmpn(0) === 0)
-    return 0;
-
-  var r = 0;
-  for (var i = 0; i < this.length; i++) {
-    var b = this._zeroBits(this.words[i]);
-    r += b;
-    if (b !== 26)
-      break;
-  }
-  return r;
-};
-
-BN.prototype.byteLength = function byteLength() {
-  return Math.ceil(this.bitLength() / 8);
-};
-
-// Return negative clone of `this`
-BN.prototype.neg = function neg() {
-  if (this.cmpn(0) === 0)
-    return this.clone();
-
-  var r = this.clone();
-  r.sign = !this.sign;
-  return r;
-};
-
-
-// Or `num` with `this` in-place
-BN.prototype.ior = function ior(num) {
-  this.sign = this.sign || num.sign;
-
-  while (this.length < num.length)
-    this.words[this.length++] = 0;
-
-  for (var i = 0; i < num.length; i++)
-    this.words[i] = this.words[i] | num.words[i];
-
-  return this.strip();
-};
-
-
-// Or `num` with `this`
-BN.prototype.or = function or(num) {
-  if (this.length > num.length)
-    return this.clone().ior(num);
-  else
-    return num.clone().ior(this);
-};
-
-
-// And `num` with `this` in-place
-BN.prototype.iand = function iand(num) {
-  this.sign = this.sign && num.sign;
-
-  // b = min-length(num, this)
-  var b;
-  if (this.length > num.length)
-    b = num;
-  else
-    b = this;
-
-  for (var i = 0; i < b.length; i++)
-    this.words[i] = this.words[i] & num.words[i];
-
-  this.length = b.length;
-
-  return this.strip();
-};
-
-
-// And `num` with `this`
-BN.prototype.and = function and(num) {
-  if (this.length > num.length)
-    return this.clone().iand(num);
-  else
-    return num.clone().iand(this);
-};
-
-
-// Xor `num` with `this` in-place
-BN.prototype.ixor = function ixor(num) {
-  this.sign = this.sign || num.sign;
-
-  // a.length > b.length
-  var a;
-  var b;
-  if (this.length > num.length) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  for (var i = 0; i < b.length; i++)
-    this.words[i] = a.words[i] ^ b.words[i];
-
-  if (this !== a)
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-
-  this.length = a.length;
-
-  return this.strip();
-};
-
-
-// Xor `num` with `this`
-BN.prototype.xor = function xor(num) {
-  if (this.length > num.length)
-    return this.clone().ixor(num);
-  else
-    return num.clone().ixor(this);
-};
-
-
-// Set `bit` of `this`
-BN.prototype.setn = function setn(bit, val) {
-  assert(typeof bit === 'number' && bit >= 0);
-
-  var off = (bit / 26) | 0;
-  var wbit = bit % 26;
-
-  while (this.length <= off)
-    this.words[this.length++] = 0;
-
-  if (val)
-    this.words[off] = this.words[off] | (1 << wbit);
-  else
-    this.words[off] = this.words[off] & ~(1 << wbit);
-
-  return this.strip();
-};
-
-
-// Add `num` to `this` in-place
-BN.prototype.iadd = function iadd(num) {
-  // negative + positive
-  if (this.sign && !num.sign) {
-    this.sign = false;
-    var r = this.isub(num);
-    this.sign = !this.sign;
-    return this._normSign();
-
-  // positive + negative
-  } else if (!this.sign && num.sign) {
-    num.sign = false;
-    var r = this.isub(num);
-    num.sign = true;
-    return r._normSign();
-  }
-
-  // a.length > b.length
-  var a;
-  var b;
-  if (this.length > num.length) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  var carry = 0;
-  for (var i = 0; i < b.length; i++) {
-    var r = a.words[i] + b.words[i] + carry;
-    this.words[i] = r & 0x3ffffff;
-    carry = r >>> 26;
-  }
-  for (; carry !== 0 && i < a.length; i++) {
-    var r = a.words[i] + carry;
-    this.words[i] = r & 0x3ffffff;
-    carry = r >>> 26;
-  }
-
-  this.length = a.length;
-  if (carry !== 0) {
-    this.words[this.length] = carry;
-    this.length++;
-  // Copy the rest of the words
-  } else if (a !== this) {
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-  }
-
-  return this;
-};
-
-// Add `num` to `this`
-BN.prototype.add = function add(num) {
-  if (num.sign && !this.sign) {
-    num.sign = false;
-    var res = this.sub(num);
-    num.sign = true;
-    return res;
-  } else if (!num.sign && this.sign) {
-    this.sign = false;
-    var res = num.sub(this);
-    this.sign = true;
-    return res;
-  }
-
-  if (this.length > num.length)
-    return this.clone().iadd(num);
-  else
-    return num.clone().iadd(this);
-};
-
-// Subtract `num` from `this` in-place
-BN.prototype.isub = function isub(num) {
-  // this - (-num) = this + num
-  if (num.sign) {
-    num.sign = false;
-    var r = this.iadd(num);
-    num.sign = true;
-    return r._normSign();
-
-  // -this - num = -(this + num)
-  } else if (this.sign) {
-    this.sign = false;
-    this.iadd(num);
-    this.sign = true;
-    return this._normSign();
-  }
-
-  // At this point both numbers are positive
-  var cmp = this.cmp(num);
-
-  // Optimization - zeroify
-  if (cmp === 0) {
-    this.sign = false;
-    this.length = 1;
-    this.words[0] = 0;
-    return this;
-  }
-
-  // a > b
-  var a;
-  var b;
-  if (cmp > 0) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  var carry = 0;
-  for (var i = 0; i < b.length; i++) {
-    var r = a.words[i] - b.words[i] + carry;
-    carry = r >> 26;
-    this.words[i] = r & 0x3ffffff;
-  }
-  for (; carry !== 0 && i < a.length; i++) {
-    var r = a.words[i] + carry;
-    carry = r >> 26;
-    this.words[i] = r & 0x3ffffff;
-  }
-
-  // Copy rest of the words
-  if (carry === 0 && i < a.length && a !== this)
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-  this.length = Math.max(this.length, i);
-
-  if (a !== this)
-    this.sign = true;
-
-  return this.strip();
-};
-
-// Subtract `num` from `this`
-BN.prototype.sub = function sub(num) {
-  return this.clone().isub(num);
-};
-
-/*
-// NOTE: This could be potentionally used to generate loop-less multiplications
-function _genCombMulTo(alen, blen) {
-  var len = alen + blen - 1;
-  var src = [
-    'var a = this.words, b = num.words, o = out.words, c = 0, w, ' +
-        'mask = 0x3ffffff, shift = 0x4000000;',
-    'out.length = ' + len + ';'
-  ];
-  for (var k = 0; k < len; k++) {
-    var minJ = Math.max(0, k - alen + 1);
-    var maxJ = Math.min(k, blen - 1);
-
-    for (var j = minJ; j <= maxJ; j++) {
-      var i = k - j;
-      var mul = 'a[' + i + '] * b[' + j + ']';
-
-      if (j === minJ) {
-        src.push('w = ' + mul + ' + c;');
-        src.push('c = (w / shift) | 0;');
-      } else {
-        src.push('w += ' + mul + ';');
-        src.push('c += (w / shift) | 0;');
-      }
-      src.push('w &= mask;');
+  BN.prototype._init = function init (number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
     }
-    src.push('o[' + k + '] = w;');
-  }
-  src.push('if (c !== 0) {',
-           '  o[' + k + '] = c;',
-           '  out.length++;',
-           '}',
-           'return out;');
 
-  return src.join('\n');
-}
-*/
-
-BN.prototype._smallMulTo = function _smallMulTo(num, out) {
-  out.sign = num.sign !== this.sign;
-  out.length = this.length + num.length;
-
-  var carry = 0;
-  for (var k = 0; k < out.length - 1; k++) {
-    // Sum all words with the same `i + j = k` and accumulate `ncarry`,
-    // note that ncarry could be >= 0x3ffffff
-    var ncarry = carry >>> 26;
-    var rword = carry & 0x3ffffff;
-    var maxJ = Math.min(k, num.length - 1);
-    for (var j = Math.max(0, k - this.length + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i] | 0;
-      var b = num.words[j] | 0;
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
-      lo = (lo + rword) | 0;
-      rword = lo & 0x3ffffff;
-      ncarry = (ncarry + (lo >>> 26)) | 0;
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
     }
-    out.words[k] = rword;
-    carry = ncarry;
-  }
-  if (carry !== 0) {
-    out.words[k] = carry;
-  } else {
-    out.length--;
-  }
 
-  return out.strip();
-};
-
-BN.prototype._bigMulTo = function _bigMulTo(num, out) {
-  out.sign = num.sign !== this.sign;
-  out.length = this.length + num.length;
-
-  var carry = 0;
-  var hncarry = 0;
-  for (var k = 0; k < out.length - 1; k++) {
-    // Sum all words with the same `i + j = k` and accumulate `ncarry`,
-    // note that ncarry could be >= 0x3ffffff
-    var ncarry = hncarry;
-    hncarry = 0;
-    var rword = carry & 0x3ffffff;
-    var maxJ = Math.min(k, num.length - 1);
-    for (var j = Math.max(0, k - this.length + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i] | 0;
-      var b = num.words[j] | 0;
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
-      lo = (lo + rword) | 0;
-      rword = lo & 0x3ffffff;
-      ncarry = (ncarry + (lo >>> 26)) | 0;
-
-      hncarry += ncarry >>> 26;
-      ncarry &= 0x3ffffff;
+    if (base === 'hex') {
+      base = 16;
     }
-    out.words[k] = rword;
-    carry = ncarry;
-    ncarry = hncarry;
-  }
-  if (carry !== 0) {
-    out.words[k] = carry;
-  } else {
-    out.length--;
-  }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
 
-  return out.strip();
-};
-
-BN.prototype.mulTo = function mulTo(num, out) {
-  var res;
-  if (this.length + num.length < 63)
-    res = this._smallMulTo(num, out);
-  else
-    res = this._bigMulTo(num, out);
-  return res;
-};
-
-// Multiply `this` by `num`
-BN.prototype.mul = function mul(num) {
-  var out = new BN(null);
-  out.words = new Array(this.length + num.length);
-  return this.mulTo(num, out);
-};
-
-// In-place Multiplication
-BN.prototype.imul = function imul(num) {
-  if (this.cmpn(0) === 0 || num.cmpn(0) === 0) {
-    this.words[0] = 0;
-    this.length = 1;
-    return this;
-  }
-
-  var tlen = this.length;
-  var nlen = num.length;
-
-  this.sign = num.sign !== this.sign;
-  this.length = this.length + num.length;
-  this.words[this.length - 1] = 0;
-
-  for (var k = this.length - 2; k >= 0; k--) {
-    // Sum all words with the same `i + j = k` and accumulate `carry`,
-    // note that carry could be >= 0x3ffffff
-    var carry = 0;
-    var rword = 0;
-    var maxJ = Math.min(k, nlen - 1);
-    for (var j = Math.max(0, k - tlen + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i];
-      var b = num.words[j];
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      carry += (r / 0x4000000) | 0;
-      lo += rword;
-      rword = lo & 0x3ffffff;
-      carry += lo >>> 26;
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
     }
-    this.words[k] = rword;
-    this.words[k + 1] += carry;
-    carry = 0;
-  }
 
-  // Propagate overflows
-  var carry = 0;
-  for (var i = 1; i < this.length; i++) {
-    var w = this.words[i] + carry;
-    this.words[i] = w & 0x3ffffff;
-    carry = w >>> 26;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.imuln = function imuln(num) {
-  assert(typeof num === 'number');
-
-  // Carry
-  var carry = 0;
-  for (var i = 0; i < this.length; i++) {
-    var w = this.words[i] * num;
-    var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
-    carry >>= 26;
-    carry += (w / 0x4000000) | 0;
-    // NOTE: lo is 27bit maximum
-    carry += lo >>> 26;
-    this.words[i] = lo & 0x3ffffff;
-  }
-
-  if (carry !== 0) {
-    this.words[i] = carry;
-    this.length++;
-  }
-
-  return this;
-};
-
-BN.prototype.muln = function muln(num) {
-  return this.clone().imuln(num);
-};
-
-// `this` * `this`
-BN.prototype.sqr = function sqr() {
-  return this.mul(this);
-};
-
-// `this` * `this` in-place
-BN.prototype.isqr = function isqr() {
-  return this.mul(this);
-};
-
-// Shift-left in-place
-BN.prototype.ishln = function ishln(bits) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var r = bits % 26;
-  var s = (bits - r) / 26;
-  var carryMask = (0x3ffffff >>> (26 - r)) << (26 - r);
-
-  if (r !== 0) {
-    var carry = 0;
-    for (var i = 0; i < this.length; i++) {
-      var newCarry = this.words[i] & carryMask;
-      var c = (this.words[i] - newCarry) << r;
-      this.words[i] = c | carry;
-      carry = newCarry >>> (26 - r);
+    if (base === 16) {
+      this._parseHex(number, start);
+    } else {
+      this._parseBase(number, base, start);
     }
-    if (carry) {
-      this.words[i] = carry;
-      this.length++;
+
+    if (number[0] === '-') {
+      this.negative = 1;
     }
-  }
 
-  if (s !== 0) {
-    for (var i = this.length - 1; i >= 0; i--)
-      this.words[i + s] = this.words[i];
-    for (var i = 0; i < s; i++)
-      this.words[i] = 0;
-    this.length += s;
-  }
+    this.strip();
 
-  return this.strip();
-};
+    if (endian !== 'le') return;
 
-// Shift-right in-place
-// NOTE: `hint` is a lowest bit before trailing zeroes
-// NOTE: if `extended` is present - it will be filled with destroyed bits
-BN.prototype.ishrn = function ishrn(bits, hint, extended) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var h;
-  if (hint)
-    h = (hint - (hint % 26)) / 26;
-  else
-    h = 0;
+    this._initArray(this.toArray(), base, endian);
+  };
 
-  var r = bits % 26;
-  var s = Math.min((bits - r) / 26, this.length);
-  var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
-  var maskedWords = extended;
+  BN.prototype._initNumber = function _initNumber (number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [ number & 0x3ffffff ];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff
+      ];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff,
+        1
+      ];
+      this.length = 3;
+    }
 
-  h -= s;
-  h = Math.max(0, h);
+    if (endian !== 'le') return;
 
-  // Extended mode, copy masked part
-  if (maskedWords) {
-    for (var i = 0; i < s; i++)
-      maskedWords.words[i] = this.words[i];
-    maskedWords.length = s;
-  }
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
 
-  if (s === 0) {
-    // No-op, we should not move anything at all
-  } else if (this.length > s) {
-    this.length -= s;
-    for (var i = 0; i < this.length; i++)
-      this.words[i] = this.words[i + s];
-  } else {
-    this.words[0] = 0;
-    this.length = 1;
-  }
-
-  var carry = 0;
-  for (var i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
-    var word = this.words[i];
-    this.words[i] = (carry << (26 - r)) | (word >>> r);
-    carry = word & mask;
-  }
-
-  // Push carried bits as a mask
-  if (maskedWords && carry !== 0)
-    maskedWords.words[maskedWords.length++] = carry;
-
-  if (this.length === 0) {
-    this.words[0] = 0;
-    this.length = 1;
-  }
-
-  this.strip();
-
-  return this;
-};
-
-// Shift-left
-BN.prototype.shln = function shln(bits) {
-  return this.clone().ishln(bits);
-};
-
-// Shift-right
-BN.prototype.shrn = function shrn(bits) {
-  return this.clone().ishrn(bits);
-};
-
-// Test if n bit is set
-BN.prototype.testn = function testn(bit) {
-  assert(typeof bit === 'number' && bit >= 0);
-  var r = bit % 26;
-  var s = (bit - r) / 26;
-  var q = 1 << r;
-
-  // Fast case: bit is much higher than all existing words
-  if (this.length <= s) {
-    return false;
-  }
-
-  // Check bit and return
-  var w = this.words[s];
-
-  return !!(w & q);
-};
-
-// Return only lowers bits of number (in-place)
-BN.prototype.imaskn = function imaskn(bits) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var r = bits % 26;
-  var s = (bits - r) / 26;
-
-  assert(!this.sign, 'imaskn works only with positive numbers');
-
-  if (r !== 0)
-    s++;
-  this.length = Math.min(s, this.length);
-
-  if (r !== 0) {
-    var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
-    this.words[this.length - 1] &= mask;
-  }
-
-  return this.strip();
-};
-
-// Return only lowers bits of number
-BN.prototype.maskn = function maskn(bits) {
-  return this.clone().imaskn(bits);
-};
-
-// Add plain number `num` to `this`
-BN.prototype.iaddn = function iaddn(num) {
-  assert(typeof num === 'number');
-  if (num < 0)
-    return this.isubn(-num);
-
-  // Possible sign change
-  if (this.sign) {
-    if (this.length === 1 && this.words[0] < num) {
-      this.words[0] = num - this.words[0];
-      this.sign = false;
+  BN.prototype._initArray = function _initArray (number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [ 0 ];
+      this.length = 1;
       return this;
     }
 
-    this.sign = false;
-    this.isubn(num);
-    this.sign = true;
-    return this;
-  }
-
-  // Add without checks
-  return this._iaddn(num);
-};
-
-BN.prototype._iaddn = function _iaddn(num) {
-  this.words[0] += num;
-
-  // Carry
-  for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
-    this.words[i] -= 0x4000000;
-    if (i === this.length - 1)
-      this.words[i + 1] = 1;
-    else
-      this.words[i + 1]++;
-  }
-  this.length = Math.max(this.length, i + 1);
-
-  return this;
-};
-
-// Subtract plain number `num` from `this`
-BN.prototype.isubn = function isubn(num) {
-  assert(typeof num === 'number');
-  if (num < 0)
-    return this.iaddn(-num);
-
-  if (this.sign) {
-    this.sign = false;
-    this.iaddn(num);
-    this.sign = true;
-    return this;
-  }
-
-  this.words[0] -= num;
-
-  // Carry
-  for (var i = 0; i < this.length && this.words[i] < 0; i++) {
-    this.words[i] += 0x4000000;
-    this.words[i + 1] -= 1;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.addn = function addn(num) {
-  return this.clone().iaddn(num);
-};
-
-BN.prototype.subn = function subn(num) {
-  return this.clone().isubn(num);
-};
-
-BN.prototype.iabs = function iabs() {
-  this.sign = false;
-
-  return this;
-};
-
-BN.prototype.abs = function abs() {
-  return this.clone().iabs();
-};
-
-BN.prototype._ishlnsubmul = function _ishlnsubmul(num, mul, shift) {
-  // Bigger storage is needed
-  var len = num.length + shift;
-  var i;
-  if (this.words.length < len) {
-    var t = new Array(len);
-    for (var i = 0; i < this.length; i++)
-      t[i] = this.words[i];
-    this.words = t;
-  } else {
-    i = this.length;
-  }
-
-  // Zeroify rest
-  this.length = Math.max(this.length, len);
-  for (; i < this.length; i++)
-    this.words[i] = 0;
-
-  var carry = 0;
-  for (var i = 0; i < num.length; i++) {
-    var w = this.words[i + shift] + carry;
-    var right = num.words[i] * mul;
-    w -= right & 0x3ffffff;
-    carry = (w >> 26) - ((right / 0x4000000) | 0);
-    this.words[i + shift] = w & 0x3ffffff;
-  }
-  for (; i < this.length - shift; i++) {
-    var w = this.words[i + shift] + carry;
-    carry = w >> 26;
-    this.words[i + shift] = w & 0x3ffffff;
-  }
-
-  if (carry === 0)
-    return this.strip();
-
-  // Subtraction overflow
-  assert(carry === -1);
-  carry = 0;
-  for (var i = 0; i < this.length; i++) {
-    var w = -this.words[i] + carry;
-    carry = w >> 26;
-    this.words[i] = w & 0x3ffffff;
-  }
-  this.sign = true;
-
-  return this.strip();
-};
-
-BN.prototype._wordDiv = function _wordDiv(num, mode) {
-  var shift = this.length - num.length;
-
-  var a = this.clone();
-  var b = num;
-
-  // Normalize
-  var bhi = b.words[b.length - 1];
-  var bhiBits = this._countBits(bhi);
-  shift = 26 - bhiBits;
-  if (shift !== 0) {
-    b = b.shln(shift);
-    a.ishln(shift);
-    bhi = b.words[b.length - 1];
-  }
-
-  // Initialize quotient
-  var m = a.length - b.length;
-  var q;
-
-  if (mode !== 'mod') {
-    q = new BN(null);
-    q.length = m + 1;
-    q.words = new Array(q.length);
-    for (var i = 0; i < q.length; i++)
-      q.words[i] = 0;
-  }
-
-  var diff = a.clone()._ishlnsubmul(b, 1, m);
-  if (!diff.sign) {
-    a = diff;
-    if (q)
-      q.words[m] = 1;
-  }
-
-  for (var j = m - 1; j >= 0; j--) {
-    var qj = a.words[b.length + j] * 0x4000000 + a.words[b.length + j - 1];
-
-    // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
-    // (0x7ffffff)
-    qj = Math.min((qj / bhi) | 0, 0x3ffffff);
-
-    a._ishlnsubmul(b, qj, j);
-    while (a.sign) {
-      qj--;
-      a.sign = false;
-      a._ishlnsubmul(b, 1, j);
-      if (a.cmpn(0) !== 0)
-        a.sign = !a.sign;
-    }
-    if (q)
-      q.words[j] = qj;
-  }
-  if (q)
-    q.strip();
-  a.strip();
-
-  // Denormalize
-  if (mode !== 'div' && shift !== 0)
-    a.ishrn(shift);
-  return { div: q ? q : null, mod: a };
-};
-
-BN.prototype.divmod = function divmod(num, mode) {
-  assert(num.cmpn(0) !== 0);
-
-  if (this.sign && !num.sign) {
-    var res = this.neg().divmod(num, mode);
-    var div;
-    var mod;
-    if (mode !== 'mod')
-      div = res.div.neg();
-    if (mode !== 'div')
-      mod = res.mod.cmpn(0) === 0 ? res.mod : num.sub(res.mod);
-    return {
-      div: div,
-      mod: mod
-    };
-  } else if (!this.sign && num.sign) {
-    var res = this.divmod(num.neg(), mode);
-    var div;
-    if (mode !== 'mod')
-      div = res.div.neg();
-    return { div: div, mod: res.mod };
-  } else if (this.sign && num.sign) {
-    return this.neg().divmod(num.neg(), mode);
-  }
-
-  // Both numbers are positive at this point
-
-  // Strip both numbers to approximate shift value
-  if (num.length > this.length || this.cmp(num) < 0)
-    return { div: new BN(0), mod: this };
-
-  // Very short reduction
-  if (num.length === 1) {
-    if (mode === 'div')
-      return { div: this.divn(num.words[0]), mod: null };
-    else if (mode === 'mod')
-      return { div: null, mod: new BN(this.modn(num.words[0])) };
-    return {
-      div: this.divn(num.words[0]),
-      mod: new BN(this.modn(num.words[0]))
-    };
-  }
-
-  return this._wordDiv(num, mode);
-};
-
-// Find `this` / `num`
-BN.prototype.div = function div(num) {
-  return this.divmod(num, 'div').div;
-};
-
-// Find `this` % `num`
-BN.prototype.mod = function mod(num) {
-  return this.divmod(num, 'mod').mod;
-};
-
-// Find Round(`this` / `num`)
-BN.prototype.divRound = function divRound(num) {
-  var dm = this.divmod(num);
-
-  // Fast case - exact division
-  if (dm.mod.cmpn(0) === 0)
-    return dm.div;
-
-  var mod = dm.div.sign ? dm.mod.isub(num) : dm.mod;
-
-  var half = num.shrn(1);
-  var r2 = num.andln(1);
-  var cmp = mod.cmp(half);
-
-  // Round down
-  if (cmp < 0 || r2 === 1 && cmp === 0)
-    return dm.div;
-
-  // Round up
-  return dm.div.sign ? dm.div.isubn(1) : dm.div.iaddn(1);
-};
-
-BN.prototype.modn = function modn(num) {
-  assert(num <= 0x3ffffff);
-  var p = (1 << 26) % num;
-
-  var acc = 0;
-  for (var i = this.length - 1; i >= 0; i--)
-    acc = (p * acc + this.words[i]) % num;
-
-  return acc;
-};
-
-// In-place division by number
-BN.prototype.idivn = function idivn(num) {
-  assert(num <= 0x3ffffff);
-
-  var carry = 0;
-  for (var i = this.length - 1; i >= 0; i--) {
-    var w = this.words[i] + carry * 0x4000000;
-    this.words[i] = (w / num) | 0;
-    carry = w % num;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.divn = function divn(num) {
-  return this.clone().idivn(num);
-};
-
-BN.prototype.egcd = function egcd(p) {
-  assert(!p.sign);
-  assert(p.cmpn(0) !== 0);
-
-  var x = this;
-  var y = p.clone();
-
-  if (x.sign)
-    x = x.mod(p);
-  else
-    x = x.clone();
-
-  // A * x + B * y = x
-  var A = new BN(1);
-  var B = new BN(0);
-
-  // C * x + D * y = y
-  var C = new BN(0);
-  var D = new BN(1);
-
-  var g = 0;
-
-  while (x.isEven() && y.isEven()) {
-    x.ishrn(1);
-    y.ishrn(1);
-    ++g;
-  }
-
-  var yp = y.clone();
-  var xp = x.clone();
-
-  while (x.cmpn(0) !== 0) {
-    while (x.isEven()) {
-      x.ishrn(1);
-      if (A.isEven() && B.isEven()) {
-        A.ishrn(1);
-        B.ishrn(1);
-      } else {
-        A.iadd(yp).ishrn(1);
-        B.isub(xp).ishrn(1);
-      }
-    }
-
-    while (y.isEven()) {
-      y.ishrn(1);
-      if (C.isEven() && D.isEven()) {
-        C.ishrn(1);
-        D.ishrn(1);
-      } else {
-        C.iadd(yp).ishrn(1);
-        D.isub(xp).ishrn(1);
-      }
-    }
-
-    if (x.cmp(y) >= 0) {
-      x.isub(y);
-      A.isub(C);
-      B.isub(D);
-    } else {
-      y.isub(x);
-      C.isub(A);
-      D.isub(B);
-    }
-  }
-
-  return {
-    a: C,
-    b: D,
-    gcd: y.ishln(g)
-  };
-};
-
-// This is reduced incarnation of the binary EEA
-// above, designated to invert members of the
-// _prime_ fields F(p) at a maximal speed
-BN.prototype._invmp = function _invmp(p) {
-  assert(!p.sign);
-  assert(p.cmpn(0) !== 0);
-
-  var a = this;
-  var b = p.clone();
-
-  if (a.sign)
-    a = a.mod(p);
-  else
-    a = a.clone();
-
-  var x1 = new BN(1);
-  var x2 = new BN(0);
-
-  var delta = b.clone();
-
-  while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
-    while (a.isEven()) {
-      a.ishrn(1);
-      if (x1.isEven())
-        x1.ishrn(1);
-      else
-        x1.iadd(delta).ishrn(1);
-    }
-    while (b.isEven()) {
-      b.ishrn(1);
-      if (x2.isEven())
-        x2.ishrn(1);
-      else
-        x2.iadd(delta).ishrn(1);
-    }
-    if (a.cmp(b) >= 0) {
-      a.isub(b);
-      x1.isub(x2);
-    } else {
-      b.isub(a);
-      x2.isub(x1);
-    }
-  }
-  if (a.cmpn(1) === 0)
-    return x1;
-  else
-    return x2;
-};
-
-BN.prototype.gcd = function gcd(num) {
-  if (this.cmpn(0) === 0)
-    return num.clone();
-  if (num.cmpn(0) === 0)
-    return this.clone();
-
-  var a = this.clone();
-  var b = num.clone();
-  a.sign = false;
-  b.sign = false;
-
-  // Remove common factor of two
-  for (var shift = 0; a.isEven() && b.isEven(); shift++) {
-    a.ishrn(1);
-    b.ishrn(1);
-  }
-
-  do {
-    while (a.isEven())
-      a.ishrn(1);
-    while (b.isEven())
-      b.ishrn(1);
-
-    var r = a.cmp(b);
-    if (r < 0) {
-      // Swap `a` and `b` to make `a` always bigger than `b`
-      var t = a;
-      a = b;
-      b = t;
-    } else if (r === 0 || b.cmpn(1) === 0) {
-      break;
-    }
-
-    a.isub(b);
-  } while (true);
-
-  return b.ishln(shift);
-};
-
-// Invert number in the field F(num)
-BN.prototype.invm = function invm(num) {
-  return this.egcd(num).a.mod(num);
-};
-
-BN.prototype.isEven = function isEven() {
-  return (this.words[0] & 1) === 0;
-};
-
-BN.prototype.isOdd = function isOdd() {
-  return (this.words[0] & 1) === 1;
-};
-
-// And first word and num
-BN.prototype.andln = function andln(num) {
-  return this.words[0] & num;
-};
-
-// Increment at the bit position in-line
-BN.prototype.bincn = function bincn(bit) {
-  assert(typeof bit === 'number');
-  var r = bit % 26;
-  var s = (bit - r) / 26;
-  var q = 1 << r;
-
-  // Fast case: bit is much higher than all existing words
-  if (this.length <= s) {
-    for (var i = this.length; i < s + 1; i++)
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
       this.words[i] = 0;
-    this.words[s] |= q;
-    this.length = s + 1;
-    return this;
-  }
-
-  // Add bit and propagate, if needed
-  var carry = q;
-  for (var i = s; carry !== 0 && i < this.length; i++) {
-    var w = this.words[i];
-    w += carry;
-    carry = w >>> 26;
-    w &= 0x3ffffff;
-    this.words[i] = w;
-  }
-  if (carry !== 0) {
-    this.words[i] = carry;
-    this.length++;
-  }
-  return this;
-};
-
-BN.prototype.cmpn = function cmpn(num) {
-  var sign = num < 0;
-  if (sign)
-    num = -num;
-
-  if (this.sign && !sign)
-    return -1;
-  else if (!this.sign && sign)
-    return 1;
-
-  num &= 0x3ffffff;
-  this.strip();
-
-  var res;
-  if (this.length > 1) {
-    res = 1;
-  } else {
-    var w = this.words[0];
-    res = w === num ? 0 : w < num ? -1 : 1;
-  }
-  if (this.sign)
-    res = -res;
-  return res;
-};
-
-// Compare two numbers and return:
-// 1 - if `this` > `num`
-// 0 - if `this` == `num`
-// -1 - if `this` < `num`
-BN.prototype.cmp = function cmp(num) {
-  if (this.sign && !num.sign)
-    return -1;
-  else if (!this.sign && num.sign)
-    return 1;
-
-  var res = this.ucmp(num);
-  if (this.sign)
-    return -res;
-  else
-    return res;
-};
-
-// Unsigned comparison
-BN.prototype.ucmp = function ucmp(num) {
-  // At this point both numbers have the same sign
-  if (this.length > num.length)
-    return 1;
-  else if (this.length < num.length)
-    return -1;
-
-  var res = 0;
-  for (var i = this.length - 1; i >= 0; i--) {
-    var a = this.words[i];
-    var b = num.words[i];
-
-    if (a === b)
-      continue;
-    if (a < b)
-      res = -1;
-    else if (a > b)
-      res = 1;
-    break;
-  }
-  return res;
-};
-
-//
-// A reduce context, could be using montgomery or something better, depending
-// on the `m` itself.
-//
-BN.red = function red(num) {
-  return new Red(num);
-};
-
-BN.prototype.toRed = function toRed(ctx) {
-  assert(!this.red, 'Already a number in reduction context');
-  assert(!this.sign, 'red works only with positives');
-  return ctx.convertTo(this)._forceRed(ctx);
-};
-
-BN.prototype.fromRed = function fromRed() {
-  assert(this.red, 'fromRed works only with numbers in reduction context');
-  return this.red.convertFrom(this);
-};
-
-BN.prototype._forceRed = function _forceRed(ctx) {
-  this.red = ctx;
-  return this;
-};
-
-BN.prototype.forceRed = function forceRed(ctx) {
-  assert(!this.red, 'Already a number in reduction context');
-  return this._forceRed(ctx);
-};
-
-BN.prototype.redAdd = function redAdd(num) {
-  assert(this.red, 'redAdd works only with red numbers');
-  return this.red.add(this, num);
-};
-
-BN.prototype.redIAdd = function redIAdd(num) {
-  assert(this.red, 'redIAdd works only with red numbers');
-  return this.red.iadd(this, num);
-};
-
-BN.prototype.redSub = function redSub(num) {
-  assert(this.red, 'redSub works only with red numbers');
-  return this.red.sub(this, num);
-};
-
-BN.prototype.redISub = function redISub(num) {
-  assert(this.red, 'redISub works only with red numbers');
-  return this.red.isub(this, num);
-};
-
-BN.prototype.redShl = function redShl(num) {
-  assert(this.red, 'redShl works only with red numbers');
-  return this.red.shl(this, num);
-};
-
-BN.prototype.redMul = function redMul(num) {
-  assert(this.red, 'redMul works only with red numbers');
-  this.red._verify2(this, num);
-  return this.red.mul(this, num);
-};
-
-BN.prototype.redIMul = function redIMul(num) {
-  assert(this.red, 'redMul works only with red numbers');
-  this.red._verify2(this, num);
-  return this.red.imul(this, num);
-};
-
-BN.prototype.redSqr = function redSqr() {
-  assert(this.red, 'redSqr works only with red numbers');
-  this.red._verify1(this);
-  return this.red.sqr(this);
-};
-
-BN.prototype.redISqr = function redISqr() {
-  assert(this.red, 'redISqr works only with red numbers');
-  this.red._verify1(this);
-  return this.red.isqr(this);
-};
-
-// Square root over p
-BN.prototype.redSqrt = function redSqrt() {
-  assert(this.red, 'redSqrt works only with red numbers');
-  this.red._verify1(this);
-  return this.red.sqrt(this);
-};
-
-BN.prototype.redInvm = function redInvm() {
-  assert(this.red, 'redInvm works only with red numbers');
-  this.red._verify1(this);
-  return this.red.invm(this);
-};
-
-// Return negative clone of `this` % `red modulo`
-BN.prototype.redNeg = function redNeg() {
-  assert(this.red, 'redNeg works only with red numbers');
-  this.red._verify1(this);
-  return this.red.neg(this);
-};
-
-BN.prototype.redPow = function redPow(num) {
-  assert(this.red && !num.red, 'redPow(normalNum)');
-  this.red._verify1(this);
-  return this.red.pow(this, num);
-};
-
-// Prime numbers with efficient reduction
-var primes = {
-  k256: null,
-  p224: null,
-  p192: null,
-  p25519: null
-};
-
-// Pseudo-Mersenne prime
-function MPrime(name, p) {
-  // P = 2 ^ N - K
-  this.name = name;
-  this.p = new BN(p, 16);
-  this.n = this.p.bitLength();
-  this.k = new BN(1).ishln(this.n).isub(this.p);
-
-  this.tmp = this._tmp();
-}
-
-MPrime.prototype._tmp = function _tmp() {
-  var tmp = new BN(null);
-  tmp.words = new Array(Math.ceil(this.n / 13));
-  return tmp;
-};
-
-MPrime.prototype.ireduce = function ireduce(num) {
-  // Assumes that `num` is less than `P^2`
-  // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
-  var r = num;
-  var rlen;
-
-  do {
-    this.split(r, this.tmp);
-    r = this.imulK(r);
-    r = r.iadd(this.tmp);
-    rlen = r.bitLength();
-  } while (rlen > this.n);
-
-  var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
-  if (cmp === 0) {
-    r.words[0] = 0;
-    r.length = 1;
-  } else if (cmp > 0) {
-    r.isub(this.p);
-  } else {
-    r.strip();
-  }
-
-  return r;
-};
-
-MPrime.prototype.split = function split(input, out) {
-  input.ishrn(this.n, 0, out);
-};
-
-MPrime.prototype.imulK = function imulK(num) {
-  return num.imul(this.k);
-};
-
-function K256() {
-  MPrime.call(
-    this,
-    'k256',
-    'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
-}
-inherits(K256, MPrime);
-
-K256.prototype.split = function split(input, output) {
-  // 256 = 9 * 26 + 22
-  var mask = 0x3fffff;
-
-  var outLen = Math.min(input.length, 9);
-  for (var i = 0; i < outLen; i++)
-    output.words[i] = input.words[i];
-  output.length = outLen;
-
-  if (input.length <= 9) {
-    input.words[0] = 0;
-    input.length = 1;
-    return;
-  }
-
-  // Shift by 9 limbs
-  var prev = input.words[9];
-  output.words[output.length++] = prev & mask;
-
-  for (var i = 10; i < input.length; i++) {
-    var next = input.words[i];
-    input.words[i - 10] = ((next & mask) << 4) | (prev >>> 22);
-    prev = next;
-  }
-  input.words[i - 10] = prev >>> 22;
-  input.length -= 9;
-};
-
-K256.prototype.imulK = function imulK(num) {
-  // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
-  num.words[num.length] = 0;
-  num.words[num.length + 1] = 0;
-  num.length += 2;
-
-  // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
-  var hi;
-  var lo = 0;
-  for (var i = 0; i < num.length; i++) {
-    var w = num.words[i];
-    hi = w * 0x40;
-    lo += w * 0x3d1;
-    hi += (lo / 0x4000000) | 0;
-    lo &= 0x3ffffff;
-
-    num.words[i] = lo;
-
-    lo = hi;
-  }
-
-  // Fast length reduction
-  if (num.words[num.length - 1] === 0) {
-    num.length--;
-    if (num.words[num.length - 1] === 0)
-      num.length--;
-  }
-  return num;
-};
-
-function P224() {
-  MPrime.call(
-    this,
-    'p224',
-    'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
-}
-inherits(P224, MPrime);
-
-function P192() {
-  MPrime.call(
-    this,
-    'p192',
-    'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
-}
-inherits(P192, MPrime);
-
-function P25519() {
-  // 2 ^ 255 - 19
-  MPrime.call(
-    this,
-    '25519',
-    '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
-}
-inherits(P25519, MPrime);
-
-P25519.prototype.imulK = function imulK(num) {
-  // K = 0x13
-  var carry = 0;
-  for (var i = 0; i < num.length; i++) {
-    var hi = num.words[i] * 0x13 + carry;
-    var lo = hi & 0x3ffffff;
-    hi >>>= 26;
-
-    num.words[i] = lo;
-    carry = hi;
-  }
-  if (carry !== 0)
-    num.words[num.length++] = carry;
-  return num;
-};
-
-// Exported mostly for testing purposes, use plain name instead
-BN._prime = function prime(name) {
-  // Cached version of prime
-  if (primes[name])
-    return primes[name];
-
-  var prime;
-  if (name === 'k256')
-    prime = new K256();
-  else if (name === 'p224')
-    prime = new P224();
-  else if (name === 'p192')
-    prime = new P192();
-  else if (name === 'p25519')
-    prime = new P25519();
-  else
-    throw new Error('Unknown prime ' + name);
-  primes[name] = prime;
-
-  return prime;
-};
-
-//
-// Base reduction engine
-//
-function Red(m) {
-  if (typeof m === 'string') {
-    var prime = BN._prime(m);
-    this.m = prime.p;
-    this.prime = prime;
-  } else {
-    this.m = m;
-    this.prime = null;
-  }
-}
-
-Red.prototype._verify1 = function _verify1(a) {
-  assert(!a.sign, 'red works only with positives');
-  assert(a.red, 'red works only with red numbers');
-};
-
-Red.prototype._verify2 = function _verify2(a, b) {
-  assert(!a.sign && !b.sign, 'red works only with positives');
-  assert(a.red && a.red === b.red,
-         'red works only with red numbers');
-};
-
-Red.prototype.imod = function imod(a) {
-  if (this.prime)
-    return this.prime.ireduce(a)._forceRed(this);
-  return a.mod(this.m)._forceRed(this);
-};
-
-Red.prototype.neg = function neg(a) {
-  var r = a.clone();
-  r.sign = !r.sign;
-  return r.iadd(this.m)._forceRed(this);
-};
-
-Red.prototype.add = function add(a, b) {
-  this._verify2(a, b);
-
-  var res = a.add(b);
-  if (res.cmp(this.m) >= 0)
-    res.isub(this.m);
-  return res._forceRed(this);
-};
-
-Red.prototype.iadd = function iadd(a, b) {
-  this._verify2(a, b);
-
-  var res = a.iadd(b);
-  if (res.cmp(this.m) >= 0)
-    res.isub(this.m);
-  return res;
-};
-
-Red.prototype.sub = function sub(a, b) {
-  this._verify2(a, b);
-
-  var res = a.sub(b);
-  if (res.cmpn(0) < 0)
-    res.iadd(this.m);
-  return res._forceRed(this);
-};
-
-Red.prototype.isub = function isub(a, b) {
-  this._verify2(a, b);
-
-  var res = a.isub(b);
-  if (res.cmpn(0) < 0)
-    res.iadd(this.m);
-  return res;
-};
-
-Red.prototype.shl = function shl(a, num) {
-  this._verify1(a);
-  return this.imod(a.shln(num));
-};
-
-Red.prototype.imul = function imul(a, b) {
-  this._verify2(a, b);
-  return this.imod(a.imul(b));
-};
-
-Red.prototype.mul = function mul(a, b) {
-  this._verify2(a, b);
-  return this.imod(a.mul(b));
-};
-
-Red.prototype.isqr = function isqr(a) {
-  return this.imul(a, a);
-};
-
-Red.prototype.sqr = function sqr(a) {
-  return this.mul(a, a);
-};
-
-Red.prototype.sqrt = function sqrt(a) {
-  if (a.cmpn(0) === 0)
-    return a.clone();
-
-  var mod3 = this.m.andln(3);
-  assert(mod3 % 2 === 1);
-
-  // Fast case
-  if (mod3 === 3) {
-    var pow = this.m.add(new BN(1)).ishrn(2);
-    var r = this.pow(a, pow);
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | (number[i - 1] << 8) | (number[i - 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | (number[i + 1] << 8) | (number[i + 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this.strip();
+  };
+
+  function parseHex (str, start, end) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r <<= 4;
+
+      // 'a' - 'f'
+      if (c >= 49 && c <= 54) {
+        r |= c - 49 + 0xa;
+
+      // 'A' - 'F'
+      } else if (c >= 17 && c <= 22) {
+        r |= c - 17 + 0xa;
+
+      // '0' - '9'
+      } else {
+        r |= c & 0xf;
+      }
+    }
     return r;
   }
 
-  // Tonelli-Shanks algorithm (Totally unoptimized and slow)
-  //
-  // Find Q and S, that Q * 2 ^ S = (P - 1)
-  var q = this.m.subn(1);
-  var s = 0;
-  while (q.cmpn(0) !== 0 && q.andln(1) === 0) {
-    s++;
-    q.ishrn(1);
+  BN.prototype._parseHex = function _parseHex (number, start) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    // Scan 24-bit chunks and add them to the number
+    var off = 0;
+    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
+      w = parseHex(number, i, i + 6);
+      this.words[j] |= (w << off) & 0x3ffffff;
+      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
+      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
+      off += 24;
+      if (off >= 26) {
+        off -= 26;
+        j++;
+      }
+    }
+    if (i + 6 !== start) {
+      w = parseHex(number, start, i + 6);
+      this.words[j] |= (w << off) & 0x3ffffff;
+      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
+    }
+    this.strip();
+  };
+
+  function parseBase (str, start, end, mul) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        r += c - 49 + 0xa;
+
+      // 'A'
+      } else if (c >= 17) {
+        r += c - 17 + 0xa;
+
+      // '0' - '9'
+      } else {
+        r += c;
+      }
+    }
+    return r;
   }
-  assert(q.cmpn(0) !== 0);
 
-  var one = new BN(1).toRed(this);
-  var nOne = one.redNeg();
+  BN.prototype._parseBase = function _parseBase (number, base, start) {
+    // Initialize as zero
+    this.words = [ 0 ];
+    this.length = 1;
 
-  // Find quadratic non-residue
-  // NOTE: Max is such because of generalized Riemann hypothesis.
-  var lpow = this.m.subn(1).ishrn(1);
-  var z = this.m.bitLength();
-  z = new BN(2 * z * z).toRed(this);
-  while (this.pow(z, lpow).cmp(nOne) !== 0)
-    z.redIAdd(nOne);
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = (limbPow / base) | 0;
 
-  var c = this.pow(z, q);
-  var r = this.pow(a, q.addn(1).ishrn(1));
-  var t = this.pow(a, q);
-  var m = s;
-  while (t.cmp(one) !== 0) {
-    var tmp = t;
-    for (var i = 0; tmp.cmp(one) !== 0; i++)
-      tmp = tmp.redSqr();
-    assert(i < m);
-    var b = this.pow(c, new BN(1).ishln(m - i - 1));
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
 
-    r = r.redMul(b);
-    c = b.redSqr();
-    t = t.redMul(c);
-    m = i;
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+  };
+
+  BN.prototype.copy = function copy (dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  BN.prototype.clone = function clone () {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand (size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype.strip = function strip () {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign () {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  BN.prototype.inspect = function inspect () {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  };
+
+  /*
+
+  var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+
+  var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
   }
 
-  return r;
-};
+  */
 
-Red.prototype.invm = function invm(a) {
-  var inv = a._invmp(this.m);
-  if (inv.sign) {
-    inv.sign = false;
-    return this.imod(inv).redNeg();
+  var zeros = [
+    '',
+    '0',
+    '00',
+    '000',
+    '0000',
+    '00000',
+    '000000',
+    '0000000',
+    '00000000',
+    '000000000',
+    '0000000000',
+    '00000000000',
+    '000000000000',
+    '0000000000000',
+    '00000000000000',
+    '000000000000000',
+    '0000000000000000',
+    '00000000000000000',
+    '000000000000000000',
+    '0000000000000000000',
+    '00000000000000000000',
+    '000000000000000000000',
+    '0000000000000000000000',
+    '00000000000000000000000',
+    '000000000000000000000000',
+    '0000000000000000000000000'
+  ];
+
+  var groupSizes = [
+    0, 0,
+    25, 16, 12, 11, 10, 9, 8,
+    8, 7, 7, 7, 7, 6, 6,
+    6, 6, 6, 6, 6, 5, 5,
+    5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5
+  ];
+
+  var groupBases = [
+    0, 0,
+    33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216,
+    43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625,
+    16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632,
+    6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149,
+    24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176
+  ];
+
+  BN.prototype.toString = function toString (base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = (((w << off) | carry) & 0xffffff).toString(16);
+        carry = (w >>> (24 - off)) & 0xffffff;
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber () {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + (this.words[1] * 0x4000000);
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return (this.negative !== 0) ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON () {
+    return this.toString(16);
+  };
+
+  BN.prototype.toBuffer = function toBuffer (endian, length) {
+    assert(typeof Buffer !== 'undefined');
+    return this.toArrayLike(Buffer, endian, length);
+  };
+
+  BN.prototype.toArray = function toArray (endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike (ArrayType, endian, length) {
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    this.strip();
+    var littleEndian = endian === 'le';
+    var res = new ArrayType(reqLength);
+
+    var b, i;
+    var q = this.clone();
+    if (!littleEndian) {
+      // Assume big-endian
+      for (i = 0; i < reqLength - byteLength; i++) {
+        res[i] = 0;
+      }
+
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[reqLength - i - 1] = b;
+      }
+    } else {
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[i] = b;
+      }
+
+      for (; i < reqLength; i++) {
+        res[i] = 0;
+      }
+    }
+
+    return res;
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits (w) {
+      return 32 - Math.clz32(w);
+    };
   } else {
-    return this.imod(inv);
+    BN.prototype._countBits = function _countBits (w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
   }
-};
 
-Red.prototype.pow = function pow(a, num) {
-  var w = [];
+  BN.prototype._zeroBits = function _zeroBits (w) {
+    // Short-cut
+    if (w === 0) return 26;
 
-  if (num.cmpn(0) === 0)
-    return new BN(1);
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
 
-  var q = num.clone();
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength () {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
 
-  while (q.cmpn(0) !== 0) {
-    w.push(q.andln(1));
-    q.ishrn(1);
+  function toBitArray (num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = (bit / 26) | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] & (1 << wbit)) >>> wbit;
+    }
+
+    return w;
   }
 
-  // Skip leading zeroes
-  var res = a;
-  for (var i = 0; i < w.length; i++, res = this.sqr(res))
-    if (w[i] !== 0)
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits () {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength () {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos (width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos (width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg () {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg () {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg () {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor (num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ior = function ior (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or (num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor (num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand (num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.iand = function iand (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and (num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand (num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor (num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.ixor = function ixor (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor (num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor (num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn (width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & (0x3ffffff >> (26 - bitsLeft));
+    }
+
+    // And remove leading zeroes
+    return this.strip();
+  };
+
+  BN.prototype.notn = function notn (width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn (bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = (bit / 26) | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | (1 << wbit);
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this.strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd (num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+    // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+    // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add (num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub (num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+    // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this.strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub (num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = (self.length + num.length) | 0;
+    out.length = len;
+    len = (len - 1) | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = (r / 0x4000000) | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = (k - j) | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += (r / 0x4000000) | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo (self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = (mid + Math.imul(ah0, bl0)) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w0 >>> 26)) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = (mid + Math.imul(ah1, bl0)) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = (lo + Math.imul(al0, bl1)) | 0;
+    mid = (mid + Math.imul(al0, bh1)) | 0;
+    mid = (mid + Math.imul(ah0, bl1)) | 0;
+    hi = (hi + Math.imul(ah0, bh1)) | 0;
+    var w1 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w1 >>> 26)) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = (mid + Math.imul(ah2, bl0)) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = (lo + Math.imul(al1, bl1)) | 0;
+    mid = (mid + Math.imul(al1, bh1)) | 0;
+    mid = (mid + Math.imul(ah1, bl1)) | 0;
+    hi = (hi + Math.imul(ah1, bh1)) | 0;
+    lo = (lo + Math.imul(al0, bl2)) | 0;
+    mid = (mid + Math.imul(al0, bh2)) | 0;
+    mid = (mid + Math.imul(ah0, bl2)) | 0;
+    hi = (hi + Math.imul(ah0, bh2)) | 0;
+    var w2 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w2 >>> 26)) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = (mid + Math.imul(ah3, bl0)) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = (lo + Math.imul(al2, bl1)) | 0;
+    mid = (mid + Math.imul(al2, bh1)) | 0;
+    mid = (mid + Math.imul(ah2, bl1)) | 0;
+    hi = (hi + Math.imul(ah2, bh1)) | 0;
+    lo = (lo + Math.imul(al1, bl2)) | 0;
+    mid = (mid + Math.imul(al1, bh2)) | 0;
+    mid = (mid + Math.imul(ah1, bl2)) | 0;
+    hi = (hi + Math.imul(ah1, bh2)) | 0;
+    lo = (lo + Math.imul(al0, bl3)) | 0;
+    mid = (mid + Math.imul(al0, bh3)) | 0;
+    mid = (mid + Math.imul(ah0, bl3)) | 0;
+    hi = (hi + Math.imul(ah0, bh3)) | 0;
+    var w3 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w3 >>> 26)) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = (mid + Math.imul(ah4, bl0)) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = (lo + Math.imul(al3, bl1)) | 0;
+    mid = (mid + Math.imul(al3, bh1)) | 0;
+    mid = (mid + Math.imul(ah3, bl1)) | 0;
+    hi = (hi + Math.imul(ah3, bh1)) | 0;
+    lo = (lo + Math.imul(al2, bl2)) | 0;
+    mid = (mid + Math.imul(al2, bh2)) | 0;
+    mid = (mid + Math.imul(ah2, bl2)) | 0;
+    hi = (hi + Math.imul(ah2, bh2)) | 0;
+    lo = (lo + Math.imul(al1, bl3)) | 0;
+    mid = (mid + Math.imul(al1, bh3)) | 0;
+    mid = (mid + Math.imul(ah1, bl3)) | 0;
+    hi = (hi + Math.imul(ah1, bh3)) | 0;
+    lo = (lo + Math.imul(al0, bl4)) | 0;
+    mid = (mid + Math.imul(al0, bh4)) | 0;
+    mid = (mid + Math.imul(ah0, bl4)) | 0;
+    hi = (hi + Math.imul(ah0, bh4)) | 0;
+    var w4 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w4 >>> 26)) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = (mid + Math.imul(ah5, bl0)) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = (lo + Math.imul(al4, bl1)) | 0;
+    mid = (mid + Math.imul(al4, bh1)) | 0;
+    mid = (mid + Math.imul(ah4, bl1)) | 0;
+    hi = (hi + Math.imul(ah4, bh1)) | 0;
+    lo = (lo + Math.imul(al3, bl2)) | 0;
+    mid = (mid + Math.imul(al3, bh2)) | 0;
+    mid = (mid + Math.imul(ah3, bl2)) | 0;
+    hi = (hi + Math.imul(ah3, bh2)) | 0;
+    lo = (lo + Math.imul(al2, bl3)) | 0;
+    mid = (mid + Math.imul(al2, bh3)) | 0;
+    mid = (mid + Math.imul(ah2, bl3)) | 0;
+    hi = (hi + Math.imul(ah2, bh3)) | 0;
+    lo = (lo + Math.imul(al1, bl4)) | 0;
+    mid = (mid + Math.imul(al1, bh4)) | 0;
+    mid = (mid + Math.imul(ah1, bl4)) | 0;
+    hi = (hi + Math.imul(ah1, bh4)) | 0;
+    lo = (lo + Math.imul(al0, bl5)) | 0;
+    mid = (mid + Math.imul(al0, bh5)) | 0;
+    mid = (mid + Math.imul(ah0, bl5)) | 0;
+    hi = (hi + Math.imul(ah0, bh5)) | 0;
+    var w5 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w5 >>> 26)) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = (mid + Math.imul(ah6, bl0)) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = (lo + Math.imul(al5, bl1)) | 0;
+    mid = (mid + Math.imul(al5, bh1)) | 0;
+    mid = (mid + Math.imul(ah5, bl1)) | 0;
+    hi = (hi + Math.imul(ah5, bh1)) | 0;
+    lo = (lo + Math.imul(al4, bl2)) | 0;
+    mid = (mid + Math.imul(al4, bh2)) | 0;
+    mid = (mid + Math.imul(ah4, bl2)) | 0;
+    hi = (hi + Math.imul(ah4, bh2)) | 0;
+    lo = (lo + Math.imul(al3, bl3)) | 0;
+    mid = (mid + Math.imul(al3, bh3)) | 0;
+    mid = (mid + Math.imul(ah3, bl3)) | 0;
+    hi = (hi + Math.imul(ah3, bh3)) | 0;
+    lo = (lo + Math.imul(al2, bl4)) | 0;
+    mid = (mid + Math.imul(al2, bh4)) | 0;
+    mid = (mid + Math.imul(ah2, bl4)) | 0;
+    hi = (hi + Math.imul(ah2, bh4)) | 0;
+    lo = (lo + Math.imul(al1, bl5)) | 0;
+    mid = (mid + Math.imul(al1, bh5)) | 0;
+    mid = (mid + Math.imul(ah1, bl5)) | 0;
+    hi = (hi + Math.imul(ah1, bh5)) | 0;
+    lo = (lo + Math.imul(al0, bl6)) | 0;
+    mid = (mid + Math.imul(al0, bh6)) | 0;
+    mid = (mid + Math.imul(ah0, bl6)) | 0;
+    hi = (hi + Math.imul(ah0, bh6)) | 0;
+    var w6 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w6 >>> 26)) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = (mid + Math.imul(ah7, bl0)) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = (lo + Math.imul(al6, bl1)) | 0;
+    mid = (mid + Math.imul(al6, bh1)) | 0;
+    mid = (mid + Math.imul(ah6, bl1)) | 0;
+    hi = (hi + Math.imul(ah6, bh1)) | 0;
+    lo = (lo + Math.imul(al5, bl2)) | 0;
+    mid = (mid + Math.imul(al5, bh2)) | 0;
+    mid = (mid + Math.imul(ah5, bl2)) | 0;
+    hi = (hi + Math.imul(ah5, bh2)) | 0;
+    lo = (lo + Math.imul(al4, bl3)) | 0;
+    mid = (mid + Math.imul(al4, bh3)) | 0;
+    mid = (mid + Math.imul(ah4, bl3)) | 0;
+    hi = (hi + Math.imul(ah4, bh3)) | 0;
+    lo = (lo + Math.imul(al3, bl4)) | 0;
+    mid = (mid + Math.imul(al3, bh4)) | 0;
+    mid = (mid + Math.imul(ah3, bl4)) | 0;
+    hi = (hi + Math.imul(ah3, bh4)) | 0;
+    lo = (lo + Math.imul(al2, bl5)) | 0;
+    mid = (mid + Math.imul(al2, bh5)) | 0;
+    mid = (mid + Math.imul(ah2, bl5)) | 0;
+    hi = (hi + Math.imul(ah2, bh5)) | 0;
+    lo = (lo + Math.imul(al1, bl6)) | 0;
+    mid = (mid + Math.imul(al1, bh6)) | 0;
+    mid = (mid + Math.imul(ah1, bl6)) | 0;
+    hi = (hi + Math.imul(ah1, bh6)) | 0;
+    lo = (lo + Math.imul(al0, bl7)) | 0;
+    mid = (mid + Math.imul(al0, bh7)) | 0;
+    mid = (mid + Math.imul(ah0, bl7)) | 0;
+    hi = (hi + Math.imul(ah0, bh7)) | 0;
+    var w7 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w7 >>> 26)) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = (mid + Math.imul(ah8, bl0)) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = (lo + Math.imul(al7, bl1)) | 0;
+    mid = (mid + Math.imul(al7, bh1)) | 0;
+    mid = (mid + Math.imul(ah7, bl1)) | 0;
+    hi = (hi + Math.imul(ah7, bh1)) | 0;
+    lo = (lo + Math.imul(al6, bl2)) | 0;
+    mid = (mid + Math.imul(al6, bh2)) | 0;
+    mid = (mid + Math.imul(ah6, bl2)) | 0;
+    hi = (hi + Math.imul(ah6, bh2)) | 0;
+    lo = (lo + Math.imul(al5, bl3)) | 0;
+    mid = (mid + Math.imul(al5, bh3)) | 0;
+    mid = (mid + Math.imul(ah5, bl3)) | 0;
+    hi = (hi + Math.imul(ah5, bh3)) | 0;
+    lo = (lo + Math.imul(al4, bl4)) | 0;
+    mid = (mid + Math.imul(al4, bh4)) | 0;
+    mid = (mid + Math.imul(ah4, bl4)) | 0;
+    hi = (hi + Math.imul(ah4, bh4)) | 0;
+    lo = (lo + Math.imul(al3, bl5)) | 0;
+    mid = (mid + Math.imul(al3, bh5)) | 0;
+    mid = (mid + Math.imul(ah3, bl5)) | 0;
+    hi = (hi + Math.imul(ah3, bh5)) | 0;
+    lo = (lo + Math.imul(al2, bl6)) | 0;
+    mid = (mid + Math.imul(al2, bh6)) | 0;
+    mid = (mid + Math.imul(ah2, bl6)) | 0;
+    hi = (hi + Math.imul(ah2, bh6)) | 0;
+    lo = (lo + Math.imul(al1, bl7)) | 0;
+    mid = (mid + Math.imul(al1, bh7)) | 0;
+    mid = (mid + Math.imul(ah1, bl7)) | 0;
+    hi = (hi + Math.imul(ah1, bh7)) | 0;
+    lo = (lo + Math.imul(al0, bl8)) | 0;
+    mid = (mid + Math.imul(al0, bh8)) | 0;
+    mid = (mid + Math.imul(ah0, bl8)) | 0;
+    hi = (hi + Math.imul(ah0, bh8)) | 0;
+    var w8 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w8 >>> 26)) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = (mid + Math.imul(ah9, bl0)) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = (lo + Math.imul(al8, bl1)) | 0;
+    mid = (mid + Math.imul(al8, bh1)) | 0;
+    mid = (mid + Math.imul(ah8, bl1)) | 0;
+    hi = (hi + Math.imul(ah8, bh1)) | 0;
+    lo = (lo + Math.imul(al7, bl2)) | 0;
+    mid = (mid + Math.imul(al7, bh2)) | 0;
+    mid = (mid + Math.imul(ah7, bl2)) | 0;
+    hi = (hi + Math.imul(ah7, bh2)) | 0;
+    lo = (lo + Math.imul(al6, bl3)) | 0;
+    mid = (mid + Math.imul(al6, bh3)) | 0;
+    mid = (mid + Math.imul(ah6, bl3)) | 0;
+    hi = (hi + Math.imul(ah6, bh3)) | 0;
+    lo = (lo + Math.imul(al5, bl4)) | 0;
+    mid = (mid + Math.imul(al5, bh4)) | 0;
+    mid = (mid + Math.imul(ah5, bl4)) | 0;
+    hi = (hi + Math.imul(ah5, bh4)) | 0;
+    lo = (lo + Math.imul(al4, bl5)) | 0;
+    mid = (mid + Math.imul(al4, bh5)) | 0;
+    mid = (mid + Math.imul(ah4, bl5)) | 0;
+    hi = (hi + Math.imul(ah4, bh5)) | 0;
+    lo = (lo + Math.imul(al3, bl6)) | 0;
+    mid = (mid + Math.imul(al3, bh6)) | 0;
+    mid = (mid + Math.imul(ah3, bl6)) | 0;
+    hi = (hi + Math.imul(ah3, bh6)) | 0;
+    lo = (lo + Math.imul(al2, bl7)) | 0;
+    mid = (mid + Math.imul(al2, bh7)) | 0;
+    mid = (mid + Math.imul(ah2, bl7)) | 0;
+    hi = (hi + Math.imul(ah2, bh7)) | 0;
+    lo = (lo + Math.imul(al1, bl8)) | 0;
+    mid = (mid + Math.imul(al1, bh8)) | 0;
+    mid = (mid + Math.imul(ah1, bl8)) | 0;
+    hi = (hi + Math.imul(ah1, bh8)) | 0;
+    lo = (lo + Math.imul(al0, bl9)) | 0;
+    mid = (mid + Math.imul(al0, bh9)) | 0;
+    mid = (mid + Math.imul(ah0, bl9)) | 0;
+    hi = (hi + Math.imul(ah0, bh9)) | 0;
+    var w9 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w9 >>> 26)) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = (mid + Math.imul(ah9, bl1)) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = (lo + Math.imul(al8, bl2)) | 0;
+    mid = (mid + Math.imul(al8, bh2)) | 0;
+    mid = (mid + Math.imul(ah8, bl2)) | 0;
+    hi = (hi + Math.imul(ah8, bh2)) | 0;
+    lo = (lo + Math.imul(al7, bl3)) | 0;
+    mid = (mid + Math.imul(al7, bh3)) | 0;
+    mid = (mid + Math.imul(ah7, bl3)) | 0;
+    hi = (hi + Math.imul(ah7, bh3)) | 0;
+    lo = (lo + Math.imul(al6, bl4)) | 0;
+    mid = (mid + Math.imul(al6, bh4)) | 0;
+    mid = (mid + Math.imul(ah6, bl4)) | 0;
+    hi = (hi + Math.imul(ah6, bh4)) | 0;
+    lo = (lo + Math.imul(al5, bl5)) | 0;
+    mid = (mid + Math.imul(al5, bh5)) | 0;
+    mid = (mid + Math.imul(ah5, bl5)) | 0;
+    hi = (hi + Math.imul(ah5, bh5)) | 0;
+    lo = (lo + Math.imul(al4, bl6)) | 0;
+    mid = (mid + Math.imul(al4, bh6)) | 0;
+    mid = (mid + Math.imul(ah4, bl6)) | 0;
+    hi = (hi + Math.imul(ah4, bh6)) | 0;
+    lo = (lo + Math.imul(al3, bl7)) | 0;
+    mid = (mid + Math.imul(al3, bh7)) | 0;
+    mid = (mid + Math.imul(ah3, bl7)) | 0;
+    hi = (hi + Math.imul(ah3, bh7)) | 0;
+    lo = (lo + Math.imul(al2, bl8)) | 0;
+    mid = (mid + Math.imul(al2, bh8)) | 0;
+    mid = (mid + Math.imul(ah2, bl8)) | 0;
+    hi = (hi + Math.imul(ah2, bh8)) | 0;
+    lo = (lo + Math.imul(al1, bl9)) | 0;
+    mid = (mid + Math.imul(al1, bh9)) | 0;
+    mid = (mid + Math.imul(ah1, bl9)) | 0;
+    hi = (hi + Math.imul(ah1, bh9)) | 0;
+    var w10 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w10 >>> 26)) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = (mid + Math.imul(ah9, bl2)) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = (lo + Math.imul(al8, bl3)) | 0;
+    mid = (mid + Math.imul(al8, bh3)) | 0;
+    mid = (mid + Math.imul(ah8, bl3)) | 0;
+    hi = (hi + Math.imul(ah8, bh3)) | 0;
+    lo = (lo + Math.imul(al7, bl4)) | 0;
+    mid = (mid + Math.imul(al7, bh4)) | 0;
+    mid = (mid + Math.imul(ah7, bl4)) | 0;
+    hi = (hi + Math.imul(ah7, bh4)) | 0;
+    lo = (lo + Math.imul(al6, bl5)) | 0;
+    mid = (mid + Math.imul(al6, bh5)) | 0;
+    mid = (mid + Math.imul(ah6, bl5)) | 0;
+    hi = (hi + Math.imul(ah6, bh5)) | 0;
+    lo = (lo + Math.imul(al5, bl6)) | 0;
+    mid = (mid + Math.imul(al5, bh6)) | 0;
+    mid = (mid + Math.imul(ah5, bl6)) | 0;
+    hi = (hi + Math.imul(ah5, bh6)) | 0;
+    lo = (lo + Math.imul(al4, bl7)) | 0;
+    mid = (mid + Math.imul(al4, bh7)) | 0;
+    mid = (mid + Math.imul(ah4, bl7)) | 0;
+    hi = (hi + Math.imul(ah4, bh7)) | 0;
+    lo = (lo + Math.imul(al3, bl8)) | 0;
+    mid = (mid + Math.imul(al3, bh8)) | 0;
+    mid = (mid + Math.imul(ah3, bl8)) | 0;
+    hi = (hi + Math.imul(ah3, bh8)) | 0;
+    lo = (lo + Math.imul(al2, bl9)) | 0;
+    mid = (mid + Math.imul(al2, bh9)) | 0;
+    mid = (mid + Math.imul(ah2, bl9)) | 0;
+    hi = (hi + Math.imul(ah2, bh9)) | 0;
+    var w11 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w11 >>> 26)) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = (mid + Math.imul(ah9, bl3)) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = (lo + Math.imul(al8, bl4)) | 0;
+    mid = (mid + Math.imul(al8, bh4)) | 0;
+    mid = (mid + Math.imul(ah8, bl4)) | 0;
+    hi = (hi + Math.imul(ah8, bh4)) | 0;
+    lo = (lo + Math.imul(al7, bl5)) | 0;
+    mid = (mid + Math.imul(al7, bh5)) | 0;
+    mid = (mid + Math.imul(ah7, bl5)) | 0;
+    hi = (hi + Math.imul(ah7, bh5)) | 0;
+    lo = (lo + Math.imul(al6, bl6)) | 0;
+    mid = (mid + Math.imul(al6, bh6)) | 0;
+    mid = (mid + Math.imul(ah6, bl6)) | 0;
+    hi = (hi + Math.imul(ah6, bh6)) | 0;
+    lo = (lo + Math.imul(al5, bl7)) | 0;
+    mid = (mid + Math.imul(al5, bh7)) | 0;
+    mid = (mid + Math.imul(ah5, bl7)) | 0;
+    hi = (hi + Math.imul(ah5, bh7)) | 0;
+    lo = (lo + Math.imul(al4, bl8)) | 0;
+    mid = (mid + Math.imul(al4, bh8)) | 0;
+    mid = (mid + Math.imul(ah4, bl8)) | 0;
+    hi = (hi + Math.imul(ah4, bh8)) | 0;
+    lo = (lo + Math.imul(al3, bl9)) | 0;
+    mid = (mid + Math.imul(al3, bh9)) | 0;
+    mid = (mid + Math.imul(ah3, bl9)) | 0;
+    hi = (hi + Math.imul(ah3, bh9)) | 0;
+    var w12 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w12 >>> 26)) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = (mid + Math.imul(ah9, bl4)) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = (lo + Math.imul(al8, bl5)) | 0;
+    mid = (mid + Math.imul(al8, bh5)) | 0;
+    mid = (mid + Math.imul(ah8, bl5)) | 0;
+    hi = (hi + Math.imul(ah8, bh5)) | 0;
+    lo = (lo + Math.imul(al7, bl6)) | 0;
+    mid = (mid + Math.imul(al7, bh6)) | 0;
+    mid = (mid + Math.imul(ah7, bl6)) | 0;
+    hi = (hi + Math.imul(ah7, bh6)) | 0;
+    lo = (lo + Math.imul(al6, bl7)) | 0;
+    mid = (mid + Math.imul(al6, bh7)) | 0;
+    mid = (mid + Math.imul(ah6, bl7)) | 0;
+    hi = (hi + Math.imul(ah6, bh7)) | 0;
+    lo = (lo + Math.imul(al5, bl8)) | 0;
+    mid = (mid + Math.imul(al5, bh8)) | 0;
+    mid = (mid + Math.imul(ah5, bl8)) | 0;
+    hi = (hi + Math.imul(ah5, bh8)) | 0;
+    lo = (lo + Math.imul(al4, bl9)) | 0;
+    mid = (mid + Math.imul(al4, bh9)) | 0;
+    mid = (mid + Math.imul(ah4, bl9)) | 0;
+    hi = (hi + Math.imul(ah4, bh9)) | 0;
+    var w13 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w13 >>> 26)) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = (mid + Math.imul(ah9, bl5)) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = (lo + Math.imul(al8, bl6)) | 0;
+    mid = (mid + Math.imul(al8, bh6)) | 0;
+    mid = (mid + Math.imul(ah8, bl6)) | 0;
+    hi = (hi + Math.imul(ah8, bh6)) | 0;
+    lo = (lo + Math.imul(al7, bl7)) | 0;
+    mid = (mid + Math.imul(al7, bh7)) | 0;
+    mid = (mid + Math.imul(ah7, bl7)) | 0;
+    hi = (hi + Math.imul(ah7, bh7)) | 0;
+    lo = (lo + Math.imul(al6, bl8)) | 0;
+    mid = (mid + Math.imul(al6, bh8)) | 0;
+    mid = (mid + Math.imul(ah6, bl8)) | 0;
+    hi = (hi + Math.imul(ah6, bh8)) | 0;
+    lo = (lo + Math.imul(al5, bl9)) | 0;
+    mid = (mid + Math.imul(al5, bh9)) | 0;
+    mid = (mid + Math.imul(ah5, bl9)) | 0;
+    hi = (hi + Math.imul(ah5, bh9)) | 0;
+    var w14 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w14 >>> 26)) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = (mid + Math.imul(ah9, bl6)) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = (lo + Math.imul(al8, bl7)) | 0;
+    mid = (mid + Math.imul(al8, bh7)) | 0;
+    mid = (mid + Math.imul(ah8, bl7)) | 0;
+    hi = (hi + Math.imul(ah8, bh7)) | 0;
+    lo = (lo + Math.imul(al7, bl8)) | 0;
+    mid = (mid + Math.imul(al7, bh8)) | 0;
+    mid = (mid + Math.imul(ah7, bl8)) | 0;
+    hi = (hi + Math.imul(ah7, bh8)) | 0;
+    lo = (lo + Math.imul(al6, bl9)) | 0;
+    mid = (mid + Math.imul(al6, bh9)) | 0;
+    mid = (mid + Math.imul(ah6, bl9)) | 0;
+    hi = (hi + Math.imul(ah6, bh9)) | 0;
+    var w15 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w15 >>> 26)) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = (mid + Math.imul(ah9, bl7)) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = (lo + Math.imul(al8, bl8)) | 0;
+    mid = (mid + Math.imul(al8, bh8)) | 0;
+    mid = (mid + Math.imul(ah8, bl8)) | 0;
+    hi = (hi + Math.imul(ah8, bh8)) | 0;
+    lo = (lo + Math.imul(al7, bl9)) | 0;
+    mid = (mid + Math.imul(al7, bh9)) | 0;
+    mid = (mid + Math.imul(ah7, bl9)) | 0;
+    hi = (hi + Math.imul(ah7, bh9)) | 0;
+    var w16 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w16 >>> 26)) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = (mid + Math.imul(ah9, bl8)) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = (lo + Math.imul(al8, bl9)) | 0;
+    mid = (mid + Math.imul(al8, bh9)) | 0;
+    mid = (mid + Math.imul(ah8, bl9)) | 0;
+    hi = (hi + Math.imul(ah8, bh9)) | 0;
+    var w17 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w17 >>> 26)) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = (mid + Math.imul(ah9, bl9)) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w18 >>> 26)) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
+        lo = (lo + rword) | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = (ncarry + (lo >>> 26)) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  function jumboMulTo (self, num, out) {
+    var fftm = new FFTM();
+    return fftm.mulp(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo (num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM (x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT (N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin (x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << (l - i - 1);
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute (rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform (rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b (n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate (rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b (ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 +
+        Math.round(ws[2 * i] / N) +
+        carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b (ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff; carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff; carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub (N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp (x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out.strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul (num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += (w / 0x4000000) | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return this;
+  };
+
+  BN.prototype.muln = function muln (num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr () {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr () {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow (num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = (0x3ffffff >>> (26 - r)) << (26 - r);
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = ((this.words[i] | 0) - newCarry) << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> (26 - r);
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishln = function ishln (bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn (bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - (hint % 26)) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = (carry << (26 - r)) | (word >>> r);
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishrn = function ishrn (bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln (bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln (bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn (bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn (bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn (bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this.strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn (bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) < num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn (num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.addn = function addn (num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn (num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs () {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs () {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul (num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - ((right / 0x4000000) | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this.strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this.strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv (num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 +
+        (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min((qj / bhi) | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q.strip();
+    }
+    a.strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod (num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div (num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod (num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod (num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound (num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modn = function modn (num) {
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return acc;
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn (num) {
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = (w / num) | 0;
+      carry = w % num;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.divn = function divn (num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd (num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm (num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven () {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd () {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln (num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn (bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero () {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn (num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this.strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp (num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp (num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
       break;
+    }
+    return res;
+  };
 
-  if (++i < w.length) {
-    for (var q = this.sqr(res); i < w.length; i++, q = this.sqr(q)) {
-      if (w[i] === 0)
-        continue;
-      res = this.mul(res, q);
+  BN.prototype.gtn = function gtn (num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt (num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten (num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte (num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn (num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt (num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten (num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte (num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn (num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq (num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red (num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed () {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed (ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd (num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd (num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub (num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub (num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl (num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr () {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr () {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt () {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm () {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg () {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow (num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime (name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp () {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce (num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      if (r.strip !== undefined) {
+        // r is BN v4 instance
+        r.strip();
+      } else {
+        // r is BN v5 instance
+        r._strip();
+      }
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split (input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK (num) {
+    return num.imul(this.k);
+  };
+
+  function K256 () {
+    MPrime.call(
+      this,
+      'k256',
+      'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split (input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = ((next & mask) << 4) | (prev >>> 22);
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK (num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + ((lo / 0x4000000) | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224 () {
+    MPrime.call(
+      this,
+      'p224',
+      'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192 () {
+    MPrime.call(
+      this,
+      'p192',
+      'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519 () {
+    // 2 ^ 255 - 19
+    MPrime.call(
+      this,
+      '25519',
+      '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK (num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime (name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red (m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
     }
   }
 
-  return res;
-};
+  Red.prototype._verify1 = function _verify1 (a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
 
-Red.prototype.convertTo = function convertTo(num) {
-  var r = num.mod(this.m);
-  if (r === num)
-    return r.clone();
-  else
+  Red.prototype._verify2 = function _verify2 (a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red,
+      'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod (a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+    return a.umod(this.m)._forceRed(this);
+  };
+
+  Red.prototype.neg = function neg (a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add (a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd (a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl (a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr (a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr (a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt (a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
     return r;
-};
+  };
 
-Red.prototype.convertFrom = function convertFrom(num) {
-  var res = num.clone();
-  res.red = null;
-  return res;
-};
+  Red.prototype.invm = function invm (a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
 
-//
-// Montgomery method engine
-//
+  Red.prototype.pow = function pow (a, num) {
+    if (num.isZero()) return new BN(1).toRed(this);
+    if (num.cmpn(1) === 0) return a.clone();
 
-BN.mont = function mont(num) {
-  return new Mont(num);
-};
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
 
-function Mont(m) {
-  Red.call(this, m);
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
 
-  this.shift = this.m.bitLength();
-  if (this.shift % 26 !== 0)
-    this.shift += 26 - (this.shift % 26);
-  this.r = new BN(1).ishln(this.shift);
-  this.r2 = this.imod(this.r.sqr());
-  this.rinv = this.r._invmp(this.m);
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = (word >> j) & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
 
-  this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
-  this.minv.sign = true;
-  this.minv = this.minv.mod(this.r);
-}
-inherits(Mont, Red);
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
 
-Mont.prototype.convertTo = function convertTo(num) {
-  return this.imod(num.shln(this.shift));
-};
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
 
-Mont.prototype.convertFrom = function convertFrom(num) {
-  var r = this.imod(num.mul(this.rinv));
-  r.red = null;
-  return r;
-};
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
 
-Mont.prototype.imul = function imul(a, b) {
-  if (a.cmpn(0) === 0 || b.cmpn(0) === 0) {
-    a.words[0] = 0;
-    a.length = 1;
-    return a;
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo (num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom (num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont (num) {
+    return new Mont(num);
+  };
+
+  function Mont (m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - (this.shift % 26);
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
   }
+  inherits(Mont, Red);
 
-  var t = a.imul(b);
-  var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
-  var u = t.isub(c).ishrn(this.shift);
-  var res = u;
-  if (u.cmp(this.m) >= 0)
-    res = u.isub(this.m);
-  else if (u.cmpn(0) < 0)
-    res = u.iadd(this.m);
+  Mont.prototype.convertTo = function convertTo (num) {
+    return this.imod(num.ushln(this.shift));
+  };
 
-  return res._forceRed(this);
-};
+  Mont.prototype.convertFrom = function convertFrom (num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
 
-Mont.prototype.mul = function mul(a, b) {
-  if (a.cmpn(0) === 0 || b.cmpn(0) === 0)
-    return new BN(0)._forceRed(this);
+  Mont.prototype.imul = function imul (a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
 
-  var t = a.mul(b);
-  var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
-  var u = t.isub(c).ishrn(this.shift);
-  var res = u;
-  if (u.cmp(this.m) >= 0)
-    res = u.isub(this.m);
-  else if (u.cmpn(0) < 0)
-    res = u.iadd(this.m);
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
 
-  return res._forceRed(this);
-};
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
 
-Mont.prototype.invm = function invm(a) {
-  // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
-  var res = this.imod(a._invmp(this.m).mul(this.r2));
-  return res._forceRed(this);
-};
+    return res._forceRed(this);
+  };
 
+  Mont.prototype.mul = function mul (a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm (a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
 })(typeof module === 'undefined' || module, this);
 
-},{}],37:[function(require,module,exports){
+},{"buffer":45}],37:[function(require,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -4031,7 +5172,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":40,"./lib/sweep":44,"typedarray-pool":247}],39:[function(require,module,exports){
+},{"./lib/intersect":40,"./lib/sweep":44,"typedarray-pool":306}],39:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -4238,7 +5379,7 @@ function iterInit(d, count) {
     BOX_ISTACK = pool.mallocInt32(maxInts)
   }
   var maxDoubles = bits.nextPow2(DFRAME_SIZE*levels)
-  if(BOX_DSTACK < maxDoubles) {
+  if(BOX_DSTACK.length < maxDoubles) {
     pool.free(BOX_DSTACK)
     BOX_DSTACK = pool.mallocDouble(maxDoubles)
   }
@@ -4671,7 +5812,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":39,"./median":41,"./partition":42,"./sweep":44,"bit-twiddle":35,"typedarray-pool":247}],41:[function(require,module,exports){
+},{"./brute":39,"./median":41,"./partition":42,"./sweep":44,"bit-twiddle":35,"typedarray-pool":306}],41:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -5507,12 +6648,14 @@ red_loop:
     }
   }
 }
-},{"./sort":43,"bit-twiddle":35,"typedarray-pool":247}],45:[function(require,module,exports){
-(function (global){
+},{"./sort":43,"bit-twiddle":35,"typedarray-pool":306}],45:[function(require,module,exports){
+
+},{}],46:[function(require,module,exports){
+(function (global,Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <http://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -7299,8 +8442,8 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":46,"ieee754":165,"isarray":47}],46:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"base64-js":47,"buffer":46,"ieee754":219,"isarray":48}],47:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -7317,68 +8460,103 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i
 }
 
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62
 revLookup['_'.charCodeAt(0)] = 63
 
-function placeHoldersCount (b64) {
+function getLens (b64) {
   var len = b64.length
+
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
 }
 
+// base64 is 4/3 + up to two characters of the original data
 function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
 }
 
 function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
 
-  arr = new Arr(len * 3 / 4 - placeHolders)
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
 
   // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
 
-  var L = 0
-
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
   return arr
 }
 
 function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
 }
 
 function encodeChunk (uint8, start, end) {
   var tmp
   var output = []
   for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
     output.push(tripletToBase64(tmp))
   }
   return output.join('')
@@ -7388,42 +8566,45 @@ function fromByteArray (uint8) {
   var tmp
   var len = uint8.length
   var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
   var parts = []
   var maxChunkLength = 16383 // must be multiple of 3
 
   // go through the array every three bytes, we'll deal with trailing stuff later
   for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
   }
 
   // pad the end with zeros, but make sure to not forget the extra bytes
   if (extraBytes === 1) {
     tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
   } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
   }
-
-  parts.push(output)
 
   return parts.join('')
 }
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -7507,7 +8688,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":49,"./lib/filter":50,"./lib/monotone":51,"./lib/triangulation":52}],49:[function(require,module,exports){
+},{"./lib/delaunay":50,"./lib/filter":51,"./lib/monotone":52,"./lib/triangulation":53}],50:[function(require,module,exports){
 'use strict'
 
 var inCircle = require('robust-in-sphere')[4]
@@ -7624,7 +8805,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":53,"robust-in-sphere":218}],50:[function(require,module,exports){
+},{"binary-search-bounds":54,"robust-in-sphere":277}],51:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -7806,7 +8987,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":53}],51:[function(require,module,exports){
+},{"binary-search-bounds":54}],52:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -7995,7 +9176,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":53,"robust-orientation":220}],52:[function(require,module,exports){
+},{"binary-search-bounds":54,"robust-orientation":279}],53:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -8101,15 +9282,14 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":53}],53:[function(require,module,exports){
+},{"binary-search-bounds":54}],54:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
   var code = [
     "function ", funcName, "(a,l,h,", extraArgs.join(","),  "){",
-earlyOut ? "" : "var i=", (reversed ? "l-1" : "h+1"),
-";while(l<=h){\
-var m=(l+h)>>>1,x=a[m]"]
+    earlyOut ? "" : "var i=", (reversed ? "l-1" : "h+1"),
+    ";while(l<=h){var m=(l+h)>>>1,x=a[m]"]
   if(earlyOut) {
     if(predicate.indexOf("c") < 0) {
       code.push(";if(x===y){return m}else if(x<=y){")
@@ -8148,14 +9328,14 @@ return dispatchBsearch", suffix].join(""))
 }
 
 module.exports = {
-  ge: compileBoundsSearch(">=", false, "GE"),
-  gt: compileBoundsSearch(">", false, "GT"),
-  lt: compileBoundsSearch("<", true, "LT"),
-  le: compileBoundsSearch("<=", true, "LE"),
-  eq: compileBoundsSearch("-", true, "EQ", true)
+  ge: compileBoundsSearch(">=", false,  "GE"),
+  gt: compileBoundsSearch(">",  false,  "GT"),
+  lt: compileBoundsSearch("<",  true,   "LT"),
+  le: compileBoundsSearch("<=", true,   "LE"),
+  eq: compileBoundsSearch("-",  true,   "EQ", true)
 }
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict'
 
 module.exports = orientation
@@ -8174,7 +9354,7 @@ function orientation(s) {
   return p
 }
 
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict"
 
 var dup = require("dup")
@@ -8243,7 +9423,7 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":77,"robust-linear-solve":219}],56:[function(require,module,exports){
+},{"dup":77,"robust-linear-solve":278}],57:[function(require,module,exports){
 module.exports = circumradius
 
 var circumcenter = require('circumcenter')
@@ -8259,14 +9439,13 @@ function circumradius(points) {
   }
   return Math.sqrt(avgDist / points.length)
 }
-},{"circumcenter":55}],57:[function(require,module,exports){
+},{"circumcenter":56}],58:[function(require,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
 
 var UnionFind = require('union-find')
 var boxIntersect = require('box-intersect')
-var compareCell = require('compare-cell')
 var segseg = require('robust-segment-intersect')
 var rat = require('big-rat')
 var ratCmp = require('big-rat/cmp')
@@ -8276,93 +9455,100 @@ var nextafter = require('nextafter')
 
 var solveIntersection = require('./lib/rat-seg-intersect')
 
-//Bounds on a rational number when rounded to a float
-function boundRat(r) {
+// Bounds on a rational number when rounded to a float
+function boundRat (r) {
   var f = ratToFloat(r)
-  var cmp = ratCmp(rat(f), r)
-  if(cmp < 0) {
-    return [f, nextafter(f, Infinity)]
-  } else if(cmp > 0) {
-    return [nextafter(f, -Infinity), f]
-  } else {
-    return [f, f]
-  }
+  return [
+    nextafter(f, -Infinity),
+    nextafter(f, Infinity)
+  ]
 }
 
-//Convert a list of edges in a pslg to bounding boxes
-function boundEdges(points, edges) {
+// Convert a list of edges in a pslg to bounding boxes
+function boundEdges (points, edges) {
   var bounds = new Array(edges.length)
-  for(var i=0; i<edges.length; ++i) {
+  for (var i = 0; i < edges.length; ++i) {
     var e = edges[i]
     var a = points[e[0]]
     var b = points[e[1]]
     bounds[i] = [
-      Math.min(a[0], b[0]),
-      Math.min(a[1], b[1]),
-      Math.max(a[0], b[0]),
-      Math.max(a[1], b[1]) ]
+      nextafter(Math.min(a[0], b[0]), -Infinity),
+      nextafter(Math.min(a[1], b[1]), -Infinity),
+      nextafter(Math.max(a[0], b[0]), Infinity),
+      nextafter(Math.max(a[1], b[1]), Infinity)
+    ]
   }
   return bounds
 }
 
-//Convert a list of points into bounding boxes by duplicating coords
-function boundPoints(points) {
+// Convert a list of points into bounding boxes by duplicating coords
+function boundPoints (points) {
   var bounds = new Array(points.length)
-  for(var i=0; i<points.length; ++i) {
+  for (var i = 0; i < points.length; ++i) {
     var p = points[i]
-    bounds[i] = [ p[0], p[1], p[0], p[1] ]
+    bounds[i] = [
+      nextafter(p[0], -Infinity),
+      nextafter(p[1], -Infinity),
+      nextafter(p[0], Infinity),
+      nextafter(p[1], Infinity)
+    ]
   }
   return bounds
 }
 
-//Find all pairs of crossing edges in a pslg (given edge bounds)
-function getCrossings(points, edges, edgeBounds) {
+// Find all pairs of crossing edges in a pslg (given edge bounds)
+function getCrossings (points, edges, edgeBounds) {
   var result = []
-  boxIntersect(edgeBounds, function(i, j) {
+  boxIntersect(edgeBounds, function (i, j) {
     var e = edges[i]
     var f = edges[j]
-    if(e[0] === f[0] || e[0] === f[1] ||
-       e[1] === f[0] || e[1] === f[1]) {
-         return
+    if (e[0] === f[0] || e[0] === f[1] ||
+      e[1] === f[0] || e[1] === f[1]) {
+      return
     }
     var a = points[e[0]]
     var b = points[e[1]]
     var c = points[f[0]]
     var d = points[f[1]]
-    if(segseg(a, b, c, d)) {
+    if (segseg(a, b, c, d)) {
       result.push([i, j])
     }
   })
   return result
 }
 
-//Find all pairs of crossing vertices in a pslg (given edge/vert bounds)
-function getTJunctions(points, edges, edgeBounds, vertBounds) {
+// Find all pairs of crossing vertices in a pslg (given edge/vert bounds)
+function getTJunctions (points, edges, edgeBounds, vertBounds) {
   var result = []
-  boxIntersect(edgeBounds, vertBounds, function(i, v) {
+  boxIntersect(edgeBounds, vertBounds, function (i, v) {
     var e = edges[i]
-    if(e[0] === v || e[1] === v) {
+    if (e[0] === v || e[1] === v) {
       return
     }
     var p = points[v]
     var a = points[e[0]]
     var b = points[e[1]]
-    if(segseg(a, b, p, p)) {
+    if (segseg(a, b, p, p)) {
       result.push([i, v])
     }
   })
   return result
 }
 
+// Cut edges along crossings/tjunctions
+function cutEdges (floatPoints, edges, crossings, junctions, useColor) {
+  var i, e
 
-//Cut edges along crossings/tjunctions
-function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
-
-  //Convert crossings into tjunctions by constructing rational points
-  var ratPoints = []
-  for(var i=0; i<crossings.length; ++i) {
+  // Convert crossings into tjunctions by constructing rational points
+  var ratPoints = floatPoints.map(function(p) {
+      return [
+          rat(p[0]),
+          rat(p[1])
+      ]
+  })
+  for (i = 0; i < crossings.length; ++i) {
     var crossing = crossings[i]
-    var e = crossing[0]
+    e = crossing[0]
     var f = crossing[1]
     var ee = edges[e]
     var ef = edges[f]
@@ -8371,65 +9557,59 @@ function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
       ratVec(floatPoints[ee[1]]),
       ratVec(floatPoints[ef[0]]),
       ratVec(floatPoints[ef[1]]))
-    if(!x) {
-      //Segments are parallel, should already be handled by t-junctions
+    if (!x) {
+      // Segments are parallel, should already be handled by t-junctions
       continue
     }
-    var idx = ratPoints.length + floatPoints.length
+    var idx = floatPoints.length
+    floatPoints.push([ratToFloat(x[0]), ratToFloat(x[1])])
     ratPoints.push(x)
     junctions.push([e, idx], [f, idx])
   }
 
-  //Sort tjunctions
-  function getPoint(idx) {
-    if(idx >= floatPoints.length) {
-      return ratPoints[idx-floatPoints.length]
-    }
-    var p = floatPoints[idx]
-    return [ rat(p[0]), rat(p[1]) ]
-  }
-  junctions.sort(function(a, b) {
-    if(a[0] !== b[0]) {
+  // Sort tjunctions
+  junctions.sort(function (a, b) {
+    if (a[0] !== b[0]) {
       return a[0] - b[0]
     }
-    var u = getPoint(a[1])
-    var v = getPoint(b[1])
+    var u = ratPoints[a[1]]
+    var v = ratPoints[b[1]]
     return ratCmp(u[0], v[0]) || ratCmp(u[1], v[1])
   })
 
-  //Split edges along junctions
-  for(var i=junctions.length-1; i>=0; --i) {
+  // Split edges along junctions
+  for (i = junctions.length - 1; i >= 0; --i) {
     var junction = junctions[i]
-    var e = junction[0]
+    e = junction[0]
 
     var edge = edges[e]
     var s = edge[0]
     var t = edge[1]
 
-    //Check if edge is not lexicographically sorted
+    // Check if edge is not lexicographically sorted
     var a = floatPoints[s]
     var b = floatPoints[t]
-    if(((a[0] - b[0]) || (a[1] - b[1])) < 0) {
+    if (((a[0] - b[0]) || (a[1] - b[1])) < 0) {
       var tmp = s
       s = t
       t = tmp
     }
 
-    //Split leading edge
+    // Split leading edge
     edge[0] = s
     var last = edge[1] = junction[1]
 
-    //If we are grouping edges by color, remember to track data
+    // If we are grouping edges by color, remember to track data
     var color
-    if(useColor) {
+    if (useColor) {
       color = edge[2]
     }
 
-    //Split other edges
-    while(i > 0 && junctions[i-1][0] === e) {
+    // Split other edges
+    while (i > 0 && junctions[i - 1][0] === e) {
       var junction = junctions[--i]
       var next = junction[1]
-      if(useColor) {
+      if (useColor) {
         edges.push([last, next, color])
       } else {
         edges.push([last, next])
@@ -8437,93 +9617,108 @@ function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
       last = next
     }
 
-    //Add final edge
-    if(useColor) {
+    // Add final edge
+    if (useColor) {
       edges.push([last, t, color])
     } else {
       edges.push([last, t])
     }
   }
 
-  //Return constructed rational points
+  // Return constructed rational points
   return ratPoints
 }
 
-//Merge overlapping points
-function dedupPoints(floatPoints, ratPoints, floatBounds) {
-  var numPoints = floatPoints.length + ratPoints.length
-  var uf        = new UnionFind(numPoints)
+// Merge overlapping points
+function dedupPoints (floatPoints, ratPoints, floatBounds) {
+  var numPoints = ratPoints.length
+  var uf = new UnionFind(numPoints)
 
-  //Compute rational bounds
-  var bounds = floatBounds
-  for(var i=0; i<ratPoints.length; ++i) {
+  // Compute rational bounds
+  var bounds = []
+  for (var i = 0; i < ratPoints.length; ++i) {
     var p = ratPoints[i]
     var xb = boundRat(p[0])
     var yb = boundRat(p[1])
-    bounds.push([ xb[0], yb[0], xb[1], yb[1] ])
-    floatPoints.push([ ratToFloat(p[0]), ratToFloat(p[1]) ])
+    bounds.push([
+      nextafter(xb[0], -Infinity),
+      nextafter(yb[0], -Infinity),
+      nextafter(xb[1], Infinity),
+      nextafter(yb[1], Infinity)
+    ])
   }
 
-  //Link all points with over lapping boxes
-  boxIntersect(bounds, function(i, j) {
+  // Link all points with over lapping boxes
+  boxIntersect(bounds, function (i, j) {
     uf.link(i, j)
   })
 
-  //Call find on each point to get a relabeling
-  var ptr = 0
+  // Do 1 pass over points to combine points in label sets
   var noDupes = true
   var labels = new Array(numPoints)
-  for(var i=0; i<numPoints; ++i) {
+  for (var i = 0; i < numPoints; ++i) {
     var j = uf.find(i)
-    if(j === i) {
-      //If not a duplicate, then don't bother
-      labels[i] = ptr
-      floatPoints[ptr++] = floatPoints[i]
-    } else {
-      //Clear no-dupes flag, zero out label
+    if (j !== i) {
+      // Clear no-dupes flag, zero out label
       noDupes = false
-      labels[i] = -1
+      // Make each point the top-left point from its cell
+      floatPoints[j] = [
+        Math.min(floatPoints[i][0], floatPoints[j][0]),
+        Math.min(floatPoints[i][1], floatPoints[j][1])
+      ]
     }
   }
-  floatPoints.length = ptr
 
-  //If no duplicates, return null to signal termination
-  if(noDupes) {
+  // If no duplicates, return null to signal termination
+  if (noDupes) {
     return null
   }
 
-  //Do a second pass to fix up missing labels
-  for(var i=0; i<numPoints; ++i) {
-    if(labels[i] < 0) {
+  var ptr = 0
+  for (var i = 0; i < numPoints; ++i) {
+    var j = uf.find(i)
+    if (j === i) {
+      labels[i] = ptr
+      floatPoints[ptr++] = floatPoints[i]
+    } else {
+      labels[i] = -1
+    }
+  }
+
+  floatPoints.length = ptr
+
+  // Do a second pass to fix up missing labels
+  for (var i = 0; i < numPoints; ++i) {
+    if (labels[i] < 0) {
       labels[i] = labels[uf.find(i)]
     }
   }
 
-  //Return resulting union-find data structure
+  // Return resulting union-find data structure
   return labels
 }
 
-function compareLex2(a,b) { return (a[0]-b[0]) || (a[1]-b[1]) }
-function compareLex3(a,b) {
+function compareLex2 (a, b) { return (a[0] - b[0]) || (a[1] - b[1]) }
+function compareLex3 (a, b) {
   var d = (a[0] - b[0]) || (a[1] - b[1])
-  if(d) {
+  if (d) {
     return d
   }
-  if(a[2] < b[2]) {
+  if (a[2] < b[2]) {
     return -1
-  } else if(a[2] > b[2]) {
+  } else if (a[2] > b[2]) {
     return 1
   }
   return 0
 }
 
-//Remove duplicate edge labels
-function dedupEdges(edges, labels, useColor) {
-  if(edges.length === 0) {
+// Remove duplicate edge labels
+function dedupEdges (edges, labels, useColor) {
+  if (edges.length === 0) {
     return
   }
-  if(labels) {
-    for(var i=0; i<edges.length; ++i) {
+  if (labels) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       var a = labels[e[0]]
       var b = labels[e[1]]
@@ -8531,7 +9726,7 @@ function dedupEdges(edges, labels, useColor) {
       e[1] = Math.max(a, b)
     }
   } else {
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       var a = e[0]
       var b = e[1]
@@ -8539,16 +9734,16 @@ function dedupEdges(edges, labels, useColor) {
       e[1] = Math.max(a, b)
     }
   }
-  if(useColor) {
+  if (useColor) {
     edges.sort(compareLex3)
   } else {
     edges.sort(compareLex2)
   }
   var ptr = 1
-  for(var i=1; i<edges.length; ++i) {
-    var prev = edges[i-1]
+  for (var i = 1; i < edges.length; ++i) {
+    var prev = edges[i - 1]
     var next = edges[i]
-    if(next[0] === prev[0] && next[1] === prev[1] &&
+    if (next[0] === prev[0] && next[1] === prev[1] &&
       (!useColor || next[2] === prev[2])) {
       continue
     }
@@ -8557,28 +9752,33 @@ function dedupEdges(edges, labels, useColor) {
   edges.length = ptr
 }
 
-//Repeat until convergence
-function snapRound(points, edges, useColor) {
+function preRound (points, edges, useColor) {
+  var labels = dedupPoints(points, [], boundPoints(points))
+  dedupEdges(edges, labels, useColor)
+  return !!labels
+}
 
+// Repeat until convergence
+function snapRound (points, edges, useColor) {
   // 1. find edge crossings
   var edgeBounds = boundEdges(points, edges)
-  var crossings  = getCrossings(points, edges, edgeBounds)
+  var crossings = getCrossings(points, edges, edgeBounds)
 
   // 2. find t-junctions
   var vertBounds = boundPoints(points)
   var tjunctions = getTJunctions(points, edges, edgeBounds, vertBounds)
 
   // 3. cut edges, construct rational points
-  var ratPoints  = cutEdges(points, edges, crossings, tjunctions, useColor)
+  var ratPoints = cutEdges(points, edges, crossings, tjunctions, useColor)
 
   // 4. dedupe verts
-  var labels     = dedupPoints(points, ratPoints, vertBounds)
+  var labels = dedupPoints(points, ratPoints, vertBounds)
 
-  // 6. dedupe edges
+  // 5. dedupe edges
   dedupEdges(edges, labels, useColor)
 
-  // 5. check termination
-  if(!labels) {
+  // 6. check termination
+  if (!labels) {
     return (crossings.length > 0 || tjunctions.length > 0)
   }
 
@@ -8586,32 +9786,33 @@ function snapRound(points, edges, useColor) {
   return true
 }
 
-//Main loop, runs PSLG clean up until completion
-function cleanPSLG(points, edges, colors) {
-  var modified = false
-
-  //If using colors, augment edges with color data
+// Main loop, runs PSLG clean up until completion
+function cleanPSLG (points, edges, colors) {
+  // If using colors, augment edges with color data
   var prevEdges
-  if(colors) {
+  if (colors) {
     prevEdges = edges
     var augEdges = new Array(edges.length)
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       augEdges[i] = [e[0], e[1], colors[i]]
     }
     edges = augEdges
   }
 
-  //Run snap rounding until convergence
-  while(snapRound(points, edges, !!colors)) {
+  // First round: remove duplicate edges and points
+  var modified = preRound(points, edges, !!colors)
+
+  // Run snap rounding until convergence
+  while (snapRound(points, edges, !!colors)) {
     modified = true
   }
 
-  //Strip color tags
-  if(!!colors && modified) {
+  // Strip color tags
+  if (!!colors && modified) {
     prevEdges.length = 0
     colors.length = 0
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       prevEdges.push([e[0], e[1]])
       colors.push(e[2])
@@ -8621,10 +9822,8 @@ function cleanPSLG(points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":58,"big-rat":21,"big-rat/cmp":19,"big-rat/to-float":33,"box-intersect":38,"compare-cell":63,"nextafter":193,"rat-vec":209,"robust-segment-intersect":223,"union-find":248}],58:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":59,"big-rat":21,"big-rat/cmp":19,"big-rat/to-float":33,"box-intersect":38,"nextafter":252,"rat-vec":268,"robust-segment-intersect":282,"union-find":307}],59:[function(require,module,exports){
 'use strict'
-
-//TODO: Move this to a separate module
 
 module.exports = solveIntersection
 
@@ -8636,26 +9835,24 @@ var rvSub = require('rat-vec/sub')
 var rvAdd = require('rat-vec/add')
 var rvMuls = require('rat-vec/muls')
 
-var toFloat = require('big-rat/to-float')
-
-function ratPerp(a, b) {
+function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
 }
 
-//Solve for intersection
+// Solve for intersection
 //  x = a + t (b-a)
 //  (x - c) ^ (d-c) = 0
 //  (t * (b-a) + (a-c) ) ^ (d-c) = 0
 //  t * (b-a)^(d-c) = (d-c)^(a-c)
 //  t = (d-c)^(a-c) / (b-a)^(d-c)
 
-function solveIntersection(a, b, c, d) {
+function solveIntersection (a, b, c, d) {
   var ba = rvSub(b, a)
   var dc = rvSub(d, c)
 
   var baXdc = ratPerp(ba, dc)
 
-  if(ratSign(baXdc) === 0) {
+  if (ratSign(baXdc) === 0) {
     return null
   }
 
@@ -8663,175 +9860,13 @@ function solveIntersection(a, b, c, d) {
   var dcXac = ratPerp(dc, ac)
 
   var t = ratDiv(dcXac, baXdc)
+  var s = rvMuls(ba, t)
+  var r = rvAdd(a, s)
 
-  return rvAdd(a, rvMuls(ba, t))
+  return r
 }
 
-},{"big-rat/div":20,"big-rat/mul":30,"big-rat/sign":31,"big-rat/sub":32,"big-rat/to-float":33,"rat-vec/add":208,"rat-vec/muls":210,"rat-vec/sub":211}],59:[function(require,module,exports){
-(function (Buffer){
-var clone = (function() {
-'use strict';
-
-/**
- * Clones (copies) an Object using deep copying.
- *
- * This function supports circular references by default, but if you are certain
- * there are no circular references in your object, you can save some CPU time
- * by calling clone(obj, false).
- *
- * Caution: if `circular` is false and `parent` contains circular references,
- * your program may enter an infinite loop and crash.
- *
- * @param `parent` - the object to be cloned
- * @param `circular` - set to true if the object to be cloned may contain
- *    circular references. (optional - true by default)
- * @param `depth` - set to a number if the object is only to be cloned to
- *    a particular depth. (optional - defaults to Infinity)
- * @param `prototype` - sets the prototype to be used when cloning an object.
- *    (optional - defaults to parent prototype).
-*/
-function clone(parent, circular, depth, prototype) {
-  var filter;
-  if (typeof circular === 'object') {
-    depth = circular.depth;
-    prototype = circular.prototype;
-    filter = circular.filter;
-    circular = circular.circular
-  }
-  // maintain two arrays for circular references, where corresponding parents
-  // and children have the same index
-  var allParents = [];
-  var allChildren = [];
-
-  var useBuffer = typeof Buffer != 'undefined';
-
-  if (typeof circular == 'undefined')
-    circular = true;
-
-  if (typeof depth == 'undefined')
-    depth = Infinity;
-
-  // recurse this function so we don't reset allParents and allChildren
-  function _clone(parent, depth) {
-    // cloning null always returns null
-    if (parent === null)
-      return null;
-
-    if (depth == 0)
-      return parent;
-
-    var child;
-    var proto;
-    if (typeof parent != 'object') {
-      return parent;
-    }
-
-    if (clone.__isArray(parent)) {
-      child = [];
-    } else if (clone.__isRegExp(parent)) {
-      child = new RegExp(parent.source, __getRegExpFlags(parent));
-      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.__isDate(parent)) {
-      child = new Date(parent.getTime());
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
-      parent.copy(child);
-      return child;
-    } else {
-      if (typeof prototype == 'undefined') {
-        proto = Object.getPrototypeOf(parent);
-        child = Object.create(proto);
-      }
-      else {
-        child = Object.create(prototype);
-        proto = prototype;
-      }
-    }
-
-    if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
-      allParents.push(parent);
-      allChildren.push(child);
-    }
-
-    for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
-      }
-
-      if (attrs && attrs.set == null) {
-        continue;
-      }
-      child[i] = _clone(parent[i], depth - 1);
-    }
-
-    return child;
-  }
-
-  return _clone(parent, depth);
-}
-
-/**
- * Simple flat clone using prototype, accepts only objects, usefull for property
- * override on FLAT configuration object (no nested props).
- *
- * USE WITH CAUTION! This may not behave as you wish if you do not know how this
- * works.
- */
-clone.clonePrototype = function clonePrototype(parent) {
-  if (parent === null)
-    return null;
-
-  var c = function () {};
-  c.prototype = parent;
-  return new c();
-};
-
-// private utility functions
-
-function __objToStr(o) {
-  return Object.prototype.toString.call(o);
-};
-clone.__objToStr = __objToStr;
-
-function __isDate(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
-clone.__isDate = __isDate;
-
-function __isArray(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
-clone.__isArray = __isArray;
-
-function __isRegExp(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
-clone.__isRegExp = __isRegExp;
-
-function __getRegExpFlags(re) {
-  var flags = '';
-  if (re.global) flags += 'g';
-  if (re.ignoreCase) flags += 'i';
-  if (re.multiline) flags += 'm';
-  return flags;
-};
-clone.__getRegExpFlags = __getRegExpFlags;
-
-return clone;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = clone;
-}
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":45}],60:[function(require,module,exports){
+},{"big-rat/div":20,"big-rat/mul":30,"big-rat/sign":31,"big-rat/sub":32,"rat-vec/add":267,"rat-vec/muls":269,"rat-vec/sub":270}],60:[function(require,module,exports){
 module.exports={
 	"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],
 
@@ -8877,7 +9912,7 @@ module.exports={
 
 	"electric":[{"index":0,"rgb":[0,0,0]},{"index":0.15,"rgb":[30,0,100]},{"index":0.4,"rgb":[120,0,100]},{"index":0.6,"rgb":[160,90,0]},{"index":0.8,"rgb":[230,200,0]},{"index":1,"rgb":[255,250,220]}],
 
-	"alpha": [{"index":0, "rgb": [255,255,255,0]},{"index":0, "rgb": [255,255,255,1]}],
+	"alpha": [{"index":0, "rgb": [255,255,255,0]},{"index":1, "rgb": [255,255,255,1]}],
 
 	"viridis": [{"index":0,"rgb":[68,1,84]},{"index":0.13,"rgb":[71,44,122]},{"index":0.25,"rgb":[59,81,139]},{"index":0.38,"rgb":[44,113,142]},{"index":0.5,"rgb":[33,144,141]},{"index":0.63,"rgb":[39,173,129]},{"index":0.75,"rgb":[92,200,99]},{"index":0.88,"rgb":[170,220,50]},{"index":1,"rgb":[253,231,37]}],
 
@@ -8932,9 +9967,8 @@ module.exports={
  */
 'use strict';
 
-var at = require('arraytools');
-var clone = require('clone');
-var colorScale = require('./colorScales');
+var colorScale = require('./colorScale');
+var lerp = require('lerp')
 
 module.exports = createColormap;
 
@@ -8942,17 +9976,13 @@ function createColormap (spec) {
     /*
      * Default Options
      */
-    var indicies, rgba, fromrgba, torgba,
+    var indicies, fromrgba, torgba,
         nsteps, cmap, colormap, format,
-        nshades, colors, alpha, index, i,
-        r = [],
-        g = [],
-        b = [],
-        a = [];
+        nshades, colors, alpha, i;
 
-    if ( !at.isPlainObject(spec) ) spec = {};
+    if ( !spec ) spec = {};
 
-    nshades = spec.nshades || 72;
+    nshades = (spec.nshades || 72) - 1;
     format = spec.format || 'hex';
 
     colormap = spec.colormap;
@@ -8965,16 +9995,16 @@ function createColormap (spec) {
             throw Error(colormap + ' not a supported colorscale');
         }
 
-        cmap = clone(colorScale[colormap]);
+        cmap = colorScale[colormap];
 
     } else if (Array.isArray(colormap)) {
-        cmap = clone(colormap);
+        cmap = colormap.slice();
 
     } else {
         throw Error('unsupported colormap option', colormap);
     }
 
-    if (cmap.length > nshades) {
+    if (cmap.length > nshades + 1) {
         throw new Error(
             colormap+' map requires nshades to be at least size '+cmap.length
         );
@@ -8993,59 +10023,72 @@ function createColormap (spec) {
         alpha = [1, 1];
 
     } else {
-        alpha = clone(spec.alpha);
+        alpha = spec.alpha.slice();
     }
 
-    /*
-     * map index points from 0->1 to 0 -> n-1
-     */
+    // map index points from 0..1 to 0..n-1
     indicies = cmap.map(function(c) {
         return Math.round(c.index * nshades);
     });
 
-    /*
-     * Add alpha channel to the map
-     */
-    if (alpha[0] < 0) alpha[0] = 0;
-    if (alpha[1] < 0) alpha[0] = 0;
-    if (alpha[0] > 1) alpha[0] = 1;
-    if (alpha[1] > 1) alpha[0] = 1;
+    // Add alpha channel to the map
+    alpha[0] = Math.min(Math.max(alpha[0], 0), 1);
+    alpha[1] = Math.min(Math.max(alpha[1], 0), 1);
 
-    for (i = 0; i < indicies.length; ++i) {
-        index = cmap[i].index;
-        rgba = cmap[i].rgb;
+    var steps = cmap.map(function(c, i) {
+        var index = cmap[i].index
+
+        var rgba = cmap[i].rgb.slice();
 
         // if user supplies their own map use it
-        if (rgba.length === 4 && rgba[3] >= 0 && rgba[3] <= 1) continue;
+        if (rgba.length === 4 && rgba[3] >= 0 && rgba[3] <= 1) {
+            return rgba
+        }
         rgba[3] = alpha[0] + (alpha[1] - alpha[0])*index;
-    }
+
+        return rgba
+    })
+
 
     /*
      * map increasing linear values between indicies to
      * linear steps in colorvalues
      */
+    var colors = []
     for (i = 0; i < indicies.length-1; ++i) {
         nsteps = indicies[i+1] - indicies[i];
-        fromrgba = cmap[i].rgb;
-        torgba = cmap[i+1].rgb;
-        r = r.concat(at.linspace(fromrgba[0], torgba[0], nsteps ) );
-        g = g.concat(at.linspace(fromrgba[1], torgba[1], nsteps ) );
-        b = b.concat(at.linspace(fromrgba[2], torgba[2], nsteps ) );
-        a = a.concat(at.linspace(fromrgba[3], torgba[3], nsteps ) );
+        fromrgba = steps[i];
+        torgba = steps[i+1];
+
+        for (var j = 0; j < nsteps; j++) {
+            var amt = j / nsteps
+            colors.push([
+                Math.round(lerp(fromrgba[0], torgba[0], amt)),
+                Math.round(lerp(fromrgba[1], torgba[1], amt)),
+                Math.round(lerp(fromrgba[2], torgba[2], amt)),
+                lerp(fromrgba[3], torgba[3], amt)
+            ])
+        }
     }
 
-    r = r.map( Math.round );
-    g = g.map( Math.round );
-    b = b.map( Math.round );
-
-    colors = at.zip(r, g, b, a);
+    //add 1 step as last value
+    colors.push(cmap[cmap.length - 1].rgb.concat(alpha[1]))
 
     if (format === 'hex') colors = colors.map( rgb2hex );
-    if (format === 'rgbaString') colors = colors.map( rgbaStr );
+    else if (format === 'rgbaString') colors = colors.map( rgbaStr );
+    else if (format === 'float') colors = colors.map( rgb2float );
 
     return colors;
 };
 
+function rgb2float (rgba) {
+    return [
+        rgba[0] / 255,
+        rgba[1] / 255,
+        rgba[2] / 255,
+        rgba[3]
+    ]
+}
 
 function rgb2hex (rgba) {
     var dig, hex = '#';
@@ -9061,7 +10104,7 @@ function rgbaStr (rgba) {
     return 'rgba(' + rgba.join(',') + ')';
 }
 
-},{"./colorScales":60,"arraytools":15,"clone":59}],62:[function(require,module,exports){
+},{"./colorScale":60,"lerp":228}],62:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -9147,7 +10190,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":220,"robust-product":221,"robust-sum":225,"signum":226,"two-sum":246}],63:[function(require,module,exports){
+},{"robust-orientation":279,"robust-product":280,"robust-sum":284,"signum":285,"two-sum":305}],63:[function(require,module,exports){
 module.exports = compareCells
 
 var min = Math.min
@@ -9215,7 +10258,7 @@ function compareOrientedCells(a, b) {
   return compareCells(a, b) || parity(a) - parity(b)
 }
 
-},{"cell-orientation":54,"compare-cell":63}],65:[function(require,module,exports){
+},{"cell-orientation":55,"compare-cell":63}],65:[function(require,module,exports){
 "use strict"
 
 var convexHull1d = require('./lib/ch1d')
@@ -9288,7 +10331,7 @@ function convexHull2D(points) {
   return edges
 }
 
-},{"monotone-convex-hull-2d":177}],68:[function(require,module,exports){
+},{"monotone-convex-hull-2d":235}],68:[function(require,module,exports){
 'use strict'
 
 module.exports = convexHullnD
@@ -9349,7 +10392,7 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":12,"incremental-convex-hull":166}],69:[function(require,module,exports){
+},{"affine-hull":12,"incremental-convex-hull":220}],69:[function(require,module,exports){
 "use strict"
 
 function dcubicHermite(p0, v0, p1, v1, t, f) {
@@ -9529,7 +10572,9 @@ function innerFill(order, proc, body) {
       }
     }
   }
-  code.push("var " + vars.join(","))
+  if (vars.length > 0) {
+    code.push("var " + vars.join(","))
+  }  
   //Scan loop
   for(i=dimension-1; i>=0; --i) { // Start at largest stride and work your way inwards
     idx = order[i]
@@ -9822,7 +10867,9 @@ function generateCWiseOp(proc, typesig) {
                       .concat(proc.body.thisVars)
                       .concat(proc.post.thisVars))
   vars = vars.concat(thisVars)
-  code.push("var " + vars.join(","))
+  if (vars.length > 0) {
+    code.push("var " + vars.join(","))
+  }
   for(var i=0; i<proc.arrayArgs.length; ++i) {
     code.push("p"+i+"|=0")
   }
@@ -9856,7 +10903,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":249}],72:[function(require,module,exports){
+},{"uniq":308}],72:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -19661,7 +20708,7 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":166,"uniq":249}],76:[function(require,module,exports){
+},{"incremental-convex-hull":220,"uniq":308}],76:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -19765,7 +20812,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":45}],77:[function(require,module,exports){
+},{"buffer":46}],77:[function(require,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -19849,7 +20896,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":249}],79:[function(require,module,exports){
+},{"uniq":308}],79:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -21006,7 +22053,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":206}],80:[function(require,module,exports){
+},{"_process":265}],80:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21338,38 +22385,7 @@ function extractPlanes(M, zNear, zFar) {
 
 'use strict';
 
-/**
- * Is this string all whitespace?
- * This solution kind of makes my brain hurt, but it's significantly faster
- * than !str.trim() or any other solution I could find.
- *
- * whitespace codes from: http://en.wikipedia.org/wiki/Whitespace_character
- * and verified with:
- *
- *  for(var i = 0; i < 65536; i++) {
- *      var s = String.fromCharCode(i);
- *      if(+s===0 && !s.trim()) console.log(i, s);
- *  }
- *
- * which counts a couple of these as *not* whitespace, but finds nothing else
- * that *is* whitespace. Note that charCodeAt stops at 16 bits, but it appears
- * that there are no whitespace characters above this, and code points above
- * this do not map onto white space characters.
- */
-function allBlankCharCodes(str){
-    var l = str.length,
-        a;
-    for(var i = 0; i < l; i++) {
-        a = str.charCodeAt(i);
-        if((a < 9 || a > 13) && (a !== 32) && (a !== 133) && (a !== 160) &&
-            (a !== 5760) && (a !== 6158) && (a < 8192 || a > 8205) &&
-            (a !== 8232) && (a !== 8233) && (a !== 8239) && (a !== 8287) &&
-            (a !== 8288) && (a !== 12288) && (a !== 65279)) {
-                return false;
-        }
-    }
-    return true;
-}
+var allBlankCharCodes = require('is-string-blank');
 
 module.exports = function(n) {
     var type = typeof n;
@@ -21384,7 +22400,7 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],83:[function(require,module,exports){
+},{"is-string-blank":227}],83:[function(require,module,exports){
 'use strict'
 
 module.exports = createFilteredVector
@@ -22822,6 +23838,7 @@ function Axes(gl) {
   this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
   this.tickSize       = [ 12, 12, 12 ]
   this.tickAngle      = [ 0, 0, 0 ]
+  this.tickAlign      = [ 'auto', 'auto', 'auto' ]
   this.tickColor      = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ]
   this.tickPad        = [ 10, 10, 10 ]
 
@@ -22835,6 +23852,7 @@ function Axes(gl) {
   this.labelFont      = 'sans-serif'
   this.labelSize      = [ 20, 20, 20 ]
   this.labelAngle     = [ 0, 0, 0 ]
+  this.labelAlign     = [ 'auto', 'auto', 'auto' ]
   this.labelColor     = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ]
   this.labelPad       = [ 10, 10, 10 ]
 
@@ -23088,7 +24106,8 @@ var CUBE_ENABLE = [0,0,0]
 var DEFAULT_PARAMS = {
   model:      identity,
   view:       identity,
-  projection: identity
+  projection: identity,
+  _ortho:      false
 }
 
 proto.isOpaque = function() {
@@ -23101,6 +24120,7 @@ proto.isTransparent = function() {
 
 proto.drawTransparent = function(params) {}
 
+var ALIGN_OPTION_AUTO = 0 // i.e. as defined in the shader the text would rotate to stay upwards range: [-90,90]
 
 var PRIMAL_MINOR  = [0,0,0]
 var MIRROR_MINOR  = [0,0,0]
@@ -23116,9 +24136,10 @@ proto.draw = function(params) {
   var view        = params.view || identity
   var projection  = params.projection || identity
   var bounds      = this.bounds
+  var isOrtho     = params._ortho || false
 
   //Unpack axis info
-  var cubeParams  = getCubeProperties(model, view, projection, bounds)
+  var cubeParams  = getCubeProperties(model, view, projection, bounds, isOrtho)
   var cubeEdges   = cubeParams.cubeEdges
   var cubeAxis    = cubeParams.axis
 
@@ -23127,7 +24148,8 @@ proto.draw = function(params) {
   var cz = view[14]
   var cw = view[15]
 
-  var pixelScaleF = this.pixelRatio * (projection[3]*cx + projection[7]*cy + projection[11]*cz + projection[15]*cw) / gl.drawingBufferHeight
+  var orthoFix = (isOrtho) ? 2 : 1 // double up padding for orthographic ticks & labels
+  var pixelScaleF = orthoFix * this.pixelRatio * (projection[3]*cx + projection[7]*cy + projection[11]*cz + projection[15]*cw) / gl.drawingBufferHeight
 
   for(var i=0; i<3; ++i) {
     this.lastCubeProps.cubeEdges[i] = cubeEdges[i]
@@ -23197,7 +24219,7 @@ proto.draw = function(params) {
       var v = (i + 1 + (j^1)) % 3
       if(this.zeroEnable[v]) {
         //Check if zero line in bounds
-        if(bounds[0][v] <= 0 && bounds[1][v] >= 0) {
+        if(Math.min(bounds[0][v], bounds[1][v]) <= 0 && Math.max(bounds[0][v], bounds[1][v]) >= 0) {
           this._lines.drawZero(u, v, this.bounds, x, this.zeroLineColor[v], this.zeroLineWidth[v]*this.pixelRatio)
         }
       }
@@ -23219,12 +24241,13 @@ proto.draw = function(params) {
     var primalMinor = copyVec3(PRIMAL_MINOR, lineOffset[i].primalMinor)
     var mirrorMinor = copyVec3(MIRROR_MINOR, lineOffset[i].mirrorMinor)
     var tickLength  = this.lineTickLength
-    var op = 0
     for(var j=0; j<3; ++j) {
       var scaleFactor = pixelScaleF / model[5*j]
       primalMinor[j] *= tickLength[j] * scaleFactor
       mirrorMinor[j] *= tickLength[j] * scaleFactor
     }
+
+
 
     //Draw axis line ticks
     if(this.lineTickEnable[i]) {
@@ -23234,6 +24257,7 @@ proto.draw = function(params) {
       this._lines.drawAxisTicks(i, lineOffset[i].mirrorOffset, mirrorMinor, this.lineTickColor[i], this.lineTickWidth[i]*this.pixelRatio)
     }
   }
+  this._lines.unbind()
 
   //Draw text sprites
   this._text.bind(
@@ -23242,9 +24266,48 @@ proto.draw = function(params) {
     projection,
     this.pixelRatio)
 
+  var alignOpt // options in shader are from this list {-1, 0, 1, 2, 3, ..., n}
+  // -1: backward compatible
+  //  0: raw data
+  //  1: auto align, free angles
+  //  2: auto align, horizontal or vertical
+  //3-n: auto align, round to n directions e.g. 12 -> round to angles with 30-degree steps
+
+  var hv_ratio = 0.5 // can have an effect on the ratio between horizontals and verticals when using option 2
+
+  var enableAlign
+  var alignDir
+
+  function alignTo(i) {
+    alignDir = [0,0,0]
+    alignDir[i] = 1
+  }
+
+  function solveTickAlignments(i, minor, major) {
+
+    var i1 = (i + 1) % 3
+    var i2 = (i + 2) % 3
+
+    var A = minor[i1]
+    var B = minor[i2]
+    var C = major[i1]
+    var D = major[i2]
+
+         if ((A > 0) && (D > 0)) { alignTo(i1); return; }
+    else if ((A > 0) && (D < 0)) { alignTo(i1); return; }
+    else if ((A < 0) && (D > 0)) { alignTo(i1); return; }
+    else if ((A < 0) && (D < 0)) { alignTo(i1); return; }
+    else if ((B > 0) && (C > 0)) { alignTo(i2); return; }
+    else if ((B > 0) && (C < 0)) { alignTo(i2); return; }
+    else if ((B < 0) && (C > 0)) { alignTo(i2); return; }
+    else if ((B < 0) && (C < 0)) { alignTo(i2); return; }
+  }
+
   for(var i=0; i<3; ++i) {
 
     var minor      = lineOffset[i].primalMinor
+    var major      = lineOffset[i].mirrorMinor
+
     var offset     = copyVec3(PRIMAL_OFFSET, lineOffset[i].primalOffset)
 
     for(var j=0; j<3; ++j) {
@@ -23253,8 +24316,27 @@ proto.draw = function(params) {
       }
     }
 
+    var axis = [0,0,0]
+    axis[i] = 1
+
     //Draw tick text
     if(this.tickEnable[i]) {
+
+      if(this.tickAngle[i] === -3600) {
+        this.tickAngle[i] = 0
+        this.tickAlign[i] = 'auto'
+      } else {
+        this.tickAlign[i] = -1
+      }
+
+      enableAlign = 1;
+
+      alignOpt = [this.tickAlign[i], hv_ratio, enableAlign]
+      if(alignOpt[0] === 'auto') alignOpt[0] = ALIGN_OPTION_AUTO
+      else alignOpt[0] = parseInt('' + alignOpt[0])
+
+      alignDir = [0,0,0]
+      solveTickAlignments(i, minor, major)
 
       //Add tick padding
       for(var j=0; j<3; ++j) {
@@ -23267,11 +24349,25 @@ proto.draw = function(params) {
         this.tickSize[i],
         this.tickAngle[i],
         offset,
-        this.tickColor[i])
+        this.tickColor[i],
+        axis,
+        alignDir,
+        alignOpt)
     }
 
     //Draw labels
     if(this.labelEnable[i]) {
+
+      enableAlign = 0
+      alignDir = [0,0,0]
+      if(this.labels[i].length > 4) { // for large label axis enable alignDir to axis
+        alignTo(i)
+        enableAlign = 1
+      }
+
+      alignOpt = [this.labelAlign[i], hv_ratio, enableAlign]
+      if(alignOpt[0] === 'auto') alignOpt[0] = ALIGN_OPTION_AUTO
+      else alignOpt[0] = parseInt('' + alignOpt[0])
 
       //Add label padding
       for(var j=0; j<3; ++j) {
@@ -23285,9 +24381,14 @@ proto.draw = function(params) {
         this.labelSize[i],
         this.labelAngle[i],
         offset,
-        this.labelColor[i])
+        this.labelColor[i],
+        [0,0,0],
+        alignDir,
+        alignOpt)
     }
   }
+
+  this._text.unbind()
 }
 
 proto.dispose = function() {
@@ -23349,6 +24450,7 @@ proto.draw = function(model, view, projection, bounds, enable, colors) {
   }
   this.vao.bind()
   this.vao.draw(this.gl.TRIANGLES, 36)
+  this.vao.unbind()
 
   gl.disable(gl.POLYGON_OFFSET_FILL)
 }
@@ -23418,19 +24520,17 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":91,"gl-buffer":95,"gl-vao":149}],89:[function(require,module,exports){
+},{"./shaders":91,"gl-buffer":102,"gl-vao":202}],89:[function(require,module,exports){
 "use strict"
 
 module.exports = getCubeEdges
 
 var bits      = require('bit-twiddle')
 var multiply  = require('gl-mat4/multiply')
-var invert    = require('gl-mat4/invert')
 var splitPoly = require('split-polygon')
 var orient    = require('robust-orientation')
 
 var mvp        = new Array(16)
-var imvp       = new Array(16)
 var pCubeVerts = new Array(8)
 var cubeVerts  = new Array(8)
 var x          = new Array(3)
@@ -23502,12 +24602,12 @@ var CUBE_RESULT = {
   axis: CUBE_AXIS
 }
 
-function getCubeEdges(model, view, projection, bounds) {
+function getCubeEdges(model, view, projection, bounds, ortho) {
 
   //Concatenate matrices
   multiply(mvp, view, model)
   multiply(mvp, projection, mvp)
-  
+
   //First project cube vertices
   var ptr = 0
   for(var i=0; i<2; ++i) {
@@ -23530,13 +24630,16 @@ function getCubeEdges(model, view, projection, bounds) {
     for(var l=0; l<3; ++l) {
       cubeVerts[i][l] = pCubeVerts[i][l] / w
     }
+
+    if(ortho) cubeVerts[i][2] *= -1;
+
     if(w < 0) {
       if(closest < 0) {
         closest = i
       } else if(cubeVerts[i][2] < cubeVerts[closest][2]) {
         closest = i
       }
-    }    
+    }
   }
 
   if(closest < 0) {
@@ -23564,15 +24667,15 @@ function getCubeEdges(model, view, projection, bounds) {
           closest |= 1<<d
         }
         continue
-      } 
+      }
       for(var s=0; s<2; ++s) {
         var f0 = (s<<d)
         var f1 = f0 + (s << u) + ((1-s) << v)
-        var f2 = f0 + ((1-s) << u) + (s << v)    
+        var f2 = f0 + ((1-s) << u) + (s << v)
         var o = polygonArea([
-            pCubeVerts[f0], 
-            pCubeVerts[f1], 
-            pCubeVerts[f2], 
+            pCubeVerts[f0],
+            pCubeVerts[f1],
+            pCubeVerts[f2],
             pCubeVerts[f0+(1<<u)+(1<<v)]])
         if(s) {
           o0 = o
@@ -23659,7 +24762,7 @@ function getCubeEdges(model, view, projection, bounds) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":35,"gl-mat4/invert":112,"gl-mat4/multiply":114,"robust-orientation":220,"split-polygon":237}],90:[function(require,module,exports){
+},{"bit-twiddle":35,"gl-mat4/multiply":136,"robust-orientation":279,"split-polygon":296}],90:[function(require,module,exports){
 'use strict'
 
 module.exports    = createLines
@@ -23710,6 +24813,10 @@ proto.bind = function(model, view, projection) {
 
   this.shader.uniforms.screenShape = SHAPE
   this.vao.bind()
+}
+
+proto.unbind = function() {
+  this.vao.unbind()
 }
 
 proto.drawAxisLine = function(j, bounds, offset, color, lineWidth) {
@@ -23865,30 +24972,30 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":91,"gl-buffer":95,"gl-vao":149}],91:[function(require,module,exports){
+},{"./shaders":91,"gl-buffer":102,"gl-vao":202}],91:[function(require,module,exports){
 'use strict'
 
-
+var glslify = require('glslify')
 var createShader = require('gl-shader')
 
-var lineVert = "#define GLSLIFY 1\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"
-var lineFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"
+var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
+var lineFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
 exports.line = function(gl) {
   return createShader(gl, lineVert, lineFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var textVert = "#define GLSLIFY 1\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvoid main() {  \n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n  mat2 planeXform = scale * mat2(cos(angle), sin(angle),\n                                -sin(angle), cos(angle));\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n  vec4 worldPosition = model * vec4(dataPosition, 1);\n  \n  //Compute clip position\n  vec4 viewPosition = view * worldPosition;\n  vec4 clipPosition = projection * viewPosition;\n  clipPosition /= clipPosition.w;\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec4(viewOffset, 0, 0);\n\n  //Done\n  gl_Position = clipPosition;\n}"
-var textFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"
+var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
+var textFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
 exports.text = function(gl) {
   return createShader(gl, textVert, textFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var bgVert = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  if(dot(normal, enable) > 0.0) {\n    vec3 nPosition = mix(bounds[0], bounds[1], 0.5 * (position + 1.0));\n    gl_Position = projection * view * model * vec4(nPosition, 1.0);\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n  colorChannel = abs(normal);\n}"
-var bgFrag = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 colors[3];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  gl_FragColor = colorChannel.x * colors[0] + \n                 colorChannel.y * colors[1] +\n                 colorChannel.z * colors[2];\n}"
+var bgVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n\n  vec3 signAxis = sign(bounds[1] - bounds[0]);\n\n  vec3 realNormal = signAxis * normal;\n\n  if(dot(realNormal, enable) > 0.0) {\n    vec3 minRange = min(bounds[0], bounds[1]);\n    vec3 maxRange = max(bounds[0], bounds[1]);\n    vec3 nPosition = mix(minRange, maxRange, 0.5 * (position + 1.0));\n    gl_Position = projection * view * model * vec4(nPosition, 1.0);\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n\n  colorChannel = abs(realNormal);\n}"])
+var bgFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 colors[3];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  gl_FragColor = colorChannel.x * colors[0] +\n                 colorChannel.y * colors[1] +\n                 colorChannel.z * colors[2];\n}"])
 exports.bg = function(gl) {
   return createShader(gl, bgVert, bgFrag, null, [
     {name: 'position', type: 'vec3'},
@@ -23896,7 +25003,7 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":134}],92:[function(require,module,exports){
+},{"gl-shader":94,"glslify":217}],92:[function(require,module,exports){
 (function (process){
 "use strict"
 
@@ -23917,7 +25024,6 @@ globals.__TEXT_CACHE = {}
 //
 
 var VERTEX_SIZE = 3
-var VERTEX_STRIDE = VERTEX_SIZE * 4
 
 function TextSprites(
   gl,
@@ -23951,11 +25057,14 @@ proto.bind = function(model, view, projection, pixelScale) {
   this.shader.uniforms.resolution = SHAPE
 }
 
+proto.unbind = function() {
+  this.vao.unbind()
+}
+
 proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
-  var gl = this.gl
   var data = []
 
-  function addItem(t, text, font, size) {
+  function addItem(t, text, font, size, lineSpacing, styletags) {
     var fontcache = __TEXT_CACHE[font]
     if(!fontcache) {
       fontcache = __TEXT_CACHE[font] = {}
@@ -23966,14 +25075,14 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
         triangles: true,
         font: font,
         textAlign: 'center',
-        textBaseline: 'middle'
+        textBaseline: 'middle',
+        lineSpacing: lineSpacing,
+        styletags: styletags
       })
     }
     var scale = (size || 12) / 12
     var positions = mesh.positions
     var cells = mesh.cells
-    var lo = [ Infinity, Infinity]
-    var hi = [-Infinity,-Infinity]
     for(var i=0, nc=cells.length; i<nc; ++i) {
       var c = cells[i]
       for(var j=2; j>=0; --j) {
@@ -23988,11 +25097,26 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
   var tickCount   = [0,0,0]
   var labelOffset = [0,0,0]
   var labelCount  = [0,0,0]
+  var lineSpacing = 1.25
+  var styletags = {
+    breaklines:true,
+    bolds: true,
+    italics: true,
+    subscripts:true,
+    superscripts:true
+  }
   for(var d=0; d<3; ++d) {
 
     //Generate label
     labelOffset[d] = (data.length/VERTEX_SIZE)|0
-    addItem(0.5*(bounds[0][d]+bounds[1][d]), labels[d], labelFont)
+    addItem(
+      0.5*(bounds[0][d]+bounds[1][d]),
+      labels[d],
+      labelFont[d],
+      12, // labelFontSize
+      lineSpacing,
+      styletags
+    )
     labelCount[d] = ((data.length/VERTEX_SIZE)|0) - labelOffset[d]
 
     //Generate sprites for tick marks
@@ -24005,7 +25129,10 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
         ticks[d][i].x,
         ticks[d][i].text,
         ticks[d][i].font || tickFont,
-        ticks[d][i].fontSize || 12)
+        ticks[d][i].fontSize || 12,
+        lineSpacing,
+        styletags
+      )
     }
     tickCount[d] = ((data.length/VERTEX_SIZE)|0) - tickOffset[d]
   }
@@ -24018,34 +25145,34 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
 }
 
 //Draws the tick marks for an axis
-var AXIS = [0,0,0]
-proto.drawTicks = function(d, scale, angle, offset, color) {
+proto.drawTicks = function(d, scale, angle, offset, color, axis, alignDir, alignOpt) {
   if(!this.tickCount[d]) {
     return
   }
 
-  var v = AXIS
-  v[0] = v[1] = v[2] = 0
-  v[d] = 1
-  this.shader.uniforms.axis = v
+  this.shader.uniforms.axis = axis
   this.shader.uniforms.color = color
   this.shader.uniforms.angle = angle
   this.shader.uniforms.scale = scale
   this.shader.uniforms.offset = offset
+  this.shader.uniforms.alignDir = alignDir
+  this.shader.uniforms.alignOpt = alignOpt
   this.vao.draw(this.gl.TRIANGLES, this.tickCount[d], this.tickOffset[d])
 }
 
 //Draws the text label for an axis
-var ZERO = [0,0,0]
-proto.drawLabel = function(d, scale, angle, offset, color) {
+proto.drawLabel = function(d, scale, angle, offset, color, axis, alignDir, alignOpt) {
   if(!this.labelCount[d]) {
     return
   }
-  this.shader.uniforms.axis = ZERO
+
+  this.shader.uniforms.axis = axis
   this.shader.uniforms.color = color
   this.shader.uniforms.angle = angle
   this.shader.uniforms.scale = scale
   this.shader.uniforms.offset = offset
+  this.shader.uniforms.alignDir = alignDir
+  this.shader.uniforms.alignOpt = alignOpt
   this.vao.draw(this.gl.TRIANGLES, this.labelCount[d], this.labelOffset[d])
 }
 
@@ -24060,7 +25187,7 @@ function tryVectorizeText(text, options) {
   try {
     return vectorizeText(text, options)
   } catch(e) {
-    console.warn('error vectorizing text:', e)
+    console.warn('error vectorizing text:"' + text + '" error:', e)
     return {
       cells: [],
       positions: []
@@ -24098,7 +25225,7 @@ function createTextSprites(
 }
 
 }).call(this,require('_process'))
-},{"./shaders":91,"_process":206,"gl-buffer":95,"gl-vao":149,"vectorize-text":250}],93:[function(require,module,exports){
+},{"./shaders":91,"_process":265,"gl-buffer":102,"gl-vao":202,"vectorize-text":309}],93:[function(require,module,exports){
 'use strict'
 
 exports.create   = defaultTicks
@@ -24180,6 +25307,1021 @@ function ticksEqual(ticksA, ticksB) {
   return true
 }
 },{}],94:[function(require,module,exports){
+'use strict'
+
+var createUniformWrapper   = require('./lib/create-uniforms')
+var createAttributeWrapper = require('./lib/create-attributes')
+var makeReflect            = require('./lib/reflect')
+var shaderCache            = require('./lib/shader-cache')
+var runtime                = require('./lib/runtime-reflect')
+var GLError                = require("./lib/GLError")
+
+//Shader object
+function Shader(gl) {
+  this.gl         = gl
+  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
+
+  //Default initialize these to null
+  this._vref      =
+  this._fref      =
+  this._relink    =
+  this.vertShader =
+  this.fragShader =
+  this.program    =
+  this.attributes =
+  this.uniforms   =
+  this.types      = null
+}
+
+var proto = Shader.prototype
+
+proto.bind = function() {
+  if(!this.program) {
+    this._relink()
+  }
+
+  // ensuring that we have the right number of enabled vertex attributes
+  var i
+  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
+  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
+  var oldAttribCount = this.gl.lastAttribCount
+  if(newAttribCount > oldAttribCount) {
+    for(i = oldAttribCount; i < newAttribCount; i++) {
+      this.gl.enableVertexAttribArray(i)
+    }
+  } else if(oldAttribCount > newAttribCount) {
+    for(i = newAttribCount; i < oldAttribCount; i++) {
+      this.gl.disableVertexAttribArray(i)
+    }
+  }
+
+  this.gl.lastAttribCount = newAttribCount
+
+  this.gl.useProgram(this.program)
+}
+
+proto.dispose = function() {
+
+  // disabling vertex attributes so new shader starts with zero
+  // and it's also useful if all shaders are disposed but the
+  // gl context is reused for subsequent replotting
+  var oldAttribCount = this.gl.lastAttribCount
+  for (var i = 0; i < oldAttribCount; i++) {
+    this.gl.disableVertexAttribArray(i)
+  }
+  this.gl.lastAttribCount = 0
+
+  if(this._fref) {
+    this._fref.dispose()
+  }
+  if(this._vref) {
+    this._vref.dispose()
+  }
+  this.attributes =
+  this.types      =
+  this.vertShader =
+  this.fragShader =
+  this.program    =
+  this._relink    =
+  this._fref      =
+  this._vref      = null
+}
+
+function compareAttributes(a, b) {
+  if(a.name < b.name) {
+    return -1
+  }
+  return 1
+}
+
+//Update export hook for glslify-live
+proto.update = function(
+    vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  //If only one object passed, assume glslify style output
+  if(!fragSource || arguments.length === 1) {
+    var obj = vertSource
+    vertSource = obj.vertex
+    fragSource = obj.fragment
+    uniforms   = obj.uniforms
+    attributes = obj.attributes
+  }
+
+  var wrapper = this
+  var gl      = wrapper.gl
+
+  //Compile vertex and fragment shaders
+  var pvref = wrapper._vref
+  wrapper._vref = shaderCache.shader(gl, gl.VERTEX_SHADER, vertSource)
+  if(pvref) {
+    pvref.dispose()
+  }
+  wrapper.vertShader = wrapper._vref.shader
+  var pfref = this._fref
+  wrapper._fref = shaderCache.shader(gl, gl.FRAGMENT_SHADER, fragSource)
+  if(pfref) {
+    pfref.dispose()
+  }
+  wrapper.fragShader = wrapper._fref.shader
+
+  //If uniforms/attributes is not specified, use RT reflection
+  if(!uniforms || !attributes) {
+
+    //Create initial test program
+    var testProgram = gl.createProgram()
+    gl.attachShader(testProgram, wrapper.fragShader)
+    gl.attachShader(testProgram, wrapper.vertShader)
+    gl.linkProgram(testProgram)
+    if(!gl.getProgramParameter(testProgram, gl.LINK_STATUS)) {
+      var errLog = gl.getProgramInfoLog(testProgram)
+      throw new GLError(errLog, 'Error linking program:' + errLog)
+    }
+
+    //Load data from runtime
+    uniforms   = uniforms   || runtime.uniforms(gl, testProgram)
+    attributes = attributes || runtime.attributes(gl, testProgram)
+
+    //Release test program
+    gl.deleteProgram(testProgram)
+  }
+
+  //Sort attributes lexicographically
+  // overrides undefined WebGL behavior for attribute locations
+  attributes = attributes.slice()
+  attributes.sort(compareAttributes)
+
+  //Convert attribute types, read out locations
+  var attributeUnpacked  = []
+  var attributeNames     = []
+  var attributeLocations = []
+  var i
+  for(i=0; i<attributes.length; ++i) {
+    var attr = attributes[i]
+    if(attr.type.indexOf('mat') >= 0) {
+      var size = attr.type.charAt(attr.type.length-1)|0
+      var locVector = new Array(size)
+      for(var j=0; j<size; ++j) {
+        locVector[j] = attributeLocations.length
+        attributeNames.push(attr.name + '[' + j + ']')
+        if(typeof attr.location === 'number') {
+          attributeLocations.push(attr.location + j)
+        } else if(Array.isArray(attr.location) &&
+                  attr.location.length === size &&
+                  typeof attr.location[j] === 'number') {
+          attributeLocations.push(attr.location[j]|0)
+        } else {
+          attributeLocations.push(-1)
+        }
+      }
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: locVector
+      })
+    } else {
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: [ attributeLocations.length ]
+      })
+      attributeNames.push(attr.name)
+      if(typeof attr.location === 'number') {
+        attributeLocations.push(attr.location|0)
+      } else {
+        attributeLocations.push(-1)
+      }
+    }
+  }
+
+  //For all unspecified attributes, assign them lexicographically min attribute
+  var curLocation = 0
+  for(i=0; i<attributeLocations.length; ++i) {
+    if(attributeLocations[i] < 0) {
+      while(attributeLocations.indexOf(curLocation) >= 0) {
+        curLocation += 1
+      }
+      attributeLocations[i] = curLocation
+    }
+  }
+
+  //Rebuild program and recompute all uniform locations
+  var uniformLocations = new Array(uniforms.length)
+  function relink() {
+    wrapper.program = shaderCache.program(
+        gl
+      , wrapper._vref
+      , wrapper._fref
+      , attributeNames
+      , attributeLocations)
+
+    for(var i=0; i<uniforms.length; ++i) {
+      uniformLocations[i] = gl.getUniformLocation(
+          wrapper.program
+        , uniforms[i].name)
+    }
+  }
+
+  //Perform initial linking, reuse program used for reflection
+  relink()
+
+  //Save relinking procedure, defer until runtime
+  wrapper._relink = relink
+
+  //Generate type info
+  wrapper.types = {
+    uniforms:   makeReflect(uniforms),
+    attributes: makeReflect(attributes)
+  }
+
+  //Generate attribute wrappers
+  wrapper.attributes = createAttributeWrapper(
+      gl
+    , wrapper
+    , attributeUnpacked
+    , attributeLocations)
+
+  //Generate uniform wrappers
+  Object.defineProperty(wrapper, 'uniforms', createUniformWrapper(
+      gl
+    , wrapper
+    , uniforms
+    , uniformLocations))
+}
+
+//Compiles and links a shader program with the given attribute and vertex list
+function createShader(
+    gl
+  , vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  var shader = new Shader(gl)
+
+  shader.update(
+      vertSource
+    , fragSource
+    , uniforms
+    , attributes)
+
+  return shader
+}
+
+module.exports = createShader
+
+},{"./lib/GLError":95,"./lib/create-attributes":96,"./lib/create-uniforms":97,"./lib/reflect":98,"./lib/runtime-reflect":99,"./lib/shader-cache":100}],95:[function(require,module,exports){
+function GLError (rawError, shortMessage, longMessage) {
+    this.shortMessage = shortMessage || ''
+    this.longMessage = longMessage || ''
+    this.rawError = rawError || ''
+    this.message =
+      'gl-shader: ' + (shortMessage || rawError || '') +
+      (longMessage ? '\n'+longMessage : '')
+    this.stack = (new Error()).stack
+}
+GLError.prototype = new Error
+GLError.prototype.name = 'GLError'
+GLError.prototype.constructor = GLError
+module.exports = GLError
+
+},{}],96:[function(require,module,exports){
+'use strict'
+
+module.exports = createAttributeWrapper
+
+var GLError = require("./GLError")
+
+function ShaderAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , constFunc) {
+  this._gl        = gl
+  this._wrapper   = wrapper
+  this._index     = index
+  this._locations = locations
+  this._dimension = dimension
+  this._constFunc = constFunc
+}
+
+var proto = ShaderAttribute.prototype
+
+proto.pointer = function setAttribPointer(
+    type
+  , normalized
+  , stride
+  , offset) {
+
+  var self      = this
+  var gl        = self._gl
+  var location  = self._locations[self._index]
+
+  gl.vertexAttribPointer(
+      location
+    , self._dimension
+    , type || gl.FLOAT
+    , !!normalized
+    , stride || 0
+    , offset || 0)
+  gl.enableVertexAttribArray(location)
+}
+
+proto.set = function(x0, x1, x2, x3) {
+  return this._constFunc(this._locations[this._index], x0, x1, x2, x3)
+}
+
+Object.defineProperty(proto, 'location', {
+  get: function() {
+    return this._locations[this._index]
+  }
+  , set: function(v) {
+    if(v !== this._locations[this._index]) {
+      this._locations[this._index] = v|0
+      this._wrapper.program = null
+    }
+    return v|0
+  }
+})
+
+//Adds a vector attribute to obj
+function addVectorAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  //Construct constant function
+  var constFuncArgs = [ 'gl', 'v' ]
+  var varNames = []
+  for(var i=0; i<dimension; ++i) {
+    constFuncArgs.push('x'+i)
+    varNames.push('x'+i)
+  }
+  constFuncArgs.push(
+    'if(x0.length===void 0){return gl.vertexAttrib' +
+    dimension + 'f(v,' +
+    varNames.join() +
+    ')}else{return gl.vertexAttrib' +
+    dimension +
+    'fv(v,x0)}')
+  var constFunc = Function.apply(null, constFuncArgs)
+
+  //Create attribute wrapper
+  var attr = new ShaderAttribute(
+      gl
+    , wrapper
+    , index
+    , locations
+    , dimension
+    , constFunc)
+
+  //Create accessor
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      gl.disableVertexAttribArray(locations[index])
+      constFunc(gl, locations[index], x)
+      return x
+    }
+    , get: function() {
+      return attr
+    }
+    , enumerable: true
+  })
+}
+
+function addMatrixAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  var parts = new Array(dimension)
+  var attrs = new Array(dimension)
+  for(var i=0; i<dimension; ++i) {
+    addVectorAttribute(
+        gl
+      , wrapper
+      , index[i]
+      , locations
+      , dimension
+      , parts
+      , i)
+    attrs[i] = parts[i]
+  }
+
+  Object.defineProperty(parts, 'location', {
+    set: function(v) {
+      if(Array.isArray(v)) {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v[i]
+        }
+      } else {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v + i
+        }
+      }
+      return v
+    }
+    , get: function() {
+      var result = new Array(dimension)
+      for(var i=0; i<dimension; ++i) {
+        result[i] = locations[index[i]]
+      }
+      return result
+    }
+    , enumerable: true
+  })
+
+  parts.pointer = function(type, normalized, stride, offset) {
+    type       = type || gl.FLOAT
+    normalized = !!normalized
+    stride     = stride || (dimension * dimension)
+    offset     = offset || 0
+    for(var i=0; i<dimension; ++i) {
+      var location = locations[index[i]]
+      gl.vertexAttribPointer(
+            location
+          , dimension
+          , type
+          , normalized
+          , stride
+          , offset + i * dimension)
+      gl.enableVertexAttribArray(location)
+    }
+  }
+
+  var scratch = new Array(dimension)
+  var vertexAttrib = gl['vertexAttrib' + dimension + 'fv']
+
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      for(var i=0; i<dimension; ++i) {
+        var loc = locations[index[i]]
+        gl.disableVertexAttribArray(loc)
+        if(Array.isArray(x[0])) {
+          vertexAttrib.call(gl, loc, x[i])
+        } else {
+          for(var j=0; j<dimension; ++j) {
+            scratch[j] = x[dimension*i + j]
+          }
+          vertexAttrib.call(gl, loc, scratch)
+        }
+      }
+      return x
+    }
+    , get: function() {
+      return parts
+    }
+    , enumerable: true
+  })
+}
+
+//Create shims for attributes
+function createAttributeWrapper(
+    gl
+  , wrapper
+  , attributes
+  , locations) {
+
+  var obj = {}
+  for(var i=0, n=attributes.length; i<n; ++i) {
+
+    var a = attributes[i]
+    var name = a.name
+    var type = a.type
+    var locs = a.locations
+
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'float':
+        addVectorAttribute(
+            gl
+          , wrapper
+          , locs[0]
+          , locations
+          , 1
+          , obj
+          , name)
+      break
+
+      default:
+        if(type.indexOf('vec') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addVectorAttribute(
+              gl
+            , wrapper
+            , locs[0]
+            , locations
+            , d
+            , obj
+            , name)
+        } else if(type.indexOf('mat') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addMatrixAttribute(
+              gl
+            , wrapper
+            , locs
+            , locations
+            , d
+            , obj
+            , name)
+        } else {
+          throw new GLError('', 'Unknown data type for attribute ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+  return obj
+}
+
+},{"./GLError":95}],97:[function(require,module,exports){
+'use strict'
+
+var coallesceUniforms = require('./reflect')
+var GLError = require("./GLError")
+
+module.exports = createUniformWrapper
+
+//Binds a function and returns a value
+function identity(x) {
+  var c = new Function('y', 'return function(){return y}')
+  return c(x)
+}
+
+function makeVector(length, fill) {
+  var result = new Array(length)
+  for(var i=0; i<length; ++i) {
+    result[i] = fill
+  }
+  return result
+}
+
+//Create shims for uniforms
+function createUniformWrapper(gl, wrapper, uniforms, locations) {
+
+  function makeGetter(index) {
+    var proc = new Function(
+        'gl'
+      , 'wrapper'
+      , 'locations'
+      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}')
+    return proc(gl, wrapper, locations)
+  }
+
+  function makePropSetter(path, index, type) {
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
+      case 'float':
+        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type')
+          }
+          switch(type.charAt(0)) {
+            case 'b':
+            case 'i':
+              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
+            case 'v':
+              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
+            default:
+              throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + type)
+          }
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
+        } else {
+          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function enumerateIndices(prefix, type) {
+    if(typeof type !== 'object') {
+      return [ [prefix, type] ]
+    }
+    var indices = []
+    for(var id in type) {
+      var prop = type[id]
+      var tprefix = prefix
+      if(parseInt(id) + '' === id) {
+        tprefix += '[' + id + ']'
+      } else {
+        tprefix += '.' + id
+      }
+      if(typeof prop === 'object') {
+        indices.push.apply(indices, enumerateIndices(tprefix, prop))
+      } else {
+        indices.push([tprefix, prop])
+      }
+    }
+    return indices
+  }
+
+  function makeSetter(type) {
+    var code = [ 'return function updateProperty(obj){' ]
+    var indices = enumerateIndices('', type)
+    for(var i=0; i<indices.length; ++i) {
+      var item = indices[i]
+      var path = item[0]
+      var idx  = item[1]
+      if(locations[idx]) {
+        code.push(makePropSetter(path, idx, uniforms[idx].type))
+      }
+    }
+    code.push('return obj}')
+    var proc = new Function('gl', 'locations', code.join('\n'))
+    return proc(gl, locations)
+  }
+
+  function defaultValue(type) {
+    switch(type) {
+      case 'bool':
+        return false
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 0
+      case 'float':
+        return 0.0
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type')
+          }
+          if(type.charAt(0) === 'b') {
+            return makeVector(d, false)
+          }
+          return makeVector(d, 0)
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return makeVector(d*d, 0)
+        } else {
+          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function storeProperty(obj, prop, type) {
+    if(typeof type === 'object') {
+      var child = processObject(type)
+      Object.defineProperty(obj, prop, {
+        get: identity(child),
+        set: makeSetter(type),
+        enumerable: true,
+        configurable: false
+      })
+    } else {
+      if(locations[type]) {
+        Object.defineProperty(obj, prop, {
+          get: makeGetter(type),
+          set: makeSetter(type),
+          enumerable: true,
+          configurable: false
+        })
+      } else {
+        obj[prop] = defaultValue(uniforms[type].type)
+      }
+    }
+  }
+
+  function processObject(obj) {
+    var result
+    if(Array.isArray(obj)) {
+      result = new Array(obj.length)
+      for(var i=0; i<obj.length; ++i) {
+        storeProperty(result, i, obj[i])
+      }
+    } else {
+      result = {}
+      for(var id in obj) {
+        storeProperty(result, id, obj[id])
+      }
+    }
+    return result
+  }
+
+  //Return data
+  var coallesced = coallesceUniforms(uniforms, true)
+  return {
+    get: identity(processObject(coallesced)),
+    set: makeSetter(coallesced),
+    enumerable: true,
+    configurable: true
+  }
+}
+
+},{"./GLError":95,"./reflect":98}],98:[function(require,module,exports){
+'use strict'
+
+module.exports = makeReflectTypes
+
+//Construct type info for reflection.
+//
+// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
+//
+// The leaves of the resulting object are either indices or type strings representing primitive glslify types
+function makeReflectTypes(uniforms, useIndex) {
+  var obj = {}
+  for(var i=0; i<uniforms.length; ++i) {
+    var n = uniforms[i].name
+    var parts = n.split(".")
+    var o = obj
+    for(var j=0; j<parts.length; ++j) {
+      var x = parts[j].split("[")
+      if(x.length > 1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = []
+        }
+        o = o[x[0]]
+        for(var k=1; k<x.length; ++k) {
+          var y = parseInt(x[k])
+          if(k<x.length-1 || j<parts.length-1) {
+            if(!(y in o)) {
+              if(k < x.length-1) {
+                o[y] = []
+              } else {
+                o[y] = {}
+              }
+            }
+            o = o[y]
+          } else {
+            if(useIndex) {
+              o[y] = i
+            } else {
+              o[y] = uniforms[i].type
+            }
+          }
+        }
+      } else if(j < parts.length-1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = {}
+        }
+        o = o[x[0]]
+      } else {
+        if(useIndex) {
+          o[x[0]] = i
+        } else {
+          o[x[0]] = uniforms[i].type
+        }
+      }
+    }
+  }
+  return obj
+}
+},{}],99:[function(require,module,exports){
+'use strict'
+
+exports.uniforms    = runtimeUniforms
+exports.attributes  = runtimeAttributes
+
+var GL_TO_GLSL_TYPES = {
+  'FLOAT':       'float',
+  'FLOAT_VEC2':  'vec2',
+  'FLOAT_VEC3':  'vec3',
+  'FLOAT_VEC4':  'vec4',
+  'INT':         'int',
+  'INT_VEC2':    'ivec2',
+  'INT_VEC3':    'ivec3',
+  'INT_VEC4':    'ivec4',
+  'BOOL':        'bool',
+  'BOOL_VEC2':   'bvec2',
+  'BOOL_VEC3':   'bvec3',
+  'BOOL_VEC4':   'bvec4',
+  'FLOAT_MAT2':  'mat2',
+  'FLOAT_MAT3':  'mat3',
+  'FLOAT_MAT4':  'mat4',
+  'SAMPLER_2D':  'sampler2D',
+  'SAMPLER_CUBE':'samplerCube'
+}
+
+var GL_TABLE = null
+
+function getType(gl, type) {
+  if(!GL_TABLE) {
+    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
+    GL_TABLE = {}
+    for(var i=0; i<typeNames.length; ++i) {
+      var tn = typeNames[i]
+      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
+    }
+  }
+  return GL_TABLE[type]
+}
+
+function runtimeUniforms(gl, program) {
+  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+  var result = []
+  for(var i=0; i<numUniforms; ++i) {
+    var info = gl.getActiveUniform(program, i)
+    if(info) {
+      var type = getType(gl, info.type)
+      if(info.size > 1) {
+        for(var j=0; j<info.size; ++j) {
+          result.push({
+            name: info.name.replace('[0]', '[' + j + ']'),
+            type: type
+          })
+        }
+      } else {
+        result.push({
+          name: info.name,
+          type: type
+        })
+      }
+    }
+  }
+  return result
+}
+
+function runtimeAttributes(gl, program) {
+  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
+  var result = []
+  for(var i=0; i<numAttributes; ++i) {
+    var info = gl.getActiveAttrib(program, i)
+    if(info) {
+      result.push({
+        name: info.name,
+        type: getType(gl, info.type)
+      })
+    }
+  }
+  return result
+}
+
+},{}],100:[function(require,module,exports){
+'use strict'
+
+exports.shader   = getShaderReference
+exports.program  = createProgram
+
+var GLError = require("./GLError")
+var formatCompilerError = require('gl-format-compiler-error');
+
+var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
+var CACHE = new weakMap()
+
+var SHADER_COUNTER = 0
+
+function ShaderReference(id, src, type, shader, programs, count, cache) {
+  this.id       = id
+  this.src      = src
+  this.type     = type
+  this.shader   = shader
+  this.count    = count
+  this.programs = []
+  this.cache    = cache
+}
+
+ShaderReference.prototype.dispose = function() {
+  if(--this.count === 0) {
+    var cache    = this.cache
+    var gl       = cache.gl
+
+    //Remove program references
+    var programs = this.programs
+    for(var i=0, n=programs.length; i<n; ++i) {
+      var p = cache.programs[programs[i]]
+      if(p) {
+        delete cache.programs[i]
+        gl.deleteProgram(p)
+      }
+    }
+
+    //Remove shader reference
+    gl.deleteShader(this.shader)
+    delete cache.shaders[(this.type === gl.FRAGMENT_SHADER)|0][this.src]
+  }
+}
+
+function ContextCache(gl) {
+  this.gl       = gl
+  this.shaders  = [{}, {}]
+  this.programs = {}
+}
+
+var proto = ContextCache.prototype
+
+function compileShader(gl, type, src) {
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    var errLog = gl.getShaderInfoLog(shader)
+    try {
+        var fmt = formatCompilerError(errLog, src, type);
+    } catch (e){
+        console.warn('Failed to format compiler error: ' + e);
+        throw new GLError(errLog, 'Error compiling shader:\n' + errLog)
+    }
+    throw new GLError(errLog, fmt.short, fmt.long)
+  }
+  return shader
+}
+
+proto.getShaderReference = function(type, src) {
+  var gl      = this.gl
+  var shaders = this.shaders[(type === gl.FRAGMENT_SHADER)|0]
+  var shader  = shaders[src]
+  if(!shader || !gl.isShader(shader.shader)) {
+    var shaderObj = compileShader(gl, type, src)
+    shader = shaders[src] = new ShaderReference(
+      SHADER_COUNTER++,
+      src,
+      type,
+      shaderObj,
+      [],
+      1,
+      this)
+  } else {
+    shader.count += 1
+  }
+  return shader
+}
+
+function linkProgram(gl, vshader, fshader, attribs, locations) {
+  var program = gl.createProgram()
+  gl.attachShader(program, vshader)
+  gl.attachShader(program, fshader)
+  for(var i=0; i<attribs.length; ++i) {
+    gl.bindAttribLocation(program, locations[i], attribs[i])
+  }
+  gl.linkProgram(program)
+  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    var errLog = gl.getProgramInfoLog(program)
+    throw new GLError(errLog, 'Error linking program: ' + errLog)
+  }
+  return program
+}
+
+proto.getProgram = function(vref, fref, attribs, locations) {
+  var token = [vref.id, fref.id, attribs.join(':'), locations.join(':')].join('@')
+  var prog  = this.programs[token]
+  if(!prog || !this.gl.isProgram(prog)) {
+    this.programs[token] = prog = linkProgram(
+      this.gl,
+      vref.shader,
+      fref.shader,
+      attribs,
+      locations)
+    vref.programs.push(token)
+    fref.programs.push(token)
+  }
+  return prog
+}
+
+function getCache(gl) {
+  var ctxCache = CACHE.get(gl)
+  if(!ctxCache) {
+    ctxCache = new ContextCache(gl)
+    CACHE.set(gl, ctxCache)
+  }
+  return ctxCache
+}
+
+function getShaderReference(gl, type, src) {
+  return getCache(gl).getShaderReference(type, src)
+}
+
+function createProgram(gl, vref, fref, attribs, locations) {
+  return getCache(gl).getProgram(vref, fref, attribs, locations)
+}
+
+},{"./GLError":95,"gl-format-compiler-error":115,"weakmap-shim":314}],101:[function(require,module,exports){
 "use strict"
 
 module.exports = axesProperties
@@ -24250,10 +26392,10 @@ function axesProperties(axes, camera, width, height, params) {
   var model       = camera.model || identity
   var view        = camera.view || identity
   var projection  = camera.projection || identity
+  var isOrtho     = camera._ortho || false
   var bounds      = axes.bounds
-  var params      = params || cubeParams(model, view, projection, bounds)
+  var params      = params || cubeParams(model, view, projection, bounds, isOrtho)
   var axis        = params.axis
-  var edges       = params.edges
 
   m4mul(mvp, view, model)
   m4mul(mvp, projection, mvp)
@@ -24296,7 +26438,9 @@ i_loop:
           poly.push(x.slice())
         }
       }
-      for(var j=0; j<frustum.length; ++j) {
+
+      var Q = (isOrtho) ? 5 : 4
+      for(var j=Q; j===Q; ++j) { // Note: using only near plane here (& for orthographic projection we use the far).
         if(poly.length === 0) {
           continue i_loop
         }
@@ -24321,7 +26465,7 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":89,"extract-frustum-planes":81,"gl-mat4/multiply":114,"gl-mat4/transpose":122,"gl-vec4/transformMat4":155,"split-polygon":237}],95:[function(require,module,exports){
+},{"./lib/cube.js":89,"extract-frustum-planes":81,"gl-mat4/multiply":136,"gl-mat4/transpose":144,"gl-vec4/transformMat4":208,"split-polygon":296}],102:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -24475,7 +26619,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":192,"ndarray-ops":186,"typedarray-pool":247}],96:[function(require,module,exports){
+},{"ndarray":251,"ndarray-ops":245,"typedarray-pool":306}],103:[function(require,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -24775,14 +26919,14 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],97:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 var gl10 = require('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":96}],98:[function(require,module,exports){
+},{"./1.0/numbers":103}],105:[function(require,module,exports){
 'use strict'
 
 module.exports = createErrorBars
@@ -24809,16 +26953,17 @@ function ErrorBars(gl, buffer, vao, shader) {
   this.lineCount    = [0,0,0]
   this.lineOffset   = [0,0,0]
   this.opacity      = 1
+  this.hasAlpha     = false
 }
 
 var proto = ErrorBars.prototype
 
 proto.isOpaque = function() {
-  return this.opacity >= 1
+  return !this.hasAlpha
 }
 
 proto.isTransparent = function() {
-  return this.opacity < 1
+  return this.hasAlpha
 }
 
 proto.drawTransparent = proto.draw = function(cameraParams) {
@@ -24837,14 +26982,18 @@ proto.drawTransparent = proto.draw = function(cameraParams) {
   var cy = view[13]
   var cz = view[14]
   var cw = view[15]
-  var pixelScaleF = this.pixelRatio * (projection[3]*cx + projection[7]*cy + projection[11]*cz + projection[15]*cw) / gl.drawingBufferHeight
 
+  var isOrtho = cameraParams._ortho || false
+  var orthoFix = (isOrtho) ? 2 : 1 // double up padding for orthographic ticks & labels
+  var pixelScaleF = orthoFix * this.pixelRatio * (projection[3]*cx + projection[7]*cy + projection[11]*cz + projection[15]*cw) / gl.drawingBufferHeight
 
   this.vao.bind()
   for(var i=0; i<3; ++i) {
-    gl.lineWidth(this.lineWidth[i])
+    gl.lineWidth(this.lineWidth[i] * this.pixelRatio)
     uniforms.capSize = this.capSize[i] * pixelScaleF
-    gl.drawArrays(gl.LINES, this.lineOffset[i], this.lineCount[i])
+    if (this.lineCount[i]) {
+      gl.drawArrays(gl.LINES, this.lineOffset[i], this.lineCount[i])
+    }
   }
   this.vao.unbind()
 }
@@ -24900,8 +27049,13 @@ proto.update = function(options) {
       this.capSize = [this.capSize, this.capSize, this.capSize]
     }
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if('opacity' in options) {
-    this.opacity = options.opacity
+    this.opacity = +options.opacity
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
 
   var color    = options.color || [[0,0,0],[0,0,0],[0,0,0]]
@@ -24941,7 +27095,11 @@ i_loop:
         }
         if(c.length === 3) {
           c = [c[0], c[1], c[2], 1]
+        } else if(c.length === 4) {
+          c = [c[0], c[1], c[2], c[3]]
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
         }
+
         if(isNaN(e[0][j]) || isNaN(e[1][j])) {
           continue
         }
@@ -25019,24 +27177,38 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":99,"gl-buffer":95,"gl-vao":149}],99:[function(require,module,exports){
+},{"./shaders/index":113,"gl-buffer":102,"gl-vao":202}],106:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":107,"./lib/create-attributes":108,"./lib/create-uniforms":109,"./lib/reflect":110,"./lib/runtime-reflect":111,"./lib/shader-cache":112,"dup":94}],107:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],108:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":107,"dup":96}],109:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":107,"./reflect":110,"dup":97}],110:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],111:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],112:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":107,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],113:[function(require,module,exports){
 'use strict'
 
-
+var glslify = require('glslify')
 var createShader = require('gl-shader')
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(fragPosition, clipBounds[0])) || any(greaterThan(fragPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = opacity * fragColor;\n}"
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
+var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
 
 module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [
     {name: 'position', type: 'vec3'},
-    {name: 'offset', type: 'vec3'},
-    {name: 'color', type: 'vec4'}
+    {name: 'color', type: 'vec4'},
+    {name: 'offset', type: 'vec3'}
   ])
 }
 
-},{"gl-shader":134}],100:[function(require,module,exports){
+},{"gl-shader":106,"glslify":217}],114:[function(require,module,exports){
 'use strict'
 
 var createTexture = require('gl-texture2d')
@@ -25503,7 +27675,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":145}],101:[function(require,module,exports){
+},{"gl-texture2d":198}],115:[function(require,module,exports){
 
 var sprintf = require('sprintf-js').sprintf;
 var glConstants = require('gl-constants/lookup');
@@ -25530,7 +27702,7 @@ function formatCompilerError(errLog, src, type) {
 
     for (var i = 0; i < errorStrings.length; i++) {
         var errorString = errorStrings[i];
-        if (errorString === '') continue;
+        if (errorString === '' || errorString === "\0") continue;
         var lineNo = parseInt(errorString.split(':')[2]);
         if (isNaN(lineNo)) {
             throw new Error(sprintf('Could not parse error: %s', errorString));
@@ -25558,13 +27730,13 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":11,"gl-constants/lookup":97,"glsl-shader-name":157,"sprintf-js":238}],102:[function(require,module,exports){
-
+},{"add-line-numbers":11,"gl-constants/lookup":104,"glsl-shader-name":209,"sprintf-js":297}],116:[function(require,module,exports){
+var glslify       = require('glslify')
 var createShader  = require('gl-shader')
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvoid main() {\n  vec4 projected = projection * view * model * vec4(position, 1.0);\n  vec4 tangentClip = projection * view * model * vec4(nextPosition - position, 0.0);\n  vec2 tangent = normalize(screenShape * tangentClip.xy);\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(tangent.y, -tangent.x) / screenShape;\n\n  gl_Position = vec4(projected.xy + projected.w * offset, projected.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"
-var forwardFrag = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"
-var pickFrag = "precision mediump float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\nlowp vec4 encode_float_1_0(highp float v) {\n  highp float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  highp vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  highp float e = floor(log2(av));\n  highp float m = av * pow(2.0, -e) - 1.0;\n  \n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n  \n  //Unpack exponent\n  highp float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0; \n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\n\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId/255.0, encode_float_1_0(pixelArcLength).xyz);\n}"
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
+var forwardFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
+var pickFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\n// https://github.com/mikolalysenko/glsl-read-float/blob/master/index.glsl\nvec4 packFloat(float v) {\n  float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  float e = floor(log2(av));\n  float m = av * pow(2.0, -e) - 1.0;\n\n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n\n  //Unpack exponent\n  float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0;\n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], worldPosition)) discard;\n\n  gl_FragColor = vec4(pickId/255.0, packFloat(pixelArcLength).xyz);\n}"])
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -25582,7 +27754,7 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":134}],103:[function(require,module,exports){
+},{"gl-shader":119,"glslify":217}],117:[function(require,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -25590,7 +27762,18 @@ module.exports = createLinePlot
 var createBuffer = require('gl-buffer')
 var createVAO = require('gl-vao')
 var createTexture = require('gl-texture2d')
-var unpackFloat = require('glsl-read-float')
+
+var UINT8_VIEW = new Uint8Array(4)
+var FLOAT_VIEW = new Float32Array(UINT8_VIEW.buffer)
+// https://github.com/mikolalysenko/glsl-read-float/blob/master/index.js
+function unpackFloat(x, y, z, w) {
+  UINT8_VIEW[0] = w
+  UINT8_VIEW[1] = z
+  UINT8_VIEW[2] = y
+  UINT8_VIEW[3] = x
+  return FLOAT_VIEW[0]
+}
+
 var bsearch = require('binary-search-bounds')
 var ndarray = require('ndarray')
 var shaders = require('./lib/shaders')
@@ -25646,6 +27829,7 @@ function LinePlot (gl, shader, pickShader, buffer, vao, texture) {
   this.texture = texture
   this.dashScale = 1
   this.opacity = 1
+  this.hasAlpha = false
   this.dirty = true
   this.pixelRatio = 1
 }
@@ -25653,11 +27837,11 @@ function LinePlot (gl, shader, pickShader, buffer, vao, texture) {
 var proto = LinePlot.prototype
 
 proto.isTransparent = function () {
-  return this.opacity < 1
+  return this.hasAlpha
 }
 
 proto.isOpaque = function () {
-  return this.opacity >= 1
+  return !this.hasAlpha
 }
 
 proto.pickSlots = 1
@@ -25667,6 +27851,7 @@ proto.setPickBase = function (id) {
 }
 
 proto.drawTransparent = proto.draw = function (camera) {
+  if (!this.vertexCount) return
   var gl = this.gl
   var shader = this.shader
   var vao = this.vao
@@ -25684,9 +27869,11 @@ proto.drawTransparent = proto.draw = function (camera) {
   }
   vao.bind()
   vao.draw(gl.TRIANGLE_STRIP, this.vertexCount)
+  vao.unbind()
 }
 
 proto.drawPick = function (camera) {
+  if (!this.vertexCount) return
   var gl = this.gl
   var shader = this.pickShader
   var vao = this.vao
@@ -25702,6 +27889,7 @@ proto.drawPick = function (camera) {
   }
   vao.bind()
   vao.draw(gl.TRIANGLE_STRIP, this.vertexCount)
+  vao.unbind()
 }
 
 proto.update = function (options) {
@@ -25714,19 +27902,14 @@ proto.update = function (options) {
   if ('dashScale' in options) {
     this.dashScale = options.dashScale
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if ('opacity' in options) {
     this.opacity = +options.opacity
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
-
-  var positions = options.position || options.positions
-  if (!positions) {
-    return
-  }
-
-  // Default color
-  var colors = options.color || options.colors || [0, 0, 0, 1]
-
-  var lineWidth = options.lineWidth || 1
 
   // Recalculate buffer data
   var buffer = []
@@ -25737,74 +27920,94 @@ proto.update = function (options) {
   var bounds = [
     [ Infinity, Infinity, Infinity ],
     [ -Infinity, -Infinity, -Infinity ]]
-  var hadGap = false
 
-  fill_loop:
-  for (i = 1; i < positions.length; ++i) {
-    var a = positions[i - 1]
-    var b = positions[i]
+  var positions = options.position || options.positions
+  if (positions) {
 
-    arcLengthArray.push(arcLength)
-    pointArray.push(a.slice())
+    // Default color
+    var colors = options.color || options.colors || [0, 0, 0, 1]
 
-    for (j = 0; j < 3; ++j) {
-      if (isNaN(a[j]) || isNaN(b[j]) ||
-        !isFinite(a[j]) || !isFinite(b[j])) {
+    var lineWidth = options.lineWidth || 1
 
-        if (!connectGaps && buffer.length > 0) {
-          for (var k = 0; k < 24; ++k) {
-            buffer.push(buffer[buffer.length - 12])
+    var hadGap = false
+
+    fill_loop:
+    for (i = 1; i < positions.length; ++i) {
+      var a = positions[i - 1]
+      var b = positions[i]
+
+      arcLengthArray.push(arcLength)
+      pointArray.push(a.slice())
+
+      for (j = 0; j < 3; ++j) {
+        if (isNaN(a[j]) || isNaN(b[j]) ||
+          !isFinite(a[j]) || !isFinite(b[j])) {
+
+          if (!connectGaps && buffer.length > 0) {
+            for (var k = 0; k < 24; ++k) {
+              buffer.push(buffer[buffer.length - 12])
+            }
+            vertexCount += 2
+            hadGap = true
           }
-          vertexCount += 2
-          hadGap = true
+
+          continue fill_loop
         }
-
-        continue fill_loop
+        bounds[0][j] = Math.min(bounds[0][j], a[j], b[j])
+        bounds[1][j] = Math.max(bounds[1][j], a[j], b[j])
       }
-      bounds[0][j] = Math.min(bounds[0][j], a[j], b[j])
-      bounds[1][j] = Math.max(bounds[1][j], a[j], b[j])
-    }
 
-    var acolor, bcolor
-    if (Array.isArray(colors[0])) {
-      acolor = colors[i - 1]
-      bcolor = colors[i]
-    } else {
-      acolor = bcolor = colors
-    }
-    if (acolor.length === 3) {
-      acolor = [acolor[0], acolor[1], acolor[2], 1]
-    }
-    if (bcolor.length === 3) {
-      bcolor = [bcolor[0], bcolor[1], bcolor[2], 1]
-    }
+      var acolor, bcolor
+      if (Array.isArray(colors[0])) {
+        acolor = (colors.length > i - 1) ? colors[i - 1] :             // using index value
+                 (colors.length > 0)     ? colors[colors.length - 1] : // using last item
+                                           [0, 0, 0, 1];               // using black
 
-    var w0
-    if (Array.isArray(lineWidth)) {
-      w0 = lineWidth[i - 1]
-    } else {
-      w0 = lineWidth
-    }
-
-    var t0 = arcLength
-    arcLength += distance(a, b)
-
-    if (hadGap) {
-      for (j = 0; j < 2; ++j) {
-        buffer.push(
-          a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3])
+        bcolor = (colors.length > i) ? colors[i] :                 // using index value
+                 (colors.length > 0) ? colors[colors.length - 1] : // using last item
+                                       [0, 0, 0, 1];               // using black
+      } else {
+        acolor = bcolor = colors
       }
-      vertexCount += 2
-      hadGap = false
+
+      if (acolor.length === 3) {
+        acolor = [acolor[0], acolor[1], acolor[2], 1]
+      }
+      if (bcolor.length === 3) {
+        bcolor = [bcolor[0], bcolor[1], bcolor[2], 1]
+      }
+
+      if(!this.hasAlpha && acolor[3] < 1) this.hasAlpha = true
+
+      var w0
+      if (Array.isArray(lineWidth)) {
+        w0 = (lineWidth.length > i - 1) ? lineWidth[i - 1] :                // using index value
+             (lineWidth.length > 0)     ? lineWidth[lineWidth.length - 1] : // using last item
+                                          [0, 0, 0, 1];                     // using black
+      } else {
+        w0 = lineWidth
+      }
+
+      var t0 = arcLength
+      arcLength += distance(a, b)
+
+      if (hadGap) {
+        for (j = 0; j < 2; ++j) {
+          buffer.push(
+            a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3])
+        }
+        vertexCount += 2
+        hadGap = false
+      }
+
+      buffer.push(
+        a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3],
+        a[0], a[1], a[2], b[0], b[1], b[2], t0, -w0, acolor[0], acolor[1], acolor[2], acolor[3],
+        b[0], b[1], b[2], a[0], a[1], a[2], arcLength, -w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3],
+        b[0], b[1], b[2], a[0], a[1], a[2], arcLength, w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3])
+
+      vertexCount += 4
     }
-
-    buffer.push(
-      a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3],
-      a[0], a[1], a[2], b[0], b[1], b[2], t0, -w0, acolor[0], acolor[1], acolor[2], acolor[3],
-      b[0], b[1], b[2], a[0], a[1], a[2], arcLength, -w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3],
-      b[0], b[1], b[2], a[0], a[1], a[2], arcLength, w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3])
-
-    vertexCount += 4
   }
   this.buffer.update(buffer)
 
@@ -25952,7 +28155,23 @@ function createLinePlot (options) {
   return linePlot
 }
 
-},{"./lib/shaders":102,"binary-search-bounds":34,"gl-buffer":95,"gl-texture2d":145,"gl-vao":149,"glsl-read-float":156,"ndarray":192}],104:[function(require,module,exports){
+},{"./lib/shaders":116,"binary-search-bounds":118,"gl-buffer":102,"gl-texture2d":198,"gl-vao":202,"ndarray":251}],118:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"dup":54}],119:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":120,"./lib/create-attributes":121,"./lib/create-uniforms":122,"./lib/reflect":123,"./lib/runtime-reflect":124,"./lib/shader-cache":125,"dup":94}],120:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],121:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":120,"dup":96}],122:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":120,"./reflect":123,"dup":97}],123:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],124:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],125:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":120,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],126:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -25981,7 +28200,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],105:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -26020,7 +28239,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],106:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports = clone;
 
 /**
@@ -26049,7 +28268,7 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],107:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports = create;
 
 /**
@@ -26077,7 +28296,7 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],108:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports = determinant;
 
 /**
@@ -26108,7 +28327,7 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],109:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -26156,7 +28375,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],110:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports = fromRotationTranslation;
 
 /**
@@ -26210,7 +28429,7 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],111:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports = identity;
 
 /**
@@ -26238,7 +28457,7 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],112:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports = invert;
 
 /**
@@ -26294,7 +28513,7 @@ function invert(out, a) {
 
     return out;
 };
-},{}],113:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 var identity = require('./identity');
 
 module.exports = lookAt;
@@ -26385,7 +28604,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":111}],114:[function(require,module,exports){
+},{"./identity":133}],136:[function(require,module,exports){
 module.exports = multiply;
 
 /**
@@ -26428,7 +28647,7 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],115:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 module.exports = perspective;
 
 /**
@@ -26462,7 +28681,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],116:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 module.exports = rotate;
 
 /**
@@ -26527,7 +28746,7 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],117:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 module.exports = rotateX;
 
 /**
@@ -26572,7 +28791,7 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],118:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 module.exports = rotateY;
 
 /**
@@ -26617,7 +28836,7 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],119:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -26662,7 +28881,7 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],120:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 module.exports = scale;
 
 /**
@@ -26694,7 +28913,7 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],121:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 module.exports = translate;
 
 /**
@@ -26733,7 +28952,7 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],122:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 module.exports = transpose;
 
 /**
@@ -26783,7 +29002,7 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],123:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict'
 
 module.exports = invert
@@ -26814,7 +29033,7 @@ function invert(out, M) {
   }
   return out
 }
-},{"gl-mat2/invert":104,"gl-mat3/invert":105,"gl-mat4/invert":112}],124:[function(require,module,exports){
+},{"gl-mat2/invert":126,"gl-mat3/invert":127,"gl-mat4/invert":134}],146:[function(require,module,exports){
 'use strict'
 
 var barycentric            = require('barycentric')
@@ -26912,20 +29131,20 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
   }
   return [closestIndex, interpolate(simplex, weights), weights]
 }
-},{"barycentric":17,"polytope-closest-point/lib/closest_point_2d.js":205}],125:[function(require,module,exports){
+},{"barycentric":17,"polytope-closest-point/lib/closest_point_2d.js":264}],147:[function(require,module,exports){
+var glslify       = require('glslify')
 
-
-var triVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec4 m_position  = model * vec4(position, 1.0);\n  vec4 t_position  = view * m_position;\n  gl_Position      = projection * t_position;\n  f_color          = color;\n  f_normal         = normal;\n  f_data           = position;\n  f_eyeDirection   = eyePosition   - position;\n  f_lightDirection = lightPosition - position;\n  f_uv             = uv;\n}"
-var triFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat cookTorranceSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution_2_0(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n  \n  if(!gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = cookTorranceSpecular_1_1(L, V, N, roughness, fresnel);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}"
-var edgeVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"
-var edgeFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
-var pointVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"
-var pointFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
-var pickVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"
-var pickFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(f_position, clipBounds[0])) || \n     any(greaterThan(f_position, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"
-var pickPointVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"
-var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"
-var contourFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"
+var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec4 m_position  = model * vec4(position, 1.0);\n  vec4 t_position  = view * m_position;\n  gl_Position      = projection * t_position;\n  f_color          = color;\n  f_normal         = normal;\n  f_data           = position;\n  f_eyeDirection   = eyePosition   - position;\n  f_lightDirection = lightPosition - position;\n  f_uv             = uv;\n}"])
+var triFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n  \n  if(!gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = cookTorranceSpecular(L, V, N, roughness, fresnel);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}"])
+var edgeVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"])
+var edgeFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
+var pointVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"])
+var pointFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
+var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"])
+var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(f_position, clipBounds[0])) || \n     any(greaterThan(f_position, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
+var pickPointVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"])
+var contourVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"])
+var contourFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"])
 
 exports.meshShader = {
   vertex:   triVertSrc,
@@ -26981,7 +29200,7 @@ exports.contourShader = {
   ]
 }
 
-},{}],126:[function(require,module,exports){
+},{"glslify":156}],148:[function(require,module,exports){
 'use strict'
 
 var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6; // may be too large if triangles are very small
@@ -27307,10 +29526,15 @@ proto.update = function(params) {
   var intensityHi     = -Infinity
   if(!vertexUVs && !cellUVs) {
     if(vertexIntensity) {
-      for(var i=0; i<vertexIntensity.length; ++i) {
-        var f = vertexIntensity[i]
-        intensityLo = Math.min(intensityLo, f)
-        intensityHi = Math.max(intensityHi, f)
+      if(params.vertexIntensityBounds) {
+        intensityLo = +params.vertexIntensityBounds[0]
+        intensityHi = +params.vertexIntensityBounds[1]
+      } else {
+        for(var i=0; i<vertexIntensity.length; ++i) {
+          var f = vertexIntensity[i]
+          intensityLo = Math.min(intensityLo, f)
+          intensityHi = Math.max(intensityHi, f)
+        }
       }
     } else if(cellIntensity) {
       for(var i=0; i<cellIntensity.length; ++i) {
@@ -27810,7 +30034,7 @@ proto.dispose = function() {
 }
 
 function createMeshShader(gl) {
-  var shader = createShader(gl, meshShader)
+  var shader = createShader(gl, meshShader.vertex, meshShader.fragment)
   shader.attributes.position.location = 0
   shader.attributes.color.location    = 2
   shader.attributes.uv.location       = 3
@@ -27819,7 +30043,7 @@ function createMeshShader(gl) {
 }
 
 function createWireShader(gl) {
-  var shader = createShader(gl, wireShader)
+  var shader = createShader(gl, wireShader.vertex, wireShader.fragment)
   shader.attributes.position.location = 0
   shader.attributes.color.location    = 2
   shader.attributes.uv.location       = 3
@@ -27827,7 +30051,7 @@ function createWireShader(gl) {
 }
 
 function createPointShader(gl) {
-  var shader = createShader(gl, pointShader)
+  var shader = createShader(gl, pointShader.vertex, pointShader.fragment)
   shader.attributes.position.location  = 0
   shader.attributes.color.location     = 2
   shader.attributes.uv.location        = 3
@@ -27836,14 +30060,14 @@ function createPointShader(gl) {
 }
 
 function createPickShader(gl) {
-  var shader = createShader(gl, pickShader)
+  var shader = createShader(gl, pickShader.vertex, pickShader.fragment)
   shader.attributes.position.location = 0
   shader.attributes.id.location       = 1
   return shader
 }
 
 function createPointPickShader(gl) {
-  var shader = createShader(gl, pointPickShader)
+  var shader = createShader(gl, pointPickShader.vertex, pointPickShader.fragment)
   shader.attributes.position.location  = 0
   shader.attributes.id.location        = 1
   shader.attributes.pointSize.location = 4
@@ -27851,13 +30075,16 @@ function createPointPickShader(gl) {
 }
 
 function createContourShader(gl) {
-  var shader = createShader(gl, contourShader)
+  var shader = createShader(gl, contourShader.vertex, contourShader.fragment)
   shader.attributes.position.location = 0
   return shader
 }
 
-function createSimplicialMesh(params) {
-  var gl = params.gl
+function createSimplicialMesh(gl, params) {
+  if (arguments.length === 1) {
+    params = gl;
+    gl = params.gl;
+  }
 
   var triShader       = createMeshShader(gl)
   var lineShader      = createWireShader(gl)
@@ -27996,18 +30223,58 @@ function createSimplicialMesh(params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":124,"./lib/shaders":125,"colormap":61,"gl-buffer":95,"gl-mat4/invert":112,"gl-mat4/multiply":114,"gl-shader":134,"gl-texture2d":145,"gl-vao":149,"ndarray":192,"normals":194,"simplicial-complex-contour":228,"typedarray-pool":247}],127:[function(require,module,exports){
+},{"./lib/closest-point":146,"./lib/shaders":147,"colormap":61,"gl-buffer":102,"gl-mat4/invert":134,"gl-mat4/multiply":136,"gl-shader":149,"gl-texture2d":198,"gl-vao":202,"ndarray":251,"normals":253,"simplicial-complex-contour":287,"typedarray-pool":306}],149:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":150,"./lib/create-attributes":151,"./lib/create-uniforms":152,"./lib/reflect":153,"./lib/runtime-reflect":154,"./lib/shader-cache":155,"dup":94}],150:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],151:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":150,"dup":96}],152:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":150,"./reflect":153,"dup":97}],153:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],154:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],155:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":150,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],156:[function(require,module,exports){
+module.exports = function(strings) {
+  if (typeof strings === 'string') strings = [strings]
+  var exprs = [].slice.call(arguments,1)
+  var parts = []
+  for (var i = 0; i < strings.length-1; i++) {
+    parts.push(strings[i], exprs[i] || '')
+  }
+  parts.push(strings[i])
+  return parts.join('')
+}
 
+},{}],157:[function(require,module,exports){
+var glslify      = require('glslify')
 var createShader = require('gl-shader')
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D accumBuffer;\nvarying vec2 uv;\n\nvoid main() {\n  vec4 accum = texture2D(accumBuffer, 0.5 * (uv + 1.0));\n  gl_FragColor = min(vec4(1,1,1,1), accum);\n}"
+var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"])
+var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D accumBuffer;\nvarying vec2 uv;\n\nvoid main() {\n  vec4 accum = texture2D(accumBuffer, 0.5 * (uv + 1.0));\n  gl_FragColor = min(vec4(1,1,1,1), accum);\n}"])
 
 module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":134}],128:[function(require,module,exports){
+},{"gl-shader":158,"glslify":217}],158:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":159,"./lib/create-attributes":160,"./lib/create-uniforms":161,"./lib/reflect":162,"./lib/runtime-reflect":163,"./lib/shader-cache":164,"dup":94}],159:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],160:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":159,"dup":96}],161:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":159,"./reflect":162,"dup":97}],162:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],163:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],164:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":159,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],165:[function(require,module,exports){
 'use strict'
 
 module.exports = createScene
@@ -28022,6 +30289,7 @@ var drawTriangle = require('a-big-triangle')
 var mouseChange  = require('mouse-change')
 var perspective  = require('gl-mat4/perspective')
 var createShader = require('./lib/shader')
+var isMobile = require('is-mobile')({ tablet: true })
 
 function MouseSelect() {
   this.mouse          = [-1,-1]
@@ -28089,7 +30357,8 @@ function createScene(options) {
     gl = getContext(canvas,
       options.glOptions || {
         premultipliedAlpha: true,
-        antialias: true
+        antialias: true,
+        preserveDrawingBuffer: isMobile
       })
   }
   if(!gl) {
@@ -28105,7 +30374,7 @@ function createScene(options) {
   //Accumulation buffer
   var accumBuffer = createFBO(gl,
     [gl.drawingBufferWidth, gl.drawingBufferHeight], {
-      preferFloat: true
+      preferFloat: !isMobile
     })
 
   var accumShader = createShader(gl)
@@ -28543,6 +30812,14 @@ function createScene(options) {
         prevBounds[1][j] = bounds[1][j]
     }
 
+    //Recalculate bounds
+    pickDirty = pickDirty || boundsChanged
+    dirty = dirty || boundsChanged
+
+    if(!dirty) {
+      return
+    }
+
     if(boundsChanged) {
       var tickSpacing = [0,0,0]
       for(var i=0; i<3; ++i) {
@@ -28559,10 +30836,6 @@ function createScene(options) {
         })
       }
     }
-
-    //Recalculate bounds
-    pickDirty = pickDirty || boundsChanged
-    dirty = dirty || boundsChanged
 
     //Get scene
     var width  = gl.drawingBufferWidth
@@ -28613,7 +30886,6 @@ function createScene(options) {
         obj.clipBounds = bounds
       }
     }
-
     //Set spike parameters
     if(selection.object) {
       if(scene.snapToData) {
@@ -28628,10 +30900,6 @@ function createScene(options) {
     if(pickDirty) {
       pickDirty = false
       renderPick()
-    }
-
-    if(!dirty) {
-      return
     }
 
     //Recalculate pixel data
@@ -28755,8 +31023,9 @@ function createScene(options) {
     if(stopped || scene.contextLost) {
       return
     }
-    requestAnimationFrame(render)
+    // this order is important: ios safari sometimes has sync raf
     redraw()
+    requestAnimationFrame(render)
   }
   render()
 
@@ -28772,7 +31041,7 @@ function createScene(options) {
   return scene
 }
 
-},{"./lib/shader":127,"3d-view-controls":8,"a-big-triangle":10,"gl-axes3d":87,"gl-axes3d/properties":94,"gl-fbo":100,"gl-mat4/perspective":115,"gl-select-static":133,"gl-spikes3d":142,"mouse-change":178}],129:[function(require,module,exports){
+},{"./lib/shader":157,"3d-view-controls":8,"a-big-triangle":10,"gl-axes3d":87,"gl-axes3d/properties":101,"gl-fbo":114,"gl-mat4/perspective":137,"gl-select-static":178,"gl-spikes3d":187,"is-mobile":226,"mouse-change":236}],166:[function(require,module,exports){
 module.exports = slerp
 
 /**
@@ -28825,7 +31094,14 @@ function slerp (out, a, b, t) {
   return out
 }
 
-},{}],130:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
+'use strict';
+
+module.exports = function(a){
+  return (!a && a !== 0) ? '' : a.toString();
+}
+
+},{}],168:[function(require,module,exports){
 "use strict"
 
 var vectorizeText = require("vectorize-text")
@@ -28834,7 +31110,7 @@ module.exports = getGlyph
 
 var GLYPH_CACHE = {}
 
-function getGlyph(symbol, font) {
+function getGlyph(symbol, font, pixelRatio) {
   var fontCache = GLYPH_CACHE[font]
   if(!fontCache) {
     fontCache = GLYPH_CACHE[font] = {}
@@ -28843,26 +31119,49 @@ function getGlyph(symbol, font) {
     return fontCache[symbol]
   }
 
+  var config = {
+    textAlign: "center",
+    textBaseline: "middle",
+    lineHeight: 1.0,
+    font: font,
+    lineSpacing: 1.25,
+    styletags: {
+      breaklines:true,
+      bolds: true,
+      italics: true,
+      subscripts:true,
+      superscripts:true
+    }
+  }
+
   //Get line and triangle meshes for glyph
-  var lineSymbol = vectorizeText(symbol, {
-      textAlign: "center",
-      textBaseline: "middle",
-      lineHeight: 1.0,
-      font: font
-    }) 
-  var triSymbol = vectorizeText(symbol, {
-      triangles: true,
-      textAlign: "center",
-      textBaseline: "middle",
-      lineHeight: 1.0,
-      font: font
-    })
+  config.triangles = true
+  var triSymbol = vectorizeText(symbol, config)
+  config.triangles = false
+  var lineSymbol = vectorizeText(symbol, config)
+
+  var i, j
+
+  if(pixelRatio && pixelRatio !== 1) {
+    for(i = 0; i < triSymbol.positions.length; ++i){
+      for(j = 0; j < triSymbol.positions[i].length; ++j){
+        triSymbol.positions[i][j] /= pixelRatio;
+      }
+    }
+
+    for(i = 0; i < lineSymbol.positions.length; ++i){
+      for(j = 0; j < lineSymbol.positions[i].length; ++j){
+        lineSymbol.positions[i][j] /= pixelRatio;
+      }
+    }
+  }
 
   //Calculate bounding box
   var bounds = [[Infinity,Infinity], [-Infinity,-Infinity]]
-  for(var i=0; i<lineSymbol.positions.length; ++i) {
+  var n = lineSymbol.positions.length
+  for(i = 0; i < n; ++i) {
     var p = lineSymbol.positions[i]
-    for(var j=0; j<2; ++j) {
+    for(j=0; j<2; ++j) {
       bounds[0][j] = Math.min(bounds[0][j], p[j])
       bounds[1][j] = Math.max(bounds[1][j], p[j])
     }
@@ -28871,15 +31170,15 @@ function getGlyph(symbol, font) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":250}],131:[function(require,module,exports){
+},{"vectorize-text":309}],169:[function(require,module,exports){
 var createShaderWrapper = require('gl-shader')
+var glslify = require('glslify')
 
-
-var perspectiveVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   || \n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n    \n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
-var orthographicVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n    \n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
-var projectionVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   ||\n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"
-var drawFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   ||\n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = interpColor * opacity;\n  }\n}\n"
-var pickFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   || \n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = vec4(pickGroup, pickId.bgr);\n  }\n}"
+var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
+var orthographicVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
+var projectionVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"])
+var drawFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (\n    outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate) ||\n    interpColor.a * opacity == 0.\n  ) discard;\n  gl_FragColor = interpColor * opacity;\n}\n"])
+var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate)) discard;\n\n  gl_FragColor = vec4(pickGroup, pickId.bgr);\n}"])
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -28948,15 +31247,31 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":134}],132:[function(require,module,exports){
+},{"gl-shader":170,"glslify":217}],170:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":171,"./lib/create-attributes":172,"./lib/create-uniforms":173,"./lib/reflect":174,"./lib/runtime-reflect":175,"./lib/shader-cache":176,"dup":94}],171:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],172:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":171,"dup":96}],173:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":171,"./reflect":174,"dup":97}],174:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],175:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],176:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":171,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],177:[function(require,module,exports){
 'use strict'
 
-var createBuffer  = require('gl-buffer')
-var createVAO     = require('gl-vao')
-var pool          = require('typedarray-pool')
-var mat4mult      = require('gl-mat4/multiply')
-var shaders       = require('./lib/shaders')
-var getGlyph      = require('./lib/glyphs')
+var isAllBlank      = require('is-string-blank')
+var createBuffer    = require('gl-buffer')
+var createVAO       = require('gl-vao')
+var pool            = require('typedarray-pool')
+var mat4mult        = require('gl-mat4/multiply')
+var shaders         = require('./lib/shaders')
+var getGlyph        = require('./lib/glyphs')
+var getSimpleString = require('./lib/get-simple-string')
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -28983,17 +31298,15 @@ function project(p, v, m, x) {
   return transformMat4(x, x, p)
 }
 
-function clampVec(v) {
-  var result = new Array(3)
-  for(var i=0; i<3; ++i) {
-    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
-  }
-  return result
-}
-
 function ScatterPlotPickResult(index, position) {
   this.index = index
   this.dataCoordinate = this.position = position
+}
+
+function fixOpacity(a) {
+  if(a === true) return 1
+  if(a > 1) return 1
+  return a
 }
 
 function PointCloud(
@@ -29026,11 +31339,13 @@ function PointCloud(
   this.vertexCount     = 0
   this.lineVertexCount = 0
 
-  this.opacity         = 1.0
+  this.opacity         = 1
+  this.hasAlpha        = false
 
   this.lineWidth       = 0
   this.projectScale    = [2.0/3.0, 2.0/3.0, 2.0/3.0]
-  this.projectOpacity  = [1,1,1]
+  this.projectOpacity  = [1, 1, 1]
+  this.projectHasAlpha  = false
 
   this.pickId                = 0
   this.pickPerspectiveShader = pickPerspectiveShader
@@ -29067,11 +31382,11 @@ proto.setPickBase = function(pickBase) {
 }
 
 proto.isTransparent = function() {
-  if(this.opacity < 1)  {
+  if(this.hasAlpha)  {
     return true
   }
   for(var i=0; i<3; ++i) {
-    if(this.axesProject[i] && this.projectOpacity[i] < 1) {
+    if(this.axesProject[i] && this.projectHasAlpha) {
       return true
     }
   }
@@ -29079,11 +31394,11 @@ proto.isTransparent = function() {
 }
 
 proto.isOpaque = function() {
-  if(this.opacity >= 1)  {
+  if(!this.hasAlpha)  {
     return true
   }
   for(var i=0; i<3; ++i) {
-    if(this.axesProject[i] && this.projectOpacity[i] >= 1) {
+    if(this.axesProject[i] && !this.projectHasAlpha) {
       return true
     }
   }
@@ -29130,7 +31445,7 @@ function getClipBounds(bounds) {
   return result
 }
 
-function drawProject(shader, points, camera, transparent, forceDraw) {
+function drawProject(shader, points, camera, pixelRatio) {
   var axesProject = points.axesProject
 
   var gl         = points.gl
@@ -29142,7 +31457,7 @@ function drawProject(shader, points, camera, transparent, forceDraw) {
   var clipBounds = getClipBounds(points.clipBounds)
 
   var cubeAxis
-  if(points.axes) {
+  if(points.axes && points.axes.lastCubeProps) {
     cubeAxis = points.axes.lastCubeProps.axis
   } else {
     cubeAxis = [1,1,1]
@@ -29159,13 +31474,10 @@ function drawProject(shader, points, camera, transparent, forceDraw) {
   uniforms.highlightScale = points.highlightScale
   uniforms.clipBounds     = clipBounds
   uniforms.pickGroup      = points.pickId / 255.0
-  uniforms.pixelRatio     = points.pixelRatio
+  uniforms.pixelRatio     = pixelRatio
 
   for(var i=0; i<3; ++i) {
     if(!axesProject[i]) {
-      continue
-    }
-    if((points.projectOpacity[i] < 1) !== transparent) {
       continue
     }
 
@@ -29232,14 +31544,18 @@ function drawProject(shader, points, camera, transparent, forceDraw) {
     uniforms.fragClipBounds[0] = setComponent(SCRATCH_VEC, clipBounds[0], i, -1e8)
     uniforms.fragClipBounds[1] = setComponent(SCRATCH_VEC, clipBounds[1], i, 1e8)
 
+    points.vao.bind()
+
     //Draw interior
     points.vao.draw(gl.TRIANGLES, points.vertexCount)
 
     //Draw edges
     if(points.lineWidth > 0) {
-      gl.lineWidth(points.lineWidth)
+      gl.lineWidth(points.lineWidth * pixelRatio)
       points.vao.draw(gl.LINES, points.lineVertexCount, points.vertexCount)
     }
+
+    points.vao.unbind()
   }
 }
 
@@ -29248,12 +31564,15 @@ var NEG_INFINITY3 = [-1e8, -1e8, -1e8]
 var POS_INFINITY3 = [1e8, 1e8, 1e8]
 var CLIP_GROUP    = [NEG_INFINITY3, POS_INFINITY3]
 
-function drawFull(shader, pshader, points, camera, transparent, forceDraw) {
+function drawFull(shader, pshader, points, camera, pixelRatio, transparent, forceDraw) {
   var gl = points.gl
 
-  points.vao.bind()
+  if(transparent === points.projectHasAlpha || forceDraw) {
+    drawProject(pshader, points, camera, pixelRatio)
+  }
 
-  if(transparent === (points.opacity < 1) || forceDraw) {
+  if(transparent === points.hasAlpha || forceDraw) {
+
     shader.bind()
     var uniforms = shader.uniforms
 
@@ -29274,36 +31593,38 @@ function drawFull(shader, pshader, points, camera, transparent, forceDraw) {
     uniforms.opacity    = points.opacity
     uniforms.pickGroup  = points.pickId / 255.0
 
-    uniforms.pixelRatio = points.pixelRatio
+    uniforms.pixelRatio = pixelRatio
+
+    points.vao.bind()
 
     //Draw interior
     points.vao.draw(gl.TRIANGLES, points.vertexCount)
 
     //Draw edges
     if(points.lineWidth > 0) {
-      gl.lineWidth(points.lineWidth)
+      gl.lineWidth(points.lineWidth * pixelRatio)
       points.vao.draw(gl.LINES, points.lineVertexCount, points.vertexCount)
     }
+
+    points.vao.unbind()
   }
 
-  drawProject(pshader, points, camera, transparent, forceDraw)
 
-  points.vao.unbind()
 }
 
 proto.draw = function(camera) {
   var shader = this.useOrtho ? this.orthoShader : this.shader
-  drawFull(shader, this.projectShader, this, camera, false, false)
+  drawFull(shader, this.projectShader, this, camera, this.pixelRatio, false, false)
 }
 
 proto.drawTransparent = function(camera) {
   var shader = this.useOrtho ? this.orthoShader : this.shader
-  drawFull(shader, this.projectShader, this, camera, true, false)
+  drawFull(shader, this.projectShader, this, camera, this.pixelRatio, true, false)
 }
 
 proto.drawPick = function(camera) {
   var shader = this.useOrtho ? this.pickOrthoShader : this.pickPerspectiveShader
-  drawFull(shader, this.pickProjectShader, this, camera, false, true)
+  drawFull(shader, this.pickProjectShader, this, camera, 1, true, true)
 }
 
 proto.pick = function(selected) {
@@ -29340,6 +31661,38 @@ proto.highlight = function(selection) {
   }
 }
 
+function get_glyphData(glyphs, index, font, pixelRatio) {
+  var str
+
+  // use the data if presented in an array
+  if(Array.isArray(glyphs)) {
+    if(index < glyphs.length) {
+      str = glyphs[index]
+    } else {
+      str = undefined
+    }
+  } else {
+    str = glyphs
+  }
+
+  str = getSimpleString(str) // this would handle undefined cases
+
+  var visible = true
+  if(isAllBlank(str)) {
+    str = '▼' // Note: this special character may have minimum number of surfaces
+    visible = false
+  }
+
+  var glyph = getGlyph(str, font, pixelRatio)
+
+  return { mesh:glyph[0],
+          lines:glyph[1],
+         bounds:glyph[2],
+        visible:visible };
+}
+
+
+
 proto.update = function(options) {
 
   options = options || {}
@@ -29369,6 +31722,8 @@ proto.update = function(options) {
       this.projectScale = [s,s,s]
     }
   }
+
+  this.projectHasAlpha = false // default to no transparent draw
   if('projectOpacity' in options) {
     if(Array.isArray(options.projectOpacity)) {
       this.projectOpacity = options.projectOpacity.slice()
@@ -29376,9 +31731,20 @@ proto.update = function(options) {
       var s = +options.projectOpacity
       this.projectOpacity = [s,s,s]
     }
+    for(var i=0; i<3; ++i) {
+      this.projectOpacity[i] = fixOpacity(this.projectOpacity[i]);
+      if(this.projectOpacity[i] < 1) {
+        this.projectHasAlpha = true;
+      }
+    }
   }
+
+  this.hasAlpha = false // default to no transparent draw
   if('opacity' in options) {
-    this.opacity = options.opacity
+    this.opacity = fixOpacity(options.opacity)
+    if(this.opacity < 1) {
+      this.hasAlpha = true;
+    }
   }
 
   //Set dirty flag
@@ -29386,13 +31752,24 @@ proto.update = function(options) {
 
   //Create new buffers
   var points = options.position
-  if(!points) {
-    return
-  }
 
   //Text font
   var font      = options.font      || 'normal'
   var alignment = options.alignment || [0,0]
+
+  var alignmentX;
+  var alignmentY;
+  if (alignment.length === 2) {
+    alignmentX = alignment[0]
+    alignmentY = alignment[1]
+  } else {
+    alignmentX = []
+    alignmentY = []
+    for (var i = 0; i < alignment.length; ++i) {
+      alignmentX[i] = alignment[i][0]
+      alignmentY[i] = alignment[i][1]
+    }
+  }
 
   //Bounds
   var lowerBound = [ Infinity, Infinity, Infinity]
@@ -29406,223 +31783,256 @@ proto.update = function(options) {
   var lineColors = options.lineColor
 
   //Picking geometry
-  var pickCounter = 0
+  var pickCounter = -1
 
   //First do pass to compute buffer sizes
-  var triVertexCount     = 0
+  var triVertexCount  = 0
   var lineVertexCount = 0
 
-  //Count number of points and buffer size
-  var numPoints   = points.length
+  var numPoints = 0;
 
-count_loop:
-  for(var i=0; i<numPoints; ++i) {
-    var x = points[i]
-    for(var j=0; j<3; ++j) {
-      if(isNaN(x[j]) || !isFinite(x[j])) {
-        continue count_loop
+  if(points.length) {
+
+    //Count number of points and buffer size
+    numPoints = points.length
+
+  count_loop:
+    for(var i=0; i<numPoints; ++i) {
+      var x = points[i]
+      for(var j=0; j<3; ++j) {
+        if(isNaN(x[j]) || !isFinite(x[j])) {
+          continue count_loop
+        }
       }
-    }
 
-    var glyphData
-    if(Array.isArray(glyphs)) {
-      glyphData = getGlyph(glyphs[i], font)
-    } else if(glyphs) {
-      glyphData = getGlyph(glyphs, font)
-    } else {
-      glyphData = getGlyph('●', font)
-    }
-    var glyphMesh   = glyphData[0]
-    var glyphLines  = glyphData[1]
-    var glyphBounds = glyphData[2]
+      var glyphData = get_glyphData(glyphs, i, font, this.pixelRatio)
 
-    triVertexCount  += glyphMesh.cells.length * 3
-    lineVertexCount += glyphLines.edges.length * 2
+      var glyphMesh   = glyphData.mesh
+      var glyphLines  = glyphData.lines
+      var glyphBounds = glyphData.bounds
+
+      triVertexCount  += glyphMesh.cells.length * 3
+      lineVertexCount += glyphLines.edges.length * 2
+    }
   }
 
+  var vertexCount   = triVertexCount + lineVertexCount
 
   //Preallocate data
-  var vertexCount   = triVertexCount + lineVertexCount
   var positionArray = pool.mallocFloat(3*vertexCount)
   var colorArray    = pool.mallocFloat(4*vertexCount)
   var glyphArray    = pool.mallocFloat(2*vertexCount)
   var idArray       = pool.mallocUint32(vertexCount)
 
-  var textOffset = [0,alignment[1]]
+  if(vertexCount > 0) {
+    var triOffset  = 0
+    var lineOffset = triVertexCount
+    var color      = [0,0,0,1]
+    var lineColor  = [0,0,0,1]
 
-  var triOffset  = 0
-  var lineOffset = triVertexCount
-  var color      = [0,0,0,1]
-  var lineColor  = [0,0,0,1]
+    var isColorArray      = Array.isArray(colors)     && Array.isArray(colors[0])
+    var isLineColorArray  = Array.isArray(lineColors) && Array.isArray(lineColors[0])
 
-  var isColorArray      = Array.isArray(colors)     && Array.isArray(colors[0])
-  var isLineColorArray  = Array.isArray(lineColors) && Array.isArray(lineColors[0])
+  fill_loop:
+    for(var i=0; i<numPoints; ++i) {
+      //Increment pickCounter
+      pickCounter += 1
 
-fill_loop:
-  for(var i=0; i<numPoints; ++i) {
-    var x = points[i]
-    for(var j=0; j<3; ++j) {
-      if(isNaN(x[j]) || !isFinite(x[j])) {
-        pickCounter += 1
-        continue fill_loop
-      }
-
-      upperBound[j] = Math.max(upperBound[j], x[j])
-      lowerBound[j] = Math.min(lowerBound[j], x[j])
-    }
-
-    var glyphData
-    if(Array.isArray(glyphs)) {
-      glyphData = getGlyph(glyphs[i], font)
-    } else if(glyphs) {
-      glyphData = getGlyph(glyphs, font)
-    } else {
-      glyphData = getGlyph('●', font)
-    }
-    var glyphMesh   = glyphData[0]
-    var glyphLines  = glyphData[1]
-    var glyphBounds = glyphData[2]
-
-
-    //Get color
-    if(Array.isArray(colors)) {
-      var c
-      if(isColorArray) {
-        c = colors[i]
-      } else {
-        c = colors
-      }
-      if(c.length === 3) {
-        for(var j=0; j<3; ++j) {
-          color[j] = c[j]
+      var x = points[i]
+      for(var j=0; j<3; ++j) {
+        if(isNaN(x[j]) || !isFinite(x[j])) {
+          continue fill_loop
         }
+
+        upperBound[j] = Math.max(upperBound[j], x[j])
+        lowerBound[j] = Math.min(lowerBound[j], x[j])
+      }
+
+      var glyphData = get_glyphData(glyphs, i, font, this.pixelRatio)
+
+      var glyphMesh   = glyphData.mesh
+      var glyphLines  = glyphData.lines
+      var glyphBounds = glyphData.bounds
+      var glyphVisible = glyphData.visible
+
+      //Get color
+      if(!glyphVisible) color = [1,1,1,0]
+      else if(Array.isArray(colors)) {
+        var c
+        if(isColorArray) {
+          if(i < colors.length) {
+            c = colors[i]
+          } else {
+            c = [0,0,0,0]
+          }
+        } else {
+          c = colors
+        }
+
+        if(c.length === 3) {
+          for(var j=0; j<3; ++j) {
+            color[j] = c[j]
+          }
+          color[3] = 1
+        } else if(c.length === 4) {
+          for(var j=0; j<4; ++j) {
+            color[j] = c[j]
+          }
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
+        }
+      } else {
+        color[0] = color[1] = color[2] = 0
         color[3] = 1
-      } else if(c.length === 4) {
-        for(var j=0; j<4; ++j) {
-          color[j] = c[j]
-        }
       }
-    } else {
-      color[0] = color[1] = color[2] = 0
-      color[3] = 1
-    }
 
-    //Get lineColor
-    if(Array.isArray(lineColors)) {
-      var c
-      if(isLineColorArray) {
-        c = lineColors[i]
+
+      //Get lineColor
+      if(!glyphVisible) lineColor = [1,1,1,0]
+      else if(Array.isArray(lineColors)) {
+        var c
+        if(isLineColorArray) {
+          if(i < lineColors.length) {
+            c = lineColors[i]
+          } else {
+            c = [0,0,0,0]
+          }
+        } else {
+          c = lineColors
+        }
+
+        if(c.length === 3) {
+          for(var j=0; j<3; ++j) {
+            lineColor[j] = c[j]
+          }
+          lineColor[j] = 1
+        } else if(c.length === 4) {
+          for(var j=0; j<4; ++j) {
+            lineColor[j] = c[j]
+          }
+          if(!this.hasAlpha && c[3] < 1) this.hasAlpha = true
+        }
       } else {
-        c = lineColors
+        lineColor[0] = lineColor[1] = lineColor[2] = 0
+        lineColor[3] = 1
       }
-      if(c.length === 3) {
-        for(var j=0; j<3; ++j) {
-          lineColor[j] = c[j]
+
+
+      var size = 0.5
+      if(!glyphVisible) size = 0.0
+      else if(Array.isArray(sizes)) {
+        if(i < sizes.length) {
+          size = +sizes[i]
+        } else {
+          size = 12
         }
-        lineColor[j] = 1
-      } else if(c.length === 4) {
-        for(var j=0; j<4; ++j) {
-          lineColor[j] = c[j]
+      } else if(sizes) {
+        size = +sizes
+      } else if(this.useOrtho) {
+        size = 12
+      }
+
+
+      var angle = 0
+      if(Array.isArray(angles)) {
+        if(i < angles.length) {
+          angle = +angles[i]
+        } else {
+          angle = 0
+        }
+      } else if(angles) {
+        angle = +angles
+      }
+
+      //Loop through markers and append to buffers
+      var cos = Math.cos(angle)
+      var sin = Math.sin(angle)
+
+      var x = points[i]
+      for(var j=0; j<3; ++j) {
+        upperBound[j] = Math.max(upperBound[j], x[j])
+        lowerBound[j] = Math.min(lowerBound[j], x[j])
+      }
+
+      //Calculate text offset
+      var textOffsetX = alignmentX
+      var textOffsetY = alignmentY
+
+      var textOffsetX = 0
+      if(Array.isArray(alignmentX)) {
+        if(i < alignmentX.length) {
+          textOffsetX = alignmentX[i]
+        } else {
+          textOffsetX = 0
+        }
+      } else if(alignmentX) {
+        textOffsetX = alignmentX
+      }
+
+      var textOffsetY = 0
+      if(Array.isArray(alignmentY)) {
+        if(i < alignmentY.length) {
+          textOffsetY = alignmentY[i]
+        } else {
+          textOffsetY = 0
+        }
+      } else if(alignmentY) {
+        textOffsetY = alignmentY
+      }
+
+      textOffsetX *= (textOffsetX > 0) ? (1 - glyphBounds[0][0]) :
+                     (textOffsetX < 0) ? (1 + glyphBounds[1][0]) : 1;
+
+      textOffsetY *= (textOffsetY > 0) ? (1 - glyphBounds[0][1]) :
+                     (textOffsetY < 0) ? (1 + glyphBounds[1][1]) : 1;
+
+      var textOffset = [textOffsetX, textOffsetY]
+
+      //Write out inner marker
+      var cells = glyphMesh.cells || []
+      var verts = glyphMesh.positions || []
+
+      for(var j=0; j<cells.length; ++j) {
+        var cell = cells[j]
+        for(var k=0; k<3; ++k) {
+          for(var l=0; l<3; ++l) {
+            positionArray[3*triOffset+l] = x[l]
+          }
+          for(var l=0; l<4; ++l) {
+            colorArray[4*triOffset+l] = color[l]
+          }
+          idArray[triOffset] = pickCounter
+          var p = verts[cell[k]]
+          glyphArray[2*triOffset]   = size * (cos*p[0] - sin*p[1] + textOffset[0])
+          glyphArray[2*triOffset+1] = size * (sin*p[0] + cos*p[1] + textOffset[1])
+          triOffset += 1
         }
       }
-    } else {
-      lineColor[0] = lineColor[1] = lineColor[2] = 0
-      lineColor[3] = 1
-    }
 
-    var size = 0.5
-    if(Array.isArray(sizes)) {
-      size = +sizes[i]
-    } else if(sizes) {
-      size = +sizes
-    } else if(this.useOrtho) {
-      size = 12
-    }
+      var cells = glyphLines.edges
+      var verts = glyphLines.positions
 
-    var angle = 0
-    if(Array.isArray(angles)) {
-      angle = +angles[i]
-    } else if(angles) {
-      angle = +angles
-    }
-
-    //Loop through markers and append to buffers
-    var cos = Math.cos(angle)
-    var sin = Math.sin(angle)
-
-    var x = points[i]
-    for(var j=0; j<3; ++j) {
-      upperBound[j] = Math.max(upperBound[j], x[j])
-      lowerBound[j] = Math.min(lowerBound[j], x[j])
-    }
-
-    //Calculate text offset
-    if(alignment[0] < 0) {
-      textOffset[0] = alignment[0]  * (1+glyphBounds[1][0])
-    } else if(alignment[0] > 0) {
-      textOffset[0] = -alignment[0] * (1+glyphBounds[0][0])
-    }
-
-    //Write out inner marker
-    var cells = glyphMesh.cells
-    var verts = glyphMesh.positions
-
-    for(var j=0; j<cells.length; ++j) {
-      var cell = cells[j]
-      for(var k=0; k<3; ++k) {
-        for(var l=0; l<3; ++l) {
-          positionArray[3*triOffset+l] = x[l]
+      for(var j=0; j<cells.length; ++j) {
+        var cell = cells[j]
+        for(var k=0; k<2; ++k) {
+          for(var l=0; l<3; ++l) {
+            positionArray[3*lineOffset+l] = x[l]
+          }
+          for(var l=0; l<4; ++l) {
+            colorArray[4*lineOffset+l] = lineColor[l]
+          }
+          idArray[lineOffset] = pickCounter
+          var p = verts[cell[k]]
+          glyphArray[2*lineOffset]   = size * (cos*p[0] - sin*p[1] + textOffset[0])
+          glyphArray[2*lineOffset+1] = size * (sin*p[0] + cos*p[1] + textOffset[1])
+          lineOffset += 1
         }
-        for(var l=0; l<4; ++l) {
-          colorArray[4*triOffset+l] = color[l]
-        }
-        idArray[triOffset] = pickCounter
-        var p = verts[cell[k]]
-        glyphArray[2*triOffset]   = size * (cos*p[0] - sin*p[1] + textOffset[0])
-        glyphArray[2*triOffset+1] = size * (sin*p[0] + cos*p[1] + textOffset[1])
-        triOffset += 1
       }
+
     }
 
-    var cells = glyphLines.edges
-    var verts = glyphLines.positions
 
-    for(var j=0; j<cells.length; ++j) {
-      var cell = cells[j]
-      for(var k=0; k<2; ++k) {
-        for(var l=0; l<3; ++l) {
-          positionArray[3*lineOffset+l] = x[l]
-        }
-        for(var l=0; l<4; ++l) {
-          colorArray[4*lineOffset+l] = lineColor[l]
-        }
-        idArray[lineOffset] = pickCounter
-        var p = verts[cell[k]]
-        glyphArray[2*lineOffset]   = size * (cos*p[0] - sin*p[1] + textOffset[0])
-        glyphArray[2*lineOffset+1] = size * (sin*p[0] + cos*p[1] + textOffset[1])
-        lineOffset += 1
-      }
-    }
 
-    //Increment pickCounter
-    pickCounter += 1
   }
-
-
-  //Update vertex counts
-  this.vertexCount      = triVertexCount
-  this.lineVertexCount  = lineVertexCount
-
-  //Update buffers
-  this.pointBuffer.update(positionArray)
-  this.colorBuffer.update(colorArray)
-  this.glyphBuffer.update(glyphArray)
-  this.idBuffer.update(new Uint32Array(idArray))
-
-  pool.free(positionArray)
-  pool.free(colorArray)
-  pool.free(glyphArray)
-  pool.free(idArray)
 
   //Update bounds
   this.bounds = [lowerBound, upperBound]
@@ -29632,6 +32042,21 @@ fill_loop:
 
   //Save number of points
   this.pointCount = points.length
+
+  //Update vertex counts
+  this.vertexCount      = triVertexCount
+  this.lineVertexCount  = lineVertexCount
+
+  this.pointBuffer.update(positionArray)
+  this.colorBuffer.update(colorArray)
+  this.glyphBuffer.update(glyphArray)
+  //this.idBuffer.update(new Uint32Array(idArray))
+  this.idBuffer.update(idArray)
+
+  pool.free(positionArray)
+  pool.free(colorArray)
+  pool.free(glyphArray)
+  pool.free(idArray)
 }
 
 proto.dispose = function() {
@@ -29708,7 +32133,7 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/glyphs":130,"./lib/shaders":131,"gl-buffer":95,"gl-mat4/multiply":114,"gl-vao":149,"typedarray-pool":247}],133:[function(require,module,exports){
+},{"./lib/get-simple-string":167,"./lib/glyphs":168,"./lib/shaders":169,"gl-buffer":102,"gl-mat4/multiply":136,"gl-vao":202,"is-string-blank":227,"typedarray-pool":306}],178:[function(require,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -29716,10 +32141,37 @@ module.exports = createSelectBuffer
 var createFBO = require('gl-fbo')
 var pool      = require('typedarray-pool')
 var ndarray   = require('ndarray')
-
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_52_arg0_<255||_inline_52_arg1_<255||_inline_52_arg2_<255||_inline_52_arg3_<255){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = function(arr, x, y) {
+  var closestD2 = 1e8
+  var closestX = -1
+  var closestY = -1
+
+  var ni = arr.shape[0]
+  var nj = arr.shape[1]
+  for(var i = 0; i < ni; i++) {
+    for(var j = 0; j < nj; j++) {
+      var r = arr.get(i, j, 0)
+      var g = arr.get(i, j, 1)
+      var b = arr.get(i, j, 2)
+      var a = arr.get(i, j, 3)
+
+      if(r < 255 || g < 255 || b < 255 || a < 255) {
+        var dx = x - i
+        var dy = y - j
+        var d2 = dx*dx + dy*dy
+        if(d2 < closestD2) {
+          closestD2 = d2
+          closestX = i
+          closestY = j
+        }
+      }
+    }
+  }
+
+  return [closestX, closestY, closestD2]
+}
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -29858,1004 +32310,36 @@ proto.dispose = function() {
 }
 
 function createSelectBuffer(gl, shape) {
-  var fbo = createFBO(gl, shape)
-  var buffer = pool.mallocUint8(shape[0]*shape[1]*4)
+  var width = shape[0]
+  var height = shape[1]
+  var options = {}
+  var fbo = createFBO(gl, width, height, options)
+  var buffer = pool.mallocUint8(width*height*4)
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":35,"cwise/lib/wrapper":73,"gl-fbo":100,"ndarray":192,"typedarray-pool":247}],134:[function(require,module,exports){
+},{"bit-twiddle":35,"gl-fbo":114,"ndarray":251,"typedarray-pool":306}],179:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":180,"./lib/create-attributes":181,"./lib/create-uniforms":182,"./lib/reflect":183,"./lib/runtime-reflect":184,"./lib/shader-cache":185,"dup":94}],180:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],181:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":180,"dup":96}],182:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":180,"./reflect":183,"dup":97}],183:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],184:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],185:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":180,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],186:[function(require,module,exports){
 'use strict'
 
-var createUniformWrapper   = require('./lib/create-uniforms')
-var createAttributeWrapper = require('./lib/create-attributes')
-var makeReflect            = require('./lib/reflect')
-var shaderCache            = require('./lib/shader-cache')
-var runtime                = require('./lib/runtime-reflect')
-var GLError                = require("./lib/GLError")
-
-//Shader object
-function Shader(gl) {
-  this.gl         = gl
-
-  //Default initialize these to null
-  this._vref      =
-  this._fref      =
-  this._relink    =
-  this.vertShader =
-  this.fragShader =
-  this.program    =
-  this.attributes =
-  this.uniforms   =
-  this.types      = null
-}
-
-var proto = Shader.prototype
-
-proto.bind = function() {
-  if(!this.program) {
-    this._relink()
-  }
-  this.gl.useProgram(this.program)
-}
-
-proto.dispose = function() {
-  if(this._fref) {
-    this._fref.dispose()
-  }
-  if(this._vref) {
-    this._vref.dispose()
-  }
-  this.attributes =
-  this.types      =
-  this.vertShader =
-  this.fragShader =
-  this.program    =
-  this._relink    =
-  this._fref      =
-  this._vref      = null
-}
-
-function compareAttributes(a, b) {
-  if(a.name < b.name) {
-    return -1
-  }
-  return 1
-}
-
-//Update export hook for glslify-live
-proto.update = function(
-    vertSource
-  , fragSource
-  , uniforms
-  , attributes) {
-
-  //If only one object passed, assume glslify style output
-  if(!fragSource || arguments.length === 1) {
-    var obj = vertSource
-    vertSource = obj.vertex
-    fragSource = obj.fragment
-    uniforms   = obj.uniforms
-    attributes = obj.attributes
-  }
-
-  var wrapper = this
-  var gl      = wrapper.gl
-
-  //Compile vertex and fragment shaders
-  var pvref = wrapper._vref
-  wrapper._vref = shaderCache.shader(gl, gl.VERTEX_SHADER, vertSource)
-  if(pvref) {
-    pvref.dispose()
-  }
-  wrapper.vertShader = wrapper._vref.shader
-  var pfref = this._fref
-  wrapper._fref = shaderCache.shader(gl, gl.FRAGMENT_SHADER, fragSource)
-  if(pfref) {
-    pfref.dispose()
-  }
-  wrapper.fragShader = wrapper._fref.shader
-
-  //If uniforms/attributes is not specified, use RT reflection
-  if(!uniforms || !attributes) {
-
-    //Create initial test program
-    var testProgram = gl.createProgram()
-    gl.attachShader(testProgram, wrapper.fragShader)
-    gl.attachShader(testProgram, wrapper.vertShader)
-    gl.linkProgram(testProgram)
-    if(!gl.getProgramParameter(testProgram, gl.LINK_STATUS)) {
-      var errLog = gl.getProgramInfoLog(testProgram)
-      throw new GLError(errLog, 'Error linking program:' + errLog)
-    }
-
-    //Load data from runtime
-    uniforms   = uniforms   || runtime.uniforms(gl, testProgram)
-    attributes = attributes || runtime.attributes(gl, testProgram)
-
-    //Release test program
-    gl.deleteProgram(testProgram)
-  }
-
-  //Sort attributes lexicographically
-  // overrides undefined WebGL behavior for attribute locations
-  attributes = attributes.slice()
-  attributes.sort(compareAttributes)
-
-  //Convert attribute types, read out locations
-  var attributeUnpacked  = []
-  var attributeNames     = []
-  var attributeLocations = []
-  for(var i=0; i<attributes.length; ++i) {
-    var attr = attributes[i]
-    if(attr.type.indexOf('mat') >= 0) {
-      var size = attr.type.charAt(attr.type.length-1)|0
-      var locVector = new Array(size)
-      for(var j=0; j<size; ++j) {
-        locVector[j] = attributeLocations.length
-        attributeNames.push(attr.name + '[' + j + ']')
-        if(typeof attr.location === 'number') {
-          attributeLocations.push(attr.location + j)
-        } else if(Array.isArray(attr.location) &&
-                  attr.location.length === size &&
-                  typeof attr.location[j] === 'number') {
-          attributeLocations.push(attr.location[j]|0)
-        } else {
-          attributeLocations.push(-1)
-        }
-      }
-      attributeUnpacked.push({
-        name: attr.name,
-        type: attr.type,
-        locations: locVector
-      })
-    } else {
-      attributeUnpacked.push({
-        name: attr.name,
-        type: attr.type,
-        locations: [ attributeLocations.length ]
-      })
-      attributeNames.push(attr.name)
-      if(typeof attr.location === 'number') {
-        attributeLocations.push(attr.location|0)
-      } else {
-        attributeLocations.push(-1)
-      }
-    }
-  }
-
-  //For all unspecified attributes, assign them lexicographically min attribute
-  var curLocation = 0
-  for(var i=0; i<attributeLocations.length; ++i) {
-    if(attributeLocations[i] < 0) {
-      while(attributeLocations.indexOf(curLocation) >= 0) {
-        curLocation += 1
-      }
-      attributeLocations[i] = curLocation
-    }
-  }
-
-  //Rebuild program and recompute all uniform locations
-  var uniformLocations = new Array(uniforms.length)
-  function relink() {
-    wrapper.program = shaderCache.program(
-        gl
-      , wrapper._vref
-      , wrapper._fref
-      , attributeNames
-      , attributeLocations)
-
-    for(var i=0; i<uniforms.length; ++i) {
-      uniformLocations[i] = gl.getUniformLocation(
-          wrapper.program
-        , uniforms[i].name)
-    }
-  }
-
-  //Perform initial linking, reuse program used for reflection
-  relink()
-
-  //Save relinking procedure, defer until runtime
-  wrapper._relink = relink
-
-  //Generate type info
-  wrapper.types = {
-    uniforms:   makeReflect(uniforms),
-    attributes: makeReflect(attributes)
-  }
-
-  //Generate attribute wrappers
-  wrapper.attributes = createAttributeWrapper(
-      gl
-    , wrapper
-    , attributeUnpacked
-    , attributeLocations)
-
-  //Generate uniform wrappers
-  Object.defineProperty(wrapper, 'uniforms', createUniformWrapper(
-      gl
-    , wrapper
-    , uniforms
-    , uniformLocations))
-}
-
-//Compiles and links a shader program with the given attribute and vertex list
-function createShader(
-    gl
-  , vertSource
-  , fragSource
-  , uniforms
-  , attributes) {
-
-  var shader = new Shader(gl)
-
-  shader.update(
-      vertSource
-    , fragSource
-    , uniforms
-    , attributes)
-
-  return shader
-}
-
-module.exports = createShader
-
-},{"./lib/GLError":135,"./lib/create-attributes":136,"./lib/create-uniforms":137,"./lib/reflect":138,"./lib/runtime-reflect":139,"./lib/shader-cache":140}],135:[function(require,module,exports){
-function GLError (rawError, shortMessage, longMessage) {
-    this.shortMessage = shortMessage || ''
-    this.longMessage = longMessage || ''
-    this.rawError = rawError || ''
-    this.message =
-      'gl-shader: ' + (shortMessage || rawError || '') +
-      (longMessage ? '\n'+longMessage : '')
-    this.stack = (new Error()).stack
-}
-GLError.prototype = new Error
-GLError.prototype.name = 'GLError'
-GLError.prototype.constructor = GLError
-module.exports = GLError
-
-},{}],136:[function(require,module,exports){
-'use strict'
-
-module.exports = createAttributeWrapper
-
-var GLError = require("./GLError")
-
-function ShaderAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , constFunc) {
-  this._gl        = gl
-  this._wrapper   = wrapper
-  this._index     = index
-  this._locations = locations
-  this._dimension = dimension
-  this._constFunc = constFunc
-}
-
-var proto = ShaderAttribute.prototype
-
-proto.pointer = function setAttribPointer(
-    type
-  , normalized
-  , stride
-  , offset) {
-
-  var self      = this
-  var gl        = self._gl
-  var location  = self._locations[self._index]
-
-  gl.vertexAttribPointer(
-      location
-    , self._dimension
-    , type || gl.FLOAT
-    , !!normalized
-    , stride || 0
-    , offset || 0)
-  gl.enableVertexAttribArray(location)
-}
-
-proto.set = function(x0, x1, x2, x3) {
-  return this._constFunc(this._locations[this._index], x0, x1, x2, x3)
-}
-
-Object.defineProperty(proto, 'location', {
-  get: function() {
-    return this._locations[this._index]
-  }
-  , set: function(v) {
-    if(v !== this._locations[this._index]) {
-      this._locations[this._index] = v|0
-      this._wrapper.program = null
-    }
-    return v|0
-  }
-})
-
-//Adds a vector attribute to obj
-function addVectorAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , obj
-  , name) {
-
-  //Construct constant function
-  var constFuncArgs = [ 'gl', 'v' ]
-  var varNames = []
-  for(var i=0; i<dimension; ++i) {
-    constFuncArgs.push('x'+i)
-    varNames.push('x'+i)
-  }
-  constFuncArgs.push(
-    'if(x0.length===void 0){return gl.vertexAttrib' +
-    dimension + 'f(v,' +
-    varNames.join() +
-    ')}else{return gl.vertexAttrib' +
-    dimension +
-    'fv(v,x0)}')
-  var constFunc = Function.apply(null, constFuncArgs)
-
-  //Create attribute wrapper
-  var attr = new ShaderAttribute(
-      gl
-    , wrapper
-    , index
-    , locations
-    , dimension
-    , constFunc)
-
-  //Create accessor
-  Object.defineProperty(obj, name, {
-    set: function(x) {
-      gl.disableVertexAttribArray(locations[index])
-      constFunc(gl, locations[index], x)
-      return x
-    }
-    , get: function() {
-      return attr
-    }
-    , enumerable: true
-  })
-}
-
-function addMatrixAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , obj
-  , name) {
-
-  var parts = new Array(dimension)
-  var attrs = new Array(dimension)
-  for(var i=0; i<dimension; ++i) {
-    addVectorAttribute(
-        gl
-      , wrapper
-      , index[i]
-      , locations
-      , dimension
-      , parts
-      , i)
-    attrs[i] = parts[i]
-  }
-
-  Object.defineProperty(parts, 'location', {
-    set: function(v) {
-      if(Array.isArray(v)) {
-        for(var i=0; i<dimension; ++i) {
-          attrs[i].location = v[i]
-        }
-      } else {
-        for(var i=0; i<dimension; ++i) {
-          attrs[i].location = v + i
-        }
-      }
-      return v
-    }
-    , get: function() {
-      var result = new Array(dimension)
-      for(var i=0; i<dimension; ++i) {
-        result[i] = locations[index[i]]
-      }
-      return result
-    }
-    , enumerable: true
-  })
-
-  parts.pointer = function(type, normalized, stride, offset) {
-    type       = type || gl.FLOAT
-    normalized = !!normalized
-    stride     = stride || (dimension * dimension)
-    offset     = offset || 0
-    for(var i=0; i<dimension; ++i) {
-      var location = locations[index[i]]
-      gl.vertexAttribPointer(
-            location
-          , dimension
-          , type
-          , normalized
-          , stride
-          , offset + i * dimension)
-      gl.enableVertexAttribArray(location)
-    }
-  }
-
-  var scratch = new Array(dimension)
-  var vertexAttrib = gl['vertexAttrib' + dimension + 'fv']
-
-  Object.defineProperty(obj, name, {
-    set: function(x) {
-      for(var i=0; i<dimension; ++i) {
-        var loc = locations[index[i]]
-        gl.disableVertexAttribArray(loc)
-        if(Array.isArray(x[0])) {
-          vertexAttrib.call(gl, loc, x[i])
-        } else {
-          for(var j=0; j<dimension; ++j) {
-            scratch[j] = x[dimension*i + j]
-          }
-          vertexAttrib.call(gl, loc, scratch)
-        }
-      }
-      return x
-    }
-    , get: function() {
-      return parts
-    }
-    , enumerable: true
-  })
-}
-
-//Create shims for attributes
-function createAttributeWrapper(
-    gl
-  , wrapper
-  , attributes
-  , locations) {
-
-  var obj = {}
-  for(var i=0, n=attributes.length; i<n; ++i) {
-
-    var a = attributes[i]
-    var name = a.name
-    var type = a.type
-    var locs = a.locations
-
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'float':
-        addVectorAttribute(
-            gl
-          , wrapper
-          , locs[0]
-          , locations
-          , 1
-          , obj
-          , name)
-      break
-
-      default:
-        if(type.indexOf('vec') >= 0) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
-          }
-          addVectorAttribute(
-              gl
-            , wrapper
-            , locs[0]
-            , locations
-            , d
-            , obj
-            , name)
-        } else if(type.indexOf('mat') >= 0) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
-          }
-          addMatrixAttribute(
-              gl
-            , wrapper
-            , locs
-            , locations
-            , d
-            , obj
-            , name)
-        } else {
-          throw new GLError('', 'Unknown data type for attribute ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-  return obj
-}
-
-},{"./GLError":135}],137:[function(require,module,exports){
-'use strict'
-
-var coallesceUniforms = require('./reflect')
-var GLError = require("./GLError")
-
-module.exports = createUniformWrapper
-
-//Binds a function and returns a value
-function identity(x) {
-  var c = new Function('y', 'return function(){return y}')
-  return c(x)
-}
-
-function makeVector(length, fill) {
-  var result = new Array(length)
-  for(var i=0; i<length; ++i) {
-    result[i] = fill
-  }
-  return result
-}
-
-//Create shims for uniforms
-function createUniformWrapper(gl, wrapper, uniforms, locations) {
-
-  function makeGetter(index) {
-    var proc = new Function(
-        'gl'
-      , 'wrapper'
-      , 'locations'
-      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}')
-    return proc(gl, wrapper, locations)
-  }
-
-  function makePropSetter(path, index, type) {
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
-      case 'float':
-        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type')
-          }
-          switch(type.charAt(0)) {
-            case 'b':
-            case 'i':
-              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
-            case 'v':
-              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
-            default:
-              throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + type)
-          }
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
-        } else {
-          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function enumerateIndices(prefix, type) {
-    if(typeof type !== 'object') {
-      return [ [prefix, type] ]
-    }
-    var indices = []
-    for(var id in type) {
-      var prop = type[id]
-      var tprefix = prefix
-      if(parseInt(id) + '' === id) {
-        tprefix += '[' + id + ']'
-      } else {
-        tprefix += '.' + id
-      }
-      if(typeof prop === 'object') {
-        indices.push.apply(indices, enumerateIndices(tprefix, prop))
-      } else {
-        indices.push([tprefix, prop])
-      }
-    }
-    return indices
-  }
-
-  function makeSetter(type) {
-    var code = [ 'return function updateProperty(obj){' ]
-    var indices = enumerateIndices('', type)
-    for(var i=0; i<indices.length; ++i) {
-      var item = indices[i]
-      var path = item[0]
-      var idx  = item[1]
-      if(locations[idx]) {
-        code.push(makePropSetter(path, idx, uniforms[idx].type))
-      }
-    }
-    code.push('return obj}')
-    var proc = new Function('gl', 'locations', code.join('\n'))
-    return proc(gl, locations)
-  }
-
-  function defaultValue(type) {
-    switch(type) {
-      case 'bool':
-        return false
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 0
-      case 'float':
-        return 0.0
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type')
-          }
-          if(type.charAt(0) === 'b') {
-            return makeVector(d, false)
-          }
-          return makeVector(d, 0)
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return makeVector(d*d, 0)
-        } else {
-          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function storeProperty(obj, prop, type) {
-    if(typeof type === 'object') {
-      var child = processObject(type)
-      Object.defineProperty(obj, prop, {
-        get: identity(child),
-        set: makeSetter(type),
-        enumerable: true,
-        configurable: false
-      })
-    } else {
-      if(locations[type]) {
-        Object.defineProperty(obj, prop, {
-          get: makeGetter(type),
-          set: makeSetter(type),
-          enumerable: true,
-          configurable: false
-        })
-      } else {
-        obj[prop] = defaultValue(uniforms[type].type)
-      }
-    }
-  }
-
-  function processObject(obj) {
-    var result
-    if(Array.isArray(obj)) {
-      result = new Array(obj.length)
-      for(var i=0; i<obj.length; ++i) {
-        storeProperty(result, i, obj[i])
-      }
-    } else {
-      result = {}
-      for(var id in obj) {
-        storeProperty(result, id, obj[id])
-      }
-    }
-    return result
-  }
-
-  //Return data
-  var coallesced = coallesceUniforms(uniforms, true)
-  return {
-    get: identity(processObject(coallesced)),
-    set: makeSetter(coallesced),
-    enumerable: true,
-    configurable: true
-  }
-}
-
-},{"./GLError":135,"./reflect":138}],138:[function(require,module,exports){
-'use strict'
-
-module.exports = makeReflectTypes
-
-//Construct type info for reflection.
-//
-// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
-//
-// The leaves of the resulting object are either indices or type strings representing primitive glslify types
-function makeReflectTypes(uniforms, useIndex) {
-  var obj = {}
-  for(var i=0; i<uniforms.length; ++i) {
-    var n = uniforms[i].name
-    var parts = n.split(".")
-    var o = obj
-    for(var j=0; j<parts.length; ++j) {
-      var x = parts[j].split("[")
-      if(x.length > 1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = []
-        }
-        o = o[x[0]]
-        for(var k=1; k<x.length; ++k) {
-          var y = parseInt(x[k])
-          if(k<x.length-1 || j<parts.length-1) {
-            if(!(y in o)) {
-              if(k < x.length-1) {
-                o[y] = []
-              } else {
-                o[y] = {}
-              }
-            }
-            o = o[y]
-          } else {
-            if(useIndex) {
-              o[y] = i
-            } else {
-              o[y] = uniforms[i].type
-            }
-          }
-        }
-      } else if(j < parts.length-1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = {}
-        }
-        o = o[x[0]]
-      } else {
-        if(useIndex) {
-          o[x[0]] = i
-        } else {
-          o[x[0]] = uniforms[i].type
-        }
-      }
-    }
-  }
-  return obj
-}
-},{}],139:[function(require,module,exports){
-'use strict'
-
-exports.uniforms    = runtimeUniforms
-exports.attributes  = runtimeAttributes
-
-var GL_TO_GLSL_TYPES = {
-  'FLOAT':       'float',
-  'FLOAT_VEC2':  'vec2',
-  'FLOAT_VEC3':  'vec3',
-  'FLOAT_VEC4':  'vec4',
-  'INT':         'int',
-  'INT_VEC2':    'ivec2',
-  'INT_VEC3':    'ivec3',
-  'INT_VEC4':    'ivec4',
-  'BOOL':        'bool',
-  'BOOL_VEC2':   'bvec2',
-  'BOOL_VEC3':   'bvec3',
-  'BOOL_VEC4':   'bvec4',
-  'FLOAT_MAT2':  'mat2',
-  'FLOAT_MAT3':  'mat3',
-  'FLOAT_MAT4':  'mat4',
-  'SAMPLER_2D':  'sampler2D',
-  'SAMPLER_CUBE':'samplerCube'
-}
-
-var GL_TABLE = null
-
-function getType(gl, type) {
-  if(!GL_TABLE) {
-    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
-    GL_TABLE = {}
-    for(var i=0; i<typeNames.length; ++i) {
-      var tn = typeNames[i]
-      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
-    }
-  }
-  return GL_TABLE[type]
-}
-
-function runtimeUniforms(gl, program) {
-  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
-  var result = []
-  for(var i=0; i<numUniforms; ++i) {
-    var info = gl.getActiveUniform(program, i)
-    if(info) {
-      var type = getType(gl, info.type)
-      if(info.size > 1) {
-        for(var j=0; j<info.size; ++j) {
-          result.push({
-            name: info.name.replace('[0]', '[' + j + ']'),
-            type: type
-          })
-        }
-      } else {
-        result.push({
-          name: info.name,
-          type: type
-        })
-      }
-    }
-  }
-  return result
-}
-
-function runtimeAttributes(gl, program) {
-  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
-  var result = []
-  for(var i=0; i<numAttributes; ++i) {
-    var info = gl.getActiveAttrib(program, i)
-    if(info) {
-      result.push({
-        name: info.name,
-        type: getType(gl, info.type)
-      })
-    }
-  }
-  return result
-}
-
-},{}],140:[function(require,module,exports){
-'use strict'
-
-exports.shader   = getShaderReference
-exports.program  = createProgram
-
-var GLError = require("./GLError")
-var formatCompilerError = require('gl-format-compiler-error');
-
-var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
-var CACHE = new weakMap()
-
-var SHADER_COUNTER = 0
-
-function ShaderReference(id, src, type, shader, programs, count, cache) {
-  this.id       = id
-  this.src      = src
-  this.type     = type
-  this.shader   = shader
-  this.count    = count
-  this.programs = []
-  this.cache    = cache
-}
-
-ShaderReference.prototype.dispose = function() {
-  if(--this.count === 0) {
-    var cache    = this.cache
-    var gl       = cache.gl
-
-    //Remove program references
-    var programs = this.programs
-    for(var i=0, n=programs.length; i<n; ++i) {
-      var p = cache.programs[programs[i]]
-      if(p) {
-        delete cache.programs[i]
-        gl.deleteProgram(p)
-      }
-    }
-
-    //Remove shader reference
-    gl.deleteShader(this.shader)
-    delete cache.shaders[(this.type === gl.FRAGMENT_SHADER)|0][this.src]
-  }
-}
-
-function ContextCache(gl) {
-  this.gl       = gl
-  this.shaders  = [{}, {}]
-  this.programs = {}
-}
-
-var proto = ContextCache.prototype
-
-function compileShader(gl, type, src) {
-  var shader = gl.createShader(type)
-  gl.shaderSource(shader, src)
-  gl.compileShader(shader)
-  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    var errLog = gl.getShaderInfoLog(shader)
-    try {
-        var fmt = formatCompilerError(errLog, src, type);
-    } catch (e){
-        console.warn('Failed to format compiler error: ' + e);
-        throw new GLError(errLog, 'Error compiling shader:\n' + errLog)
-    }
-    throw new GLError(errLog, fmt.short, fmt.long)
-  }
-  return shader
-}
-
-proto.getShaderReference = function(type, src) {
-  var gl      = this.gl
-  var shaders = this.shaders[(type === gl.FRAGMENT_SHADER)|0]
-  var shader  = shaders[src]
-  if(!shader || !gl.isShader(shader.shader)) {
-    var shaderObj = compileShader(gl, type, src)
-    shader = shaders[src] = new ShaderReference(
-      SHADER_COUNTER++,
-      src,
-      type,
-      shaderObj,
-      [],
-      1,
-      this)
-  } else {
-    shader.count += 1
-  }
-  return shader
-}
-
-function linkProgram(gl, vshader, fshader, attribs, locations) {
-  var program = gl.createProgram()
-  gl.attachShader(program, vshader)
-  gl.attachShader(program, fshader)
-  for(var i=0; i<attribs.length; ++i) {
-    gl.bindAttribLocation(program, locations[i], attribs[i])
-  }
-  gl.linkProgram(program)
-  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    var errLog = gl.getProgramInfoLog(program)
-    throw new GLError(errLog, 'Error linking program: ' + errLog)
-  }
-  return program
-}
-
-proto.getProgram = function(vref, fref, attribs, locations) {
-  var token = [vref.id, fref.id, attribs.join(':'), locations.join(':')].join('@')
-  var prog  = this.programs[token]
-  if(!prog || !this.gl.isProgram(prog)) {
-    this.programs[token] = prog = linkProgram(
-      this.gl,
-      vref.shader,
-      fref.shader,
-      attribs,
-      locations)
-    vref.programs.push(token)
-    fref.programs.push(token)
-  }
-  return prog
-}
-
-function getCache(gl) {
-  var ctxCache = CACHE.get(gl)
-  if(!ctxCache) {
-    ctxCache = new ContextCache(gl)
-    CACHE.set(gl, ctxCache)
-  }
-  return ctxCache
-}
-
-function getShaderReference(gl, type, src) {
-  return getCache(gl).getShaderReference(type, src)
-}
-
-function createProgram(gl, vref, fref, attribs, locations) {
-  return getCache(gl).getProgram(vref, fref, attribs, locations)
-}
-
-},{"./GLError":135,"gl-format-compiler-error":101,"weakmap-shim":255}],141:[function(require,module,exports){
-'use strict'
-
-
+var glslify      = require('glslify')
 var createShader = require('gl-shader')
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * view * model * vec4(vertexPosition, 1.0);\n  vec2 clipOffset = (projection * view * model * vec4(color, 0.0)).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n  gl_FragColor = fragColor;\n}"
+var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * view * model * vec4(vertexPosition, 1.0);\n  vec2 clipOffset = (projection * view * model * vec4(color, 0.0)).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"])
+var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n  gl_FragColor = fragColor;\n}"])
 
 module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [
@@ -30865,7 +32349,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":134}],142:[function(require,module,exports){
+},{"gl-shader":179,"glslify":217}],187:[function(require,module,exports){
 'use strict'
 
 var createBuffer = require('gl-buffer')
@@ -31061,14 +32545,14 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":141,"gl-buffer":95,"gl-vao":149}],143:[function(require,module,exports){
+},{"./shaders/index":186,"gl-buffer":102,"gl-vao":202}],188:[function(require,module,exports){
 var createShader = require('gl-shader')
+var glslify = require('glslify')
 
-
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if (kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor = step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) + step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
-var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = f;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
-var pickSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
+var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if (\n    kill > 0.0 ||\n    vColor.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], worldCoordinate)\n  ) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
+var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform vec3 objectOffset;\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  worldCoordinate = objectOffset + dataCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z += zOffset;\n\n  gl_Position = clipPosition;\n  value = f + objectOffset.z;\n  kill = -1.0;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"])
+var pickSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"])
 
 exports.createShader = function (gl) {
   var shader = createShader(gl, vertSrc, fragSrc, null, [
@@ -31111,7 +32595,23 @@ exports.createPickContourShader = function (gl) {
   return shader
 }
 
-},{"gl-shader":134}],144:[function(require,module,exports){
+},{"gl-shader":190,"glslify":217}],189:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"dup":54}],190:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"./lib/GLError":191,"./lib/create-attributes":192,"./lib/create-uniforms":193,"./lib/reflect":194,"./lib/runtime-reflect":195,"./lib/shader-cache":196,"dup":94}],191:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"dup":95}],192:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":191,"dup":96}],193:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"./GLError":191,"./reflect":194,"dup":97}],194:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],195:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],196:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"./GLError":191,"dup":100,"gl-format-compiler-error":115,"weakmap-shim":314}],197:[function(require,module,exports){
 'use strict'
 
 module.exports = createSurfacePlot
@@ -31181,13 +32681,14 @@ function SurfacePickResult (position, index, uv, level, dataCoordinate) {
 
 var N_COLORS = 256
 
-function genColormap (name) {
+function genColormap (name, opacityscale) {
   var x = pack([colormap({
     colormap: name,
     nshades: N_COLORS,
     format: 'rgba'
-  }).map(function (c) {
-    return [c[0], c[1], c[2], 255 * c[3]]
+  }).map(function (c, i) {
+    var a = opacityscale ? getOpacityFromScale(i / 255.0, opacityscale) : 1
+    return [c[0], c[1], c[2], 255 * a]
   })])
   ops.divseq(x, 255.0)
   return x
@@ -31207,11 +32708,13 @@ function SurfacePlot (
   contourBuffer,
   contourVAO,
   dynamicBuffer,
-  dynamicVAO) {
+  dynamicVAO,
+  objectOffset) {
   this.gl = gl
   this.shape = shape
   this.bounds = bounds
-  this.intensityBounds = [];
+  this.objectOffset = objectOffset
+  this.intensityBounds = []
 
   this._shader = shader
   this._pickShader = pickShader
@@ -31273,7 +32776,10 @@ function SurfacePlot (
 
   this.snapToData = false
 
+  this.pixelRatio = 1
+
   this.opacity = 1.0
+  this.opacityscale  = false
 
   this.lightPosition = [10, 10000, 0]
   this.ambientLight = 0.8
@@ -31281,7 +32787,7 @@ function SurfacePlot (
   this.specularLight = 2.0
   this.roughness = 0.5
   this.fresnel = 1.5
-  this.vertexColor = 0;
+  this.vertexColor = 0
 
   this.dirty = true
 }
@@ -31289,15 +32795,21 @@ function SurfacePlot (
 var proto = SurfacePlot.prototype
 
 proto.isTransparent = function () {
-  return this.opacity < 1
+  return this.opacity < 1 || this.opacityscale
 }
 
 proto.isOpaque = function () {
+  if (this.opacityscale) {
+    return false
+  }
+  if (this.opacity < 1) {
+    return false
+  }
   if (this.opacity >= 1) {
     return true
   }
   for (var i = 0; i < 3; ++i) {
-    if (this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
+    if (this._contourCounts[i].length > 0) {
       return true
     }
   }
@@ -31308,6 +32820,22 @@ proto.pickSlots = 1
 
 proto.setPickBase = function (id) {
   this.pickId = id
+}
+
+function getOpacityFromScale(ratio, opacityscale) { // copied form gl-mesh3d
+  if(!opacityscale) return 1
+  if(!opacityscale.length) return 1
+
+  for(var i = 0; i < opacityscale.length; ++i) {
+    if(opacityscale.length < 2) return 1
+    if(opacityscale[i][0] === ratio) return opacityscale[i][1]
+    if(opacityscale[i][0] > ratio && i > 0) {
+      var d = (opacityscale[i][0] - ratio) / (opacityscale[i][0] - opacityscale[i - 1][0])
+      return opacityscale[i][1] * (1 - d) + d * opacityscale[i - 1][1]
+    }
+  }
+
+  return 1
 }
 
 var ZERO_VEC = [0, 0, 0]
@@ -31381,6 +32909,7 @@ var UNIFORMS = {
   contourColor: [0, 0, 0, 1],
   permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
   zOffset: -1e-4,
+  objectOffset: [0, 0, 0],
   kambient: 1,
   kdiffuse: 1,
   kspecular: 1,
@@ -31409,6 +32938,7 @@ function drawCore (params, transparent) {
   uniforms.projection = params.projection || IDENTITY
   uniforms.lowerBound = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
   uniforms.upperBound = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
+  uniforms.objectOffset = this.objectOffset
   uniforms.contourColor = this.contourColor[0]
 
   uniforms.inverseModel = invert(uniforms.inverseModel, uniforms.model)
@@ -31457,7 +32987,7 @@ function drawCore (params, transparent) {
 
   var projectData = computeProjectionData(uniforms, this)
 
-  if (projectData.showSurface && (transparent === (this.opacity < 1))) {
+  if (projectData.showSurface)  {
     // Set up uniforms
     this._shader.bind()
     this._shader.uniforms = uniforms
@@ -31482,7 +33012,7 @@ function drawCore (params, transparent) {
     this._vao.unbind()
   }
 
-  if (projectData.showContour && !transparent) {
+  if (projectData.showContour) {
     var shader = this._contourShader
 
     // Don't apply lighting to contours
@@ -31501,12 +33031,9 @@ function drawCore (params, transparent) {
     // Draw contour levels
     for (i = 0; i < 3; ++i) {
       shader.uniforms.permutation = PERMUTATIONS[i]
-      gl.lineWidth(this.contourWidth[i])
+      gl.lineWidth(this.contourWidth[i] * this.pixelRatio)
 
       for (j = 0; j < this.contourLevels[i].length; ++j) {
-        if (!this._contourCounts[i][j]) {
-          continue
-        }
         if (j === this.highlightLevel[i]) {
           shader.uniforms.contourColor = this.highlightColor[i]
           shader.uniforms.contourTint = this.highlightTint[i]
@@ -31514,6 +33041,10 @@ function drawCore (params, transparent) {
           shader.uniforms.contourColor = this.contourColor[i]
           shader.uniforms.contourTint = this.contourTint[i]
         }
+        if (!this._contourCounts[i][j]) {
+          continue
+        }
+
         shader.uniforms.height = this.contourLevels[i][j]
         vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
       }
@@ -31528,7 +33059,7 @@ function drawCore (params, transparent) {
           continue
         }
         shader.uniforms.permutation = PERMUTATIONS[j]
-        gl.lineWidth(this.contourWidth[j])
+        gl.lineWidth(this.contourWidth[j] * this.pixelRatio)
         for (var k = 0; k < this.contourLevels[j].length; ++k) {
           if (k === this.highlightLevel[j]) {
             shader.uniforms.contourColor = this.highlightColor[j]
@@ -31537,11 +33068,17 @@ function drawCore (params, transparent) {
             shader.uniforms.contourColor = this.contourColor[j]
             shader.uniforms.contourTint = this.contourTint[j]
           }
+          if (!this._contourCounts[j][k]) {
+            continue
+          }
+
           shader.uniforms.height = this.contourLevels[j][k]
           vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
         }
       }
     }
+
+    vao.unbind()
 
     // Draw dynamic contours
     vao = this._dynamicVAO
@@ -31556,7 +33093,7 @@ function drawCore (params, transparent) {
       shader.uniforms.model = uniforms.model
       shader.uniforms.clipBounds = uniforms.clipBounds
       shader.uniforms.permutation = PERMUTATIONS[i]
-      gl.lineWidth(this.dynamicWidth[i])
+      gl.lineWidth(this.dynamicWidth[i] * this.pixelRatio)
 
       shader.uniforms.contourColor = this.dynamicColor[i]
       shader.uniforms.contourTint = this.dynamicTint[i]
@@ -31598,6 +33135,7 @@ var PICK_UNIFORMS = {
   lowerBound: [0, 0, 0],
   upperBound: [0, 0, 0],
   zOffset: 0.0,
+  objectOffset: [0, 0, 0],
   permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
   lightPosition: [0, 0, 0],
   eyePosition: [0, 0, 0]
@@ -31616,6 +33154,7 @@ proto.drawPick = function (params) {
   uniforms.pickId = this.pickId / 255.0
   uniforms.lowerBound = this.bounds[0]
   uniforms.upperBound = this.bounds[1]
+  uniforms.objectOffset = this.objectOffset
   uniforms.permutation = DEFAULT_PERM
 
   for (var i = 0; i < 2; ++i) {
@@ -31659,7 +33198,7 @@ proto.drawPick = function (params) {
     vao.bind()
 
     for (j = 0; j < 3; ++j) {
-      gl.lineWidth(this.contourWidth[j])
+      gl.lineWidth(this.contourWidth[j] * this.pixelRatio)
       shader.uniforms.permutation = PERMUTATIONS[j]
       for (i = 0; i < this.contourLevels[j].length; ++i) {
         if (this._contourCounts[j][i]) {
@@ -31680,7 +33219,7 @@ proto.drawPick = function (params) {
         }
 
         shader.uniforms.permutation = PERMUTATIONS[j]
-        gl.lineWidth(this.contourWidth[j])
+        gl.lineWidth(this.contourWidth[j] * this.pixelRatio)
         for (var k = 0; k < this.contourLevels[j].length; ++k) {
           if (this._contourCounts[j][k]) {
             shader.uniforms.height = this.contourLevels[j][k]
@@ -31767,27 +33306,27 @@ proto.pick = function (selection) {
   return result
 }
 
-function padField (nfield, field) {
-  var shape = field.shape.slice()
-  var nshape = nfield.shape.slice()
+proto.padField = function(dstField, srcField) {
+  var srcShape = srcField.shape.slice()
+  var dstShape = dstField.shape.slice()
 
   // Center
-  ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field)
+  ops.assign(dstField.lo(1, 1).hi(srcShape[0], srcShape[1]), srcField)
 
   // Edges
-  ops.assign(nfield.lo(1).hi(shape[0], 1),
-    field.hi(shape[0], 1))
-  ops.assign(nfield.lo(1, nshape[1] - 1).hi(shape[0], 1),
-    field.lo(0, shape[1] - 1).hi(shape[0], 1))
-  ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
-    field.hi(1))
-  ops.assign(nfield.lo(nshape[0] - 1, 1).hi(1, shape[1]),
-    field.lo(shape[0] - 1))
+  ops.assign(dstField.lo(1).hi(srcShape[0], 1),
+    srcField.hi(srcShape[0], 1))
+  ops.assign(dstField.lo(1, dstShape[1] - 1).hi(srcShape[0], 1),
+    srcField.lo(0, srcShape[1] - 1).hi(srcShape[0], 1))
+  ops.assign(dstField.lo(0, 1).hi(1, srcShape[1]),
+    srcField.hi(1))
+  ops.assign(dstField.lo(dstShape[0] - 1, 1).hi(1, srcShape[1]),
+    srcField.lo(srcShape[0] - 1))
   // Corners
-  nfield.set(0, 0, field.get(0, 0))
-  nfield.set(0, nshape[1] - 1, field.get(0, shape[1] - 1))
-  nfield.set(nshape[0] - 1, 0, field.get(shape[0] - 1, 0))
-  nfield.set(nshape[0] - 1, nshape[1] - 1, field.get(shape[0] - 1, shape[1] - 1))
+  dstField.set(0, 0, srcField.get(0, 0))
+  dstField.set(0, dstShape[1] - 1, srcField.get(0, srcShape[1] - 1))
+  dstField.set(dstShape[0] - 1, 0, srcField.get(srcShape[0] - 1, 0))
+  dstField.set(dstShape[0] - 1, dstShape[1] - 1, srcField.get(srcShape[0] - 1, srcShape[1] - 1))
 }
 
 function handleArray (param, ctor) {
@@ -31827,6 +33366,8 @@ function handleColor (param) {
 proto.update = function (params) {
   params = params || {}
 
+  this.objectOffset = params.objectOffset || this.objectOffset
+
   this.dirty = true
 
   if ('contourWidth' in params) {
@@ -31864,6 +33405,9 @@ proto.update = function (params) {
   if ('opacity' in params) {
     this.opacity = params.opacity
   }
+  if('opacityscale' in params) {
+    this.opacityscale = params.opacityscale
+  }
   if ('colorBounds' in params) {
     this.colorBounds = params.colorBounds
   }
@@ -31894,7 +33438,7 @@ proto.update = function (params) {
 
     // Pad field
     this._field[2] = ndarray(this._field[2].data, [field.shape[0] + 2, field.shape[1] + 2])
-    padField(this._field[2], field)
+    this.padField(this._field[2], field)
 
     // Save shape of field
     this.shape = field.shape.slice()
@@ -31922,7 +33466,7 @@ proto.update = function (params) {
             throw new Error('gl-surface: coords have incorrect shape')
           }
         }
-        padField(this._field[i], coord)
+        this.padField(this._field[i], coord)
       }
     } else if (params.ticks) {
       var ticks = params.ticks
@@ -31943,7 +33487,7 @@ proto.update = function (params) {
         tick2.stride[i ^ 1] = 0
 
         // Fill in field array
-        padField(this._field[i], tick2)
+        this.padField(this._field[i], tick2)
       }
     } else {
       for (i = 0; i < 2; ++i) {
@@ -32035,8 +33579,8 @@ proto.update = function (params) {
 
           var tx = this._field[0].get(r + 1, c + 1)
           var ty = this._field[1].get(r + 1, c + 1)
-          f = this._field[2].get(r + 1, c + 1)
-          var vf = f
+          f =      this._field[2].get(r + 1, c + 1)
+
           nx = normals.get(r + 1, c + 1, 0)
           ny = normals.get(r + 1, c + 1, 1)
           nz = normals.get(r + 1, c + 1, 2)
@@ -32044,6 +33588,10 @@ proto.update = function (params) {
           if (params.intensity) {
             vf = params.intensity.get(r, c)
           }
+
+          var vf = (params.intensity) ?
+            params.intensity.get(r, c) :
+            f + this.objectOffset[2];
 
           tverts[tptr++] = r
           tverts[tptr++] = c
@@ -32056,14 +33604,14 @@ proto.update = function (params) {
           tverts[tptr++] = ny
           tverts[tptr++] = nz
 
-          lo[0] = Math.min(lo[0], tx)
-          lo[1] = Math.min(lo[1], ty)
-          lo[2] = Math.min(lo[2], f)
+          lo[0] = Math.min(lo[0], tx + this.objectOffset[0])
+          lo[1] = Math.min(lo[1], ty + this.objectOffset[1])
+          lo[2] = Math.min(lo[2], f  + this.objectOffset[2])
           lo_intensity = Math.min(lo_intensity, vf)
 
-          hi[0] = Math.max(hi[0], tx)
-          hi[1] = Math.max(hi[1], ty)
-          hi[2] = Math.max(hi[2], f)
+          hi[0] = Math.max(hi[0], tx + this.objectOffset[0])
+          hi[1] = Math.max(hi[1], ty + this.objectOffset[1])
+          hi[2] = Math.max(hi[2], f  + this.objectOffset[2])
           hi_intensity = Math.max(hi_intensity, vf)
 
           vertexCount += 1
@@ -32110,9 +33658,14 @@ proto.update = function (params) {
     }
     for (i = 0; i < 3; ++i) {
       levels[i] = levels[i].slice()
-      levels.sort(function (a, b) {
+      levels[i].sort(function (a, b) {
         return a - b
       })
+    }
+    for (i = 0; i < 3; ++i) {
+      for (j = 0; j < levels[i].length; ++j) {
+        levels[i][j] -= this.objectOffset[i]
+      }
     }
     change_test:
     for (i = 0; i < 3; ++i) {
@@ -32138,14 +33691,16 @@ proto.update = function (params) {
     var contourVerts = []
 
     for (var dim = 0; dim < 3; ++dim) {
-      levels = this.contourLevels[dim]
+      var contourLevel = this.contourLevels[dim]
+
       var levelOffsets = []
       var levelCounts = []
 
       var parts = [0, 0, 0]
 
-      for (i = 0; i < levels.length; ++i) {
-        var graph = surfaceNets(this._field[dim], levels[i])
+      for (i = 0; i < contourLevel.length; ++i) {
+        var graph = surfaceNets(this._field[dim], contourLevel[i])
+
         levelOffsets.push((contourVerts.length / 5) | 0)
         vertexCount = 0
 
@@ -32164,10 +33719,10 @@ proto.update = function (params) {
             var fy = y - iy
 
             var hole = false
-            dd_loop:
-            for (var dd = 0; dd < 3; ++dd) {
-              parts[dd] = 0.0
-              var iu = (dim + dd + 1) % 3
+            axis_loop:
+            for (var axis = 0; axis < 3; ++axis) {
+              parts[axis] = 0.0
+              var iu = (dim + axis + 1) % 3
               for (dx = 0; dx < 2; ++dx) {
                 var s = dx ? fx : 1.0 - fx
                 r = Math.min(Math.max(ix + dx, 0), shape[0]) | 0
@@ -32175,24 +33730,30 @@ proto.update = function (params) {
                   var t = dy ? fy : 1.0 - fy
                   c = Math.min(Math.max(iy + dy, 0), shape[1]) | 0
 
-                  if (dd < 2) {
+                  if (axis < 2) {
                     f = this._field[iu].get(r, c)
                   } else {
                     f = (this.intensity.get(r, c) - this.intensityBounds[0]) / (this.intensityBounds[1] - this.intensityBounds[0])
                   }
                   if (!isFinite(f) || isNaN(f)) {
                     hole = true
-                    break dd_loop
+                    break axis_loop
                   }
 
                   var w = s * t
-                  parts[dd] += w * f
+                  parts[axis] += w * f
                 }
               }
             }
 
             if (!hole) {
-              contourVerts.push(parts[0], parts[1], p[0], p[1], parts[2])
+              contourVerts.push(
+                parts[0],
+                parts[1],
+                p[0],
+                p[1],
+                parts[2]
+              )
               vertexCount += 1
             } else {
               if (k > 0) {
@@ -32212,6 +33773,7 @@ proto.update = function (params) {
       // Store results
       this._contourOffsets[dim] = levelOffsets
       this._contourCounts[dim] = levelCounts
+
     }
 
     var floatBuffer = pool.mallocFloat(contourVerts.length)
@@ -32223,7 +33785,7 @@ proto.update = function (params) {
   }
 
   if (params.colormap) {
-    this._colorMap.setPixels(genColormap(params.colormap))
+    this._colorMap.setPixels(genColormap(params.colormap, this.opacityscale))
   }
 }
 
@@ -32244,6 +33806,8 @@ proto.dispose = function () {
 }
 
 proto.highlight = function (selection) {
+  var i
+
   if (!selection) {
     this._dynamicCounts = [0, 0, 0]
     this.dyanamicLevel = [NaN, NaN, NaN]
@@ -32251,7 +33815,7 @@ proto.highlight = function (selection) {
     return
   }
 
-  for (var i = 0; i < 3; ++i) {
+  for (i = 0; i < 3; ++i) {
     if (this.enableHighlight[i]) {
       this.highlightLevel[i] = selection.level[i]
     } else {
@@ -32264,6 +33828,9 @@ proto.highlight = function (selection) {
     levels = selection.dataCoordinate
   } else {
     levels = selection.position
+  }
+  for (i = 0; i < 3; ++i) {
+    levels[i] -= this.objectOffset[i]
   }
   if ((!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
     (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
@@ -32290,7 +33857,6 @@ proto.highlight = function (selection) {
     var f = this._field[d]
     var g = this._field[u]
     var h = this._field[v]
-    var intensity = this.intensity
 
     var graph = surfaceNets(f, levels[d])
     var edges = graph.cells
@@ -32353,6 +33919,7 @@ proto.highlight = function (selection) {
 
 function createSurfacePlot (params) {
   var gl = params.gl
+
   var shader = createShader(gl)
   var pickShader = createPickShader(gl)
   var contourShader = createContourShader(gl)
@@ -32408,8 +33975,8 @@ function createSurfacePlot (params) {
 
   var surface = new SurfacePlot(
     gl,
-    [0, 0],
-    [[0, 0, 0], [0, 0, 0]],
+    [0, 0], // shape
+    [[0, 0, 0], [0, 0, 0]], // bounds
     shader,
     pickShader,
     coordinateBuffer,
@@ -32420,7 +33987,8 @@ function createSurfacePlot (params) {
     contourBuffer,
     contourVAO,
     dynamicBuffer,
-    dynamicVAO
+    dynamicVAO,
+    [0, 0, 0] // objectOffset
   )
 
   var nparams = {
@@ -32436,7 +34004,7 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":143,"binary-search-bounds":34,"bit-twiddle":35,"colormap":61,"gl-buffer":95,"gl-mat4/invert":112,"gl-mat4/multiply":114,"gl-texture2d":145,"gl-vao":149,"ndarray":192,"ndarray-gradient":183,"ndarray-ops":186,"ndarray-pack":187,"surface-nets":240,"typedarray-pool":247}],145:[function(require,module,exports){
+},{"./lib/shaders":188,"binary-search-bounds":189,"bit-twiddle":35,"colormap":61,"gl-buffer":102,"gl-mat4/invert":134,"gl-mat4/multiply":136,"gl-texture2d":198,"gl-vao":202,"ndarray":251,"ndarray-gradient":242,"ndarray-ops":245,"ndarray-pack":246,"surface-nets":299,"typedarray-pool":306}],198:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -32742,13 +34310,14 @@ proto.setPixels = function(data, x_off, y_off, mip_level) {
     y_off = y_off || 0
   }
   mip_level = mip_level || 0
-  if(acceptTextureDOM(data)) {
+  var directData = acceptTextureDOM(data) ? data : data.raw
+  if(directData) {
     var needsMip = this._mipLevels.indexOf(mip_level) < 0
     if(needsMip) {
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, data)
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, directData)
       this._mipLevels.push(mip_level)
     } else {
-      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, data)
+      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, directData)
     }
   } else if(data.shape && data.stride && data.data) {
     if(data.shape.length < 2 ||
@@ -32895,10 +34464,10 @@ function createTextureShape(gl, width, height, format, type) {
   return new Texture2D(gl, tex, width, height, format, type)
 }
 
-function createTextureDOM(gl, element, format, type) {
+function createTextureDOM(gl, directData, width, height, format, type) {
   var tex = initTexture(gl)
-  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, element)
-  return new Texture2D(gl, tex, element.width|0, element.height|0, format, type)
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, directData)
+  return new Texture2D(gl, tex, width, height, format, type)
 }
 
 //Creates a texture from an ndarray
@@ -32988,8 +34557,9 @@ function createTexture2D(gl) {
   }
   if(typeof arguments[1] === 'object') {
     var obj = arguments[1]
-    if (acceptTextureDOM(obj)) {
-      return createTextureDOM(gl, obj, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
+    var directData = acceptTextureDOM(obj) ? obj : obj.raw
+    if (directData) {
+      return createTextureDOM(gl, directData, obj.width|0, obj.height|0, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
     } else if(obj.shape && obj.data && obj.stride) {
       return createTextureArray(gl, obj)
     }
@@ -32997,7 +34567,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":192,"ndarray-ops":186,"typedarray-pool":247}],146:[function(require,module,exports){
+},{"ndarray":251,"ndarray-ops":245,"typedarray-pool":306}],199:[function(require,module,exports){
 "use strict"
 
 function doBind(gl, elements, attributes) {
@@ -33052,7 +34622,7 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],147:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -33092,7 +34662,7 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":146}],148:[function(require,module,exports){
+},{"./do-bind.js":199}],201:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -33180,7 +34750,7 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":146}],149:[function(require,module,exports){
+},{"./do-bind.js":199}],202:[function(require,module,exports){
 "use strict"
 
 var createVAONative = require("./lib/vao-native.js")
@@ -33209,7 +34779,7 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":147,"./lib/vao-native.js":148}],150:[function(require,module,exports){
+},{"./lib/vao-emulated.js":200,"./lib/vao-native.js":201}],203:[function(require,module,exports){
 module.exports = cross;
 
 /**
@@ -33229,7 +34799,7 @@ function cross(out, a, b) {
     out[2] = ax * by - ay * bx
     return out
 }
-},{}],151:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 module.exports = dot;
 
 /**
@@ -33242,7 +34812,7 @@ module.exports = dot;
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-},{}],152:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 module.exports = length;
 
 /**
@@ -33257,7 +34827,7 @@ function length(a) {
         z = a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],153:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 module.exports = lerp;
 
 /**
@@ -33278,7 +34848,7 @@ function lerp(out, a, b, t) {
     out[2] = az + t * (b[2] - az)
     return out
 }
-},{}],154:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 module.exports = normalize;
 
 /**
@@ -33302,7 +34872,7 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],155:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 module.exports = transformMat4
 
 /**
@@ -33322,21 +34892,7 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],156:[function(require,module,exports){
-module.exports = decodeFloat
-
-var UINT8_VIEW = new Uint8Array(4)
-var FLOAT_VIEW = new Float32Array(UINT8_VIEW.buffer)
-
-function decodeFloat(x, y, z, w) {
-  UINT8_VIEW[0] = w
-  UINT8_VIEW[1] = z
-  UINT8_VIEW[2] = y
-  UINT8_VIEW[3] = x
-  return FLOAT_VIEW[0]
-}
-
-},{}],157:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 var tokenize = require('glsl-tokenizer')
 var atob     = require('atob-lite')
 
@@ -33361,7 +34917,7 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":16,"glsl-tokenizer":164}],158:[function(require,module,exports){
+},{"atob-lite":16,"glsl-tokenizer":216}],210:[function(require,module,exports){
 module.exports = tokenize
 
 var literals100 = require('./lib/literals')
@@ -33426,9 +34982,18 @@ function tokenize(opt) {
     allLiterals = literals300es
   }
 
+  // cache by name
+  var builtinsDict = {}, literalsDict = {}
+  for (var i = 0; i < allBuiltins.length; i++) {
+    builtinsDict[allBuiltins[i]] = true
+  }
+  for (var i = 0; i < allLiterals.length; i++) {
+    literalsDict[allLiterals[i]] = true
+  }
+
   return function(data) {
     tokens = []
-    if (data !== null) return write(data.replace ? data.replace(/\r\n/g, '\n') : data)
+    if (data !== null) return write(data)
     return end()
   }
 
@@ -33446,8 +35011,12 @@ function tokenize(opt) {
 
   function write(chunk) {
     i = 0
-    input += chunk
+
+    if (chunk.toString) chunk = chunk.toString()
+
+    input += chunk.replace(/\r\n/g, '\n')
     len = input.length
+
 
     var last
 
@@ -33688,7 +35257,7 @@ function tokenize(opt) {
       return i + 1
     }
 
-    if (c === '-' && /[eE]/.test(last)) {
+    if ((c === '-' || c === '+') && /[eE]/.test(last)) {
       content.push(c)
       last = c
       return i + 1
@@ -33708,9 +35277,9 @@ function tokenize(opt) {
   function readtoken() {
     if(/[^\d\w_]/.test(c)) {
       var contentstr = content.join('')
-      if(allLiterals.indexOf(contentstr) > -1) {
+      if(literalsDict[contentstr]) {
         mode = KEYWORD
-      } else if(allBuiltins.indexOf(contentstr) > -1) {
+      } else if(builtinsDict[contentstr]) {
         mode = BUILTIN
       } else {
         mode = IDENT
@@ -33725,7 +35294,7 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":160,"./lib/builtins-300es":159,"./lib/literals":162,"./lib/literals-300es":161,"./lib/operators":163}],159:[function(require,module,exports){
+},{"./lib/builtins":212,"./lib/builtins-300es":211,"./lib/literals":214,"./lib/literals-300es":213,"./lib/operators":215}],211:[function(require,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
 var v100 = require('./builtins')
 
@@ -33796,7 +35365,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":160}],160:[function(require,module,exports){
+},{"./builtins":212}],212:[function(require,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -33948,7 +35517,7 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],161:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 var v100 = require('./literals')
 
 module.exports = v100.slice().concat([
@@ -33965,7 +35534,6 @@ module.exports = v100.slice().concat([
   , 'mat4x2'
   , 'mat4x3'
   , 'mat4x4'
-  , 'uint'
   , 'uvec2'
   , 'uvec3'
   , 'uvec4'
@@ -34038,7 +35606,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":162}],162:[function(require,module,exports){
+},{"./literals":214}],214:[function(require,module,exports){
 module.exports = [
   // current
     'precision'
@@ -34061,6 +35629,7 @@ module.exports = [
   , 'inout'
   , 'float'
   , 'int'
+  , 'uint'
   , 'void'
   , 'bool'
   , 'true'
@@ -34133,7 +35702,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],163:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -34182,7 +35751,7 @@ module.exports = [
   , '}'
 ]
 
-},{}],164:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 var tokenize = require('./index')
 
 module.exports = tokenizeString
@@ -34197,10 +35766,48 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":158}],165:[function(require,module,exports){
+},{"./index":210}],217:[function(require,module,exports){
+module.exports = function(strings) {
+  if (typeof strings === 'string') strings = [strings]
+  var exprs = [].slice.call(arguments,1)
+  var parts = []
+  for (var i = 0; i < strings.length-1; i++) {
+    parts.push(strings[i], exprs[i] || '')
+  }
+  parts.push(strings[i])
+  return parts.join('')
+}
+
+},{}],218:[function(require,module,exports){
+'use strict'
+
+var isBrowser = require('is-browser')
+
+function detect() {
+	var supported = false
+
+	try {
+		var opts = Object.defineProperty({}, 'passive', {
+			get: function() {
+				supported = true
+			}
+		})
+
+		window.addEventListener('test', null, opts)
+		window.removeEventListener('test', null, opts)
+	} catch(e) {
+		supported = false
+	}
+
+	return supported
+}
+
+module.exports = isBrowser && detect()
+
+},{"is-browser":224}],219:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var nBits = -7
@@ -34213,12 +35820,12 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   e = s & ((1 << (-nBits)) - 1)
   s >>= (-nBits)
   nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   m = e & ((1 << (-nBits)) - 1)
   e >>= (-nBits)
   nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
     e = 1 - eBias
@@ -34233,7 +35840,7 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
@@ -34266,7 +35873,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
       m = 0
       e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
+      m = ((value * c) - 1) * Math.pow(2, mLen)
       e = e + eBias
     } else {
       m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
@@ -34283,7 +35890,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],166:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 "use strict"
 
 //High level idea:
@@ -34730,7 +36337,7 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":220,"simplicial-complex":230}],167:[function(require,module,exports){
+},{"robust-orientation":279,"simplicial-complex":289}],221:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -35097,7 +36704,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":34}],168:[function(require,module,exports){
+},{"binary-search-bounds":34}],222:[function(require,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -35109,7 +36716,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],169:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -35121,11 +36728,13 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],170:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
+module.exports = true;
+},{}],225:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */
 
@@ -35144,7 +36753,86 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],171:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
+'use strict'
+
+module.exports = isMobile
+module.exports.isMobile = isMobile
+module.exports.default = isMobile
+
+var mobileRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+
+var tabletRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i
+
+function isMobile (opts) {
+  if (!opts) opts = {}
+  var ua = opts.ua
+  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent
+  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+    ua = ua.headers['user-agent']
+  }
+  if (typeof ua !== 'string') return false
+
+  var result = opts.tablet ? tabletRE.test(ua) : mobileRE.test(ua)
+
+  if (
+    !result &&
+    opts.tablet &&
+    opts.featureDetect &&
+    navigator &&
+    navigator.maxTouchPoints > 1 &&
+    ua.indexOf('Macintosh') !== -1 &&
+    ua.indexOf('Safari') !== -1
+  ) {
+    result = true
+  }
+
+  return result
+}
+
+},{}],227:[function(require,module,exports){
+'use strict';
+
+/**
+ * Is this string all whitespace?
+ * This solution kind of makes my brain hurt, but it's significantly faster
+ * than !str.trim() or any other solution I could find.
+ *
+ * whitespace codes from: http://en.wikipedia.org/wiki/Whitespace_character
+ * and verified with:
+ *
+ *  for(var i = 0; i < 65536; i++) {
+ *      var s = String.fromCharCode(i);
+ *      if(+s===0 && !s.trim()) console.log(i, s);
+ *  }
+ *
+ * which counts a couple of these as *not* whitespace, but finds nothing else
+ * that *is* whitespace. Note that charCodeAt stops at 16 bits, but it appears
+ * that there are no whitespace characters above this, and code points above
+ * this do not map onto white space characters.
+ */
+
+module.exports = function(str){
+    var l = str.length,
+        a;
+    for(var i = 0; i < l; i++) {
+        a = str.charCodeAt(i);
+        if((a < 9 || a > 13) && (a !== 32) && (a !== 133) && (a !== 160) &&
+            (a !== 5760) && (a !== 6158) && (a < 8192 || a > 8205) &&
+            (a !== 8232) && (a !== 8233) && (a !== 8239) && (a !== 8287) &&
+            (a !== 8288) && (a !== 12288) && (a !== 65279)) {
+                return false;
+        }
+    }
+    return true;
+}
+
+},{}],228:[function(require,module,exports){
+function lerp(v0, v1, t) {
+    return v0*(1-t)+v1*t
+}
+module.exports = lerp
+},{}],229:[function(require,module,exports){
 'use strict'
 
 module.exports = createTable
@@ -35210,7 +36898,7 @@ function createTable(dimension) {
   }
   return result
 }
-},{"convex-hull":65}],172:[function(require,module,exports){
+},{"convex-hull":65}],230:[function(require,module,exports){
 /*jshint unused:true*/
 /*
 Input:  matrix      ; a 4x4 matrix
@@ -35390,7 +37078,7 @@ function combine(out, a, b, scale1, scale2) {
     out[1] = a[1] * scale1 + b[1] * scale2
     out[2] = a[2] * scale1 + b[2] * scale2
 }
-},{"./normalize":173,"gl-mat4/clone":106,"gl-mat4/create":107,"gl-mat4/determinant":108,"gl-mat4/invert":112,"gl-mat4/transpose":122,"gl-vec3/cross":150,"gl-vec3/dot":151,"gl-vec3/length":152,"gl-vec3/normalize":154}],173:[function(require,module,exports){
+},{"./normalize":231,"gl-mat4/clone":128,"gl-mat4/create":129,"gl-mat4/determinant":130,"gl-mat4/invert":134,"gl-mat4/transpose":144,"gl-vec3/cross":203,"gl-vec3/dot":204,"gl-vec3/length":205,"gl-vec3/normalize":207}],231:[function(require,module,exports){
 module.exports = function normalize(out, mat) {
     var m44 = mat[15]
     // Cannot normalize.
@@ -35401,7 +37089,7 @@ module.exports = function normalize(out, mat) {
         out[i] = mat[i] * scale
     return true
 }
-},{}],174:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 var lerp = require('gl-vec3/lerp')
 
 var recompose = require('mat4-recompose')
@@ -35454,7 +37142,7 @@ function vec3(n) {
 function vec4() {
     return [0,0,0,1]
 }
-},{"gl-mat4/determinant":108,"gl-vec3/lerp":153,"mat4-decompose":172,"mat4-recompose":175,"quat-slerp":207}],175:[function(require,module,exports){
+},{"gl-mat4/determinant":130,"gl-vec3/lerp":206,"mat4-decompose":230,"mat4-recompose":233,"quat-slerp":266}],233:[function(require,module,exports){
 /*
 Input:  translation ; a 3 component vector
         scale       ; a 3 component vector
@@ -35515,7 +37203,7 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
     mat4.scale(matrix, matrix, scale)
     return matrix
 }
-},{"gl-mat4/create":107,"gl-mat4/fromRotationTranslation":110,"gl-mat4/identity":111,"gl-mat4/multiply":114,"gl-mat4/scale":120,"gl-mat4/translate":121}],176:[function(require,module,exports){
+},{"gl-mat4/create":129,"gl-mat4/fromRotationTranslation":132,"gl-mat4/identity":133,"gl-mat4/multiply":136,"gl-mat4/scale":142,"gl-mat4/translate":143}],234:[function(require,module,exports){
 'use strict'
 
 var bsearch   = require('binary-search-bounds')
@@ -35587,7 +37275,7 @@ proto.recalcMatrix = function(t) {
   var up = this.computedUp
   up[0] = mat[1]
   up[1] = mat[5]
-  up[2] = mat[6]
+  up[2] = mat[9]
   normalize(up, up)
 
   var imat = this.computedInverse
@@ -35622,8 +37310,8 @@ proto.flush = function(t) {
   if(idx < 0) {
     return
   }
-  this._time.slice(0, idx)
-  this._components.slice(0, 16*idx)
+  this._time.splice(0, idx)
+  this._components.splice(0, 16*idx)
 }
 
 proto.lastT = function() {
@@ -35714,7 +37402,8 @@ function createMatrixCameraController(options) {
                0,0,0,1]
   return new MatrixCameraController(matrix)
 }
-},{"binary-search-bounds":34,"gl-mat4/invert":112,"gl-mat4/lookAt":113,"gl-mat4/rotateX":117,"gl-mat4/rotateY":118,"gl-mat4/rotateZ":119,"gl-mat4/scale":120,"gl-mat4/translate":121,"gl-vec3/normalize":154,"mat4-interpolate":174}],177:[function(require,module,exports){
+
+},{"binary-search-bounds":34,"gl-mat4/invert":134,"gl-mat4/lookAt":135,"gl-mat4/rotateX":139,"gl-mat4/rotateY":140,"gl-mat4/rotateZ":141,"gl-mat4/scale":142,"gl-mat4/translate":143,"gl-vec3/normalize":207,"mat4-interpolate":232}],235:[function(require,module,exports){
 'use strict'
 
 module.exports = monotoneConvexHull2D
@@ -35796,7 +37485,7 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":220}],178:[function(require,module,exports){
+},{"robust-orientation":279}],236:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -36003,7 +37692,34 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":179}],179:[function(require,module,exports){
+},{"mouse-event":238}],237:[function(require,module,exports){
+var rootPosition = { left: 0, top: 0 }
+
+module.exports = mouseEventOffset
+function mouseEventOffset (ev, target, out) {
+  target = target || ev.currentTarget || ev.srcElement
+  if (!Array.isArray(out)) {
+    out = [ 0, 0 ]
+  }
+  var cx = ev.clientX || 0
+  var cy = ev.clientY || 0
+  var rect = getBoundingClientOffset(target)
+  out[0] = cx - rect.left
+  out[1] = cy - rect.top
+  return out
+}
+
+function getBoundingClientOffset (element) {
+  if (element === window ||
+      element === document ||
+      element === document.body) {
+    return rootPosition
+  } else {
+    return element.getBoundingClientRect()
+  }
+}
+
+},{}],238:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -36065,7 +37781,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],180:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -36107,7 +37823,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":242}],181:[function(require,module,exports){
+},{"to-px":301}],240:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -36523,7 +38239,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":247}],182:[function(require,module,exports){
+},{"typedarray-pool":306}],241:[function(require,module,exports){
 "use strict"
 
 
@@ -36535,7 +38251,7 @@ module.exports = function(array, f) {
   return array
 }
 
-},{"cwise/lib/wrapper":73}],183:[function(require,module,exports){
+},{"cwise/lib/wrapper":73}],242:[function(require,module,exports){
 'use strict'
 
 module.exports      = gradient
@@ -36833,7 +38549,7 @@ function gradient(out, inp, bc) {
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"cwise-compiler":70,"dup":77}],184:[function(require,module,exports){
+},{"cwise-compiler":70,"dup":77}],243:[function(require,module,exports){
 'use strict'
 
 var warp = require('ndarray-warp')
@@ -36863,7 +38579,7 @@ function applyHomography(dest, src, Xi) {
   })
   return dest
 }
-},{"gl-matrix-invert":123,"ndarray-warp":191}],185:[function(require,module,exports){
+},{"gl-matrix-invert":145,"ndarray-warp":250}],244:[function(require,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -36974,7 +38690,7 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],186:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -37437,7 +39153,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":70}],187:[function(require,module,exports){
+},{"cwise-compiler":70}],246:[function(require,module,exports){
 "use strict"
 
 var ndarray = require("ndarray")
@@ -37460,10 +39176,10 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":188,"ndarray":192}],188:[function(require,module,exports){
+},{"./doConvert.js":247,"ndarray":251}],247:[function(require,module,exports){
 module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
 
-},{"cwise-compiler":70}],189:[function(require,module,exports){
+},{"cwise-compiler":70}],248:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -38192,7 +39908,7 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":247}],190:[function(require,module,exports){
+},{"typedarray-pool":306}],249:[function(require,module,exports){
 "use strict"
 
 var compile = require("./lib/compile_sort.js")
@@ -38212,7 +39928,7 @@ function sort(array) {
 }
 
 module.exports = sort
-},{"./lib/compile_sort.js":189}],191:[function(require,module,exports){
+},{"./lib/compile_sort.js":248}],250:[function(require,module,exports){
 'use strict'
 
 var interp  = require('ndarray-linear-interpolate')
@@ -38244,7 +39960,7 @@ module.exports = function warp(dest, src, func) {
   return dest
 }
 
-},{"cwise/lib/wrapper":73,"ndarray-linear-interpolate":185}],192:[function(require,module,exports){
+},{"cwise/lib/wrapper":73,"ndarray-linear-interpolate":244}],251:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -38523,6 +40239,10 @@ function arrayDType(data) {
         return "uint32"
       case "[object Uint8ClampedArray]":
         return "uint8_clamped"
+      case "[object BigInt64Array]":
+        return "bigint64"
+      case "[object BigUint64Array]":
+        return "biguint64"
     }
   }
   if(Array.isArray(data)) {
@@ -38542,6 +40262,8 @@ var CACHED_CONSTRUCTORS = {
   "uint32":[],
   "array":[],
   "uint8_clamped":[],
+  "bigint64": [],
+  "biguint64": [],
   "buffer":[],
   "generic":[]
 }
@@ -38589,7 +40311,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":169,"is-buffer":170}],193:[function(require,module,exports){
+},{"iota-array":223,"is-buffer":225}],252:[function(require,module,exports){
 "use strict"
 
 var doubleBits = require("double-bits")
@@ -38632,7 +40354,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":76}],194:[function(require,module,exports){
+},{"double-bits":76}],253:[function(require,module,exports){
 var DEFAULT_NORMALS_EPSILON = 1e-6;
 var DEFAULT_FACE_EPSILON = 1e-6;
 
@@ -38757,7 +40479,7 @@ exports.faceNormals = function(faces, positions, specifiedEpsilon) {
 
 
 
-},{}],195:[function(require,module,exports){
+},{}],254:[function(require,module,exports){
 'use strict'
 
 module.exports = quatFromFrame
@@ -38799,7 +40521,7 @@ function quatFromFrame(
   }
   return out
 }
-},{}],196:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 'use strict'
 
 module.exports = createOrbitController
@@ -39193,7 +40915,7 @@ function createOrbitController(options) {
 
   return result
 }
-},{"./lib/quatFromFrame":195,"filtered-vector":83,"gl-mat4/fromQuat":109,"gl-mat4/invert":112,"gl-mat4/lookAt":113}],197:[function(require,module,exports){
+},{"./lib/quatFromFrame":254,"filtered-vector":83,"gl-mat4/fromQuat":131,"gl-mat4/invert":134,"gl-mat4/lookAt":135}],256:[function(require,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -39209,7 +40931,7 @@ module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":213}],198:[function(require,module,exports){
+},{"repeat-string":272}],257:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -39220,7 +40942,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],199:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -39272,7 +40994,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":247}],200:[function(require,module,exports){
+},{"typedarray-pool":306}],259:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -39359,7 +41081,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":168,"typedarray-pool":247}],201:[function(require,module,exports){
+},{"invert-permutation":222,"typedarray-pool":306}],260:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -39490,7 +41212,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":62}],202:[function(require,module,exports){
+},{"compare-angle":62}],261:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -39546,7 +41268,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":78}],203:[function(require,module,exports){
+},{"edges-to-adjacency-list":78}],262:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -39751,7 +41473,7 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":202,"edges-to-adjacency-list":78,"planar-dual":201,"point-in-big-polygon":204,"robust-sum":225,"two-product":245,"uniq":249}],204:[function(require,module,exports){
+},{"./lib/trim-leaves":261,"edges-to-adjacency-list":78,"planar-dual":260,"point-in-big-polygon":263,"robust-sum":284,"two-product":304,"uniq":308}],263:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -39903,7 +41625,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":34,"interval-tree-1d":167,"robust-orientation":220,"slab-decomposition":236}],205:[function(require,module,exports){
+},{"binary-search-bounds":34,"interval-tree-1d":221,"robust-orientation":279,"slab-decomposition":295}],264:[function(require,module,exports){
 //Optimized version for triangle closest point
 // Based on Eberly's WildMagick codes
 // http://www.geometrictools.com/LibMathematics/Distance/Distance.html
@@ -40101,7 +41823,7 @@ function closestPoint2d(V0, V1, V2, point, result) {
 
 module.exports = closestPoint2d;
 
-},{}],206:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -40272,6 +41994,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -40283,25 +42009,25 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],207:[function(require,module,exports){
+},{}],266:[function(require,module,exports){
 module.exports = require('gl-quat/slerp')
-},{"gl-quat/slerp":129}],208:[function(require,module,exports){
+},{"gl-quat/slerp":166}],267:[function(require,module,exports){
 'use strict'
 
 var bnadd = require('big-rat/add')
 
 module.exports = add
 
-function add(a, b) {
+function add (a, b) {
   var n = a.length
   var r = new Array(n)
-    for(var i=0; i<n; ++i) {
+  for (var i=0; i<n; ++i) {
     r[i] = bnadd(a[i], b[i])
   }
   return r
 }
 
-},{"big-rat/add":18}],209:[function(require,module,exports){
+},{"big-rat/add":18}],268:[function(require,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -40316,7 +42042,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":21}],210:[function(require,module,exports){
+},{"big-rat":21}],269:[function(require,module,exports){
 'use strict'
 
 var rat = require('big-rat')
@@ -40334,7 +42060,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":21,"big-rat/mul":30}],211:[function(require,module,exports){
+},{"big-rat":21,"big-rat/mul":30}],270:[function(require,module,exports){
 'use strict'
 
 var bnsub = require('big-rat/sub')
@@ -40350,7 +42076,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":32}],212:[function(require,module,exports){
+},{"big-rat/sub":32}],271:[function(require,module,exports){
 'use strict'
 
 var compareCell = require('compare-cell')
@@ -40383,7 +42109,7 @@ function reduceCellComplex(cells) {
   return cells
 }
 
-},{"cell-orientation":54,"compare-cell":63,"compare-oriented-cell":64}],213:[function(require,module,exports){
+},{"cell-orientation":55,"compare-cell":63,"compare-oriented-cell":64}],272:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -40455,7 +42181,7 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],214:[function(require,module,exports){
+},{}],273:[function(require,module,exports){
 (function (global){
 module.exports =
   global.performance &&
@@ -40466,7 +42192,7 @@ module.exports =
   }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],215:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 "use strict"
 
 module.exports = compressExpansion
@@ -40501,7 +42227,7 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],216:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -40605,7 +42331,7 @@ return robustDeterminant")
 }
 
 generateDispatch()
-},{"robust-compress":215,"robust-scale":222,"robust-sum":225,"two-product":245}],217:[function(require,module,exports){
+},{"robust-compress":274,"robust-scale":281,"robust-sum":284,"two-product":304}],276:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -40620,7 +42346,7 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":225,"two-product":245}],218:[function(require,module,exports){
+},{"robust-sum":284,"two-product":304}],277:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -40788,7 +42514,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":222,"robust-subtract":224,"robust-sum":225,"two-product":245}],219:[function(require,module,exports){
+},{"robust-scale":281,"robust-subtract":283,"robust-sum":284,"two-product":304}],278:[function(require,module,exports){
 "use strict"
 
 var determinant = require("robust-determinant")
@@ -40860,7 +42586,7 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":216}],220:[function(require,module,exports){
+},{"robust-determinant":275}],279:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -41051,7 +42777,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":222,"robust-subtract":224,"robust-sum":225,"two-product":245}],221:[function(require,module,exports){
+},{"robust-scale":281,"robust-subtract":283,"robust-sum":284,"two-product":304}],280:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -41081,7 +42807,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":222,"robust-sum":225}],222:[function(require,module,exports){
+},{"robust-scale":281,"robust-sum":284}],281:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -41132,7 +42858,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":245,"two-sum":246}],223:[function(require,module,exports){
+},{"two-product":304,"two-sum":305}],282:[function(require,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -41180,7 +42906,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":220}],224:[function(require,module,exports){
+},{"robust-orientation":279}],283:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -41337,7 +43063,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],225:[function(require,module,exports){
+},{}],284:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -41494,7 +43220,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],226:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -41502,7 +43228,7 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],227:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -41514,7 +43240,7 @@ function boundary(cells) {
   return reduce(bnd(cells))
 }
 
-},{"boundary-cells":37,"reduce-simplicial-complex":212}],228:[function(require,module,exports){
+},{"boundary-cells":37,"reduce-simplicial-complex":271}],287:[function(require,module,exports){
 'use strict'
 
 module.exports = extractContour
@@ -41677,7 +43403,7 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":229,"ndarray":192,"ndarray-sort":190,"typedarray-pool":247}],229:[function(require,module,exports){
+},{"./lib/codegen":288,"ndarray":251,"ndarray-sort":249,"typedarray-pool":306}],288:[function(require,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
@@ -41774,7 +43500,7 @@ function getPolygonizer(d) {
   }
   return alg
 }
-},{"marching-simplex-table":171,"typedarray-pool":247}],230:[function(require,module,exports){
+},{"marching-simplex-table":229,"typedarray-pool":306}],289:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -42118,11 +43844,11 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":35,"union-find":248}],231:[function(require,module,exports){
+},{"bit-twiddle":35,"union-find":307}],290:[function(require,module,exports){
 arguments[4][35][0].apply(exports,arguments)
-},{"dup":35}],232:[function(require,module,exports){
-arguments[4][230][0].apply(exports,arguments)
-},{"bit-twiddle":231,"dup":230,"union-find":233}],233:[function(require,module,exports){
+},{"dup":35}],291:[function(require,module,exports){
+arguments[4][289][0].apply(exports,arguments)
+},{"bit-twiddle":290,"dup":289,"union-find":292}],292:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -42179,7 +43905,7 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],234:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -42451,7 +44177,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":220,"simplicial-complex":232}],235:[function(require,module,exports){
+},{"robust-orientation":279,"simplicial-complex":291}],294:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -42547,7 +44273,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":220}],236:[function(require,module,exports){
+},{"robust-orientation":279}],295:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -42778,7 +44504,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":235,"binary-search-bounds":34,"functional-red-black-tree":84,"robust-orientation":220}],237:[function(require,module,exports){
+},{"./lib/order-segments":294,"binary-search-bounds":34,"functional-red-black-tree":84,"robust-orientation":279}],296:[function(require,module,exports){
 "use strict"
 
 var robustDot = require("robust-dot-product")
@@ -42870,158 +44596,183 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":217,"robust-sum":225}],238:[function(require,module,exports){
-(function(window) {
+},{"robust-dot-product":276,"robust-sum":284}],297:[function(require,module,exports){
+/* global window, exports, define */
+
+!function() {
+    'use strict'
+
     var re = {
         not_string: /[^s]/,
+        not_bool: /[^t]/,
+        not_type: /[^T]/,
+        not_primitive: /[^v]/,
         number: /[diefg]/,
+        numeric_arg: /[bcdiefguxX]/,
         json: /[j]/,
         not_json: /[^j]/,
         text: /^[^\x25]+/,
         modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
         key: /^([a-z_][a-z_\d]*)/i,
         key_access: /^\.([a-z_][a-z_\d]*)/i,
         index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
+        sign: /^[+-]/
     }
 
-    function sprintf() {
-        var key = arguments[0], cache = sprintf.cache
-        if (!(cache[key] && cache.hasOwnProperty(key))) {
-            cache[key] = sprintf.parse(key)
-        }
-        return sprintf.format.call(null, cache[key], arguments)
+    function sprintf(key) {
+        // `arguments` is not an array, but should be fine for this call
+        return sprintf_format(sprintf_parse(key), arguments)
     }
 
-    sprintf.format = function(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
+    function vsprintf(fmt, argv) {
+        return sprintf.apply(null, [fmt].concat(argv || []))
+    }
+
+    function sprintf_format(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, ph, pad, pad_character, pad_length, is_positive, sign
         for (i = 0; i < tree_length; i++) {
-            node_type = get_type(parse_tree[i])
-            if (node_type === "string") {
-                output[output.length] = parse_tree[i]
+            if (typeof parse_tree[i] === 'string') {
+                output += parse_tree[i]
             }
-            else if (node_type === "array") {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
+            else if (typeof parse_tree[i] === 'object') {
+                ph = parse_tree[i] // convenience purposes only
+                if (ph.keys) { // keyword argument
                     arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
+                    for (k = 0; k < ph.keys.length; k++) {
+                        if (arg == undefined) {
+                            throw new Error(sprintf('[sprintf] Cannot access property "%s" of undefined value "%s"', ph.keys[k], ph.keys[k-1]))
                         }
-                        arg = arg[match[2][k]]
+                        arg = arg[ph.keys[k]]
                     }
                 }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
+                else if (ph.param_no) { // positional argument (explicit)
+                    arg = argv[ph.param_no]
                 }
                 else { // positional argument (implicit)
                     arg = argv[cursor++]
                 }
 
-                if (get_type(arg) == "function") {
+                if (re.not_type.test(ph.type) && re.not_primitive.test(ph.type) && arg instanceof Function) {
                     arg = arg()
                 }
 
-                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
-                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
+                if (re.numeric_arg.test(ph.type) && (typeof arg !== 'number' && isNaN(arg))) {
+                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
                 }
 
-                if (re.number.test(match[8])) {
+                if (re.number.test(ph.type)) {
                     is_positive = arg >= 0
                 }
 
-                switch (match[8]) {
-                    case "b":
-                        arg = arg.toString(2)
-                    break
-                    case "c":
-                        arg = String.fromCharCode(arg)
-                    break
-                    case "d":
-                    case "i":
+                switch (ph.type) {
+                    case 'b':
+                        arg = parseInt(arg, 10).toString(2)
+                        break
+                    case 'c':
+                        arg = String.fromCharCode(parseInt(arg, 10))
+                        break
+                    case 'd':
+                    case 'i':
                         arg = parseInt(arg, 10)
-                    break
-                    case "j":
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                    break
-                    case "e":
-                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
-                    break
-                    case "f":
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                    break
-                    case "g":
-                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
-                    break
-                    case "o":
-                        arg = arg.toString(8)
-                    break
-                    case "s":
-                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
-                    break
-                    case "u":
-                        arg = arg >>> 0
-                    break
-                    case "x":
-                        arg = arg.toString(16)
-                    break
-                    case "X":
-                        arg = arg.toString(16).toUpperCase()
-                    break
+                        break
+                    case 'j':
+                        arg = JSON.stringify(arg, null, ph.width ? parseInt(ph.width) : 0)
+                        break
+                    case 'e':
+                        arg = ph.precision ? parseFloat(arg).toExponential(ph.precision) : parseFloat(arg).toExponential()
+                        break
+                    case 'f':
+                        arg = ph.precision ? parseFloat(arg).toFixed(ph.precision) : parseFloat(arg)
+                        break
+                    case 'g':
+                        arg = ph.precision ? String(Number(arg.toPrecision(ph.precision))) : parseFloat(arg)
+                        break
+                    case 'o':
+                        arg = (parseInt(arg, 10) >>> 0).toString(8)
+                        break
+                    case 's':
+                        arg = String(arg)
+                        arg = (ph.precision ? arg.substring(0, ph.precision) : arg)
+                        break
+                    case 't':
+                        arg = String(!!arg)
+                        arg = (ph.precision ? arg.substring(0, ph.precision) : arg)
+                        break
+                    case 'T':
+                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
+                        arg = (ph.precision ? arg.substring(0, ph.precision) : arg)
+                        break
+                    case 'u':
+                        arg = parseInt(arg, 10) >>> 0
+                        break
+                    case 'v':
+                        arg = arg.valueOf()
+                        arg = (ph.precision ? arg.substring(0, ph.precision) : arg)
+                        break
+                    case 'x':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16)
+                        break
+                    case 'X':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
+                        break
                 }
-                if (re.json.test(match[8])) {
-                    output[output.length] = arg
+                if (re.json.test(ph.type)) {
+                    output += arg
                 }
                 else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? "+" : "-"
-                        arg = arg.toString().replace(re.sign, "")
+                    if (re.number.test(ph.type) && (!is_positive || ph.sign)) {
+                        sign = is_positive ? '+' : '-'
+                        arg = arg.toString().replace(re.sign, '')
                     }
                     else {
-                        sign = ""
+                        sign = ''
                     }
-                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
-                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
+                    pad_character = ph.pad_char ? ph.pad_char === '0' ? '0' : ph.pad_char.charAt(1) : ' '
+                    pad_length = ph.width - (sign + arg).length
+                    pad = ph.width ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
+                    output += ph.align ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
                 }
             }
         }
-        return output.join("")
+        return output
     }
 
-    sprintf.cache = {}
+    var sprintf_cache = Object.create(null)
 
-    sprintf.parse = function(fmt) {
-        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
+    function sprintf_parse(fmt) {
+        if (sprintf_cache[fmt]) {
+            return sprintf_cache[fmt]
+        }
+
+        var _fmt = fmt, match, parse_tree = [], arg_names = 0
         while (_fmt) {
             if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree[parse_tree.length] = match[0]
+                parse_tree.push(match[0])
             }
             else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree[parse_tree.length] = "%"
+                parse_tree.push('%')
             }
             else if ((match = re.placeholder.exec(_fmt)) !== null) {
                 if (match[2]) {
                     arg_names |= 1
                     var field_list = [], replacement_field = match[2], field_match = []
                     if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list[field_list.length] = field_match[1]
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
+                        field_list.push(field_match[1])
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
                             if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list[field_list.length] = field_match[1]
+                                field_list.push(field_match[1])
                             }
                             else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list[field_list.length] = field_match[1]
+                                field_list.push(field_match[1])
                             }
                             else {
-                                throw new SyntaxError("[sprintf] failed to parse named argument key")
+                                throw new SyntaxError('[sprintf] failed to parse named argument key')
                             }
                         }
                     }
                     else {
-                        throw new SyntaxError("[sprintf] failed to parse named argument key")
+                        throw new SyntaxError('[sprintf] failed to parse named argument key')
                     }
                     match[2] = field_list
                 }
@@ -43029,58 +44780,56 @@ function negative(points, plane) {
                     arg_names |= 2
                 }
                 if (arg_names === 3) {
-                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
+                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
                 }
-                parse_tree[parse_tree.length] = match
+
+                parse_tree.push(
+                    {
+                        placeholder: match[0],
+                        param_no:    match[1],
+                        keys:        match[2],
+                        sign:        match[3],
+                        pad_char:    match[4],
+                        align:       match[5],
+                        width:       match[6],
+                        precision:   match[7],
+                        type:        match[8]
+                    }
+                )
             }
             else {
-                throw new SyntaxError("[sprintf] unexpected placeholder")
+                throw new SyntaxError('[sprintf] unexpected placeholder')
             }
             _fmt = _fmt.substring(match[0].length)
         }
-        return parse_tree
-    }
-
-    var vsprintf = function(fmt, argv, _argv) {
-        _argv = (argv || []).slice(0)
-        _argv.splice(0, 0, fmt)
-        return sprintf.apply(null, _argv)
-    }
-
-    /**
-     * helpers
-     */
-    function get_type(variable) {
-        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
-    }
-
-    function str_repeat(input, multiplier) {
-        return Array(multiplier + 1).join(input)
+        return sprintf_cache[fmt] = parse_tree
     }
 
     /**
      * export to either browser or node.js
      */
-    if (typeof exports !== "undefined") {
-        exports.sprintf = sprintf
-        exports.vsprintf = vsprintf
+    /* eslint-disable quote-props */
+    if (typeof exports !== 'undefined') {
+        exports['sprintf'] = sprintf
+        exports['vsprintf'] = vsprintf
     }
-    else {
-        window.sprintf = sprintf
-        window.vsprintf = vsprintf
+    if (typeof window !== 'undefined') {
+        window['sprintf'] = sprintf
+        window['vsprintf'] = vsprintf
 
-        if (typeof define === "function" && define.amd) {
+        if (typeof define === 'function' && define['amd']) {
             define(function() {
                 return {
-                    sprintf: sprintf,
-                    vsprintf: vsprintf
+                    'sprintf': sprintf,
+                    'vsprintf': vsprintf
                 }
             })
         }
     }
-})(typeof window === "undefined" ? this : window);
+    /* eslint-enable quote-props */
+}(); // eslint-disable-line
 
-},{}],239:[function(require,module,exports){
+},{}],298:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -43135,7 +44884,7 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],240:[function(require,module,exports){
+},{}],299:[function(require,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -43343,7 +45092,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":181,"triangulate-hypercube":243,"zero-crossings":258}],241:[function(require,module,exports){
+},{"ndarray-extract-contour":240,"triangulate-hypercube":302,"zero-crossings":317}],300:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -44540,14 +46289,15 @@ else {
 
 })(Math);
 
-},{}],242:[function(require,module,exports){
+},{}],301:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
 
 module.exports = toPX
 
-var PIXELS_PER_INCH = 96
+var PIXELS_PER_INCH = getSizeBrutal('in', document.body) // 96
+
 
 function getPropertyInPX(element, prop) {
   var parts = parseUnit(getComputedStyle(element).getPropertyValue(prop))
@@ -44557,19 +46307,22 @@ function getPropertyInPX(element, prop) {
 //This brutal hack is needed
 function getSizeBrutal(unit, element) {
   var testDIV = document.createElement('div')
-  testDIV.style['font-size'] = '128' + unit
+  testDIV.style['height'] = '128' + unit
   element.appendChild(testDIV)
-  var size = getPropertyInPX(testDIV, 'font-size') / 128
+  var size = getPropertyInPX(testDIV, 'height') / 128
   element.removeChild(testDIV)
   return size
 }
 
 function toPX(str, element) {
+  if (!str) return null
+
   element = element || document.body
-  str = (str || 'px').trim().toLowerCase()
+  str = (str + '' || 'px').trim().toLowerCase()
   if(element === window || element === document) {
-    element = document.body 
+    element = document.body
   }
+
   switch(str) {
     case '%':  //Ambiguous, not sure if we should use width or height
       return element.clientHeight / 100.0
@@ -44598,10 +46351,21 @@ function toPX(str, element) {
       return PIXELS_PER_INCH / 72
     case 'pc':
       return PIXELS_PER_INCH / 6
+    case 'px':
+      return 1
   }
-  return 1
+
+  // detect number of units
+  var parts = parseUnit(str)
+  if (!isNaN(parts[0]) && parts[1]) {
+    var px = toPX(parts[1], element)
+    return typeof px === 'number' ? parts[0] * px : null
+  }
+
+  return null
 }
-},{"parse-unit":198}],243:[function(require,module,exports){
+
+},{"parse-unit":257}],302:[function(require,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -44635,7 +46399,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":85,"permutation-parity":199,"permutation-rank":200}],244:[function(require,module,exports){
+},{"gamma":85,"permutation-parity":258,"permutation-rank":259}],303:[function(require,module,exports){
 'use strict'
 
 module.exports = createTurntableController
@@ -45208,7 +46972,7 @@ function createTurntableController(options) {
     theta,
     phi)
 }
-},{"filtered-vector":83,"gl-mat4/invert":112,"gl-mat4/rotate":116,"gl-vec3/cross":150,"gl-vec3/dot":151,"gl-vec3/normalize":154}],245:[function(require,module,exports){
+},{"filtered-vector":83,"gl-mat4/invert":134,"gl-mat4/rotate":138,"gl-vec3/cross":203,"gl-vec3/dot":204,"gl-vec3/normalize":207}],304:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -45242,7 +47006,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],246:[function(require,module,exports){
+},{}],305:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -45260,36 +47024,47 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],247:[function(require,module,exports){
-(function (global,Buffer){
+},{}],306:[function(require,module,exports){
+(function (global){
 'use strict'
 
 var bits = require('bit-twiddle')
 var dup = require('dup')
+var Buffer = require('buffer').Buffer
 
 //Legacy pool support
 if(!global.__TYPEDARRAY_POOL) {
   global.__TYPEDARRAY_POOL = {
-      UINT8   : dup([32, 0])
-    , UINT16  : dup([32, 0])
-    , UINT32  : dup([32, 0])
-    , INT8    : dup([32, 0])
-    , INT16   : dup([32, 0])
-    , INT32   : dup([32, 0])
-    , FLOAT   : dup([32, 0])
-    , DOUBLE  : dup([32, 0])
-    , DATA    : dup([32, 0])
-    , UINT8C  : dup([32, 0])
-    , BUFFER  : dup([32, 0])
+      UINT8     : dup([32, 0])
+    , UINT16    : dup([32, 0])
+    , UINT32    : dup([32, 0])
+    , BIGUINT64 : dup([32, 0])
+    , INT8      : dup([32, 0])
+    , INT16     : dup([32, 0])
+    , INT32     : dup([32, 0])
+    , BIGINT64  : dup([32, 0])
+    , FLOAT     : dup([32, 0])
+    , DOUBLE    : dup([32, 0])
+    , DATA      : dup([32, 0])
+    , UINT8C    : dup([32, 0])
+    , BUFFER    : dup([32, 0])
   }
 }
 
 var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
+var hasBigUint64 = (typeof BigUint64Array) !== 'undefined'
+var hasBigInt64 = (typeof BigInt64Array) !== 'undefined'
 var POOL = global.__TYPEDARRAY_POOL
 
 //Upgrade pool
 if(!POOL.UINT8C) {
   POOL.UINT8C = dup([32, 0])
+}
+if(!POOL.BIGUINT64) {
+  POOL.BIGUINT64 = dup([32, 0])
+}
+if(!POOL.BIGINT64) {
+  POOL.BIGINT64 = dup([32, 0])
 }
 if(!POOL.BUFFER) {
   POOL.BUFFER = dup([32, 0])
@@ -45331,9 +47106,11 @@ function freeTypedArray(array) {
 exports.freeUint8 =
 exports.freeUint16 =
 exports.freeUint32 =
+exports.freeBigUint64 =
 exports.freeInt8 =
 exports.freeInt16 =
 exports.freeInt32 =
+exports.freeBigInt64 =
 exports.freeFloat32 = 
 exports.freeFloat =
 exports.freeFloat64 = 
@@ -45372,6 +47149,10 @@ exports.malloc = function malloc(n, dtype) {
         return mallocDouble(n)
       case 'uint8_clamped':
         return mallocUint8Clamped(n)
+      case 'bigint64':
+        return mallocBigInt64(n)
+      case 'biguint64':
+        return mallocBigUint64(n)
       case 'buffer':
         return mallocBuffer(n)
       case 'data':
@@ -45445,6 +47226,24 @@ function mallocUint8Clamped(n) {
 }
 exports.mallocUint8Clamped = mallocUint8Clamped
 
+function mallocBigUint64(n) {
+  if(hasBigUint64) {
+    return new BigUint64Array(mallocArrayBuffer(8*n), 0, n)
+  } else {
+    return null;
+  }
+}
+exports.mallocBigUint64 = mallocBigUint64
+
+function mallocBigInt64(n) {
+  if (hasBigInt64) {
+    return new BigInt64Array(mallocArrayBuffer(8*n), 0, n)
+  } else {
+    return null;
+  }
+}
+exports.mallocBigInt64 = mallocBigInt64
+
 function mallocDataView(n) {
   return new DataView(mallocArrayBuffer(n), 0, n)
 }
@@ -45471,13 +47270,16 @@ exports.clearCache = function clearCache() {
     POOL.INT32[i].length = 0
     POOL.FLOAT[i].length = 0
     POOL.DOUBLE[i].length = 0
+    POOL.BIGUINT64[i].length = 0
+    POOL.BIGINT64[i].length = 0
     POOL.UINT8C[i].length = 0
     DATA[i].length = 0
     BUFFER[i].length = 0
   }
 }
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":35,"buffer":45,"dup":77}],248:[function(require,module,exports){
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"bit-twiddle":35,"buffer":46,"dup":77}],307:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -45540,7 +47342,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],249:[function(require,module,exports){
+},{}],308:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -45599,7 +47401,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],250:[function(require,module,exports){
+},{}],309:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -45626,9 +47428,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":251}],251:[function(require,module,exports){
-"use strict"
-
+},{"./lib/vtext":310}],310:[function(require,module,exports){
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
@@ -45638,6 +47438,72 @@ var simplify = require('simplify-planar-graph')
 var cleanPSLG = require('clean-pslg')
 var cdt2d = require('cdt2d')
 var toPolygonCrappy = require('planar-graph-to-polyline')
+
+var TAG_bold = "b"
+var CHR_bold = 'b|'
+
+var TAG_italic = "i"
+var CHR_italic = 'i|'
+
+var TAG_super = "sup"
+var CHR_super0 = '+'
+var CHR_super = '+1'
+
+var TAG_sub = "sub"
+var CHR_sub0 = '-'
+var CHR_sub = '-1'
+
+function parseTag(tag, TAG_CHR, str, map) {
+
+  var opnTag =  "<"  + tag + ">"
+  var clsTag =  "</" + tag + ">"
+
+  var nOPN = opnTag.length
+  var nCLS = clsTag.length
+
+  var isRecursive = (TAG_CHR[0] === CHR_super0) ||
+                    (TAG_CHR[0] === CHR_sub0);
+
+  var a = 0
+  var b = -nCLS
+  while (a > -1) {
+    a = str.indexOf(opnTag, a)
+    if(a === -1) break
+
+    b = str.indexOf(clsTag, a + nOPN)
+    if(b === -1) break
+
+    if(b <= a) break
+
+    for(var i = a; i < b + nCLS; ++i){
+      if((i < a + nOPN) || (i >= b)) {
+        map[i] = null
+        str = str.substr(0, i) + " " + str.substr(i + 1)
+      } else {
+        if(map[i] !== null) {
+          var pos = map[i].indexOf(TAG_CHR[0])
+          if(pos === -1) {
+            map[i] += TAG_CHR
+          } else { // i.e. to handle multiple sub/super-scripts
+            if(isRecursive) {
+              // i.e to increase the sub/sup number
+              map[i] = map[i].substr(0, pos + 1) + (1 + parseInt(map[i][pos + 1])) + map[i].substr(pos + 2)
+            }
+          }
+        }
+      }
+    }
+
+    var start = a + nOPN
+    var remainingStr = str.substr(start, b - start)
+
+    var c = remainingStr.indexOf(opnTag)
+    if(c !== -1) a = c
+    else a = b + nCLS
+  }
+
+  return map
+}
 
 function transformPositions(positions, options, size) {
   var align = options.textAlign || "start"
@@ -45712,27 +47578,168 @@ function transformPositions(positions, options, size) {
   })
 }
 
-function getPixels(canvas, context, str, size) {
-  var width = Math.ceil(context.measureText(str).width + 2*size)|0
-  if(width > 8192) {
-    throw new Error("vectorize-text: String too long (sorry, this will get fixed later)")
+function getPixels(canvas, context, rawString, fontSize, lineSpacing, styletags) {
+
+  rawString = rawString.replace(/\n/g, '') // don't accept \n in the input
+
+  if(styletags.breaklines === true) {
+    rawString = rawString.replace(/\<br\>/g, '\n') // replace <br> tags with \n in the string
+  } else {
+    rawString = rawString.replace(/\<br\>/g, ' ') // don't accept <br> tags in the input and replace with space in this case
   }
-  var height = 3 * size
-  if(canvas.height < height) {
-    canvas.height = height
+
+  var activeStyle = ""
+  var map = []
+  for(j = 0; j < rawString.length; ++j) {
+    map[j] = activeStyle
+  }
+
+  if(styletags.bolds === true) map = parseTag(TAG_bold, CHR_bold, rawString, map)
+  if(styletags.italics === true) map = parseTag(TAG_italic, CHR_italic, rawString, map)
+  if(styletags.superscripts === true) map = parseTag(TAG_super, CHR_super, rawString, map)
+  if(styletags.subscripts === true) map = parseTag(TAG_sub, CHR_sub, rawString, map)
+
+  var allStyles = []
+  var plainText = ""
+  for(j = 0; j < rawString.length; ++j) {
+    if(map[j] !== null) {
+      plainText += rawString[j]
+      allStyles.push(map[j])
+    }
+  }
+
+  var allTexts = plainText.split('\n')
+
+  var numberOfLines = allTexts.length
+  var lineHeight = Math.round(lineSpacing * fontSize)
+  var offsetX = fontSize
+  var offsetY = fontSize * 2
+  var maxWidth = 0
+  var minHeight = numberOfLines * lineHeight + offsetY
+
+  if(canvas.height < minHeight) {
+    canvas.height = minHeight
   }
 
   context.fillStyle = "#000"
   context.fillRect(0, 0, canvas.width, canvas.height)
 
   context.fillStyle = "#fff"
-  context.fillText(str, size, 2*size)
+  var i, j, xPos, yPos, zPos
+  var nDone = 0
+
+  var buffer = ""
+  function writeBuffer() {
+    if(buffer !== "") {
+      var delta = context.measureText(buffer).width
+
+      context.fillText(buffer, offsetX + xPos, offsetY + yPos)
+      xPos += delta
+    }
+  }
+
+  function getTextFontSize() {
+    return "" + Math.round(zPos) + "px ";
+  }
+
+  function changeStyle(oldStyle, newStyle) {
+    var ctxFont = "" + context.font;
+
+    if(styletags.subscripts === true) {
+      var oldIndex_Sub = oldStyle.indexOf(CHR_sub0);
+      var newIndex_Sub = newStyle.indexOf(CHR_sub0);
+
+      var oldSub = (oldIndex_Sub > -1) ? parseInt(oldStyle[1 + oldIndex_Sub]) : 0;
+      var newSub = (newIndex_Sub > -1) ? parseInt(newStyle[1 + newIndex_Sub]) : 0;
+
+      if(oldSub !== newSub) {
+        ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
+        zPos *= Math.pow(0.75, (newSub - oldSub))
+        ctxFont = ctxFont.replace("?px ", getTextFontSize())
+      }
+      yPos += 0.25 * lineHeight * (newSub - oldSub);
+    }
+
+    if(styletags.superscripts === true) {
+      var oldIndex_Super = oldStyle.indexOf(CHR_super0);
+      var newIndex_Super = newStyle.indexOf(CHR_super0);
+
+      var oldSuper = (oldIndex_Super > -1) ? parseInt(oldStyle[1 + oldIndex_Super]) : 0;
+      var newSuper = (newIndex_Super > -1) ? parseInt(newStyle[1 + newIndex_Super]) : 0;
+
+      if(oldSuper !== newSuper) {
+        ctxFont = ctxFont.replace(getTextFontSize(), "?px ")
+        zPos *= Math.pow(0.75, (newSuper - oldSuper))
+        ctxFont = ctxFont.replace("?px ", getTextFontSize())
+      }
+      yPos -= 0.25 * lineHeight * (newSuper - oldSuper);
+    }
+
+    if(styletags.bolds === true) {
+      var wasBold = (oldStyle.indexOf(CHR_bold) > -1)
+      var is_Bold = (newStyle.indexOf(CHR_bold) > -1)
+
+      if(!wasBold && is_Bold) {
+        if(wasItalic) {
+          ctxFont = ctxFont.replace("italic ", "italic bold ")
+        } else {
+          ctxFont = "bold " + ctxFont
+        }
+      }
+      if(wasBold && !is_Bold) {
+        ctxFont = ctxFont.replace("bold ", '')
+      }
+    }
+
+    if(styletags.italics === true) {
+      var wasItalic = (oldStyle.indexOf(CHR_italic) > -1)
+      var is_Italic = (newStyle.indexOf(CHR_italic) > -1)
+
+      if(!wasItalic && is_Italic) {
+        ctxFont = "italic " + ctxFont
+      }
+      if(wasItalic && !is_Italic) {
+        ctxFont = ctxFont.replace("italic ", '')
+      }
+    }
+    context.font = ctxFont
+  }
+
+  for(i = 0; i < numberOfLines; ++i) {
+    var txt = allTexts[i] + '\n'
+    xPos = 0
+    yPos = i * lineHeight
+    zPos = fontSize
+
+    buffer = ""
+    
+    for(j = 0; j < txt.length; ++j) {
+      var style = (j + nDone < allStyles.length) ? allStyles[j + nDone] : allStyles[allStyles.length - 1]
+      if(activeStyle === style) {
+        buffer += txt[j]
+      } else {
+        writeBuffer()
+        buffer = txt[j]
+
+        if(style !== undefined) {
+          changeStyle(activeStyle, style)
+          activeStyle = style
+        }
+      }
+    }
+    writeBuffer()
+
+    nDone += txt.length
+
+    var width = Math.round(xPos + 2 * offsetX) | 0
+    if(maxWidth < width) maxWidth = width
+  }
 
   //Cut pixels from image
-  var pixelData = context.getImageData(0, 0, width, height)
-  var pixels = ndarray(pixelData.data, [height, width, 4])
-
-  return pixels.pick(-1,-1,0).transpose(1,0)
+  var xCut = maxWidth
+  var yCut = offsetY + lineHeight * numberOfLines
+  var pixels = ndarray(context.getImageData(0, 0, xCut, yCut).data, [yCut, xCut, 4])
+  return pixels.pick(-1, -1, 0).transpose(1, 0)
 }
 
 function getContour(pixels, doSimplify) {
@@ -45819,20 +47826,64 @@ function processPixels(pixels, options, size) {
 }
 
 function vectorizeText(str, canvas, context, options) {
-  var size = options.size || 64
-  var family = options.font || "normal"
+  var size = 64
+  var lineSpacing = 1.25
+  var styletags = {
+    breaklines: false,
+    bolds: false,
+    italics: false,
+    subscripts: false,
+    superscripts: false
+  }
 
-  context.font = size + "px " + family
+  if(options) {
+
+    if(options.size &&
+       options.size > 0) size =
+       options.size
+
+    if(options.lineSpacing &&
+       options.lineSpacing > 0) lineSpacing =
+       options.lineSpacing
+
+    if(options.styletags &&
+       options.styletags.breaklines) styletags.breaklines =
+       options.styletags.breaklines ? true : false
+
+    if(options.styletags &&
+       options.styletags.bolds) styletags.bolds =
+       options.styletags.bolds ? true : false
+
+    if(options.styletags &&
+       options.styletags.italics) styletags.italics =
+       options.styletags.italics ? true : false
+
+    if(options.styletags &&
+       options.styletags.subscripts) styletags.subscripts =
+       options.styletags.subscripts ? true : false
+
+    if(options.styletags &&
+       options.styletags.superscripts) styletags.superscripts =
+       options.styletags.superscripts ? true : false
+  }
+
+  context.font = [
+    options.fontStyle,
+    options.fontVariant,
+    options.fontWeight,
+    size + "px",
+    options.font
+  ].filter(function(d) {return d}).join(" ")
   context.textAlign = "start"
   context.textBaseline = "alphabetic"
   context.direction = "ltr"
 
-  var pixels = getPixels(canvas, context, str, size)
+  var pixels = getPixels(canvas, context, str, size, lineSpacing, styletags)
 
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":48,"clean-pslg":57,"ndarray":192,"planar-graph-to-polyline":203,"simplify-planar-graph":234,"surface-nets":240}],252:[function(require,module,exports){
+},{"cdt2d":49,"clean-pslg":58,"ndarray":251,"planar-graph-to-polyline":262,"simplify-planar-graph":293,"surface-nets":299}],311:[function(require,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -46519,7 +48570,7 @@ function vectorizeText(str, canvas, context, options) {
   }
 })();
 
-},{}],253:[function(require,module,exports){
+},{}],312:[function(require,module,exports){
 var hiddenStore = require('./hidden-store.js');
 
 module.exports = createStore;
@@ -46540,7 +48591,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":254}],254:[function(require,module,exports){
+},{"./hidden-store.js":313}],313:[function(require,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -46558,8 +48609,8 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],255:[function(require,module,exports){
-// Original - @Gozola. 
+},{}],314:[function(require,module,exports){
+// Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
@@ -46578,6 +48629,7 @@ function weakMap() {
         },
         'set': function (key, value) {
             privates(key).value = value;
+            return this;
         },
         'has': function(key) {
             return 'value' in privates(key);
@@ -46588,14 +48640,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":253}],256:[function(require,module,exports){
+},{"./create-store.js":312}],315:[function(require,module,exports){
 var getContext = require('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":86}],257:[function(require,module,exports){
+},{"get-canvas-context":86}],316:[function(require,module,exports){
 module.exports = require('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -46647,7 +48699,7 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":70}],258:[function(require,module,exports){
+},{"cwise-compiler":70}],317:[function(require,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -46660,9 +48712,9 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":257}],259:[function(require,module,exports){
+},{"./lib/zc-core":316}],318:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46769,9 +48821,9 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
     return annOut;
 };
 
-},{"../../lib":365,"../../plots/cartesian/axes":396,"../color":269,"./attributes":261}],260:[function(require,module,exports){
+},{"../../lib":424,"../../plots/cartesian/axes":455,"../color":328,"./attributes":320}],319:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46834,9 +48886,9 @@ module.exports = [
     }
 ];
 
-},{}],261:[function(require,module,exports){
+},{}],320:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47056,9 +49108,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../plots/cartesian/constants":401,"../../plots/font_attributes":416,"./arrow_paths":260}],262:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/cartesian/constants":460,"../../plots/font_attributes":475,"./arrow_paths":319}],321:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47151,9 +49203,9 @@ function annAutorange(gd) {
     });
 }
 
-},{"../../lib":365,"../../plots/cartesian/axes":396,"./draw":265}],263:[function(require,module,exports){
+},{"../../lib":424,"../../plots/cartesian/axes":455,"./draw":324}],322:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47274,9 +49326,9 @@ function getToggleSets(gd, hoverData) {
     return {on: onSet, off: offSet, explicitOff: explicitOffSet};
 }
 
-},{"../../plotly":391}],264:[function(require,module,exports){
+},{"../../plotly":450}],323:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -47299,9 +49351,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":393,"./annotation_defaults":259}],265:[function(require,module,exports){
+},{"../../plots/array_container_defaults":452,"./annotation_defaults":318}],324:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48076,9 +50128,9 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../lib":365,"../../lib/setcursor":377,"../../lib/svg_text_utils":381,"../../plotly":391,"../../plots/cartesian/axes":396,"../../plots/plots":433,"../color":269,"../dragelement":290,"../drawing":292,"./annotation_defaults":259,"./defaults":264,"./draw_arrow_head":266,"d3":74,"fast-isnumeric":82}],266:[function(require,module,exports){
+},{"../../lib":424,"../../lib/setcursor":436,"../../lib/svg_text_utils":440,"../../plotly":450,"../../plots/cartesian/axes":455,"../../plots/plots":492,"../color":328,"../dragelement":349,"../drawing":351,"./annotation_defaults":318,"./defaults":323,"./draw_arrow_head":325,"d3":74,"fast-isnumeric":82}],325:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48210,9 +50262,9 @@ module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
     if(doEnd) drawhead(end, endRot);
 };
 
-},{"../color":269,"../drawing":292,"./arrow_paths":260,"d3":74,"fast-isnumeric":82}],267:[function(require,module,exports){
+},{"../color":328,"../drawing":351,"./arrow_paths":319,"d3":74,"fast-isnumeric":82}],326:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48240,9 +50292,9 @@ module.exports = {
     onClick: clickModule.onClick
 };
 
-},{"./attributes":261,"./calc_autorange":262,"./click":263,"./defaults":264,"./draw":265}],268:[function(require,module,exports){
+},{"./attributes":320,"./calc_autorange":321,"./click":322,"./defaults":323,"./draw":324}],327:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48280,9 +50332,9 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],269:[function(require,module,exports){
+},{}],328:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48437,9 +50489,9 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":268,"fast-isnumeric":82,"tinycolor2":241}],270:[function(require,module,exports){
+},{"./attributes":327,"fast-isnumeric":82,"tinycolor2":300}],329:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48593,9 +50645,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../plots/cartesian/layout_attributes":405,"../../plots/font_attributes":416}],271:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/cartesian/layout_attributes":464,"../../plots/font_attributes":475}],330:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48660,9 +50712,9 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":365,"../../plots/cartesian/tick_label_defaults":411,"../../plots/cartesian/tick_mark_defaults":412,"../../plots/cartesian/tick_value_defaults":413,"./attributes":270}],272:[function(require,module,exports){
+},{"../../lib":424,"../../plots/cartesian/tick_label_defaults":470,"../../plots/cartesian/tick_mark_defaults":471,"../../plots/cartesian/tick_value_defaults":472,"./attributes":329}],331:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49293,9 +51345,9 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../lib":365,"../../lib/extend":360,"../../lib/setcursor":377,"../../plotly":391,"../../plots/cartesian/axes":396,"../../plots/cartesian/axis_defaults":398,"../../plots/cartesian/layout_attributes":405,"../../plots/cartesian/position_defaults":408,"../../plots/plots":433,"../../registry":441,"../color":269,"../dragelement":290,"../drawing":292,"../titles":343,"./attributes":270,"d3":74,"tinycolor2":241}],273:[function(require,module,exports){
+},{"../../lib":424,"../../lib/extend":419,"../../lib/setcursor":436,"../../plotly":450,"../../plots/cartesian/axes":455,"../../plots/cartesian/axis_defaults":457,"../../plots/cartesian/layout_attributes":464,"../../plots/cartesian/position_defaults":467,"../../plots/plots":492,"../../registry":500,"../color":328,"../dragelement":349,"../drawing":351,"../titles":402,"./attributes":329,"d3":74,"tinycolor2":300}],332:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49312,9 +51364,9 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":365}],274:[function(require,module,exports){
+},{"../../lib":424}],333:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49367,9 +51419,9 @@ module.exports = {
     }
 };
 
-},{}],275:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49433,9 +51485,9 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":365,"./flip_scale":280,"./scales":287}],276:[function(require,module,exports){
+},{"../../lib":424,"./flip_scale":339,"./scales":346}],335:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49477,9 +51529,9 @@ module.exports = function makeColorScaleAttributes(context) {
     };
 };
 
-},{"../../lib/extend":360,"./attributes":274,"./scales.js":287}],277:[function(require,module,exports){
+},{"../../lib/extend":419,"./attributes":333,"./scales.js":346}],336:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49493,9 +51545,9 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":287}],278:[function(require,module,exports){
+},{"./scales":346}],337:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49557,9 +51609,9 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":365,"../colorbar/defaults":271,"../colorbar/has_colorbar":273,"./flip_scale":280,"./is_valid_scale":284,"fast-isnumeric":82}],279:[function(require,module,exports){
+},{"../../lib":424,"../colorbar/defaults":330,"../colorbar/has_colorbar":332,"./flip_scale":339,"./is_valid_scale":343,"fast-isnumeric":82}],338:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49594,9 +51646,9 @@ module.exports = function extractScale(scl, cmin, cmax) {
     };
 };
 
-},{}],280:[function(require,module,exports){
+},{}],339:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49619,9 +51671,9 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],281:[function(require,module,exports){
+},{}],340:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49659,9 +51711,9 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":277,"./is_valid_scale_array":285,"./scales":287}],282:[function(require,module,exports){
+},{"./default_scale":336,"./is_valid_scale_array":344,"./scales":346}],341:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49705,9 +51757,9 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":365,"./is_valid_scale":284,"fast-isnumeric":82}],283:[function(require,module,exports){
+},{"../../lib":424,"./is_valid_scale":343,"fast-isnumeric":82}],342:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49739,9 +51791,9 @@ exports.extractScale = require('./extract_scale');
 
 exports.makeColorScaleFunc = require('./make_color_scale_func');
 
-},{"./attributes":274,"./calc":275,"./default_scale":277,"./defaults":278,"./extract_scale":279,"./flip_scale":280,"./get_scale":281,"./has_colorscale":282,"./is_valid_scale":284,"./make_color_scale_func":286,"./scales":287}],284:[function(require,module,exports){
+},{"./attributes":333,"./calc":334,"./default_scale":336,"./defaults":337,"./extract_scale":338,"./flip_scale":339,"./get_scale":340,"./has_colorscale":341,"./is_valid_scale":343,"./make_color_scale_func":345,"./scales":346}],343:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49760,9 +51812,9 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":285,"./scales":287}],285:[function(require,module,exports){
+},{"./is_valid_scale_array":344,"./scales":346}],344:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49797,9 +51849,9 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":241}],286:[function(require,module,exports){
+},{"tinycolor2":300}],345:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -49893,9 +51945,9 @@ function colorArray2rbga(colorArray) {
     return tinycolor(colorObj).toRgbString();
 }
 
-},{"../color":269,"d3":74,"fast-isnumeric":82,"tinycolor2":241}],287:[function(require,module,exports){
+},{"../color":328,"d3":74,"fast-isnumeric":82,"tinycolor2":300}],346:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50024,9 +52076,9 @@ module.exports = {
     ]
 };
 
-},{}],288:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50057,9 +52109,9 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],289:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50095,9 +52147,9 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":365}],290:[function(require,module,exports){
+},{"../../lib":424}],349:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50282,9 +52334,9 @@ function finishDrag(gd) {
     if(gd._replotPending) Plotly.plot(gd);
 }
 
-},{"../../lib":365,"../../plotly":391,"../../plots/cartesian/constants":401,"./align":288,"./cursor":289,"./unhover":291}],291:[function(require,module,exports){
+},{"../../lib":424,"../../plotly":450,"../../plots/cartesian/constants":460,"./align":347,"./cursor":348,"./unhover":350}],350:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50333,9 +52385,9 @@ unhover.raw = function unhoverRaw(gd, evt) {
     gd._hoverdata = undefined;
 };
 
-},{"../../lib/events":359}],292:[function(require,module,exports){
+},{"../../lib/events":418}],351:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50912,9 +52964,9 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../constants/xmlns_namespaces":353,"../../lib":365,"../../lib/svg_text_utils":381,"../../registry":441,"../../traces/scatter/make_bubble_size_func":472,"../../traces/scatter/subtypes":477,"../color":269,"../colorscale":283,"./symbol_defs":293,"d3":74,"fast-isnumeric":82}],293:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":412,"../../lib":424,"../../lib/svg_text_utils":440,"../../registry":500,"../../traces/scatter/make_bubble_size_func":531,"../../traces/scatter/subtypes":536,"../color":328,"../colorscale":342,"./symbol_defs":352,"d3":74,"fast-isnumeric":82}],352:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51388,9 +53440,9 @@ module.exports = {
     }
 };
 
-},{"d3":74}],294:[function(require,module,exports){
+},{"d3":74}],353:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51487,9 +53539,9 @@ module.exports = {
     }
 };
 
-},{}],295:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51550,9 +53602,9 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":396,"../../registry":441,"./compute_error":296,"fast-isnumeric":82}],296:[function(require,module,exports){
+},{"../../plots/cartesian/axes":455,"../../registry":500,"./compute_error":355,"fast-isnumeric":82}],355:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51646,9 +53698,9 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],297:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51723,9 +53775,9 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":365,"../../registry":441,"./attributes":294,"fast-isnumeric":82}],298:[function(require,module,exports){
+},{"../../lib":424,"../../registry":500,"./attributes":353,"fast-isnumeric":82}],357:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51782,9 +53834,9 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"./attributes":294,"./calc":295,"./defaults":297,"./plot":299,"./style":300}],299:[function(require,module,exports){
+},{"./attributes":353,"./calc":354,"./defaults":356,"./plot":358,"./style":359}],358:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51946,9 +53998,9 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":477,"d3":74,"fast-isnumeric":82}],300:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":536,"d3":74,"fast-isnumeric":82}],359:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -51983,9 +54035,9 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":269,"d3":74}],301:[function(require,module,exports){
+},{"../color":328,"d3":74}],360:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52105,9 +54157,9 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian/constants":401}],302:[function(require,module,exports){
+},{"../../plots/cartesian/constants":460}],361:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52165,9 +54217,9 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":365,"../../plots/array_container_defaults":393,"../../plots/cartesian/axes":396,"./attributes":301}],303:[function(require,module,exports){
+},{"../../lib":424,"../../plots/array_container_defaults":452,"../../plots/cartesian/axes":455,"./attributes":360}],362:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52345,9 +54397,9 @@ module.exports = function draw(gd) {
     });
 };
 
-},{"../../constants/xmlns_namespaces":353,"../../plots/cartesian/axes":396,"../drawing":292,"d3":74}],304:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":412,"../../plots/cartesian/axes":455,"../drawing":351,"d3":74}],363:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52366,9 +54418,9 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":301,"./defaults":302,"./draw":303}],305:[function(require,module,exports){
+},{"./attributes":360,"./defaults":361,"./draw":362}],364:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52415,9 +54467,9 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],306:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52506,9 +54558,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../plots/font_attributes":416,"../color/attributes":268}],307:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/font_attributes":475,"../color/attributes":327}],366:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52524,9 +54576,9 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],308:[function(require,module,exports){
+},{}],367:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -52617,9 +54669,9 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":365,"../../plots/layout_attributes":431,"../../registry":441,"./attributes":306,"./helpers":311}],309:[function(require,module,exports){
+},{"../../lib":424,"../../plots/layout_attributes":490,"../../registry":500,"./attributes":365,"./helpers":370}],368:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53333,9 +55385,9 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../lib":365,"../../lib/svg_text_utils":381,"../../plotly":391,"../../plots/plots":433,"../../registry":441,"../color":269,"../dragelement":290,"../drawing":292,"./anchor_utils":305,"./constants":307,"./get_legend_data":310,"./helpers":311,"./style":313,"d3":74}],310:[function(require,module,exports){
+},{"../../lib":424,"../../lib/svg_text_utils":440,"../../plotly":450,"../../plots/plots":492,"../../registry":500,"../color":328,"../dragelement":349,"../drawing":351,"./anchor_utils":364,"./constants":366,"./get_legend_data":369,"./helpers":370,"./style":372,"d3":74}],369:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53438,9 +55490,9 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":441,"./helpers":311}],311:[function(require,module,exports){
+},{"../../registry":500,"./helpers":370}],370:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53469,9 +55521,9 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{"../../registry":441}],312:[function(require,module,exports){
+},{"../../registry":500}],371:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53493,9 +55545,9 @@ module.exports = {
     style: require('./style')
 };
 
-},{"./attributes":306,"./defaults":308,"./draw":309,"./style":313}],313:[function(require,module,exports){
+},{"./attributes":365,"./defaults":367,"./draw":368,"./style":372}],372:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -53721,9 +55773,9 @@ function stylePies(d) {
     if(pts.size()) pts.call(stylePie, d[0], trace);
 }
 
-},{"../../lib":365,"../../registry":441,"../../traces/pie/style_one":455,"../../traces/scatter/subtypes":477,"../color":269,"../drawing":292,"d3":74}],314:[function(require,module,exports){
+},{"../../lib":424,"../../registry":500,"../../traces/pie/style_one":514,"../../traces/scatter/subtypes":536,"../color":328,"../drawing":351,"d3":74}],373:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54240,9 +56292,9 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":365,"../../plotly":391,"../../plots/cartesian/axes":396,"../../plots/plots":433,"../../snapshot/download":443}],315:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":424,"../../plotly":450,"../../plots/cartesian/axes":455,"../../plots/plots":492,"../../snapshot/download":502}],374:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54254,9 +56306,9 @@ modeBarButtons.resetViews = {
 
 exports.manage = require('./manage');
 
-},{"./manage":316}],316:[function(require,module,exports){
+},{"./manage":375}],375:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54482,9 +56534,9 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axes":396,"../../traces/scatter/subtypes":477,"./buttons":314,"./modebar":317}],317:[function(require,module,exports){
+},{"../../plots/cartesian/axes":455,"../../traces/scatter/subtypes":536,"./buttons":373,"./modebar":376}],376:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54772,9 +56824,9 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":365,"d3":74}],318:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":424,"d3":74}],377:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54862,9 +56914,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../plots/font_attributes":416,"../color/attributes":268,"./button_attributes":319}],319:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/font_attributes":475,"../color/attributes":327,"./button_attributes":378}],378:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54903,9 +56955,9 @@ module.exports = {
     }
 };
 
-},{}],320:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -54932,9 +56984,9 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],321:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55031,9 +57083,9 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":365,"../color":269,"./attributes":318,"./button_attributes":319,"./constants":320}],322:[function(require,module,exports){
+},{"../../lib":424,"../color":328,"./attributes":377,"./button_attributes":378,"./constants":379}],381:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55306,9 +57358,9 @@ function reposition(gd, buttons, opts, axName) {
     });
 }
 
-},{"../../lib/svg_text_utils":381,"../../plotly":391,"../../plots/cartesian/axis_ids":399,"../../plots/plots":433,"../color":269,"../drawing":292,"../legend/anchor_utils":305,"./constants":320,"./get_update_object":323,"d3":74}],323:[function(require,module,exports){
+},{"../../lib/svg_text_utils":440,"../../plotly":450,"../../plots/cartesian/axis_ids":458,"../../plots/plots":492,"../color":328,"../drawing":351,"../legend/anchor_utils":364,"./constants":379,"./get_update_object":382,"d3":74}],382:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55363,9 +57415,9 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":74}],324:[function(require,module,exports){
+},{"d3":74}],383:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55390,9 +57442,9 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":318,"./defaults":321,"./draw":322}],325:[function(require,module,exports){
+},{"./attributes":377,"./defaults":380,"./draw":381}],384:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55448,9 +57500,9 @@ module.exports = {
     }
 };
 
-},{"../color/attributes":268}],326:[function(require,module,exports){
+},{"../color/attributes":327}],385:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55501,9 +57553,9 @@ module.exports = {
     handleStroke: '#666',
 };
 
-},{}],327:[function(require,module,exports){
+},{}],386:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -55555,9 +57607,9 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":365,"./attributes":325}],328:[function(require,module,exports){
+},{"../../lib":424,"./attributes":384}],387:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56086,9 +58138,9 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":365,"../../lib/setcursor":377,"../../plotly":391,"../../plots/cartesian":404,"../../plots/cartesian/axes":396,"../../plots/plots":433,"../color":269,"../dragelement":290,"../drawing":292,"./constants":326,"d3":74}],329:[function(require,module,exports){
+},{"../../lib":424,"../../lib/setcursor":436,"../../plotly":450,"../../plots/cartesian":463,"../../plots/cartesian/axes":455,"../../plots/plots":492,"../color":328,"../dragelement":349,"../drawing":351,"./constants":385,"d3":74}],388:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56113,9 +58165,9 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":325,"./defaults":327,"./draw":328}],330:[function(require,module,exports){
+},{"./attributes":384,"./defaults":386,"./draw":387}],389:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56211,9 +58263,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../traces/scatter/attributes":457,"../annotations/attributes":261}],331:[function(require,module,exports){
+},{"../../lib/extend":419,"../../traces/scatter/attributes":516,"../annotations/attributes":320}],390:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56288,9 +58340,9 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":365,"../../plots/cartesian/axes":396,"./constants":332,"./helpers":335}],332:[function(require,module,exports){
+},{"../../lib":424,"../../plots/cartesian/axes":455,"./constants":391,"./helpers":394}],391:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56352,9 +58404,9 @@ module.exports = {
     }
 };
 
-},{}],333:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56377,9 +58429,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":393,"./shape_defaults":337}],334:[function(require,module,exports){
+},{"../../plots/array_container_defaults":452,"./shape_defaults":396}],393:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -56944,9 +58996,9 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":365,"../../lib/setcursor":377,"../../plotly":391,"../../plots/cartesian/axes":396,"../color":269,"../dragelement":290,"../drawing":292,"./constants":332,"./defaults":333,"./helpers":335,"./shape_defaults":337,"fast-isnumeric":82}],335:[function(require,module,exports){
+},{"../../lib":424,"../../lib/setcursor":436,"../../plotly":450,"../../plots/cartesian/axes":455,"../color":328,"../dragelement":349,"../drawing":351,"./constants":391,"./defaults":392,"./helpers":394,"./shape_defaults":396,"fast-isnumeric":82}],394:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57025,9 +59077,9 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     return pixelToData;
 };
 
-},{}],336:[function(require,module,exports){
+},{}],395:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57051,9 +59103,9 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"./attributes":330,"./calc_autorange":331,"./defaults":333,"./draw":334}],337:[function(require,module,exports){
+},{"./attributes":389,"./calc_autorange":390,"./defaults":392,"./draw":393}],396:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57150,9 +59202,9 @@ module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opt
     return shapeOut;
 };
 
-},{"../../lib":365,"../../plots/cartesian/axes":396,"./attributes":330,"./helpers":335}],338:[function(require,module,exports){
+},{"../../lib":424,"../../plots/cartesian/axes":455,"./attributes":389,"./helpers":394}],397:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57384,9 +59436,9 @@ module.exports = {
     },
 };
 
-},{"../../lib/extend":360,"../../plots/animation_attributes":392,"../../plots/font_attributes":416,"../../plots/pad_attributes":432,"./constants":339}],339:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/animation_attributes":451,"../../plots/font_attributes":475,"../../plots/pad_attributes":491,"./constants":398}],398:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57481,9 +59533,9 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],340:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57594,9 +59646,9 @@ function stepsDefaults(sliderIn, sliderOut) {
     return valuesOut;
 }
 
-},{"../../lib":365,"../../plots/array_container_defaults":393,"./attributes":338,"./constants":339}],341:[function(require,module,exports){
+},{"../../lib":424,"../../plots/array_container_defaults":452,"./attributes":397,"./constants":398}],400:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58197,9 +60249,9 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":365,"../../lib/svg_text_utils":381,"../../plots/plots":433,"../color":269,"../drawing":292,"../legend/anchor_utils":305,"./constants":339,"d3":74}],342:[function(require,module,exports){
+},{"../../lib":424,"../../lib/svg_text_utils":440,"../../plots/plots":492,"../color":328,"../drawing":351,"../legend/anchor_utils":364,"./constants":398,"d3":74}],401:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58220,9 +60272,9 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":338,"./constants":339,"./defaults":340,"./draw":341}],343:[function(require,module,exports){
+},{"./attributes":397,"./constants":398,"./defaults":399,"./draw":400}],402:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58450,9 +60502,9 @@ Titles.draw = function(gd, titleClass, options) {
     el.classed('js-placeholder', isplaceholder);
 };
 
-},{"../../lib":365,"../../lib/svg_text_utils":381,"../../plotly":391,"../../plots/plots":433,"../color":269,"../drawing":292,"d3":74,"fast-isnumeric":82}],344:[function(require,module,exports){
+},{"../../lib":424,"../../lib/svg_text_utils":440,"../../plotly":450,"../../plots/plots":492,"../color":328,"../drawing":351,"d3":74,"fast-isnumeric":82}],403:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58596,9 +60648,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../../plots/font_attributes":416,"../../plots/pad_attributes":432,"../color/attributes":268}],345:[function(require,module,exports){
+},{"../../lib/extend":419,"../../plots/font_attributes":475,"../../plots/pad_attributes":491,"../color/attributes":327}],404:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58672,9 +60724,9 @@ module.exports = {
     hoverColor: '#F4FAFF'
 };
 
-},{}],346:[function(require,module,exports){
+},{}],405:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58766,9 +60818,9 @@ function buttonsDefaults(menuIn, menuOut) {
     return buttonsOut;
 }
 
-},{"../../lib":365,"../../plots/array_container_defaults":393,"./attributes":344,"./constants":345}],347:[function(require,module,exports){
+},{"../../lib":424,"../../plots/array_container_defaults":452,"./attributes":403,"./constants":404}],406:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59349,11 +61401,11 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":365,"../../lib/svg_text_utils":381,"../../plots/plots":433,"../color":269,"../drawing":292,"../legend/anchor_utils":305,"./constants":345,"d3":74}],348:[function(require,module,exports){
-arguments[4][342][0].apply(exports,arguments)
-},{"./attributes":344,"./constants":345,"./defaults":346,"./draw":347,"dup":342}],349:[function(require,module,exports){
+},{"../../lib":424,"../../lib/svg_text_utils":440,"../../plots/plots":492,"../color":328,"../drawing":351,"../legend/anchor_utils":364,"./constants":404,"d3":74}],407:[function(require,module,exports){
+arguments[4][401][0].apply(exports,arguments)
+},{"./attributes":403,"./constants":404,"./defaults":405,"./draw":406,"dup":401}],408:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59372,9 +61424,9 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],350:[function(require,module,exports){
+},{}],409:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59395,9 +61447,9 @@ module.exports = {
     x: '❌'
 };
 
-},{}],351:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59443,9 +61495,9 @@ module.exports = {
     EPOCHJD: 2440587.5
 };
 
-},{}],352:[function(require,module,exports){
+},{}],411:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59481,9 +61533,9 @@ module.exports = {
 
 };
 
-},{}],353:[function(require,module,exports){
+},{}],412:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59505,9 +61557,9 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],354:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59523,7 +61575,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.22.0';
+exports.version = '1.22.0-upsight3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -59584,9 +61636,9 @@ exports.Queue = require('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":267,"./components/images":304,"./components/legend":312,"./components/rangeselector":324,"./components/rangeslider":329,"./components/shapes":336,"./components/sliders":342,"./components/updatemenus":348,"./fonts/mathjax_config":355,"./lib/queue":375,"./plot_api/plot_schema":385,"./plot_api/register":386,"./plot_api/set_plot_config":387,"./plot_api/to_image":389,"./plot_api/validate":390,"./plotly":391,"./snapshot":446,"./snapshot/download":443,"./traces/scatter":467,"d3":74,"es6-promise":79}],355:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":326,"./components/images":363,"./components/legend":371,"./components/rangeselector":383,"./components/rangeslider":388,"./components/shapes":395,"./components/sliders":401,"./components/updatemenus":407,"./fonts/mathjax_config":414,"./lib/queue":434,"./plot_api/plot_schema":444,"./plot_api/register":445,"./plot_api/set_plot_config":446,"./plot_api/to_image":448,"./plot_api/validate":449,"./plotly":450,"./snapshot":505,"./snapshot/download":502,"./traces/scatter":526,"d3":74,"es6-promise":79}],414:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59617,9 +61669,9 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],356:[function(require,module,exports){
+},{}],415:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59650,9 +61702,9 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":351,"fast-isnumeric":82}],357:[function(require,module,exports){
+},{"../constants/numerical":410,"fast-isnumeric":82}],416:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59961,9 +62013,9 @@ exports.validate = function(value, opts) {
     return out !== failed;
 };
 
-},{"../components/colorscale/get_scale":281,"../components/colorscale/scales":287,"./nested_property":371,"fast-isnumeric":82,"tinycolor2":241}],358:[function(require,module,exports){
+},{"../components/colorscale/get_scale":340,"../components/colorscale/scales":346,"./nested_property":430,"fast-isnumeric":82,"tinycolor2":300}],417:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60589,9 +62641,9 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":351,"../registry":441,"./loggers":368,"./mod":370,"d3":74,"fast-isnumeric":82}],359:[function(require,module,exports){
+},{"../constants/numerical":410,"../registry":500,"./loggers":427,"./mod":429,"d3":74,"fast-isnumeric":82}],418:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60755,9 +62807,9 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":80}],360:[function(require,module,exports){
+},{"events":80}],419:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60869,9 +62921,9 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":367}],361:[function(require,module,exports){
+},{"./is_plain_object.js":426}],420:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60920,9 +62972,9 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],362:[function(require,module,exports){
+},{}],421:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -60951,9 +63003,9 @@ module.exports = function filterVisible(container) {
     return out;
 };
 
-},{}],363:[function(require,module,exports){
+},{}],422:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61034,9 +63086,9 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":268,"../components/colorscale":283,"./str2rgbarray":380,"fast-isnumeric":82,"tinycolor2":241}],364:[function(require,module,exports){
+},{"../components/color/attributes":327,"../components/colorscale":342,"./str2rgbarray":439,"fast-isnumeric":82,"tinycolor2":300}],423:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61103,9 +63155,9 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"../constants/string_mappings":352,"superscript-text":239}],365:[function(require,module,exports){
+},{"../constants/string_mappings":411,"superscript-text":298}],424:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61854,9 +63906,9 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-},{"./clean_number":356,"./coerce":357,"./dates":358,"./extend":360,"./filter_unique":361,"./filter_visible":362,"./is_array":366,"./is_plain_object":367,"./loggers":368,"./matrix":369,"./mod":370,"./nested_property":371,"./notifier":372,"./search":376,"./stats":379,"d3":74}],366:[function(require,module,exports){
+},{"./clean_number":415,"./coerce":416,"./dates":417,"./extend":419,"./filter_unique":420,"./filter_visible":421,"./is_array":425,"./is_plain_object":426,"./loggers":427,"./matrix":428,"./mod":429,"./nested_property":430,"./notifier":431,"./search":435,"./stats":438,"d3":74}],425:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61878,9 +63930,9 @@ module.exports = function isArray(a) {
     return Array.isArray(a) || ab.isView(a);
 };
 
-},{}],367:[function(require,module,exports){
+},{}],426:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61907,9 +63959,9 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],368:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61974,9 +64026,9 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":384}],369:[function(require,module,exports){
+},{"../plot_api/plot_config":443}],428:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62084,9 +64136,9 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],370:[function(require,module,exports){
+},{}],429:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62104,9 +64156,9 @@ module.exports = function mod(v, d) {
     return out < 0 ? out + d : out;
 };
 
-},{}],371:[function(require,module,exports){
+},{}],430:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62361,9 +64413,9 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./is_array":366,"fast-isnumeric":82}],372:[function(require,module,exports){
+},{"./is_array":425,"fast-isnumeric":82}],431:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62443,9 +64495,9 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":74,"fast-isnumeric":82}],373:[function(require,module,exports){
+},{"d3":74,"fast-isnumeric":82}],432:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62492,9 +64544,9 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":377}],374:[function(require,module,exports){
+},{"./setcursor":436}],433:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62732,9 +64784,9 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"./matrix":369}],375:[function(require,module,exports){
+},{"./matrix":428}],434:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62943,9 +64995,9 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":365,"../plot_api/plot_config":384}],376:[function(require,module,exports){
+},{"../lib":424,"../plot_api/plot_config":443}],435:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63054,9 +65106,9 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":368,"fast-isnumeric":82}],377:[function(require,module,exports){
+},{"./loggers":427,"fast-isnumeric":82}],436:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63077,9 +65129,9 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],378:[function(require,module,exports){
+},{}],437:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63126,9 +65178,9 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":269}],379:[function(require,module,exports){
+},{"../components/color":328}],438:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63222,9 +65274,9 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":82}],380:[function(require,module,exports){
+},{"fast-isnumeric":82}],439:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63244,9 +65296,9 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":15,"tinycolor2":241}],381:[function(require,module,exports){
+},{"arraytools":15,"tinycolor2":300}],440:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63772,9 +65824,9 @@ exports.makeEditable = function(context, _delegate, options) {
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../constants/string_mappings":352,"../constants/xmlns_namespaces":353,"../lib":365,"d3":74}],382:[function(require,module,exports){
+},{"../constants/string_mappings":411,"../constants/xmlns_namespaces":412,"../lib":424,"d3":74}],441:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -64260,9 +66312,9 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
 };
 
-},{"../components/color":269,"../lib":365,"../plots/cartesian/axes":396,"../plots/plots":433,"../registry":441,"fast-isnumeric":82,"gl-mat4/fromQuat":109}],383:[function(require,module,exports){
+},{"../components/color":328,"../lib":424,"../plots/cartesian/axes":455,"../plots/plots":492,"../registry":500,"fast-isnumeric":82,"gl-mat4/fromQuat":131}],442:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67086,9 +69138,9 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-},{"../components/drawing":292,"../components/errorbars":298,"../constants/xmlns_namespaces":353,"../lib":365,"../lib/events":359,"../lib/queue":375,"../lib/svg_text_utils":381,"../plotly":391,"../plots/cartesian/graph_interact":403,"../plots/plots":433,"../plots/polar":436,"../registry":441,"./helpers":382,"./subroutines":388,"d3":74,"fast-isnumeric":82}],384:[function(require,module,exports){
+},{"../components/drawing":351,"../components/errorbars":357,"../constants/xmlns_namespaces":412,"../lib":424,"../lib/events":418,"../lib/queue":434,"../lib/svg_text_utils":440,"../plotly":450,"../plots/cartesian/graph_interact":462,"../plots/plots":492,"../plots/polar":495,"../registry":500,"./helpers":441,"./subroutines":447,"d3":74,"fast-isnumeric":82}],443:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67206,9 +69258,9 @@ function defaultSetBackground(gd, bgColor) {
     }
 }
 
-},{}],385:[function(require,module,exports){
+},{}],444:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67611,9 +69663,9 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeep(np.get() || {}, newAttrs));
 }
 
-},{"../lib":365,"../plots/animation_attributes":392,"../plots/attributes":394,"../plots/frame_attributes":417,"../plots/layout_attributes":431,"../plots/polar/area_attributes":434,"../plots/polar/axis_attributes":435,"../registry":441}],386:[function(require,module,exports){
+},{"../lib":424,"../plots/animation_attributes":451,"../plots/attributes":453,"../plots/frame_attributes":476,"../plots/layout_attributes":490,"../plots/polar/area_attributes":493,"../plots/polar/axis_attributes":494,"../registry":500}],445:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67710,9 +69762,9 @@ function registerComponentModule(newModule) {
     Registry.registerComponent(newModule);
 }
 
-},{"../lib":365,"../registry":441}],387:[function(require,module,exports){
+},{"../lib":424,"../registry":500}],446:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -67736,9 +69788,9 @@ module.exports = function setPlotConfig(configObj) {
     return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../lib":365,"../plotly":391}],388:[function(require,module,exports){
+},{"../lib":424,"../plotly":450}],447:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68054,9 +70106,9 @@ exports.doModeBar = function(gd) {
     return Plots.previousPromises(gd);
 };
 
-},{"../components/color":269,"../components/drawing":292,"../components/modebar":315,"../components/titles":343,"../lib":365,"../plotly":391,"../plots/plots":433,"../registry":441}],389:[function(require,module,exports){
+},{"../components/color":328,"../components/drawing":351,"../components/modebar":374,"../components/titles":402,"../lib":424,"../plotly":450,"../plots/plots":492,"../registry":500}],448:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68164,9 +70216,9 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":365,"../plotly":391,"../snapshot/cloneplot":442,"../snapshot/helpers":445,"../snapshot/svgtoimg":447,"../snapshot/tosvg":449,"fast-isnumeric":82}],390:[function(require,module,exports){
+},{"../lib":424,"../plotly":450,"../snapshot/cloneplot":501,"../snapshot/helpers":504,"../snapshot/svgtoimg":506,"../snapshot/tosvg":508,"fast-isnumeric":82}],449:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68534,9 +70586,9 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":365,"../plots/plots":433,"./plot_schema":385}],391:[function(require,module,exports){
+},{"../lib":424,"../plots/plots":492,"./plot_schema":444}],450:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68567,9 +70619,9 @@ exports.ModeBar = require('./components/modebar');
 // plot api
 require('./plot_api/plot_api');
 
-},{"./components/modebar":315,"./plot_api/plot_api":383,"./plot_api/plot_config":384,"./plots/cartesian/axes":396,"./plots/cartesian/graph_interact":403,"./plots/plots":433}],392:[function(require,module,exports){
+},{"./components/modebar":374,"./plot_api/plot_api":442,"./plot_api/plot_config":443,"./plots/cartesian/axes":455,"./plots/cartesian/graph_interact":462,"./plots/plots":492}],451:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68669,9 +70721,9 @@ module.exports = {
     }
 };
 
-},{}],393:[function(require,module,exports){
+},{}],452:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68738,9 +70790,9 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     }
 };
 
-},{"../lib":365}],394:[function(require,module,exports){
+},{"../lib":424}],453:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68821,9 +70873,9 @@ module.exports = {
     }
 };
 
-},{}],395:[function(require,module,exports){
+},{}],454:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -68848,9 +70900,9 @@ module.exports = {
     }
 };
 
-},{}],396:[function(require,module,exports){
+},{}],455:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -70148,7 +72200,10 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    if(tickformat) return d3.format(tickformat)(v).replace(/-/g, '\u2212');
+    if(tickformat) {
+        return ((typeof(tickformat) === 'function') ?
+            tickformat(v) : d3.format(tickformat)(v)).replace(/-/g, '\u2212');
+    }
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
@@ -71058,9 +73113,9 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
     }
 }
 
-},{"../../components/color":269,"../../components/drawing":292,"../../components/titles":343,"../../constants/numerical":351,"../../lib":365,"../../lib/svg_text_utils":381,"../../registry":441,"./axis_ids":399,"./layout_attributes":405,"./layout_defaults":406,"./set_convert":410,"d3":74,"fast-isnumeric":82}],397:[function(require,module,exports){
+},{"../../components/color":328,"../../components/drawing":351,"../../components/titles":402,"../../constants/numerical":410,"../../lib":424,"../../lib/svg_text_utils":440,"../../registry":500,"./axis_ids":458,"./layout_attributes":464,"./layout_defaults":465,"./set_convert":469,"d3":74,"fast-isnumeric":82}],456:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71133,9 +73188,9 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../constants/numerical":351,"../../lib":365,"fast-isnumeric":82}],398:[function(require,module,exports){
+},{"../../constants/numerical":410,"../../lib":424,"fast-isnumeric":82}],457:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71364,9 +73419,9 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
     }
 }
 
-},{"../../components/color/attributes":268,"../../lib":365,"../../registry":441,"./axis_autotype":397,"./axis_ids":399,"./category_order_defaults":400,"./layout_attributes":405,"./ordered_categories":407,"./set_convert":410,"./tick_label_defaults":411,"./tick_mark_defaults":412,"./tick_value_defaults":413,"fast-isnumeric":82,"tinycolor2":241}],399:[function(require,module,exports){
+},{"../../components/color/attributes":327,"../../lib":424,"../../registry":500,"./axis_autotype":456,"./axis_ids":458,"./category_order_defaults":459,"./layout_attributes":464,"./ordered_categories":466,"./set_convert":469,"./tick_label_defaults":470,"./tick_mark_defaults":471,"./tick_value_defaults":472,"fast-isnumeric":82,"tinycolor2":300}],458:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71486,9 +73541,9 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     return ax;
 };
 
-},{"../../lib":365,"../../registry":441,"../plots":433,"./constants":401}],400:[function(require,module,exports){
+},{"../../lib":424,"../../registry":500,"../plots":492,"./constants":460}],459:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71520,9 +73575,9 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],401:[function(require,module,exports){
+},{}],460:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -71594,9 +73649,9 @@ module.exports = {
     DFLTRANGEY: [-1, 4]
 };
 
-},{}],402:[function(require,module,exports){
+},{}],461:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -72359,9 +74414,9 @@ function isSelectOrLasso(dragmode) {
     return modes.indexOf(dragmode) !== -1;
 }
 
-},{"../../components/color":269,"../../components/dragelement":290,"../../components/drawing":292,"../../lib":365,"../../lib/setcursor":377,"../../lib/svg_text_utils":381,"../../plotly":391,"../../registry":441,"./axes":396,"./constants":401,"./select":409,"d3":74,"tinycolor2":241}],403:[function(require,module,exports){
+},{"../../components/color":328,"../../components/dragelement":349,"../../components/drawing":351,"../../lib":424,"../../lib/setcursor":436,"../../lib/svg_text_utils":440,"../../plotly":450,"../../registry":500,"./axes":455,"./constants":460,"./select":468,"d3":74,"tinycolor2":300}],462:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -73718,9 +75773,9 @@ fx.inbox = function(v0, v1) {
     return Infinity;
 };
 
-},{"../../components/color":269,"../../components/dragelement":290,"../../components/drawing":292,"../../lib":365,"../../lib/events":359,"../../lib/override_cursor":373,"../../lib/svg_text_utils":381,"../../registry":441,"../layout_attributes":431,"./axes":396,"./constants":401,"./dragbox":402,"d3":74,"fast-isnumeric":82,"tinycolor2":241}],404:[function(require,module,exports){
+},{"../../components/color":328,"../../components/dragelement":349,"../../components/drawing":351,"../../lib":424,"../../lib/events":418,"../../lib/override_cursor":432,"../../lib/svg_text_utils":440,"../../registry":500,"../layout_attributes":490,"./axes":455,"./constants":460,"./dragbox":461,"d3":74,"fast-isnumeric":82,"tinycolor2":300}],463:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74095,9 +76150,9 @@ function joinLayer(parent, nodeType, className) {
     return layer;
 }
 
-},{"../../lib":365,"../plots":433,"./attributes":395,"./axes":396,"./constants":401,"./layout_attributes":405,"./transition_axes":414,"d3":74}],405:[function(require,module,exports){
+},{"../../lib":424,"../plots":492,"./attributes":454,"./axes":455,"./constants":460,"./layout_attributes":464,"./transition_axes":473,"d3":74}],464:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74295,7 +76350,7 @@ module.exports = {
         
     },
     tickformat: {
-        valType: 'string',
+        valType: 'any',
         dflt: '',
         
         
@@ -74438,9 +76493,9 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":268,"../../lib/extend":360,"../font_attributes":416,"./constants":401}],406:[function(require,module,exports){
+},{"../../components/color/attributes":327,"../../lib/extend":419,"../font_attributes":475,"./constants":460}],465:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74640,9 +76695,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":269,"../../lib":365,"../../registry":441,"../layout_attributes":431,"./axis_defaults":398,"./axis_ids":399,"./constants":401,"./layout_attributes":405,"./position_defaults":408}],407:[function(require,module,exports){
+},{"../../components/color":328,"../../lib":424,"../../registry":500,"../layout_attributes":490,"./axis_defaults":457,"./axis_ids":458,"./constants":460,"./layout_attributes":464,"./position_defaults":467}],466:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74719,9 +76774,9 @@ module.exports = function orderedCategories(axisLetter, categoryorder, categorya
     }
 };
 
-},{"d3":74}],408:[function(require,module,exports){
+},{"d3":74}],467:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74784,9 +76839,9 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":365,"fast-isnumeric":82}],409:[function(require,module,exports){
+},{"../../lib":424,"fast-isnumeric":82}],468:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74984,9 +77039,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-},{"../../components/color":269,"../../lib/polygon":374,"./axes":396,"./constants":401}],410:[function(require,module,exports){
+},{"../../components/color":328,"../../lib/polygon":433,"./axes":455,"./constants":460}],469:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75400,9 +77455,9 @@ module.exports = function setConvert(ax) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":351,"../../lib":365,"./axis_ids":399,"./constants":401,"d3":74,"fast-isnumeric":82}],411:[function(require,module,exports){
+},{"../../constants/numerical":410,"../../lib":424,"./axis_ids":458,"./constants":460,"d3":74,"fast-isnumeric":82}],470:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75484,9 +77539,9 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":365}],412:[function(require,module,exports){
+},{"../../lib":424}],471:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75517,9 +77572,9 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":365,"./layout_attributes":405}],413:[function(require,module,exports){
+},{"../../lib":424,"./layout_attributes":464}],472:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75601,9 +77656,9 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../constants/numerical":351,"../../lib":365,"fast-isnumeric":82}],414:[function(require,module,exports){
+},{"../../constants/numerical":410,"../../lib":424,"fast-isnumeric":82}],473:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75913,9 +77968,9 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../lib":365,"../../plotly":391,"../../registry":441,"./axes":396,"d3":74}],415:[function(require,module,exports){
+},{"../../lib":424,"../../plotly":450,"../../registry":500,"./axes":455,"d3":74}],474:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76330,9 +78385,9 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":365,"../plotly":391}],416:[function(require,module,exports){
+},{"../lib":424,"../plotly":450}],475:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76361,9 +78416,9 @@ module.exports = {
     }
 };
 
-},{}],417:[function(require,module,exports){
+},{}],476:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76407,9 +78462,9 @@ module.exports = {
     }
 };
 
-},{}],418:[function(require,module,exports){
+},{}],477:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76650,9 +78705,9 @@ function createCamera(element, options) {
     return camera;
 }
 
-},{"3d-view":9,"mouse-change":178,"mouse-wheel":180,"right-now":214}],419:[function(require,module,exports){
+},{"3d-view":9,"mouse-change":236,"mouse-wheel":239,"right-now":273}],478:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76784,9 +78839,9 @@ function initAxes(gd, sceneLayout) {
     }
 }
 
-},{"../../constants/xmlns_namespaces":353,"../plots":433,"./layout/attributes":420,"./layout/defaults":424,"./layout/layout_attributes":425,"./scene":429,"./set_convert":430}],420:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":412,"../plots":492,"./layout/attributes":479,"./layout/defaults":483,"./layout/layout_attributes":484,"./scene":488,"./set_convert":489}],479:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76805,9 +78860,9 @@ module.exports = {
     }
 };
 
-},{}],421:[function(require,module,exports){
+},{}],480:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76911,9 +78966,9 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../components/color":269,"../../../lib/extend":360,"../../cartesian/layout_attributes":405}],422:[function(require,module,exports){
+},{"../../../components/color":328,"../../../lib/extend":419,"../../cartesian/layout_attributes":464}],481:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -76980,9 +79035,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":365,"../../cartesian/axis_defaults":398,"./axis_attributes":421,"tinycolor2":241}],423:[function(require,module,exports){
+},{"../../../lib":424,"../../cartesian/axis_defaults":457,"./axis_attributes":480,"tinycolor2":300}],482:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77135,9 +79190,9 @@ function createAxesOptions(plotlyOptions) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib/html2unicode":364,"../../../lib/str2rgbarray":380,"arraytools":15}],424:[function(require,module,exports){
+},{"../../../lib/html2unicode":423,"../../../lib/str2rgbarray":439,"arraytools":15}],483:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77244,9 +79299,9 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":269,"../../subplot_defaults":440,"./axis_defaults":422,"./layout_attributes":425}],425:[function(require,module,exports){
+},{"../../../components/color":328,"../../subplot_defaults":499,"./axis_defaults":481,"./layout_attributes":484}],484:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77372,9 +79427,9 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":360,"./axis_attributes":421}],426:[function(require,module,exports){
+},{"../../../lib/extend":419,"./axis_attributes":480}],485:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77418,9 +79473,9 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":380}],427:[function(require,module,exports){
+},{"../../../lib/str2rgbarray":439}],486:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77514,9 +79569,9 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib":365,"../../../lib/html2unicode":364,"../../cartesian/axes":396}],428:[function(require,module,exports){
+},{"../../../lib":424,"../../../lib/html2unicode":423,"../../cartesian/axes":455}],487:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -77548,9 +79603,9 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],429:[function(require,module,exports){
+},{}],488:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -78276,9 +80331,9 @@ proto.toImage = function(format) {
 
 module.exports = Scene;
 
-},{"../../lib":365,"../../lib/show_no_webgl_msg":378,"../../lib/str2rgbarray":380,"../../plots/cartesian/axes":396,"../../plots/cartesian/graph_interact":403,"./camera":418,"./layout/convert":423,"./layout/spikes":426,"./layout/tick_marks":427,"./project":428,"./set_convert":430,"gl-plot3d":128,"webgl-context":256}],430:[function(require,module,exports){
+},{"../../lib":424,"../../lib/show_no_webgl_msg":437,"../../lib/str2rgbarray":439,"../../plots/cartesian/axes":455,"../../plots/cartesian/graph_interact":462,"./camera":477,"./layout/convert":482,"./layout/spikes":485,"./layout/tick_marks":486,"./project":487,"./set_convert":489,"gl-plot3d":165,"webgl-context":315}],489:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -78297,9 +80352,9 @@ module.exports = function setConvert(containerOut) {
     containerOut.setScale = Lib.noop;
 };
 
-},{"../../lib":365,"../cartesian/axes":396}],431:[function(require,module,exports){
+},{"../../lib":424,"../cartesian/axes":455}],490:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -78453,9 +80508,9 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":268,"../lib":365,"./font_attributes":416}],432:[function(require,module,exports){
+},{"../components/color/attributes":327,"../lib":424,"./font_attributes":475}],491:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -78491,9 +80546,9 @@ module.exports = {
     }
 };
 
-},{}],433:[function(require,module,exports){
+},{}],492:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -80615,9 +82670,9 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
     subplot.traceHash = traceHash;
 };
 
-},{"../components/color":269,"../components/errorbars":298,"../lib":365,"../plotly":391,"../registry":441,"./animation_attributes":392,"./attributes":394,"./command":415,"./font_attributes":416,"./frame_attributes":417,"./layout_attributes":431,"d3":74,"fast-isnumeric":82}],434:[function(require,module,exports){
+},{"../components/color":328,"../components/errorbars":357,"../lib":424,"../plotly":450,"../registry":500,"./animation_attributes":451,"./attributes":453,"./command":474,"./font_attributes":475,"./frame_attributes":476,"./layout_attributes":490,"d3":74,"fast-isnumeric":82}],493:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -80640,9 +82695,9 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":457}],435:[function(require,module,exports){
+},{"../../traces/scatter/attributes":516}],494:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -80755,9 +82810,9 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":360,"../cartesian/layout_attributes":405}],436:[function(require,module,exports){
+},{"../../lib/extend":419,"../cartesian/layout_attributes":464}],495:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -80770,9 +82825,9 @@ var Polar = module.exports = require('./micropolar');
 
 Polar.manager = require('./micropolar_manager');
 
-},{"./micropolar":437,"./micropolar_manager":438}],437:[function(require,module,exports){
+},{"./micropolar":496,"./micropolar_manager":497}],496:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82189,9 +84244,9 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../lib":365,"d3":74}],438:[function(require,module,exports){
+},{"../../lib":424,"d3":74}],497:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82275,9 +84330,9 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../components/color":269,"../../lib":365,"./micropolar":437,"./undo_manager":439,"d3":74}],439:[function(require,module,exports){
+},{"../../components/color":328,"../../lib":424,"./micropolar":496,"./undo_manager":498,"d3":74}],498:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82341,9 +84396,9 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],440:[function(require,module,exports){
+},{}],499:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82416,9 +84471,9 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":365,"./plots":433}],441:[function(require,module,exports){
+},{"../lib":424,"./plots":492}],500:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82584,9 +84639,9 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib":365,"./plots/attributes":394}],442:[function(require,module,exports){
+},{"./lib":424,"./plots/attributes":453}],501:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82742,9 +84797,9 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":365,"../plots/plots":433}],443:[function(require,module,exports){
+},{"../lib":424,"../plots/plots":492}],502:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82808,9 +84863,9 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":365,"../plot_api/to_image":389,"./filesaver":444}],444:[function(require,module,exports){
+},{"../lib":424,"../plot_api/to_image":448,"./filesaver":503}],503:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82876,9 +84931,9 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],445:[function(require,module,exports){
+},{}],504:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82909,9 +84964,9 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],446:[function(require,module,exports){
+},{}],505:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -82935,9 +84990,9 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":442,"./download":443,"./helpers":445,"./svgtoimg":447,"./toimage":448,"./tosvg":449}],447:[function(require,module,exports){
+},{"./cloneplot":501,"./download":502,"./helpers":504,"./svgtoimg":506,"./toimage":507,"./tosvg":508}],506:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83066,9 +85121,9 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":365,"events":80}],448:[function(require,module,exports){
+},{"../lib":424,"events":80}],507:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83146,9 +85201,9 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":365,"../plotly":391,"./cloneplot":442,"./helpers":445,"./svgtoimg":447,"./tosvg":449,"events":80}],449:[function(require,module,exports){
+},{"../lib":424,"../plotly":450,"./cloneplot":501,"./helpers":504,"./svgtoimg":506,"./tosvg":508,"events":80}],508:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83265,9 +85320,9 @@ module.exports = function toSVG(gd, format) {
     return s;
 };
 
-},{"../components/color":269,"../components/drawing":292,"../constants/xmlns_namespaces":353,"../lib/svg_text_utils":381,"d3":74}],450:[function(require,module,exports){
+},{"../components/color":328,"../components/drawing":351,"../constants/xmlns_namespaces":412,"../lib/svg_text_utils":440,"d3":74}],509:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83316,9 +85371,9 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":272,"../../components/colorscale":283,"../../lib":365,"../../plots/plots":433,"fast-isnumeric":82}],451:[function(require,module,exports){
+},{"../../components/colorbar/draw":331,"../../components/colorscale":342,"../../lib":424,"../../plots/plots":492,"fast-isnumeric":82}],510:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83449,9 +85504,9 @@ module.exports = {
     }, surfaceAtts.lighting)
 };
 
-},{"../../components/colorbar/attributes":270,"../../components/colorscale/attributes":274,"../../lib/extend":360,"../surface/attributes":486}],452:[function(require,module,exports){
+},{"../../components/colorbar/attributes":329,"../../components/colorscale/attributes":333,"../../lib/extend":419,"../surface/attributes":545}],511:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83611,9 +85666,9 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/str2rgbarray":380,"alpha-shape":14,"convex-hull":65,"delaunay-triangulate":75,"gl-mesh3d":126,"tinycolor2":241}],453:[function(require,module,exports){
+},{"../../lib/str2rgbarray":439,"alpha-shape":14,"convex-hull":65,"delaunay-triangulate":75,"gl-mesh3d":148,"tinycolor2":300}],512:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83712,9 +85767,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/colorbar/defaults":271,"../../lib":365,"../../registry":441,"./attributes":451}],454:[function(require,module,exports){
+},{"../../components/colorbar/defaults":330,"../../lib":424,"../../registry":500,"./attributes":510}],513:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83741,9 +85796,9 @@ Mesh3D.meta = {
 
 module.exports = Mesh3D;
 
-},{"../../plots/gl3d":419,"../heatmap/colorbar":450,"./attributes":451,"./convert":452,"./defaults":453}],455:[function(require,module,exports){
+},{"../../plots/gl3d":478,"../heatmap/colorbar":509,"./attributes":510,"./convert":511,"./defaults":512}],514:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83768,9 +85823,9 @@ module.exports = function styleOne(s, pt, trace) {
     .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":269}],456:[function(require,module,exports){
+},{"../../components/color":328}],515:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83809,9 +85864,9 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":365}],457:[function(require,module,exports){
+},{"../../lib":424}],516:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -83949,6 +86004,11 @@ module.exports = {
         
         
     },
+    forceNoXPadding: {
+        valType: 'boolean',
+        dflt: false,
+        
+    },
     marker: extendFlat({}, {
         symbol: {
             valType: 'enumerated',
@@ -84071,9 +86131,9 @@ module.exports = {
     error_x: errorBarAttrs
 };
 
-},{"../../components/colorbar/attributes":270,"../../components/colorscale/color_attributes":276,"../../components/drawing":292,"../../components/errorbars/attributes":294,"../../lib/extend":360,"./constants":462}],458:[function(require,module,exports){
+},{"../../components/colorbar/attributes":329,"../../components/colorscale/color_attributes":335,"../../components/drawing":351,"../../components/errorbars/attributes":353,"../../lib/extend":419,"./constants":521}],517:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84160,9 +86220,9 @@ module.exports = function calc(gd, trace) {
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(!trace.error_y.visible && (
+    else if(trace.forceNoXPadding || (!trace.error_y.visible && (
             ['tonexty', 'tozeroy'].indexOf(trace.fill) !== -1 ||
-            (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace))
+            (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace)))
         )) {
         xOptions.padded = false;
         xOptions.ppad = 0;
@@ -84201,9 +86261,9 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plots/cartesian/axes":396,"./arrays_to_calcdata":456,"./colorscale_calc":461,"./subtypes":477,"fast-isnumeric":82}],459:[function(require,module,exports){
+},{"../../plots/cartesian/axes":455,"./arrays_to_calcdata":515,"./colorscale_calc":520,"./subtypes":536,"fast-isnumeric":82}],518:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84240,9 +86300,9 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],460:[function(require,module,exports){
+},{}],519:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84297,9 +86357,9 @@ module.exports = function colorbar(gd, cd) {
         .options(marker.colorbar)();
 };
 
-},{"../../components/colorbar/draw":272,"../../components/colorscale":283,"../../lib":365,"../../plots/plots":433,"fast-isnumeric":82}],461:[function(require,module,exports){
+},{"../../components/colorbar/draw":331,"../../components/colorscale":342,"../../lib":424,"../../plots/plots":492,"fast-isnumeric":82}],520:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84330,9 +86390,9 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":275,"../../components/colorscale/has_colorscale":282,"./subtypes":477}],462:[function(require,module,exports){
+},{"../../components/colorscale/calc":334,"../../components/colorscale/has_colorscale":341,"./subtypes":536}],521:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84346,9 +86406,9 @@ module.exports = {
     PTS_LINESONLY: 20
 };
 
-},{}],463:[function(require,module,exports){
+},{}],522:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84388,6 +86448,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('mode', defaultMode);
     coerce('ids');
+    coerce('forceNoXPadding');
 
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
@@ -84426,9 +86487,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":297,"../../lib":365,"./attributes":457,"./constants":462,"./fillcolor_defaults":464,"./line_defaults":468,"./line_shape_defaults":470,"./marker_defaults":473,"./subtypes":477,"./text_defaults":478,"./xy_defaults":479}],464:[function(require,module,exports){
+},{"../../components/errorbars/defaults":356,"../../lib":424,"./attributes":516,"./constants":521,"./fillcolor_defaults":523,"./line_defaults":527,"./line_shape_defaults":529,"./marker_defaults":532,"./subtypes":536,"./text_defaults":537,"./xy_defaults":538}],523:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84464,9 +86525,9 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":269}],465:[function(require,module,exports){
+},{"../../components/color":328}],524:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84517,9 +86578,9 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":269,"./subtypes":477}],466:[function(require,module,exports){
+},{"../../components/color":328,"./subtypes":536}],525:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84686,9 +86747,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":269,"../../components/errorbars":298,"../../lib":365,"../../plots/cartesian/constants":401,"../../plots/cartesian/graph_interact":403,"./get_trace_color":465}],467:[function(require,module,exports){
+},{"../../components/color":328,"../../components/errorbars":357,"../../lib":424,"../../plots/cartesian/constants":460,"../../plots/cartesian/graph_interact":462,"./get_trace_color":524}],526:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84730,9 +86791,9 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":404,"./arrays_to_calcdata":456,"./attributes":457,"./calc":458,"./clean_data":459,"./colorbar":460,"./defaults":463,"./hover":466,"./plot":474,"./select":475,"./style":476,"./subtypes":477}],468:[function(require,module,exports){
+},{"../../plots/cartesian":463,"./arrays_to_calcdata":515,"./attributes":516,"./calc":517,"./clean_data":518,"./colorbar":519,"./defaults":522,"./hover":525,"./plot":533,"./select":534,"./style":535,"./subtypes":536}],527:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84763,9 +86824,9 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":278,"../../components/colorscale/has_colorscale":282}],469:[function(require,module,exports){
+},{"../../components/colorscale/defaults":337,"../../components/colorscale/has_colorscale":341}],528:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84936,9 +86997,9 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":351}],470:[function(require,module,exports){
+},{"../../constants/numerical":410}],529:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84955,9 +87016,9 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],471:[function(require,module,exports){
+},{}],530:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -84996,9 +87057,9 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],472:[function(require,module,exports){
+},{}],531:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85038,9 +87099,9 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":82}],473:[function(require,module,exports){
+},{"fast-isnumeric":82}],532:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85098,9 +87159,9 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":269,"../../components/colorscale/defaults":278,"../../components/colorscale/has_colorscale":282,"./subtypes":477}],474:[function(require,module,exports){
+},{"../../components/color":328,"../../components/colorscale/defaults":337,"../../components/colorscale/has_colorscale":341,"./subtypes":536}],533:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85633,9 +87694,9 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":292,"../../components/errorbars":298,"../../lib":365,"../../lib/polygon":374,"./line_points":469,"./link_traces":471,"./subtypes":477,"d3":74}],475:[function(require,module,exports){
+},{"../../components/drawing":351,"../../components/errorbars":357,"../../lib":424,"../../lib/polygon":433,"./line_points":528,"./link_traces":530,"./subtypes":536,"d3":74}],534:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85705,9 +87766,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":477}],476:[function(require,module,exports){
+},{"./subtypes":536}],535:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85747,9 +87808,9 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/drawing":292,"../../components/errorbars":298,"d3":74}],477:[function(require,module,exports){
+},{"../../components/drawing":351,"../../components/errorbars":357,"d3":74}],536:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85783,9 +87844,9 @@ module.exports = {
     }
 };
 
-},{"../../lib":365}],478:[function(require,module,exports){
+},{"../../lib":424}],537:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85804,9 +87865,9 @@ module.exports = function(traceIn, traceOut, layout, coerce) {
     Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
-},{"../../lib":365}],479:[function(require,module,exports){
+},{"../../lib":424}],538:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85854,9 +87915,9 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../registry":441}],480:[function(require,module,exports){
+},{"../../registry":500}],539:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -85988,9 +88049,9 @@ module.exports = {
     error_z: errorBarAttrs,
 };
 
-},{"../../components/colorscale/color_attributes":276,"../../components/errorbars/attributes":294,"../../constants/gl_markers":350,"../../lib/extend":360,"../scatter/attributes":457}],481:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":335,"../../components/errorbars/attributes":353,"../../constants/gl_markers":409,"../../lib/extend":419,"../scatter/attributes":516}],540:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86017,9 +88078,9 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":456,"../scatter/colorscale_calc":461}],482:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":515,"../scatter/colorscale_calc":520}],541:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86088,9 +88149,9 @@ function calculateErrors(data, scaleFactor) {
 
 module.exports = calculateErrors;
 
-},{"../../components/errorbars/compute_error":296}],483:[function(require,module,exports){
+},{"../../components/errorbars/compute_error":355}],542:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86550,9 +88611,9 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes":349,"../../constants/gl_markers":350,"../../lib":365,"../../lib/gl_format_color":363,"../../lib/str2rgbarray":380,"../scatter/make_bubble_size_func":472,"./calc_errors":482,"delaunay-triangulate":75,"gl-error3d":98,"gl-line3d":103,"gl-mesh3d":126,"gl-scatter3d":132}],484:[function(require,module,exports){
+},{"../../constants/gl3d_dashes":408,"../../constants/gl_markers":409,"../../lib":424,"../../lib/gl_format_color":422,"../../lib/str2rgbarray":439,"../scatter/make_bubble_size_func":531,"./calc_errors":541,"delaunay-triangulate":75,"gl-error3d":105,"gl-line3d":117,"gl-mesh3d":148,"gl-scatter3d":177}],543:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86639,9 +88700,9 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     return len;
 }
 
-},{"../../components/errorbars/defaults":297,"../../lib":365,"../../registry":441,"../scatter/line_defaults":468,"../scatter/marker_defaults":473,"../scatter/subtypes":477,"../scatter/text_defaults":478,"./attributes":480}],485:[function(require,module,exports){
+},{"../../components/errorbars/defaults":356,"../../lib":424,"../../registry":500,"../scatter/line_defaults":527,"../scatter/marker_defaults":532,"../scatter/subtypes":536,"../scatter/text_defaults":537,"./attributes":539}],544:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86670,9 +88731,9 @@ Scatter3D.meta = {
 
 module.exports = Scatter3D;
 
-},{"../../constants/gl_markers":350,"../../plots/gl3d":419,"../scatter/colorbar":460,"./attributes":480,"./calc":481,"./convert":483,"./defaults":484}],486:[function(require,module,exports){
+},{"../../constants/gl_markers":409,"../../plots/gl3d":478,"../scatter/colorbar":519,"./attributes":539,"./calc":540,"./convert":542,"./defaults":543}],545:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86890,9 +88951,9 @@ module.exports = {
     }
 };
 
-},{"../../components/color":269,"../../components/colorbar/attributes":270,"../../components/colorscale/attributes":274,"../../lib/extend":360}],487:[function(require,module,exports){
+},{"../../components/color":328,"../../components/colorbar/attributes":329,"../../components/colorscale/attributes":333,"../../lib/extend":419}],546:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86914,9 +88975,9 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":275}],488:[function(require,module,exports){
+},{"../../components/colorscale/calc":334}],547:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86966,9 +89027,9 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":272,"../../components/colorscale":283,"../../lib":365,"../../plots/plots":433,"fast-isnumeric":82}],489:[function(require,module,exports){
+},{"../../components/colorbar/draw":331,"../../components/colorscale":342,"../../lib":424,"../../plots/plots":492,"fast-isnumeric":82}],548:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -87350,9 +89411,9 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":380,"gl-surface3d":144,"ndarray":192,"ndarray-fill":182,"ndarray-homography":184,"ndarray-ops":186,"tinycolor2":241}],490:[function(require,module,exports){
+},{"../../lib/str2rgbarray":439,"gl-surface3d":197,"ndarray":251,"ndarray-fill":241,"ndarray-homography":243,"ndarray-ops":245,"tinycolor2":300}],549:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -87471,9 +89532,9 @@ function mapLegacy(traceIn, oldAttr, newAttr) {
     }
 }
 
-},{"../../components/colorscale/defaults":278,"../../lib":365,"../../registry":441,"./attributes":486}],491:[function(require,module,exports){
+},{"../../components/colorscale/defaults":337,"../../lib":424,"../../registry":500,"./attributes":545}],550:[function(require,module,exports){
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -87501,5 +89562,5 @@ Surface.meta = {
 
 module.exports = Surface;
 
-},{"../../plots/gl3d":419,"./attributes":486,"./calc":487,"./colorbar":488,"./convert":489,"./defaults":490}]},{},[4])(4)
+},{"../../plots/gl3d":478,"./attributes":545,"./calc":546,"./colorbar":547,"./convert":548,"./defaults":549}]},{},[4])(4)
 });

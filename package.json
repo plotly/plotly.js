@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.22.0-upsight1",
+  "version": "1.22.0-upsight3",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
