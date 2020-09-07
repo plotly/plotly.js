@@ -2722,8 +2722,9 @@ describe('Test axes', function() {
 
     describe('calcTicks and tickText', function() {
         function mockCalc(ax) {
-            if (ax.minexponent === undefined)
+            if(ax.minexponent === undefined) {
                 ax.minexponent = 3;
+            }
             ax.tickfont = {};
             Axes.setConvert(ax, {separators: '.,', _extraFormat: {
                 year: '%Y',
