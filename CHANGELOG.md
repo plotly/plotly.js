@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.55.2] -- 2020-09-08
+
+### Fixed
+ - Fix `automargin` when `ticklabelmode` is set to "period" [#5134]
+
+
 ## [1.55.1] -- 2020-09-02
 
 ### Fixed
