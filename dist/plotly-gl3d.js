@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.55.1
+* plotly.js (gl3d) v1.55.2
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -93274,7 +93274,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ticksOut[i].periodX = v;
 
             if(v > maxRange || v < minRange) { // hide label if outside the range
-                ticksOut[i].text = '';
+                ticksOut[i].text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
                 removedPreTick0Label = true;
             }
         }
@@ -121955,7 +121955,7 @@ module.exports = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.55.1';
+exports.version = '1.55.2';
 
 },{}]},{},[4])(4)
 });
