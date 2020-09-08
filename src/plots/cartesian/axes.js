@@ -858,7 +858,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ticksOut[i].periodX = v;
 
             if(v > maxRange || v < minRange) { // hide label if outside the range
-                ticksOut[i].text = '';
+                ticksOut[i].text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
                 removedPreTick0Label = true;
             }
         }
