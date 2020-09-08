@@ -9,7 +9,46 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.55.2] -- 2020-09-08
+
+### Fixed
+ - Fix `automargin` when `ticklabelmode` is set to "period" [#5134]
+
+
+## [1.55.1] -- 2020-09-02
+
+### Fixed
+ - Install `image-size` module in dependencies [#5119]
+
+
+## [1.55.0] -- 2020-09-02
+
+### Added
+ - Introduce "period" `ticklabelmode` on cartesian date axes [#4993, #5055, #5060, #5065, #5088, #5089]
+ - Add new formatting options for weeks and quarters [#5026]
+ - Add `source` attribute to `image` traces for fast rendering [#5075]
+ - Add `zsmooth` attribute for discrete `heatmapgl` traces [#4953], with thanks to @ordiology for the contribution!
+ - Add horizontal and vertical markers for arrow charts [#5010]
+ - Add touch support to `rangeslider` [#5025], with thanks to @priyanomi, @cristiantx, @JasDev42 for their contribution!
+
+### Changed
+ - Improve contribution guide & readme, add code of conduct [#5068]
+ - Bump various dev-dependencies namely bubleify and glslify [#5084, #5085, #5118]
+
+### Fixed
+ - Fix updating `title` and tick labels during transition with react [#5045]
+ - Fix `table` wheel scroll for Firefox [#5051], with thanks to @ManelBH for the contribution!
+ - Fix ISO-8601 short time zone format [#5015], with thanks to @mtgto for the contribution!
+ - Fix numeric periods on date axes for `bar` with `base` [#5061]
+ - Fix `bar` and `box` widths on categorical axes in "overlay" mode [#5072]
+ - Fix `symbol` numbers in string format [#5073]
+ - Fix gl2d marker sizes [#5093]
+ - Fix default latitude span in `geo` subplots [#5033]
+ - Improve axis tick increment [#5114]
+
+
 ## [1.54.7] -- 2020-07-23
+
 ### Changed
  - Revert [#4904] to fix a template regression introduced in 1.54.4 [#5016]
 
@@ -38,6 +77,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 
 ## [1.54.4] -- 2020-06-22
+
 ### Changed
  - Bump `ecstatic`, `gl-selet-static`, `gl-plot2d` & `gl-plot3d` and drop `cwise` to simplify build process & address security warnings [#4929, #4930, #4934]
 
@@ -46,11 +86,13 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 
 ## [1.54.3] -- 2020-06-16
+
 ### Fixed
  - Fix `autosize` case of hidden div with non-px size [#4925]
 
 
 ## [1.54.2] -- 2020-06-10
+
 ### Changed
  - Bump `regl` dependency to v1.6.1 [#4881]
  - Bump `ndarray` dependency to v1.0.19 [#4910]
