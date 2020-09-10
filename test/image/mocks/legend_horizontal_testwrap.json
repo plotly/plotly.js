@@ -25,6 +25,5 @@
         "height": 300,
         "legend": {"orientation": "h"},
         "margin": {"l": 30, "r": 20}
-      }
-  }
-  
+    }
+}
