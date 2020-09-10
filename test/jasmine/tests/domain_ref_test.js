@@ -16,16 +16,21 @@ function makeTests(component, filter) {
         var descriptions = component.descriptions().filter(filter);
         var tests = component.tests().filter(filter);
         var gd;
-        beforeEach(function () { gd = createGraphDiv(); });
-        afterEach(function () {
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(function() {
             Plotly.purge(gd);
             destroyGraphDiv(gd);
+            gd = null;
         });
         descriptions.forEach(function(d, i) {
             it(d, function(done) {
+                console.log("testing " + d);
+                gd.id = "graph-" + i;
                 tests[i](function(v) {
                         expect(v).toBe(true);
-                    },gd)
+                    }, gd)
                     .catch(failTest)
                     .then(done);
             });
@@ -35,18 +40,24 @@ function makeTests(component, filter) {
 
 describe('Test annotations', makeTests(domainRefComponents.annotations,
     function(f, i) {
-        if (testNumber === undefined) { return true; }
+        if (testNumber === undefined) {
+            return true;
+        }
         return i == testNumber;
     }));
 
 describe('Test images', makeTests(domainRefComponents.images,
     function(f, i) {
-        if (testNumber === undefined) { return true; }
+        if (testNumber === undefined) {
+            return true;
+        }
         return i == testNumber;
     }));
 
-fdescribe('Test shapes', makeTests(domainRefComponents.shapes,
+describe('Test shapes', makeTests(domainRefComponents.shapes,
     function(f, i) {
-        if (testNumber === undefined) { return true; }
+        if (testNumber === undefined) {
+            return true;
+        }
         return i == testNumber;
     }));

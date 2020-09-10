@@ -17,6 +17,8 @@ var destroyGraphDiv = require('../../assets/destroy_graph_div');
 var pixelCalc = require('../../assets/pixel_calc');
 var getSVGElemScreenBBox = require(
     '../../assets/get_svg_elem_screen_bbox');
+var SVGTools = require(
+    '../../assets/svg_tools');
 var Lib = require('../../../../src/lib');
 var Axes = require('../../../../src/plots/cartesian/axes');
 var axisIds = require('../../../../src/plots/cartesian/axis_ids');
@@ -24,8 +26,37 @@ var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var iterable = require('extra-iterable');
 var delay = require('../../assets/delay');
 
-var testMock = Lib.extendDeep({},
-    require('../../../image/mocks/domain_ref_base.json'));
+var testMock = require('../../../image/mocks/domain_ref_base.json');
+
+var defaultLayout = {
+    "xaxis": {
+        "domain": [0, 0.75],
+        "range": [1, 3]
+    },
+    "yaxis": {
+        "domain": [0, 0.4],
+        "range": [1, 4]
+    },
+    "xaxis2": {
+        "domain": [0.75, 1],
+        "range": [1, 4],
+        "anchor": "y2"
+    },
+    "yaxis2": {
+        "domain": [0.4, 1],
+        "range": [1, 3],
+        "anchor": "x2"
+    },
+    "margin": {
+        "l": 100,
+        "r": 100,
+        "t": 100,
+        "b": 100,
+        "autoexpand": false
+    },
+    "width": 400,
+    "height": 400
+};
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
@@ -373,7 +404,10 @@ function imageToBBox(layout, img) {
 
 
 function coordsEq(a, b) {
-    return Math.abs(a - b) < EQUALITY_TOLERANCE;
+    if (a && b) {
+        return Math.abs(a - b) < EQUALITY_TOLERANCE;
+    }
+    return false;
 }
 
 function compareBBoxes(a, b) {
@@ -438,6 +472,8 @@ function checkAROPosition(gd, aro) {
     var aroPathBBox = getSVGElemScreenBBox(aroPath);
     var aroBBox = shapeToBBox(gd.layout, aro);
     var ret = compareBBoxes(aroBBox, aroPathBBox);
+    console.log("aroBBox: " + JSON.stringify(aroBBox))
+    console.log("aroPathBBox: " + JSON.stringify(SVGTools.SVGRectToObj(aroPathBBox)))
     return ret;
 }
 
@@ -535,6 +571,7 @@ function testShape(
     yaroPos,
     aroType
 ) {
+    console.log('gd.layout: ', JSON.stringify(gd.layout));
     var aro = {
         type: aroType,
         line: {
@@ -549,6 +586,7 @@ function testShape(
     // change to log axes if need be
     logAxisIfAxType(gd.layout, layout, 'x' + xAxNum, xaxisType);
     logAxisIfAxType(gd.layout, layout, 'y' + yAxNum, yaxisType);
+    console.log('layout: ', JSON.stringify(layout));
     return Plotly.relayout(gd, layout)
         .then(function(gd) {
             return checkAROPosition(gd, aro);
@@ -562,15 +600,16 @@ function describeShapeComboTest(combo) {
     var xaroPos = combo[3];
     var yaroPos = combo[4];
     var gd_id = combo[5];
+    var xid = axispair[0];
+    var yid = axispair[1];
     return [
-        "should create a plot with graph ID",
-        gd_id,
-        " with parameters:", "\n",
+        "#", gd_id,
+        "should create a plot with parameters:", "\n",
         "x-axis type:", xaxisType, "\n",
         "y-axis type:", yaxisType, "\n",
-        "axis pair:", axispair, "\n",
-        "ARO position x:", xaroPos, "\n",
-        "ARO position y:", yaroPos, "\n",
+        "axis pair:", xid, yid, "\n",
+        "ARO position x:", JSON.stringify(xaroPos), "\n",
+        "ARO position y:", JSON.stringify(yaroPos), "\n",
     ].join(' ');
 }
 
@@ -582,68 +621,12 @@ function testShapeCombo(combo, assert, gd) {
     var yaroPos = combo[4];
     var xAxNum = axispair[0].substr(1);
     var yAxNum = axispair[1].substr(1);
-    return Plotly.newPlot(gd, testMock)
+    return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
-            return testShape(gd,xAxNum,xaxisType,xaroPos,yAxNum,yaxisType,yaroPos,'shape');
+            return testShape(gd, xAxNum, xaxisType, xaroPos, yAxNum, yaxisType, yaroPos, 'shape');
         }).then(function(test_ret) {
             assert(test_ret);
         });
-}
-
-var testDomRefAROCombo = function(combo) {
-    var xAxNum = combo[0];
-    var xaxisType = combo[1];
-    var xaroPos = combo[2];
-    var yAxNum = combo[3];
-    var yaxisType = combo[4];
-    var yaroPos = combo[5];
-    var aroType = combo[6];
-    it('should draw a ' + aroType +
-        ' for x' + xAxNum + ' of type ' +
-        xaxisType +
-        ' with a value referencing ' +
-        xaroPos.ref +
-        ' and for y' + yAxNum + ' of type ' +
-        yaxisType +
-        ' with a value referencing ' +
-        yaroPos.ref,
-        function(done) {
-            var gd = createGraphDiv();
-            var mock = testMock;
-            if (DEBUG) {
-                console.log(combo);
-            }
-            Plotly.newPlot(gd, mock)
-            var aro = {
-                type: aroType,
-                line: {
-                    color: aroColor
-                }
-            };
-            aroFromAROPos(aro, 'x', xAxNum, xaroPos);
-            aroFromAROPos(aro, 'y', yAxNum, yaroPos);
-            var layout = {
-                shapes: [aro]
-            };
-            // change to log axes if need be
-            logAxisIfAxType(gd.layout, layout, 'x' + xAxNum, xaxisType);
-            logAxisIfAxType(gd.layout, layout, 'y' + yAxNum, yaxisType);
-            Plotly.relayout(gd, layout);
-            console.log(checkAROPosition(gd, aro));
-            destroyGraphDiv();
-        });
-}
-
-// Test correct aro positions
-function test_correct_aro_positions() {
-    // for both x and y axes
-    var testCombos = [...iterable.cartesianProduct([
-        axNum, axisTypes, aroPositionsX, axNum, axisTypes,
-        aroPositionsY, aroType
-    ])];
-    // map all the combinations to a aro definition and check this aro is
-    // placed properly
-    testCombos.forEach(testDomRefAROCombo);
 }
 
 function describeImageComboTest(combo) {
@@ -661,14 +644,13 @@ function describeImageComboTest(combo) {
     var yref = makeAxRef(yid, aroposy.ref);
     // TODO Add image combo test description
     return [
-        "layout image with graph ID",
-        gd_id,
-        "with parameters:",
+        "#", gd_id,
+        "should create a plot with parameters:", "\n",
         "x-axis type:", axistypex, "\n",
         "y-axis type:", axistypey, "\n",
-        "axis pair:", axispair, "\n",
-        "ARO position x:", aroposx, "\n",
-        "ARO position y:", aroposy, "\n",
+        "axis pair:", xid, yid, "\n",
+        "ARO position x:", JSON.stringify(aroposx), "\n",
+        "ARO position y:", JSON.stringify(aroposy), "\n",
         "xanchor:", xanchor, "\n",
         "yanchor:", yanchor, "\n",
         "xref:", xref, "\n",
@@ -689,7 +671,7 @@ function testImageCombo(combo, assert, gd) {
     var yid = axispair[1];
     var xref = makeAxRef(xid, aroposx.ref);
     var yref = makeAxRef(yid, aroposy.ref);
-    return Plotly.newPlot(gd, testMock)
+    return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
             return imageTest(gd, {}, axistypex, axistypey,
                 aroposx.value[0], aroposy.value[0], aroposx.size,
@@ -713,14 +695,13 @@ function describeAnnotationComboTest(combo) {
     var xref = makeAxRef(xid, aroposx.ref);
     var yref = makeAxRef(yid, aroposy.ref);
     return [
-        "should create a plot with graph ID",
-        gd_id,
-        " with parameters:", "\n",
+        "#", gd_id,
+        "should create a plot with parameters:", "\n",
         "x-axis type:", axistypex, "\n",
         "y-axis type:", axistypey, "\n",
-        "axis pair:", axispair, "\n",
-        "ARO position x:", aroposx, "\n",
-        "ARO position y:", aroposy, "\n",
+        "axis pair:", xid, yid, "\n",
+        "ARO position x:", JSON.stringify(aroposx), "\n",
+        "ARO position y:", JSON.stringify(aroposy), "\n",
         "arrow axis pair:", arrowaxispair, "\n",
         "xref:", xref, "\n",
         "yref:", yref, "\n",
@@ -745,7 +726,7 @@ function testAnnotationCombo(combo, assert, gd) {
     var y0 = aroposy.value[0];
     var ax = axref === 'pixel' ? aroposx.pixel : aroposx.value[1];
     var ay = ayref === 'pixel' ? aroposy.pixel : aroposy.value[1];
-    return Plotly.newPlot(gd, testMock)
+    return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
             return annotationTest(gd, {}, x0, y0, ax, ay, xref, yref, axref,
                 ayref, axistypex, axistypey, xid, yid);
