@@ -14,7 +14,7 @@ var Color = require('../../components/color');
 var boxDefaults = require('../box/defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -22,7 +22,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce2(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    boxDefaults.handleSampleDefaults(traceIn, traceOut, coerce, layout);
+    boxDefaults.handleSampleDefaults(gd, traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
 
     coerce('bandwidth');
@@ -43,7 +43,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('line.width');
     var fillColor = coerce('fillcolor', Color.addOpacity(traceOut.line.color, 0.5));
 
-    boxDefaults.handlePointsDefaults(traceIn, traceOut, coerce, {prefix: ''});
+    boxDefaults.handlePointsDefaults(gd, traceIn, traceOut, coerce, {prefix: ''});
 
     var boxWidth = coerce2('box.width');
     var boxFillColor = coerce2('box.fillcolor', fillColor);

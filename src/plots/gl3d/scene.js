@@ -138,6 +138,7 @@ proto.prepareOptions = function() {
 
 proto.tryCreatePlot = function() {
     var scene = this;
+    var gd = scene.graphDiv;
 
     var opts = scene.prepareOptions();
 
@@ -151,7 +152,7 @@ proto.tryCreatePlot = function() {
         } else { // try second time
             try {
                 // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
-                Lib.warn([
+                Lib.warn(gd, [
                     'webgl setup failed possibly due to',
                     isMobile ? 'disabling' : 'enabling',
                     'preserveDrawingBuffer config.',
@@ -278,7 +279,7 @@ proto.initializeGLPlot = function() {
     }
 
     scene.glplot.oncontextloss = function() {
-        scene.recoverContext();
+        scene.recoverContext(gd);
     };
 
     scene.glplot.onrender = function() {
@@ -453,7 +454,7 @@ proto.render = function() {
     scene.drawAnnotations(scene);
 };
 
-proto.recoverContext = function() {
+proto.recoverContext = function(gd) {
     var scene = this;
 
     scene.glplot.dispose();
@@ -464,7 +465,7 @@ proto.recoverContext = function() {
             return;
         }
         if(!scene.initializeGLPlot()) {
-            Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
+            Lib.error(gd, 'Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
         scene.plot.apply(scene, scene.plotArgs);
@@ -536,7 +537,8 @@ function computeAnnotationBounds(scene, bounds) {
     }
 }
 
-proto.plot = function(sceneData, fullLayout, layout) {
+proto.plot = function(gd, sceneData, fullLayout) {
+    var layout = gd.layout;
     var scene = this;
 
     // Save parameters
@@ -609,14 +611,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         trace = scene.traces[data.uid];
         if(trace) {
             if(trace.data.type === data.type) {
-                trace.update(data);
+                trace.update(gd, data);
             } else {
                 trace.dispose();
-                trace = data._module.plot(this, data);
+                trace = data._module.plot(gd, this, data);
                 scene.traces[data.uid] = trace;
             }
         } else {
-            trace = data._module.plot(this, data);
+            trace = data._module.plot(gd, this, data);
             scene.traces[data.uid] = trace;
         }
         trace.name = data.name;

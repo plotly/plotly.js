@@ -128,7 +128,7 @@ exports.attributes = {
     editType: 'calc'
 };
 
-exports.supplyDefaults = function(transformIn) {
+exports.supplyDefaults = function(gd, transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {
@@ -150,8 +150,8 @@ exports.supplyDefaults = function(transformIn) {
         coerce('value');
 
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
-        handleCalendarDefaults(transformIn, transformOut, 'valuecalendar', null);
-        handleCalendarDefaults(transformIn, transformOut, 'targetcalendar', null);
+        handleCalendarDefaults(gd, transformIn, transformOut, 'valuecalendar', null);
+        handleCalendarDefaults(gd, transformIn, transformOut, 'targetcalendar', null);
     }
 
     return transformOut;

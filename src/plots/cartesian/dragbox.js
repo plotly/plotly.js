@@ -476,7 +476,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var wheelDelta = -e.deltaY;
         if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
         if(!isFinite(wheelDelta)) {
-            Lib.log('Did not find wheel motion attributes: ', e);
+            Lib.log(gd, 'Did not find wheel motion attributes: ', e);
             return;
         }
 

@@ -11,8 +11,8 @@ var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
 
 
-function supplyDataDefaults(dataIn, dataOut) {
-    return Plots.supplyDataDefaults(dataIn, dataOut, {}, {
+function supplyDataDefaults(gd, dataIn, dataOut) {
+    return Plots.supplyDataDefaults(gd, dataIn, dataOut, {}, {
         _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
         _modules: [],
         _visibleModules: [],
@@ -368,7 +368,7 @@ describe('groupby', function() {
                 ]
             }];
 
-            supplyDataDefaults(dataIn, dataOut);
+            supplyDataDefaults(void 0, dataIn, dataOut);
 
             for(var i = 0; i < dataOut.length; i++) {
                 uniqueColors[dataOut[i].marker.color] = true;
@@ -820,7 +820,7 @@ describe('groupby', function() {
                 ]
             }];
 
-            supplyDataDefaults(dataIn, dataOut);
+            supplyDataDefaults(void 0, dataIn, dataOut);
 
             for(var i = 0; i < dataOut.length; i++) {
                 colors.push(dataOut[i].marker.color);

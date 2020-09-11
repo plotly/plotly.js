@@ -263,7 +263,7 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
 
-        sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
+        sliceText.text(exports.formatSliceLabel(gd, pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
             .call(Drawing.font, font)
@@ -495,7 +495,7 @@ function partition(entry) {
         .size([2 * Math.PI, entry.height + 1])(entry);
 }
 
-exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
+exports.formatSliceLabel = function(gd, pt, entry, trace, cd, fullLayout) {
     var texttemplate = trace.texttemplate;
     var textinfo = trace.textinfo;
 
@@ -605,7 +605,7 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var ptTx = Lib.castOption(trace, cdi.i, 'text');
     if(Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
     obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
-    return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
+    return Lib.texttemplateString(gd, txt, obj, fullLayout._d3locale, obj, trace._meta || {});
 };
 
 function getInscribedRadiusFraction(pt) {

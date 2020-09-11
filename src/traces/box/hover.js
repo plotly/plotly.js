@@ -14,7 +14,7 @@ var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var fillText = Lib.fillText;
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var hoveron = trace.hoveron;
@@ -22,11 +22,11 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var closePtData;
 
     if(hoveron.indexOf('boxes') !== -1) {
-        closeBoxData = closeBoxData.concat(hoverOnBoxes(pointData, xval, yval, hovermode));
+        closeBoxData = closeBoxData.concat(hoverOnBoxes(gd, pointData, xval, yval, hovermode));
     }
 
     if(hoveron.indexOf('points') !== -1) {
-        closePtData = hoverOnPoints(pointData, xval, yval);
+        closePtData = hoverOnPoints(gd, pointData, xval, yval);
     }
 
     // If there's a point in range and hoveron has points, show the best single point only.
@@ -45,7 +45,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     return closeBoxData;
 }
 
-function hoverOnBoxes(pointData, xval, yval, hovermode) {
+function hoverOnBoxes(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var ya = pointData.ya;
@@ -198,7 +198,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     return closeBoxData;
 }
 
-function hoverOnPoints(pointData, xval, yval) {
+function hoverOnPoints(gd, pointData, xval, yval) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var ya = pointData.ya;

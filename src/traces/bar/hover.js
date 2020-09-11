@@ -18,7 +18,7 @@ var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
 
     if(barPointData) {

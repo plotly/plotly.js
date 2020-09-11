@@ -14,12 +14,12 @@ var layoutAttributes = require('./layout_attributes');
 var handleHoverModeDefaults = require('./hovermode_defaults');
 var handleHoverLabelDefaults = require('./hoverlabel_defaults');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    var hoverMode = handleHoverModeDefaults(layoutIn, layoutOut, fullData);
+    var hoverMode = handleHoverModeDefaults(gd, layoutIn, layoutOut, fullData);
     if(hoverMode) {
         coerce('hoverdistance');
         coerce('spikedistance', isUnifiedHover(hoverMode) ? -1 : undefined);
@@ -42,5 +42,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         layoutOut.dragmode = 'pan';
     }
 
-    handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
+    handleHoverLabelDefaults(gd, layoutIn, layoutOut, coerce);
 };

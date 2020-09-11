@@ -15,12 +15,12 @@ var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
+    handleSampleDefaults(gd, traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
 
     var hasPreCompStats = traceOut._hasPreCompStats;
@@ -61,10 +61,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var notched = coerce('notched', notchedDflt);
     if(notched) coerce('notchwidth');
 
-    handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
+    handlePointsDefaults(gd, traceIn, traceOut, coerce, {prefix: 'box'});
 }
 
-function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
+function handleSampleDefaults(gd, traceIn, traceOut, coerce, layout) {
     function getDims(arr) {
         var dims = 0;
         if(arr && arr.length) {
@@ -224,10 +224,10 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y'], layout);
 }
 
-function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
+function handlePointsDefaults(gd, traceIn, traceOut, coerce, opts) {
     var prefix = opts.prefix;
 
     var outlierColorDflt = Lib.coerce2(traceIn, traceOut, attributes, 'marker.outliercolor');
@@ -277,7 +277,7 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
-function crossTraceDefaults(fullData, fullLayout) {
+function crossTraceDefaults(gd, fullData, fullLayout) {
     var traceIn, traceOut;
 
     function coerce(attr) {
@@ -291,7 +291,7 @@ function crossTraceDefaults(fullData, fullLayout) {
         if(traceType === 'box' || traceType === 'violin') {
             traceIn = traceOut._input;
             if(fullLayout[traceType + 'mode'] === 'group') {
-                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+                handleGroupingDefaults(gd, traceIn, traceOut, fullLayout, coerce);
             }
         }
     }

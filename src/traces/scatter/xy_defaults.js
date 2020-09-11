@@ -11,13 +11,13 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
-module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
+module.exports = function handleXYDefaults(gd, traceIn, traceOut, layout, coerce) {
     var x = coerce('x');
     var y = coerce('y');
     var len;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y'], layout);
 
     if(x) {
         var xlen = Lib.minRowLength(x);

@@ -22,7 +22,7 @@ var Lib = require('../../lib');
  *  - a: array such that a.length === data[0].length
  *  - b: array such that b.length === data.length
  */
-module.exports = function smoothFill2dArray(data, a, b) {
+module.exports = function smoothFill2dArray(gd, data, a, b) {
     var i, j, k;
     var ip = [];
     var jp = [];
@@ -214,7 +214,7 @@ module.exports = function smoothFill2dArray(data, a, b) {
         resid = Math.sqrt(resid);
     } while(iter++ < itermax && resid > tol);
 
-    Lib.log('Smoother converged to', resid, 'after', iter, 'iterations');
+    Lib.log(gd, 'Smoother converged to', resid, 'after', iter, 'iterations');
 
     return data;
 };

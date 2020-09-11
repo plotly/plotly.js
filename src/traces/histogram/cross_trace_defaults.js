@@ -27,7 +27,7 @@ var BINATTRS = [
 var BINDIRECTIONS = ['x', 'y'];
 
 // handle bin attrs and relink auto-determined values so fullData is complete
-module.exports = function crossTraceDefaults(fullData, fullLayout) {
+module.exports = function crossTraceDefaults(gd, fullData, fullLayout) {
     var allBinOpts = fullLayout._histogramBinOpts = {};
     var histTraces = [];
     var mustMatchTracesLookup = {};
@@ -68,7 +68,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
                 groupName = fallbackGroupName;
 
                 if(axType !== binOpts.axType) {
-                    Lib.warn([
+                    Lib.warn(gd, [
                         'Attempted to group the bins of trace', traceOut.index,
                         'set on a', 'type:' + axType, 'axis',
                         'with bins on', 'type:' + binOpts.axType, 'axis.'
@@ -77,7 +77,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
                 if(calendar !== binOpts.calendar) {
                     // prohibit bingroup for traces using different calendar,
                     // there's probably a way to make this work, but skip for now
-                    Lib.warn([
+                    Lib.warn(gd, [
                         'Attempted to group the bins of trace', traceOut.index,
                         'set with a', calendar, 'calendar',
                         'with bins',
@@ -112,7 +112,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"
             if(!traceIs(traceOut, '2dMap')) {
-                handleGroupingDefaults(traceOut._input, traceOut, fullLayout, coerce);
+                handleGroupingDefaults(gd, traceOut._input, traceOut, fullLayout, coerce);
             }
         }
     }
@@ -186,7 +186,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             traceOut = traces[i];
             var bingroupIn = traceOut._input.bingroup;
             if(bingroupIn && bingroupIn !== groupName) {
-                Lib.warn([
+                Lib.warn(gd, [
                     'Trace', traceOut.index, 'must match',
                     'within bingroup', groupName + '.',
                     'Ignoring its bingroup:', bingroupIn, 'setting.'

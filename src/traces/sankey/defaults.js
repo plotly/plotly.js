@@ -17,7 +17,7 @@ var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults'
 var Template = require('../../plot_api/plot_template');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -40,7 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('line.color');
     coerceNode('line.width');
     coerceNode('hoverinfo', traceIn.hoverinfo);
-    handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, hoverlabelDefault);
+    handleHoverLabelDefaults(gd, nodeIn, nodeOut, coerceNode, hoverlabelDefault);
     coerceNode('hovertemplate');
 
     var colors = layout.colorway;
@@ -66,7 +66,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('line.color');
     coerceLink('line.width');
     coerceLink('hoverinfo', traceIn.hoverinfo);
-    handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
+    handleHoverLabelDefaults(gd, linkIn, linkOut, coerceLink, hoverlabelDefault);
     coerceLink('hovertemplate');
 
     var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
@@ -76,12 +76,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
     coerceLink('customdata');
 
-    handleArrayContainerDefaults(linkIn, linkOut, {
+    handleArrayContainerDefaults(gd, linkIn, linkOut, {
         name: 'colorscales',
         handleItemDefaults: concentrationscalesDefaults
     });
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     coerce('orientation');
     coerce('valueformat');
@@ -100,7 +100,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-function concentrationscalesDefaults(In, Out) {
+function concentrationscalesDefaults(gd, In, Out) {
     function coerce(attr, dflt) {
         return Lib.coerce(In, Out, attributes.link.colorscales, attr, dflt);
     }

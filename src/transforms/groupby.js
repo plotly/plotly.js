@@ -96,7 +96,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, traceOut, layout) {
+exports.supplyDefaults = function(gd, transformIn, traceOut, layout) {
     var i;
     var transformOut = {};
 

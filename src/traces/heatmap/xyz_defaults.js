@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 
 var Registry = require('../../registry');
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
+module.exports = function handleXYZDefaults(gd, traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
     xName = xName || 'x';
     yName = yName || 'y';
@@ -33,8 +33,8 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
 
         traceOut._length = Math.min(xlen, ylen, z.length);
     } else {
-        x = coordDefaults(xName, coerce);
-        y = coordDefaults(yName, coerce);
+        x = coordDefaults(gd, xName, coerce);
+        y = coordDefaults(gd, yName, coerce);
 
         // TODO put z validation elsewhere
         if(!isValidZ(z)) return 0;
@@ -50,12 +50,12 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
     ) return true; // skip calendars until we handle them in those traces
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, [xName, yName], layout);
 
     return true;
 };
 
-function coordDefaults(coordStr, coerce) {
+function coordDefaults(gd, coordStr, coerce) {
     var coord = coerce(coordStr);
     var coordType = coord ? coerce(coordStr + 'type', 'array') : 'scaled';
 

@@ -17,7 +17,7 @@ var concatExtremes = require('./autorange').concatExtremes;
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 var FROM_BL = require('../../constants/alignment').FROM_BL;
 
-exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, opts) {
+exports.handleConstraintDefaults = function(gd, containerIn, containerOut, coerce, opts) {
     var allAxisIds = opts.allAxisIds;
     var layoutOut = opts.layoutOut;
     var scaleanchorDflt = opts.scaleanchorDflt;
@@ -74,7 +74,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
         delete containerOut.constrain;
         updateConstraintGroups(matchGroups, matchOpts.thisGroup, thisID, matches, 1);
     } else if(allAxisIds.indexOf(containerIn.matches) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.matches: "' +
+        Lib.warn(gd, 'ignored ' + containerOut._name + '.matches: "' +
             containerIn.matches + '" to avoid either an infinite loop ' +
             'or because the target axis has fixed range.');
     }
@@ -91,7 +91,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
 
         updateConstraintGroups(constraintGroups, scaleOpts.thisGroup, thisID, scaleanchor, scaleratio);
     } else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
+        Lib.warn(gd, 'ignored ' + containerOut._name + '.scaleanchor: "' +
             containerIn.scaleanchor + '" to avoid either an infinite loop ' +
             'and possibly inconsistent scaleratios, or because the target ' +
             'axis has fixed range or this axis declares a *matches* constraint.');

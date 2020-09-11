@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var hasColorscale = require('./helpers').hasColorscale;
 var extractOpts = require('./helpers').extractOpts;
 
-module.exports = function crossTraceDefaults(fullData, fullLayout) {
+module.exports = function crossTraceDefaults(gd, fullData, fullLayout) {
     function replace(cont, k) {
         var val = cont['_' + k];
         if(val !== undefined) {

@@ -279,7 +279,7 @@ describe('heatmapgl supplyDefaults', function() {
             z: [[0, 1], [1, 0]]
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         var allKeys = Object.getOwnPropertyNames(traceOut);
         allKeys.forEach(function(key) {
             if(key[0] !== '_') {

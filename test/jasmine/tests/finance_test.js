@@ -1162,7 +1162,7 @@ describe('finance trace hover:', function() {
                     ya: gd._fullLayout.yaxis,
                     maxHoverDistance: 20
                 };
-                var pts = trace._module.hoverPoints(pointData, xval, yval, hovermode);
+                var pts = trace._module.hoverPoints(gd, pointData, xval, yval, hovermode);
                 return pts ? pts[0] : {distance: Infinity};
             });
 

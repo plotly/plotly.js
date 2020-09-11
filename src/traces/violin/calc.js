@@ -50,7 +50,7 @@ module.exports = function calc(gd, trace) {
             var step = dist / n;
 
             if(!isFinite(step) || !isFinite(n)) {
-                Lib.error('Something went wrong with computing the violin span');
+                Lib.error(gd, 'Something went wrong with computing the violin span');
                 cd[0].t.empty = true;
                 return cd;
             }

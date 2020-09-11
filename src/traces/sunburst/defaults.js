@@ -17,7 +17,7 @@ var Colorscale = require('../../components/colorscale');
 var hasColorscale = Colorscale.hasColorscale;
 var colorscaleDefaults = Colorscale.handleDefaults;
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -49,7 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
     );
     if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+        colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
     coerce('leaf.opacity', withColorscale ? 1 : 0.7);
@@ -73,7 +73,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('insidetextorientation');
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     // do not support transforms for now
     traceOut._length = null;

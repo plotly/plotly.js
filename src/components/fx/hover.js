@@ -238,7 +238,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             xaArray[i] = _subplot.xaxis;
             yaArray[i] = _subplot.yaxis;
         } else {
-            Lib.warn('Unrecognized subplot: ' + spId);
+            Lib.warn(gd, 'Unrecognized subplot: ' + spId);
             return;
         }
     }
@@ -353,7 +353,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         else yvalArray = helpers.p2c(yaArray, ypx);
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
-            Lib.warn('Fx.hover failed', evt, gd);
+            Lib.warn(gd, 'Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
     }
@@ -478,7 +478,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(gd, pointData, xval, yval, mode, fullLayout._hoverlayer);
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -489,7 +489,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                         }
                     }
                 } else {
-                    Lib.log('Unrecognized trace type in hover:', trace);
+                    Lib.log(gd, 'Unrecognized trace type in hover:', trace);
                 }
             }
 
@@ -507,7 +507,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(gd, pointData, xval, yval, 'closest', fullLayout._hoverlayer);
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
@@ -1000,13 +1000,13 @@ function createHoverText(hoverData, opts, gd) {
             }
         };
         var mockLayoutOut = {};
-        legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
+        legendSupplyDefaults(gd, mockLayoutIn, mockLayoutOut, gd._fullData);
         var legendOpts = mockLayoutOut.legend;
 
         // prepare items for the legend
         legendOpts.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
-            var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
+            var texts = getHoverLabelText(gd, hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
             var pt = hoverData[j];
@@ -1118,7 +1118,7 @@ function createHoverText(hoverData, opts, gd) {
         // find a contrasting color for border and text
         var contrastColor = d.borderColor || Color.contrast(numsColor);
 
-        var texts = getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g);
+        var texts = getHoverLabelText(gd, d, showCommonLabel, hovermode, fullLayout, t0, g);
         var text = texts[0];
         var name = texts[1];
 
@@ -1219,7 +1219,7 @@ function createHoverText(hoverData, opts, gd) {
     return hoverLabels;
 }
 
-function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
+function getHoverLabelText(gd, d, showCommonLabel, hovermode, fullLayout, t0, g) {
     var name = '';
     var text = '';
     // to get custom 'name' labels pass cleanPoint
@@ -1274,6 +1274,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     var eventData = d.eventData[0] || {};
     if(hovertemplate) {
         text = Lib.hovertemplateString(
+            gd,
             hovertemplate,
             hovertemplateLabels,
             d3locale,

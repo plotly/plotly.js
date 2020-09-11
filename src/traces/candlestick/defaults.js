@@ -14,12 +14,12 @@ var Color = require('../../components/color');
 var handleOHLC = require('../ohlc/ohlc_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleOHLC(traceIn, traceOut, coerce, layout);
+    var len = handleOHLC(gd, traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
         return;

@@ -11,7 +11,7 @@
 
 var Lib = require('../../lib');
 
-module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
+module.exports = function handleLabelDefaults(gd, coerce, layout, lineColor, opts) {
     if(!opts) opts = {};
     var showLabels = coerce('contours.showlabels');
     if(showLabels) {

@@ -23,19 +23,21 @@ var loggers = module.exports = {};
  */
 
 loggers.log = function() {
+    var gd = arguments[0] || {};
+    var context = gd._context || dfltConfig;
     var i;
 
-    if(dfltConfig.logging > 1) {
+    if(context.logging > 1) {
         var messages = ['LOG:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.trace || console.log, messages);
     }
 
-    if(dfltConfig.notifyOnLogging > 1) {
+    if(context.notifyOnLogging > 1) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'long');
@@ -43,19 +45,21 @@ loggers.log = function() {
 };
 
 loggers.warn = function() {
+    var gd = arguments[0] || {};
+    var context = gd._context || dfltConfig;
     var i;
 
-    if(dfltConfig.logging > 0) {
+    if(context.logging > 0) {
         var messages = ['WARN:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.trace || console.log, messages);
     }
 
-    if(dfltConfig.notifyOnLogging > 0) {
+    if(context.notifyOnLogging > 0) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'stick');
@@ -63,19 +67,21 @@ loggers.warn = function() {
 };
 
 loggers.error = function() {
+    var gd = arguments[0] || {};
+    var context = gd._context || dfltConfig;
     var i;
 
-    if(dfltConfig.logging > 0) {
+    if(context.logging > 0) {
         var messages = ['ERROR:'];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
         apply(console.error, messages);
     }
 
-    if(dfltConfig.notifyOnLogging > 0) {
+    if(context.notifyOnLogging > 0) {
         var lines = [];
-        for(i = 0; i < arguments.length; i++) {
+        for(i = 1; i < arguments.length; i++) {
             lines.push(arguments[i]);
         }
         notifier(lines.join('<br>'), 'stick');

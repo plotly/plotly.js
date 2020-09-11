@@ -33,14 +33,14 @@ describe('Test histogram', function() {
             traceIn = {
                 x: []
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 y: []
             };
             traceOut = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -49,7 +49,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -57,7 +57,7 @@ describe('Test histogram', function() {
                 y: []
             };
             traceOut = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -66,7 +66,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults2D(traceIn, traceOut, '', {});
+            supplyDefaults2D(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -74,7 +74,7 @@ describe('Test histogram', function() {
                 y: []
             };
             traceOut = {};
-            supplyDefaults2D(traceIn, traceOut, '', {});
+            supplyDefaults2D(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -82,7 +82,7 @@ describe('Test histogram', function() {
                 y: []
             };
             traceOut = {};
-            supplyDefaults2D(traceIn, traceOut, '', {});
+            supplyDefaults2D(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -90,7 +90,7 @@ describe('Test histogram', function() {
                 y: [1, 2, 2]
             };
             traceOut = {};
-            supplyDefaults2DC(traceIn, traceOut, '', {});
+            supplyDefaults2DC(void 0, traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -98,7 +98,7 @@ describe('Test histogram', function() {
             traceIn = {
                 x: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
 
             traceIn = {
@@ -106,7 +106,7 @@ describe('Test histogram', function() {
                 y: [1, 2, 2]
             };
             traceOut = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
         });
 
@@ -114,7 +114,7 @@ describe('Test histogram', function() {
             traceIn = {
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('h');
         });
 
@@ -130,14 +130,14 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
 
             traceIn = {
                 x: [1, 2, 2]
             };
             traceOut = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
         });
 
@@ -150,14 +150,14 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
 
             traceIn = {
                 y: [1, 2, 2]
             };
             traceOut = {};
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults(void 0, traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
         });
 
@@ -165,7 +165,7 @@ describe('Test histogram', function() {
             traceIn = {
                 x: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, '', {calendar: 'islamic'});
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.
@@ -181,7 +181,7 @@ describe('Test histogram', function() {
                 xcalendar: 'coptic',
                 ycalendar: 'nepali'
             };
-            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, '', {calendar: 'islamic'});
 
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('nepali');
@@ -229,7 +229,7 @@ describe('Test histogram', function() {
             });
 
             if(warnMsg) {
-                expect(Lib.warn).toHaveBeenCalledWith(warnMsg);
+                expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(), warnMsg);
             } else {
                 expect(Lib.warn).toHaveBeenCalledTimes(0);
             }

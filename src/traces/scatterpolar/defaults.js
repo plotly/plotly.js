@@ -20,12 +20,12 @@ var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 
 var attributes = require('./attributes');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleRThetaDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -38,18 +38,18 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        handleLineShapeDefaults(traceIn, traceOut, coerce);
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineShapeDefaults(gd, traceIn, traceOut, coerce);
         coerce('connectgaps');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce);
     }
 
     var dfltHoverOn = [];
@@ -63,8 +63,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('fill');
 
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        handleFillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce);
+        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(gd, traceIn, traceOut, coerce);
     }
 
     if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
@@ -75,7 +75,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
-function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
+function handleRThetaDefaults(gd, traceIn, traceOut, layout, coerce) {
     var r = coerce('r');
     var theta = coerce('theta');
     var len;

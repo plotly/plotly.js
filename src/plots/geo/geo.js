@@ -272,7 +272,7 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
 
         this.viewInitial = null;
 
-        Lib.warn(msg);
+        Lib.warn(gd, msg);
         gd._promises.push(Registry.call('relayout', gd, updateObj));
         return msg;
     }
@@ -287,7 +287,7 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
         if(isFinite(k2)) {
             projection.scale(k2 * s);
         } else {
-            Lib.warn('Something went wrong during' + this.id + 'fitbounds computations.');
+            Lib.warn(gd, 'Something went wrong during' + this.id + 'fitbounds computations.');
         }
     } else {
         // adjust projection to user setting

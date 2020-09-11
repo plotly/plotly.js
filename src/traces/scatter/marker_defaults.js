@@ -20,7 +20,7 @@ var subTypes = require('./subtypes');
  *   gradient: caller supports gradients
  *   noSelect: caller does not support selected/unselected attribute containers
  */
-module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+module.exports = function markerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var isBubble = subTypes.isBubble(traceIn);
     var lineColor = (traceIn.line || {}).color;
     var defaultMLC;
@@ -36,7 +36,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.color', defaultColor);
     if(hasColorscale(traceIn, 'marker')) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+        colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
     if(!opts.noSelect) {
@@ -58,7 +58,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
         coerce('marker.line.color', defaultMLC);
         if(hasColorscale(traceIn, 'marker.line')) {
-            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'});
+            colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'});
         }
 
         coerce('marker.line.width', isBubble ? 1 : 0);

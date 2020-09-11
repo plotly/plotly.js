@@ -16,7 +16,7 @@ var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var isIndex = Lib.isIndex;
 var Colorscale = require('../../components/colorscale');
 
-function convertToD3Sankey(trace) {
+function convertToD3Sankey(gd, trace) {
     var nodeSpec = trace.node;
     var linkSpec = trace.link;
 
@@ -54,7 +54,7 @@ function convertToD3Sankey(trace) {
             var nodeIndex = group[j];
             var groupIndex = nodeCount + i;
             if(groupLookup.hasOwnProperty(nodeIndex)) {
-                Lib.warn('Node ' + nodeIndex + ' is already part of a group.');
+                Lib.warn(gd, 'Node ' + nodeIndex + ' is already part of a group.');
             } else {
                 groupLookup[nodeIndex] = groupIndex;
             }
@@ -173,7 +173,7 @@ function circularityPresent(nodeLen, sources, targets) {
 }
 
 module.exports = function calc(gd, trace) {
-    var result = convertToD3Sankey(trace);
+    var result = convertToD3Sankey(gd, trace);
 
     return wrap({
         circular: result.circular,

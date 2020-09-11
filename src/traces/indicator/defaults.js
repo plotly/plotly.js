@@ -19,12 +19,12 @@ var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     // Mode
     coerce('mode');
@@ -116,7 +116,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGauge('bar.thickness', defaultBarThickness);
 
         // Gauge steps
-        handleArrayContainerDefaults(gaugeIn, gaugeOut, {
+        handleArrayContainerDefaults(gd, gaugeIn, gaugeOut, {
             name: 'steps',
             handleItemDefaults: stepDefaults
         });
@@ -135,9 +135,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         traceOut._range = coerceGaugeAxis('range', traceOut._range);
 
         var opts = {outerTicks: true};
-        handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
-        handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
-        handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, opts);
+        handleTickValueDefaults(gd, axisIn, axisOut, coerceGaugeAxis, 'linear');
+        handleTickLabelDefaults(gd, axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
+        handleTickMarkDefaults(gd, axisIn, axisOut, coerceGaugeAxis, opts);
     } else {
         coerce('title.align', 'center');
         coerce('align', 'center');
@@ -148,7 +148,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     traceOut._length = null;
 }
 
-function stepDefaults(stepIn, stepOut) {
+function stepDefaults(gd, stepIn, stepOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(stepIn, stepOut, attributes.gauge.steps, attr, dflt);
     }

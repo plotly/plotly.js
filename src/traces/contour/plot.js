@@ -38,7 +38,7 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         var x = cd0.x;
         var y = cd0.y;
         var contours = trace.contours;
-        var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
+        var pathinfo = emptyPathinfo(gd, contours, plotinfo, cd0);
 
         // use a heatmap to fill - draw it behind the lines
         var heatmapColoringLayer = Lib.ensureSingle(plotGroup, 'g', 'heatmapcoloring');
@@ -49,7 +49,7 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
 
         makeCrossings(pathinfo);
-        findAllPaths(pathinfo);
+        findAllPaths(gd, pathinfo);
 
         var leftedge = xa.c2p(x[0], true);
         var rightedge = xa.c2p(x[x.length - 1], true);
@@ -65,12 +65,12 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
             // N.B. this also mutates pathinfo
-            fillPathinfo = convertToConstraints(pathinfo, contours._operation);
+            fillPathinfo = convertToConstraints(gd, pathinfo, contours._operation);
         }
 
         // draw everything
         makeBackground(plotGroup, perimeter, contours);
-        makeFills(plotGroup, fillPathinfo, perimeter, contours);
+        makeFills(gd, plotGroup, fillPathinfo, perimeter, contours);
         makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours);
         clipGaps(plotGroup, plotinfo, gd, cd0, perimeter);
     });
@@ -88,7 +88,7 @@ function makeBackground(plotgroup, perimeter, contours) {
         .style('stroke', 'none');
 }
 
-function makeFills(plotgroup, pathinfo, perimeter, contours) {
+function makeFills(gd, plotgroup, pathinfo, perimeter, contours) {
     var hasFills = contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=');
     var boundaryPath = 'M' + perimeter.join('L') + 'Z';
 
@@ -109,7 +109,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
         var fullpath = (pi.prefixBoundary ? boundaryPath : '') +
-            joinAllPaths(pi, perimeter);
+            joinAllPaths(gd, pi, perimeter);
 
         if(!fullpath) {
             d3.select(this).remove();
@@ -121,7 +121,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
     });
 }
 
-function joinAllPaths(pi, perimeter) {
+function joinAllPaths(gd, pi, perimeter) {
     var fullpath = '';
     var i = 0;
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
@@ -148,7 +148,7 @@ function joinAllPaths(pi, perimeter) {
         // now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
-                Lib.log('Missing end?', i, pi);
+                Lib.log(gd, 'Missing end?', i, pi);
                 break;
             }
 
@@ -173,7 +173,7 @@ function joinAllPaths(pi, perimeter) {
                         nexti = possiblei;
                     }
                 } else {
-                    Lib.log('endpt to newendpt is not vert. or horz.',
+                    Lib.log(gd, 'endpt to newendpt is not vert. or horz.',
                         endpt, newendpt, ptNew);
                 }
             }
@@ -185,7 +185,7 @@ function joinAllPaths(pi, perimeter) {
         }
 
         if(nexti === pi.edgepaths.length) {
-            Lib.log('unclosed perimeter path');
+            Lib.log(gd, 'unclosed perimeter path');
             break;
         }
 
@@ -655,13 +655,13 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
         };
 
         makeCrossings([clipPathInfo]);
-        findAllPaths([clipPathInfo]);
+        findAllPaths(gd, [clipPathInfo]);
         closeBoundaries([clipPathInfo], {type: 'levels'});
 
         var path = Lib.ensureSingle(clipPath, 'path', '');
         path.attr('d',
             (clipPathInfo.prefixBoundary ? 'M' + perimeter.join('L') + 'Z' : '') +
-            joinAllPaths(clipPathInfo, perimeter)
+            joinAllPaths(gd, clipPathInfo, perimeter)
         );
     } else clipId = null;
 

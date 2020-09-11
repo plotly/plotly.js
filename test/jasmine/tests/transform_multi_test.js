@@ -43,7 +43,7 @@ describe('general transforms:', function() {
             transforms: [{}]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{}]);
     });
@@ -54,7 +54,7 @@ describe('general transforms:', function() {
             transforms: [{}]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toBeUndefined();
     });
@@ -65,7 +65,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'filter' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -84,7 +84,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'invalid' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.y).toBe(traceIn.y);
     });
@@ -110,7 +110,7 @@ describe('general transforms:', function() {
             _basePlotModules: []
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(void 0, traceIn, {type: 'scatter'}, 0, layout);
 
         expect(traceOut.transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',
@@ -149,7 +149,7 @@ describe('general transforms:', function() {
         }];
 
         var dataOut = [];
-        Plots.supplyDataDefaults(dataIn, dataOut, {}, mockFullLayout);
+        Plots.supplyDataDefaults(void 0, dataIn, dataOut, {}, mockFullLayout);
 
         var msg;
 
@@ -226,7 +226,7 @@ describe('user-defined transforms:', function() {
         var fullLayout = Lib.extendDeep({}, mockFullLayout);
         var transitionData = {};
 
-        function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
+        function assertSupplyDefaultsArgs(gd, _transformIn, traceOut, _layout) {
             if(!calledSupplyDefaults) {
                 expect(_transformIn).toBe(transformIn);
             } else {
@@ -255,7 +255,7 @@ describe('user-defined transforms:', function() {
             return dataOut;
         }
 
-        function assertSupplyLayoutDefaultsArgs(_layout, _fullLayout, _fullData, _transitionData) {
+        function assertSupplyLayoutDefaultsArgs(gd, _layout, _fullLayout, _fullData, _transitionData) {
             expect(_layout).toBe(layout);
             expect(_fullLayout).toBe(fullLayout);
             expect(_fullData).toBe(fullData);
@@ -274,8 +274,8 @@ describe('user-defined transforms:', function() {
         };
 
         Plotly.register(fakeTransformModule);
-        Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
-        Plots.supplyLayoutModuleDefaults(layout, fullLayout, fullData, transitionData);
+        Plots.supplyDataDefaults(void 0, dataIn, fullData, layout, fullLayout);
+        Plots.supplyLayoutModuleDefaults(void 0, layout, fullLayout, fullData, transitionData);
         delete Plots.transformsRegistry.fake;
         expect(calledSupplyDefaults).toBe(2);
         expect(calledTransform).toBe(1);
@@ -294,7 +294,7 @@ describe('user-defined transforms:', function() {
             name: 'linemaker',
             makesData: true,
             attributes: {},
-            supplyDefaults: function(transformIn) {
+            supplyDefaults: function(gd, transformIn) {
                 return Lib.extendFlat({}, transformIn);
             },
             transform: function(data, state) {
@@ -323,7 +323,7 @@ describe('user-defined transforms:', function() {
         };
 
         Plotly.register(lineMakerModule);
-        Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
+        Plots.supplyDataDefaults(void 0, dataIn, fullData, layout, fullLayout);
 
         expect(fullData.length).toBe(1);
         var traceOut = fullData[0];

@@ -19,12 +19,12 @@ var handleTextDefaults = require('../scatter/text_defaults');
 
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
+    var len = handleXYZDefaults(gd, traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -37,16 +37,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
     }
 
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 
     var lineColor = (traceOut.line || {}).color;
@@ -63,19 +63,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'z'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y', inherit: 'z'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'z'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'z'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y', inherit: 'z'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'z'});
 };
 
-function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
+function handleXYZDefaults(gd, traceIn, traceOut, coerce, layout) {
     var len = 0;
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
         // TODO: what happens if one is missing?

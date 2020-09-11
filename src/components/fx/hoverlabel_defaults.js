@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var Color = require('../color');
 var isUnifiedHover = require('./helpers').isUnifiedHover;
 
-module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
+module.exports = function handleHoverLabelDefaults(gd, contIn, contOut, coerce, opts) {
     opts = opts || {};
 
     function inheritFontAttr(attr) {

@@ -71,7 +71,7 @@ describe('Test barpolar hover:', function() {
                     subplot: subplot,
                     maxHoverDistance: 20
                 };
-                var pts = trace._module.hoverPoints(pointData, specs.xval, specs.yval, 'closest');
+                var pts = trace._module.hoverPoints(gd, pointData, specs.xval, specs.yval, 'closest');
                 return pts ? pts[0] : {distance: Infinity};
             });
 

@@ -10,7 +10,7 @@
 
 var Registry = require('../../registry');
 
-function calculateAxisErrors(data, params, scaleFactor, axis) {
+function calculateAxisErrors(gd, data, params, scaleFactor, axis) {
     if(!params || !params.visible) return null;
 
     var computeError = Registry.getComponentMethod('errorbars', 'makeComputeError')(params);
@@ -53,11 +53,11 @@ function dataLength(array) {
     return 0;
 }
 
-function calculateErrors(data, scaleFactor, sceneLayout) {
+function calculateErrors(gd, data, scaleFactor, sceneLayout) {
     var errors = [
-        calculateAxisErrors(data.x, data.error_x, scaleFactor[0], sceneLayout.xaxis),
-        calculateAxisErrors(data.y, data.error_y, scaleFactor[1], sceneLayout.yaxis),
-        calculateAxisErrors(data.z, data.error_z, scaleFactor[2], sceneLayout.zaxis)
+        calculateAxisErrors(gd, data.x, data.error_x, scaleFactor[0], sceneLayout.xaxis),
+        calculateAxisErrors(gd, data.y, data.error_y, scaleFactor[1], sceneLayout.yaxis),
+        calculateAxisErrors(gd, data.z, data.error_z, scaleFactor[2], sceneLayout.zaxis)
     ];
 
     var n = dataLength(errors);

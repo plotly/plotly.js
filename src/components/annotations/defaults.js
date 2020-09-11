@@ -17,14 +17,14 @@ var handleAnnotationCommonDefaults = require('./common_defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
-    handleArrayContainerDefaults(layoutIn, layoutOut, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut) {
+    handleArrayContainerDefaults(gd, layoutIn, layoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults
     });
 };
 
-function handleAnnotationDefaults(annIn, annOut, fullLayout) {
+function handleAnnotationDefaults(gd, annIn, annOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
@@ -34,7 +34,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
 
     if(!(visible || clickToShow)) return;
 
-    handleAnnotationCommonDefaults(annIn, annOut, fullLayout, coerce);
+    handleAnnotationCommonDefaults(gd, annIn, annOut, fullLayout, coerce);
 
     var showArrow = annOut.showarrow;
 

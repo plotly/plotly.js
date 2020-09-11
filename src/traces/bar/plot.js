@@ -294,7 +294,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
-    var text = getText(fullLayout, cd, i, xa, ya);
+    var text = getText(gd, fullLayout, cd, i, xa, ya);
     textPosition = getTextPosition(trace, i);
 
     // compute text position
@@ -612,13 +612,13 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     };
 }
 
-function getText(fullLayout, cd, index, xa, ya) {
+function getText(gd, fullLayout, cd, index, xa, ya) {
     var trace = cd[0].trace;
     var texttemplate = trace.texttemplate;
 
     var value;
     if(texttemplate) {
-        value = calcTexttemplate(fullLayout, cd, index, xa, ya);
+        value = calcTexttemplate(gd, fullLayout, cd, index, xa, ya);
     } else if(trace.textinfo) {
         value = calcTextinfo(cd, index, xa, ya);
     } else {
@@ -633,7 +633,7 @@ function getTextPosition(trace, index) {
     return helpers.coerceEnumerated(attributeTextPosition, value);
 }
 
-function calcTexttemplate(fullLayout, cd, index, xa, ya) {
+function calcTexttemplate(gd, fullLayout, cd, index, xa, ya) {
     var trace = cd[0].trace;
     var texttemplate = Lib.castOption(trace, index, 'texttemplate');
     if(!texttemplate) return '';
@@ -700,7 +700,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
 
     var customdata = Lib.castOption(trace, cdi.i, 'customdata');
     if(customdata) obj.customdata = customdata;
-    return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
+    return Lib.texttemplateString(gd, texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
 }
 
 function calcTextinfo(cd, index, xa, ya) {

@@ -11,7 +11,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 
-module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
+module.exports = function handleOHLC(gd, traceIn, traceOut, coerce, layout) {
     var x = coerce('x');
     var open = coerce('open');
     var high = coerce('high');
@@ -21,7 +21,7 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     coerce('hoverlabel.split');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x'], layout);
 
     if(!(open && high && low && close)) return;
 

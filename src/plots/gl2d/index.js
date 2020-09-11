@@ -31,9 +31,9 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('../cartesian/attributes');
 
-exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+exports.supplyLayoutDefaults = function(gd, layoutIn, layoutOut, fullData) {
     if(!layoutOut._has('cartesian')) {
-        Cartesian.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        Cartesian.supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData);
     }
 };
 

@@ -21,7 +21,7 @@ var handleLineDefaults = require('../scatter/line_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -29,7 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var isOpen = traceIn.marker ? helpers.isOpenSymbol(traceIn.marker.symbol) : false;
     var isBubble = subTypes.isBubble(traceIn);
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleXYDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -43,18 +43,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
         coerce('line.shape');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce);
     }
 
     var lineColor = (traceOut.line || {}).color;
@@ -62,12 +62,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce);
     }
 
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
+    errorBarsSupplyDefaults(gd, traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

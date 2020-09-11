@@ -265,7 +265,7 @@ describe('Test colorscale:', function() {
                 zmin: -10,
                 zmax: 10
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.zauto).toBe(false);
         });
 
@@ -274,42 +274,42 @@ describe('Test colorscale:', function() {
                 zmin: 'dsa',
                 zmax: null
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.zauto).toBe(true);
 
             traceIn = {
                 zmin: 10,
                 zmax: -10
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.zauto).toBe(true);
         });
 
         it('should coerce autocolorscale to false unless set to true', function() {
             traceIn = {};
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.autocolorscale).toBe(false);
 
             traceIn = {
                 colorscale: 'Greens'
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.autocolorscale).toBe(false);
 
             traceIn = {
                 autocolorscale: true
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.autocolorscale).toBe(true);
         });
 
         it('should coerce showscale to true unless set to false', function() {
             traceIn = {};
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.showscale).toBe(true);
 
             traceIn = { showscale: false };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.showscale).toBe(false);
         });
     });
@@ -336,7 +336,7 @@ describe('Test colorscale:', function() {
 
         it('should coerce autocolorscale to true by default', function() {
             traceIn = { marker: { line: {} } };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.autocolorscale).toBe(true);
         });
 
@@ -344,19 +344,19 @@ describe('Test colorscale:', function() {
             traceIn = {
                 marker: { colorscale: 'Greens' }
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.autocolorscale).toBe(false);
 
             traceIn = {
                 marker: { colorscale: 'nope' }
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.autocolorscale).toBe(true);
         });
 
         it('should coerce showscale to true if colorbar is specified', function() {
             traceIn = { marker: {} };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(false);
 
             traceIn = {
@@ -364,7 +364,7 @@ describe('Test colorscale:', function() {
                     colorbar: {}
                 }
             };
-            handleDefaults(traceIn, traceOut, layout, coerce, opts);
+            handleDefaults(void 0, traceIn, traceOut, layout, coerce, opts);
             expect(traceOut.marker.showscale).toBe(true);
         });
     });

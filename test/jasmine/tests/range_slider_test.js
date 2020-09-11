@@ -620,7 +620,7 @@ describe('Rangeslider handleDefaults function', function() {
         setConvert(layoutOut[axName]);
         layoutOut[axName]._id = name2id(axName);
         if(!layoutOut._requestRangeslider) layoutOut._requestRangeslider = {};
-        RangeSlider.handleDefaults(layoutIn, layoutOut, axName);
+        RangeSlider.handleDefaults(void 0, layoutIn, layoutOut, axName);
         // we don't care about this after it's done its job
         delete layoutOut._requestRangeslider;
     }

@@ -15,7 +15,7 @@ var getTraceColor = require('../scatter/get_trace_color');
 var fillText = require('../../lib').fillText;
 var attributes = require('./attributes');
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+module.exports = function hoverPoints(gd, pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;

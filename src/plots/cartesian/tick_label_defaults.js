@@ -13,13 +13,13 @@ var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 var handleArrayContainerDefaults = require('../array_container_defaults');
 
-module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, config) {
+module.exports = function handleTickLabelDefaults(gd, containerIn, containerOut, coerce, axType, options, config) {
     if(!config || config.pass === 1) {
         handlePrefixSuffix(containerIn, containerOut, coerce, axType, options);
     }
 
     if(!config || config.pass === 2) {
-        handleOtherDefaults(containerIn, containerOut, coerce, axType, options);
+        handleOtherDefaults(gd, containerIn, containerOut, coerce, axType, options);
     }
 };
 
@@ -33,7 +33,7 @@ function handlePrefixSuffix(containerIn, containerOut, coerce, axType, options) 
     if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 }
 
-function handleOtherDefaults(containerIn, containerOut, coerce, axType, options) {
+function handleOtherDefaults(gd, containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
 
     var tickPrefix = coerce('tickprefix');
@@ -60,7 +60,7 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
 
-            handleArrayContainerDefaults(containerIn, containerOut, {
+            handleArrayContainerDefaults(gd, containerIn, containerOut, {
                 name: 'tickformatstops',
                 inclusionAttr: 'enabled',
                 handleItemDefaults: tickformatstopDefaults
@@ -106,7 +106,7 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-function tickformatstopDefaults(valueIn, valueOut) {
+function tickformatstopDefaults(gd, valueIn, valueOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, layoutAttributes.tickformatstops, attr, dflt);
     }

@@ -13,7 +13,9 @@ var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 describe('sliders defaults', function() {
     'use strict';
 
-    var supply = Sliders.supplyLayoutDefaults;
+    function supply(layoutIn, layoutOut) {
+        return Sliders.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
+    }
 
     var layoutIn, layoutOut;
 

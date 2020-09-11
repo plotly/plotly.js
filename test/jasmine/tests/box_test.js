@@ -26,14 +26,14 @@ describe('Test boxes supplyDefaults', function() {
 
     it('should set visible to false when x and y are empty', function() {
         traceIn = {};
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor);
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -41,27 +41,27 @@ describe('Test boxes supplyDefaults', function() {
         traceIn = {
             x: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [1, 2, 3],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -69,14 +69,14 @@ describe('Test boxes supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('v');
 
         traceIn = {
             x: [1, 1, 1],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('v');
     });
 
@@ -84,7 +84,7 @@ describe('Test boxes supplyDefaults', function() {
         traceIn = {
             x: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.orientation).toBe('h');
     });
 
@@ -92,7 +92,7 @@ describe('Test boxes supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -106,7 +106,7 @@ describe('Test boxes supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -119,7 +119,7 @@ describe('Test boxes supplyDefaults', function() {
             y: [1, 1, 2],
             boxpoints: false
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
 
         expect(traceOut.boxpoints).toBe(false);
         expect(traceOut.jitter).toBeUndefined();
@@ -135,7 +135,7 @@ describe('Test boxes supplyDefaults', function() {
                 outliercolor: 'blue'
             }
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.boxpoints).toBe('suspectedoutliers');
     });
 
@@ -146,7 +146,7 @@ describe('Test boxes supplyDefaults', function() {
                 line: {outliercolor: 'blue'}
             }
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
         expect(traceOut.boxpoints).toBe('suspectedoutliers');
         expect(traceOut.marker).toBeDefined();
         expect(traceOut.text).toBeDefined();
@@ -161,7 +161,7 @@ describe('Test boxes supplyDefaults', function() {
                 hoveron: 'points',
                 hovertemplate: ht
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
             expect(traceOut.hovertemplate).toBe(ht);
         });
 
@@ -171,7 +171,7 @@ describe('Test boxes supplyDefaults', function() {
                 hoveron: 'points+boxes',
                 hovertemplate: ht
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
             expect(traceOut.hovertemplate).toBe(ht);
         });
 
@@ -181,7 +181,7 @@ describe('Test boxes supplyDefaults', function() {
                 hoveron: 'boxes',
                 hovertemplate: ht
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {});
             expect(traceOut.hovertemplate).toBe(undefined);
         });
     });

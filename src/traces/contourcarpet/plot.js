@@ -41,7 +41,7 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         var a = cd0.a;
         var b = cd0.b;
         var contours = trace.contours;
-        var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
+        var pathinfo = emptyPathinfo(gd, contours, plotinfo, cd0);
         var isConstraint = contours.type === 'constraint';
         var operation = contours._operation;
         var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
@@ -64,7 +64,7 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         makeCrossings(pathinfo);
         var atol = (a[a.length - 1] - a[0]) * 1e-8;
         var btol = (b[b.length - 1] - b[0]) * 1e-8;
-        findAllPaths(pathinfo, atol, btol);
+        findAllPaths(gd, pathinfo, atol, btol);
 
         // Constraints might need to be draw inverted, which is not something contours
         // handle by default since they're assumed fully opaque so that they can be
@@ -76,7 +76,7 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         // See: https://github.com/plotly/plotly.js/issues/1356
         var fillPathinfo = pathinfo;
         if(contours.type === 'constraint') {
-            fillPathinfo = convertToConstraints(pathinfo, operation);
+            fillPathinfo = convertToConstraints(gd, pathinfo, operation);
         }
 
         // Map the paths in a/b coordinates to pixel coordinates:
@@ -105,7 +105,7 @@ module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
         // Draw the specific contour fills. As a simplification, they're assumed to be
         // fully opaque so that it's easy to draw them simply overlapping. The alternative
         // would be to flip adjacent paths and draw closed paths for each level instead.
-        makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
+        makeFills(gd, trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
 
         // Draw contour lines:
         makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, plotinfo, carpet);
@@ -326,7 +326,7 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
         .style('stroke', 'none');
 }
 
-function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath) {
+function makeFills(gd, trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath) {
     var hasFills = coloring === 'fill';
 
     // fills prefixBoundary in pathinfo items
@@ -345,7 +345,7 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
         var fullpath = (pi.prefixBoundary ? boundaryPath : '') +
-            joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
+            joinAllPaths(gd, trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
 
         if(!fullpath) {
             d3.select(this).remove();
@@ -357,7 +357,7 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
     });
 }
 
-function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
+function joinAllPaths(gd, trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
     var i;
     var fullpath = '';
 
@@ -414,7 +414,7 @@ function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
         // now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
-                Lib.log('Missing end?', i, pi);
+                Lib.log(gd, 'Missing end?', i, pi);
                 break;
             }
 
@@ -444,7 +444,7 @@ function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
                         nexti = possiblei;
                     }
                 } else {
-                    Lib.log('endpt to newendpt is not vert. or horz.', endpt, newendpt, ptNew);
+                    Lib.log(gd, 'endpt to newendpt is not vert. or horz.', endpt, newendpt, ptNew);
                 }
             }
 
@@ -454,7 +454,7 @@ function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
         }
 
         if(nexti === pi.edgepaths.length) {
-            Lib.log('unclosed perimeter path');
+            Lib.log(gd, 'unclosed perimeter path');
             break;
         }
 

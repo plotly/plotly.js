@@ -16,12 +16,12 @@ var handleXYDefaults = require('../scatter/xy_defaults');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleXYDefaults(gd, traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -72,7 +72,7 @@ function defaultFillColor(markerColor) {
     return Color.addOpacity(cBase, 0.5 * Color.opacity(cBase));
 }
 
-function crossTraceDefaults(fullData, fullLayout) {
+function crossTraceDefaults(gd, fullData, fullLayout) {
     var traceIn, traceOut;
 
     function coerce(attr) {
@@ -84,7 +84,7 @@ function crossTraceDefaults(fullData, fullLayout) {
             traceOut = fullData[i];
             traceIn = traceOut._input;
 
-            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            handleGroupingDefaults(gd, traceIn, traceOut, fullLayout, coerce);
         }
     }
 }

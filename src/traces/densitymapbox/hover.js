@@ -12,8 +12,8 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var scatterMapboxHoverPoints = require('../scattermapbox/hover');
 
-module.exports = function hoverPoints(pointData, xval, yval) {
-    var pts = scatterMapboxHoverPoints(pointData, xval, yval);
+module.exports = function hoverPoints(gd, pointData, xval, yval) {
+    var pts = scatterMapboxHoverPoints(gd, pointData, xval, yval);
     if(!pts) return;
 
     var newPointData = pts[0];

@@ -108,7 +108,7 @@ exports.attributes = function(opts, extra) {
     return out;
 };
 
-exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
+exports.defaults = function(gd, containerOut, layout, coerce, dfltDomains) {
     var dfltX = (dfltDomains && dfltDomains.x) || [0, 1];
     var dfltY = (dfltDomains && dfltDomains.y) || [0, 1];
 

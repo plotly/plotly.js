@@ -85,7 +85,7 @@ function plot(gd, data, layout, config) {
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        Lib.warn('Calling Plotly.plot as if redrawing ' +
+        Lib.warn(gd, 'Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
@@ -143,7 +143,7 @@ function plot(gd, data, layout, config) {
 
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
-        Lib.log('Legacy polar charts are deprecated!');
+        Lib.log(gd, 'Legacy polar charts are deprecated!');
         return plotLegacyPolar(gd, data, layout);
     }
 
@@ -257,9 +257,9 @@ function plot(gd, data, layout, config) {
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {
-                        Lib.error(msg);
+                        Lib.error(gd, msg);
                     } else {
-                        Lib.log(msg + ' Clearing graph and plotting again.');
+                        Lib.log(gd, msg + ' Clearing graph and plotting again.');
                         Plots.cleanPlot([], {}, gd._fullData, fullLayout);
                         Plots.supplyDefaults(gd);
                         fullLayout = gd._fullLayout;
@@ -413,7 +413,7 @@ function setBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
     } catch(e) {
-        Lib.error(e);
+        Lib.error(gd, e);
     }
 }
 
@@ -1348,7 +1348,7 @@ function restyle(gd, astr, val, _traces) {
         aobj = Lib.extendFlat({}, astr);
         if(_traces === undefined) _traces = val;
     } else {
-        Lib.warn('Restyle fail.', astr, val, _traces);
+        Lib.warn(gd, 'Restyle fail.', astr, val, _traces);
         return Promise.reject();
     }
 
@@ -1863,7 +1863,7 @@ function relayout(gd, astr, val) {
     } else if(Lib.isPlainObject(astr)) {
         aobj = Lib.extendFlat({}, astr);
     } else {
-        Lib.warn('Relayout fail.', astr, val);
+        Lib.warn(gd, 'Relayout fail.', astr, val);
         return Promise.reject();
     }
 
@@ -2236,7 +2236,7 @@ function _relayout(gd, aobj) {
                 } else if(manageArrays.isRemoveVal(vi)) {
                     undoit[ai] = (nestedProperty(layout, arrayStr).get() || [])[i];
                 } else {
-                    Lib.warn('unrecognized full object value', aobj);
+                    Lib.warn(gd, 'unrecognized full object value', aobj);
                 }
             }
             editTypes.update(flags, updateValObject);
@@ -2541,7 +2541,9 @@ function valsMatch(v1, v2) {
     return v1 === v2;
 }
 
-function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
+function applyUIRevisions(gd, oldFullData, oldFullLayout) {
+    var data = gd.data;
+    var layout = gd.layout;
     var layoutPreGUI = oldFullLayout._preGUI;
     var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
     var bothInheritAutorange = [];
@@ -2566,7 +2568,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 }
             }
         } else {
-            Lib.warn('unrecognized GUI edit: ' + key);
+            Lib.warn(gd, 'unrecognized GUI edit: ' + key);
         }
         // if we got this far, the new value was accepted as the new starting
         // point (either because it changed or revision changed)
@@ -2643,7 +2645,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     }
                 }
             } else {
-                Lib.warn('unrecognized GUI edit: ' + key + ' in trace uid ' + uid);
+                Lib.warn(gd, 'unrecognized GUI edit: ' + key + ' in trace uid ' + uid);
             }
             delete tracePreGUI[key];
         }
@@ -2711,7 +2713,7 @@ function react(gd, data, layout, config) {
         gd.layout = layout || {};
         helpers.cleanLayout(gd.layout);
 
-        applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
+        applyUIRevisions(gd, oldFullData, oldFullLayout);
 
         var allNames = Object.getOwnPropertyNames(oldFullLayout);
         for(var q = 0; q < allNames.length; q++) {
@@ -3168,7 +3170,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         trans._frameQueue = [];
     }
 
-    animationOpts = Plots.supplyAnimationDefaults(animationOpts);
+    animationOpts = Plots.supplyAnimationDefaults(gd, animationOpts);
     var transitionOpts = animationOpts.transition;
     var frameOpts = animationOpts.frame;
 
@@ -3443,7 +3445,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         for(i = 0; i < frameList.length; i++) {
             frame = frameList[i];
             if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
-                Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
+                Lib.warn(gd, 'animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
             }
@@ -3558,14 +3560,14 @@ function addFrames(gd, frameList, indices) {
         if(name && newName && typeof newName === 'number' && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
             numericNameWarningCount++;
 
-            Lib.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
+            Lib.warn(gd, 'addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
                 '" with a frame whose name of type "number" also equates to "' +
                 name + '". This is valid but may potentially lead to unexpected ' +
                 'behavior since all plotly.js frame names are stored internally ' +
                 'as strings.');
 
             if(numericNameWarningCount === numericNameWarningCountLimit) {
-                Lib.warn('addFrames: This API call has yielded too many of these warnings. ' +
+                Lib.warn(gd, 'addFrames: This API call has yielded too many of these warnings. ' +
                     'For the rest of this call, further warnings about numeric frame ' +
                     'names will be suppressed.');
             }
@@ -3574,7 +3576,7 @@ function addFrames(gd, frameList, indices) {
         _frameHashLocal[lookupName] = {name: lookupName};
 
         insertions.push({
-            frame: Plots.supplyFrameDefaults(frameList[i]),
+            frame: Plots.supplyFrameDefaults(gd, frameList[i]),
             index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
         });
     }
@@ -3594,7 +3596,7 @@ function addFrames(gd, frameList, indices) {
         frame = insertions[i].frame;
 
         if(typeof frame.name === 'number') {
-            Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
+            Lib.warn(gd, 'Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
         }
 

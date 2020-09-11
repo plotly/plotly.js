@@ -38,7 +38,7 @@ describe('Test choropleth', function() {
                 z: [1, 2, 3]
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.z).toEqual([1, 2, 3]);
             expect(traceOut.locations).toEqual(['CAN', 'USA']);
             expect(traceOut._length).toBe(2);
@@ -48,7 +48,7 @@ describe('Test choropleth', function() {
                 z: [1, 2]
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.z).toEqual([1, 2]);
             expect(traceOut.locations).toEqual(['CAN', 'USA', 'ALB']);
             expect(traceOut._length).toBe(2);
@@ -59,7 +59,7 @@ describe('Test choropleth', function() {
                 z: [1, 2, 3]
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -69,7 +69,7 @@ describe('Test choropleth', function() {
                 z: 'no gonna work'
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -85,7 +85,7 @@ describe('Test choropleth', function() {
                 }
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.marker.line.width).toBe(0, 'mlw');
             expect(traceOut.marker.line.color).toBe(undefined, 'mlc');
         });
@@ -97,7 +97,7 @@ describe('Test choropleth', function() {
                 geojson: 'url'
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.locationmode).toBe('geojson-id', 'valid url string');
 
             traceIn = {
@@ -106,7 +106,7 @@ describe('Test choropleth', function() {
                 geojson: {}
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.locationmode).toBe('geojson-id', 'valid object');
 
             traceIn = {
@@ -115,7 +115,7 @@ describe('Test choropleth', function() {
                 geojson: ''
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.locationmode).toBe('ISO-3', 'invalid sting');
 
             traceIn = {
@@ -124,7 +124,7 @@ describe('Test choropleth', function() {
                 geojson: []
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.locationmode).toBe('ISO-3', 'invalid object');
         });
 
@@ -136,7 +136,7 @@ describe('Test choropleth', function() {
                 featureidkey: 'properties.name'
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.featureidkey).toBe('properties.name', 'coerced');
 
             traceIn = {
@@ -145,7 +145,7 @@ describe('Test choropleth', function() {
                 featureidkey: 'properties.name'
             };
             traceOut = {};
-            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Choropleth.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.featureidkey).toBe(undefined, 'NOT coerced');
         });
     });

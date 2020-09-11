@@ -13,15 +13,15 @@ var Registry = require('../../registry');
 var attributes = require('./attributes');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    supplyIsoDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
 }
 
-function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+function supplyIsoDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce) {
     var isomin = coerce('isomin');
     var isomax = coerce('isomax');
 
@@ -49,7 +49,7 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
+    handleCalendarDefaults(gd, traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     ['x', 'y', 'z'].forEach(function(dim) {
         var capDim = 'caps.' + dim;
@@ -103,7 +103,7 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
         'opacity'
     ].forEach(function(x) { coerce(x); });
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+    colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 
     // disable 1D transforms (for now)
     traceOut._length = null;

@@ -16,7 +16,7 @@ describe('Test scatterpolar trace defaults:', function() {
 
     function _supply(traceIn, layout) {
         traceOut = {};
-        ScatterPolar.supplyDefaults(traceIn, traceOut, '#444', layout || {});
+        ScatterPolar.supplyDefaults(void 0, traceIn, traceOut, '#444', layout || {});
     }
 
     it('should not truncate *r* when longer than *theta*', function() {

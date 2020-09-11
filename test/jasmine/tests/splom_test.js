@@ -650,7 +650,7 @@ describe('Test splom trace calc step:', function() {
         expect(scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
         expect(trace._visibleDims).toEqual([1]);
         expect(Lib.log).toHaveBeenCalledTimes(1);
-        expect(Lib.log).toHaveBeenCalledWith('Skipping splom dimension 0 with conflicting axis types');
+        expect(Lib.log).toHaveBeenCalledWith(jasmine.anything(), 'Skipping splom dimension 0 with conflicting axis types');
     });
 });
 

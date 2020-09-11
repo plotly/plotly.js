@@ -10,7 +10,7 @@
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
 
-module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce) {
+module.exports = function handleStackDefaults(gd, traceIn, traceOut, layout, coerce) {
     var stackOpts = layout._scatterStackOpts;
 
     var stackGroup = coerce('stackgroup');

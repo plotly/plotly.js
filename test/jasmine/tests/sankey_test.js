@@ -35,7 +35,7 @@ describe('sankey tests', function() {
         var defaultColor = '#444';
         var layout = { colorway: defaultColors };
 
-        Sankey.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Sankey.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
 
         return traceOut;
     }
@@ -44,7 +44,7 @@ describe('sankey tests', function() {
         var traceOut = { visible: true };
         var defaultColor = '#444';
 
-        Sankey.supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({colorway: defaultColors}, layout));
+        Sankey.supplyDefaults(void 0, traceIn, traceOut, defaultColor, Lib.extendFlat({colorway: defaultColors}, layout));
 
         return traceOut;
     }
@@ -75,7 +75,7 @@ describe('sankey tests', function() {
         // the rest of our data processing.
         it('some nodes are not linked', function() {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
+            spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
                 warnings.push(msg);
             });
 
@@ -325,7 +325,7 @@ describe('sankey tests', function() {
 
         it('emits a warning if a node is part of more than one group', function() {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
+            spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
                 warnings.push(msg);
             });
 
@@ -1473,7 +1473,7 @@ describe('sankey tests', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         var warnings = [];
-        spyOn(Lib, 'warn').and.callFake(function(msg) {
+        spyOn(Lib, 'warn').and.callFake(function(gd, msg) {
             warnings.push(msg);
         });
         Plotly.plot(gd, mockCopy).then(function() {

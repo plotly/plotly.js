@@ -15,7 +15,7 @@ describe('Plots.supplyAnimationDefaults', function() {
     'use strict';
 
     it('supplies transition defaults', function() {
-        expect(Plots.supplyAnimationDefaults({})).toEqual({
+        expect(Plots.supplyAnimationDefaults(void 0, {})).toEqual({
             fromcurrent: false,
             mode: 'afterall',
             direction: 'forward',
@@ -31,7 +31,7 @@ describe('Plots.supplyAnimationDefaults', function() {
     });
 
     it('uses provided values', function() {
-        expect(Plots.supplyAnimationDefaults({
+        expect(Plots.supplyAnimationDefaults(void 0, {
             mode: 'next',
             fromcurrent: true,
             direction: 'reverse',

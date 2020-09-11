@@ -205,7 +205,7 @@ function formatParam(paramIn, len, calculate, dflt, extraFn) {
 }
 
 
-function convertPlotlyOptions(scene, data) {
+function convertPlotlyOptions(gd, scene, data) {
     var points = [];
     var sceneLayout = scene.fullSceneLayout;
     var scaleFactor = scene.dataScale;
@@ -270,7 +270,7 @@ function convertPlotlyOptions(scene, data) {
             var pointValues = {};
             appendArrayPointValue(pointValues, data, i);
             var meta = data._meta || {};
-            text[i] = Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta);
+            text[i] = Lib.texttemplateString(gd, txt(i), labels, d3locale, pointValues, d, meta);
         }
     }
 
@@ -318,7 +318,7 @@ function convertPlotlyOptions(scene, data) {
         }
     }
 
-    params.errorBounds = calculateError(data, scaleFactor, sceneLayout);
+    params.errorBounds = calculateError(gd, data, scaleFactor, sceneLayout);
 
     var errorParams = calculateErrorParams([data.error_x, data.error_y, data.error_z]);
     params.errorColor = errorParams.color;
@@ -345,7 +345,7 @@ function arrayToColor(color) {
     return null;
 }
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     var gl = this.scene.glplot.gl;
     var lineOptions;
     var scatterOptions;
@@ -357,7 +357,7 @@ proto.update = function(data) {
     this.data = data;
 
     // Run data conversion
-    var options = convertPlotlyOptions(this.scene, data);
+    var options = convertPlotlyOptions(gd, this.scene, data);
 
     if('mode' in options) {
         this.mode = options.mode;
@@ -531,9 +531,9 @@ proto.dispose = function() {
     }
 };
 
-function createLineWithMarkers(scene, data) {
+function createLineWithMarkers(gd, scene, data) {
     var plot = new LineWithMarkers(scene, data.uid);
-    plot.update(data);
+    plot.update(gd, data);
     return plot;
 }
 

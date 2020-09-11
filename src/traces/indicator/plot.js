@@ -831,8 +831,8 @@ function mockAxis(gd, opts, zrange) {
         return Lib.coerce(axisIn, axisOut, axisLayoutAttrs, attr, dflt);
     }
 
-    handleAxisDefaults(axisIn, axisOut, coerce, axisOptions, fullLayout);
-    handleAxisPositionDefaults(axisIn, axisOut, coerce, axisOptions);
+    handleAxisDefaults(gd, axisIn, axisOut, coerce, axisOptions, fullLayout);
+    handleAxisPositionDefaults(gd, axisIn, axisOut, coerce, axisOptions);
 
     return axisOut;
 }

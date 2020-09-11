@@ -12,7 +12,7 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var constants = require('./constants');
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+module.exports = function hoverPoints(gd, pointData, xval, yval) {
     var cd0 = pointData.cd[0];
     var trace = cd0.trace;
     var xa = pointData.xa;

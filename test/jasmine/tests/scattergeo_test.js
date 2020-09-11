@@ -35,7 +35,7 @@ describe('Test scattergeo defaults', function() {
             lat: [45, 45, 45]
         };
 
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.lat).toEqual([45, 45, 45]);
         expect(traceOut.lon).toEqual([-75]);
         expect(traceOut._length).toBe(1);
@@ -48,7 +48,7 @@ describe('Test scattergeo defaults', function() {
             lat: [45]
         };
 
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.lat).toEqual([45]);
         expect(traceOut.lon).toEqual([-75, -75, -75]);
         expect(traceOut._length).toBe(1);
@@ -61,14 +61,14 @@ describe('Test scattergeo defaults', function() {
             lat: [20, 40]
         };
 
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.lon).toBeUndefined();
         expect(traceOut.lat).toBeUndefined();
     });
 
     it('should make trace invisible if lon or lat is omitted and locations not given', function() {
         function testOne() {
-            ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         }
 
@@ -94,7 +94,7 @@ describe('Test scattergeo defaults', function() {
             geojson: 'url'
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe('geojson-id', 'valid url string');
 
         traceIn = {
@@ -102,7 +102,7 @@ describe('Test scattergeo defaults', function() {
             geojson: {}
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe('geojson-id', 'valid object');
 
         traceIn = {
@@ -110,7 +110,7 @@ describe('Test scattergeo defaults', function() {
             geojson: ''
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe('ISO-3', 'invalid sting');
 
         traceIn = {
@@ -118,7 +118,7 @@ describe('Test scattergeo defaults', function() {
             geojson: []
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe('ISO-3', 'invalid object');
 
         traceIn = {
@@ -126,7 +126,7 @@ describe('Test scattergeo defaults', function() {
             lat: [20, 40]
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.locationmode).toBe(undefined, 'lon/lat coordinates');
     });
 
@@ -137,7 +137,7 @@ describe('Test scattergeo defaults', function() {
             featureidkey: 'properties.name'
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.featureidkey).toBe('properties.name', 'coerced');
 
         traceIn = {
@@ -145,7 +145,7 @@ describe('Test scattergeo defaults', function() {
             featureidkey: 'properties.name'
         };
         traceOut = {};
-        ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterGeo.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         expect(traceOut.featureidkey).toBe(undefined, 'NOT coerced');
     });
 });

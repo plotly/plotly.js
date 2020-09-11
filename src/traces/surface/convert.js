@@ -429,7 +429,7 @@ proto.setContourLevels = function() {
     }
 };
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     var scene = this.scene;
     var sceneLayout = scene.fullSceneLayout;
     var surface = this.surface;
@@ -476,7 +476,7 @@ proto.update = function(data) {
 
     if(data.connectgaps) {
         data._emptypoints = findEmpties(rawCoords[2]);
-        interp2d(rawCoords[2], data._emptypoints);
+        interp2d(gd, rawCoords[2], data._emptypoints);
 
         data._interpolatedZ = [];
         for(j = 0; j < xlen; j++) {
@@ -690,12 +690,12 @@ proto.dispose = function() {
     this.surface.dispose();
 };
 
-function createSurfaceTrace(scene, data) {
+function createSurfaceTrace(gd, scene, data) {
     var gl = scene.glplot.gl;
     var surface = createSurface({ gl: gl });
     var result = new SurfaceTrace(scene, surface, data.uid);
     surface._trace = result;
-    result.update(data);
+    result.update(gd, data);
     scene.glplot.add(surface);
     return result;
 }

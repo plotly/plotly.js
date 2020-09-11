@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 // draws contours correctly *as* constraints.
 //
 // ** I do not know which "weird range loops" the comment above is referring to.
-module.exports = function(pathinfo, operation) {
+module.exports = function convertToConstraints(gd, pathinfo, operation) {
     var i, pi0, pi1;
 
     var op0 = function(arr) { return arr.reverse(); };
@@ -28,7 +28,7 @@ module.exports = function(pathinfo, operation) {
             return pathinfo;
         case '>':
             if(pathinfo.length !== 1) {
-                Lib.warn('Contour data invalid for the specified inequality operation.');
+                Lib.warn(gd, 'Contour data invalid for the specified inequality operation.');
             }
 
             // In this case there should be exactly one contour levels in pathinfo.
@@ -55,7 +55,7 @@ module.exports = function(pathinfo, operation) {
         case '[]':
             /* eslint-enable: no-fallthrough */
             if(pathinfo.length !== 2) {
-                Lib.warn('Contour data invalid for the specified inequality range operation.');
+                Lib.warn(gd, 'Contour data invalid for the specified inequality range operation.');
             }
 
             // In this case there should be exactly two contour levels in pathinfo.

@@ -42,7 +42,7 @@ var Template = require('../plot_api/plot_template');
  *    links to supplementary data (e.g. fullData for layout components)
  *
  */
-module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
+module.exports = function handleArrayContainerDefaults(gd, parentObjIn, parentObjOut, opts) {
     var name = opts.name;
     var inclusionAttr = opts.inclusionAttr || 'visible';
 
@@ -50,7 +50,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
     var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [];
     var contOut = parentObjOut[name] = [];
-    var templater = Template.arrayTemplater(parentObjOut, name, inclusionAttr);
+    var templater = Template.arrayTemplater(gd, parentObjOut, name, inclusionAttr);
     var i, itemOut;
 
     for(i = 0; i < contIn.length; i++) {
@@ -66,7 +66,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         itemOut._index = i;
 
         if(itemOut[inclusionAttr] !== false) {
-            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts);
+            opts.handleItemDefaults(gd, itemIn, itemOut, parentObjOut, opts);
         }
 
         contOut.push(itemOut);
@@ -76,7 +76,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     for(i = 0; i < defaultItems.length; i++) {
         itemOut = defaultItems[i];
         itemOut._index = contOut.length;
-        opts.handleItemDefaults({}, itemOut, parentObjOut, opts, {});
+        opts.handleItemDefaults(gd, {}, itemOut, parentObjOut, opts, {});
         contOut.push(itemOut);
     }
 

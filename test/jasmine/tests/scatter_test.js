@@ -49,14 +49,14 @@ describe('Test scatter', function() {
 
         it('should set visible to false when x and y are empty', function() {
             traceIn = {};
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 x: [],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -64,27 +64,27 @@ describe('Test scatter', function() {
             traceIn = {
                 x: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 x: [],
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 x: [1, 2, 3],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
@@ -96,7 +96,7 @@ describe('Test scatter', function() {
             it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
                 traceIn = {};
                 traceIn[spec.letter] = [1, 2];
-                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+                supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
                 expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
                 expect(traceOut._length).toBe(2, l);
                 expect(traceOut[c0]).toBe(0, c0);
@@ -116,14 +116,14 @@ describe('Test scatter', function() {
             // you need visible: true here, as that normally gets set
             // outside of the module supplyDefaults
             traceOut = {visible: true};
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.hoveron).toBe('points+fills');
 
             // but with only lines (or just fill) and fill tonext or toself
             // you get fills
             traceIn.mode = 'lines';
             traceOut = {visible: true};
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.hoveron).toBe('fills');
 
             // with the wrong fill you always get points
@@ -133,7 +133,7 @@ describe('Test scatter', function() {
             // default to hoveron points.
             traceIn.fill = 'tonexty';
             traceOut = {visible: true};
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             expect(traceOut.hoveron).toBe('points');
         });
 
@@ -142,7 +142,7 @@ describe('Test scatter', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.
@@ -157,7 +157,7 @@ describe('Test scatter', function() {
                 xcalendar: 'coptic',
                 ycalendar: 'ethiopian'
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+            supplyDefaults(void 0, traceIn, traceOut, defaultColor, {calendar: 'islamic'});
 
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
@@ -171,7 +171,7 @@ describe('Test scatter', function() {
                     y: [2, 1, 2]
                 }, patch);
                 traceOut = {visible: true};
-                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+                supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             }
 
             it('should fill in [un]selected.marker.opacity default when no other [un]selected is set', function() {
@@ -211,7 +211,7 @@ describe('Test scatter', function() {
 
         describe('should find correct coordinate length', function() {
             function _supply() {
-                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+                supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
             }
 
             it('- x 2d', function() {
@@ -1436,7 +1436,7 @@ describe('scatter hoverPoints', function() {
             var cd = gd.calcdata[i];
             var subplot = gd._fullLayout._plots.xy;
 
-            var out = Scatter.hoverPoints({
+            var out = Scatter.hoverPoints(gd, {
                 index: false,
                 distance: 20,
                 cd: cd,

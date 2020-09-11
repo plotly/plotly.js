@@ -23,7 +23,7 @@ describe('Scatter3D defaults', function() {
         var traceOut = { visible: true };
         var layout = Lib.extendFlat({ _dataLength: 1 }, layoutEdits);
 
-        Scatter3D.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Scatter3D.supplyDefaults(void 0, traceIn, traceOut, defaultColor, layout);
         return traceOut;
     }
 

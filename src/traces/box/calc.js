@@ -141,7 +141,7 @@ module.exports = function calc(gd, trace) {
                 cdi.min = imin;
                 cdi.max = imax;
             } else {
-                Lib.warn([
+                Lib.warn(gd, [
                     'Invalid input - make sure that q1 <= median <= q3',
                     'q1 = ' + cdi.q1,
                     'median = ' + cdi.med,

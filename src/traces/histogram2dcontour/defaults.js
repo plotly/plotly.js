@@ -17,7 +17,7 @@ var handleStyleDefaults = require('../contour/style_defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -26,10 +26,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce2(traceIn, traceOut, attributes, attr);
     }
 
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
+    handleSampleDefaults(gd, traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
 
-    handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    handleContoursDefaults(gd, traceIn, traceOut, coerce, coerce2);
+    handleStyleDefaults(gd, traceIn, traceOut, coerce, layout);
     coerce('hovertemplate');
 };

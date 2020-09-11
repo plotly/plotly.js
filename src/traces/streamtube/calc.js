@@ -28,7 +28,7 @@ function calc(gd, trace) {
     trace._y = filter(trace.y, trace._len);
     trace._z = filter(trace.z, trace._len);
 
-    var grid = processGrid(trace);
+    var grid = processGrid(gd, trace);
     trace._gridFill = grid.fill;
     trace._Xs = grid.Xs;
     trace._Ys = grid.Ys;
@@ -87,7 +87,7 @@ function calc(gd, trace) {
     trace._zbnds = [grid.zMin, grid.zMax];
 }
 
-function processGrid(trace) {
+function processGrid(gd, trace) {
     var x = trace._x;
     var y = trace._y;
     var z = trace._z;
@@ -211,7 +211,7 @@ function processGrid(trace) {
     }
 
     if(arbitrary) {
-        Lib.warn('Encountered arbitrary coordinates! Unable to input data grid.');
+        Lib.warn(gd, 'Encountered arbitrary coordinates! Unable to input data grid.');
         empty();
     }
 

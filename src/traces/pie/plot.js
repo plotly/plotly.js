@@ -1144,7 +1144,7 @@ function formatSliceLabel(gd, pt, cd0) {
             var obj = makeTemplateVariables(pt);
             var ptTx = helpers.getFirstFilled(trace.text, pt.pts);
             if(isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
-            pt.text = Lib.texttemplateString(txt, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
+            pt.text = Lib.texttemplateString(gd, txt, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
         }
     }
 }

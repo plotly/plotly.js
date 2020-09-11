@@ -21,8 +21,8 @@ var layoutAttributes = require('./layout_attributes');
 
 var axesNames = ['aaxis', 'baxis', 'caxis'];
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+module.exports = function supplyLayoutDefaults(gd, layoutIn, layoutOut, fullData) {
+    handleSubplotDefaults(gd, layoutIn, layoutOut, fullData, {
         type: 'ternary',
         attributes: layoutAttributes,
         handleDefaults: handleTernaryDefaults,
@@ -31,7 +31,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, options) {
+function handleTernaryDefaults(gd, ternaryLayoutIn, ternaryLayoutOut, coerce, options) {
     var bgColor = coerce('bgcolor');
     var sum = coerce('sum');
     options.bgColor = Color.combine(bgColor, options.paper_bgcolor);
@@ -46,7 +46,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
         containerOut = Template.newContainer(ternaryLayoutOut, axName);
         containerOut._name = axName;
 
-        handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut);
+        handleAxisDefaults(gd, containerIn, containerOut, options, ternaryLayoutOut);
     }
 
     // if the min values contradict each other, set them all to default (0)
@@ -65,7 +65,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     }
 }
 
-function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut) {
+function handleAxisDefaults(gd, containerIn, containerOut, options, ternaryLayoutOut) {
     var axAttrs = layoutAttributes[containerOut._name];
 
     function coerce(attr, dflt) {
@@ -97,9 +97,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     // range is just set by 'min' - max is determined by the other axes mins
     coerce('min');
 
-    handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
-    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {});
-    handleTickMarkDefaults(containerIn, containerOut, coerce,
+    handleTickValueDefaults(gd, containerIn, containerOut, coerce, 'linear');
+    handleTickLabelDefaults(gd, containerIn, containerOut, coerce, 'linear', {});
+    handleTickMarkDefaults(gd, containerIn, containerOut, coerce,
         { outerTicks: true });
 
     var showTickLabels = coerce('showticklabels');
@@ -113,7 +113,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
         coerce('tickformat');
     }
 
-    handleLineGridDefaults(containerIn, containerOut, coerce, {
+    handleLineGridDefaults(gd, containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         // default grid color is darker here (60%, vs cartesian default ~91%)

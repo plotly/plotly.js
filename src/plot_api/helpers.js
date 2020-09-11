@@ -24,7 +24,7 @@ var traceIs = Registry.traceIs;
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function(gd) {
     if(Array.isArray(gd._promises) && gd._promises.length > 0) {
-        Lib.log('Clearing previous rejected promises from queue.');
+        Lib.log(gd, 'Clearing previous rejected promises from queue.');
     }
 
     gd._promises = [];
@@ -568,7 +568,7 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
             if(Lib.isIndex(traceIndices[i], gd.data.length)) {
                 traceIndicesOut.push(traceIndices[i]);
             } else {
-                Lib.warn('trace index (', traceIndices[i], ') is not a number or is out of bounds');
+                Lib.warn(gd, 'trace index (', traceIndices[i], ') is not a number or is out of bounds');
             }
         }
         return traceIndicesOut;

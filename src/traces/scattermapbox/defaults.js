@@ -17,12 +17,12 @@ var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleLonLatDefaults(traceIn, traceOut, coerce);
+    var len = handleLonLatDefaults(gd, traceIn, traceOut, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -36,12 +36,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('below');
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
+        handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
         coerce('connectgaps');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
+        handleMarkerDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
         coerce('marker.allowoverlap');
         coerce('marker.angle');
@@ -55,18 +55,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+        handleTextDefaults(gd, traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(gd, traceIn, traceOut, defaultColor, coerce);
     }
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-function handleLonLatDefaults(traceIn, traceOut, coerce) {
+function handleLonLatDefaults(gd, traceIn, traceOut, coerce) {
     var lon = coerce('lon') || [];
     var lat = coerce('lat') || [];
     var len = Math.min(lon.length, lat.length);

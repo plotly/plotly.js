@@ -62,7 +62,7 @@ exports.attributes = {
     editType: 'calc'
 };
 
-exports.supplyDefaults = function(transformIn) {
+exports.supplyDefaults = function(gd, transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {

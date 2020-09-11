@@ -20,13 +20,13 @@ var axisBrush = require('./axisbrush');
 var maxDimensionCount = require('./constants').maxDimensionCount;
 var mergeLength = require('./merge_length');
 
-function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+function handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce) {
     var lineColor = coerce('line.color', defaultColor);
 
     if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
             coerce('line.colorscale');
-            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+            colorscaleDefaults(gd, traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
             // TODO: I think it would be better to keep showing lines beyond the last line color
             // but I'm not sure what color to give these lines - probably black or white
             // depending on the background color?
@@ -38,7 +38,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     return Infinity;
 }
 
-function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
+function dimensionDefaults(gd, dimensionIn, dimensionOut, parentOut, opts) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
@@ -74,26 +74,26 @@ function dimensionDefaults(dimensionIn, dimensionOut, parentOut, opts) {
     }
 }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var dimensionsIn = traceIn.dimensions;
     if(Array.isArray(dimensionsIn) && dimensionsIn.length > maxDimensionCount) {
-        Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
+        Lib.log(gd, 'parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
         dimensionsIn.splice(maxDimensionCount);
     }
 
-    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+    var dimensions = handleArrayContainerDefaults(gd, traceIn, traceOut, {
         name: 'dimensions',
         layout: layout,
         handleItemDefaults: dimensionDefaults
     });
 
-    var len = handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    var len = handleLineDefaults(gd, traceIn, traceOut, defaultColor, layout, coerce);
 
-    handleDomainDefaults(traceOut, layout, coerce);
+    handleDomainDefaults(gd, traceOut, layout, coerce);
 
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;

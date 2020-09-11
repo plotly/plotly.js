@@ -25,7 +25,7 @@ module.exports = function calc(gd, trace) {
     trace._z = filter(trace.z, trace._len);
     trace._value = filter(trace.value, trace._len);
 
-    var grid = processGrid(trace);
+    var grid = processGrid(gd, trace);
     trace._gridFill = grid.fill;
     trace._Xs = grid.Xs;
     trace._Ys = grid.Ys;

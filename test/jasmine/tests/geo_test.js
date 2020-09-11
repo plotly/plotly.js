@@ -75,7 +75,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.geo.projection.rotation).toBeUndefined();
         expect(layoutOut.geo.scope).toEqual('usa');
     });
@@ -92,7 +92,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutOut.geo.projection.rotation).toBeDefined();
         expect(layoutOut.geo.scope).toEqual('world');
     });
@@ -108,7 +108,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         seaFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeUndefined();
         });
@@ -122,7 +122,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         seaFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeDefined();
         });
@@ -141,7 +141,7 @@ describe('Test Geo layout defaults', function() {
                 }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         }
 
         projTypes.forEach(function(projType) {
@@ -159,7 +159,7 @@ describe('Test Geo layout defaults', function() {
             geo: { scope: 'usa' }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         subunitFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeDefined();
         });
@@ -168,7 +168,7 @@ describe('Test Geo layout defaults', function() {
     it('should coerce subunits only when available (default case)', function() {
         layoutIn = { geo: {} };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         subunitFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeUndefined();
         });
@@ -182,7 +182,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         subunitFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeDefined();
         });
@@ -196,7 +196,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         subunitFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeDefined();
         });
@@ -209,7 +209,7 @@ describe('Test Geo layout defaults', function() {
             }
         };
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         subunitFields.forEach(function(field) {
             expect(layoutOut.geo[field]).toBeUndefined();
         });
@@ -223,7 +223,7 @@ describe('Test Geo layout defaults', function() {
                 geo: { scope: scope }
             };
 
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         }
 
         scopes.forEach(function(scope) {
@@ -244,7 +244,7 @@ describe('Test Geo layout defaults', function() {
         layoutIn = {};
         fullData = [{ type: 'scattergeo', geo: 'geo' }];
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutIn.geo).toEqual({});
     });
 
@@ -253,7 +253,7 @@ describe('Test Geo layout defaults', function() {
         layoutIn = {};
         fullData = [{ type: 'scatter' }];
 
-        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
         expect(layoutIn.geo).toBe(undefined);
     });
 
@@ -268,7 +268,7 @@ describe('Test Geo layout defaults', function() {
 
             it('base case for ' + s, function() {
                 layoutIn = {geo: {scope: s}};
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
                 var dfltLonaxisRange = scopeDefaults[s].lonaxisRange;
                 var dfltLataxisRange = scopeDefaults[s].lataxisRange;
@@ -287,7 +287,7 @@ describe('Test Geo layout defaults', function() {
                         lataxis: {range: customLataxisRange}
                     }
                 };
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
                 expect(layoutOut.geo.lonaxis.range).toEqual(customLonaxisRange);
                 expect(layoutOut.geo.lataxis.range).toEqual(customLataxisRange);
@@ -334,7 +334,7 @@ describe('Test Geo layout defaults', function() {
         specs.forEach(function(s, i) {
             it('- case ' + i, function() {
                 layoutIn = {geo: s.geo};
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
 
                 expect(layoutOut.geo.lonaxis.range).toEqual(s.lonRange);
                 expect(layoutOut.geo.lataxis.range).toEqual(s.latRange);
@@ -358,7 +358,7 @@ describe('Test Geo layout defaults', function() {
                     geo: { lonaxis: {range: s.lonRange} }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 expect(layoutOut.geo.lonaxis.range)
                     .toEqual(s.lonRange, 'lonaxis.range');
                 expect(layoutOut.geo.projection.rotation.lon)
@@ -378,7 +378,7 @@ describe('Test Geo layout defaults', function() {
                     }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 expect(layoutOut.geo.lonaxis.range)
                     .toEqual(s.lonRange, 'lonaxis.range');
                 expect(layoutOut.geo.projection.rotation.lon)
@@ -407,7 +407,7 @@ describe('Test Geo layout defaults', function() {
                     }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 expect(layoutOut.geo.lonaxis.range)
                     .toEqual(s.lonRange, 'lonaxis.range');
                 expect(layoutOut.geo.projection.rotation.lon)
@@ -431,7 +431,7 @@ describe('Test Geo layout defaults', function() {
                     }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 expect(layoutOut.geo.lonaxis.range)
                     .toEqual(s.lonRange, 'lonaxis.range');
                 expect(layoutOut.geo.projection.rotation.lon)
@@ -455,7 +455,7 @@ describe('Test Geo layout defaults', function() {
                     geo: { lataxis: {range: s.latRange} }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 expect(layoutOut.geo.lataxis.range)
                     .toEqual(s.latRange, 'lataxis.range');
                 expect(layoutOut.geo.center.lat)
@@ -485,7 +485,7 @@ describe('Test Geo layout defaults', function() {
                         fitbounds: false
                     }
                 };
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     'projection.scale': 1,
                     'center.lon': 15,
@@ -505,7 +505,7 @@ describe('Test Geo layout defaults', function() {
                             fitbounds: v
                         }
                     };
-                    supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                    supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                     _assert({
                         'projection.scale': undefined,
                         'center.lon': undefined,
@@ -531,7 +531,7 @@ describe('Test Geo layout defaults', function() {
                         fitbounds: false,
                     }
                 };
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     'projection.scale': 2,
                     'center.lon': 20,
@@ -555,7 +555,7 @@ describe('Test Geo layout defaults', function() {
                             fitbounds: v
                         }
                     };
-                    supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                    supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                     _assert({
                         'projection.scale': undefined,
                         'center.lon': undefined,
@@ -583,7 +583,7 @@ describe('Test Geo layout defaults', function() {
                         fitbounds: false,
                     }
                 };
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     'projection.scale': 2,
                     'center.lon': 20,
@@ -609,7 +609,7 @@ describe('Test Geo layout defaults', function() {
                             fitbounds: v,
                         }
                     };
-                    supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                    supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                     _assert({
                         'projection.scale': undefined,
                         'center.lon': undefined,
@@ -672,7 +672,7 @@ describe('Test Geo layout defaults', function() {
                     geo: { visible: false }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     showsubunits: undefined
                 });
@@ -701,7 +701,7 @@ describe('Test Geo layout defaults', function() {
                     geo: { scope: 'europe', visible: false }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     showframe: undefined,
                     showsubunits: undefined
@@ -731,7 +731,7 @@ describe('Test Geo layout defaults', function() {
                     geo: { scope: 'usa', visible: false }
                 };
 
-                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(void 0, layoutIn, layoutOut, fullData);
                 _assert({
                     showframe: undefined,
                     showcoastlines: undefined,
@@ -1477,7 +1477,7 @@ describe('Test geo interactions', function() {
             });
 
             expect(Lib.warn).toHaveBeenCalledTimes(1);
-            expect(Lib.warn).toHaveBeenCalledWith(
+            expect(Lib.warn).toHaveBeenCalledWith(jasmine.anything(),
                 'Invalid geo settings, relayout\'ing to default view.'
             );
         })

@@ -17,7 +17,7 @@ var handleConstraintDefaults = require('../contour/constraint_defaults');
 var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(gd, traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -44,7 +44,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-        var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
+        var len = handleXYZDefaults(gd, traceIn, traceOut, coerce, layout, 'a', 'b');
 
         if(!len) {
             traceOut.visible = false;
@@ -55,10 +55,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         var isConstraint = (coerce('contours.type') === 'constraint');
 
         if(isConstraint) {
-            handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, {hasHover: false});
+            handleConstraintDefaults(gd, traceIn, traceOut, coerce, layout, defaultColor, {hasHover: false});
         } else {
-            handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
-            handleStyleDefaults(traceIn, traceOut, coerce, layout, {hasHover: false});
+            handleContoursDefaults(gd, traceIn, traceOut, coerce, coerce2);
+            handleStyleDefaults(gd, traceIn, traceOut, coerce, layout, {hasHover: false});
         }
     } else {
         traceOut._defaultColor = defaultColor;

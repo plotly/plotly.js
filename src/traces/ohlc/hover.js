@@ -20,7 +20,7 @@ var DIRSYMBOL = {
     decreasing: delta.DECREASING.SYMBOL
 };
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
 
@@ -28,7 +28,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         return hoverSplit(pointData, xval, yval, hovermode);
     }
 
-    return hoverOnPoints(pointData, xval, yval, hovermode);
+    return hoverOnPoints(gd, pointData, xval, yval, hovermode);
 }
 
 function getClosestPoint(pointData, xval, yval, hovermode) {
@@ -152,7 +152,7 @@ function hoverSplit(pointData, xval, yval, hovermode) {
     return closeBoxData;
 }
 
-function hoverOnPoints(pointData, xval, yval, hovermode) {
+function hoverOnPoints(gd, pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var ya = pointData.ya;
     var trace = cd[0].trace;

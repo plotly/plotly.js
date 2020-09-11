@@ -53,7 +53,7 @@ describe('Test shapes defaults:', function() {
         layoutOut = layoutOut || {};
         layoutOut._has = Plots._hasPlotType.bind(layoutOut);
 
-        Shapes.supplyLayoutDefaults(layoutIn, layoutOut);
+        Shapes.supplyLayoutDefaults(void 0, layoutIn, layoutOut);
 
         return layoutOut.shapes;
     }

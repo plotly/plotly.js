@@ -105,7 +105,7 @@ function hasValidIndices(list, numVertices) {
     return true;
 }
 
-proto.update = function(data) {
+proto.update = function(gd, data) {
     var scene = this.scene;
     var layout = scene.fullSceneLayout;
 
@@ -188,12 +188,12 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createMesh3DTrace(scene, data) {
+function createMesh3DTrace(gd, scene, data) {
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new Mesh3DTrace(scene, mesh, data.uid);
     mesh._trace = result;
-    result.update(data);
+    result.update(gd, data);
     scene.glplot.add(mesh);
     return result;
 }
