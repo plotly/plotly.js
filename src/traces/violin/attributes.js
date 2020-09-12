@@ -19,6 +19,8 @@ module.exports = {
 
     xperiod: boxAttrs.xperiod,
     yperiod: boxAttrs.yperiod,
+    xperiod0: boxAttrs.xperiod0,
+    yperiod0: boxAttrs.yperiod0,
     xperiodalignment: boxAttrs.xperiodalignment,
     yperiodalignment: boxAttrs.yperiodalignment,
 

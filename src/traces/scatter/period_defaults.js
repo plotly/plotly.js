@@ -17,16 +17,18 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 
     if(opts.x) {
-        var xperiodalignment = coerce('xperiodalignment');
-        if(xperiodalignment !== 'start') {
-            coerce('xperiod');
+        var xperiod = coerce('xperiod');
+        if(xperiod) {
+            coerce('xperiod0');
+            coerce('xperiodalignment');
         }
     }
 
     if(opts.y) {
-        var yperiodalignment = coerce('yperiodalignment');
-        if(yperiodalignment !== 'start') {
-            coerce('yperiod');
+        var yperiod = coerce('yperiod');
+        if(yperiod) {
+            coerce('yperiod0');
+            coerce('yperiodalignment');
         }
     }
 };

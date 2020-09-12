@@ -17,6 +17,8 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat({
     xperiod: histogram2dAttrs.xperiod,
     yperiod: histogram2dAttrs.yperiod,
+    xperiod0: histogram2dAttrs.xperiod0,
+    yperiod0: histogram2dAttrs.yperiod0,
     xperiodalignment: histogram2dAttrs.xperiodalignment,
     yperiodalignment: histogram2dAttrs.yperiodalignment,
 

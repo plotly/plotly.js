@@ -30,6 +30,8 @@ var attrs = module.exports = overrideAll({
 
     xperiod: scatterAttrs.xperiod,
     yperiod: scatterAttrs.yperiod,
+    xperiod0: scatterAttrs.xperiod0,
+    yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
 

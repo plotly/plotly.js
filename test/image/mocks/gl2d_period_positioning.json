@@ -5,7 +5,9 @@
             "type": "scattergl",
             "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle",
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         }
     ],

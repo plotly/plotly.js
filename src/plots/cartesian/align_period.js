@@ -9,61 +9,103 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var ms2DateTime = require('../../lib').ms2DateTime;
-var ONEDAY = require('../../constants/numerical').ONEDAY;
+var Lib = require('../../lib');
+var ms2DateTime = Lib.ms2DateTime;
+var dateTime2ms = Lib.dateTime2ms;
+var constants = require('../../constants/numerical');
+var ONEDAY = constants.ONEDAY;
+var ONEAVGMONTH = constants.ONEAVGMONTH;
+var ONEAVGYEAR = constants.ONEAVGYEAR;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var alignment = trace[axLetter + 'periodalignment'];
-    if(!alignment || alignment === 'start') return vals;
+    if(!alignment) return vals;
 
-    var dynamic = false;
     var period = trace[axLetter + 'period'];
     if(isNumeric(period)) {
-        period = +period; // milliseconds
+        period = +period;
         if(period <= 0) return vals;
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
-        var v = +(period.substring(1));
-        if(v > 0 && Math.round(v) === v) period = v; // positive integer months
+        var n = +(period.substring(1));
+        if(n > 0 && Math.round(n) === n) period = n * ONEAVGMONTH;
         else return vals;
-
-        dynamic = true;
     }
 
     if(period > 0) {
-        var ratio = (alignment === 'end') ? 1 : 0.5;
+        var calendar = ax.calendar;
+
+        var isStart = 'start' === alignment;
+        // var isMiddle = 'middle' === alignment;
+        var isEnd = 'end' === alignment;
+
+        var offset = (new Date()).getTimezoneOffset() * 60000;
+        var period0 = trace[axLetter + 'period0'];
+        var base = (dateTime2ms(period0, calendar) || 0) - offset;
 
         var len = vals.length;
         for(var i = 0; i < len; i++) {
-            var delta;
+            var v = vals[i] - base;
 
-            if(dynamic) {
-                var dateStr = ms2DateTime(vals[i], 0, ax.calendar);
-                var d = new Date(dateStr);
-                var year = d.getFullYear();
-                var month = d.getMonth() + 1;
+            var dateStr = ms2DateTime(v, 0, calendar);
+            var O = new Date(dateStr);
+            var year = O.getFullYear();
+            var month = O.getMonth();
+            var day = O.getDate();
 
-                var totalDaysInMonths = 0;
-                for(var k = 0; k < period; k++) {
-                    month += 1;
-                    if(month > 12) {
-                        month = 1;
-                        year++;
+            var newD;
+            var startTime;
+            var endTime;
+
+            var nYears = Math.floor(period / ONEAVGYEAR);
+            var nMonths = Math.floor(period / ONEAVGMONTH) % 12;
+            var nDays = Math.floor((period - nYears * ONEAVGYEAR - nMonths * ONEAVGMONTH) / ONEDAY);
+            if(nYears && nMonths) nDays = 0;
+
+            var y1 = year + nYears;
+            var m1 = month + nMonths;
+            var d1 = day + nDays;
+            if(nDays || nMonths || nYears) {
+                if(nDays) {
+                    startTime = (new Date(year, month, day)).getTime();
+                    var monthDays = new Date(y1, m1, 0).getDate();
+                    if(d1 > monthDays) {
+                        d1 -= monthDays;
+                        m1 += 1;
+                        if(m1 > 11) {
+                            m1 -= 12;
+                            y1 += 1;
+                        }
                     }
-
-                    var monthDays = (
-                        new Date(year, month, 0)
-                    ).getDate();
-
-                    totalDaysInMonths += monthDays;
+                    endTime = (new Date(y1, m1, d1)).getTime();
+                } else if(nMonths) {
+                    startTime = (new Date(year, nYears ? month : roundMonth(month, nMonths))).getTime();
+                    if(m1 > 11) {
+                        m1 -= 12;
+                        y1 += 1;
+                    }
+                    endTime = (new Date(y1, nYears ? m1 : roundMonth(m1, nMonths))).getTime();
+                } else {
+                    startTime = (new Date(year, 0)).getTime();
+                    endTime = (new Date(y1, 0)).getTime();
                 }
 
-                delta = ONEDAY * totalDaysInMonths; // convert to ms
-            } else {
-                delta = period;
+                newD = new Date(
+                    isStart ? startTime :
+                    isEnd ? endTime :
+                    (startTime + endTime) / 2
+                );
             }
 
-            vals[i] += ratio * delta;
+            if(newD) {
+                vals[i] = newD.getTime() + base;
+            }
         }
     }
     return vals;
 };
+
+var monthSteps = [2, 3, 4, 6];
+
+function roundMonth(month, step) {
+    return (monthSteps.indexOf(step) === -1) ? month : Math.floor(month / step) * step;
+}

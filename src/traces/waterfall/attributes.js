@@ -79,6 +79,8 @@ module.exports = {
 
     xperiod: barAttrs.xperiod,
     yperiod: barAttrs.yperiod,
+    xperiod0: barAttrs.xperiod0,
+    yperiod0: barAttrs.yperiod0,
     xperiodalignment: barAttrs.xperiodalignment,
     yperiodalignment: barAttrs.yperiodalignment,
 

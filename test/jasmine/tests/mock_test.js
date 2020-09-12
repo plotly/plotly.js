@@ -756,6 +756,10 @@ var list = [
     'percent_error_bar',
     'period_positioning',
     'period_positioning2',
+    'period_positioning3',
+    'period_positioning4',
+    'period_positioning5',
+    'period_positioning6',
     'picnic_heatmap',
     'pie_aggregated',
     'pie_automargin',
@@ -1811,6 +1815,10 @@ figs['parcats_unbundled'] = require('@mocks/parcats_unbundled');
 figs['percent_error_bar'] = require('@mocks/percent_error_bar');
 figs['period_positioning'] = require('@mocks/period_positioning');
 figs['period_positioning2'] = require('@mocks/period_positioning2');
+figs['period_positioning3'] = require('@mocks/period_positioning3');
+figs['period_positioning4'] = require('@mocks/period_positioning4');
+figs['period_positioning5'] = require('@mocks/period_positioning5');
+figs['period_positioning6'] = require('@mocks/period_positioning6');
 figs['picnic_heatmap'] = require('@mocks/picnic_heatmap');
 figs['pie_aggregated'] = require('@mocks/pie_aggregated');
 figs['pie_automargin'] = require('@mocks/pie_automargin');
@@ -2097,7 +2105,6 @@ figs['waterfall-offsetgroups'] = require('@mocks/waterfall-offsetgroups');
 // figs['yignbu_heatmap'] = require('@mocks/yignbu_heatmap');
 // figs['yiorrd_heatmap'] = require('@mocks/yiorrd_heatmap');
 figs['zsmooth_methods'] = require('@mocks/zsmooth_methods');
-
 
 describe('@noCI mock validation', function() {
     list.forEach(function(name) {

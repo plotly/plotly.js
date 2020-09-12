@@ -7,6 +7,7 @@
             "type": "bar",
             "y": [1, 2, 3, 4],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
         {
@@ -16,6 +17,7 @@
             "type": "scatter",
             "y": [1, 2, 3, 4],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
 
@@ -27,6 +29,7 @@
             "orientation": "h",
             "x": [1, 2, 3, 4],
             "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
         {
@@ -36,6 +39,7 @@
             "type": "scatter",
             "x": [1, 2, 3, 4],
             "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -46,6 +50,7 @@
             "type": "waterfall",
             "y": [4, -3, 2, -1],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
         {
@@ -55,6 +60,7 @@
             "type": "funnel",
             "x": [4, 3, 2, 1],
             "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -74,7 +80,9 @@
                 [0, 1, 0, 1],
                 [1, 0, 1, 0]
             ],
+            "xperiod": "M12",
             "xperiodalignment": "middle",
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -94,7 +102,9 @@
                 [0, 1, 0, 1],
                 [1, 0, 1, 0]
             ],
+            "xperiod": "M12",
             "xperiodalignment": "middle",
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         }
     ],

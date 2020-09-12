@@ -13,6 +13,7 @@
                 "2003-01-01", "2003-01-01", "2003-01-01",
                 "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
             ],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
 
@@ -27,6 +28,7 @@
                 "2003-01-01", "2003-01-01", "2003-01-01",
                 "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
             ],
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -40,6 +42,7 @@
             "open": [1, 2, 3, 4],
             "high": [2, 4, 6, 8],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
 
@@ -53,6 +56,7 @@
             "open": [1, 2, 3, 4],
             "high": [2, 4, 6, 8],
             "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
         {
@@ -66,6 +70,7 @@
             "median": [6, 7, 8, 9],
             "q3": [8, 8.5, 9, 9.5],
             "upperfence": [10, 10, 10, 10],
+            "xperiod": "M12",
             "xperiodalignment": "middle"
         },
         {
@@ -79,6 +84,7 @@
             "median": [1, 2, 3, 4],
             "q3": [1.5, 3, 4.5, 6],
             "upperfence": [2, 4, 6, 8],
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -118,7 +124,9 @@
                 "end": "2005-01-01",
                 "size": 31557600000
             },
+            "xperiod": "M12",
             "xperiodalignment": "middle",
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         },
 
@@ -158,7 +166,9 @@
                 "end": "2005-01-01",
                 "size": 31557600000
             },
+            "xperiod": "M12",
             "xperiodalignment": "middle",
+            "yperiod": "M12",
             "yperiodalignment": "middle"
         }
     ],

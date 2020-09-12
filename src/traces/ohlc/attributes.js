@@ -35,6 +35,7 @@ function directionAttrs(lineColorDefault) {
 module.exports = {
 
     xperiod: scatterAttrs.xperiod,
+    xperiod0: scatterAttrs.xperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
 
     x: {

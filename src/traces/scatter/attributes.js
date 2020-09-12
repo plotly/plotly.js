@@ -16,14 +16,13 @@ var dash = require('../../components/drawing/attributes').dash;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
-var ONEAVGYEAR = require('../../constants/numerical').ONEAVGYEAR;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
 function axisPeriod(axis) {
     return {
         valType: 'any',
-        dflt: ONEAVGYEAR, // maybe better to use 12M which is more accurate here?
+        dflt: 0,
         role: 'info',
         editType: 'calc',
         description: [
@@ -35,13 +34,26 @@ function axisPeriod(axis) {
     };
 }
 
+function axisPeriod0(axis) {
+    return {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the base for period positioning in milliseconds or date string on the ' + axis + ' axis.'
+        ].join(' ')
+    };
+}
+
 function axisPeriodAlignment(axis) {
     return {
         valType: 'enumerated',
         values: [
             'start', 'middle', 'end'
         ],
-        dflt: 'start',
+        dflt: 'middle',
         role: 'style',
         editType: 'calc',
         description: [
@@ -115,6 +127,8 @@ module.exports = {
 
     xperiod: axisPeriod('x'),
     yperiod: axisPeriod('y'),
+    xperiod0: axisPeriod0('x0'),
+    yperiod0: axisPeriod0('y0'),
     xperiodalignment: axisPeriodAlignment('x'),
     yperiodalignment: axisPeriodAlignment('y'),
 
