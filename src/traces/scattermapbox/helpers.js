@@ -10,6 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
@@ -111,4 +112,4 @@ function isBADNUM(lonlat) {
 
 module.exports = {
     makeCircleOpts: makeCircleOpts
-}
+};
