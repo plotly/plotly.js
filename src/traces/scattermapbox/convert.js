@@ -360,7 +360,6 @@ function getFillFunc(attr, numeric) {
 function blankFillFunc() { return ''; }
 
 
-
 function createCircleColor(cuts, colors) {
     var isArray = Lib.isArrayOrTypedArray(cuts) && Lib.isArrayOrTypedArray(colors);
 
