@@ -67,7 +67,8 @@ function makeCircleOpts(calcTrace) {
         features.push({
             type: 'Feature',
             geometry: {type: 'Point', coordinates: lonlat},
-            properties: props
+            properties: props,
+            id: i
         });
     }
 

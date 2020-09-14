@@ -8,10 +8,8 @@
 
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes')
-  .hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes')
-  .texttemplateAttrs;
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
