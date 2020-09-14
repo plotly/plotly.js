@@ -123,11 +123,11 @@ module.exports = overrideAll({
         valType: 'string',
         role: 'info',
         description: [
-            'Determines if this scattermapbox trace\'s layers are to be inserted',
+            'Determines if this scatterclustermapbox trace\'s layers are to be inserted',
             'before the layer with the specified ID.',
-            'By default, scattermapbox layers are inserted',
+            'By default, scatterclustermapbox layers are inserted',
             'above all the base layers.',
-            'To place the scattermapbox layers above every other layer, set `below` to *\'\'*.'
+            'To place the scatterclustermapbox layers above every other layer, set `below` to *\'\'*.'
         ].join(' ')
     },
 }, 'calc', 'nested');
