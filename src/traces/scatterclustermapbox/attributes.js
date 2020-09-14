@@ -56,7 +56,6 @@ module.exports = overrideAll({
             valType: 'color',
             dflt: '#51bbd6',
             arrayOk: true,
-            role: 'style',
             editType: 'style',
             anim: true,
             description: [
