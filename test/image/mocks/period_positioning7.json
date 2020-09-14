@@ -391,8 +391,9 @@
             "title": {
                 "text": "week of year"
             },
+            "tick0": "2020-01-06",
             "dtick": 604800000,
-            "tickformat": "%V",
+            "tickformat": "%W",
             "ticklabelmode": "period",
             "tickcolor": "black"
         }
