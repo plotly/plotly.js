@@ -35,7 +35,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     function distFn(d) {
         var lonlat = d.lonlat;
         if(lonlat[0] === BADNUM) return Infinity;
-        if(!unclusteredPoints.includes(d.i)) return Infinity;
+        if(!unclusteredPoints.includes(d.i + 1)) return Infinity;
 
         var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];
