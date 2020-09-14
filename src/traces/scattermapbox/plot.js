@@ -270,7 +270,7 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
     var optsAll = convert(subplot.gd, calcTrace);
     var clusterEnabled = trace.cluster.enabled;
     var scatterMapbox = createScatterMapboxInstance(subplot, trace.uid, clusterEnabled);
-    renderScatterMapbox(scatterMapbox, clusterEnabled, optsAll)
+    renderScatterMapbox(scatterMapbox, clusterEnabled, optsAll);
 
     // link ref for quick update during selections
     calcTrace[0].trace._glTrace = scatterMapbox;

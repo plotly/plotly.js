@@ -26,7 +26,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var clusteredPointsIds = [];
     var layer = LAYER_PREFIX + trace.uid + '-cluster-points';
 
-    if (clusterEnabled) {
+    if(clusterEnabled) {
         var elems = subplot.map.queryRenderedFeatures(null, {layers: [layer]});
         clusteredPointsIds = elems.map(function(elem) {return elem.id;});
     }
