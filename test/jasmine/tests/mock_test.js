@@ -760,6 +760,7 @@ var list = [
     'period_positioning4',
     'period_positioning5',
     'period_positioning6',
+    'period_positioning7',
     'picnic_heatmap',
     'pie_aggregated',
     'pie_automargin',
@@ -1819,6 +1820,7 @@ figs['period_positioning3'] = require('@mocks/period_positioning3');
 figs['period_positioning4'] = require('@mocks/period_positioning4');
 figs['period_positioning5'] = require('@mocks/period_positioning5');
 figs['period_positioning6'] = require('@mocks/period_positioning6');
+figs['period_positioning7'] = require('@mocks/period_positioning7');
 figs['picnic_heatmap'] = require('@mocks/picnic_heatmap');
 figs['pie_aggregated'] = require('@mocks/pie_aggregated');
 figs['pie_automargin'] = require('@mocks/pie_automargin');

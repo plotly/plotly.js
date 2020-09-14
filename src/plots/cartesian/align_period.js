@@ -56,9 +56,9 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             var startTime;
             var endTime;
 
-            var nYears = Math.floor(period / ONEAVGYEAR);
             var nMonths = Math.floor(period / ONEAVGMONTH) % 12;
-            var nDays = Math.floor((period - nYears * ONEAVGYEAR - nMonths * ONEAVGMONTH) / ONEDAY);
+            var nYears = Math.floor((period - nMonths * ONEAVGMONTH) / ONEAVGYEAR);
+            var nDays = Math.floor((period - nMonths * ONEAVGMONTH - nYears * ONEAVGYEAR) / ONEDAY);
             if(nYears && nMonths) nDays = 0;
 
             var y1 = year + nYears;
@@ -67,7 +67,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             if(nDays || nMonths || nYears) {
                 if(nDays) {
                     startTime = (new Date(year, month, day)).getTime();
-                    var monthDays = new Date(y1, m1, 0).getDate();
+                    var monthDays = new Date(y1, m1 + 1, 0).getDate();
                     if(d1 > monthDays) {
                         d1 -= monthDays;
                         m1 += 1;
