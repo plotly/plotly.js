@@ -1,20 +1,17 @@
 {
   "data": [
     {
-      "cluster": {"color": "red", "size": 40},
       "type": "scattermapbox",
-      "mode": "markers",
+      "mode": "markers+lines",
       "lon": [
-        10.1,
-        10.1,
-        10.2,
-        10.3
+        10,
+        20,
+        30
       ],
       "lat": [
-        10.0,
-        10.1,
-        10.2,
-        10.3
+        10,
+        20,
+        30
       ],
       "marker": {
         "size": 20
