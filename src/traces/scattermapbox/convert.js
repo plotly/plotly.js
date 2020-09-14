@@ -14,7 +14,9 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var geoJsonUtils = require('../../lib/geojson_utils');
 
-var helpers = require('./helpers');
+var Colorscale = require('../../components/colorscale');
+var Drawing = require('../../components/drawing');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
@@ -38,12 +40,34 @@ module.exports = function convert(gd, calcTrace) {
     var line = initContainer();
     var circle = initContainer();
     var symbol = initContainer();
+    var cluster = {
+        maxZoom: trace.cluster.maxZoom,
+        radius: trace.cluster.radius,
+        layout: {
+            visibility: 'none',
+        },
+        paint: {
+            'circle-color': createCircleColor(trace.cluster.cuts, trace.cluster.color),
+            'circle-radius': createSize(trace.cluster.cuts, trace.cluster.size),
+
+        }
+    };
+    var clusterCount = {
+        layout: {
+            visibility: 'none',
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
+        }
+    };
 
     var opts = {
         fill: fill,
         line: line,
         circle: circle,
-        symbol: symbol
+        symbol: symbol,
+        cluster: cluster,
+        clusterCount: clusterCount
     };
 
     // early return if not visible or placeholder
@@ -78,9 +102,11 @@ module.exports = function convert(gd, calcTrace) {
     }
 
     if(hasCircles) {
-        var circleOpts = helpers.makeCircleOpts(calcTrace);
+        var circleOpts = makeCircleOpts(calcTrace);
         circle.geojson = circleOpts.geojson;
         circle.layout.visibility = 'visible';
+        cluster.layout.visibility = 'visible';
+        clusterCount.layout.visibility = 'visible';
 
         Lib.extendFlat(circle.paint, {
             'circle-color': circleOpts.mcc,
@@ -155,6 +181,100 @@ function initContainer() {
         layout: { visibility: 'none' },
         paint: {}
     };
+}
+
+function makeCircleOpts(calcTrace) {
+    var trace = calcTrace[0].trace;
+    var marker = trace.marker;
+    var selectedpoints = trace.selectedpoints;
+    var arrayColor = Lib.isArrayOrTypedArray(marker.color);
+    var arraySize = Lib.isArrayOrTypedArray(marker.size);
+    var arrayOpacity = Lib.isArrayOrTypedArray(marker.opacity);
+    var i;
+
+    function addTraceOpacity(o) { return trace.opacity * o; }
+
+    function size2radius(s) { return s / 2; }
+
+    var colorFn;
+    if(arrayColor) {
+        if(Colorscale.hasColorscale(trace, 'marker')) {
+            colorFn = Colorscale.makeColorScaleFuncFromTrace(marker);
+        } else {
+            colorFn = Lib.identity;
+        }
+    }
+
+    var sizeFn;
+    if(arraySize) {
+        sizeFn = makeBubbleSizeFn(trace);
+    }
+
+    var opacityFn;
+    if(arrayOpacity) {
+        opacityFn = function(mo) {
+            var mo2 = isNumeric(mo) ? +Lib.constrain(mo, 0, 1) : 0;
+            return addTraceOpacity(mo2);
+        };
+    }
+
+    var features = [];
+    for(i = 0; i < calcTrace.length; i++) {
+        var calcPt = calcTrace[i];
+        var lonlat = calcPt.lonlat;
+
+        if(isBADNUM(lonlat)) continue;
+
+        var props = {};
+        if(colorFn) props.mcc = calcPt.mcc = colorFn(calcPt.mc);
+        if(sizeFn) props.mrc = calcPt.mrc = sizeFn(calcPt.ms);
+        if(opacityFn) props.mo = opacityFn(calcPt.mo);
+        if(selectedpoints) props.selected = calcPt.selected || 0;
+
+        features.push({
+            type: 'Feature',
+            geometry: {type: 'Point', coordinates: lonlat},
+            properties: props,
+            id: i + 1
+        });
+    }
+
+    var fns;
+    if(selectedpoints) {
+        fns = Drawing.makeSelectedPointStyleFns(trace);
+
+        for(i = 0; i < features.length; i++) {
+            var d = features[i].properties;
+
+            if(fns.selectedOpacityFn) {
+                d.mo = addTraceOpacity(fns.selectedOpacityFn(d));
+            }
+            if(fns.selectedColorFn) {
+                d.mcc = fns.selectedColorFn(d);
+            }
+            if(fns.selectedSizeFn) {
+                d.mrc = fns.selectedSizeFn(d);
+            }
+        }
+    }
+
+    return {
+        geojson: {type: 'FeatureCollection', features: features},
+        mcc: arrayColor || (fns && fns.selectedColorFn) ?
+            {type: 'identity', property: 'mcc'} :
+            marker.color,
+        mrc: arraySize || (fns && fns.selectedSizeFn) ?
+            {type: 'identity', property: 'mrc'} :
+            size2radius(marker.size),
+        mo: arrayOpacity || (fns && fns.selectedOpacityFn) ?
+            {type: 'identity', property: 'mo'} :
+            addTraceOpacity(marker.opacity)
+    };
+}
+
+// only need to check lon (OR lat)
+function isBADNUM(lonlat) {
+    return lonlat[0] === BADNUM;
 }
 
 
@@ -239,7 +359,31 @@ function getFillFunc(attr, numeric) {
 
 function blankFillFunc() { return ''; }
 
-// only need to check lon (OR lat)
-function isBADNUM(lonlat) {
-    return lonlat[0] === BADNUM;
+
+
+function createCircleColor(cuts, colors) {
+    var isArray = Lib.isArrayOrTypedArray(cuts) && Lib.isArrayOrTypedArray(colors);
+
+    if(isArray) {
+        var colorArray = ['step', ['get', 'point_count'], colors[0]];
+        for(var idx = 1; idx < colors.length; idx++) {
+            colorArray.push(cuts[idx - 1], colors[idx]);
+        }
+        return colorArray;
+    } else {
+        return colors;
+    }
+}
+function createSize(cuts, size) {
+    var isArray = Lib.isArrayOrTypedArray(cuts) && Lib.isArrayOrTypedArray(size);
+
+    if(isArray) {
+        var sizeArray = ['step', ['get', 'point_count'], size[0]];
+        for(var idx = 1; idx < size.length; idx++) {
+            sizeArray.push(cuts[idx - 1], size[idx]);
+        }
+        return sizeArray;
+    } else {
+        return size;
+    }
 }

@@ -26,6 +26,54 @@ module.exports = overrideAll({
     lon: scatterGeoAttrs.lon,
     lat: scatterGeoAttrs.lat,
 
+    cluster: {
+        maxZoom: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            max: 22,
+            dflt: 14,
+            description: 'Sets the maximum zoom level for the cluster.',
+        },
+        radius: {
+            role: 'info',
+            valType: 'number',
+            dflt: 50,
+            description: 'Radius of each cluster when clustering points.',
+        },
+        cuts: {
+            role: 'info',
+            valType: 'number',
+            arrayOk: true,
+            dflt: -1,
+            min: -1,
+            description: [
+                'Sets the steps for each cluster.'
+            ].join(' ')
+        },
+        color: {
+            role: 'info',
+            valType: 'color',
+            dflt: '#51bbd6',
+            arrayOk: true,
+            editType: 'style',
+            anim: true,
+            description: [
+                'Sets the color for each cluster.'
+            ].join(' ')
+        },
+        size: {
+            role: 'info',
+            valType: 'number',
+            arrayOk: true,
+            dflt: 20,
+            min: 0,
+            description: [
+                'Sets the size for each cluster.'
+            ].join(' ')
+        },
+    },
+
     // locations
     // locationmode
 
