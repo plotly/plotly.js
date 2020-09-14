@@ -70,6 +70,7 @@ var glMockList = [
 ];
 
 var mapboxMockList = [
+    ['scatterclustermapbox', require('@mocks/mapbox_scattercluster.json')],
     ['scattermapbox', require('@mocks/mapbox_bubbles-text.json')],
     ['choroplethmapbox', require('@mocks/mapbox_choropleth0.json')],
     ['densitymapbox', require('@mocks/mapbox_density0.json')]
