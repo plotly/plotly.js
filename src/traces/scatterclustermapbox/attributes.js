@@ -29,17 +29,20 @@ module.exports = overrideAll({
     cluster: {
         maxZoom: {
             valType: 'number',
+            role: 'info',
             min: 0,
             max: 22,
             dflt: 14,
             description: 'Sets the maximum zoom level for the cluster.',
         },
         radius: {
+            role: 'info',
             valType: 'number',
             dflt: 50,
             description: 'Radius of each cluster when clustering points.',
         },
         steps: {
+            role: 'info',
             valType: 'number',
             arrayOk: true,
             dflt: -1,
@@ -49,6 +52,7 @@ module.exports = overrideAll({
             ].join(' ')
         },
         stepColors: {
+            role: 'info',
             valType: 'color',
             dflt: '#51bbd6',
             arrayOk: true,
@@ -60,6 +64,7 @@ module.exports = overrideAll({
             ].join(' ')
         },
         stepSize: {
+            role: 'info',
             valType: 'number',
             arrayOk: true,
             dflt: 20,
@@ -126,4 +131,4 @@ module.exports = overrideAll({
             'To place the scattermapbox layers above every other layer, set `below` to *\'\'*.'
         ].join(' ')
     },
-});
+}, 'calc', 'nested');
