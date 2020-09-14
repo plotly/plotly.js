@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var geoJsonUtils = require('../../lib/geojson_utils');
 
-var helpers = require('./helpers')
+var helpers = require('./helpers');
 
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
@@ -156,7 +156,6 @@ function initContainer() {
         paint: {}
     };
 }
-
 
 
 function makeSymbolGeoJSON(calcTrace, gd) {

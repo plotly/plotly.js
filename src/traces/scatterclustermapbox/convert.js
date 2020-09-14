@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 var geoJsonUtils = require('../../lib/geojson_utils');
 
-var helpers = require('../scattermapbox/helpers')
+var helpers = require('../scattermapbox/helpers');
 var subTypes = require('../scatter/subtypes');
 
 module.exports = function convert(gd, calcTrace) {
