@@ -1,0 +1,37 @@
+{
+    "data": [
+      {
+        "type": "scattermapbox",
+        "mode": "markers",
+        "cluster": {},
+        "lon": [
+          10.0,
+          10.1,
+          10.2,
+          10.3
+        ],
+        "lat": [
+          10.0,
+          10.1,
+          10.2,
+          10.3
+        ],
+        "marker": {
+          "size": 20
+        }
+      }
+    ],
+    "layout": {
+      "mapbox": {
+        "style": "dark",
+        "center": {
+          "lon": -4.71092760419225,
+          "lat": 19.475789009298566
+        },
+        "zoom": 1.2345714569517612
+      },
+      "height": 450,
+      "width": 1100,
+      "autosize": true
+    }
+  }
