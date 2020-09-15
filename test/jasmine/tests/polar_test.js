@@ -675,7 +675,7 @@ describe('Test polar interactions:', function() {
     ];
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
         eventData = '';
         eventCnts = {};
         gd = createGraphDiv();
@@ -1367,7 +1367,7 @@ describe('Test polar *gridshape linear* interactions', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
         gd = createGraphDiv();
     });
 

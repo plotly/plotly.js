@@ -19,7 +19,7 @@ describe('Test gl3d before/after plot', function() {
     var mock = require('@mocks/gl3d_marker-arrays.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 8000;
     });
 
     afterEach(function() {
@@ -144,7 +144,7 @@ describe('Test gl3d plots', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
     });
 
     afterEach(function() {
@@ -918,7 +918,7 @@ describe('Test gl3d drag and wheel interactions', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
     });
 
     afterEach(function() {

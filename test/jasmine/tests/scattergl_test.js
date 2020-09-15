@@ -624,7 +624,7 @@ describe('Test scattergl autorange:', function() {
         var gd;
 
         beforeEach(function() {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
             gd = createGraphDiv();
         });
 
@@ -675,7 +675,7 @@ describe('Test scattergl autorange:', function() {
         var gd;
 
         beforeEach(function() {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
             gd = createGraphDiv();
             // to avoid expansive draw calls (which could be problematic on CI)
             spyOn(ScatterGl, 'plot').and.callFake(function(gd) {
