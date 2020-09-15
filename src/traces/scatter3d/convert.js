@@ -347,7 +347,7 @@ function _arrayToColor(color) {
 
 function arrayToColor(colors) {
     if(!Lib.isArrayOrTypedArray(colors)) {
-        return _arrayToColor(colors);
+        return null;
     }
 
     if((colors.length === 4) && (typeof colors[0] === 'number')) {
