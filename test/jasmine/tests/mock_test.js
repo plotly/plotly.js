@@ -256,6 +256,7 @@ var list = [
     'date_axes',
     'date_axes_period',
     'date_axes_period2',
+    'date_axes_period_breaks_automargin',
     'date_histogram',
     'dendrogram',
     'display-text_zero-number',
@@ -631,6 +632,7 @@ var list = [
     'hists-on-matching-axes',
     'hot_heatmap',
     'image_adventurer',
+    'image_astronaut_source',
     'image_axis_reverse',
     'image_axis_type',
     'image_cat',
@@ -932,6 +934,8 @@ var list = [
     'tick_prefix_suffix',
     'tick_prefix_suffix_exponent',
     'tick-datafn',
+    'tick-increment',
+    'tick-percent',
     'tickformat',
     'tickformatstops',
     'tickson_boundaries',
@@ -1304,6 +1308,7 @@ figs['custom_size_subplot'] = require('@mocks/custom_size_subplot');
 figs['date_axes'] = require('@mocks/date_axes');
 figs['date_axes_period'] = require('@mocks/date_axes_period');
 figs['date_axes_period2'] = require('@mocks/date_axes_period2');
+figs['date_axes_period_breaks_automargin'] = require('@mocks/date_axes_period_breaks_automargin');
 figs['date_histogram'] = require('@mocks/date_histogram');
 // figs['dendrogram'] = require('@mocks/dendrogram');
 figs['display-text_zero-number'] = require('@mocks/display-text_zero-number');
@@ -1679,6 +1684,7 @@ figs['histogram2dcontour_legend-coloraxis'] = require('@mocks/histogram2dcontour
 figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
 figs['image_adventurer'] = require('@mocks/image_adventurer');
+figs['image_astronaut_source'] = require('@mocks/image_astronaut_source');
 figs['image_axis_reverse'] = require('@mocks/image_axis_reverse');
 figs['image_axis_type'] = require('@mocks/image_axis_type');
 figs['image_cat'] = require('@mocks/image_cat');
@@ -1980,6 +1986,8 @@ figs['tick_attributes'] = require('@mocks/tick_attributes');
 figs['tick_prefix_suffix'] = require('@mocks/tick_prefix_suffix');
 figs['tick_prefix_suffix_exponent'] = require('@mocks/tick_prefix_suffix_exponent');
 figs['tick-datafn'] = require('@mocks/tick-datafn');
+figs['tick-increment'] = require('@mocks/tick-increment');
+figs['tick-percent'] = require('@mocks/tick-percent');
 figs['tickformat'] = require('@mocks/tickformat');
 figs['tickformatstops'] = require('@mocks/tickformatstops');
 figs['tickson_boundaries'] = require('@mocks/tickson_boundaries');

@@ -23,13 +23,18 @@ var axAttrs = require('./layout_attributes');
 var cleanTicks = require('./clean_ticks');
 
 var constants = require('../../constants/numerical');
+var ONEMAXYEAR = constants.ONEMAXYEAR;
 var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEMINYEAR = constants.ONEMINYEAR;
+var ONEMAXQUARTER = constants.ONEMAXQUARTER;
 var ONEAVGQUARTER = constants.ONEAVGQUARTER;
+var ONEMINQUARTER = constants.ONEMINQUARTER;
 var ONEMAXMONTH = constants.ONEMAXMONTH;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEMINMONTH = constants.ONEMINMONTH;
 var ONEWEEK = constants.ONEWEEK;
 var ONEDAY = constants.ONEDAY;
+var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
@@ -544,7 +549,7 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
             // will always give a somewhat odd-looking label, until we do something
             // smarter like showing the bin boundaries (or the bounds of the actual
             // data in each bin)
-            binStart -= ONEDAY / 2;
+            binStart -= HALFDAY;
         }
         var nextBinStart = axes.tickIncrement(binStart, dtick);
 
@@ -743,22 +748,28 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxRange = Math.max(rng[0], rng[1]);
 
     var definedDelta;
-    if(isPeriod && ax.tickformat) {
+    var tickformat = axes.getTickFormat(ax);
+    if(isPeriod && tickformat) {
         if(
-            !(/%[fLQsSMHIpX]/.test(ax.tickformat))
+            !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
             // %L: milliseconds as a decimal number [000, 999]
             // %Q: milliseconds since UNIX epoch
             // %s: seconds since UNIX epoch
             // %S: second as a decimal number [00,61]
             // %M: minute as a decimal number [00,59]
-            // %H: hour (24-hour clock) as a decimal number [00,23]
-            // %I: hour (12-hour clock) as a decimal number [01,12]
-            // %p: either AM or PM
             // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
             if(
-                /%[Aadejuwx]/.test(ax.tickformat)
+                /%[HI]/.test(tickformat)
+                // %H: hour (24-hour clock) as a decimal number [00,23]
+                // %I: hour (12-hour clock) as a decimal number [01,12]
+            ) definedDelta = ONEHOUR;
+            else if(
+                /%p/.test(tickformat) // %p: either AM or PM
+            ) definedDelta = HALFDAY;
+            else if(
+                /%[Aadejuwx]/.test(tickformat)
                 // %A: full weekday name
                 // %a: abbreviated weekday name
                 // %d: zero-padded day of the month as a decimal number [01,31]
@@ -769,93 +780,142 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %x: the locale’s date, such as %-m/%-d/%Y
             ) definedDelta = ONEDAY;
             else if(
-                /%[UVW]/.test(ax.tickformat)
+                /%[UVW]/.test(tickformat)
                 // %U: Sunday-based week of the year as a decimal number [00,53]
                 // %V: ISO 8601 week of the year as a decimal number [01, 53]
                 // %W: Monday-based week of the year as a decimal number [00,53]
             ) definedDelta = ONEWEEK;
             else if(
-                /%[Bbm]/.test(ax.tickformat)
+                /%[Bbm]/.test(tickformat)
                 // %B: full month name
                 // %b: abbreviated month name
                 // %m: month as a decimal number [01,12]
             ) definedDelta = ONEAVGMONTH;
             else if(
-                /%[q]/.test(ax.tickformat)
+                /%[q]/.test(tickformat)
                 // %q: quarter of the year as a decimal number [1,4]
             ) definedDelta = ONEAVGQUARTER;
             else if(
-                /%[Yy]/.test(ax.tickformat)
+                /%[Yy]/.test(tickformat)
                 // %Y: year with century as a decimal number, such as 1999
                 // %y: year without century as a decimal number [00,99]
             ) definedDelta = ONEAVGYEAR;
         }
     }
 
-    var removedPreTick0Label = false;
-    var ticksOut = new Array(tickVals.length);
+    var ticksOut = [];
     var i;
+    var prevText;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
-        ticksOut[i] = axes.tickText(
+        var t = axes.tickText(
             ax,
             _value,
             false, // hover
             _minor // noSuffixPrefix
         );
 
-        if(isPeriod) {
-            var v = tickVals[i].value;
+        if(isPeriod && prevText === t.text) continue;
+        prevText = t.text;
+
+        ticksOut.push(t);
+    }
+
+    if(isPeriod) {
+        var removedPreTick0Label = false;
+
+        for(i = 0; i < ticksOut.length; i++) {
+            var v = ticksOut[i].x;
 
             var a = i;
             var b = i + 1;
-            if(i < tickVals.length - 1) {
+            if(i < ticksOut.length - 1) {
                 a = i;
                 b = i + 1;
-            } else {
+            } else if(i > 0) {
                 a = i - 1;
+                b = i;
+            } else {
+                a = i;
                 b = i;
             }
 
-            var A = tickVals[a].value;
-            var B = tickVals[b].value;
+            var A = ticksOut[a].x;
+            var B = ticksOut[b].x;
+            var actualDelta = Math.abs(B - A);
+            var delta = definedDelta || actualDelta;
+            var periodLength = 0;
 
-            var delta = definedDelta || Math.abs(B - A);
-            if(delta >= ONEDAY * 365) { // Years could have days less than ONEAVGYEAR period
-                v += ONEAVGYEAR / 2;
-            } else if(delta >= ONEAVGQUARTER) {
-                v += ONEAVGQUARTER / 2;
-            } else if(delta >= ONEMINMONTH) { // Months could have days less than ONEAVGMONTH period
-                var actualDelta = Math.abs(B - A);
-                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
-                    v += actualDelta / 2;
+            if(delta >= ONEMINYEAR) {
+                if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
+                    periodLength = actualDelta;
                 } else {
-                    v += ONEAVGMONTH / 2;
+                    periodLength = ONEAVGYEAR;
                 }
-            } else if(delta >= ONEWEEK) {
-                v += ONEWEEK / 2;
+            } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
+                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+                    periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGQUARTER;
+                }
+            } else if(delta >= ONEMINMONTH) {
+                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+                    periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGMONTH;
+                }
+            } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
+                periodLength = ONEWEEK;
             } else if(delta >= ONEDAY) {
-                v += ONEDAY / 2;
+                periodLength = ONEDAY;
+            } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
+                periodLength = HALFDAY;
+            } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
+                periodLength = ONEHOUR;
+            }
+
+            if(periodLength && ax.rangebreaks) {
+                var nFirstHalf = 0;
+                var nSecondHalf = 0;
+                var nAll = 2 * 3 * 7; // number of samples
+                for(var c = 0; c < nAll; c++) {
+                    var r = c / nAll;
+                    if(ax.maskBreaks(A * (1 - r) + B * r) !== BADNUM) {
+                        if(r < 0.5) {
+                            nFirstHalf++;
+                        } else {
+                            nSecondHalf++;
+                        }
+                    }
+                }
+
+                if(nSecondHalf) {
+                    periodLength *= (nFirstHalf + nSecondHalf) / nAll;
+                }
+            }
+
+            if(periodLength <= actualDelta) { // i.e. to ensure new label positions remain between ticks
+                v += periodLength / 2;
             }
 
             ticksOut[i].periodX = v;
 
             if(v > maxRange || v < minRange) { // hide label if outside the range
-                ticksOut[i].text = '';
+                ticksOut[i].text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
                 removedPreTick0Label = true;
             }
         }
-    }
 
-    if(removedPreTick0Label) {
-        for(i = 0; i < ticksOut.length; i++) {
-            if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
-                // redo first visible tick
-                ax._prevDateHead = '';
-                ticksOut[i].text = axes.tickText(ax, tickVals[i].value).text;
-                break;
+        if(removedPreTick0Label) {
+            for(i = 0; i < ticksOut.length; i++) {
+                if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
+                    // redo first visible tick
+                    ax._prevDateHead = '';
+                    ticksOut[i].text = axes.tickText(ax, ticksOut[i].x).text;
+                    break;
+                }
             }
         }
     }
@@ -969,7 +1029,8 @@ axes.autoTicks = function(ax, roughDTick) {
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             ax.tick0 = Lib.dateTick0(ax.calendar, true);
 
-            if(/%[uVW]/.test(ax.tickformat)) {
+            var tickformat = axes.getTickFormat(ax);
+            if(/%[uVW]/.test(tickformat)) {
                 // replace Sunday with Monday for ISO and Monday-based formats
                 var len = ax.tick0.length;
                 var lastD = +ax.tick0[len - 1];
@@ -1108,7 +1169,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     var axSign = axrev ? -1 : 1;
 
     // includes linear, all dates smaller than month, and pure 10^n in log
-    if(isNumeric(dtick)) return x + axSign * dtick;
+    if(isNumeric(dtick)) return Lib.increment(x, axSign * dtick);
 
     // everything else is a string, one character plus a number
     var tType = dtick.charAt(0);

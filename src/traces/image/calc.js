@@ -13,15 +13,27 @@ var constants = require('./constants');
 var isNumeric = require('fast-isnumeric');
 var Axes = require('../../plots/cartesian/axes');
 var maxRowLength = require('../../lib').maxRowLength;
+var sizeOf = require('image-size');
+var dataUri = require('../../snapshot/helpers').IMAGE_URL_PREFIX;
+var Buffer = require('buffer/').Buffer;  // note: the trailing slash is important!
 
 module.exports = function calc(gd, trace) {
+    var h;
+    var w;
+    if(trace._hasZ) {
+        h = trace.z.length;
+        w = maxRowLength(trace.z);
+    } else if(trace._hasSource) {
+        var size = getImageSize(trace.source);
+        h = size.height;
+        w = size.width;
+    }
+
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
 
     var x0 = xa.d2c(trace.x0) - trace.dx / 2;
     var y0 = ya.d2c(trace.y0) - trace.dy / 2;
-    var h = trace.z.length;
-    var w = maxRowLength(trace.z);
 
     // Set axis range
     var i;
@@ -55,9 +67,9 @@ function constrain(min, max) {
 
 // Generate a function to scale color components according to zmin/zmax and the colormodel
 function makeScaler(trace) {
-    var colormodel = trace.colormodel;
+    var cr = constants.colormodel[trace.colormodel];
+    var colormodel = (cr.colormodel || trace.colormodel);
     var n = colormodel.length;
-    var cr = constants.colormodel[colormodel];
 
     trace._sArray = [];
     // Loop over all color components
@@ -83,4 +95,11 @@ function makeScaler(trace) {
         }
         return c;
     };
+}
+
+// Get image size
+function getImageSize(src) {
+    var data = src.replace(dataUri, '');
+    var buff = new Buffer(data, 'base64');
+    return sizeOf(buff);
 }

@@ -1,0 +1,108 @@
+{
+    "data": [
+        {
+            "type": "scatter",
+            "y": [
+                1,
+                0,
+                0.5
+            ]
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "type": "scatter",
+            "y": [
+                1,
+                0,
+                0.5
+            ]
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "type": "scatter",
+            "y": [
+                1,
+                0,
+                0.5
+            ]
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "type": "scatter",
+            "y": [
+                1,
+                0,
+                0.5
+            ]
+        }
+    ],
+    "layout": {
+        "width": 800,
+        "height": 800,
+        "xaxis": {
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "xaxis4": {
+            "autorange": "reversed",
+            "anchor": "y4",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis": {
+            "tickformat": "p",
+            "domain": [
+                0,
+                0.48
+            ]
+        },
+        "yaxis2": {
+            "tickformat": "p",
+            "dtick": 0.1,
+            "anchor": "x2",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickformat": "p",
+            "dtick": 0.3,
+            "anchor": "x3",
+            "domain": [
+                0.52,
+                1
+            ]
+        },
+        "yaxis4": {
+            "tickformat": "p",
+            "dtick": 0.05,
+            "anchor": "x4",
+            "domain": [
+                0,
+                0.48
+            ]
+        }
+    }
+}
