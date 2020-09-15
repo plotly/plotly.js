@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 var convert = require('./convert');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
@@ -114,7 +113,7 @@ scattermapboxproto.dispose = function dispose() {
 
 
 function ScatterClusterMapbox(subplot, uid) {
-    this.type = 'scatterclustermapbox';
+    this.type = 'scattermapbox';
     this.subplot = subplot;
     this.uid = uid;
     this.order = ['cluster', 'clusterCount', 'clusterPoints'];
@@ -148,7 +147,7 @@ scatterclustermapboxproto.addSource = function(opts) {
     });
 };
 
-scatterclustermapboxproto.setSourceData = function(k, opts) {
+scatterclustermapboxproto.setSourceData = function(opts) {
     this.subplot.map
         .getSource(this.sourceId)
         .setData(opts.circle.geojson);
@@ -204,20 +203,23 @@ scatterclustermapboxproto.update = function update(calcTrace) {
     var map = subplot.map;
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
-    var idx, k, opts;
+    var i, k, opts;
 
     if(below !== this.below) {
-        for(idx = 0; idx < this.order.length; idx++) {
-            map.removeLayer(this.layerIds[this.order[idx]]);
+        for(i = this.order.length - 1; i >= 0; i--) {
+            k = this.order[i];
+            map.removeLayer(this.layerIds[k]);
         }
         this.addLayer(optsAll, below);
         this.below = below;
     }
 
-    for(idx = 0; idx < this.order.length; idx++) {
-        k = this.order[idx];
+    for(i = 0; i < this.order.length; i++) {
+        k = this.order[i];
         opts = optsAll[k];
+
         subplot.setOptions(this.layerIds[k], 'setLayoutProperty', opts.layout);
+
         if(opts.layout.visibility === 'visible') {
             this.setSourceData(k, opts);
             subplot.setOptions(this.layerIds[k], 'setPaintProperty', opts.paint);
