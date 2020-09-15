@@ -715,6 +715,7 @@ var list = [
     'mapbox_geojson-attributes',
     'mapbox_layers',
     'mapbox_osm-style',
+    'mapbox_scattercluster',
     'mapbox_stamen-style',
     'mapbox_symbol-text',
     'mapbox_texttemplate',
@@ -1767,6 +1768,7 @@ figs['mapbox_fill'] = require('@mocks/mapbox_fill');
 figs['mapbox_geojson-attributes'] = require('@mocks/mapbox_geojson-attributes');
 figs['mapbox_layers'] = require('@mocks/mapbox_layers');
 figs['mapbox_osm-style'] = require('@mocks/mapbox_osm-style');
+figs['mapbox_scattercluster'] = require('@mocks/mapbox_scattercluster');
 figs['mapbox_stamen-style'] = require('@mocks/mapbox_stamen-style');
 figs['mapbox_symbol-text'] = require('@mocks/mapbox_symbol-text');
 figs['mapbox_texttemplate'] = require('@mocks/mapbox_texttemplate');
