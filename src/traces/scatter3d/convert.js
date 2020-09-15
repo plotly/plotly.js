@@ -354,9 +354,7 @@ function arrayToColor(colors) {
         return _arrayToColor(colors);
     }
 
-    return colors.map(function(color) {
-        return _arrayToColor(color);
-    });
+    return colors.map(_arrayToColor);
 }
 
 proto.update = function(data) {
