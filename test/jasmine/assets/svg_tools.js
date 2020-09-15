@@ -2,7 +2,7 @@
 
 module.exports = {
     findParentSVG: findParentSVG,
-    SVGRectToObj: SVGRectToObj
+    svgRectToObj: svgRectToObj
 };
 
 function findParentSVG(node) {
@@ -15,7 +15,7 @@ function findParentSVG(node) {
     }
 }
 
-function SVGRectToObj(svgrect) {
+function svgRectToObj(svgrect) {
     var obj = {};
     obj.x = svgrect.x;
     obj.y = svgrect.y;
