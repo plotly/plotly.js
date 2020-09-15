@@ -1,17 +1,16 @@
-'use strict'
+'use strict';
 var failTest = require('../assets/fail_test');
 var domainRefComponents = require('../assets/domain_ref/components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plotly = require('../../../lib/index');
-var delay = require('../assets/delay');
 // optionally specify a test number in a file to run just a single test
 var testNumber = require('../assets/domain_ref/testnumber');
 
 function makeTests(component, filter) {
     return function() {
         filter = filter === undefined ? function() {
-            return true
+            return true;
         } : filter;
         var descriptions = component.descriptions().filter(filter);
         var tests = component.tests().filter(filter);
@@ -26,11 +25,11 @@ function makeTests(component, filter) {
         });
         descriptions.forEach(function(d, i) {
             it(d, function(done) {
-                console.log("testing " + d);
-                gd.id = "graph-" + i;
+                console.log('testing ' + d);
+                gd.id = 'graph-' + i;
                 tests[i](function(v) {
-                        expect(v).toBe(true);
-                    }, gd)
+                    expect(v).toBe(true);
+                }, gd)
                     .catch(failTest)
                     .then(done);
             });
@@ -40,24 +39,24 @@ function makeTests(component, filter) {
 
 describe('Test annotations', makeTests(domainRefComponents.annotations,
     function(f, i) {
-        if (testNumber === undefined) {
+        if(testNumber === undefined) {
             return true;
         }
-        return i == testNumber;
+        return i === testNumber;
     }));
 
 describe('Test images', makeTests(domainRefComponents.images,
     function(f, i) {
-        if (testNumber === undefined) {
+        if(testNumber === undefined) {
             return true;
         }
-        return i == testNumber;
+        return i === testNumber;
     }));
 
 describe('Test shapes', makeTests(domainRefComponents.shapes,
     function(f, i) {
-        if (testNumber === undefined) {
+        if(testNumber === undefined) {
             return true;
         }
-        return i == testNumber;
+        return i === testNumber;
     }));

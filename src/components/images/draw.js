@@ -206,8 +206,8 @@ module.exports = function draw(gd) {
 
 
         // Set proper clipping on images
-        var xId = xa && (Axes.getRefType(d.xref) != 'domain') ? xa._id : '';
-        var yId = ya && (Axes.getRefType(d.yref) != 'domain') ? ya._id : '';
+        var xId = xa && (Axes.getRefType(d.xref) !== 'domain') ? xa._id : '';
+        var yId = ya && (Axes.getRefType(d.yref) !== 'domain') ? ya._id : '';
         var clipAxes = xId + yId;
 
         Drawing.setClipUrl(

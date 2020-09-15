@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 // Calculate the pixel values from various objects
 
@@ -19,20 +19,20 @@ function mapToPixelHelper(layout, axis, domain, d) {
     var dim;
     var lower;
     var upper;
-    if (axis === 'x') {
+    if(axis === 'x') {
         dim = 'width';
         lower = 'l';
         upper = 'r';
-    } else if (axis === 'y') {
+    } else if(axis === 'y') {
         dim = 'height';
         lower = 'b';
         upper = 't';
     } else {
-        throw "Bad axis letter: " + axis;
+        throw 'Bad axis letter: ' + axis;
     }
     var plotwidth = layout[dim] - layout.margin[lower] - layout.margin[upper];
     var domwidth = (domain[1] - domain[0]) * plotwidth;
-    if (dim === 'height') {
+    if(dim === 'height') {
         // y-axes relative to bottom of plot in plotly.js
         return layout[dim] - (layout.margin[lower] + domain[0] * plotwidth + domwidth * d);
     }
@@ -41,12 +41,12 @@ function mapToPixelHelper(layout, axis, domain, d) {
 
 // axis must be single letter, e.g., x or y
 function mapPaperToPixel(layout, axis, d) {
-    return mapToPixelHelper(layout,axis,[0,1],d);
+    return mapToPixelHelper(layout, axis, [0, 1], d);
 }
 
 // Here axis must have the same form as in layout, e.g., xaxis, yaxis2, etc.
 function mapDomainToPixel(layout, axis, d) {
-    return mapToPixelHelper(layout,axis[0],layout[axis].domain,d);
+    return mapToPixelHelper(layout, axis[0], layout[axis].domain, d);
 }
 
 // Here axis must have the same form as in layout, e.g., xaxis, yaxis2, etc.
@@ -55,7 +55,7 @@ function mapDomainToPixel(layout, axis, d) {
 // and dimensions are specified in powers of 10, e.g., if the corner's x
 // coordinate is at data 10, then the x value passed is 1
 function mapRangeToPixel(layout, axis, r, nolog) {
-    if ((!nolog)&&(layout[axis].type === 'log')) {
+    if((!nolog) && (layout[axis].type === 'log')) {
         r = Math.log10(r);
     }
     var d = (r - layout[axis].range[0]) / (layout[axis].range[1] - layout[axis].range[0]);
@@ -63,7 +63,7 @@ function mapRangeToPixel(layout, axis, r, nolog) {
 }
 
 module.exports = {
-mapPaperToPixel: mapPaperToPixel,
-mapDomainToPixel: mapDomainToPixel,
-mapRangeToPixel: mapRangeToPixel
+    mapPaperToPixel: mapPaperToPixel,
+    mapDomainToPixel: mapDomainToPixel,
+    mapRangeToPixel: mapRangeToPixel
 };

@@ -294,9 +294,7 @@ function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
 function logAxisIfAxType(layoutIn, layoutOut, axid, axtype, nologrange) {
     var axname = axisIds.id2name(axid);
     if ((axtype === 'log') && (axid !== undefined)) {
-        var axis = {
-            ...layoutIn[axname]
-        };
+        var axis = Lib.extendDeep({}, layoutIn[axname]);
         axis.type = 'log';
         axis.range = nologrange ? axis.range : axis.range.map(Math.log10);
         layoutOut[axname] = axis;
