@@ -410,8 +410,8 @@ function coordsEq(a, b) {
 
 function compareBBoxes(a, b) {
     return ['x', 'y', 'width', 'height'].map(
-        (k, ) => coordsEq(a[k], b[k])).reduce(
-        (l, r) => l && r,
+        function (k) { return coordsEq(a[k], b[k]); }).reduce(
+        function (l, r) { return l && r; },
         true);
 }
 
@@ -537,8 +537,6 @@ var axisTypes = ['linear', 'log'];
 // suffice.
 var axisPairs = [
     ['x', 'y'],
-    ['x2', 'y'],
-    ['x', 'y2'],
     ['x2', 'y2']
 ];
 // For annotations: if arrow coordinate is in the same coordinate system 's', if
