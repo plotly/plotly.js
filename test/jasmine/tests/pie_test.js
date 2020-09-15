@@ -2064,3 +2064,72 @@ describe('pie uniformtext', function() {
         .then(done);
     });
 });
+
+describe('pie value format', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should handle rounding big & small numbers', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'pie',
+            textinfo: 'value',
+            values: [
+                123456789012,
+                12345678901.2,
+                1234567890.12,
+                123456789.012,
+                12345678.9012,
+                1234567.89012,
+                123456.789012,
+                12345.6789012,
+                1234.56789012,
+                123.456789012,
+                12.3456789012,
+                1.23456789012,
+                0.123456789012,
+                0.0123456789012,
+                0.00123456789012,
+                0.000123456789012,
+                0.0000123456789012,
+                0.00000123456789012,
+            ]
+        }])
+        .then(function() {
+            var exp = [
+                '123,456,789,012',
+                '12,345,678,901',
+                '1,234,567,890',
+                '123,456,789',
+                '12,345,678.9',
+                '1,234,567.89',
+                '123,456.789',
+                '12,345.6789',
+                '1,234.56789',
+                '123.456789',
+                '12.3456789',
+                '1.23456789',
+                '0.123456789',
+                '0.0123456789',
+                '0.00123456789',
+                '0.000123456789',
+                '0.0000123456789',
+                '0.00000123456789'
+            ];
+
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            for(var i = 0; i < selection[0].length; i++) {
+                var text = selection[0][i].getAttribute('data-unformatted');
+                expect(text).toBe(exp[i]);
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});

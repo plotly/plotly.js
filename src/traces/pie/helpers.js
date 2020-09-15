@@ -20,7 +20,9 @@ exports.formatPiePercent = function formatPiePercent(v, separators) {
 
 exports.formatPieValue = function formatPieValue(v, separators) {
     var vRounded = v.toPrecision(10);
-    if(vRounded.lastIndexOf('.') !== -1) {
+    if(vRounded.indexOf('e+') !== -1) {
+        vRounded = Math.round(v);
+    } else if(vRounded.lastIndexOf('.') !== -1) {
         vRounded = vRounded.replace(/[.]?0+$/, '');
     }
     return Lib.numSeparate(vRounded, separators);
