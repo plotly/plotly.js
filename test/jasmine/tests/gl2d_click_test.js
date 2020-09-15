@@ -23,6 +23,7 @@ Plotly.register([
     require('@lib/contourgl')
 ]);
 
+var mock0 = require('@mocks/gl2d_scatter-continuous-clustering.json');
 var mock1 = require('@mocks/gl2d_14.json');
 var mock2 = require('@mocks/gl2d_pointcloud-basic.json');
 
@@ -440,6 +441,31 @@ describe('Test hover and click interactions', function() {
         });
 
         Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl scatter3d should propagate marker colors to hover labels', function(done) {
+        var _mock = Lib.extendDeep({}, mock0);
+        _mock.layout.width = 800;
+        _mock.layout.height = 600;
+
+        var run = makeRunner([700, 300], {
+            x: 15075859,
+            y: 79183,
+            curveNumber: 0,
+            pointNumber: 0,
+            bgcolor: 'rgb(202, 178, 214)',
+            bordercolor: 'rgb(68, 68, 68)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(68, 68, 68)'
+        }, {
+            msg: 'pointcloud'
+        });
+
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .catch(failTest)
         .then(done);
