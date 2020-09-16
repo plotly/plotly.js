@@ -44,6 +44,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
         var period0 = trace[axLetter + 'period0'];
         var base = (dateTime2ms(period0, calendar) || 0) - offset;
 
+        var newVals = [];
         var len = vals.length;
         for(var i = 0; i < len; i++) {
             var v = vals[i] - base;
@@ -98,10 +99,9 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
                 );
             }
 
-            if(newD) {
-                vals[i] = newD.getTime() + base;
-            }
+            newVals[i] = newD ? newD.getTime() + base : vals[i];
         }
+        return newVals;
     }
     return vals;
 };

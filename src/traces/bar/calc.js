@@ -18,20 +18,23 @@ var calcSelection = require('../scatter/calc_selection');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos;
+    var size, pos, oPos;
 
     var sizeOpts = {
         msUTC: !!(trace.base || trace.base === 0)
     };
 
+    var hasPeriod;
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x', sizeOpts);
-        pos = ya.makeCalcdata(trace, 'y');
-        pos = alignPeriod(trace, ya, 'y', pos);
+        oPos = ya.makeCalcdata(trace, 'y');
+        pos = alignPeriod(trace, ya, 'y', oPos);
+        hasPeriod = !!trace.yperiodalignment;
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
-        pos = xa.makeCalcdata(trace, 'x');
-        pos = alignPeriod(trace, xa, 'x', pos);
+        oPos = xa.makeCalcdata(trace, 'x');
+        pos = alignPeriod(trace, xa, 'x', oPos);
+        hasPeriod = !!trace.xperiodalignment;
     }
 
     // create the "calculated data" to plot
@@ -41,6 +44,10 @@ module.exports = function calc(gd, trace) {
     // set position and size
     for(var i = 0; i < serieslen; i++) {
         cd[i] = { p: pos[i], s: size[i] };
+
+        if(hasPeriod) {
+            cd[i].orig_p = oPos[i]; // used by hover
+        }
 
         if(trace.ids) {
             cd[i].id = String(trace.ids[i]);

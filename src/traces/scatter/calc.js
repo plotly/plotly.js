@@ -24,10 +24,10 @@ function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var x = xa.makeCalcdata(trace, 'x');
-    var y = ya.makeCalcdata(trace, 'y');
-    x = alignPeriod(trace, xa, 'x', x);
-    y = alignPeriod(trace, ya, 'y', y);
+    var oX = xa.makeCalcdata(trace, 'x');
+    var oY = ya.makeCalcdata(trace, 'y');
+    var x = alignPeriod(trace, xa, 'x', oX);
+    var y = alignPeriod(trace, ya, 'y', oY);
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);
@@ -59,6 +59,9 @@ function calc(gd, trace) {
         calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     }
 
+    var hasPeriodX = !!trace.xperiodalignment;
+    var hasPeriodY = !!trace.yperiodalignment;
+
     for(i = 0; i < serieslen; i++) {
         var cdi = cd[i] = {};
         var xValid = isNumeric(x[i]);
@@ -66,6 +69,13 @@ function calc(gd, trace) {
         if(xValid && yValid) {
             cdi[xAttr] = x[i];
             cdi[yAttr] = y[i];
+
+            if(hasPeriodX) {
+                cdi.orig_x = oX[i];
+            }
+            if(hasPeriodY) {
+                cdi.orig_y = oY[i];
+            }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions
             // even with invalid sizes
