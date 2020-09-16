@@ -10,21 +10,21 @@
 
 var Lib = require('../../lib');
 
+function format(vRounded) {
+    return (
+        vRounded.indexOf('e') !== -1 ? vRounded.replace(/[.]?0+e/, 'e') :
+        vRounded.indexOf('.') !== -1 ? vRounded.replace(/[.]?0+$/, '') :
+        vRounded
+    );
+}
+
 exports.formatPiePercent = function formatPiePercent(v, separators) {
-    var vRounded = (v * 100).toPrecision(3);
-    if(vRounded.lastIndexOf('.') !== -1) {
-        vRounded = vRounded.replace(/[.]?0+$/, '');
-    }
+    var vRounded = format((v * 100).toPrecision(3));
     return Lib.numSeparate(vRounded, separators) + '%';
 };
 
 exports.formatPieValue = function formatPieValue(v, separators) {
-    var vRounded = v.toPrecision(10);
-    if(vRounded.indexOf('e+') !== -1) {
-        vRounded = Math.round(v);
-    } else if(vRounded.lastIndexOf('.') !== -1) {
-        vRounded = vRounded.replace(/[.]?0+$/, '');
-    }
+    var vRounded = format(v.toPrecision(10));
     return Lib.numSeparate(vRounded, separators);
 };
 

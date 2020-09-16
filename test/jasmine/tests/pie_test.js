@@ -2076,7 +2076,7 @@ describe('pie value format', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should handle rounding big & small numbers', function(done) {
+    it('should handle rounding big & small values', function(done) {
         Plotly.newPlot(gd, [{
             type: 'pie',
             textinfo: 'value',
@@ -2099,12 +2099,14 @@ describe('pie value format', function() {
                 0.000123456789012,
                 0.0000123456789012,
                 0.00000123456789012,
+                0.000000123456789012,
+                0.0000000123456789012
             ]
         }])
         .then(function() {
             var exp = [
-                '123,456,789,012',
-                '12,345,678,901',
+                '1.23456789e+11',
+                '1.23456789e+10',
                 '1,234,567,890',
                 '123,456,789',
                 '12,345,678.9',
@@ -2120,12 +2122,55 @@ describe('pie value format', function() {
                 '0.00123456789',
                 '0.000123456789',
                 '0.0000123456789',
-                '0.00000123456789'
+                '0.00000123456789',
+                '1.23456789e-7',
+                '1.23456789e-8'
             ];
 
             var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
             for(var i = 0; i < selection[0].length; i++) {
                 var text = selection[0][i].getAttribute('data-unformatted');
+                expect(text).toBe(exp[i]);
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should handle rounding big & small percents', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'pie',
+            textinfo: 'percent',
+            values: [
+                0.9,
+                0.09,
+                0.009,
+                0.0009,
+                0.00009,
+                0.000009,
+                0.0000009,
+                0.00000009,
+                0.000000009,
+                0.0000000009
+            ]
+        }])
+        .then(function() {
+            var exp = [
+                '90%',
+                '9%',
+                '0.9%',
+                '0.09%',
+                '0.009%',
+                '0.0009%',
+                '0.00009%',
+                '0.000009%',
+                '9e-7%',
+                '9e-8%'
+            ];
+
+            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            for(var i = 0; i < selection[0].length; i++) {
+                var text = selection[0][i].innerHTML;
                 expect(text).toBe(exp[i]);
             }
         })
