@@ -9,6 +9,7 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
@@ -26,9 +27,11 @@ module.exports = function calc(gd, trace) {
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x', sizeOpts);
         pos = ya.makeCalcdata(trace, 'y');
+        pos = alignPeriod(trace, ya, 'y', pos);
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
         pos = xa.makeCalcdata(trace, 'x');
+        pos = alignPeriod(trace, xa, 'x', pos);
     }
 
     // create the "calculated data" to plot

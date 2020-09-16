@@ -12,6 +12,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var subTypes = require('./subtypes');
@@ -25,6 +26,8 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var x = xa.makeCalcdata(trace, 'x');
     var y = ya.makeCalcdata(trace, 'y');
+    x = alignPeriod(trace, xa, 'x', x);
+    y = alignPeriod(trace, ya, 'y', y);
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);

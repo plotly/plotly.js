@@ -13,6 +13,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var binFunctions = require('./bin_functions');
@@ -272,7 +273,9 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
             if(tracei.visible) {
                 var mainDatai = binOpts.dirs[i];
-                pos0 = tracei['_' + mainDatai + 'pos0'] = pa.makeCalcdata(tracei, mainDatai);
+                pos0 = pa.makeCalcdata(tracei, mainDatai);
+                pos0 = alignPeriod(trace, pa, mainData, pos0);
+                tracei['_' + mainDatai + 'pos0'] = pos0;
 
                 allPos = Lib.concat(allPos, pos0);
                 delete tracei['_' + mainData + 'autoBinFinished'];

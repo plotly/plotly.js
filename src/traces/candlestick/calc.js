@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 
 var calcCommon = require('../ohlc/calc').calcCommon;
 
@@ -19,6 +20,7 @@ module.exports = function(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis);
 
     var x = xa.makeCalcdata(trace, 'x');
+    x = alignPeriod(trace, xa, 'x', x);
 
     var cd = calcCommon(gd, trace, x, ya, ptFunc);
 

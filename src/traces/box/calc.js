@@ -11,6 +11,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var Lib = require('../../lib');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
@@ -309,7 +310,9 @@ function getPos(trace, posLetter, posAxis, num) {
     var hasPosStep = 'd' + posLetter in trace;
 
     if(hasPosArray || (hasPos0 && hasPosStep)) {
-        return posAxis.makeCalcdata(trace, posLetter);
+        var pos = posAxis.makeCalcdata(trace, posLetter);
+        pos = alignPeriod(trace, posAxis, posLetter, pos);
+        return pos;
     }
 
     var pos0;

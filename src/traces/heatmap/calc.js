@@ -11,6 +11,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -62,7 +63,11 @@ module.exports = function calc(gd, trace) {
             zIn = trace._z;
         } else {
             x = trace._x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-            y = trace._y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+            y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+            x = alignPeriod(trace, xa, 'x', x);
+            y = alignPeriod(trace, ya, 'y', y);
+            trace._x = x;
+            trace._y = y;
         }
 
         x0 = trace.x0;

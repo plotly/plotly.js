@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 function calc(gd, trace) {
@@ -144,6 +145,7 @@ function convertTickWidth(gd, xa, trace) {
                 ohlcTracesOnThisXaxis.push(tracei);
 
                 var xcalc = xa.makeCalcdata(tracei, 'x');
+                xcalc = alignPeriod(trace, xa, 'x', xcalc);
                 tracei._xcalc = xcalc;
 
                 var _minDiff = Lib.distinctVals(xcalc).minDiff;

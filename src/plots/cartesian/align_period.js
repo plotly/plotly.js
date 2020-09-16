@@ -18,6 +18,8 @@ var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
+    if(ax.type !== 'date') return vals;
+
     var alignment = trace[axLetter + 'periodalignment'];
     if(!alignment) return vals;
 
