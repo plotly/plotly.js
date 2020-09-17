@@ -56,6 +56,7 @@
       ]
     },
     "xaxis4": {
+      "type": "log",
       "anchor": "y4",
       "domain": [
         0.55,
@@ -81,6 +82,7 @@
       ]
     },
     "yaxis3": {
+      "type": "log",
       "anchor": "x3",
       "domain": [
         0.0,
@@ -116,14 +118,14 @@
         "xref": "x4 domain",
         "yref": "y4 domain",
         "x0":   0.4,
-        "y0":   0.6,
-        "x1":   0.5,
+        "y0":   0.5,
+        "x1":   0.6,
         "y1":   0.7,
         "line": { "color": "rgb(10, 20, 31)" }
     }],
     "annotations": [{
         "text": "A",
-        "bgcolor": "rgb(100, 200, 232)",
+        "bordercolor": "rgb(100, 200, 232)",
         "xref": "x3 domain",
         "yref": "y3 domain",
         "x":   0.4,
@@ -134,7 +136,7 @@
         "ay":   0.7
     },{
         "text": "B",
-        "bgcolor": "rgb(200, 200, 232)",
+        "bordercolor": "rgb(200, 200, 232)",
         "xref": "x4 domain",
         "yref": "y4 domain",
         "x":   0.3,

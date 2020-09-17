@@ -437,9 +437,10 @@ function compareBBoxes(a, b) {
         true);
 }
 
-function findAROByColor(color, id) {
+function findAROByColor(color, id, type) {
     id = (id === undefined) ? '' : id + ' ';
-    var selector = id + 'path';
+    type = (type === undefined) ? 'path' : type;
+    var selector = id + type;
     var ret = d3.selectAll(selector).filter(function() {
         return this.style.stroke === color;
     }).node();
