@@ -44,9 +44,8 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
         // var isMiddle = 'middle' === alignment;
         var isEnd = 'end' === alignment;
 
-        var offset = (new Date()).getTimezoneOffset() * 60000;
         var period0 = trace[axLetter + 'period0'];
-        var base = (dateTime2ms(period0, calendar) || 0) - offset;
+        var base = dateTime2ms(period0, calendar) || 0;
 
         var newVals = [];
         var len = vals.length;
@@ -55,9 +54,9 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
 
             var dateStr = ms2DateTime(v, 0, calendar);
             var d = new Date(dateStr);
-            var year = d.getFullYear();
-            var month = d.getMonth();
-            var day = d.getDate();
+            var year = d.getUTCFullYear();
+            var month = d.getUTCMonth();
+            var day = d.getUTCDate();
 
             var newD;
             var startTime;
@@ -73,8 +72,8 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             var d1 = day + nDays;
             if(nDays || nMonths || nYears) {
                 if(nDays) {
-                    startTime = (new Date(year, month, day)).getTime();
-                    var monthDays = new Date(y1, m1 + 1, 0).getDate();
+                    startTime = Date.UTC(year, month, day);
+                    var monthDays = new Date(y1, m1 + 1, 0).getUTCDate();
                     if(d1 > monthDays) {
                         d1 -= monthDays;
                         m1 += 1;
@@ -83,13 +82,13 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
                             y1 += 1;
                         }
                     }
-                    endTime = (new Date(y1, m1, d1)).getTime();
+                    endTime = Date.UTC(y1, m1, d1);
                 } else if(nMonths) {
-                    startTime = (new Date(year, nYears ? month : roundMonth(month, nMonths))).getTime();
+                    startTime = Date.UTC(year, nYears ? month : roundMonth(month, nMonths));
                     endTime = incrementMonth(startTime, mPeriod ? mPeriod : nMonths, calendar);
                 } else {
-                    startTime = (new Date(year, 0)).getTime();
-                    endTime = (new Date(y1, 0)).getTime();
+                    startTime = Date.UTC(year, 0);
+                    endTime = Date.UTC(y1, 0);
                 }
 
                 newD = new Date(
