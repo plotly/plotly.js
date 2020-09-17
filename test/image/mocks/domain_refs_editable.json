@@ -1,39 +1,150 @@
 {
-    "data": [{
-        "x": [1, 5],
-        "y": [1, 10],
-        "type": "scatter"
-    }, {
-        "x": [1, 5],
-        "y": [0.1, 1.0],
-        "type": "scatter",
-        "yaxis": "y2"
-    }],
-    "layout": {
-        "title": "Axis domain referenced shape",
-        "width": 0.3,
-        "height": 0.2,
-        "xaxis": {
-            "domain": [0.2, 0.9]
-        },
-        "yaxis": {
-            "domain": [0.1, 0.8]
-        },
-        "yaxis2": {
-            "overlaying": "y",
-            "side": "right"
-        },
-        "shapes": [{
-            "type": "rect",
-            "xref": "x domain",
-            "yref": "y domain",
-            "layer": "above",
-            "x0": 0.1,
-            "y0": 0.2,
-            "x1": 0.8,
-            "y1": 0.5
-        }]
+  "data": [
+    {
+      "type": "scatter",
+      "x": [],
+      "xaxis": "x",
+      "y": [],
+      "yaxis": "y"
     },
+    {
+      "type": "scatter",
+      "x": [],
+      "xaxis": "x2",
+      "y": [],
+      "yaxis": "y2"
+    },
+    {
+      "type": "scatter",
+      "x": [],
+      "xaxis": "x3",
+      "y": [],
+      "yaxis": "y3"
+    },
+    {
+      "type": "scatter",
+      "x": [],
+      "xaxis": "x4",
+      "y": [],
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "anchor": "y",
+      "domain": [
+        0.0,
+        0.45
+      ]
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [
+        0.55,
+        1.0
+      ]
+    },
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [
+        0.0,
+        0.45
+      ],
+      "range": [
+        1,
+        10
+      ]
+    },
+    "xaxis4": {
+      "anchor": "y4",
+      "domain": [
+        0.55,
+        1.0
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    "yaxis": {
+      "anchor": "x",
+      "domain": [
+        0.575,
+        1.0
+      ]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [
+        0.575,
+        1.0
+      ]
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [
+        0.0,
+        0.425
+      ],
+      "range": [
+        0,
+        1
+      ]
+    },
+    "yaxis4": {
+      "anchor": "x4",
+      "domain": [
+        0.0,
+        0.425
+      ],
+      "range": [
+        1,
+        10
+      ]
+    },
+    "shapes": [{
+        "type": "rect",
+        "xref": "x3 domain",
+        "yref": "y3 domain",
+        "x0":   0.1,
+        "y0":   0.2,
+        "x1":   0.3,
+        "y1":   0.4,
+        "line": { "color": "rgb(10, 20, 30)" }
+    },{
+        "type": "rect",
+        "xref": "x4 domain",
+        "yref": "y4 domain",
+        "x0":   0.4,
+        "y0":   0.6,
+        "x1":   0.5,
+        "y1":   0.7,
+        "line": { "color": "rgb(10, 20, 31)" }
+    }],
+    "annotations": [{
+        "text": "A",
+        "bgcolor": "rgb(100, 200, 232)",
+        "xref": "x3 domain",
+        "yref": "y3 domain",
+        "x":   0.4,
+        "y":   0.6,
+        "axref": "x3 domain",
+        "ayref": "y3 domain",
+        "ax":   0.5,
+        "ay":   0.7
+    },{
+        "text": "B",
+        "bgcolor": "rgb(200, 200, 232)",
+        "xref": "x4 domain",
+        "yref": "y4 domain",
+        "x":   0.3,
+        "y":   0.4,
+        "axref": "x4 domain",
+        "ayref": "y4 domain",
+        "ax":   0.1,
+        "ay":   0.2
+    }]
+  },
     "config": {
         "editable": true
     }

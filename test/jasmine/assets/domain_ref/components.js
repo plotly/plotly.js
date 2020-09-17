@@ -28,6 +28,88 @@ var testMock = require('../../../image/mocks/domain_ref_base.json');
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
 
+// some made-up values for testing
+// NOTE: The pixel values are intentionally set so that 2*pixel is never greater
+// than the mock's margin. This is so that annotations are not unintentionally
+// clipped out because they exceed the plotting area. The reason for using twice
+// the pixel value is because the annotation test requires plotting 2
+// annotations, the second having arrow components twice as long as the first.
+var aroPositionsX = [{
+        // aros referring to data
+    ref: 'range',
+    value: [2, 3],
+        // for objects that need a size (i.e., images)
+    size: 1.5,
+        // for the case when annotations specifies arrow in pixels, this value
+        // is read instead of value[1]
+    pixel: 25
+},
+{
+        // aros referring to domains
+    ref: 'domain',
+    value: [0.2, 0.75],
+    size: 0.3,
+    pixel: 30
+},
+{
+        // aros referring to paper
+    ref: 'paper',
+    value: [0.25, 0.8],
+    size: 0.35,
+    pixel: 35
+},
+];
+var aroPositionsY = [{
+        // aros referring to data
+    ref: 'range',
+        // two values for rects
+    value: [1, 2],
+    pixel: 30,
+    size: 1.2
+},
+{
+        // aros referring to domains
+    ref: 'domain',
+    value: [0.25, 0.7],
+    pixel: 40,
+    size: 0.2
+},
+{
+        // aros referring to paper
+    ref: 'paper',
+    value: [0.2, 0.85],
+    pixel: 45,
+    size: 0.3
+}
+];
+
+var axisTypes = ['linear', 'log'];
+// Test on 'x', 'y', 'x2', 'y2' axes
+// TODO the 'paper' position references are tested twice when once would
+// suffice.
+var axisPairs = [
+    ['x', 'y'],
+    ['x2', 'y2']
+];
+// For annotations: if arrow coordinate is in the same coordinate system 's', if
+// pixel then 'p'
+var arrowAxis = [
+    ['s', 's'],
+    ['p', 's'],
+    ['s', 'p'],
+    ['p', 'p']
+];
+// only test the shapes line and rect for now
+var shapeTypes = ['line', 'rect'];
+// anchor positions for images
+var xAnchors = ['left', 'center', 'right'];
+var yAnchors = ['top', 'middle', 'bottom'];
+// this color chosen so it can easily be found with d3
+// NOTE: for images color cannot be set but it will be the only image in the
+// plot so you can use d3.select('g image').node()
+var aroColor = 'rgb(50, 100, 150)';
+
+
 // acts on an Object representing a aro which could be a line or a rect
 // DEPRECATED
 function aroFromAROPos(aro, axletter, axnum, aropos) {
@@ -412,87 +494,6 @@ function checkAROPosition(gd, aro) {
     console.log('aroPathBBox: ' + JSON.stringify(SVGTools.svgRectToObj(aroPathBBox)));
     return ret;
 }
-
-// some made-up values for testing
-// NOTE: The pixel values are intentionally set so that 2*pixel is never greater
-// than the mock's margin. This is so that annotations are not unintentionally
-// clipped out because they exceed the plotting area. The reason for using twice
-// the pixel value is because the annotation test requires plotting 2
-// annotations, the second having arrow components twice as long as the first.
-var aroPositionsX = [{
-        // aros referring to data
-    ref: 'range',
-    value: [2, 3],
-        // for objects that need a size (i.e., images)
-    size: 1.5,
-        // for the case when annotations specifies arrow in pixels, this value
-        // is read instead of value[1]
-    pixel: 25
-},
-{
-        // aros referring to domains
-    ref: 'domain',
-    value: [0.2, 0.75],
-    size: 0.3,
-    pixel: 30
-},
-{
-        // aros referring to paper
-    ref: 'paper',
-    value: [0.25, 0.8],
-    size: 0.35,
-    pixel: 35
-},
-];
-var aroPositionsY = [{
-        // aros referring to data
-    ref: 'range',
-        // two values for rects
-    value: [1, 2],
-    pixel: 30,
-    size: 1.2
-},
-{
-        // aros referring to domains
-    ref: 'domain',
-    value: [0.25, 0.7],
-    pixel: 40,
-    size: 0.2
-},
-{
-        // aros referring to paper
-    ref: 'paper',
-    value: [0.2, 0.85],
-    pixel: 45,
-    size: 0.3
-}
-];
-
-var axisTypes = ['linear', 'log'];
-// Test on 'x', 'y', 'x2', 'y2' axes
-// TODO the 'paper' position references are tested twice when once would
-// suffice.
-var axisPairs = [
-    ['x', 'y'],
-    ['x2', 'y2']
-];
-// For annotations: if arrow coordinate is in the same coordinate system 's', if
-// pixel then 'p'
-var arrowAxis = [
-    ['s', 's'],
-    ['p', 's'],
-    ['s', 'p'],
-    ['p', 'p']
-];
-// only test the shapes line and rect for now
-var shapeTypes = ['line', 'rect'];
-// anchor positions for images
-var xAnchors = ['left', 'center', 'right'];
-var yAnchors = ['top', 'middle', 'bottom'];
-// this color chosen so it can easily be found with d3
-// NOTE: for images color cannot be set but it will be the only image in the
-// plot so you can use d3.select('g image').node()
-var aroColor = 'rgb(50, 100, 150)';
 
 function testShape(
     gd,
