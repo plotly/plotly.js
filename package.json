@@ -155,7 +155,7 @@
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.6",
     "lodash": "^4.17.20",
-    "madge": "^3.9.2",
+    "madge": "^3.10.0",
     "minify-stream": "^2.1.0",
     "mkdirp": "^1.0.4",
     "node-sass": "^4.14.1",
