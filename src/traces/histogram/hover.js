@@ -11,6 +11,7 @@
 
 var barHover = require('../bar/hover').hoverPoints;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
+var instanceOrPeriod = require('../../plots/cartesian/instance_or_period');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var pts = barHover(pointData, xval, yval, hovermode);
@@ -23,8 +24,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     if(!trace.cumulative.enabled) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';
-
-        pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.ph0, di.ph1);
+        var pp = instanceOrPeriod(pointData, trace, posLetter);
+        var ax = pointData[posLetter + 'a'];
+        var label = hoverLabelText(ax, di.ph0, di.ph1);
+        if(pp[1] !== undefined) label += ' - ' + hoverLabelText(ax, pp[0], pp[1]);
+        pointData[posLetter + 'Label'] = label;
     }
 
     return pts;
