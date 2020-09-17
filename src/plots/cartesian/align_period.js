@@ -12,6 +12,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
+var incrementMonth = Lib.incrementMonth;
 var constants = require('../../constants/numerical');
 var ONEDAY = constants.ONEDAY;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
@@ -24,13 +25,16 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     if(!alignment) return vals;
 
     var period = trace[axLetter + 'period'];
+    var mPeriod;
     if(isNumeric(period)) {
         period = +period;
         if(period <= 0) return vals;
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var n = +(period.substring(1));
-        if(n > 0 && Math.round(n) === n) period = n * ONEAVGMONTH;
-        else return vals;
+        if(n > 0 && Math.round(n) === n) {
+            mPeriod = n;
+            period = n * ONEAVGMONTH;
+        } else return vals;
     }
 
     if(period > 0) {
@@ -82,11 +86,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
                     endTime = (new Date(y1, m1, d1)).getTime();
                 } else if(nMonths) {
                     startTime = (new Date(year, nYears ? month : roundMonth(month, nMonths))).getTime();
-                    if(m1 > 11) {
-                        m1 -= 12;
-                        y1 += 1;
-                    }
-                    endTime = (new Date(y1, nYears ? m1 : roundMonth(m1, nMonths))).getTime();
+                    endTime = incrementMonth(startTime, mPeriod ? mPeriod : nMonths, calendar);
                 } else {
                     startTime = (new Date(year, 0)).getTime();
                     endTime = (new Date(y1, 0)).getTime();
