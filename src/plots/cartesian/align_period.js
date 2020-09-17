@@ -13,10 +13,7 @@ var Lib = require('../../lib');
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
 var incrementMonth = Lib.incrementMonth;
-var constants = require('../../constants/numerical');
-var ONEDAY = constants.ONEDAY;
-var ONEAVGMONTH = constants.ONEAVGMONTH;
-var ONEAVGYEAR = constants.ONEAVGYEAR;
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     if(ax.type !== 'date') return vals;
@@ -25,84 +22,67 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     if(!alignment) return vals;
 
     var period = trace[axLetter + 'period'];
-    var mPeriod;
+    var mPeriod, dPeriod;
     if(isNumeric(period)) {
-        period = +period;
-        if(period <= 0) return vals;
+        dPeriod = +period;
+        dPeriod /= ONEDAY; // convert milliseconds to days
+        dPeriod = Math.round(dPeriod);
+        if(dPeriod <= 0) return vals;
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var n = +(period.substring(1));
         if(n > 0 && Math.round(n) === n) {
             mPeriod = n;
-            period = n * ONEAVGMONTH;
         } else return vals;
     }
 
-    if(period > 0) {
-        var calendar = ax.calendar;
+    var calendar = ax.calendar;
 
-        var isStart = 'start' === alignment;
-        // var isMiddle = 'middle' === alignment;
-        var isEnd = 'end' === alignment;
+    var isStart = 'start' === alignment;
+    // var isMiddle = 'middle' === alignment;
+    var isEnd = 'end' === alignment;
 
-        var period0 = trace[axLetter + 'period0'];
-        var base = dateTime2ms(period0, calendar) || 0;
+    var period0 = trace[axLetter + 'period0'];
+    var base = dateTime2ms(period0, calendar) || 0;
 
-        var newVals = [];
-        var len = vals.length;
-        for(var i = 0; i < len; i++) {
-            var v = vals[i] - base;
+    var newVals = [];
+    var len = vals.length;
+    for(var i = 0; i < len; i++) {
+        var v = vals[i] - base;
 
-            var dateStr = ms2DateTime(v, 0, calendar);
-            var d = new Date(dateStr);
-            var year = d.getUTCFullYear();
-            var month = d.getUTCMonth();
-            var day = d.getUTCDate();
+        var dateStr = ms2DateTime(v, 0, calendar);
+        var d = new Date(dateStr);
+        var year = d.getUTCFullYear();
+        var month = d.getUTCMonth();
+        var day = d.getUTCDate();
 
-            var newD;
-            var startTime;
-            var endTime;
-
-            var nMonths = Math.floor(period / ONEAVGMONTH) % 12;
-            var nYears = Math.floor((period - nMonths * ONEAVGMONTH) / ONEAVGYEAR);
-            var nDays = Math.floor((period - nMonths * ONEAVGMONTH - nYears * ONEAVGYEAR) / ONEDAY);
-            if(nYears && nMonths) nDays = 0;
-
-            var y1 = year + nYears;
-            var m1 = month + nMonths;
-            var d1 = day + nDays;
-            if(nDays || nMonths || nYears) {
-                if(nDays) {
-                    startTime = Date.UTC(year, month, day);
-                    var monthDays = new Date(y1, m1 + 1, 0).getUTCDate();
-                    if(d1 > monthDays) {
-                        d1 -= monthDays;
-                        m1 += 1;
-                        if(m1 > 11) {
-                            m1 -= 12;
-                            y1 += 1;
-                        }
-                    }
-                    endTime = Date.UTC(y1, m1, d1);
-                } else if(nMonths) {
-                    startTime = Date.UTC(year, nYears ? month : roundMonth(month, nMonths));
-                    endTime = incrementMonth(startTime, mPeriod ? mPeriod : nMonths, calendar);
-                } else {
-                    startTime = Date.UTC(year, 0);
-                    endTime = Date.UTC(y1, 0);
-                }
-
-                newD = new Date(
-                    isStart ? startTime :
-                    isEnd ? endTime :
-                    (startTime + endTime) / 2
-                );
-            }
-
-            newVals[i] = newD ? newD.getTime() + base : vals[i];
+        var startTime, endTime;
+        if(dPeriod) {
+            startTime = Date.UTC(year, month, day);
+            endTime = startTime + dPeriod * ONEDAY;
         }
-        return newVals;
+
+        if(mPeriod) {
+            var nYears = Math.floor(mPeriod / 12);
+            var nMonths = mPeriod % 12;
+
+            if(nMonths) {
+                startTime = Date.UTC(year, nYears ? month : roundMonth(month, nMonths));
+                endTime = incrementMonth(startTime, mPeriod, calendar);
+            } else {
+                startTime = Date.UTC(year, 0);
+                endTime = Date.UTC(year + nYears, 0);
+            }
+        }
+
+        var newD = new Date(
+            isStart ? startTime :
+            isEnd ? endTime :
+            (startTime + endTime) / 2
+        );
+
+        newVals[i] = newD.getTime() + base;
     }
-    return vals;
+    return newVals;
 };
 
 var monthSteps = [2, 3, 4, 6];
