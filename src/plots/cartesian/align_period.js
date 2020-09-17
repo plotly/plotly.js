@@ -54,10 +54,10 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             var v = vals[i] - base;
 
             var dateStr = ms2DateTime(v, 0, calendar);
-            var O = new Date(dateStr);
-            var year = O.getFullYear();
-            var month = O.getMonth();
-            var day = O.getDate();
+            var d = new Date(dateStr);
+            var year = d.getFullYear();
+            var month = d.getMonth();
+            var day = d.getDate();
 
             var newD;
             var startTime;
