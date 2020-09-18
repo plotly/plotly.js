@@ -7,7 +7,7 @@ var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var getSVGElemScreenBBox = require(
     '../assets/get_svg_elem_screen_bbox');
-var testMock = require('../../image/mocks/domain_refs_editable.json');
+var testMock = require('../assets/domain_ref/domain_refs_editable.json');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 // we have to use drag to move annotations for some reason
@@ -22,9 +22,7 @@ var rectColor4 = 'rgb(200, 200, 232)';
 var arrowColor1 = 'rgb(231, 200, 100)';
 var arrowColor2 = 'rgb(231, 200, 200)';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000000;
-
-var DELAY_TIME = 1000;
+var DELAY_TIME = 10;
 
 function svgRectToJSON(svgrect) {
     return JSON.stringify(SVGTools.svgRectToObj(svgrect));

@@ -23,7 +23,7 @@ var axisIds = require('../../../../src/plots/cartesian/axis_ids');
 var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var iterable = require('extra-iterable');
 
-var testMock = require('../../../image/mocks/domain_ref_base.json');
+var testMock = require('./domain_ref_base.json');
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
