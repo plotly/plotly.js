@@ -132,8 +132,10 @@
         "y":   0.6,
         "axref": "x3 domain",
         "ayref": "y3 domain",
-        "ax":   0.5,
-        "ay":   0.7
+        "ax":   0.7,
+        "ay":   0.8,
+        "arrowcolor": "rgb(231, 200, 100)",
+        "arrowwidth": 3
     },{
         "text": "B",
         "bordercolor": "rgb(200, 200, 232)",
@@ -144,10 +146,14 @@
         "axref": "x4 domain",
         "ayref": "y4 domain",
         "ax":   0.1,
-        "ay":   0.2
-    }]
+        "ay":   0.2,
+        "arrowcolor": "rgb(231, 200, 200)",
+        "arrowwidth": 3
+    }],
+    "dragmode": "drawopenpath"
   },
     "config": {
-        "editable": true
+        "editable": true,
+        "modeBarButtonsToAdd": ["drawopenpath"]
     }
 }

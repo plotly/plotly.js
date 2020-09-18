@@ -10,15 +10,36 @@ var getSVGElemScreenBBox = require(
 var testMock = require('../../image/mocks/domain_refs_editable.json');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
+// we have to use drag to move annotations for some reason
 var drag = require('../assets/drag');
+var SVGTools = require('../assets/svg_tools');
 
 // color of the rectangles
 var rectColor1 = 'rgb(10, 20, 30)';
 var rectColor2 = 'rgb(10, 20, 31)';
 var rectColor3 = 'rgb(100, 200, 232)';
 var rectColor4 = 'rgb(200, 200, 232)';
+var arrowColor1 = 'rgb(231, 200, 100)';
+var arrowColor2 = 'rgb(231, 200, 200)';
 
-var DELAY_TIME = 0;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000000;
+
+var DELAY_TIME = 1000;
+
+function svgRectToJSON(svgrect) {
+    return JSON.stringify(SVGTools.svgRectToObj(svgrect));
+}
+
+function checkBBox(bboxBefore, bboxAfter, moveX, moveY) {
+    // We print out the objects for sanity, because sometimes Jasmine says a
+    // test passed when it actually did nothing!
+    console.log('bboxBefore', svgRectToJSON(bboxBefore));
+    console.log('bboxAfter', svgRectToJSON(bboxAfter));
+    console.log('moveX', moveX);
+    console.log('moveY', moveY);
+    expect(bboxAfter.x).toBeCloseTo(bboxBefore.x + moveX, 2);
+    expect(bboxAfter.y).toBeCloseTo(bboxBefore.y + moveY, 2);
+}
 
 function testObjectMove(objectColor, moveX, moveY, type) {
     var bboxBefore = getSVGElemScreenBBox(
@@ -37,27 +58,83 @@ function testObjectMove(objectColor, moveX, moveY, type) {
     var bboxAfter = getSVGElemScreenBBox(
         domainRefComponents.findAROByColor(objectColor, undefined, type)
     );
-    expect(bboxAfter.x).toBeCloseTo(bboxBefore.x + moveX, 2);
-    expect(bboxAfter.y).toBeCloseTo(bboxBefore.y + moveY, 2);
+    checkBBox(bboxBefore, bboxAfter, moveX, moveY);
 }
 
-function testAnnotationMove(objectColor, moveX, moveY, type) {
+function dragPos0(bbox, corner) {
+    if(corner === 'bl') {
+        return [ bbox.x + bbox.width * 0.5,
+            bbox.y + bbox.height * 0.5 - 10 ];
+    } else if(corner === 'tr') {
+        return [ bbox.x + bbox.width * 0.5,
+            bbox.y + bbox.height * 0.5 + 10 ];
+    } else {
+        return [ bbox.x + bbox.width * 0.5,
+            bbox.y + bbox.height * 0.5];
+    }
+}
+
+// Tests moving the annotation label
+function testAnnotationMoveLabel(objectColor, moveX, moveY) {
+    var bboxAfter;
+    // Get where the text box (label) is before dragging it
     var bboxBefore = getSVGElemScreenBBox(
-        domainRefComponents.findAROByColor(objectColor, undefined, type)
+        domainRefComponents.findAROByColor(objectColor, undefined, 'rect')
     );
-    var opt = {
-        pos0: [ bboxBefore.x + bboxBefore.width * 0.5,
-            bboxBefore.y + bboxBefore.height * 0.5 ],
+    // we have to use drag to move annotations for some reason
+    var optLabelDrag = {
+        pos0: dragPos0(bboxBefore)
     };
-    opt.dpos = [moveX, moveY];
-    return (new Promise(function() { drag(opt); }))
+    optLabelDrag.dpos = [moveX, moveY];
+    console.log('optLabelDrag', optLabelDrag);
+    // drag the label, this will make the arrow rotate around the arrowhead
+    return (new Promise(function(resolve) {
+        drag(optLabelDrag); resolve();
+    }))
+    .then(delay(DELAY_TIME))
     .then(function() {
-        var bboxAfter = getSVGElemScreenBBox(
-            domainRefComponents.findAROByColor(objectColor, undefined, type)
+        // then check it's position
+        bboxAfter = getSVGElemScreenBBox(
+            domainRefComponents.findAROByColor(objectColor, undefined, 'rect')
         );
-        expect(bboxAfter.x).toBeCloseTo(bboxBefore.x + moveX, 2);
-        expect(bboxAfter.y).toBeCloseTo(bboxBefore.y + moveY, 2);
-    });
+        checkBBox(bboxBefore, bboxAfter, moveX, moveY);
+    })
+    .then(delay(DELAY_TIME));
+}
+
+// Tests moving the whole annotation
+function testAnnotationMoveWhole(objectColor, arrowColor, moveX, moveY, corner) {
+    var bboxAfter;
+    var arrowBBoxAfter;
+    // Get where the text box (label) is before dragging it
+    var bboxBefore = getSVGElemScreenBBox(
+        domainRefComponents.findAROByColor(objectColor, undefined, 'rect')
+    );
+    var arrowBBoxBefore = getSVGElemScreenBBox(
+        domainRefComponents.findAROByColor(arrowColor, undefined, 'path', 'fill')
+    );
+    var optArrowDrag = {
+        pos0: dragPos0(arrowBBoxBefore, corner)
+    };
+    optArrowDrag.dpos = [moveX, moveY];
+    console.log('optArrowDrag', optArrowDrag);
+    // drag the whole annotation
+    (new Promise(function(resolve) {
+        drag(optArrowDrag); resolve();
+    }))
+    .then(delay(DELAY_TIME))
+    .then(function() {
+        // check the new position of the arrow and label
+        arrowBBoxAfter = getSVGElemScreenBBox(
+            domainRefComponents.findAROByColor(arrowColor, undefined, 'path', 'fill')
+        );
+        bboxAfter = getSVGElemScreenBBox(
+            domainRefComponents.findAROByColor(objectColor, undefined, 'rect')
+        );
+        checkBBox(arrowBBoxBefore, arrowBBoxAfter, moveX, moveY);
+        checkBBox(bboxBefore, bboxAfter, moveX, moveY);
+    })
+    .then(delay(DELAY_TIME));
 }
 
 describe('Shapes referencing domain', function() {
@@ -82,11 +159,21 @@ describe('Shapes referencing domain', function() {
             .then(done);
         };
     }
-    function testAnnotationMoveItFun(color, x, y, type) {
+    function testAnnotationMoveLabelItFun(color, x, y) {
         return function(done) {
             Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
             .then(delay(DELAY_TIME))
-            .then(testAnnotationMove(color, x, y, type))
+            .then(testAnnotationMoveLabel(color, x, y))
+            .then(delay(DELAY_TIME))
+            .catch(failTest)
+            .then(done);
+        };
+    }
+    function testAnnotationMoveWholeItFun(color, arrowColor, x, y, corner) {
+        return function(done) {
+            Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
+            .then(delay(DELAY_TIME))
+            .then(testAnnotationMoveWhole(color, arrowColor, x, y, corner))
             .then(delay(DELAY_TIME))
             .catch(failTest)
             .then(done);
@@ -96,8 +183,12 @@ describe('Shapes referencing domain', function() {
     testObjectMoveItFun(rectColor1, 100, -300, 'path'));
     it('should move box on log x axis and linear y to the proper position',
     testObjectMoveItFun(rectColor2, -400, -200, 'path'));
-    it('should move annotation box on linear x axis and log y to the proper position',
-    testAnnotationMoveItFun(rectColor3, 50, -100, 'rect'));
-    it('should move annotation box on log x axis and linear y to the proper position',
-    testAnnotationMoveItFun(rectColor4, -75, -150, 'rect'));
+    it('should move annotation label on linear x axis and log y to the proper position',
+    testAnnotationMoveLabelItFun(rectColor3, 50, -100, 'rect'));
+    it('should move annotation label on log x axis and linear y to the proper position',
+    testAnnotationMoveLabelItFun(rectColor4, -75, -150, 'rect'));
+    it('should move whole annotation on linear x axis and log y to the proper position',
+    testAnnotationMoveWholeItFun(rectColor3, arrowColor1, 50, -100, 'bl'));
+    it('should move whole annotation on log x axis and linear y to the proper position',
+    testAnnotationMoveWholeItFun(rectColor4, arrowColor2, -75, -150, 'tr'));
 });
