@@ -31,16 +31,24 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var x1 = xRange[1];
     var xx = instanceOrPeriod(pointData, trace, 'x');
     var xa = pointData.xa;
-    var xLabel = hoverLabelText(xa, x0, x1);
-    if(xx[1] !== undefined) xLabel = hoverLabelText(xa, xx[0], xx[1]);
+    var xLabel;
+    if(xx[1] !== undefined) {
+        xLabel = hoverLabelText(xa, xx[0], xx[1]);
+    } else {
+        xLabel = hoverLabelText(xa, x0, x1);
+    }
     pointData.xLabel = xLabel;
 
     var y0 = yRange[0];
     var y1 = yRange[1];
     var yy = instanceOrPeriod(pointData, trace, 'y');
     var ya = pointData.ya;
-    var yLabel = hoverLabelText(ya, y0, y1);
-    if(yy[1] !== undefined) yLabel = hoverLabelText(ya, yy[0], yy[1]);
+    var yLabel;
+    if(yy[1] !== undefined) {
+        yLabel = hoverLabelText(ya, yy[0], yy[1]);
+    } else {
+        yLabel = hoverLabelText(ya, y0, y1);
+    }
     pointData.yLabel = yLabel;
 
     return pts;

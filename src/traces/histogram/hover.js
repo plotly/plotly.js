@@ -26,8 +26,12 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';
         var pp = instanceOrPeriod(pointData, trace, posLetter);
         var ax = pointData[posLetter + 'a'];
-        var label = hoverLabelText(ax, di.ph0, di.ph1);
-        if(pp[1] !== undefined) label += ' - ' + hoverLabelText(ax, pp[0], pp[1]);
+        var label;
+        if(pp[1] !== undefined) {
+            label = hoverLabelText(ax, pp[0], pp[1]);
+        } else {
+            label = hoverLabelText(ax, di.ph0, di.ph1);
+        }
         pointData[posLetter + 'Label'] = label;
     }
 
