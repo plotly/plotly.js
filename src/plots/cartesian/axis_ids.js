@@ -37,15 +37,13 @@ exports.name2id = function name2id(name) {
  * ' domain' part is kept at the end of the axis ID string.
  */
 exports.cleanId = function cleanId(id, axLetter, domainId) {
+    var domainTest = /( domain)$/.test(id);
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
-    if(/( domain)$/.test(id) && (!domainId)) return;
+    if(domainTest && (!domainId)) return;
     var axNum = id.split(' ')[0].substr(1).replace(/^0+/, '');
     if(axNum === '1') axNum = '';
-    if(/( domain)$/.test(id) && domainId) {
-        return id.charAt(0) + axNum + ' domain';
-    }
-    return id.charAt(0) + axNum;
+    return id.charAt(0) + axNum + (domainTest && domainId ? ' domain' : '');
 };
 
 // get all axis objects, as restricted in listNames
@@ -92,7 +90,7 @@ exports.listIds = function(gd, axLetter) {
 exports.getFromId = function(gd, id, type) {
     var fullLayout = gd._fullLayout;
     // remove "domain" suffix
-    id = ((id === undefined) || (typeof(id) !== 'string')) ? id : id.replace(/ *domain/, '');
+    id = ((id === undefined) || (typeof(id) !== 'string')) ? id : id.replace(' domain', '');
 
     if(type === 'x') id = id.replace(/y[0-9]*/, '');
     else if(type === 'y') id = id.replace(/x[0-9]*/, '');
@@ -146,8 +144,5 @@ exports.ref2id = function(ar) {
     // This assumes ar has been coerced via coerceRef, and uses the shortcut of
     // checking if the first letter matches [xyz] to determine if it should
     // return the axis ID. Otherwise it returns false.
-    if(/^[xyz]/.test(ar)) {
-        return ar.split(' ')[0];
-    }
-    return false;
+    return (/^[xyz]/.test(ar)) ? ar.split(' ')[0] : false;
 };
