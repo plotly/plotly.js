@@ -2391,7 +2391,6 @@ describe('hover on many lines+bars', function() {
     });
 });
 
-
 describe('hover info on overlaid subplots', function() {
     'use strict';
 
@@ -2683,6 +2682,455 @@ describe('Hover on multicategory axes', function() {
             });
             expect(eventData.x).toEqual(['2017', 'q3']);
         })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('hover on traces with (x|y)period positioning', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    it('shows hover info for scatter, bar, waterfall, funnel, heatmap and contour traces', function(done) {
+        Plotly.newPlot(gd, require('@mocks/period_positioning.json'))
+        .then(function() { _hover(110, 390); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'scatter',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(290, 285); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'scatter',
+                nums: '(Jan 2004 - Jan 2005, 4)'
+            });
+        })
+        .then(function() { _hover(110, 410); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'bar (v)',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(290, 410); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'bar (v)',
+                nums: '(Jan 2004 - Jan 2005, 4)'
+            });
+        })
+        .then(function() { _hover(100, 230); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'bar (h)',
+                nums: '(1, Jan 2001 - Jan 2002)'
+            });
+        })
+        .then(function() { _hover(100, 120); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'bar (h)',
+                nums: '(4, Jan 2004 - Jan 2005)'
+            });
+        })
+        .then(function() { _hover(135, 230); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'scatter2',
+                nums: '(1, Jan 2001 - Jan 2002)'
+            });
+        })
+        .then(function() { _hover(305, 120); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'scatter2',
+                nums: '(4, Jan 2004 - Jan 2005)'
+            });
+        })
+        .then(function() { _hover(385, 355); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'waterfall',
+                nums: [
+                    '(Jan 2001 - Jan 2002, 4)',
+                    '4 ▲',
+                    'Initial: 0'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(565, 355); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'waterfall',
+                nums: [
+                    '(Jan 2004 - Jan 2005, 2)',
+                    '(1) ▼',
+                    'Initial: 3'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(475, 225); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'funnel',
+                nums: [
+                    '(1, Jan 2004 - Jan 2005)',
+                    '25% of initial',
+                    '50% of previous',
+                    '10% of total'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(475, 115); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'funnel',
+                nums: [
+                    '(4, Jan 2001 - Jan 2002)',
+                    '100% of initial',
+                    '100% of previous',
+                    '40% of total'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(665, 365); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'heatmap',
+                nums: [
+                    'x: Jan 2001 - Jan 2002',
+                    'y: Jan 2002 - Jan 2003',
+                    'z: 1'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(800, 150); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'contour',
+                nums: [
+                    'x: Jan 2003 - Jan 2004',
+                    'y: Jan 2003 - Jan 2004',
+                    'z: 0'
+                ].join('\n')
+            });
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows hover info for box, ohlc, candlestick, histogram, histogram2d and histogram2dcontour traces', function(done) {
+        Plotly.newPlot(gd, require('@mocks/period_positioning2.json'))
+        .then(function() { _hover(110, 390); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'ohlc',
+                nums: [
+                    'Jan 2001 - Jan 2002',
+                    'open: 1',
+                    'high: 2',
+                    'low: 0',
+                    'close: 0.5  ▼'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(290, 285); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'ohlc',
+                nums: [
+                    'Jan 2004 - Jan 2005',
+                    'open: 4',
+                    'high: 8',
+                    'low: 0',
+                    'close: 2  ▼'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(110, 410); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'histogram(v)',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(290, 410); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'histogram(v)',
+                nums: '(Jan 2004 - Jan 2005, 4)'
+            });
+        })
+        .then(function() { _hover(100, 230); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'histogram(h)',
+                nums: '(1, Jan 2001 - Jan 2002)'
+            });
+        })
+        .then(function() { _hover(100, 120); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'histogram(h)',
+                nums: '(4, Jan 2004 - Jan 2005)'
+            });
+        })
+        .then(function() { _hover(565, 355); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'candlestick',
+                nums: [
+                    'Jan 2004 - Jan 2005',
+                    'open: 4',
+                    'high: 8',
+                    'low: 0',
+                    'close: 2  ▼'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(385, 355); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: ['', '', '', 'box (v)', ''],
+                nums: [
+                    '(Jan 2001 - Jan 2002, min: 2)',
+                    '(Jan 2001 - Jan 2002, q1: 4)',
+                    '(Jan 2001 - Jan 2002, q3: 8)',
+                    '(Jan 2001 - Jan 2002, median: 6)',
+                    '(Jan 2001 - Jan 2002, max: 10)',
+                ]
+            });
+        })
+        .then(function() { _hover(475, 120); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: ['', '', '', '', 'box (h)'],
+                nums: [
+                    '(max: 8, Jan 2004 - Jan 2005)',
+                    '(min: 0, Jan 2004 - Jan 2005)',
+                    '(q1: 2, Jan 2004 - Jan 2005)',
+                    '(q3: 6, Jan 2004 - Jan 2005)',
+                    '(median: 4, Jan 2004 - Jan 2005)'
+                ]
+            });
+        })
+        .then(function() { _hover(665, 365); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'histogram2d',
+                nums: [
+                    'x: Jan 2001 - Jan 2002',
+                    'y: Jan 2002 - Jan 2003',
+                    'z: 0'
+                ].join('\n')
+            });
+        })
+        .then(function() { _hover(800, 150); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'hist2dcontour',
+                nums: [
+                    'x: Jan 2003 - Jan 2004',
+                    'y: Jan 2003 - Jan 2004',
+                    'z: 3'
+                ].join('\n')
+            });
+        })
+
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows hover info for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
+        Plotly.newPlot(gd, require('@mocks/period_positioning4.json'))
+        .then(function() { _hover(65, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(65, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 2)'
+            });
+        })
+        .then(function() { _hover(100, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(100, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 2)'
+            });
+        })
+        .then(function() { _hover(135, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(135, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M1)',
+                nums: '(Jan 1, 2001 - Feb 1, 2001, 2)'
+            });
+        })
+
+        .then(function() { _hover(65, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(65, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 2)'
+            });
+        })
+        .then(function() { _hover(100, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(100, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 2)'
+            });
+        })
+        .then(function() { _hover(135, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 1)'
+            });
+        })
+        .then(function() { _hover(135, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M2)',
+                nums: '(Jan 1, 2001 - Mar 1, 2001, 2)'
+            });
+        })
+
+        .then(function() { _hover(335, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M3)',
+                nums: '(Q1 - Q2, 1)'
+            });
+        })
+        .then(function() { _hover(335, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M3)',
+                nums: '(Q1 - Q2, 2)'
+            });
+        })
+        .then(function() { _hover(370, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M3)',
+                nums: '(Q1 - Q2, 1)'
+            });
+        })
+        .then(function() { _hover(370, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M3)',
+                nums: '(Q1 - Q2, 2)'
+            });
+        })
+        .then(function() { _hover(405, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M3)',
+                nums: '(Q1 - Q2, 1)'
+            });
+        })
+        .then(function() { _hover(405, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M3)',
+                nums: '(Q1 - Q2, 2)'
+            });
+        })
+
+        .then(function() { _hover(605, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M12)',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(605, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (M12)',
+                nums: '(Jan 2001 - Jan 2002, 2)'
+            });
+        })
+        .then(function() { _hover(640, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M12)',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(640, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (M12)',
+                nums: '(Jan 2001 - Jan 2002, 2)'
+            });
+        })
+        .then(function() { _hover(675, 425); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M12)',
+                nums: '(Jan 2001 - Jan 2002, 1)'
+            });
+        })
+        .then(function() { _hover(675, 395); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (M12)',
+                nums: '(Jan 2001 - Jan 2002, 2)'
+            });
+        })
+
         .catch(failTest)
         .then(done);
     });
