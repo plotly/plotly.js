@@ -13,7 +13,7 @@ var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
-var axisPlaceableObjs = require('../../constants/axis_placeable_objects.js');
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 
 module.exports = templatedArray('shape', {
     visible: {

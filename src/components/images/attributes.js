@@ -10,7 +10,7 @@
 
 var cartesianConstants = require('../../plots/cartesian/constants');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
-var axisPlaceableObjs = require('../../constants/axis_placeable_objects.js');
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 
 
 module.exports = templatedArray('image', {
