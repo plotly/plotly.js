@@ -174,7 +174,7 @@ exports.cleanLayout = function(layout) {
         cleanAxRef(shape, 'yref');
     }
 
-    var imagesLen = isArray(layout.images) ? layout.images.length : 0;
+    var imagesLen = Array.isArray(layout.images) ? layout.images.length : 0;
     for(i = 0; i < imagesLen; i++) {
         var image = layout.images[i];
 
