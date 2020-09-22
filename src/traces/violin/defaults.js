@@ -11,7 +11,6 @@
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 
-var handlePeriodDefaults = require('../scatter/period_defaults');
 var boxDefaults = require('../box/defaults');
 var attributes = require('./attributes');
 
@@ -25,8 +24,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     boxDefaults.handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
-
-    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('bandwidth');
     coerce('side');

@@ -24,10 +24,10 @@ function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var oX = xa.makeCalcdata(trace, 'x');
-    var oY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', oX);
-    var y = alignPeriod(trace, ya, 'y', oY);
+    var origX = xa.makeCalcdata(trace, 'x');
+    var origY = ya.makeCalcdata(trace, 'y');
+    var x = alignPeriod(trace, xa, 'x', origX);
+    var y = alignPeriod(trace, ya, 'y', origY);
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);
@@ -71,10 +71,10 @@ function calc(gd, trace) {
             cdi[yAttr] = y[i];
 
             if(hasPeriodX) {
-                cdi.orig_x = oX[i];
+                cdi.orig_x = origX[i]; // used by hover
             }
             if(hasPeriodY) {
-                cdi.orig_y = oY[i];
+                cdi.orig_y = origY[i]; // used by hover
             }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions

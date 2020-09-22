@@ -18,7 +18,7 @@ var calcSelection = require('../scatter/calc_selection');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, oPos;
+    var size, pos, origPos;
 
     var sizeOpts = {
         msUTC: !!(trace.base || trace.base === 0)
@@ -27,13 +27,13 @@ module.exports = function calc(gd, trace) {
     var hasPeriod;
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x', sizeOpts);
-        oPos = ya.makeCalcdata(trace, 'y');
-        pos = alignPeriod(trace, ya, 'y', oPos);
+        origPos = ya.makeCalcdata(trace, 'y');
+        pos = alignPeriod(trace, ya, 'y', origPos);
         hasPeriod = !!trace.yperiodalignment;
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
-        oPos = xa.makeCalcdata(trace, 'x');
-        pos = alignPeriod(trace, xa, 'x', oPos);
+        origPos = xa.makeCalcdata(trace, 'x');
+        pos = alignPeriod(trace, xa, 'x', origPos);
         hasPeriod = !!trace.xperiodalignment;
     }
 
@@ -46,7 +46,7 @@ module.exports = function calc(gd, trace) {
         cd[i] = { p: pos[i], s: size[i] };
 
         if(hasPeriod) {
-            cd[i].orig_p = oPos[i]; // used by hover
+            cd[i].orig_p = origPos[i]; // used by hover
         }
 
         if(trace.ids) {

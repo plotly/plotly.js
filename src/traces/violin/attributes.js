@@ -17,13 +17,6 @@ module.exports = {
     x0: boxAttrs.x0,
     y0: boxAttrs.y0,
 
-    xperiod: boxAttrs.xperiod,
-    yperiod: boxAttrs.yperiod,
-    xperiod0: boxAttrs.xperiod0,
-    yperiod0: boxAttrs.yperiod0,
-    xperiodalignment: boxAttrs.xperiodalignment,
-    yperiodalignment: boxAttrs.yperiodalignment,
-
     name: extendFlat({}, boxAttrs.name, {
         description: [
             'Sets the trace name.',

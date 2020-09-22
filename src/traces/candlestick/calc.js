@@ -19,10 +19,10 @@ module.exports = function(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis);
     var ya = Axes.getFromId(gd, trace.yaxis);
 
-    var x = xa.makeCalcdata(trace, 'x');
-    x = alignPeriod(trace, xa, 'x', x);
+    var origX = xa.makeCalcdata(trace, 'x');
+    var x = alignPeriod(trace, xa, 'x', origX);
 
-    var cd = calcCommon(gd, trace, x, ya, ptFunc);
+    var cd = calcCommon(gd, trace, origX, x, ya, ptFunc);
 
     if(cd.length) {
         Lib.extendFlat(cd[0].t, {

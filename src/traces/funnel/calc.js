@@ -17,16 +17,19 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, i, cdi;
+    var size, pos, origPos, i, cdi;
 
+    var hasPeriod;
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
-        pos = ya.makeCalcdata(trace, 'y');
-        pos = alignPeriod(trace, ya, 'y', pos);
+        origPos = ya.makeCalcdata(trace, 'y');
+        pos = alignPeriod(trace, ya, 'y', origPos);
+        hasPeriod = !!trace.yperiodalignment;
     } else {
         size = ya.makeCalcdata(trace, 'y');
-        pos = xa.makeCalcdata(trace, 'x');
-        pos = alignPeriod(trace, xa, 'x', pos);
+        origPos = xa.makeCalcdata(trace, 'x');
+        pos = alignPeriod(trace, xa, 'x', origPos);
+        hasPeriod = !!trace.xperiodalignment;
     }
 
     // create the "calculated data" to plot
@@ -57,6 +60,10 @@ module.exports = function calc(gd, trace) {
         };
 
         trace._base[i] = -0.5 * cdi.s;
+
+        if(hasPeriod) {
+            cd[i].orig_p = origPos[i]; // used by hover
+        }
 
         if(trace.ids) {
             cdi.id = String(trace.ids[i]);
