@@ -20,7 +20,6 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
-var instanceOrPeriod = require('../../plots/cartesian/instance_or_period');
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -1590,17 +1589,11 @@ function cleanPoint(d, hovermode) {
 
     // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        if(!('xLabel' in d)) {
-            var xx = instanceOrPeriod(d, trace, 'x');
-            d.xLabel = Axes.hoverLabelText(d.xa, xx[0], xx[1]);
-        }
+        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        if(!('yLabel' in d)) {
-            var yy = instanceOrPeriod(d, trace, 'y');
-            d.yLabel = Axes.hoverLabelText(d.ya, yy[0], yy[1]);
-        }
+        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
