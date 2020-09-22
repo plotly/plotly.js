@@ -22,11 +22,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var xa = pointData.xa;
     var ya = pointData.ya;
     var subplot = pointData.subplot;
-    var clusterEnabled = trace.cluster.enabled;
     var clusteredPointsIds = [];
-    var layer = LAYER_PREFIX + trace.uid + '-cluster-points';
+    var layer = LAYER_PREFIX + trace.uid + '-circle';
 
-    if(clusterEnabled) {
+    if(trace.cluster.enabled) {
         var elems = subplot.map.queryRenderedFeatures(null, {layers: [layer]});
         clusteredPointsIds = elems.map(function(elem) {return elem.id;});
     }
@@ -43,7 +42,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     function distFn(d) {
         var lonlat = d.lonlat;
         if(lonlat[0] === BADNUM) return Infinity;
-        if(!clusteredPointsIds.includes(d.i + 1)) return Infinity;
+        if(trace.cluster.enabled && !clusteredPointsIds.includes(d.i + 1)) return Infinity;
 
         var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];

@@ -1,10 +1,10 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright 2012-2020, Plotly, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 'use strict';
 
@@ -17,7 +17,6 @@ var geoJsonUtils = require('../../lib/geojson_utils');
 var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
@@ -28,52 +27,58 @@ var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var isVisible = (trace.visible === true && trace._length !== 0);
-    var hasFill = (trace.fill !== 'none');
+    var isVisible = trace.visible === true && trace._length !== 0;
+    var hasFill = trace.fill !== 'none';
     var hasLines = subTypes.hasLines(trace);
     var hasMarkers = subTypes.hasMarkers(trace);
     var hasText = subTypes.hasText(trace);
-    var hasCircles = (hasMarkers && trace.marker.symbol === 'circle');
-    var hasSymbols = (hasMarkers && trace.marker.symbol !== 'circle');
+    var hasCircles = hasMarkers && trace.marker.symbol === 'circle';
+    var hasSymbols = hasMarkers && trace.marker.symbol !== 'circle';
+    var hasCluster = trace.cluster.enabled;
 
-    var fill = initContainer();
-    var line = initContainer();
-    var circle = initContainer();
-    var symbol = initContainer();
-    var cluster = {
-        maxZoom: trace.cluster.maxZoom,
-        radius: trace.cluster.radius,
-        layout: {
-            visibility: 'none',
-        },
-        paint: {
-            'circle-color': createCircleColor(trace.cluster.cuts, trace.cluster.color),
-            'circle-radius': createSize(trace.cluster.cuts, trace.cluster.size),
-
-        }
-    };
-    var clusterCount = {
-        layout: {
-            visibility: 'none',
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12
-        }
-    };
+    var fill = initContainer('fill');
+    var line = initContainer('line');
+    var circle = initContainer('circle');
+    var symbol = initContainer('symbol');
 
     var opts = {
         fill: fill,
         line: line,
         circle: circle,
         symbol: symbol,
-        cluster: cluster,
-        clusterCount: clusterCount
+        cluster: {
+            type: 'circle',
+            filter: ['has', 'point_count'],
+            layout: {visibility: 'visible'},
+            paint: {
+                'circle-color': [
+                    'step',
+          ['get', 'point_count'],
+                    '#51bbd6',
+                    100,
+                    '#f1f075',
+                    750,
+                    '#f28cb1',
+                ],
+                'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+            },
+        },
+        clusterCount: {
+            type: 'symbol',
+            filter: ['has', 'point_count'],
+            paint: {},
+            layout: {
+                'text-field': '{point_count_abbreviated}',
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            }
+        }
     };
 
-    // early return if not visible or placeholder
+  // early return if not visible or placeholder
     if(!isVisible) return opts;
 
-    // fill layer and line layer use the same coords
+  // fill layer and line layer use the same coords
     var lineCoords;
     if(hasFill || hasLines) {
         lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
@@ -84,7 +89,7 @@ module.exports = function convert(gd, calcTrace) {
         fill.layout.visibility = 'visible';
 
         Lib.extendFlat(fill.paint, {
-            'fill-color': trace.fillcolor
+            'fill-color': trace.fillcolor,
         });
     }
 
@@ -95,24 +100,26 @@ module.exports = function convert(gd, calcTrace) {
         Lib.extendFlat(line.paint, {
             'line-width': trace.line.width,
             'line-color': trace.line.color,
-            'line-opacity': trace.opacity
+            'line-opacity': trace.opacity,
         });
 
-        // TODO convert line.dash into line-dasharray
+    // TODO convert line.dash into line-dasharray
     }
 
     if(hasCircles) {
         var circleOpts = makeCircleOpts(calcTrace);
         circle.geojson = circleOpts.geojson;
         circle.layout.visibility = 'visible';
-        cluster.layout.visibility = 'visible';
-        clusterCount.layout.visibility = 'visible';
 
         Lib.extendFlat(circle.paint, {
             'circle-color': circleOpts.mcc,
             'circle-radius': circleOpts.mrc,
-            'circle-opacity': circleOpts.mo
+            'circle-opacity': circleOpts.mo,
         });
+    }
+
+    if(hasCircles && hasCluster) {
+        circle.filter = ['!', ['has', 'point_count']];
     }
 
     if(hasSymbols || hasText) {
@@ -121,22 +128,23 @@ module.exports = function convert(gd, calcTrace) {
         Lib.extendFlat(symbol.layout, {
             visibility: 'visible',
             'icon-image': '{symbol}-15',
-            'text-field': '{text}'
+            'text-field': '{text}',
         });
 
         if(hasSymbols) {
             Lib.extendFlat(symbol.layout, {
-                'icon-size': trace.marker.size / 10
+                'icon-size': trace.marker.size / 10,
             });
 
             if('angle' in trace.marker && trace.marker.angle !== 'auto') {
                 Lib.extendFlat(symbol.layout, {
-                // unfortunately cant use {angle} do to this issue:
-                // https://github.com/mapbox/mapbox-gl-js/issues/873
+          // unfortunately cant use {angle} do to this issue:
+          // https://github.com/mapbox/mapbox-gl-js/issues/873
                     'icon-rotate': {
-                        type: 'identity', property: 'angle'
+                        type: 'identity',
+                        property: 'angle',
                     },
-                    'icon-rotation-alignment': 'map'
+                    'icon-rotation-alignment': 'map',
                 });
             }
 
@@ -145,8 +153,8 @@ module.exports = function convert(gd, calcTrace) {
             Lib.extendFlat(symbol.paint, {
                 'icon-opacity': trace.opacity * trace.marker.opacity,
 
-                // TODO does not work ??
-                'icon-color': trace.marker.color
+        // TODO does not work ??
+                'icon-color': trace.marker.color,
             });
         }
 
@@ -154,20 +162,20 @@ module.exports = function convert(gd, calcTrace) {
             var iconSize = (trace.marker || {}).size;
             var textOpts = convertTextOpts(trace.textposition, iconSize);
 
-            // all data-driven below !!
+      // all data-driven below !!
 
             Lib.extendFlat(symbol.layout, {
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
-                'text-offset': textOpts.offset
+                'text-offset': textOpts.offset,
 
-                // TODO font family
-                // 'text-font': symbol.textfont.family.split(', '),
+        // TODO font family
+        // 'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {
                 'text-color': trace.textfont.color,
-                'text-opacity': trace.opacity
+                'text-opacity': trace.opacity,
             });
         }
     }
@@ -175,11 +183,13 @@ module.exports = function convert(gd, calcTrace) {
     return opts;
 };
 
-function initContainer() {
+function initContainer(type) {
     return {
+        type: type,
         geojson: geoJsonUtils.makeBlank(),
         layout: { visibility: 'none' },
-        paint: {}
+        filter: null,
+        paint: {},
     };
 }
 
@@ -192,9 +202,13 @@ function makeCircleOpts(calcTrace) {
     var arrayOpacity = Lib.isArrayOrTypedArray(marker.opacity);
     var i;
 
-    function addTraceOpacity(o) { return trace.opacity * o; }
+    function addTraceOpacity(o) {
+        return trace.opacity * o;
+    }
 
-    function size2radius(s) { return s / 2; }
+    function size2radius(s) {
+        return s / 2;
+    }
 
     var colorFn;
     if(arrayColor) {
@@ -233,9 +247,9 @@ function makeCircleOpts(calcTrace) {
 
         features.push({
             type: 'Feature',
-            geometry: {type: 'Point', coordinates: lonlat},
+            id: i + 1,
+            geometry: { type: 'Point', coordinates: lonlat },
             properties: props,
-            id: i + 1
         });
     }
 
@@ -259,24 +273,21 @@ function makeCircleOpts(calcTrace) {
     }
 
     return {
-        geojson: {type: 'FeatureCollection', features: features},
-        mcc: arrayColor || (fns && fns.selectedColorFn) ?
-            {type: 'identity', property: 'mcc'} :
-            marker.color,
-        mrc: arraySize || (fns && fns.selectedSizeFn) ?
-            {type: 'identity', property: 'mrc'} :
-            size2radius(marker.size),
-        mo: arrayOpacity || (fns && fns.selectedOpacityFn) ?
-            {type: 'identity', property: 'mo'} :
-            addTraceOpacity(marker.opacity)
+        geojson: { type: 'FeatureCollection', features: features },
+        mcc:
+      arrayColor || (fns && fns.selectedColorFn) ?
+        { type: 'identity', property: 'mcc' } :
+        marker.color,
+        mrc:
+      arraySize || (fns && fns.selectedSizeFn) ?
+        { type: 'identity', property: 'mrc' } :
+        size2radius(marker.size),
+        mo:
+      arrayOpacity || (fns && fns.selectedOpacityFn) ?
+        { type: 'identity', property: 'mo' } :
+        addTraceOpacity(marker.opacity),
     };
 }
-
-// only need to check lon (OR lat)
-function isBADNUM(lonlat) {
-    return lonlat[0] === BADNUM;
-}
-
 
 function makeSymbolGeoJSON(calcTrace, gd) {
     var fullLayout = gd._fullLayout;
@@ -286,18 +297,13 @@ function makeSymbolGeoJSON(calcTrace, gd) {
     var symbol = marker.symbol;
     var angle = marker.angle;
 
-    var fillSymbol = (symbol !== 'circle') ?
-        getFillFunc(symbol) :
-        blankFillFunc;
+    var fillSymbol = symbol !== 'circle' ? getFillFunc(symbol) : blankFillFunc;
 
-    var fillAngle = (angle !== 'auto') ?
-        getFillFunc(angle, true) :
-        blankFillFunc;
+    var fillAngle = angle !== 'auto' ? getFillFunc(angle, true) : blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
-        getFillFunc(trace.text) :
-        blankFillFunc;
-
+    getFillFunc(trace.text) :
+    blankFillFunc;
 
     var features = [];
 
@@ -310,12 +316,21 @@ function makeSymbolGeoJSON(calcTrace, gd) {
         var text;
 
         if(texttemplate) {
-            var tt = Array.isArray(texttemplate) ? (texttemplate[i] || '') : texttemplate;
+            var tt = Array.isArray(texttemplate) ?
+        texttemplate[i] || '' :
+        texttemplate;
             var labels = trace._module.formatLabels(calcPt, trace, fullLayout);
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, calcPt.i);
             var meta = trace._meta || {};
-            text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
+            text = Lib.texttemplateString(
+        tt,
+        labels,
+        fullLayout._d3locale,
+        pointValues,
+        calcPt,
+        meta
+      );
         } else {
             text = fillText(i);
         }
@@ -328,61 +343,46 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             type: 'Feature',
             geometry: {
                 type: 'Point',
-                coordinates: calcPt.lonlat
+                coordinates: calcPt.lonlat,
             },
             properties: {
                 symbol: fillSymbol(i),
                 angle: fillAngle(i),
-                text: text
-            }
+                text: text,
+            },
         });
     }
 
     return {
         type: 'FeatureCollection',
-        features: features
+        features: features,
     };
 }
 
 function getFillFunc(attr, numeric) {
     if(Lib.isArrayOrTypedArray(attr)) {
         if(numeric) {
-            return function(i) { return isNumeric(attr[i]) ? +attr[i] : 0; };
+            return function(i) {
+                return isNumeric(attr[i]) ? +attr[i] : 0;
+            };
         }
-        return function(i) { return attr[i]; };
+        return function(i) {
+            return attr[i];
+        };
     } else if(attr) {
-        return function() { return attr; };
+        return function() {
+            return attr;
+        };
     } else {
         return blankFillFunc;
     }
 }
 
-function blankFillFunc() { return ''; }
-
-
-function createCircleColor(cuts, colors) {
-    var isArray = Lib.isArrayOrTypedArray(cuts) && Lib.isArrayOrTypedArray(colors);
-
-    if(isArray) {
-        var colorArray = ['step', ['get', 'point_count'], colors[0]];
-        for(var idx = 1; idx < colors.length; idx++) {
-            colorArray.push(cuts[idx - 1], colors[idx]);
-        }
-        return colorArray;
-    } else {
-        return colors;
-    }
+function blankFillFunc() {
+    return '';
 }
-function createSize(cuts, size) {
-    var isArray = Lib.isArrayOrTypedArray(cuts) && Lib.isArrayOrTypedArray(size);
 
-    if(isArray) {
-        var sizeArray = ['step', ['get', 'point_count'], size[0]];
-        for(var idx = 1; idx < size.length; idx++) {
-            sizeArray.push(cuts[idx - 1], size[idx]);
-        }
-        return sizeArray;
-    } else {
-        return size;
-    }
+// only need to check lon (OR lat)
+function isBADNUM(lonlat) {
+    return lonlat[0] === BADNUM;
 }
