@@ -260,6 +260,7 @@ var list = [
     'date_histogram',
     'dendrogram',
     'display-text_zero-number',
+    'domain_refs',
     'earth_heatmap',
     'electric_heatmap',
     'empty',
