@@ -629,3 +629,41 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 });
+
+describe('hover with (x|y)period positioning', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    it('@gl shows hover info for scattergl', function(done) {
+        Plotly.newPlot(gd, require('@mocks/gl2d_period_positioning.json'))
+        .then(function() { _hover(100, 255); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(Jan 2001, Jan 1, 1970)'
+            });
+        })
+        .then(function() { _hover(470, 45); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(Jan 2006, Jun 1, 1970)'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
