@@ -193,8 +193,8 @@
         }],
         "images": [{
             "source": "https://images.plot.ly/language-icons/api-home/js-logo.png",
-            "xref": "x1 domain",
-            "yref": "y1 domain",
+            "xref": "x domain",
+            "yref": "y domain",
             "x": 0,
             "y": 0,
             "xanchor": "left",
