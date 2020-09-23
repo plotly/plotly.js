@@ -78,8 +78,12 @@ function drawOne(gd, index) {
 // the plot.
 // axDomainRef: if true and axa defined, draws relative to axis domain,
 // otherwise draws relative to data (if axa defined) or paper (if not).
-function shiftPosition(axa, optAx, dAx, gsDim, vertical, axRef) {
+function shiftPosition(axa, options, dAx, axLetter, gs) {
+    var optAx = options[axLetter];
+    var axRef = options[axLetter + 'ref'];
+    var vertical = axLetter.includes('y');
     var axDomainRef = Axes.getRefType(axRef) === 'domain';
+    var gsDim = vertical ? gs.h : gs.w;
     if(axa) {
         if(axDomainRef) {
             // here optAx normalized to length of axis (e.g., normally in range
@@ -611,21 +615,19 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
                         modifyItem('x',
-                            shiftPosition(xa, options.x, dx, gs.w, false, options.xref));
+                            shiftPosition(xa, options, dx, 'x', gs));
                         modifyItem('y',
-                            shiftPosition(ya, options.y, dy, gs.h, true, options.yref));
+                            shiftPosition(ya, options, dy, 'y', gs));
 
                         // for these 2 calls to shiftPosition, it is assumed xa, ya are
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.w, false,
-                                       options.xref));
+                            modifyItem('ax', shiftPosition(xa, options, dx, 'ax', gs));
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.h, true,
-                                       options.yref));
+                            modifyItem('ay', shiftPosition(ya, options, dy, 'ay', gs));
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -664,15 +666,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         // defined, so gsDim will not be used, but we put it in
                         // anyways for consistency
                         if(options.axref === options.xref) {
-                            modifyItem('ax', shiftPosition(xa, options.ax, dx, gs.h, false,
-                                       options.xref));
+                            modifyItem('ax', shiftPosition(xa, options, dx, 'ax', gs));
                         } else {
                             modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            modifyItem('ay', shiftPosition(ya, options.ay, dy, gs.w, true,
-                                       options.yref));
+                            modifyItem('ay', shiftPosition(ya, options, dy, 'ay', gs.w));
                         } else {
                             modifyItem('ay', options.ay + dy);
                         }
@@ -683,8 +683,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         if(xa) {
                             // shiftPosition will not execute code where xa was
                             // undefined, so we use to calculate xUpdate too
-                            xUpdate = shiftPosition(xa, options.x, dx, gs.h, false,
-                                       options.xref);
+                            xUpdate = shiftPosition(xa, options, dx, 'x', gs);
                         } else {
                             var widthFraction = options._xsize / gs.w;
                             var xLeft = options.x + (options._xshift - options.xshift) / gs.w - widthFraction / 2;
@@ -696,8 +695,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         if(ya) {
                             // shiftPosition will not execute code where ya was
                             // undefined, so we use to calculate yUpdate too
-                            yUpdate = shiftPosition(ya, options.y, dy, gs.w, true,
-                                       options.yref);
+                            yUpdate = shiftPosition(ya, options, dy, 'y', gs);
                         } else {
                             var heightFraction = options._ysize / gs.h;
                             var yBottom = options.y - (options._yshift + options.yshift) / gs.h - heightFraction / 2;
