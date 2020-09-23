@@ -58,12 +58,12 @@ exports.extractPathCoords = function(path, paramsToUse) {
     return extractedCoordinates;
 };
 
-exports.getDataToPixel = function(gd, axis, isVertical, opt) {
+exports.getDataToPixel = function(gd, axis, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
 
     if(axis) {
-        if(opt === 'domain') {
+        if(refType === 'domain') {
             dataToPixel = function(v) {
                 return axis._length * (isVertical ? (1 - v) : v) + axis._offset;
             };
