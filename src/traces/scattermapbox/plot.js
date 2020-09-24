@@ -39,12 +39,12 @@ function ScatterMapbox(subplot, uid, clusterEnabled) {
         clusterCount: LAYER_PREFIX + uid + '-cluster-count',
     };
 
-  // We could merge the 'fill' source with the 'line' source and
-  // the 'circle' source with the 'symbol' source if ever having
-  // for up-to 4 sources per 'scattermapbox' traces becomes a problem.
+    // We could merge the 'fill' source with the 'line' source and
+    // the 'circle' source with the 'symbol' source if ever having
+    // for up-to 4 sources per 'scattermapbox' traces becomes a problem.
 
-  // previous 'below' value,
-  // need this to update it properly
+    // previous 'below' value,
+    // need this to update it properly
     this.below = null;
 }
 
@@ -176,7 +176,7 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
         }
     }
 
-  // link ref for quick update during selections
+    // link ref for quick update during selections
     calcTrace[0].trace._glTrace = scatterMapbox;
 
     return scatterMapbox;
