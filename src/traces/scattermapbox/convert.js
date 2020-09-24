@@ -27,8 +27,8 @@ var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
-    var isVisible = trace.visible === true && trace._length !== 0;
-    var hasFill = trace.fill !== 'none';
+    var isVisible = (trace.visible === true && trace._length !== 0);
+    var hasFill = (trace.fill !== 'none');
     var hasLines = subTypes.hasLines(trace);
     var hasMarkers = subTypes.hasMarkers(trace);
     var hasText = subTypes.hasText(trace);
@@ -141,10 +141,9 @@ module.exports = function convert(gd, calcTrace) {
                 // unfortunately cant use {angle} do to this issue:
                 // https://github.com/mapbox/mapbox-gl-js/issues/873
                     'icon-rotate': {
-                        type: 'identity',
-                        property: 'angle',
+                        type: 'identity', property: 'angle'
                     },
-                    'icon-rotation-alignment': 'map',
+                    'icon-rotation-alignment': 'map'
                 });
             }
 
@@ -167,7 +166,7 @@ module.exports = function convert(gd, calcTrace) {
             Lib.extendFlat(symbol.layout, {
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
-                'text-offset': textOpts.offset,
+                'text-offset': textOpts.offset
 
                 // TODO font family
                 // 'text-font': symbol.textfont.family.split(', '),
@@ -290,11 +289,11 @@ function makeSymbolGeoJSON(calcTrace, gd) {
     var symbol = marker.symbol;
     var angle = marker.angle;
 
-    var fillSymbol = symbol !== 'circle' ? 
+    var fillSymbol = (symbol !== 'circle') ? 
         getFillFunc(symbol) : 
         blankFillFunc;
 
-    var fillAngle = angle !== 'auto' ? 
+    var fillAngle = (angle !== 'auto') ? 
         getFillFunc(angle, true) : 
         blankFillFunc;
 
@@ -337,7 +336,7 @@ function makeSymbolGeoJSON(calcTrace, gd) {
                 symbol: fillSymbol(i),
                 angle: fillAngle(i),
                 text: text
-            },
+            }
         });
     }
 
