@@ -159,7 +159,7 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
     trace.cluster.enabled
   );
     var optsAll = convert(subplot.gd, calcTrace);
-    var below = (scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid]);
+    var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
     var i, k, opts;
 
     if(trace.cluster.enabled) {
