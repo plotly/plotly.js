@@ -30,7 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('cluster.maxZoom');
     coerce('cluster.radius');
-    coerce('cluster.cuts');
+    coerce('cluster.steps');
     coerce('cluster.size');
     coerce('cluster.color');
     traceOut.cluster.enabled = traceIn.cluster ? true : false;

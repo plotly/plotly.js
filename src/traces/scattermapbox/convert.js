@@ -51,16 +51,8 @@ module.exports = function convert(gd, calcTrace) {
             filter: ['has', 'point_count'],
             layout: {visibility: 'visible'},
             paint: {
-                'circle-color': [
-                    'step',
-          ['get', 'point_count'],
-                    '#51bbd6',
-                    100,
-                    '#f1f075',
-                    750,
-                    '#f28cb1',
-                ],
-                'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+                'circle-color': createClusterColors(trace.cluster.color, trace.cluster.steps),
+                'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.steps)
             },
         },
         clusterCount: {
@@ -364,4 +356,33 @@ function blankFillFunc() { return ''; }
 // only need to check lon (OR lat)
 function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
+}
+
+function createClusterColors(colors, steps) {
+    var idx, colors_;
+    if(Lib.isArrayOrTypedArray(colors)) {
+        colors_ = ['step', ['get', 'point_count'], colors[0]];
+        for(idx = 1; idx < colors.length; idx++) {
+            colors_.push(steps[idx - 1], colors[idx]);
+        }
+    } else {
+        colors_ = colors;
+    }
+    return colors_;
+}
+
+function createClusterSizes(sizes, steps) {
+    var idx, sizes_;
+    if(
+    Lib.isArrayOrTypedArray(sizes) &&
+    Lib.isArrayOrTypedArray(steps)
+  ) {
+        sizes_ = ['step', ['get', 'point_count'], sizes[0]];
+        for(idx = 1; idx < sizes.length; idx++) {
+            sizes_.push(steps[idx - 1], sizes[idx]);
+        }
+    } else {
+        sizes_ = sizes;
+    }
+    return sizes_;
 }
