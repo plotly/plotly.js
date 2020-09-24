@@ -27,6 +27,13 @@ module.exports = overrideAll({
     lat: scatterGeoAttrs.lat,
 
     cluster: {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            editType: 'plot',
+            description: 'Determines whether clustering is enabled or disabled.'
+        },
         maxzoom: {
             valType: 'number',
             role: 'info',
