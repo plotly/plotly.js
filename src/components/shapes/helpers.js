@@ -93,9 +93,7 @@ exports.getPixelToData = function(gd, axis, isVertical, opt) {
         if(opt === 'domain') {
             pixelToData = function(p) {
                 var q = (p - axis._offset) / axis._length;
-                return ((isVertical ?
-                        (1 - q) :
-                        q));
+                return isVertical ?  1 - q : q;
             };
         } else {
             var r2d = exports.rangeToShapePosition(axis);
