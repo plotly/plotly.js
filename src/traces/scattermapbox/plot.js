@@ -68,7 +68,9 @@ proto.addSource = function(k, opts, cluster) {
 };
 
 proto.setSourceData = function(k, opts) {
-    this.subplot.map.getSource(this.sourceIds[k]).setData(opts.geojson);
+    this.subplot.map
+        .getSource(this.sourceIds[k])
+        .setData(opts.geojson);
 };
 
 proto.addLayer = function(k, opts, below) {
