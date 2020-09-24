@@ -359,30 +359,30 @@ function isBADNUM(lonlat) {
 }
 
 function createClusterColors(colors, steps) {
-    var idx, colors_;
+    var idx, newColors;
     if(Lib.isArrayOrTypedArray(colors)) {
-        colors_ = ['step', ['get', 'point_count'], colors[0]];
+        newColors = ['step', ['get', 'point_count'], colors[0]];
         for(idx = 1; idx < colors.length; idx++) {
-            colors_.push(steps[idx - 1], colors[idx]);
+            newColors.push(steps[idx - 1], colors[idx]);
         }
     } else {
-        colors_ = colors;
+        newColors = colors;
     }
-    return colors_;
+    return newColors;
 }
 
 function createClusterSizes(sizes, steps) {
-    var idx, sizes_;
+    var idx, newSizes;
     if(
     Lib.isArrayOrTypedArray(sizes) &&
     Lib.isArrayOrTypedArray(steps)
   ) {
-        sizes_ = ['step', ['get', 'point_count'], sizes[0]];
+        newSizes = ['step', ['get', 'point_count'], sizes[0]];
         for(idx = 1; idx < sizes.length; idx++) {
-            sizes_.push(steps[idx - 1], sizes[idx]);
+            newSizes.push(steps[idx - 1], sizes[idx]);
         }
     } else {
-        sizes_ = sizes;
+        newSizes = sizes;
     }
-    return sizes_;
+    return newSizes;
 }
