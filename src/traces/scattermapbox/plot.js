@@ -51,20 +51,20 @@ function ScatterMapbox(subplot, uid, clusterEnabled) {
 var proto = ScatterMapbox.prototype;
 
 proto.addSource = function(k, opts, cluster) {
-    if(cluster.enabled) {
-        this.subplot.map.addSource(this.sourceIds[k], {
+    var sourceOpts = {
             type: 'geojson',
             data: opts.geojson,
-            cluster: true,
-            clusterMaxZoom: cluster.maxzoom,
+    };
+    
+    if(cluster.enabled) {
+        Lib.extendFlat({}, sourceOpts, {
+            cluster: true, // better to rename this key to clusterEnabled?
+            clusterMaxZoom: cluster.maxZoom,
             clusterRadius: cluster.radius,
         });
-    } else {
-        this.subplot.map.addSource(this.sourceIds[k], {
-            type: 'geojson',
-            data: opts.geojson,
-        });
-    }
+    } 
+    
+    this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
 };
 
 proto.setSourceData = function(k, opts) {
