@@ -56,7 +56,7 @@ proto.addSource = function(k, opts, cluster) {
             type: 'geojson',
             data: opts.geojson,
             cluster: true,
-            clusterMaxZoom: cluster.maxZoom,
+            clusterMaxZoom: cluster.maxzoom,
             clusterRadius: cluster.radius,
         });
     } else {

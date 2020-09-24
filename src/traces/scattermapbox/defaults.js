@@ -28,7 +28,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('cluster.maxZoom');
+    coerce('cluster.maxzoom');
     coerce('cluster.radius');
     coerce('cluster.steps');
     coerce('cluster.size');

@@ -27,7 +27,7 @@ module.exports = overrideAll({
     lat: scatterGeoAttrs.lat,
 
     cluster: {
-        maxZoom: {
+        maxzoom: {
             valType: 'number',
             role: 'info',
             min: 0,
