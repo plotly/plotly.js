@@ -254,7 +254,9 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         slicePath.call(styleOne, pt, trace);
 
-        var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
+        var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext')
+            .classed('user-select-none', true);
+
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
             // tex and regular text together

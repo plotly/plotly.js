@@ -53,7 +53,11 @@ function draw(gd) {
         Lib.ensureSingle(g, 'g', cn.cbfills);
         Lib.ensureSingle(g, 'g', cn.cblines);
         Lib.ensureSingle(g, 'g', cn.cbaxis, function(s) { s.classed(cn.crisp, true); });
-        Lib.ensureSingle(g, 'g', cn.cbtitleunshift, function(s) { s.append('g').classed(cn.cbtitle, true); });
+        Lib.ensureSingle(g, 'g', cn.cbtitleunshift, function(s) {
+            s.append('g')
+                .classed('user-select-none', true)
+                .classed(cn.cbtitle, true);
+        });
         Lib.ensureSingle(g, 'rect', cn.cboutline);
 
         var done = drawColorBar(g, opts, gd);

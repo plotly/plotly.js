@@ -23,7 +23,8 @@ var style = require('./style');
 
 function plot(gd, geo, calcData) {
     var scatterLayer = geo.layers.frontplot.select('.scatterlayer');
-    var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
+    var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo')
+        .classed('user-select-none', true);
 
     function removeBADNUM(d, node) {
         if(d.lonlat[0] === BADNUM) {

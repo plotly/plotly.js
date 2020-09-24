@@ -813,6 +813,7 @@ function createHoverText(hoverData, opts, gd) {
     var commonLabel = container.selectAll('g.axistext')
         .data(showCommonLabel ? [0] : []);
     commonLabel.enter().append('g')
+        .classed('user-select-none', true)
         .classed('axistext', true);
     commonLabel.exit().remove();
 
@@ -1083,6 +1084,7 @@ function createHoverText(hoverData, opts, gd) {
             return hoverDataKey(d);
         });
     hoverLabels.enter().append('g')
+        .classed('user-select-none', true)
         .classed('hovertext', true)
         .each(function() {
             var g = d3.select(this);

@@ -89,6 +89,7 @@ module.exports = function plot(gd, cdModule) {
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
                 sliceTextGroup.enter().append('g')
+                    .classed('user-select-none', true)
                     .classed('slicetext', true);
                 sliceTextGroup.exit().remove();
 
@@ -141,6 +142,7 @@ module.exports = function plot(gd, cdModule) {
                 .data(trace.title.text ? [0] : []);
 
             titleTextGroup.enter().append('g')
+                .classed('user-select-none', true)
                 .classed('titletext', true);
             titleTextGroup.exit().remove();
 
