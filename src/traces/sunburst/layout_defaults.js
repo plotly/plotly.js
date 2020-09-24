@@ -17,4 +17,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
     coerce('sunburstcolorway', layoutOut.colorway);
     coerce('extendsunburstcolors');
+    coerce('sort');
 };

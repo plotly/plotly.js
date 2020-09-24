@@ -192,7 +192,9 @@ exports.calc = function(gd, trace) {
     if(failed) return;
 
     // TODO add way to sort by height also?
-    hierarchy.sort(function(a, b) { return b.value - a.value; });
+    if ( fullLayout[ 'sort']) {
+      hierarchy.sort(function(a, b) { return b.value - a.value; });
+    }
 
     var pullColor;
     var scaleColor;
