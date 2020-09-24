@@ -289,12 +289,12 @@ function makeSymbolGeoJSON(calcTrace, gd) {
     var symbol = marker.symbol;
     var angle = marker.angle;
 
-    var fillSymbol = (symbol !== 'circle') ? 
-        getFillFunc(symbol) : 
+    var fillSymbol = (symbol !== 'circle') ?
+        getFillFunc(symbol) :
         blankFillFunc;
 
-    var fillAngle = (angle !== 'auto') ? 
-        getFillFunc(angle, true) : 
+    var fillAngle = (angle !== 'auto') ?
+        getFillFunc(angle, true) :
         blankFillFunc;
 
     var fillText = subTypes.hasText(trace) ?
