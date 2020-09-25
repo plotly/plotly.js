@@ -173,13 +173,13 @@ axes.addAxRefDomainCoerceRefExtra = function(container, axLetter, coerceRefExtra
  * - for other types: coerce them to numbers
  */
 axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
-    var cleanPos, pos;
-
-    if(axRef === 'paper' || axRef === 'pixel') {
+    var cleanPos, pos, axRefType;
+    axRefType = axes.getRefType(axRef);
+    if(axRefType === 'paper' || axRefType === 'pixel' || axRefType === 'domain') {
         cleanPos = Lib.ensureNumber;
         pos = coerce(attr, dflt);
     } else {
-        // TODO: This doesn't seem to work for dates
+        // if axRef is 'range' or undefined we will end up here
         var ax = axes.getFromId(gd, axRef);
         dflt = ax.fraction2r(dflt);
         pos = coerce(attr, dflt);
