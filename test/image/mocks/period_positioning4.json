@@ -18,6 +18,7 @@
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
             "x": ["2001-01-01", "2001-01-15", "2001-02-01", "2001-02-15", "2001-03-01", "2001-03-15"],
+            "textposition": "inside", "textangle": 0, "texttemplate": "%{x|%b-%e}",
             "xperiodalignment": "middle"
         },
         {
@@ -49,6 +50,7 @@
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
             "x": ["2001-01-01", "2001-02-01", "2001-03-01", "2001-04-01", "2001-05-01", "2001-06-01"],
+            "textposition": "inside", "textangle": 0, "texttemplate": "%{x|%b-%e}",
             "xperiodalignment": "middle"
         },
         {
@@ -80,6 +82,7 @@
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
             "x": ["2001-01-01", "2001-02-15", "2001-04-01", "2001-05-15", "2001-07-01", "2001-08-15"],
+            "textposition": "inside", "textangle": 0, "texttemplate": "%{x|%b-%e}",
             "xperiodalignment": "middle"
         },
         {
@@ -111,6 +114,7 @@
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
             "x": ["2001-01-01", "2001-04-01", "2001-07-01", "2001-10-01", "2002-01-01", "2002-04-01"],
+            "textposition": "inside", "textangle": 0, "texttemplate": "%{x|%b-%e}",
             "xperiodalignment": "middle"
         },
         {
@@ -142,6 +146,7 @@
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
             "x": ["2001-01-01", "2001-07-01", "2002-01-01", "2002-07-01", "2003-01-01", "2003-07-01"],
+            "textposition": "inside", "textangle": 0, "texttemplate": "%{x|%b-%e}",
             "xperiodalignment": "middle"
         },
         {
@@ -158,31 +163,37 @@
         {
             "xaxis": "x6",
             "yaxis": "y6",
-            "xperiod": 31557600000,
-            "name": "start (AVG-YEAR)",
+            "xperiod": 604800000,
+            "name": "start (W1)",
             "marker": { "opacity": 0.5 }, "type": "scatter",
             "y": [1, 2, 3, 4, 5, 6],
-            "x": ["2001-01-01", "2001-07-01", "2002-01-01", "2002-07-01", "2003-01-01", "2003-07-01"],
+            "x": ["2001-01-01", "2001-01-05", "2001-01-08", "2001-01-12", "2001-01-15", "2001-01-19"],
+            "xperiod0": "2001-01-01",
             "xperiodalignment": "start"
         },
         {
             "xaxis": "x6",
             "yaxis": "y6",
-            "xperiod": 31557600000,
-            "name": "middle (AVG-YEAR)",
+            "xperiod": 604800000,
+            "name": "middle (W1)",
             "marker": { "opacity": 0.5 }, "type": "bar",
             "y": [1, 2, 3, 4, 5, 6],
-            "x": ["2001-01-01", "2001-07-01", "2002-01-01", "2002-07-01", "2003-01-01", "2003-07-01"],
+            "x": ["2001-01-01", "2001-01-05", "2001-01-08", "2001-01-12", "2001-01-15", "2001-01-19"],
+            "textposition": "inside", "textangle": 0,
+            "texttemplate": "%{x|%A}",
+            "hovertemplate": "%{x|%A}, %{y}",
+            "xperiod0": "2001-01-01",
             "xperiodalignment": "middle"
         },
         {
             "xaxis": "x6",
             "yaxis": "y6",
-            "xperiod": 31557600000,
-            "name": "end (AVG-YEAR)",
+            "xperiod": 604800000,
+            "name": "end (W1)",
             "marker": { "opacity": 0.5 }, "type": "scatter",
             "y": [1, 2, 3, 4, 5, 6],
-            "x": ["2001-01-01", "2001-07-01", "2002-01-01", "2002-07-01", "2003-01-01", "2003-07-01"],
+            "x": ["2001-01-01", "2001-01-05", "2001-01-08", "2001-01-12", "2001-01-15", "2001-01-19"],
+            "xperiod0": "2001-01-01",
             "xperiodalignment": "end"
         }
     ],
@@ -249,7 +260,10 @@
             ]
         },
         "xaxis6": {
+            "dtick": 604800000,
+            "tick0": "2001-01-01",
             "ticklabelmode": "period",
+            "tickformat": "W%V",
             "tickcolor": "black",
             "anchor": "y6",
             "domain": [

@@ -29,8 +29,7 @@ function axisPeriod(axis) {
             'Only relevant when the axis `type` is *date*.',
             'Sets the period positioning in milliseconds or *M<n>* on the ' + axis + ' axis.',
             'Special values in the form of *M<n>* could be used to declare',
-            'the number of "average" months. In this case `n` must be a positive integer.',
-            'When using milliseconds the period is rounded and applied as the number of days.'
+            'the number of "average" months. In this case `n` must be a positive integer.'
         ].join(' ')
     };
 }

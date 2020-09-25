@@ -10,10 +10,10 @@
 
 var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
-var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
 var incrementMonth = Lib.incrementMonth;
-var ONEDAY = require('../../constants/numerical').ONEDAY;
+var constants = require('../../constants/numerical');
+var ONEAVGMONTH = constants.ONEAVGMONTH;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     if(ax.type !== 'date') return vals;
@@ -22,12 +22,10 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     if(!alignment) return vals;
 
     var period = trace[axLetter + 'period'];
-    var mPeriod, dPeriod;
+    var mPeriod;
     if(isNumeric(period)) {
-        dPeriod = +period;
-        dPeriod /= ONEDAY; // convert milliseconds to days
-        dPeriod = Math.round(dPeriod);
-        if(dPeriod <= 0) return vals;
+        period = +period;
+        if(period <= 0) return vals;
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var n = +(period.substring(1));
         if(n > 0 && Math.round(n) === n) {
@@ -47,46 +45,46 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var newVals = [];
     var len = vals.length;
     for(var i = 0; i < len; i++) {
-        var v = vals[i] - base;
+        var v = vals[i];
 
-        var dateStr = ms2DateTime(v, 0, calendar);
-        var d = new Date(dateStr);
-        var year = d.getUTCFullYear();
-        var month = d.getUTCMonth();
-        var day = d.getUTCDate();
-
-        var startTime, endTime;
-        if(dPeriod) {
-            startTime = Date.UTC(year, month, day);
-            endTime = startTime + dPeriod * ONEDAY;
-        }
-
+        var nEstimated, startTime, endTime;
         if(mPeriod) {
-            var nYears = Math.floor(mPeriod / 12);
-            var nMonths = mPeriod % 12;
+            // guess at how many periods away from base we are
+            nEstimated = Math.round((v - base) / (mPeriod * ONEAVGMONTH));
+            endTime = incrementMonth(base, mPeriod * nEstimated, calendar);
 
-            if(nMonths) {
-                startTime = Date.UTC(year, nYears ? month : roundMonth(month, nMonths));
-                endTime = incrementMonth(startTime, mPeriod, calendar);
-            } else {
-                startTime = Date.UTC(year, 0);
-                endTime = Date.UTC(year + nYears, 0);
+            // iterate to get the exact bounds before and after v
+            // there may be ways to make this faster, but most of the time
+            // we'll only execute each loop zero or one time.
+            while(endTime > v) {
+                endTime = incrementMonth(endTime, -mPeriod, calendar);
             }
+            while(endTime <= v) {
+                endTime = incrementMonth(endTime, mPeriod, calendar);
+            }
+
+            // now we know endTime is the boundary immediately after v
+            // so startTime is obtained by incrementing backward one period.
+            startTime = incrementMonth(endTime, -mPeriod, calendar);
+        } else { // case of ms
+            nEstimated = Math.round((v - base) / period);
+            endTime = base + nEstimated * period;
+
+            while(endTime > v) {
+                endTime -= period;
+            }
+            while(endTime <= v) {
+                endTime += period;
+            }
+
+            startTime = endTime - period;
         }
 
-        var newD = new Date(
+        newVals[i] = (
             isStart ? startTime :
             isEnd ? endTime :
             (startTime + endTime) / 2
         );
-
-        newVals[i] = newD.getTime() + base;
     }
     return newVals;
 };
-
-var monthSteps = [2, 3, 4, 6];
-
-function roundMonth(month, step) {
-    return (monthSteps.indexOf(step) === -1) ? month : Math.floor(month / step) * step;
-}

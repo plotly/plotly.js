@@ -2957,7 +2957,7 @@ describe('hover on traces with (x|y)period positioning', function() {
         .then(done);
     });
 
-    it('shows hover info for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
+    it('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
         Plotly.newPlot(gd, require('@mocks/period_positioning4.json'))
         .then(function() { _hover(65, 425); })
         .then(function() {
@@ -3045,42 +3045,42 @@ describe('hover on traces with (x|y)period positioning', function() {
             });
         })
 
-        .then(function() { _hover(335, 425); })
+        .then(function() { _hover(345, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'start (M3)',
                 nums: '(Q1, 1)'
             });
         })
-        .then(function() { _hover(335, 395); })
+        .then(function() { _hover(345, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'start (M3)',
                 nums: '(Q1, 2)'
             });
         })
-        .then(function() { _hover(370, 425); })
+        .then(function() { _hover(380, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'middle (M3)',
                 nums: '(Q1, 1)'
             });
         })
-        .then(function() { _hover(370, 395); })
+        .then(function() { _hover(380, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'middle (M3)',
                 nums: '(Q1, 2)'
             });
         })
-        .then(function() { _hover(405, 425); })
+        .then(function() { _hover(415, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'end (M3)',
                 nums: '(Q1, 1)'
             });
         })
-        .then(function() { _hover(405, 395); })
+        .then(function() { _hover(415, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'end (M3)',
@@ -3088,46 +3088,89 @@ describe('hover on traces with (x|y)period positioning', function() {
             });
         })
 
-        .then(function() { _hover(605, 425); })
+        .then(function() { _hover(630, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'start (M12)',
                 nums: '(Jan 2001, 1)'
             });
         })
-        .then(function() { _hover(605, 395); })
+        .then(function() { _hover(630, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'start (M12)',
                 nums: '(Jul 2001, 2)'
             });
         })
-        .then(function() { _hover(640, 425); })
+        .then(function() { _hover(665, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'middle (M12)',
                 nums: '(Jan 2001, 1)'
             });
         })
-        .then(function() { _hover(640, 395); })
+        .then(function() { _hover(665, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'middle (M12)',
                 nums: '(Jul 2001, 2)'
             });
         })
-        .then(function() { _hover(675, 425); })
+        .then(function() { _hover(700, 425); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'end (M12)',
                 nums: '(Jan 2001, 1)'
             });
         })
-        .then(function() { _hover(675, 395); })
+        .then(function() { _hover(700, 395); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'end (M12)',
                 nums: '(Jul 2001, 2)'
+            });
+        })
+
+        .then(function() { _hover(630, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (W1)',
+                nums: '(W01, 1)'
+            });
+        })
+        .then(function() { _hover(630, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'start (W1)',
+                nums: '(W01, 2)'
+            });
+        })
+        .then(function() { _hover(665, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (W1)',
+                nums: 'Monday, 1'
+            });
+        })
+        .then(function() { _hover(665, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'middle (W1)',
+                nums: 'Friday, 2'
+            });
+        })
+        .then(function() { _hover(700, 205); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (W1)',
+                nums: '(W01, 1)'
+            });
+        })
+        .then(function() { _hover(700, 175); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'end (W1)',
+                nums: '(W01, 2)'
             });
         })
 
