@@ -134,9 +134,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
         pt._text = (helpers.getPtLabel(pt) || '').split('<br>').join(' ') || '';
 
-        var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext')
-            .classed('user-select-none', true);
-
+        var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
             // tex and regular text together

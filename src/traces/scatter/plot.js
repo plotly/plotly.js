@@ -470,10 +470,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
-        join.enter().append('g')
-            .classed('user-select-none', true)
-            .classed('textpoint', true)
-            .append('text');
+        join.enter().append('g').classed('textpoint', true).append('text');
 
         join.order();
 

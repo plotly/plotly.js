@@ -217,9 +217,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         Lib.templateString(options.text, fullLayout._meta) :
         options.text;
 
-    var annText = annTextGroupInner
-        .classed('user-select-none', true)
-        .append('text')
+    var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
         .text(text);
 

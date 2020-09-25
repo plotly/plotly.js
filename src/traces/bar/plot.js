@@ -122,7 +122,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
 
         bars.enter().append('g')
-            .classed('user-select-none', true)
             .classed('point', true);
 
         bars.exit().remove();

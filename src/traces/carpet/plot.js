@@ -34,8 +34,7 @@ module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
         var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
         var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
         var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
-        var labelLayer = Lib.ensureSingle(axisLayer, 'g', 'labellayer')
-            .classed('user-select-none', true);
+        var labelLayer = Lib.ensureSingle(axisLayer, 'g', 'labellayer');
 
         axisLayer.style('opacity', trace.opacity);
 
@@ -207,8 +206,7 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
     var titleJoin = layer.selectAll('text.' + labelClass).data(data);
     var offset = labelOrientation.maxExtent;
 
-    titleJoin.enter()
-        .append('text')
+    titleJoin.enter().append('text')
         .classed(labelClass, true);
 
     // There's only one, but we'll do it as a join so it's updated nicely:
@@ -229,8 +227,7 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
 
         var el = d3.select(this);
 
-        el.classed('user-select-none', true)
-            .text(axis.title.text)
+        el.text(axis.title.text)
             .call(svgTextUtils.convertToTspans, gd);
 
         if(reverseTitle) {
@@ -242,6 +239,7 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
                 'rotate(' + orientation.angle + ') ' +
                 'translate(0,' + offset + ')'
             )
+            .classed('user-select-none', true)
             .attr('text-anchor', 'middle')
             .call(Drawing.font, axis.title.font);
     });

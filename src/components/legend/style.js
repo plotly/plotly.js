@@ -282,10 +282,8 @@ module.exports = function style(s, gd, legend) {
         var txt = ptgroup.selectAll('g.pointtext')
             .data(showText ? dMod : []);
         txt.enter()
-            .append('g')
-            .classed('user-select-none', true)
-            .classed('pointtext', true)
-            .append('text').attr('transform', 'translate(20,0)');
+            .append('g').classed('pointtext', true)
+                .append('text').attr('transform', 'translate(20,0)');
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
     }

@@ -105,8 +105,7 @@ function draw(gd, titleClass, options) {
     var elShouldExist = txt || editable;
 
     if(!group) {
-        group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass)
-            .classed('user-select-none', true);
+        group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
     }
 
     var el = group.selectAll('text')

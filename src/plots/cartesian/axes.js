@@ -2732,7 +2732,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelsReady = [];
 
     tickLabels.enter().append('g')
-        .classed('user-select-none', true)
         .classed(cls, 1)
         .append('text')
             // only so tex has predictable alignment that we can

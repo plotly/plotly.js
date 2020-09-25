@@ -225,7 +225,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Initialize category label
     categoryGroupEnterSelection
-        .classed('user-select-none', true)
         .append('text')
         .attr('class', 'catlabel')
         .attr('pointer-events', 'none');

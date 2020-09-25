@@ -161,7 +161,6 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
     labelGroup.exit().remove();
 
     labelGroup.enter().append('g')
-        .classed('user-select-none', true)
         .classed('contourlabels', true);
 
     if(showLabels) {
