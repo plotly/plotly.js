@@ -3725,7 +3725,6 @@ function makePlotFramework(gd) {
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
-        .classed('user-select-none', true)
         .classed('svg-container', true)
         .style('position', 'relative');
 
