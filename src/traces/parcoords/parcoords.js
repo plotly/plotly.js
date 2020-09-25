@@ -350,7 +350,8 @@ function styleExtentTexts(selection) {
     selection
         .classed(c.cn.axisExtentText, true)
         .attr('text-anchor', 'middle')
-        .style('cursor', 'default');
+        .style('cursor', 'default')
+        .style('user-select', 'none');
 }
 
 function parcoordsInteractionState() {
@@ -654,7 +655,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     axis.selectAll('text')
         .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
-        .style('cursor', 'default');
+        .style('cursor', 'default')
+        .style('user-select', 'none');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
         .data(repeat, keyFun);
@@ -671,6 +673,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
+        .style('user-select', 'none')
         .style('pointer-events', 'auto');
 
     axisTitle
