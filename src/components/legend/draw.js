@@ -708,7 +708,7 @@ function computeLegendDimensions(gd, groups, traces, opts) {
                 var w = textGap + d[0].width;
                 var next = (oneRowLegend ? w : maxItemWidth) + itemGap;
 
-                if((next + bw + offsetX) > opts._maxWidth) {
+                if((next + bw + offsetX - itemGap) >= opts._maxWidth) {
                     maxRowWidth = Math.max(maxRowWidth, rowWidth);
                     offsetX = 0;
                     offsetY += maxItemHeightInRow;

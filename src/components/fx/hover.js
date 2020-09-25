@@ -1103,8 +1103,13 @@ function createHoverText(hoverData, opts, gd) {
     hoverLabels.each(function(d) {
         var g = d3.select(this).attr('transform', '');
 
+        var dColor = d.color;
+        if(Array.isArray(dColor)) {
+            dColor = dColor[d.eventData[0].pointNumber];
+        }
+
         // combine possible non-opaque trace color with bgColor
-        var color0 = d.bgcolor || d.color;
+        var color0 = d.bgcolor || dColor;
         // color for 'nums' part of the label
         var numsColor = Color.combine(
             Color.opacity(color0) ? color0 : Color.defaultLine,
@@ -1112,7 +1117,7 @@ function createHoverText(hoverData, opts, gd) {
         );
         // color for 'name' part of the label
         var nameColor = Color.combine(
-            Color.opacity(d.color) ? d.color : Color.defaultLine,
+            Color.opacity(dColor) ? dColor : Color.defaultLine,
             bgColor
         );
         // find a contrasting color for border and text
