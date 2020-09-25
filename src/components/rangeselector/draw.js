@@ -144,8 +144,7 @@ function drawButtonText(button, selectorLayout, d, gd) {
     }
 
     var text = Lib.ensureSingle(button, 'text', 'selector-text', function(s) {
-        s.classed('user-select-none', true)
-            .attr('text-anchor', 'middle');
+        s.attr('text-anchor', 'middle');
     });
 
     text.call(Drawing.font, selectorLayout.font)
