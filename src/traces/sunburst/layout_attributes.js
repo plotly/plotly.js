@@ -35,15 +35,5 @@ module.exports = {
             'Colors provided in the trace, using `marker.colors`, are never',
             'extended.'
         ].join(' ')
-    },
-    sort: {
-      valType: 'boolean',
-      dflt: true,
-      role: 'style',
-      editType: 'calc',
-      description: [
-          'sort on values.',
-          'default true'
-      ].join(' ')
     }
 };
