@@ -192,7 +192,7 @@ exports.calc = function(gd, trace) {
     if(failed) return;
 
     // TODO add way to sort by height also?
-    if (trace.sort) {
+    if(trace.sort) {
         hierarchy.sort(function(a, b) { return b.value - a.value; });
     }
 

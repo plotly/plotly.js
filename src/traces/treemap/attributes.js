@@ -268,6 +268,7 @@ module.exports = {
             'Sets the positions of the `text` elements.'
         ].join(' ')
     },
+    sort: pieAttrs.sort,
 
     domain: domainAttrs({name: 'treemap', trace: true, editType: 'calc'}),
 };
