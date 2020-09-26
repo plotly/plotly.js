@@ -93,8 +93,6 @@ if(allMock || argv.filter) {
     allMockList = allMockList.filter(function(mockName) {
         var cond = !(
             mockName === 'font-wishlist' ||
-            mockName === 'treemap_with-without_values' ||
-            mockName === 'gl3d_surface-heatmap-treemap_transparent-colorscale' ||
             mockName.indexOf('mapbox_') !== -1
         );
         if(!cond) console.log(' -', mockName);
@@ -104,12 +102,8 @@ if(allMock || argv.filter) {
 
 var FLAKY_LIST = [
     'treemap_coffee',
-    'treemap_textposition',
-    'treemap_sunburst_marker_colors',
-    'gl3d_surface-lighting',
-    'gl3d_surface_contour_start-end-size',
+    'treemap_with-without_values',
     'gl3d_directions-streamtube1',
-    'gl3d_traces-with-opacity',
 ];
 
 console.log('');

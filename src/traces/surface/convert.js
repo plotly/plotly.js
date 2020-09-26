@@ -433,7 +433,6 @@ proto.update = function(data) {
     var scene = this.scene;
     var sceneLayout = scene.fullSceneLayout;
     var surface = this.surface;
-    var alpha = data.opacity;
     var colormap = parseColorScale(data);
     var scaleFactor = scene.dataScale;
     var xlen = data.z[0].length;
@@ -678,10 +677,6 @@ proto.update = function(data) {
 
     if('lightposition' in data) {
         surface.lightPosition = [data.lightposition.x, data.lightposition.y, data.lightposition.z];
-    }
-
-    if(alpha && alpha < 1) {
-        surface.supportsTransparency = true;
     }
 };
 
