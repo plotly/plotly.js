@@ -76,14 +76,11 @@ function formatColor(containerIn, opacityIn, len) {
     return colorOut;
 }
 
-function parseColorScale(cont, alpha) {
-    if(alpha === undefined) alpha = 1;
-
+function parseColorScale(cont) {
     var cOpts = Colorscale.extractOpts(cont);
 
-    var colorscale = cOpts.reversescale ?
-        Colorscale.flipScale(cOpts.colorscale) :
-        cOpts.colorscale;
+    var colorscale = cOpts.colorscale;
+    if(cOpts.reversescale) colorscale = Colorscale.flipScale(cOpts.colorscale);
 
     return colorscale.map(function(elem) {
         var index = elem[0];
@@ -91,7 +88,7 @@ function parseColorScale(cont, alpha) {
         var rgb = color.toRgb();
         return {
             index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, alpha]
+            rgb: [rgb.r, rgb.g, rgb.b, rgb.a]
         };
     });
 }

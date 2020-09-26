@@ -562,6 +562,7 @@ var list = [
     'gl3d_surface_transparent-with-contours',
     'gl3d_surface-circular-colorscale',
     'gl3d_surface-circular-opacityscale',
+    'gl3d_surface-heatmap-treemap_transparent-colorscale',
     'gl3d_surface-lighting',
     'gl3d_tetrahedra',
     'gl3d_text-weirdness',
@@ -1614,6 +1615,7 @@ figs['gl3d_surface_opacity_match_mesh3d'] = require('@mocks/gl3d_surface_opacity
 figs['gl3d_surface_transparent-with-contours'] = require('@mocks/gl3d_surface_transparent-with-contours');
 figs['gl3d_surface-circular-colorscale'] = require('@mocks/gl3d_surface-circular-colorscale');
 figs['gl3d_surface-circular-opacityscale'] = require('@mocks/gl3d_surface-circular-opacityscale');
+// figs['gl3d_surface-heatmap-treemap_transparent-colorscale'] = require('@mocks/gl3d_surface-heatmap-treemap_transparent-colorscale');
 // figs['gl3d_surface-lighting'] = require('@mocks/gl3d_surface-lighting');
 figs['gl3d_tetrahedra'] = require('@mocks/gl3d_tetrahedra');
 figs['gl3d_text-weirdness'] = require('@mocks/gl3d_text-weirdness');
