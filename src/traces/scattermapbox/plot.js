@@ -53,18 +53,18 @@ var proto = ScatterMapbox.prototype;
 
 proto.addSource = function(k, opts, cluster) {
     var sourceOpts = {
-            type: 'geojson',
-            data: opts.geojson,
+        type: 'geojson',
+        data: opts.geojson,
     };
-    
+
     if(cluster.enabled) {
         Lib.extendFlat(sourceOpts, {
-            cluster: true, // better to rename this key to clusterEnabled?
+            cluster: true,
             clusterMaxZoom: cluster.maxZoom,
             clusterRadius: cluster.radius,
         });
-    } 
-    
+    }
+
     this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
 };
 

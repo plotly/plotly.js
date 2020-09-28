@@ -61,7 +61,7 @@ module.exports = function convert(gd, calcTrace) {
             paint: {},
             layout: {
                 'text-field': '{point_count_abbreviated}',
-                'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], // reuse dflt found in mapbox/layout_attributes.js 
+                'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
                 'text-size': 12
             }
         }
