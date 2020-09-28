@@ -3,7 +3,9 @@
       {
         "type": "scattermapbox",
         "mode": "markers",
-        "cluster": {},
+        "cluster": {
+          "enabled": true
+        },
         "lon": [
           10.0,
           10.1,

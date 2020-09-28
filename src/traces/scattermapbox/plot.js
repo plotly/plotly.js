@@ -8,6 +8,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var convert = require('./convert');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 var ORDER = {
@@ -57,7 +58,7 @@ proto.addSource = function(k, opts, cluster) {
     };
     
     if(cluster.enabled) {
-        Lib.extendFlat({}, sourceOpts, {
+        Lib.extendFlat(sourceOpts, {
             cluster: true, // better to rename this key to clusterEnabled?
             clusterMaxZoom: cluster.maxZoom,
             clusterRadius: cluster.radius,
