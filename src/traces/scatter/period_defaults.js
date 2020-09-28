@@ -8,15 +8,13 @@
 
 'use strict';
 
+var dateTick0 = require('../../lib').dateTick0;
 var numConstants = require('../../constants/numerical');
 var ONEWEEK = numConstants.ONEWEEK;
 
-function getPeriod0Dflt(period) {
+function getPeriod0Dflt(period, calendar) {
     var n = period / ONEWEEK;
-
-    return Math.round(n) === n ?
-        '1970-01-04' : // a Sunday
-        '1970-01-01';
+    return dateTick0(calendar, Math.round(n) === n);
 }
 
 module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce, opts) {
@@ -30,7 +28,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     if(opts.x) {
         var xperiod = coerce('xperiod');
         if(xperiod) {
-            coerce('xperiod0', getPeriod0Dflt(xperiod));
+            coerce('xperiod0', getPeriod0Dflt(xperiod, traceOut.xcalendar));
             coerce('xperiodalignment');
         }
     }
@@ -38,7 +36,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     if(opts.y) {
         var yperiod = coerce('yperiod');
         if(yperiod) {
-            coerce('yperiod0', getPeriod0Dflt(yperiod));
+            coerce('yperiod0', getPeriod0Dflt(yperiod, traceOut.ycalendar));
             coerce('yperiodalignment');
         }
     }
