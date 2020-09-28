@@ -203,6 +203,7 @@ module.exports = {
             'this option won\'t have any effect and `insidetextfont` would be used.'
         ].join(' ')
     }),
+    rotation: pieAttrs.rotation,
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };

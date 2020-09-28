@@ -220,6 +220,10 @@ function plotOne(gd, cd, element, transitionOpts) {
             s.style('pointer-events', 'all');
         });
 
+        var extraAngle = trace.rotation * Math.PI / 180;
+        pt.x0 = pt.x0 + extraAngle;
+        pt.x1 = pt.x1 + extraAngle;
+
         pt.rpx0 = y2rpx(pt.y0);
         pt.rpx1 = y2rpx(pt.y1);
         pt.xmid = (pt.x0 + pt.x1) / 2;

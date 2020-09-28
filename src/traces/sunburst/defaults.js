@@ -73,6 +73,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('insidetextorientation');
 
+    coerce('rotation');
+
     handleDomainDefaults(traceOut, layout, coerce);
 
     // do not support transforms for now
