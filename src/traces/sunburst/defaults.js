@@ -73,7 +73,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('insidetextorientation');
 
+    coerce('sort');
+
     coerce('rotation');
+    
 
     handleDomainDefaults(traceOut, layout, coerce);
 

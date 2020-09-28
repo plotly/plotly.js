@@ -204,6 +204,7 @@ module.exports = {
         ].join(' ')
     }),
     rotation: pieAttrs.rotation,
+    sort: pieAttrs.sort,
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };
