@@ -15,7 +15,7 @@ function getPeriod0Dflt(period) {
     var n = period / ONEWEEK;
 
     return Math.round(n) === n ?
-        '1970-01-05' : // a Monday
+        '1970-01-04' : // a Sunday
         '1970-01-01';
 }
 

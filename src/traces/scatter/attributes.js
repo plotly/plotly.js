@@ -43,7 +43,7 @@ function axisPeriod0(axis) {
             'Only relevant when the axis `type` is *date*.',
             'Sets the base for period positioning in milliseconds or date string on the ' + axis + ' axis.',
             'When `' + axis + 'period` is round number of weeks,',
-            'the `' + axis + 'period0` by default would be on a Monday i.e. 1970-01-05,',
+            'the `' + axis + 'period0` by default would be on a Sunday i.e. 1970-01-04,',
             'otherwise it would be at 1970-01-01.'
         ].join(' ')
     };
