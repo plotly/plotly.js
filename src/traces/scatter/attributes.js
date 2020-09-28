@@ -29,7 +29,7 @@ function axisPeriod(axis) {
             'Only relevant when the axis `type` is *date*.',
             'Sets the period positioning in milliseconds or *M<n>* on the ' + axis + ' axis.',
             'Special values in the form of *M<n>* could be used to declare',
-            'the number of "average" months. In this case `n` must be a positive integer.'
+            'the number of months. In this case `n` must be a positive integer.'
         ].join(' ')
     };
 }
@@ -37,12 +37,14 @@ function axisPeriod(axis) {
 function axisPeriod0(axis) {
     return {
         valType: 'any',
-        dflt: 0,
         role: 'info',
         editType: 'calc',
         description: [
             'Only relevant when the axis `type` is *date*.',
-            'Sets the base for period positioning in milliseconds or date string on the ' + axis + ' axis.'
+            'Sets the base for period positioning in milliseconds or date string on the ' + axis + ' axis.',
+            'When `' + axis + 'period` is round number of weeks,',
+            'the `' + axis + 'period0` by default would be on a Monday i.e. 1970-01-05,',
+            'otherwise it would be at 1970-01-01.'
         ].join(' ')
     };
 }
