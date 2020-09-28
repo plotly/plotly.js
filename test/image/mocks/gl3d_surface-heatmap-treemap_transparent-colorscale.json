@@ -150,7 +150,7 @@
         "width": 1000,
         "height": 350,
         "title": {
-            "text": "treemap, treemap & surface plots with transparent colorscale and engineering formatting"
+            "text": "treemap, heatmap & surface plots with transparent colorscale and engineering formatting"
         },
         "coloraxis": {
             "colorscale": [
