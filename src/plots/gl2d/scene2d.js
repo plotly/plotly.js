@@ -145,11 +145,6 @@ proto.makeFramework = function() {
 
     this.updateSize(canvas);
 
-    // disabling user select on the canvas
-    // sanitizes double-clicks interactions
-    // ref: https://github.com/plotly/plotly.js/issues/744
-    canvas.className += ' user-select-none';
-
     // create SVG container for hover text
     var svgContainer = this.svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',

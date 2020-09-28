@@ -72,6 +72,7 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
+                coerce('minexponent');
                 coerce('separatethousands');
             }
         }

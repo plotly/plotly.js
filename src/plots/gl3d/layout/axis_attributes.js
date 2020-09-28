@@ -108,6 +108,7 @@ module.exports = overrideAll({
     showticksuffix: axesAttrs.showticksuffix,
     showexponent: axesAttrs.showexponent,
     exponentformat: axesAttrs.exponentformat,
+    minexponent: axesAttrs.minexponent,
     separatethousands: axesAttrs.separatethousands,
     tickformat: axesAttrs.tickformat,
     tickformatstops: axesAttrs.tickformatstops,

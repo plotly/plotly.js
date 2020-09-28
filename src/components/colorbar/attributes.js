@@ -173,6 +173,7 @@ module.exports = overrideAll({
     showticksuffix: axesAttrs.showticksuffix,
     separatethousands: axesAttrs.separatethousands,
     exponentformat: axesAttrs.exponentformat,
+    minexponent: axesAttrs.minexponent,
     showexponent: axesAttrs.showexponent,
     title: {
         text: {

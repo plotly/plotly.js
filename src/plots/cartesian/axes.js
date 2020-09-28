@@ -1103,7 +1103,8 @@ function autoTickRound(ax) {
 
         var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
         var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
-        if(Math.abs(rangeexp) > 3) {
+        var minexponent = ax.minexponent === undefined ? 3 : ax.minexponent;
+        if(Math.abs(rangeexp) > minexponent) {
             if(isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {
                 ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             } else ax._tickexponent = rangeexp;
@@ -1586,6 +1587,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat: exponentFormat,
+            minexponent: ax.minexponent,
             dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
