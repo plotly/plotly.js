@@ -114,6 +114,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('pathbar.edgeshape');
     }
 
+    coerce('sort');
+
     handleDomainDefaults(traceOut, layout, coerce);
 
     // do not support transforms for now
