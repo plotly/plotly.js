@@ -11,7 +11,6 @@
 
 var Lib = require('../../lib');
 
-var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleSampleDefaults = require('../histogram2d/sample_defaults');
 var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
@@ -29,8 +28,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
-
-    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);

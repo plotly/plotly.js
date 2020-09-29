@@ -34,21 +34,13 @@ module.exports = function calc(gd, trace) {
     var xBinsAndPos = calcAllAutoBins(gd, trace, xa, 'x');
     var xBinSpec = xBinsAndPos[0];
     var xPos0 = xBinsAndPos[1];
-    var origX = xBinsAndPos[2];
     var yBinsAndPos = calcAllAutoBins(gd, trace, ya, 'y');
     var yBinSpec = yBinsAndPos[0];
     var yPos0 = yBinsAndPos[1];
-    var origY = yBinsAndPos[2];
 
     var serieslen = trace._length;
-    if(xPos0.length > serieslen) {
-        xPos0.splice(serieslen, xPos0.length - serieslen);
-        origX.splice(serieslen, origX.length - serieslen);
-    }
-    if(yPos0.length > serieslen) {
-        yPos0.splice(serieslen, yPos0.length - serieslen);
-        origY.splice(serieslen, origY.length - serieslen);
-    }
+    if(xPos0.length > serieslen) xPos0.splice(serieslen, xPos0.length - serieslen);
+    if(yPos0.length > serieslen) yPos0.splice(serieslen, yPos0.length - serieslen);
 
     // make the empty bin array & scale the map
     var z = [];
@@ -139,8 +131,6 @@ module.exports = function calc(gd, trace) {
     var uniqueValsPerY = true;
     var xVals = new Array(nx);
     var yVals = new Array(ny);
-    var xOrig = [];
-    var yOrig = [];
     var xGapLow = Infinity;
     var xGapHigh = Infinity;
     var yGapLow = Infinity;
@@ -151,9 +141,6 @@ module.exports = function calc(gd, trace) {
         n = Lib.findBin(xi, xbins);
         m = Lib.findBin(yi, ybins);
         if(n >= 0 && n < nx && m >= 0 && m < ny) {
-            if(origX) xOrig[n] = origX[i];
-            if(origY) yOrig[m] = origY[i];
-
             total += binfunc(n, i, z[m], rawCounterData, counts[m]);
             inputPoints[m][n].push(i);
 
@@ -181,18 +168,14 @@ module.exports = function calc(gd, trace) {
     }
 
     return {
-        orig_x: xOrig,
         x: xPos0,
         xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
         x0: x0,
         dx: dx,
-
-        orig_y: yOrig,
         y: yPos0,
         yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
         y0: y0,
         dy: dy,
-
         z: z,
         pts: inputPoints
     };

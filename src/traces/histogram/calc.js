@@ -13,7 +13,6 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var alignPeriod = require('../../plots/cartesian/align_period');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var binFunctions = require('./bin_functions');
@@ -24,19 +23,16 @@ var getBinSpanLabelRound = require('./bin_label_vals');
 function calc(gd, trace) {
     var pos = [];
     var size = [];
-    var isHorizontal = trace.orientation === 'h';
-    var pa = Axes.getFromId(gd, isHorizontal ? trace.yaxis : trace.xaxis);
-    var mainData = isHorizontal ? 'y' : 'x';
+    var pa = Axes.getFromId(gd, trace.orientation === 'h' ? trace.yaxis : trace.xaxis);
+    var mainData = trace.orientation === 'h' ? 'y' : 'x';
     var counterData = {x: 'y', y: 'x'}[mainData];
     var calendar = trace[mainData + 'calendar'];
-    var hasPeriod = trace[mainData + 'periodalignment'];
     var cumulativeSpec = trace.cumulative;
     var i;
 
     var binsAndPos = calcAllAutoBins(gd, trace, pa, mainData);
     var binSpec = binsAndPos[0];
     var pos0 = binsAndPos[1];
-    var origPos = binsAndPos[2];
 
     var nonuniformBins = typeof binSpec.size === 'string';
     var binEdges = [];
@@ -189,21 +185,13 @@ function calc(gd, trace) {
                 b: 0
             };
 
-            if(hasPeriod) {
-                cdi.orig_p = origPos[i];
-            }
-
             // setup hover and event data fields,
             // N.B. pts and "hover" positions ph0/ph1 don't seem to make much sense
             // for cumulative distributions
             if(!cumulativeSpec.enabled) {
                 cdi.pts = inputPoints[i];
                 if(uniqueValsPerBin) {
-                    if(hasPeriod) {
-                        cdi.ph0 = cdi.ph1 = cdi.pts.length ? origPos[cdi.pts[0]] : cdi.orig_p;
-                    } else {
-                        cdi.ph0 = cdi.ph1 = cdi.pts.length ? pos0[cdi.pts[0]] : cdi.p;
-                    }
+                    cdi.ph0 = cdi.ph1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
                 } else {
                     // Defer evaluation of ph(0|1) in crossTraceCalc
                     trace._computePh = true;
@@ -245,7 +233,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
     var groupName = trace['_' + mainData + 'bingroup'];
     var binOpts = fullLayout._histogramBinOpts[groupName];
     var isOverlay = fullLayout.barmode === 'overlay';
-    var i, traces, tracei, calendar, pos0, origPos, autoVals, cumulativeSpec;
+    var i, traces, tracei, calendar, pos0, autoVals, cumulativeSpec;
 
     var r2c = function(v) { return pa.r2c(v, 0, calendar); };
     var c2r = function(v) { return pa.c2r(v, 0, calendar); };
@@ -284,9 +272,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
             if(tracei.visible) {
                 var mainDatai = binOpts.dirs[i];
-                origPos = pa.makeCalcdata(tracei, mainDatai);
-                pos0 = alignPeriod(trace, pa, mainData, origPos);
-                tracei['_' + mainDatai + 'pos0'] = pos0;
+                pos0 = tracei['_' + mainDatai + 'pos0'] = pa.makeCalcdata(tracei, mainDatai);
 
                 allPos = Lib.concat(allPos, pos0);
                 delete tracei['_' + mainData + 'autoBinFinished'];
@@ -334,7 +320,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
             // Several single-valued histograms! Stop infinite recursion,
             // just return an extra flag that tells handleSingleValueOverlays
             // to sort out this trace too
-            if(_overlayEdgeCase) return [newBinSpec, pos0, origPos, true];
+            if(_overlayEdgeCase) return [newBinSpec, pos0, true];
 
             newBinSpec = handleSingleValueOverlays(gd, trace, pa, mainData, binAttr);
         }
@@ -421,7 +407,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         delete trace[autoBinAttr];
     }
 
-    return [traceBinOptsCalc, pos0, origPos, false];
+    return [traceBinOptsCalc, pos0];
 }
 
 /*
@@ -455,7 +441,7 @@ function handleSingleValueOverlays(gd, trace, pa, mainData, binAttr) {
         } else {
             var resulti = calcAllAutoBins(gd, tracei, pa, mainData, true);
             var binSpeci = resulti[0];
-            var isSingleValued = resulti[3];
+            var isSingleValued = resulti[2];
 
             // so we can use this result when we get to tracei in the normal
             // course of events, mark it as done and put _pos0 back
