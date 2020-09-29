@@ -64,7 +64,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
-            'paper', true);
+            'paper');
         var axRefType = Axes.getRefType(axRef);
 
         if(axRefType === 'range') {

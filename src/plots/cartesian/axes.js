@@ -87,7 +87,7 @@ function expandRange(range) {
  * domainRef: true if ' domain' should be appended to the axis items in the list
  *     of possible values for this axis reference.
  */
-axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption, domainRef) {
+axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
     var axLetter = attr.charAt(attr.length - 1);
     var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
     var refAttr = attr + 'ref';
@@ -95,7 +95,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 
     if(!dflt) dflt = axlist[0] || (typeof extraOption === 'string' ? extraOption : extraOption[0]);
     if(!extraOption) extraOption = dflt;
-    if(domainRef) axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
+    axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
 
     // data-ref annotations are not supported in gl2d yet
 
