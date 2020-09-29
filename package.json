@@ -160,7 +160,7 @@
     "mkdirp": "^1.0.4",
     "node-sass": "^4.14.1",
     "npm-link-check": "^4.0.0",
-    "open": "^7.2.1",
+    "open": "^7.3.0",
     "prepend-file": "^2.0.0",
     "prettysize": "^2.0.0",
     "read-last-lines": "^1.7.2",
