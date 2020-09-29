@@ -11,6 +11,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -30,15 +31,9 @@ module.exports = function calc(gd, trace) {
     var isHist = Registry.traceIs(trace, 'histogram');
     var isGL2D = Registry.traceIs(trace, 'gl2d');
     var zsmooth = isContour ? 'best' : trace.zsmooth;
-    var x;
-    var x0;
-    var dx;
-    var y;
-    var y0;
-    var dy;
-    var z;
-    var i;
-    var binned;
+    var x, x0, dx, origX;
+    var y, y0, dy, origY;
+    var z, i, binned;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -46,12 +41,16 @@ module.exports = function calc(gd, trace) {
 
     if(isHist) {
         binned = histogram2dCalc(gd, trace);
+        origX = binned.orig_x;
         x = binned.x;
         x0 = binned.x0;
         dx = binned.dx;
+
+        origY = binned.orig_y;
         y = binned.y;
         y0 = binned.y0;
         dy = binned.dy;
+
         z = binned.z;
     } else {
         var zIn = trace.z;
@@ -61,8 +60,12 @@ module.exports = function calc(gd, trace) {
             y = trace._y;
             zIn = trace._z;
         } else {
-            x = trace._x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-            y = trace._y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+            origX = trace.x ? xa.makeCalcdata(trace, 'x') : [];
+            origY = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+            x = alignPeriod(trace, xa, 'x', origX);
+            y = alignPeriod(trace, ya, 'y', origY);
+            trace._x = x;
+            trace._y = y;
         }
 
         x0 = trace.x0;
@@ -143,6 +146,13 @@ module.exports = function calc(gd, trace) {
         text: trace._text || trace.text,
         hovertext: trace._hovertext || trace.hovertext
     };
+
+    if(trace.xperiodalignment && origX) {
+        cd0.orig_x = origX;
+    }
+    if(trace.yperiodalignment && origY) {
+        cd0.orig_y = origY;
+    }
 
     if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;
     if(yIn && yIn.length === yArray.length - 1) cd0.yCenter = yIn;

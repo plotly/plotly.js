@@ -31,6 +31,14 @@ module.exports = extendFlat({
     y: heatmapAttrs.y,
     y0: heatmapAttrs.y0,
     dy: heatmapAttrs.dy,
+
+    xperiod: heatmapAttrs.xperiod,
+    yperiod: heatmapAttrs.yperiod,
+    xperiod0: scatterAttrs.xperiod0,
+    yperiod0: scatterAttrs.yperiod0,
+    xperiodalignment: heatmapAttrs.xperiodalignment,
+    yperiodalignment: heatmapAttrs.yperiodalignment,
+
     text: heatmapAttrs.text,
     hovertext: heatmapAttrs.hovertext,
     transpose: heatmapAttrs.transpose,

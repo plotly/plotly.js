@@ -415,6 +415,7 @@ var list = [
     'gl2d_parcoords_select_first_last_enum',
     'gl2d_parcoords_style_labels',
     'gl2d_parcoords_tick_format',
+    'gl2d_period_positioning',
     'gl2d_point-selection',
     'gl2d_pointcloud-basic',
     'gl2d_rgb_dont_accept_alpha_scattergl',
@@ -754,6 +755,14 @@ var list = [
     'parcats_reordered',
     'parcats_unbundled',
     'percent_error_bar',
+    'period_positioning',
+    'period_positioning2',
+    'period_positioning3',
+    'period_positioning4',
+    'period_positioning5',
+    'period_positioning6',
+    'period_positioning7',
+    'period_positioning8',
     'picnic_heatmap',
     'pie_aggregated',
     'pie_automargin',
@@ -1468,6 +1477,7 @@ figs['gl2d_parcoords_rgba_colorscale'] = require('@mocks/gl2d_parcoords_rgba_col
 // figs['gl2d_parcoords_select_first_last_enum'] = require('@mocks/gl2d_parcoords_select_first_last_enum');
 figs['gl2d_parcoords_style_labels'] = require('@mocks/gl2d_parcoords_style_labels');
 figs['gl2d_parcoords_tick_format'] = require('@mocks/gl2d_parcoords_tick_format');
+figs['gl2d_period_positioning'] = require('@mocks/gl2d_period_positioning');
 figs['gl2d_point-selection'] = require('@mocks/gl2d_point-selection');
 // figs['gl2d_pointcloud-basic'] = require('@mocks/gl2d_pointcloud-basic');
 // figs['gl2d_rgb_dont_accept_alpha_scattergl'] = require('@mocks/gl2d_rgb_dont_accept_alpha_scattergl');
@@ -1807,6 +1817,14 @@ figs['parcats_numeric_sort'] = require('@mocks/parcats_numeric_sort');
 figs['parcats_reordered'] = require('@mocks/parcats_reordered');
 figs['parcats_unbundled'] = require('@mocks/parcats_unbundled');
 figs['percent_error_bar'] = require('@mocks/percent_error_bar');
+figs['period_positioning'] = require('@mocks/period_positioning');
+figs['period_positioning2'] = require('@mocks/period_positioning2');
+figs['period_positioning3'] = require('@mocks/period_positioning3');
+figs['period_positioning4'] = require('@mocks/period_positioning4');
+figs['period_positioning5'] = require('@mocks/period_positioning5');
+figs['period_positioning6'] = require('@mocks/period_positioning6');
+figs['period_positioning7'] = require('@mocks/period_positioning7');
+figs['period_positioning8'] = require('@mocks/period_positioning8');
 figs['picnic_heatmap'] = require('@mocks/picnic_heatmap');
 figs['pie_aggregated'] = require('@mocks/pie_aggregated');
 figs['pie_automargin'] = require('@mocks/pie_automargin');
@@ -2093,7 +2111,6 @@ figs['waterfall-offsetgroups'] = require('@mocks/waterfall-offsetgroups');
 // figs['yignbu_heatmap'] = require('@mocks/yignbu_heatmap');
 // figs['yiorrd_heatmap'] = require('@mocks/yiorrd_heatmap');
 figs['zsmooth_methods'] = require('@mocks/zsmooth_methods');
-
 
 describe('@noCI mock validation', function() {
     list.forEach(function(name) {

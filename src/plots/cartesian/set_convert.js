@@ -30,7 +30,6 @@ var ONEMIN = numConstants.ONEMIN;
 var ONESEC = numConstants.ONESEC;
 
 var axisIds = require('./axis_ids');
-
 var constants = require('./constants');
 var HOUR_PATTERN = constants.HOUR_PATTERN;
 var WEEKDAY_PATTERN = constants.WEEKDAY_PATTERN;

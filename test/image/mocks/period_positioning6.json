@@ -1,0 +1,333 @@
+{
+    "data": [
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": 86400000,
+            "name": "start (D1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05", "2001-01-06"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": 86400000,
+            "name": "middle (D1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05", "2001-01-06"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": 86400000,
+            "name": "end (D1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05", "2001-01-06"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": 86400000,
+            "name": "start (D1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": 86400000,
+            "name": "middle (D1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": 86400000,
+            "name": "end (D1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-01", "2001-01-02", "2001-01-03", "2001-01-04", "2001-01-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": 172800000,
+            "name": "start (D2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-03", "2001-01-05", "2001-01-07", "2001-01-09", "2001-01-11"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": 172800000,
+            "name": "middle (D2)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-03", "2001-01-05", "2001-01-07", "2001-01-09", "2001-01-11"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": 172800000,
+            "name": "end (D2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-03", "2001-01-05", "2001-01-07", "2001-01-09", "2001-01-11"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": 172800000,
+            "name": "start (D2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-02", "2001-01-04", "2001-01-06", "2001-01-08", "2001-01-10", "2001-01-12"],
+            "xperiod0": "2001-01-02",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": 172800000,
+            "name": "middle (D2)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-02", "2001-01-04", "2001-01-06", "2001-01-08", "2001-01-10", "2001-01-12"],
+            "xperiod0": "2001-01-02",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": 172800000,
+            "name": "end (D2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-02", "2001-01-04", "2001-01-06", "2001-01-08", "2001-01-10", "2001-01-12"],
+            "xperiod0": "2001-01-02",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": 604800000,
+            "name": "start (W1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-08", "2001-01-15", "2001-01-22", "2001-01-29", "2001-02-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": 604800000,
+            "name": "middle (W1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-08", "2001-01-15", "2001-01-22", "2001-01-29", "2001-02-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": 604800000,
+            "name": "end (W1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01-01", "2001-01-08", "2001-01-15", "2001-01-22", "2001-01-29", "2001-02-05"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": 604800000,
+            "name": "start (W1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-07", "2001-01-14", "2001-01-21", "2001-01-28", "2001-02-04"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": 604800000,
+            "name": "middle (W1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-07", "2001-01-14", "2001-01-21", "2001-01-28", "2001-02-04"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": 604800000,
+            "name": "end (W1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2000-12-31", "2001-01-07", "2001-01-14", "2001-01-21", "2001-01-28", "2001-02-04"],
+            "xperiod0": "2000-12-31",
+            "xperiodalignment": "end"
+        }
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 500,
+        "margin": {
+            "t": 50,
+            "l": 50,
+            "r": 50,
+            "b": 50
+        },
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "tick0": "2001-01-01",
+            "dtick": 86400000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis2": {
+            "tick0": "2000-12-31",
+            "dtick": 86400000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis3": {
+            "tick0": "2001-01-01",
+            "dtick": 172800000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y3",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis4": {
+            "tick0": "2001-01-02",
+            "dtick": 172800000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y4",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis5": {
+            "tick0": "2001-01-01",
+            "dtick": 604800000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y5",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+        "xaxis6": {
+            "tick0": "2000-12-31",
+            "dtick": 604800000,
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y6",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+
+        "yaxis": {
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "tickcolor": "black",
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickcolor": "black",
+            "anchor": "x3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis4": {
+            "tickcolor": "black",
+            "anchor": "x4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis5": {
+            "tickcolor": "black",
+            "anchor": "x5",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis6": {
+            "tickcolor": "black",
+            "anchor": "x6",
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}

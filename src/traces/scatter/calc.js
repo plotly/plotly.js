@@ -12,6 +12,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var subTypes = require('./subtypes');
@@ -23,8 +24,11 @@ function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var x = xa.makeCalcdata(trace, 'x');
-    var y = ya.makeCalcdata(trace, 'y');
+    var origX = xa.makeCalcdata(trace, 'x');
+    var origY = ya.makeCalcdata(trace, 'y');
+    var x = alignPeriod(trace, xa, 'x', origX);
+    var y = alignPeriod(trace, ya, 'y', origY);
+
     var serieslen = trace._length;
     var cd = new Array(serieslen);
     var ids = trace.ids;
@@ -55,6 +59,9 @@ function calc(gd, trace) {
         calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     }
 
+    var hasPeriodX = !!trace.xperiodalignment;
+    var hasPeriodY = !!trace.yperiodalignment;
+
     for(i = 0; i < serieslen; i++) {
         var cdi = cd[i] = {};
         var xValid = isNumeric(x[i]);
@@ -62,6 +69,13 @@ function calc(gd, trace) {
         if(xValid && yValid) {
             cdi[xAttr] = x[i];
             cdi[yAttr] = y[i];
+
+            if(hasPeriodX) {
+                cdi.orig_x = origX[i]; // used by hover
+            }
+            if(hasPeriodY) {
+                cdi.orig_y = origY[i]; // used by hover
+            }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions
             // even with invalid sizes

@@ -88,7 +88,7 @@ function getClosestPoint(pointData, xval, yval, hovermode) {
     pointData.x0 = xa.c2p(di.pos + centerShift - displayHalfWidth, true);
     pointData.x1 = xa.c2p(di.pos + centerShift + displayHalfWidth, true);
 
-    pointData.xLabelVal = di.pos;
+    pointData.xLabelVal = di.orig_p !== undefined ? di.orig_p : di.pos;
 
     pointData.spikeDistance = dxy(di) * spikePseudoDistance / hoverPseudoDistance;
     pointData.xSpike = xa.c2p(di.pos, true);

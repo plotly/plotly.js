@@ -1,0 +1,334 @@
+{
+    "data": [
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": "M9",
+            "name": "start (M9)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2001-10", "2002-07", "2003-04", "2004-01", "2004-10"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": "M9",
+            "name": "middle (M9)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2001-10", "2002-07", "2003-04", "2004-01", "2004-10"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "xperiod": "M9",
+            "name": "end (M9)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2001-10", "2002-07", "2003-04", "2004-01", "2004-10"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": "M12",
+            "name": "start (Y1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-01", "2003-01", "2004-01", "2005-01", "2006-01"],
+            "xperiod0": "2002-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": "M12",
+            "name": "middle (Y1)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-01", "2003-01", "2004-01", "2005-01", "2006-01"],
+            "xperiod0": "2002-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "xperiod": "M12",
+            "name": "end (Y1)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-01", "2003-01", "2004-01", "2005-01", "2006-01"],
+            "xperiod0": "2002-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": "M18",
+            "name": "start (Y1.5)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-07", "2004-01", "2005-07", "2007-01", "2008-07"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": "M18",
+            "name": "middle (Y1.5)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-07", "2004-01", "2005-07", "2007-01", "2008-07"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "xperiod": "M18",
+            "name": "end (Y1.5)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2002-07", "2004-01", "2005-07", "2007-01", "2008-07"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": "M24",
+            "name": "start (Y2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2003-01", "2005-01", "2007-01", "2009-01", "2011-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": "M24",
+            "name": "middle (Y2)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2003-01", "2005-01", "2007-01", "2009-01", "2011-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "xperiod": "M24",
+            "name": "end (Y2)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2003-01", "2005-01", "2007-01", "2009-01", "2011-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": "M48",
+            "name": "start (Y4)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2005-01", "2009-01", "2013-01", "2017-01", "2021-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": "M48",
+            "name": "middle (Y4)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2005-01", "2009-01", "2013-01", "2017-01", "2021-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "xperiod": "M48",
+            "name": "end (Y4)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2005-01", "2009-01", "2013-01", "2017-01", "2021-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        },
+
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": "M120",
+            "name": "start (Y10)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2011-01", "2021-01", "2031-01", "2041-01", "2051-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "start"
+        },
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": "M120",
+            "name": "middle (Y10)",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2011-01", "2021-01", "2031-01", "2041-01", "2051-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "xperiod": "M120",
+            "name": "end (Y5)",
+            "type": "scatter",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2011-01", "2021-01", "2031-01", "2041-01", "2051-01"],
+            "xperiod0": "2001-01-01",
+            "xperiodalignment": "end"
+        }
+
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 500,
+        "margin": {
+            "t": 50,
+            "l": 50,
+            "r": 50,
+            "b": 50
+        },
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "tick0": "2001-01",
+            "dtick": "M9",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis2": {
+            "tick0": "2001-01",
+            "dtick": "M12",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis3": {
+            "tick0": "2001-01",
+            "dtick": "M18",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y3",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis4": {
+            "tick0": "2001-01",
+            "dtick": "M24",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y4",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis5": {
+            "tick0": "2001-01",
+            "dtick": "M48",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y5",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+        "xaxis6": {
+            "tick0": "2001-01",
+            "dtick": "M120",
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y6",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+
+        "yaxis": {
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "tickcolor": "black",
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickcolor": "black",
+            "anchor": "x3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis4": {
+            "tickcolor": "black",
+            "anchor": "x4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis5": {
+            "tickcolor": "black",
+            "anchor": "x5",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis6": {
+            "tickcolor": "black",
+            "anchor": "x6",
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}

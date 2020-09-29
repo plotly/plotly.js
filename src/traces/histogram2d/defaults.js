@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleSampleDefaults = require('./sample_defaults');
 var handleStyleDefaults = require('../heatmap/style_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
@@ -24,6 +25,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});

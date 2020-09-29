@@ -11,6 +11,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var Lib = require('../../lib');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
@@ -29,19 +30,24 @@ module.exports = function calc(gd, trace) {
     var valAxis, valLetter;
     var posAxis, posLetter;
 
+    var hasPeriod;
     if(trace.orientation === 'h') {
         valAxis = xa;
         valLetter = 'x';
         posAxis = ya;
         posLetter = 'y';
+        hasPeriod = !!trace.yperiodalignment;
     } else {
         valAxis = ya;
         valLetter = 'y';
         posAxis = xa;
         posLetter = 'x';
+        hasPeriod = !!trace.xperiodalignment;
     }
 
-    var posArray = getPos(trace, posLetter, posAxis, fullLayout[numKey]);
+    var allPosArrays = getPosArrays(trace, posLetter, posAxis, fullLayout[numKey]);
+    var posArray = allPosArrays[0];
+    var origPos = allPosArrays[1];
     var dv = Lib.distinctVals(posArray);
     var posDistinct = dv.vals;
     var dPos = dv.minDiff / 2;
@@ -77,6 +83,9 @@ module.exports = function calc(gd, trace) {
 
             cdi = {};
             cdi.pos = cdi[posLetter] = posi;
+            if(hasPeriod && origPos) {
+                cdi.orig_p = origPos[i]; // used by hover
+            }
 
             cdi.q1 = d2c('q1');
             cdi.med = d2c('median');
@@ -303,13 +312,15 @@ module.exports = function calc(gd, trace) {
 // so if you want one box
 // per trace, set x0 (y0) to the x (y) value or category for this trace
 // (or set x (y) to a constant array matching y (x))
-function getPos(trace, posLetter, posAxis, num) {
+function getPosArrays(trace, posLetter, posAxis, num) {
     var hasPosArray = posLetter in trace;
     var hasPos0 = posLetter + '0' in trace;
     var hasPosStep = 'd' + posLetter in trace;
 
     if(hasPosArray || (hasPos0 && hasPosStep)) {
-        return posAxis.makeCalcdata(trace, posLetter);
+        var origPos = posAxis.makeCalcdata(trace, posLetter);
+        var pos = alignPeriod(trace, posAxis, posLetter, origPos);
+        return [pos, origPos];
     }
 
     var pos0;
@@ -337,7 +348,7 @@ function getPos(trace, posLetter, posAxis, num) {
     var out = new Array(len);
     for(var i = 0; i < len; i++) out[i] = pos0c;
 
-    return out;
+    return [out];
 }
 
 function makeBins(x, dx) {

@@ -1,0 +1,220 @@
+{
+    "data": [
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "name": "bar (v)",
+            "type": "bar",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "name": "scatter",
+            "type": "scatter",
+            "y": [1, 2, 3, 4],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "name": "bar (h)",
+            "type": "bar",
+            "orientation": "h",
+            "x": [1, 2, 3, 4],
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "name": "scatter2",
+            "type": "scatter",
+            "x": [1, 2, 3, 4],
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "name": "waterfall",
+            "type": "waterfall",
+            "y": [4, -3, 2, -1],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "name": "funnel",
+            "type": "funnel",
+            "x": [4, 3, 2, 1],
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x5",
+            "yaxis": "y5",
+            "name": "heatmap",
+            "type": "heatmap",
+            "zsmooth": "best",
+            "showscale": false,
+            "showlegend": true,
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "z": [
+                [0, 1, 0, 1],
+                [1, 0, 1, 0],
+                [0, 1, 0, 1],
+                [1, 0, 1, 0]
+            ],
+            "xperiod": "M12",
+            "xperiodalignment": "middle",
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x6",
+            "yaxis": "y6",
+            "name": "contour",
+            "type": "contour",
+            "colorscale": "Portland",
+            "showscale": false,
+            "showlegend": true,
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "z": [
+                [0, 1, 0, 1],
+                [1, 0, 1, 0],
+                [0, 1, 0, 1],
+                [1, 0, 1, 0]
+            ],
+            "xperiod": "M12",
+            "xperiodalignment": "middle",
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        }
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 500,
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis2": {
+            "tickcolor": "black",
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.3
+            ]
+        },
+        "xaxis3": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y3",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [
+                0.35,
+                0.65
+            ]
+        },
+        "xaxis5": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y5",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+        "xaxis6": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y6",
+            "domain": [
+                0.7,
+                1
+            ]
+        },
+
+        "yaxis": {
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickcolor": "black",
+            "anchor": "x3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis4": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "x4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis5": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "x5",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis6": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "x6",
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}

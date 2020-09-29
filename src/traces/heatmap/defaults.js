@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 
 var handleXYZDefaults = require('./xyz_defaults');
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleStyleDefaults = require('./style_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
@@ -27,6 +28,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('text');
     coerce('hovertext');

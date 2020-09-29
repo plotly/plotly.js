@@ -22,11 +22,23 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var ny = indices[0];
     var nx = indices[1];
     var cd0 = pointData.cd[0];
-    var xRange = cd0.xRanges[nx];
-    var yRange = cd0.yRanges[ny];
 
-    pointData.xLabel = hoverLabelText(pointData.xa, xRange[0], xRange[1]);
-    pointData.yLabel = hoverLabelText(pointData.ya, yRange[0], yRange[1]);
+    var trace = cd0.trace;
+    var hasPeriodX = !!trace.xperiodalignment;
+    var hasPeriodY = !!trace.yperiodalignment;
+
+    if(hasPeriodX) {
+        pointData.xLabel = hoverLabelText(pointData.xa, cd0.orig_x[nx]);
+    } else {
+        var xRange = cd0.xRanges[nx];
+        pointData.xLabel = hoverLabelText(pointData.xa, xRange[0], xRange[1]);
+    }
+    if(hasPeriodY) {
+        pointData.yLabel = hoverLabelText(pointData.ya, cd0.orig_x[ny]);
+    } else {
+        var yRange = cd0.yRanges[ny];
+        pointData.yLabel = hoverLabelText(pointData.ya, yRange[0], yRange[1]);
+    }
 
     return pts;
 };
