@@ -203,7 +203,18 @@ module.exports = {
             'this option won\'t have any effect and `insidetextfont` would be used.'
         ].join(' ')
     }),
-    rotation: pieAttrs.rotation,
+    rotation: {
+        valType: 'number',
+        role: 'style',
+        min: -180,
+        max: 180,
+        dflt: 0,
+        editType: 'plot',
+        description: [
+            'Instead of the first slice starting at 3 o\'clock,',
+            'rotate to some other angle.'
+        ].join(' ')
+    },
     sort: pieAttrs.sort,
 
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
