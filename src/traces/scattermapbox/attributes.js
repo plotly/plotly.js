@@ -58,27 +58,6 @@ module.exports = overrideAll({
                 'Sets the steps for each cluster.'
             ].join(' ')
         },
-        color: {
-            role: 'info',
-            valType: 'color',
-            dflt: '#51bbd6',
-            arrayOk: true,
-            editType: 'style',
-            anim: true,
-            description: [
-                'Sets the color for each cluster.'
-            ].join(' ')
-        },
-        size: {
-            role: 'info',
-            valType: 'number',
-            arrayOk: true,
-            dflt: 20,
-            min: 0,
-            description: [
-                'Sets the size for each cluster.'
-            ].join(' ')
-        },
     },
 
     // locations
