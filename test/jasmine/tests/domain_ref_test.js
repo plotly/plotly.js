@@ -25,7 +25,7 @@ function makeTests(component, filter) {
         });
         descriptions.forEach(function(d, i) {
             it(d, function(done) {
-                console.log('testing ' + d);
+                // console.log('testing ' + d);
                 gd.id = 'graph-' + i;
                 tests[i](function(v) {
                     expect(v).toBe(true);

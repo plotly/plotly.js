@@ -12,7 +12,7 @@ var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 // we have to use drag to move annotations for some reason
 var drag = require('../assets/drag');
-var SVGTools = require('../assets/svg_tools');
+// var SVGTools = require('../assets/svg_tools');
 
 // color of the rectangles
 var rectColor1 = 'rgb(10, 20, 30)';
@@ -24,17 +24,17 @@ var arrowColor2 = 'rgb(231, 200, 200)';
 
 var DELAY_TIME = 10;
 
-function svgRectToJSON(svgrect) {
-    return JSON.stringify(SVGTools.svgRectToObj(svgrect));
-}
+// function svgRectToJSON(svgrect) {
+//    return JSON.stringify(SVGTools.svgRectToObj(svgrect));
+// }
 
 function checkBBox(bboxBefore, bboxAfter, moveX, moveY) {
     // We print out the objects for sanity, because sometimes Jasmine says a
     // test passed when it actually did nothing!
-    console.log('bboxBefore', svgRectToJSON(bboxBefore));
-    console.log('bboxAfter', svgRectToJSON(bboxAfter));
-    console.log('moveX', moveX);
-    console.log('moveY', moveY);
+    // console.log('bboxBefore', svgRectToJSON(bboxBefore));
+    // console.log('bboxAfter', svgRectToJSON(bboxAfter));
+    // console.log('moveX', moveX);
+    // console.log('moveY', moveY);
     expect(bboxAfter.x).toBeCloseTo(bboxBefore.x + moveX, 2);
     expect(bboxAfter.y).toBeCloseTo(bboxBefore.y + moveY, 2);
 }
@@ -84,7 +84,7 @@ function testAnnotationMoveLabel(objectColor, moveX, moveY) {
         pos0: dragPos0(bboxBefore)
     };
     optLabelDrag.dpos = [moveX, moveY];
-    console.log('optLabelDrag', optLabelDrag);
+    // console.log('optLabelDrag', optLabelDrag);
     // drag the label, this will make the arrow rotate around the arrowhead
     return (new Promise(function(resolve) {
         drag(optLabelDrag); resolve();
@@ -115,7 +115,7 @@ function testAnnotationMoveWhole(objectColor, arrowColor, moveX, moveY, corner) 
         pos0: dragPos0(arrowBBoxBefore, corner)
     };
     optArrowDrag.dpos = [moveX, moveY];
-    console.log('optArrowDrag', optArrowDrag);
+    // console.log('optArrowDrag', optArrowDrag);
     // drag the whole annotation
     (new Promise(function(resolve) {
         drag(optArrowDrag); resolve();

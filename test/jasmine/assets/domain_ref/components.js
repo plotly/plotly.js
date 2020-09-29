@@ -13,10 +13,8 @@
 var Plotly = require('../../../../lib/index');
 var d3 = require('d3');
 var pixelCalc = require('../../assets/pixel_calc');
-var getSVGElemScreenBBox = require(
-    '../../assets/get_svg_elem_screen_bbox');
-var SVGTools = require(
-    '../../assets/svg_tools');
+var getSVGElemScreenBBox = require('../../assets/get_svg_elem_screen_bbox');
+// var SVGTools = require('../../assets/svg_tools');
 var Lib = require('../../../../src/lib');
 var Axes = require('../../../../src/plots/cartesian/axes');
 var axisIds = require('../../../../src/plots/cartesian/axis_ids');
@@ -27,6 +25,19 @@ var testMock = require('./domain_ref_base.json');
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
+
+// Make an array from a finite iterable (for environments not having
+// Array.from)
+function iterToArray(iter) {
+    var a = [];
+    do {
+        var v = iter.next();
+        // when done is true v.value is undefined
+        if(v.done) { return a; }
+        a.push(v.value);
+    } while(true);
+    return a;
+}
 
 // some made-up values for testing
 // NOTE: The pixel values are intentionally set so that 2*pixel is never greater
@@ -492,8 +503,8 @@ function checkAROPosition(gd, aro) {
     var aroPathBBox = getSVGElemScreenBBox(aroPath);
     var aroBBox = shapeToBBox(gd.layout, aro);
     var ret = compareBBoxes(aroBBox, aroPathBBox);
-    console.log('aroBBox: ' + JSON.stringify(aroBBox));
-    console.log('aroPathBBox: ' + JSON.stringify(SVGTools.svgRectToObj(aroPathBBox)));
+    // console.log('aroBBox: ' + JSON.stringify(aroBBox));
+    // console.log('aroPathBBox: ' + JSON.stringify(SVGTools.svgRectToObj(aroPathBBox)));
     return ret;
 }
 
@@ -507,7 +518,7 @@ function testShape(
     yaroPos,
     aroType
 ) {
-    console.log('gd.layout: ', JSON.stringify(gd.layout));
+    // console.log('gd.layout: ', JSON.stringify(gd.layout));
     var aro = {
         type: aroType,
         line: {
@@ -522,7 +533,7 @@ function testShape(
     // change to log axes if need be
     logAxisIfAxType(gd.layout, layout, 'x' + xAxNum, xaxisType);
     logAxisIfAxType(gd.layout, layout, 'y' + yAxNum, yaxisType);
-    console.log('layout: ', JSON.stringify(layout));
+    // console.log('layout: ', JSON.stringify(layout));
     return Plotly.relayout(gd, layout)
         .then(function(gd) {
             return checkAROPosition(gd, aro);
@@ -699,7 +710,7 @@ function comboTestDescriptions(testCombos, desribe) {
 }
 
 function annotationTestCombos() {
-    var testCombos = Array.from(iterable.cartesianProduct([
+    var testCombos = iterToArray(iterable.cartesianProduct([
         axisTypes, axisTypes, axisPairs, aroPositionsX, aroPositionsY, arrowAxis
     ]));
     testCombos = testCombos.map(
@@ -722,7 +733,7 @@ function annotationTestDescriptions() {
 
 
 function imageTestCombos() {
-    var testCombos = Array.from(iterable.cartesianProduct(
+    var testCombos = iterToArray(iterable.cartesianProduct(
         [
             axisTypes, axisTypes, axisPairs,
             // axis reference types are contained in here
@@ -749,7 +760,7 @@ function imageTestDescriptions() {
 }
 
 function shapeTestCombos() {
-    var testCombos = Array.from(iterable.cartesianProduct(
+    var testCombos = iterToArray(iterable.cartesianProduct(
         [
             axisTypes, axisTypes, axisPairs,
             // axis reference types are contained in here
