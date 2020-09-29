@@ -10,6 +10,7 @@
 
 var d3 = require('d3');
 var loggers = require('./loggers');
+var matrix = require('./matrix');
 
 /**
  * Allow referencing a graph DOM element either directly
@@ -91,11 +92,85 @@ function deleteRelatedStyleRule(uid) {
     if(style) removeElement(style);
 }
 
+function getFullTransformMatrix(element) {
+    var ancestors = getElementAncestors(element);
+    // the identity matrix
+    var transform = [
+        [1, 0, 0], 
+        [0, 1, 0],
+        [0, 0, 1]
+    ];
+    ancestors.forEach((ancestor) => {
+        var ancestor_transform = getElementTransformMatrix(ancestor);
+        if (ancestor_transform)
+            transform = matrix.dot(transform, matrix.convertCssMatrix(ancestor_transform));
+    });
+    return transform;
+}
+
+/**
+ * transforms a rect with {left, top, right?, bottom?, width?, height?} according to an element's css transform styles
+ */ 
+function transformRectToNode(element, rect) {
+    var inverse = matrix.inverseTransformMatrix(getFullTransformMatrix(element));
+    var at = matrix.apply2DTransform2(inverse);
+    var rectArray = [
+        rect.left, 
+        rect.top, 
+        rect.hasOwnProperty('right') ? rect.right : rect.left + rect.width,
+        rect.hasOwnProperty('bottom') ? rect.bottom : rect.top + rect.height
+    ];
+    var transformed = at(rectArray);
+    return {
+        left: transformed[0],
+        top: transformed[1],
+        right: transformed[2],
+        bottom: transformed[3],
+        width: transformed[2] - transformed[0],
+        height: transformed[3] - transformed[1]
+    };
+}
+
+/**
+ * extracts and parses the 2d css style transform matrix from some element
+ */ 
+function getElementTransformMatrix(element) {
+    const style = window.getComputedStyle(element, null);
+    const transform = style.getPropertyValue("-webkit-transform") ||
+      style.getPropertyValue("-moz-transform") ||
+      style.getPropertyValue("-ms-transform") ||
+      style.getPropertyValue("-o-transform") ||
+      style.getPropertyValue("transform");
+    if (transform === 'none')
+        return null;
+    // the slice is because the transform string returns eg "matrix(0.5, 0, 1, 0, 1, 1)"
+    return transform.slice(7, -1).split(',').map(n => parseFloat(n));
+}
+/**
+ * retrieve all DOM elements that are ancestors of the specified one (including itself)
+ */ 
+function getElementAncestors(element) {
+    const elements = [];
+    while (isTransformableElement(element)) {
+      elements.push(element);
+      element = element.parentElement;
+    }
+    return elements;
+}
+
+function isTransformableElement(element) {
+    return element && (element instanceof Element || element instanceof HTMLElement);
+}
+
 module.exports = {
     getGraphDiv: getGraphDiv,
     isPlotDiv: isPlotDiv,
     removeElement: removeElement,
     addStyleRule: addStyleRule,
     addRelatedStyleRule: addRelatedStyleRule,
-    deleteRelatedStyleRule: deleteRelatedStyleRule
+    deleteRelatedStyleRule: deleteRelatedStyleRule,
+    getFullTransformMatrix: getFullTransformMatrix,
+    getElementTransformMatrix: getElementTransformMatrix,
+    getElementAncestors: getElementAncestors,
+    transformRectToNode: transformRectToNode,
 };

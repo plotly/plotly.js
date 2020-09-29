@@ -103,3 +103,52 @@ exports.apply2DTransform2 = function(transform) {
         return at(xys.slice(0, 2)).concat(at(xys.slice(2, 4)));
     };
 };
+
+// applies a 2D transform to something with either the form {left, top, right, bottom}
+// or {left, top, width, height}, and returns it in the same format
+exports.apply2DTransformToRect = function(transform) {
+    var at = exports.apply2DTransform2(transform);
+    return function(rect) {
+        var rectArray = [
+            rect.left, 
+            rect.top, 
+            rect.hasOwnProperty('right') ? rect.right : rect.left + rect.width,
+            rect.hasOwnProperty('bottom') ? rect.bottom : rect.top + rect.height
+        ];
+        var transformed = at(rectArray);
+        return {
+            left: transformed[0],
+            top: transformed[1],
+            right: transformed[2],
+            bottom: transformed[3],
+            width: transformed[2] - transformed[0],
+            height: transformed[3] - transformed[1]
+        };
+    }
+}
+
+// converts a 2x3 css transform matrix, represented as a length 6 array, to a 3x3 matrix.
+exports.convertCssMatrix = function(m) {
+    if (m.length != 6)
+        throw new Error("Css transform matrix not of length 6");
+    return [
+        [m[0],  m[2],   m[4]],
+        [m[1],  m[3],   m[5]],
+        [0,     0,      1   ]
+    ];
+}
+
+// find the inverse for a 3x3 affine transform matrix
+exports.inverseTransformMatrix = function(m) {
+    const determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
+    if (Math.abs(determinant) < Number.EPSILON)
+        throw new Error("Matrix is singular");
+    var inv = 1.0 / determinant;
+    var invTranslateX = inv * (-m[1][1] * m[0][2] + m[0][1] * m[1][2]);
+    var invTranslateY = inv * (m[1][0] * m[0][2] + -m[0][0] * m[1][2]);
+    return [
+        [inv * m[1][1], inv * -m[0][1], invTranslateX],
+        [inv * -m[1][0], inv * m[0][0], invTranslateY],
+        [0, 0, 1]
+    ];
+}

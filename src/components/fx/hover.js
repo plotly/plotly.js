@@ -72,6 +72,8 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
 
+    evt.inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(evt.target));
+
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
@@ -335,6 +337,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
+
+            var transformedCoords = Lib.apply2DTransform(evt.inverseTransform)(xpx, ypx);
+
+            xpx = transformedCoords[0];
+            ypx = transformedCoords[1];
 
             // in case hover was called from mouseout into hovertext,
             // it's possible you're not actually over the plot anymore
