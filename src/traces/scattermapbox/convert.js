@@ -90,8 +90,8 @@ module.exports = function convert(gd, calcTrace) {
                 filter: ['has', 'point_count'],
                 layout: {visibility: 'visible'},
                 paint: {
-                    'circle-color': createClusterColors(trace.marker.color, trace.marker.steps),
-                    'circle-radius': createClusterSizes(trace.marker.size, trace.marker.steps)
+                    'circle-color': createClusterColors(trace.cluster.color, trace.marker.steps),
+                    'circle-radius': createClusterSizes(trace.cluster.size, trace.marker.steps)
                 },
             };
             opts.clusterCount = {
