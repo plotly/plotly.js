@@ -1,37 +1,5 @@
-
-
 {
     "data": [
-        {
-            "xaxis": "x",
-            "yaxis": "y",
-            "name": "histogram(v)",
-            "type": "histogram",
-            "x": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "xperiod": "M12",
-            "xperiodalignment": "middle"
-        },
-
-        {
-            "xaxis": "x2",
-            "yaxis": "y2",
-            "name": "histogram(h)",
-            "type": "histogram",
-            "y": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "yperiod": "M12",
-            "yperiodalignment": "middle"
-        },
-
         {
             "xaxis": "x",
             "yaxis": "y",
@@ -47,8 +15,8 @@
         },
 
         {
-            "xaxis": "x3",
-            "yaxis": "y3",
+            "xaxis": "x2",
+            "yaxis": "y2",
             "name": "candlestick",
             "type": "candlestick",
             "low": [0, 0, 0, 0],
@@ -86,94 +54,10 @@
             "upperfence": [2, 4, 6, 8],
             "yperiod": "M12",
             "yperiodalignment": "middle"
-        },
-
-        {
-            "xaxis": "x5",
-            "yaxis": "y5",
-            "name": "histogram2d",
-            "type": "histogram2d",
-            "zsmooth": "best",
-            "showscale": false,
-            "showlegend": true,
-            "x": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "y": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "z": [
-                1, 2, 3, 4,
-                5, 6, 7, 8,
-                9, 10, 11, 12,
-                13, 14, 15, 16
-            ],
-            "xbins": {
-                "start": "2001-01-01",
-                "end": "2005-01-01",
-                "size": 31557600000
-            },
-            "ybins": {
-                "start": "2001-01-01",
-                "end": "2005-01-01",
-                "size": 31557600000
-            },
-            "xperiod": "M12",
-            "xperiodalignment": "middle",
-            "yperiod": "M12",
-            "yperiodalignment": "middle"
-        },
-
-        {
-            "xaxis": "x6",
-            "yaxis": "y6",
-            "name": "hist2dcontour",
-            "type": "histogram2dcontour",
-            "colorscale": "Portland",
-            "showscale": false,
-            "showlegend": true,
-            "x": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "y": [
-                "2001-01-01",
-                "2002-01-01", "2002-01-01",
-                "2003-01-01", "2003-01-01", "2003-01-01",
-                "2004-01-01", "2004-01-01", "2004-01-01", "2004-01-01"
-            ],
-            "z": [
-                1, 2, 3, 4,
-                5, 6, 7, 8,
-                9, 10, 11, 12,
-                13, 14, 15, 16
-            ],
-            "xbins": {
-                "start": "2001-01-01",
-                "end": "2005-01-01",
-                "size": 31557600000
-            },
-            "ybins": {
-                "start": "2001-01-01",
-                "end": "2005-01-01",
-                "size": 31557600000
-            },
-            "xperiod": "M12",
-            "xperiodalignment": "middle",
-            "yperiod": "M12",
-            "yperiodalignment": "middle"
         }
     ],
     "layout": {
-        "width": 1000,
+        "width": 700,
         "height": 500,
         "showlegend": true,
         "hovermode": "closest",
@@ -184,15 +68,16 @@
             "tickcolor": "black",
             "domain": [
                 0,
-                0.3
+                0.45
             ]
         },
         "xaxis2": {
+            "rangeslider": {"visible": false},
             "tickcolor": "black",
             "anchor": "y2",
             "domain": [
                 0,
-                0.3
+                0.45
             ]
         },
         "xaxis3": {
@@ -201,33 +86,15 @@
             "tickcolor": "black",
             "anchor": "y3",
             "domain": [
-                0.35,
-                0.65
+                0.55,
+                1
             ]
         },
         "xaxis4": {
             "tickcolor": "black",
             "anchor": "y4",
             "domain": [
-                0.35,
-                0.65
-            ]
-        },
-        "xaxis5": {
-            "ticklabelmode": "period",
-            "tickcolor": "black",
-            "anchor": "y5",
-            "domain": [
-                0.7,
-                1
-            ]
-        },
-        "xaxis6": {
-            "ticklabelmode": "period",
-            "tickcolor": "black",
-            "anchor": "y6",
-            "domain": [
-                0.7,
+                0.55,
                 1
             ]
         },
@@ -260,24 +127,6 @@
             "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "x4",
-            "domain": [
-                0.55,
-                1
-            ]
-        },
-        "yaxis5": {
-            "ticklabelmode": "period",
-            "tickcolor": "black",
-            "anchor": "x5",
-            "domain": [
-                0,
-                0.45
-            ]
-        },
-        "yaxis6": {
-            "ticklabelmode": "period",
-            "tickcolor": "black",
-            "anchor": "x6",
             "domain": [
                 0.55,
                 1

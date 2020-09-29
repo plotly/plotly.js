@@ -2835,7 +2835,7 @@ describe('hover on traces with (x|y)period positioning', function() {
         .then(done);
     });
 
-    it('shows hover info for box, ohlc, candlestick, histogram, histogram2d and histogram2dcontour traces', function(done) {
+    it('shows hover info for box, ohlc, candlestick traces', function(done) {
         Plotly.newPlot(gd, require('@mocks/period_positioning2.json'))
         .then(function() { _hover(110, 390); })
         .then(function() {
@@ -2863,35 +2863,7 @@ describe('hover on traces with (x|y)period positioning', function() {
                 ].join('\n')
             });
         })
-        .then(function() { _hover(110, 410); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'histogram(v)',
-                nums: '(Jan 2001, 1)'
-            });
-        })
-        .then(function() { _hover(290, 410); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'histogram(v)',
-                nums: '(Jan 2004, 4)'
-            });
-        })
-        .then(function() { _hover(100, 230); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'histogram(h)',
-                nums: '(1, Jan 2001)'
-            });
-        })
-        .then(function() { _hover(100, 120); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'histogram(h)',
-                nums: '(4, Jan 2004)'
-            });
-        })
-        .then(function() { _hover(565, 355); })
+        .then(function() { _hover(290, 120); })
         .then(function() {
             assertHoverLabelContent({
                 name: 'candlestick',
@@ -2928,28 +2900,6 @@ describe('hover on traces with (x|y)period positioning', function() {
                     '(q3: 6, Jan 2004)',
                     '(median: 4, Jan 2004)'
                 ]
-            });
-        })
-        .then(function() { _hover(665, 365); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'histogram2d',
-                nums: [
-                    'x: Jan 2001',
-                    'y: Jan 2002',
-                    'z: 0'
-                ].join('\n')
-            });
-        })
-        .then(function() { _hover(800, 150); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'hist2dcontour',
-                nums: [
-                    'x: Jan 2003',
-                    'y: Jan 2003',
-                    'z: 3'
-                ].join('\n')
             });
         })
 
