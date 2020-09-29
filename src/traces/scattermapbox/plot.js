@@ -95,8 +95,10 @@ proto.update = function update(calcTrace) {
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
     var i, k, opts, order;
+    var hasCluster = trace.cluster.enabled;
+    var hadCluster = this.clusterEnabled;
 
-    if(trace.cluster.enabled === this.clusterEnabled) {
+    if(hasCluster === hadCluster) {
         order = [];
         if(below !== this.below) {
             for(i = order.length - 1; i >= 0; i--) {

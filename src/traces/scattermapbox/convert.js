@@ -46,25 +46,6 @@ module.exports = function convert(gd, calcTrace) {
         line: line,
         circle: circle,
         symbol: symbol,
-        cluster: {
-            type: 'circle',
-            filter: ['has', 'point_count'],
-            layout: {visibility: 'visible'},
-            paint: {
-                'circle-color': createClusterColors(trace.cluster.color, trace.cluster.steps),
-                'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.steps)
-            },
-        },
-        clusterCount: {
-            type: 'symbol',
-            filter: ['has', 'point_count'],
-            paint: {},
-            layout: {
-                'text-field': '{point_count_abbreviated}',
-                'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-                'text-size': 12
-            }
-        }
     };
 
     // early return if not visible or placeholder
@@ -102,6 +83,28 @@ module.exports = function convert(gd, calcTrace) {
         var circleOpts = makeCircleOpts(calcTrace);
         circle.geojson = circleOpts.geojson;
         circle.layout.visibility = 'visible';
+        if(hasCluster) {
+            circle.filter = ['!', ['has', 'point_count']];
+            opts.cluster = {
+                type: 'circle',
+                filter: ['has', 'point_count'],
+                layout: {visibility: 'visible'},
+                paint: {
+                    'circle-color': createClusterColors(trace.marker.color, trace.marker.steps),
+                    'circle-radius': createClusterSizes(trace.marker.size, trace.marker.steps)
+                },
+            };
+            opts.clusterCount = {
+                type: 'symbol',
+                filter: ['has', 'point_count'],
+                paint: {},
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                    'text-size': 12
+                }
+            };
+        }
 
         Lib.extendFlat(circle.paint, {
             'circle-color': circleOpts.mcc,
