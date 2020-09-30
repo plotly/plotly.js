@@ -630,12 +630,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
     generateTicks();
 
     var isPeriod = ax.ticklabelmode === 'period';
-    if(isPeriod) {
+    var addedPreTick0Label = false;
+    if(isPeriod && tickVals[0]) {
         // add one label to show pre tick0 period
         tickVals.unshift({
             minor: false,
             value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
         });
+        addedPreTick0Label = true;
     }
 
     if(ax.rangebreaks) {
@@ -778,7 +780,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         ticksOut.push(t);
     }
 
-    if(isPeriod) {
+    if(isPeriod && addedPreTick0Label) {
         var removedPreTick0Label = false;
 
         for(i = 0; i < ticksOut.length; i++) {
