@@ -9,6 +9,30 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.56.0] -- 2020-09-30
+
+### Added
+ - Introduce period positioning attributes on date axes in various cartesian traces [#5074, #5175],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Add `minexponent` attribute to improve control over SI prefixes in axis tick labels [#5121],
+   with thanks to @ignamv for the contribution!
+ - Add `sort` attribute to `sunburst` and `treemap` traces to disable automatic sort [#5164],
+   with thanks to @thierryVergult for the contribution!
+ - Handle `rgba` colors in `colorscale` of `surface` traces [#5166],
+   with thanks to @lucapinello for the contribution!
+
+### Changed
+ - Disable undesirable text selections on graphs [#5165]
+ - Adjust `tick0` for weekly periods [#5180]
+ - More informative error messages when creating `sunburst` and `treemap` charts [#5163]
+
+### Fixed
+ - Fix positioning `legend` items [#5139],
+   with thanks to @fredrikw for the contribution!
+ - Fix rounding big numbers in `pie` and `sunburst` traces [#5152]
+ - Display `marker` and `line` colors in `scatter3d` and `scattergl` when hovering [#4867]
+
+
 ## [1.55.2] -- 2020-09-08
 
 ### Fixed
@@ -24,8 +48,10 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [1.55.0] -- 2020-09-02
 
 ### Added
- - Introduce "period" `ticklabelmode` on cartesian date axes [#4993, #5055, #5060, #5065, #5088, #5089]
- - Add new formatting options for weeks and quarters [#5026]
+ - Introduce "period" `ticklabelmode` on cartesian date axes [#4993, #5055, #5060, #5065, #5088, #5089],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Add new formatting options for weeks and quarters [#5026],
+   this feature was anonymously sponsored: thank you to our sponsor!
  - Add `source` attribute to `image` traces for fast rendering [#5075]
  - Add `zsmooth` attribute for discrete `heatmapgl` traces [#4953], with thanks to @ordiology for the contribution!
  - Add horizontal and vertical markers for arrow charts [#5010]
@@ -155,8 +181,10 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ### Added
  - Introduce `rangebreaks` on date axes mainly thanks to [#4614] with API revision & improvements in
-   [#4639, #4641, #4644, #4649, #4652, #4653, #4660, #4661, #4670, #4677, #4684, #4688, #4695, #4696, #4698, #4699]
- - Introduce "(x|y) unified" `hovermode` [#4620, #4664, #4669, #4687]
+   [#4639, #4641, #4644, #4649, #4652, #4653, #4660, #4661, #4670, #4677, #4684, #4688, #4695, #4696, #4698, #4699],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Introduce "(x|y) unified" `hovermode` [#4620, #4664, #4669, #4687],
+   this feature was anonymously sponsored: thank you to our sponsor!
  - Add "hovered data" mode to `spikesnap` [#4665]
  - Add "full-json" export format to `Plotly.toImage` and `Plotly.dowloadImage` [#4593]
  - Add `node.customdata` and `link.customdata` to `sankey` traces [#4621]
