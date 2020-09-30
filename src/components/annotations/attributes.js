@@ -16,12 +16,12 @@ var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 
 function arrowAxisRefDescription(axis) {
     return [
-        'In order for absolute positioning of the arrow to work, *a'+axis+
-        'ref* must be exactly the same as *'+axis+'ref*, otherwise *a'+axis+
+        'In order for absolute positioning of the arrow to work, *a' + axis +
+        'ref* must be exactly the same as *' + axis + 'ref*, otherwise *a' + axis +
         'ref* will revert to *pixel* (explained next).',
-        'For relative positioning, *a'+axis+'ref* can be set to *pixel*,',
-        'in which case the *a'+axis+'* value is specified in pixels',
-        'relative to *'+axis+'*.',
+        'For relative positioning, *a' + axis + 'ref* can be set to *pixel*,',
+        'in which case the *a' + axis + '* value is specified in pixels',
+        'relative to *' + axis + '*.',
         'Absolute positioning is useful',
         'for trendline annotations which should continue to indicate',
         'the correct trend when zoomed. Relative positioning is useful',
@@ -29,15 +29,15 @@ function arrowAxisRefDescription(axis) {
     ].join(' ');
 }
 
-function arrowCoordinateDescription(axis,lower,upper) {
+function arrowCoordinateDescription(axis, lower, upper) {
     return [
         'Sets the', axis, 'component of the arrow tail about the arrow head.',
-        'If `a'+axis+'ref` is `pixel`, a positive (negative)',
+        'If `a' + axis + 'ref` is `pixel`, a positive (negative)',
         'component corresponds to an arrow pointing',
-        'from', upper, 'to', lower, '('+lower, 'to', upper+').',
-        'If `a'+axis+'ref` is not `pixel` and is exactly the same as `'+axis+'ref`,',
+        'from', upper, 'to', lower, '(' + lower, 'to', upper + ').',
+        'If `a' + axis + 'ref` is not `pixel` and is exactly the same as `' + axis + 'ref`,',
         'this is an absolute value on that axis,',
-        'like `'+axis+'`, specified in the same coordinates as `'+axis+'ref`.'
+        'like `' + axis + '`, specified in the same coordinates as `' + axis + 'ref`.'
     ].join(' ');
 }
 
@@ -281,7 +281,7 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc+arraydraw',
         description: [
-            arrowCoordinateDescription('x','left','right')
+            arrowCoordinateDescription('x', 'left', 'right')
         ].join(' ')
     },
     ay: {
@@ -289,7 +289,7 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc+arraydraw',
         description: [
-            arrowCoordinateDescription('y','top','bottom')
+            arrowCoordinateDescription('y', 'top', 'bottom')
         ].join(' ')
     },
     axref: {

@@ -30,12 +30,11 @@ var EQUALITY_TOLERANCE = 1e-2;
 // Array.from)
 function iterToArray(iter) {
     var a = [];
-    do {
-        var v = iter.next();
-        // when done is true v.value is undefined
-        if(v.done) { return a; }
+    var v;
+    // when done is true v.value is undefined
+    for(v = iter.next(); !v.done; v = iter.next()) {
         a.push(v.value);
-    } while(true);
+    }
     return a;
 }
 
