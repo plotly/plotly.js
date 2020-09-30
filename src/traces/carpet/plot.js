@@ -239,7 +239,6 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
                 'rotate(' + orientation.angle + ') ' +
                 'translate(0,' + offset + ')'
             )
-            .classed('user-select-none', true)
             .attr('text-anchor', 'middle')
             .call(Drawing.font, axis.title.font);
     });

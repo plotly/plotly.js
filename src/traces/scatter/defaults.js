@@ -15,6 +15,7 @@ var attributes = require('./attributes');
 var constants = require('./constants');
 var subTypes = require('./subtypes');
 var handleXYDefaults = require('./xy_defaults');
+var handlePeriodDefaults = require('./period_defaults');
 var handleStackDefaults = require('./stack_defaults');
 var handleMarkerDefaults = require('./marker_defaults');
 var handleLineDefaults = require('./line_defaults');
@@ -31,6 +32,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(!len) traceOut.visible = false;
 
     if(!traceOut.visible) return;
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
 

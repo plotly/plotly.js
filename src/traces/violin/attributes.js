@@ -16,6 +16,7 @@ module.exports = {
     x: boxAttrs.x,
     x0: boxAttrs.x0,
     y0: boxAttrs.y0,
+
     name: extendFlat({}, boxAttrs.name, {
         description: [
             'Sets the trace name.',

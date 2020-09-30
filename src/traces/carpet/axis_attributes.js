@@ -284,6 +284,16 @@ module.exports = {
             'If *B*, 1B.'
         ].join(' ')
     },
+    minexponent: {
+        valType: 'number',
+        dflt: 3,
+        min: 0,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Hide SI prefix for 10^n if |n| is below this number'
+        ].join(' ')
+    },
     separatethousands: {
         valType: 'boolean',
         dflt: false,

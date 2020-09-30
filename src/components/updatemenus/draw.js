@@ -195,8 +195,7 @@ function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
 
     // draw drop arrow at the right edge
     var arrow = Lib.ensureSingle(gHeader, 'text', constants.headerArrowClassName, function(s) {
-        s.classed('user-select-none', true)
-            .attr('text-anchor', 'end')
+        s.attr('text-anchor', 'end')
             .call(Drawing.font, menuOpts.font)
             .text(constants.arrowSymbol[menuOpts.direction]);
     });
@@ -435,11 +434,10 @@ function drawItemRect(item, menuOpts) {
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
     var text = Lib.ensureSingle(item, 'text', constants.itemTextClassName, function(s) {
-        s.classed('user-select-none', true)
-            .attr({
-                'text-anchor': 'start',
-                'data-notex': 1
-            });
+        s.attr({
+            'text-anchor': 'start',
+            'data-notex': 1
+        });
     });
 
     var tx = itemOpts.label;

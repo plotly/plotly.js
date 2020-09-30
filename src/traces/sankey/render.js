@@ -1026,7 +1026,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .append('text')
         .classed(c.cn.nodeLabel, true)
         .attr('transform', textFlip)
-        .style('user-select', 'none')
         .style('cursor', 'default')
         .style('fill', 'black');
 

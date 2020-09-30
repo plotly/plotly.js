@@ -13,6 +13,7 @@ var cluster = require('@plotly/point-cluster');
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
+var alignPeriod = require('../../plots/cartesian/align_period');
 
 var scatterCalc = require('../scatter/calc');
 var calcMarkerSize = scatterCalc.calcMarkerSize;
@@ -36,8 +37,15 @@ module.exports = function calc(gd, trace) {
     var stash = {};
     var i, xx, yy;
 
-    var x = trace._x = xa.makeCalcdata(trace, 'x');
-    var y = trace._y = ya.makeCalcdata(trace, 'y');
+    var origX = xa.makeCalcdata(trace, 'x');
+    var origY = ya.makeCalcdata(trace, 'y');
+    var x = alignPeriod(trace, xa, 'x', origX);
+    var y = alignPeriod(trace, ya, 'y', origY);
+    trace._x = x;
+    trace._y = y;
+
+    if(trace.xperiodalignment) trace._origX = origX;
+    if(trace.yperiodalignment) trace._origY = origY;
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values

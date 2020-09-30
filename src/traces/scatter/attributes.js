@@ -16,7 +16,54 @@ var dash = require('../../components/drawing/attributes').dash;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
+
 var extendFlat = require('../../lib/extend').extendFlat;
+
+function axisPeriod(axis) {
+    return {
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the period positioning in milliseconds or *M<n>* on the ' + axis + ' axis.',
+            'Special values in the form of *M<n>* could be used to declare',
+            'the number of months. In this case `n` must be a positive integer.'
+        ].join(' ')
+    };
+}
+
+function axisPeriod0(axis) {
+    return {
+        valType: 'any',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the base for period positioning in milliseconds or date string on the ' + axis + ' axis.',
+            'When `' + axis + 'period` is round number of weeks,',
+            'the `' + axis + 'period0` by default would be on a Sunday i.e. 2000-01-02,',
+            'otherwise it would be at 2000-01-01.'
+        ].join(' ')
+    };
+}
+
+function axisPeriodAlignment(axis) {
+    return {
+        valType: 'enumerated',
+        values: [
+            'start', 'middle', 'end'
+        ],
+        dflt: 'middle',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Only relevant when the axis `type` is *date*.',
+            'Sets the alignment of data points on the ' + axis + ' axis.'
+        ].join(' ')
+    };
+}
 
 module.exports = {
     x: {
@@ -79,6 +126,13 @@ module.exports = {
             'See `y0` for more info.'
         ].join(' ')
     },
+
+    xperiod: axisPeriod('x'),
+    yperiod: axisPeriod('y'),
+    xperiod0: axisPeriod0('x0'),
+    yperiod0: axisPeriod0('y0'),
+    xperiodalignment: axisPeriodAlignment('x'),
+    yperiodalignment: axisPeriodAlignment('y'),
 
     stackgroup: {
         valType: 'string',

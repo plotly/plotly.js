@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "name": "scattergl",
+            "type": "scattergl",
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01", "2005-01-01", "2006-01-01"],
+            "y": ["1970-01-01", "1970-02-01", "1970-03-01", "1970-04-01", "1970-05-01", "1970-06-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle",
+            "yperiod": "M1",
+            "yperiodalignment": "middle"
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 300,
+        "margin": {
+            "t": 30,
+            "b": 30
+        },
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black"
+        },
+
+        "yaxis": {
+            "ticklabelmode": "period",
+            "tickcolor": "black"
+        }
+    }
+}

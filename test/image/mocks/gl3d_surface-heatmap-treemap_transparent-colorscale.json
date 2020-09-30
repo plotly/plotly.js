@@ -1,0 +1,210 @@
+{
+    "data": [
+        {
+            "type": "treemap",
+            "labels": [
+                "Alpha",
+                "Bravo",
+                "Charlie",
+                "Delta",
+                "Echo",
+                "Foxtrot",
+                "Golf",
+                "Hotel",
+                "India",
+                "Juliet",
+                "Kilo",
+                "Lima",
+                "Mike",
+                "November",
+                "Oscar",
+                "Papa",
+                "Quebec",
+                "Romeo",
+                "Sierra",
+                "Tango",
+                "Uniform",
+                "Victor",
+                "Whiskey",
+                "X ray",
+                "Yankee",
+                "Zulu"
+            ],
+            "parents": [
+                "",
+                "Alpha",
+                "Alpha",
+                "Charlie",
+                "Charlie",
+                "Charlie",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Foxtrot",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Juliet",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Oscar",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform",
+                "Uniform"
+            ],
+            "branchvalues": "total",
+            "values": [
+                40000,
+                2000,
+                38000,
+                1500,
+                2500,
+                34000,
+                1000,
+                2000,
+                3000,
+                28000,
+                1250,
+                1750,
+                2250,
+                2750,
+                20000,
+                1000,
+                1500,
+                2000,
+                2500,
+                3000,
+                10000,
+                1000,
+                1500,
+                2000,
+                2500,
+                3000
+            ],
+            "sort": false,
+            "level": "Oscar",
+            "count": "leaves+branches",
+            "textinfo": "label",
+            "insidetextorientation": "horizontal",
+            "marker": {
+                "line": {
+                    "color": "#777"
+                },
+                "colorscale": [
+                    [0, "rgba(0,0,255,1)"],
+                    [0.5, "rgba(0,255,0,0.25)"],
+                    [1, "rgba(255,0,0,1)"]
+                ],
+                "showscale": false
+            },
+            "domain": {
+                "x": [0, 0.3]
+            }
+        },
+        {
+            "type": "heatmap",
+            "zsmooth": "best",
+            "coloraxis": "coloraxis",
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [0, 2000, 4000, 6000, 8000],
+            "y": [0, 2000, 4000, 6000, 8000],
+            "z": [
+                [0, 0, 0, 0, 0],
+                [0, 500, 4000, 3500, 0],
+                [0, 1000, 0, 3000, 0],
+                [0, 1500, 2000, 2500, 0],
+                [0, 0, 0, 0, 0]
+            ]
+        },
+        {
+            "type": "surface",
+            "coloraxis": "coloraxis",
+            "contours": {
+                "z": {
+                    "show": true
+                }
+            },
+            "x": [0, 2000, 4000, 6000, 8000],
+            "y": [0, 2000, 4000, 6000, 8000],
+            "z": [
+                [0, 0, 0, 0, 0],
+                [0, 500, 4000, 3500, 0],
+                [0, 1000, 0, 3000, 0],
+                [0, 1500, 2000, 2500, 0],
+                [0, 0, 0, 0, 0]
+            ]
+        }
+    ],
+    "layout": {
+        "width": 1000,
+        "height": 350,
+        "title": {
+            "text": "treemap, heatmap & surface plots with transparent colorscale and engineering formatting"
+        },
+        "coloraxis": {
+            "colorscale": [
+                [0, "rgba(0,0,255,1)"],
+                [0.5, "rgba(0,255,0,0.25)"],
+                [1, "rgba(255,0,0,1)"]
+            ],
+            "colorbar": {
+                "minexponent": 0
+            }
+        },
+        "margin": {
+            "t": 75,
+            "l": 25,
+            "r": 25,
+            "b": 25
+        },
+        "xaxis": {
+            "domain": [0.35, 0.65],
+            "minexponent": 0,
+            "dtick": 2000
+        },
+        "yaxis": {
+            "minexponent": 0,
+            "dtick": 2000
+        },
+        "scene": {
+            "xaxis": {
+                "minexponent": 0,
+                "dtick": 2000
+            },
+            "yaxis": {
+                "minexponent": 0,
+                "dtick": 2000
+            },
+            "zaxis": {
+                "minexponent": 0,
+                "dtick": 2000
+            },
+            "domain": {
+                "x": [0.7, 1]
+            },
+            "camera": {
+                "eye": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 2.1
+                },
+                "up": {
+                    "x": 0,
+                    "y": 1,
+                    "z": 0
+                }
+            }
+        }
+    }
+}

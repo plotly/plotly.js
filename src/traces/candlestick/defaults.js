@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var handleOHLC = require('../ohlc/ohlc_defaults');
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -24,6 +25,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce, {x: true});
 
     coerce('line.width');
 

@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 function calc(gd, trace) {
@@ -20,10 +21,12 @@ function calc(gd, trace) {
     var tickLen = convertTickWidth(gd, xa, trace);
     var minDiff = trace._minDiff;
     trace._minDiff = null;
+    var origX = trace._origX;
+    trace._origX = null;
     var x = trace._xcalc;
     trace._xcalc = null;
 
-    var cd = calcCommon(gd, trace, x, ya, ptFunc);
+    var cd = calcCommon(gd, trace, origX, x, ya, ptFunc);
 
     trace._extremes[xa._id] = Axes.findExtremes(xa, x, {vpad: minDiff / 2});
     if(cd.length) {
@@ -49,7 +52,7 @@ function ptFunc(o, h, l, c) {
 
 // shared between OHLC and candlestick
 // ptFunc makes a calcdata point specific to each trace type, from oi, hi, li, ci
-function calcCommon(gd, trace, x, ya, ptFunc) {
+function calcCommon(gd, trace, origX, x, ya, ptFunc) {
     var o = ya.makeCalcdata(trace, 'open');
     var h = ya.makeCalcdata(trace, 'high');
     var l = ya.makeCalcdata(trace, 'low');
@@ -61,6 +64,8 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
     // we're optimists - before we have any changing data, assume increasing
     var increasing = true;
     var cPrev = null;
+
+    var hasPeriod = !!trace.xperiodalignment;
 
     var cd = [];
     for(var i = 0; i < x.length; i++) {
@@ -90,6 +95,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
             pt.x = pt.pos;
             pt.y = [li, hi];
 
+            if(hasPeriod) pt.orig_p = origX[i]; // used by hover
             if(hasTextArray) pt.tx = trace.text[i];
             if(hasHovertextArray) pt.htx = trace.hovertext[i];
 
@@ -121,7 +127,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
  * in all traces; when a trace uses this in its
  * calc step it deletes _minDiff, so that next calc this is
  * done again in case the data changed.
- * also since we need it here, stash _xcalc on the trace
+ * also since we need it here, stash _xcalc (and _origX) on the trace
  */
 function convertTickWidth(gd, xa, trace) {
     var minDiff = trace._minDiff;
@@ -143,7 +149,10 @@ function convertTickWidth(gd, xa, trace) {
             ) {
                 ohlcTracesOnThisXaxis.push(tracei);
 
-                var xcalc = xa.makeCalcdata(tracei, 'x');
+                var origX = xa.makeCalcdata(tracei, 'x');
+                tracei._origX = origX;
+
+                var xcalc = alignPeriod(trace, xa, 'x', origX);
                 tracei._xcalc = xcalc;
 
                 var _minDiff = Lib.distinctVals(xcalc).minDiff;

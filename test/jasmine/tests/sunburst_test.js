@@ -248,7 +248,7 @@ describe('Test sunburst calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Multiple implied roots, cannot build sunburst hierarchy.');
+        expect(Lib.warn).toHaveBeenCalledWith('Multiple implied roots, cannot build sunburst hierarchy of trace 0. These roots include: Root1, Root22');
     });
 
     it('should generate "root of roots" when it can', function() {
@@ -299,8 +299,8 @@ describe('Test sunburst calc:', function() {
         expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
-        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
-        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root of trace 0 is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B of trace 0 is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
     });
 
     it('should warn labels/parents lead to ambiguous hierarchy', function() {
@@ -310,7 +310,7 @@ describe('Test sunburst calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy. Error: ambiguous: A');
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy of trace 0. Error: ambiguous: A');
     });
 
     it('should warn ids/parents lead to ambiguous hierarchy', function() {
@@ -321,7 +321,7 @@ describe('Test sunburst calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy. Error: ambiguous: b');
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build sunburst hierarchy of trace 0. Error: ambiguous: b');
     });
 
     it('should accept numbers (even `0`) are ids/parents items', function() {

@@ -70,14 +70,21 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var y0 = ya.c2p(y[ny]);
     var y1 = ya.c2p(y[ny + 1]);
 
+    var _x, _y;
     if(contour) {
+        _x = cd0.orig_x || x;
+        _y = cd0.orig_y || y;
+
         x1 = x0;
-        xl = x[nx];
+        xl = _x[nx];
         y1 = y0;
-        yl = y[ny];
+        yl = _y[ny];
     } else {
-        xl = xc ? xc[nx] : ((x[nx] + x[nx + 1]) / 2);
-        yl = yc ? yc[ny] : ((y[ny] + y[ny + 1]) / 2);
+        _x = cd0.orig_x || xc || x;
+        _y = cd0.orig_y || yc || y;
+
+        xl = xc ? _x[nx] : ((_x[nx] + _x[nx + 1]) / 2);
+        yl = yc ? _y[ny] : ((_y[ny] + _y[ny + 1]) / 2);
 
         if(xa && xa.type === 'category') xl = x[nx];
         if(ya && ya.type === 'category') yl = y[ny];

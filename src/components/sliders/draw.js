@@ -302,11 +302,10 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     }
 
     var text = Lib.ensureSingle(sliderGroup, 'text', constants.labelClass, function(s) {
-        s.classed('user-select-none', true)
-            .attr({
-                'text-anchor': textAnchor,
-                'data-notex': 1
-            });
+        s.attr({
+            'text-anchor': textAnchor,
+            'data-notex': 1
+        });
     });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
@@ -357,11 +356,10 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
 
 function drawLabel(item, data, sliderOpts) {
     var text = Lib.ensureSingle(item, 'text', constants.labelClass, function(s) {
-        s.classed('user-select-none', true)
-            .attr({
-                'text-anchor': 'middle',
-                'data-notex': 1
-            });
+        s.attr({
+            'text-anchor': 'middle',
+            'data-notex': 1
+        });
     });
 
     var tx = data.step.label;

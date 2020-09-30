@@ -78,8 +78,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             // the normalized individual sizes, so that's what I'm doing here
             // for now.
             var sizeVal = orientation && (di.sNorm || di.s);
-            var xLabelVal = (orientation === 'h') ? sizeVal : di.x;
-            var yLabelVal = (orientation === 'v') ? sizeVal : di.y;
+            var xLabelVal = (orientation === 'h') ? sizeVal : di.orig_x !== undefined ? di.orig_x : di.x;
+            var yLabelVal = (orientation === 'v') ? sizeVal : di.orig_y !== undefined ? di.orig_y : di.y;
 
             Lib.extendFlat(pointData, {
                 color: getTraceColor(trace, di),

@@ -78,6 +78,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     coerce('separatethousands');
     coerce('tickformat');
     coerce('exponentformat');
+    coerce('minexponent');
     coerce('showexponent');
     coerce('categoryorder');
 
@@ -186,6 +187,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         delete containerOut.tickangle;
         delete containerOut.showexponent;
         delete containerOut.exponentformat;
+        delete containerOut.minexponent;
         delete containerOut.tickformat;
         delete containerOut.showticksuffix;
         delete containerOut.showtickprefix;
