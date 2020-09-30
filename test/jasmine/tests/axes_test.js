@@ -13,8 +13,10 @@ var Cartesian = require('@src/plots/cartesian');
 var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
-var BADNUM = require('@src/constants/numerical').BADNUM;
-var ONEDAY = require('@src/constants/numerical').ONEDAY;
+var numerical = require('@src/constants/numerical');
+var BADNUM = numerical.BADNUM;
+var ONEDAY = numerical.ONEDAY;
+var ONEWEEK = numerical.ONEWEEK;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -6015,6 +6017,42 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('', t.positions, t.labels);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        [undefined, '%U', '%V', '%W'].forEach(function(tickformat) {
+            it('with ' + tickformat + ' tickformat, should default tick0 on a Sunday when dtick is a round number of weeks', function(done) {
+                var fig = {
+                    data: [
+                        {
+                            showlegend: false,
+                            type: 'bar',
+                            width: ONEWEEK,
+                            xperiod: ONEWEEK,
+                            x: [
+                                '2020-09-16',
+                                '2020-09-24',
+                                '2020-09-30'
+                            ],
+                            y: [3, 2, 4]
+                        }
+                    ],
+                    layout: {
+                        xaxis: {
+                            tickformat: tickformat,
+                            dtick: ONEWEEK,
+                            ticklabelmode: 'period',
+                            showgrid: true,
+                        }
+                    }
+                };
+
+                Plotly.newPlot(gd, fig)
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.tick0).toBe('2000-01-02');
                 })
                 .catch(failTest)
                 .then(done);
