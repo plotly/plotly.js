@@ -111,7 +111,10 @@ exports.calc = function(gd, trace) {
                 label: k
             });
         } else {
-            return Lib.warn('Multiple implied roots, cannot build ' + trace.type + ' hierarchy.');
+            return Lib.warn([
+                'Multiple implied roots, cannot build', trace.type, 'hierarchy of', trace.name + '.',
+                'These roots include:', impliedRoots.join(', ')
+            ].join(' '));
         }
     } else if(parent2children[''].length > 1) {
         var dummyId = Lib.randstr();
@@ -140,7 +143,10 @@ exports.calc = function(gd, trace) {
             .id(function(d) { return d.id; })
             .parentId(function(d) { return d.pid; })(cd);
     } catch(e) {
-        return Lib.warn('Failed to build ' + trace.type + ' hierarchy. Error: ' + e.message);
+        return Lib.warn([
+            'Failed to build', trace.type, 'hierarchy of', trace.name + '.',
+            'Error:', e.message
+        ].join(' '));
     }
 
     var hierarchy = d3Hierarchy.hierarchy(root);
@@ -170,7 +176,7 @@ exports.calc = function(gd, trace) {
                         if(v < partialSum * ALMOST_EQUAL) {
                             failed = true;
                             return Lib.warn([
-                                'Total value for node', d.data.data.id,
+                                'Total value for node', d.data.data.id, 'of', trace.name,
                                 'is smaller than the sum of its children.',
                                 '\nparent value =', v,
                                 '\nchildren sum =', partialSum
