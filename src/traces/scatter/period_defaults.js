@@ -13,8 +13,10 @@ var numConstants = require('../../constants/numerical');
 var ONEWEEK = numConstants.ONEWEEK;
 
 function getPeriod0Dflt(period, calendar) {
-    var n = period / ONEWEEK;
-    return dateTick0(calendar, Math.round(n) === n);
+    if(period % ONEWEEK === 0) {
+        return dateTick0(calendar, 1); // Sunday
+    }
+    return dateTick0(calendar, 0);
 }
 
 module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce, opts) {
