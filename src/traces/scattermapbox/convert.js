@@ -90,8 +90,8 @@ module.exports = function convert(gd, calcTrace) {
                 filter: ['has', 'point_count'],
                 layout: {visibility: 'visible'},
                 paint: {
-                    'circle-color': createClusterColors(trace.cluster.color, trace.cluster.steps),
-                    'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.steps)
+                    'circle-color': createClusterColors(trace.cluster.color, trace.cluster.step),
+                    'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.step)
                 },
             };
             opts.clusterCount = {
@@ -361,12 +361,12 @@ function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
 }
 
-function createClusterColors(colors, steps) {
+function createClusterColors(colors, step) {
     var idx, newColors;
     if(Lib.isArrayOrTypedArray(colors)) {
         newColors = ['step', ['get', 'point_count'], colors[0]];
         for(idx = 1; idx < colors.length; idx++) {
-            newColors.push(steps[idx - 1], colors[idx]);
+            newColors.push(step[idx - 1], colors[idx]);
         }
     } else {
         newColors = colors;
@@ -374,15 +374,15 @@ function createClusterColors(colors, steps) {
     return newColors;
 }
 
-function createClusterSizes(sizes, steps) {
+function createClusterSizes(sizes, step) {
     var idx, newSizes;
     if(
     Lib.isArrayOrTypedArray(sizes) &&
-    Lib.isArrayOrTypedArray(steps)
+    Lib.isArrayOrTypedArray(step)
   ) {
         newSizes = ['step', ['get', 'point_count'], sizes[0]];
         for(idx = 1; idx < sizes.length; idx++) {
-            newSizes.push(steps[idx - 1], sizes[idx]);
+            newSizes.push(step[idx - 1], sizes[idx]);
         }
     } else {
         newSizes = sizes;

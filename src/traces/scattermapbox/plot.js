@@ -112,7 +112,7 @@ proto.update = function update(calcTrace) {
             }
             this.below = below;
         }
-    } else if(trace.cluster.enabled && !this.clusterEnabled) {
+    } else if(hasCluster && !hadCluster) {
         for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
             k = ORDER.nonCluster[i];
             map.removeLayer(this.layerIds[k]);
@@ -124,8 +124,8 @@ proto.update = function update(calcTrace) {
             opts = optsAll[k];
             this.addLayer(k, opts, below);
         }
-        this.clusterEnabled = trace.cluster.enabled;
-    } else if(!trace.cluster.enabled && this.clusterEnabled) {
+        this.clusterEnabled = hasCluster;
+    } else if(!hasCluster && hadCluster) {
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
             map.removeLayer(this.layerIds[k]);
@@ -137,7 +137,7 @@ proto.update = function update(calcTrace) {
             this.addSource(k, opts, trace.cluster);
             this.addLayer(k, opts, below);
         }
-        this.clusterEnabled = trace.cluster.enabled;
+        this.clusterEnabled = hasCluster;
     }
 
   // link ref for quick update during selections
