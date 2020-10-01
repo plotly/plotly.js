@@ -3,13 +3,6 @@
         {
             "xperiod": 604800000,
             "xperiod0": "2020-01-06",
-            "marker": {
-                "opacity": 0.5,
-                "line": {
-                    "color": "black",
-                    "width": 1
-                }
-            },
             "name": "start",
             "type": "scatter",
             "y": [
@@ -247,13 +240,6 @@
         {
             "xperiod": 604800000,
             "xperiod0": "2020-01-06",
-            "marker": {
-                "opacity": 0.5,
-                "line": {
-                    "color": "black",
-                    "width": 1
-                }
-            },
             "name": "end",
             "type": "scatter",
             "y": [
