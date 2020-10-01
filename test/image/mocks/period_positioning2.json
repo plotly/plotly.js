@@ -73,6 +73,7 @@
         },
         "xaxis2": {
             "rangeslider": {"visible": false},
+            "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "y2",
             "domain": [
@@ -107,7 +108,6 @@
             ]
         },
         "yaxis2": {
-            "ticklabelmode": "period",
             "tickcolor": "black",
             "anchor": "x2",
             "domain": [
