@@ -48,7 +48,7 @@ module.exports = overrideAll({
             dflt: 50,
             description: 'Radius of each cluster when clustering points.',
         },
-        steps: {
+        step: {
             role: 'info',
             valType: 'number',
             arrayOk: true,
