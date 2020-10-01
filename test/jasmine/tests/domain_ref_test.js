@@ -4,8 +4,8 @@ var domainRefComponents = require('../assets/domain_ref/components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plotly = require('../../../lib/index');
-// optionally specify a test number in a file to run just a single test
-var testNumber = require('../assets/domain_ref/testnumber');
+// optionally specify a test number to run just a single test
+var testNumber = undefined;
 
 function makeTests(component, filter) {
     return function() {
