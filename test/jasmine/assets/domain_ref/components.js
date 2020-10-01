@@ -119,7 +119,6 @@ var yAnchors = ['top', 'middle', 'bottom'];
 // plot so you can use d3.select('g image').node()
 var aroColor = 'rgb(50, 100, 150)';
 
-
 // acts on an Object representing a aro which could be a line or a rect
 // DEPRECATED
 function aroFromAROPos(aro, axletter, axnum, aropos) {
@@ -133,7 +132,6 @@ function aroFromAROPos(aro, axletter, axnum, aropos) {
         aro[axletter + 'ref'] = 'paper';
     }
 }
-
 
 // {axid} is the axis id, e.g., x2, y, etc.
 // {ref} is ['range'|'domain'|'paper']
@@ -228,8 +226,20 @@ function annaxscale(ac, c0) {
 // of the arrow doesn't change where the arrow meets the text box.
 // xaxistype can be linear|log, only used if xref has type 'range' or 'domain',
 // same for yaxistype and yref
-function annotationTest(gd, layout, x0, y0, ax, ay, xref, yref, axref, ayref,
-    xaxistype, yaxistype, xid, yid) {
+function annotationTest(gd, layout, opt) {
+    var x0 = opt.x0;
+    var y0 = opt.y0;
+    var ax = opt.ax;
+    var ay = opt.ay;
+    var xref = opt.xref;
+    var yref = opt.yref;
+    var axref = opt.axref;
+    var ayref = opt.ayref;
+    var xaxistype = opt.xaxistype;
+    var yaxistype = opt.yaxistype;
+    var xid = opt.xid;
+    var yid = opt.yid;
+
     // Take the log of values corresponding to log axes.  This is because the
     // test is designed to make predicting the pixel positions easy, and it's
     // easiest when we work with the logarithm of values on log axes (doubling
@@ -432,7 +442,6 @@ function imageToBBox(layout, img) {
     return bbox;
 }
 
-
 function coordsEq(a, b) {
     if(a && b) {
         return Math.abs(a - b) < EQUALITY_TOLERANCE;
@@ -465,8 +474,20 @@ function findImage(id) {
     return ret;
 }
 
-function imageTest(gd, layout, xaxtype, yaxtype, x, y, sizex, sizey, xanchor,
-    yanchor, xref, yref, xid, yid) {
+function imageTest(gd, layout, opt) {
+    var xaxtype = opt.xaxtype;
+    var yaxtype = opt.yaxtype;
+    var x = opt.x;
+    var y = opt.y;
+    var sizex = opt.sizex;
+    var sizey = opt.sizey;
+    var xanchor = opt.xanchor;
+    var yanchor = opt.yanchor;
+    var xref = opt.xref;
+    var yref = opt.yref;
+    var xid = opt.xid;
+    var yid = opt.yid;
+
     var image = {
         x: x,
         y: y,
@@ -507,16 +528,17 @@ function checkAROPosition(gd, aro) {
     return ret;
 }
 
-function testShape(
+function shapeTest(
     gd,
-    xAxNum,
-    xaxisType,
-    xaroPos,
-    yAxNum,
-    yaxisType,
-    yaroPos,
-    aroType
-) {
+    opt) {
+    var xAxNum = opt.xAxNum;
+    var xaxisType = opt.xaxisType;
+    var xaroPos = opt.xaroPos;
+    var yAxNum = opt.yAxNum;
+    var yaxisType = opt.yaxisType;
+    var yaroPos = opt.yaroPos;
+    var aroType = opt.aroType;
+
     // console.log('gd.layout: ', JSON.stringify(gd.layout));
     var aro = {
         type: aroType,
@@ -572,7 +594,7 @@ function testShapeCombo(combo, assert, gd) {
     var yAxNum = axispair[1].substr(1);
     return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
-            return testShape(gd, xAxNum, xaxisType, xaroPos, yAxNum, yaxisType, yaroPos,
+            return shapeTest(gd, xAxNum, xaxisType, xaroPos, yAxNum, yaxisType, yaroPos,
                              shapeType);
         }).then(function(testRet) {
             assert(testRet);
@@ -729,7 +751,6 @@ function annotationTestDescriptions() {
     var testCombos = annotationTestCombos();
     return comboTestDescriptions(testCombos, describeAnnotationComboTest);
 }
-
 
 function imageTestCombos() {
     var testCombos = iterToArray(iterable.cartesianProduct(
