@@ -13,8 +13,10 @@ var Cartesian = require('@src/plots/cartesian');
 var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
-var BADNUM = require('@src/constants/numerical').BADNUM;
-var ONEDAY = require('@src/constants/numerical').ONEDAY;
+var numerical = require('@src/constants/numerical');
+var BADNUM = numerical.BADNUM;
+var ONEDAY = numerical.ONEDAY;
+var ONEWEEK = numerical.ONEWEEK;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -2848,6 +2850,58 @@ describe('Test axes', function() {
                 '10G', '2', '5',
                 '100G', '2', '5',
                 '1T'
+            ]);
+        });
+
+        it('Does not use SI prefixes for 10^n with |n| < minexponent', function() {
+            var textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                minexponent: 5,
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1,
+                range: [-18.5, 18.5]
+            });
+
+            expect(textOut).toEqual([
+                '10<sup>\u221218</sup>',
+                '10<sup>\u221217</sup>',
+                '10<sup>\u221216</sup>',
+                '1f', '10f', '100f', '1p', '10p', '100p', '1n', '10n', '100n',
+                '1μ', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1', '10', '100',
+                '1000', '10,000', '100,000', '1M', '10M', '100M', '1G', '10G', '100G',
+                '1T', '10T', '100T',
+                '10<sup>15</sup>',
+                '10<sup>16</sup>',
+                '10<sup>17</sup>',
+                '10<sup>18</sup>'
+            ]);
+
+            textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                minexponent: 0,
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1,
+                range: [-18.5, 18.5]
+            });
+
+            expect(textOut).toEqual([
+                '10<sup>\u221218</sup>',
+                '10<sup>\u221217</sup>',
+                '10<sup>\u221216</sup>',
+                '1f', '10f', '100f', '1p', '10p', '100p', '1n', '10n', '100n',
+                '1μ', '10μ', '100μ', '1m', '10m', '100m', '1', '10', '100',
+                '1k', '10k', '100k', '1M', '10M', '100M', '1G', '10G', '100G',
+                '1T', '10T', '100T',
+                '10<sup>15</sup>',
+                '10<sup>16</sup>',
+                '10<sup>17</sup>',
+                '10<sup>18</sup>'
             ]);
         });
 
@@ -5963,6 +6017,42 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     _assert('', t.positions, t.labels);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        [undefined, '%U', '%V', '%W'].forEach(function(tickformat) {
+            it('with ' + tickformat + ' tickformat, should default tick0 on a Sunday when dtick is a round number of weeks', function(done) {
+                var fig = {
+                    data: [
+                        {
+                            showlegend: false,
+                            type: 'bar',
+                            width: ONEWEEK,
+                            xperiod: ONEWEEK,
+                            x: [
+                                '2020-09-16',
+                                '2020-09-24',
+                                '2020-09-30'
+                            ],
+                            y: [3, 2, 4]
+                        }
+                    ],
+                    layout: {
+                        xaxis: {
+                            tickformat: tickformat,
+                            dtick: ONEWEEK,
+                            ticklabelmode: 'period',
+                            showgrid: true,
+                        }
+                    }
+                };
+
+                Plotly.newPlot(gd, fig)
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.tick0).toBe('2000-01-02');
                 })
                 .catch(failTest)
                 .then(done);

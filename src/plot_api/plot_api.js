@@ -3717,13 +3717,15 @@ function makePlotFramework(gd) {
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
-    fullLayout._container.enter().insert('div', ':first-child')
+    fullLayout._container.enter()
+        .insert('div', ':first-child')
         .classed('plot-container', true)
         .classed('plotly', true);
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
+        .classed('user-select-none', true)
         .classed('svg-container', true)
         .style('position', 'relative');
 
@@ -3749,6 +3751,7 @@ function makePlotFramework(gd) {
         .classed('main-svg', true);
 
     fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+    delete fullLayout._modeBar;
 
     fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);

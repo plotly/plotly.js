@@ -1,0 +1,136 @@
+{
+    "data": [
+        {
+            "xaxis": "x",
+            "yaxis": "y",
+            "name": "ohlc",
+            "type": "ohlc",
+            "low": [0, 0, 0, 0],
+            "close": [0.5, 1, 1.5, 2],
+            "open": [1, 2, 3, 4],
+            "high": [2, 4, 6, 8],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+
+        {
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "name": "candlestick",
+            "type": "candlestick",
+            "low": [0, 0, 0, 0],
+            "close": [0.5, 1, 1.5, 2],
+            "open": [1, 2, 3, 4],
+            "high": [2, 4, 6, 8],
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x3",
+            "yaxis": "y3",
+            "name": "box (v)",
+            "type": "box",
+            "x": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "lowerfence": [2, 4, 6, 8],
+            "q1": [4, 5.5, 7, 8.5],
+            "median": [6, 7, 8, 9],
+            "q3": [8, 8.5, 9, 9.5],
+            "upperfence": [10, 10, 10, 10],
+            "xperiod": "M12",
+            "xperiodalignment": "middle"
+        },
+        {
+            "xaxis": "x4",
+            "yaxis": "y4",
+            "name": "box (h)",
+            "type": "box",
+            "y": ["2001-01-01", "2002-01-01", "2003-01-01", "2004-01-01"],
+            "lowerfence": [0, 0, 0, 0],
+            "q1": [0.5, 1, 1.5, 2],
+            "median": [1, 2, 3, 4],
+            "q3": [1.5, 3, 4.5, 6],
+            "upperfence": [2, 4, 6, 8],
+            "yperiod": "M12",
+            "yperiodalignment": "middle"
+        }
+    ],
+    "layout": {
+        "width": 700,
+        "height": 500,
+        "showlegend": true,
+        "hovermode": "closest",
+
+        "xaxis": {
+            "rangeslider": {"visible": false},
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis2": {
+            "rangeslider": {"visible": false},
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y2",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis3": {
+            "rangeslider": {"visible": false},
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "y3",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "xaxis4": {
+            "tickcolor": "black",
+            "anchor": "y4",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+
+        "yaxis": {
+            "tickcolor": "black",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "tickcolor": "black",
+            "anchor": "x2",
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis3": {
+            "tickcolor": "black",
+            "anchor": "x3",
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis4": {
+            "ticklabelmode": "period",
+            "tickcolor": "black",
+            "anchor": "x4",
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}

@@ -675,12 +675,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
     generateTicks();
 
     var isPeriod = ax.ticklabelmode === 'period';
-    if(isPeriod) {
+    var addedPreTick0Label = false;
+    if(isPeriod && tickVals[0]) {
         // add one label to show pre tick0 period
         tickVals.unshift({
             minor: false,
             value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
         });
+        addedPreTick0Label = true;
     }
 
     if(ax.rangebreaks) {
@@ -823,7 +825,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         ticksOut.push(t);
     }
 
-    if(isPeriod) {
+    if(isPeriod && addedPreTick0Label) {
         var removedPreTick0Label = false;
 
         for(i = 0; i < ticksOut.length; i++) {
@@ -1010,7 +1012,7 @@ axes.autoTicks = function(ax, roughDTick) {
     }
 
     if(ax.type === 'date') {
-        ax.tick0 = Lib.dateTick0(ax.calendar);
+        ax.tick0 = Lib.dateTick0(ax.calendar, 0);
         // the criteria below are all based on the rough spacing we calculate
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
@@ -1027,14 +1029,11 @@ axes.autoTicks = function(ax, roughDTick) {
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
-            ax.tick0 = Lib.dateTick0(ax.calendar, true);
-
             var tickformat = axes.getTickFormat(ax);
             if(/%[uVW]/.test(tickformat)) {
-                // replace Sunday with Monday for ISO and Monday-based formats
-                var len = ax.tick0.length;
-                var lastD = +ax.tick0[len - 1];
-                ax.tick0 = ax.tick0.substring(0, len - 2) + String(lastD + 1);
+                ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
+            } else {
+                ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
             }
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
@@ -1148,7 +1147,8 @@ function autoTickRound(ax) {
 
         var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
         var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
-        if(Math.abs(rangeexp) > 3) {
+        var minexponent = ax.minexponent === undefined ? 3 : ax.minexponent;
+        if(Math.abs(rangeexp) > minexponent) {
             if(isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {
                 ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             } else ax._tickexponent = rangeexp;
@@ -1631,6 +1631,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat: exponentFormat,
+            minexponent: ax.minexponent,
             dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent

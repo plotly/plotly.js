@@ -13,6 +13,7 @@ var Lib = require('../../lib');
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 var handleText = require('../bar/defaults').handleText;
 var handleXYDefaults = require('../scatter/xy_defaults');
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
 var delta = require('../../constants/delta.js');
@@ -37,6 +38,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         traceOut.visible = false;
         return;
     }
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('measure');
 

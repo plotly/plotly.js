@@ -1579,4 +1579,46 @@ describe('ModeBar', function() {
             .then(done);
         });
     });
+
+    describe('modebar html', function() {
+        var gd;
+        var traces = [
+            {type: 'scatter', x: [1, 2], y: [1, 2]},
+            {type: 'scatter3d', x: [1, 2], y: [1, 2], z: [1, 2]},
+            {type: 'surface', z: [[1, 2], [1, 2]]},
+            {type: 'heatmap', z: [[1, 2], [1, 2]]},
+        ];
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        function getModebarDiv() {
+            return document.getElementById('modebar-' + gd._fullLayout._uid);
+        }
+
+        traces.forEach(function(fromTrace) {
+            traces.forEach(function(toTrace) {
+                it('is still present when switching from ' + fromTrace.type + ' to ' + toTrace.type, function(done) {
+                    Plotly.plot(gd, [fromTrace], {})
+                    .then(function() {
+                        expect(getModebarDiv()).toBeTruthy();
+                        expect(getModebarDiv().innerHTML).toBeTruthy();
+                    })
+                    .then(Plotly.react(gd, [toTrace]))
+                    .then(function() {
+                        expect(getModebarDiv()).toBeTruthy();
+                        expect(getModebarDiv().innerHTML).toBeTruthy();
+                    })
+                    .then(done)
+                    .catch(failTest);
+                });
+            });
+        });
+    });
 });

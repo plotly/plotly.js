@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
+var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleConstraintDefaults = require('./constraint_defaults');
 var handleContoursDefaults = require('./contours_defaults');
 var handleStyleDefaults = require('./style_defaults');
@@ -31,6 +32,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('text');
     coerce('hovertext');

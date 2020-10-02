@@ -23,6 +23,7 @@ Plotly.register([
     require('@lib/contourgl')
 ]);
 
+var mock0 = require('@mocks/gl2d_scatter-continuous-clustering.json');
 var mock1 = require('@mocks/gl2d_14.json');
 var mock2 = require('@mocks/gl2d_pointcloud-basic.json');
 
@@ -445,6 +446,31 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('@gl scatter3d should propagate marker colors to hover labels', function(done) {
+        var _mock = Lib.extendDeep({}, mock0);
+        _mock.layout.width = 800;
+        _mock.layout.height = 600;
+
+        var run = makeRunner([700, 300], {
+            x: 15075859,
+            y: 79183,
+            curveNumber: 0,
+            pointNumber: 0,
+            bgcolor: 'rgb(202, 178, 214)',
+            bordercolor: 'rgb(68, 68, 68)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(68, 68, 68)'
+        }, {
+            msg: 'pointcloud'
+        });
+
+        Plotly.newPlot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@gl should output correct event data for heatmapgl', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
         _mock.data[0].type = 'heatmapgl';
@@ -625,6 +651,44 @@ describe('Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('hover with (x|y)period positioning', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    it('@gl shows hover info for scattergl', function(done) {
+        Plotly.newPlot(gd, require('@mocks/gl2d_period_positioning.json'))
+        .then(function() { _hover(100, 255); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(Jan 2001, Jan 1, 1970)'
+            });
+        })
+        .then(function() { _hover(470, 45); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(Jan 2006, Jun 1, 1970)'
+            });
+        })
         .catch(failTest)
         .then(done);
     });

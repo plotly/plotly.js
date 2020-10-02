@@ -1,0 +1,67 @@
+{
+    "data": [
+        {
+            "marker": {
+                "opacity": 0.5,
+                "line": {
+                    "width": 2,
+                    "color": "white"
+                }
+            },
+            "textposition": "inside",
+            "textangle": 0,
+            "texttemplate": "%{x|%A %d %b %Y}",
+            "hovertemplate": "%{x|%A}, %{y}",
+            "type": "bar",
+            "y": [
+                28,
+                28,
+                28,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                21,
+                21,
+                21,
+                21
+            ],
+            "x": [
+                "2020-01-16",
+                "2020-01-17",
+                "2020-01-18",
+                "2020-01-19",
+                "2020-01-20",
+                "2020-01-21",
+                "2020-01-22",
+                "2020-01-23",
+                "2020-01-24",
+                "2020-01-25",
+                "2020-01-26",
+                "2020-01-27",
+                "2020-01-28",
+                "2020-01-29"
+            ],
+            "xperiod": 604800000
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 400,
+        "margin": {
+            "t": 50
+        },
+        "hovermode": "closest",
+        "barmode": "stack",
+        "bargap": 0,
+        "xaxis": {
+            "dtick": 86400000,
+            "ticklabelmode": "period",
+            "tickformat": "%a %m-%d",
+            "tickcolor": "black"
+        }
+    }
+}

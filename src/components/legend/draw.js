@@ -89,7 +89,6 @@ module.exports = function draw(gd, opts) {
     if(title.text) {
         var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
         titleEl.attr('text-anchor', 'start')
-            .classed('user-select-none', true)
             .call(Drawing.font, title.font)
             .text(title.text);
 
@@ -410,7 +409,6 @@ function drawTexts(g, gd, opts) {
     var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
 
     textEl.attr('text-anchor', 'start')
-        .classed('user-select-none', true)
         .call(Drawing.font, opts.font)
         .text(isEditable ? ensureLength(name, maxNameLength) : name);
 

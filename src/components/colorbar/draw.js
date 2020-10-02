@@ -683,6 +683,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,
         exponentformat: opts.exponentformat,
+        minexponent: opts.minexponent,
         separatethousands: opts.separatethousands,
         showexponent: opts.showexponent,
         showtickprefix: opts.showtickprefix,

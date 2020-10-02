@@ -10,7 +10,9 @@
 
 var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
-var ONEDAY = require('../../constants/numerical').ONEDAY;
+var constants = require('../../constants/numerical');
+var ONEDAY = constants.ONEDAY;
+var ONEWEEK = constants.ONEWEEK;
 
 /**
  * Return a validated dtick value for this axis
@@ -75,7 +77,9 @@ exports.dtick = function(dtick, axType) {
  */
 exports.tick0 = function(tick0, axType, calendar, dtick) {
     if(axType === 'date') {
-        return Lib.cleanDate(tick0, Lib.dateTick0(calendar));
+        return Lib.cleanDate(tick0,
+            Lib.dateTick0(calendar, (dtick % ONEWEEK === 0) ? 1 : 0)
+        );
     }
     if(dtick === 'D1' || dtick === 'D2') {
         // D1 and D2 modes ignore tick0 entirely
