@@ -591,7 +591,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
-    var dtick = ax.dtick;
     var tickformat = axes.getTickFormat(ax);
     var isPeriod = ax.ticklabelmode === 'period';
 
@@ -605,10 +604,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             Math.min(ax._categories.length - 0.5, endTick);
     }
 
-    var isDLog = (ax.type === 'log') && !(isNumeric(dtick) || dtick.charAt(0) === 'L');
+    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
 
     var definedDelta;
     if(isPeriod && tickformat) {
+        var noDtick = !!ax._dtickInit;
+
         if(
             !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
@@ -625,12 +626,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %I: hour (12-hour clock) as a decimal number [01,12]
             ) {
                 definedDelta = ONEHOUR;
-                if(!dtick) dtick = ONEHOUR;
+                if(noDtick) ax.dtick = ONEHOUR;
             } else if(
                 /%p/.test(tickformat) // %p: either AM or PM
             ) {
                 definedDelta = HALFDAY;
-                if(!dtick) dtick = HALFDAY;
+                if(noDtick) ax.dtick = HALFDAY;
             } else if(
                 /%[Aadejuwx]/.test(tickformat)
                 // %A: full weekday name
@@ -643,7 +644,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %x: the locale’s date, such as %-m/%-d/%Y
             ) {
                 definedDelta = ONEDAY;
-                if(!dtick) dtick = ONEDAY;
+                if(noDtick) ax.dtick = ONEDAY;
             } else if(
                 /%[UVW]/.test(tickformat)
                 // %U: Sunday-based week of the year as a decimal number [00,53]
@@ -651,7 +652,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %W: Monday-based week of the year as a decimal number [00,53]
             ) {
                 definedDelta = ONEWEEK;
-                if(!dtick) dtick = ONEWEEK;
+                if(noDtick) ax.dtick = ONEWEEK;
             } else if(
                 /%[Bbm]/.test(tickformat)
                 // %B: full month name
@@ -659,20 +660,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %m: month as a decimal number [01,12]
             ) {
                 definedDelta = ONEAVGMONTH;
-                if(!dtick) dtick = ONEMAXMONTH;
+                if(noDtick) ax.dtick = 'M1';
             } else if(
                 /%[q]/.test(tickformat)
                 // %q: quarter of the year as a decimal number [1,4]
             ) {
                 definedDelta = ONEAVGQUARTER;
-                if(!dtick) dtick = ONEMAXQUARTER;
+                if(noDtick) ax.dtick = 'M3';
             } else if(
                 /%[Yy]/.test(tickformat)
                 // %Y: year with century as a decimal number, such as 1999
                 // %y: year without century as a decimal number [00,99]
             ) {
                 definedDelta = ONEAVGYEAR;
-                if(!dtick) dtick = ONEMAXYEAR;
+                if(noDtick) ax.dtick = 'M12';
             }
         }
     }
@@ -684,7 +685,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         tickVals = [];
         for(var x = ax._tmin;
                 (axrev) ? (x >= endTick) : (x <= endTick);
-                x = axes.tickIncrement(x, dtick, axrev, ax.calendar)) {
+                x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
             // prevent infinite loops - no more than one tick per pixel,
             // and make sure each value is different from the previous
             if(tickVals.length > maxTicks || x === xPrevious) break;
@@ -709,7 +710,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // add one label to show pre tick0 period
         tickVals.unshift({
             minor: false,
-            value: axes.tickIncrement(tickVals[0].value, dtick, !axrev, ax.caldendar)
+            value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
         });
         addedPreTick0Label = true;
     }
@@ -960,6 +961,8 @@ axes.autoTicks = function(ax, roughDTick) {
     function getBase(v) {
         return Math.pow(v, Math.floor(Math.log(roughDTick) / Math.LN10));
     }
+
+    ax._dtickInit = ax.dtick;
 
     if(ax.type === 'date') {
         ax.tick0 = Lib.dateTick0(ax.calendar, 0);
