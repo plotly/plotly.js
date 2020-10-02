@@ -594,8 +594,15 @@ function testShapeCombo(combo, assert, gd) {
     var yAxNum = axispair[1].substr(1);
     return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
-            return shapeTest(gd, xAxNum, xaxisType, xaroPos, yAxNum, yaxisType, yaroPos,
-                             shapeType);
+            return shapeTest(gd,
+                {xAxNum: xAxNum,
+                    xaxisType: xaxisType,
+                    xaroPos: xaroPos,
+                    yAxNum: yAxNum,
+                    yaxisType: yaxisType,
+                    yaroPos: yaroPos,
+                    aroType: shapeType,
+                });
         }).then(function(testRet) {
             assert(testRet);
         });
@@ -644,10 +651,21 @@ function testImageCombo(combo, assert, gd) {
     var yref = makeAxRef(yid, aroposy.ref);
     return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
-            return imageTest(gd, {}, axistypex, axistypey,
-                aroposx.value[0], aroposy.value[0], aroposx.size,
-                aroposy.size,
-                xanchor, yanchor, xref, yref, xid, yid);
+            return imageTest(gd, {},
+                {
+                    xaxtype: axistypex,
+                    yaxtype: axistypey,
+                    x: aroposx.value[0],
+                    y: aroposy.value[0],
+                    sizex: aroposx.size,
+                    sizey: aroposy.size,
+                    xanchor: xanchor,
+                    yanchor: yanchor,
+                    xref: xref,
+                    yref: yref,
+                    xid: xid,
+                    yid: yid,
+                });
         }).then(function(testRet) {
             assert(testRet);
         });
@@ -698,8 +716,21 @@ function testAnnotationCombo(combo, assert, gd) {
     var ay = ayref === 'pixel' ? aroposy.pixel : aroposy.value[1];
     return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
-            return annotationTest(gd, {}, x0, y0, ax, ay, xref, yref, axref,
-                ayref, axistypex, axistypey, xid, yid);
+            return annotationTest(gd, {},
+                {
+                    x0: x0,
+                    y0: y0,
+                    ax: ax,
+                    ay: ay,
+                    xref: xref,
+                    yref: yref,
+                    axref: axref,
+                    ayref: ayref,
+                    axistypex: axistypex,
+                    axistypey: axistypey,
+                    xid: xid,
+                    yid: yid,
+                });
         }).then(function(testRet) {
             assert(testRet);
         });
