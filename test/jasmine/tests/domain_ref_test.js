@@ -5,7 +5,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plotly = require('../../../lib/index');
 // optionally specify a test number to run just a single test
-var testNumber = undefined;
+var testNumber;
 
 function makeTests(component, filter) {
     return function() {
