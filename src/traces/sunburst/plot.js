@@ -150,6 +150,14 @@ function plotOne(gd, cd, element, transitionOpts) {
     // filter out slices that won't show up on graph
     sliceData = sliceData.filter(function(pt) { return pt.y1 <= cutoff; });
 
+    if(trace.rotation && trace.rotation !== 'auto') {
+        var extraAngle = trace.rotation * Math.PI / 180;
+        sliceData.forEach(function(pt) {
+            pt.x0 += extraAngle;
+            pt.x1 += extraAngle;
+        });
+    }
+
     // partition span ('y') to sector radial px value
     var maxY = Math.min(maxHeight, maxDepth);
     var y2rpx = function(y) { return (y - yOffset) / maxY * rMax; };
@@ -219,10 +227,6 @@ function plotOne(gd, cd, element, transitionOpts) {
         var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function(s) {
             s.style('pointer-events', 'all');
         });
-
-        var extraAngle = trace.rotation * Math.PI / 180;
-        pt.x0 = pt.x0 + extraAngle;
-        pt.x1 = pt.x1 + extraAngle;
 
         pt.rpx0 = y2rpx(pt.y0);
         pt.rpx1 = y2rpx(pt.y1);

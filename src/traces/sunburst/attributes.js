@@ -204,15 +204,13 @@ module.exports = {
         ].join(' ')
     }),
     rotation: {
-        valType: 'number',
+        valType: 'angle',
         role: 'style',
-        min: -180,
-        max: 180,
         dflt: 0,
         editType: 'plot',
         description: [
-            'Instead of the first slice starting at 3 o\'clock,',
-            'rotate to some other angle.'
+            'Rotates the whole diagram counterclockwise by some angle.',
+            'By default the first slice starts at 3 o\'clock.'
         ].join(' ')
     },
     sort: pieAttrs.sort,
