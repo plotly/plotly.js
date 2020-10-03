@@ -150,7 +150,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     // filter out slices that won't show up on graph
     sliceData = sliceData.filter(function(pt) { return pt.y1 <= cutoff; });
 
-    if(trace.rotation && trace.rotation !== 'auto') {
+    if(trace.rotation) {
         var extraAngle = trace.rotation * Math.PI / 180;
         sliceData.forEach(function(pt) {
             pt.x0 += extraAngle;
