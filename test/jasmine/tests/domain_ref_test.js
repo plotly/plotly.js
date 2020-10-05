@@ -37,26 +37,12 @@ function makeTests(component, filter) {
     };
 }
 
-describe('Test annotations', makeTests(domainRefComponents.annotations,
-    function(f, i) {
-        if(testNumber === undefined) {
-            return true;
-        }
-        return i === testNumber;
-    }));
-
-describe('Test images', makeTests(domainRefComponents.images,
-    function(f, i) {
-        if(testNumber === undefined) {
-            return true;
-        }
-        return i === testNumber;
-    }));
-
-describe('Test shapes', makeTests(domainRefComponents.shapes,
-    function(f, i) {
-        if(testNumber === undefined) {
-            return true;
-        }
-        return i === testNumber;
-    }));
+['annotations', 'images', 'shapes'].forEach(function(componentName) {
+    describe('Test ' + componentName, makeTests(domainRefComponents[componentName],
+        function(f, i) {
+            if(testNumber === undefined) {
+                return true;
+            }
+            return i === testNumber;
+        }));
+});
