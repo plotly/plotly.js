@@ -709,6 +709,14 @@ function getProjection(geoLayout) {
 
     projection.precision(constants.precision);
 
+    // https://github.com/d3/d3-zoom/blob/master/README.md#zoom_scaleExtent
+    projection.scaleExtent = function() {
+        var minscale = projLayout.minscale;
+        var maxscale = projLayout.maxscale;
+        if(maxscale === -1) maxscale = Infinity;
+        return [100 * minscale, 100 * maxscale];
+    };
+
     if(geoLayout._isSatellite) {
         projection.tilt(projLayout.tilt).distance(projLayout.distance);
     }
