@@ -161,6 +161,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     }
 
     coerce('projection.scale');
+    coerce('projection.minScale');
+    coerce('projection.maxScale');
 
     show = coerce('showland', !visible ? false : undefined);
     if(show) coerce('landcolor');
@@ -205,6 +207,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     // clear attributes that will get auto-filled later
     if(fitBounds) {
         delete geoLayoutOut.projection.scale;
+        delete geoLayoutOut.projection.minScale;
+        delete geoLayoutOut.projection.maxScale;
 
         if(isScoped) {
             delete geoLayoutOut.center.lon;
