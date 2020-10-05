@@ -131,18 +131,20 @@ module.exports = function draw(gd) {
         // Axes if specified
         var xa = Axes.getFromId(gd, d.xref);
         var ya = Axes.getFromId(gd, d.yref);
+        var xIsDomain = Axes.getRefType(d.xref) === 'domain';
+        var yIsDomain = Axes.getRefType(d.yref) === 'domain';
 
         var size = fullLayout._size;
         var width, height;
         if(xa !== undefined) {
-            width = ((typeof(d.xref) === 'string') && d.xref.endsWith(' domain')) ?
+            width = ((typeof(d.xref) === 'string') && xIsDomain) ?
                 xa._length * d.sizex :
                 Math.abs(xa.l2p(d.sizex) - xa.l2p(0));
         } else {
             width = d.sizex * size.w;
         }
         if(ya !== undefined) {
-            height = ((typeof(d.yref) === 'string') && d.yref.endsWith(' domain')) ?
+            height = ((typeof(d.yref) === 'string') && yIsDomain) ?
                 ya._length * d.sizey :
                 Math.abs(ya.l2p(d.sizey) - ya.l2p(0));
         } else {
@@ -158,7 +160,7 @@ module.exports = function draw(gd) {
         // Final positions
         var xPos, yPos;
         if(xa !== undefined) {
-            xPos = ((typeof(d.xref) === 'string') && d.xref.endsWith(' domain')) ?
+            xPos = ((typeof(d.xref) === 'string') && xIsDomain) ?
                 xa._length * d.x + xa._offset :
                 xa.r2p(d.x) + xa._offset;
         } else {
@@ -166,7 +168,7 @@ module.exports = function draw(gd) {
         }
         xPos += xOffset;
         if(ya !== undefined) {
-            yPos = ((typeof(d.yref) === 'string') && d.yref.endsWith(' domain')) ?
+            yPos = ((typeof(d.yref) === 'string') && yIsDomain) ?
                 // consistent with "paper" yref value, where positive values
                 // move up the page
                 ya._length * (1 - d.y) + ya._offset :

@@ -84,8 +84,6 @@ function expandRange(range) {
  *     extraOption if there is no axis)
  * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
  *     Only required if it's different from `dflt`
- * domainRef: true if ' domain' should be appended to the axis items in the list
- *     of possible values for this axis reference.
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
     var axLetter = attr.charAt(attr.length - 1);
@@ -124,30 +122,6 @@ axes.getRefType = function(ar) {
     if(ar === 'paper') { return 'paper'; }
     if(ar === 'pixel') { return 'pixel'; }
     if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
-};
-
-/*
- * Add the specified axis letter and number + " domain" to the extras for
- * coerceRef.
- *
- * container: the object holding the [xyz]ref keys, e.g., a shape.
- * axLetter: the letter of the axis of interest.
- * coerceRefExtras: the current list of extras for coerceRef that will be
- * appended to.
- *
- */
-axes.addAxRefDomainCoerceRefExtra = function(container, axLetter, coerceRefExtras) {
-    var axNumMatch = (
-            container[axLetter + 'ref'] ?
-            container[axLetter + 'ref'].match(/[xyz]([0-9]*)/) :
-            undefined
-        );
-    if(axNumMatch) {
-        var axNum = axNumMatch[1];
-        coerceRefExtras = coerceRefExtras.concat(
-                    (axNum !== undefined) ? [axLetter + axNum + ' domain'] : []);
-    }
-    return coerceRefExtras;
 };
 
 /*
