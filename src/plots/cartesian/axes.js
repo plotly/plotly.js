@@ -147,19 +147,17 @@ axes.getRefType = function(ar) {
  * - for other types: coerce them to numbers
  */
 axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
-    var cleanPos, pos, axRefType;
-    axRefType = axes.getRefType(axRef);
-    if(axRefType === 'paper' || axRefType === 'pixel' || axRefType === 'domain') {
+    var cleanPos, pos;
+    var axRefType = axes.getRefType(axRef);
+    if(axRefType !== 'range') {
         cleanPos = Lib.ensureNumber;
         pos = coerce(attr, dflt);
     } else {
-        // if axRef is 'range' or undefined we will end up here
         var ax = axes.getFromId(gd, axRef);
         dflt = ax.fraction2r(dflt);
         pos = coerce(attr, dflt);
         cleanPos = ax.cleanPos;
     }
-
     containerOut[attr] = cleanPos(pos);
 };
 
