@@ -709,6 +709,13 @@ function getProjection(geoLayout) {
         return projection.getPath().bounds(object);
     };
 
+    // https://github.com/d3/d3-zoom/blob/master/README.md#zoom_scaleExtent
+    projection.scaleExtent = function() {
+        var minScale = projLayout.minScale * 100;
+        var maxScale = projLayout.maxScale * 100;
+        return [ minScale, maxScale ];
+    };
+
     // adapted from d3 v4:
     // https://github.com/d3/d3-geo/blob/master/src/projection/fit.js
     projection.fitExtent = function(extent, object) {
