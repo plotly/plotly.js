@@ -57,10 +57,7 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
     // 'matches' wins over 'scaleanchor' (for now)
     var scaleanchor, scaleOpts;
 
-    if(!matches &&
-       !(containerOut.fixedrange && constrain !== 'domain') &&
-       (containerIn.scaleanchor || scaleanchorDflt)
-     ) {
+    if(containerIn.scaleanchor || scaleanchorDflt) {
         scaleOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
         scaleanchor = Lib.coerce(containerIn, containerOut, {
             scaleanchor: {
