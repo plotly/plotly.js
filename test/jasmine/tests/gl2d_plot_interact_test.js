@@ -21,7 +21,7 @@ describe('Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
         gd = createGraphDiv();
     });
 
@@ -94,7 +94,7 @@ describe('Test gl plot side effects', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
         gd = createGraphDiv();
     });
 
@@ -389,7 +389,7 @@ describe('Test gl2d plot interactions:', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
         gd = createGraphDiv();
     });
 

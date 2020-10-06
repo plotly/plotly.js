@@ -12,7 +12,34 @@ var ARROWPATHS = require('./arrow_paths');
 var fontAttrs = require('../../plots/font_attributes');
 var cartesianConstants = require('../../plots/cartesian/constants');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 
+function arrowAxisRefDescription(axis) {
+    return [
+        'In order for absolute positioning of the arrow to work, *a' + axis +
+        'ref* must be exactly the same as *' + axis + 'ref*, otherwise *a' + axis +
+        'ref* will revert to *pixel* (explained next).',
+        'For relative positioning, *a' + axis + 'ref* can be set to *pixel*,',
+        'in which case the *a' + axis + '* value is specified in pixels',
+        'relative to *' + axis + '*.',
+        'Absolute positioning is useful',
+        'for trendline annotations which should continue to indicate',
+        'the correct trend when zoomed. Relative positioning is useful',
+        'for specifying the text offset for an annotated point.'
+    ].join(' ');
+}
+
+function arrowCoordinateDescription(axis, lower, upper) {
+    return [
+        'Sets the', axis, 'component of the arrow tail about the arrow head.',
+        'If `a' + axis + 'ref` is `pixel`, a positive (negative)',
+        'component corresponds to an arrow pointing',
+        'from', upper, 'to', lower, '(' + lower, 'to', upper + ').',
+        'If `a' + axis + 'ref` is not `pixel` and is exactly the same as `' + axis + 'ref`,',
+        'this is an absolute value on that axis,',
+        'like `' + axis + '`, specified in the same coordinates as `' + axis + 'ref`.'
+    ].join(' ');
+}
 
 module.exports = templatedArray('annotation', {
     visible: {
@@ -254,12 +281,7 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc+arraydraw',
         description: [
-            'Sets the x component of the arrow tail about the arrow head.',
-            'If `axref` is `pixel`, a positive (negative) ',
-            'component corresponds to an arrow pointing',
-            'from right to left (left to right).',
-            'If `axref` is an axis, this is an absolute value on that axis,',
-            'like `x`, NOT a relative value.'
+            arrowCoordinateDescription('x', 'left', 'right')
         ].join(' ')
     },
     ay: {
@@ -267,12 +289,7 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc+arraydraw',
         description: [
-            'Sets the y component of the arrow tail about the arrow head.',
-            'If `ayref` is `pixel`, a positive (negative) ',
-            'component corresponds to an arrow pointing',
-            'from bottom to top (top to bottom).',
-            'If `ayref` is an axis, this is an absolute value on that axis,',
-            'like `y`, NOT a relative value.'
+            arrowCoordinateDescription('y', 'top', 'bottom')
         ].join(' ')
     },
     axref: {
@@ -285,12 +302,10 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc',
         description: [
-            'Indicates in what terms the tail of the annotation (ax,ay) ',
-            'is specified. If `pixel`, `ax` is a relative offset in pixels ',
-            'from `x`. If set to an x axis id (e.g. *x* or *x2*), `ax` is ',
-            'specified in the same terms as that axis. This is useful ',
-            'for trendline annotations which should continue to indicate ',
-            'the correct trend when zoomed.'
+            'Indicates in what coordinates the tail of the',
+            'annotation (ax,ay) is specified.',
+            axisPlaceableObjs.axisRefDescription('ax', 'left', 'right'),
+            arrowAxisRefDescription('x')
         ].join(' ')
     },
     ayref: {
@@ -303,12 +318,10 @@ module.exports = templatedArray('annotation', {
         role: 'info',
         editType: 'calc',
         description: [
-            'Indicates in what terms the tail of the annotation (ax,ay) ',
-            'is specified. If `pixel`, `ay` is a relative offset in pixels ',
-            'from `y`. If set to a y axis id (e.g. *y* or *y2*), `ay` is ',
-            'specified in the same terms as that axis. This is useful ',
-            'for trendline annotations which should continue to indicate ',
-            'the correct trend when zoomed.'
+            'Indicates in what coordinates the tail of the',
+            'annotation (ax,ay) is specified.',
+            axisPlaceableObjs.axisRefDescription('ay', 'bottom', 'top'),
+            arrowAxisRefDescription('y')
         ].join(' ')
     },
     // positioning
@@ -322,11 +335,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s x coordinate axis.',
-            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x coordinate',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left side of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the left (right) side.'
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
         ].join(' ')
     },
     x: {
@@ -385,11 +394,7 @@ module.exports = templatedArray('annotation', {
         editType: 'calc',
         description: [
             'Sets the annotation\'s y coordinate axis.',
-            'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to an y coordinate',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the bottom (top).'
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
         ].join(' ')
     },
     y: {

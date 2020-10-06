@@ -1,5 +1,7 @@
 'use strict';
 
+var SVGTools = require('./svg_tools');
+
 
 /**
  * Get the screen coordinates of the center of
@@ -18,7 +20,7 @@ module.exports = function getRectCenter(rect) {
 
 // Taken from: http://stackoverflow.com/a/5835212/4068492
 function getRectScreenCoords(rect) {
-    var svg = findParentSVG(rect);
+    var svg = SVGTools.findParentSVG(rect);
     var pt = svg.createSVGPoint();
     var corners = {};
     var matrix = rect.getScreenCTM();
@@ -34,14 +36,4 @@ function getRectScreenCoords(rect) {
     corners.sw = pt.matrixTransform(matrix);
 
     return corners;
-}
-
-function findParentSVG(node) {
-    var parentNode = node.parentNode;
-
-    if(parentNode.tagName === 'svg') {
-        return parentNode;
-    } else {
-        return findParentSVG(parentNode);
-    }
 }

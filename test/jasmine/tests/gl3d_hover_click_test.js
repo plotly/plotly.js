@@ -35,7 +35,7 @@ describe('Test gl3d trace click/hover:', function() {
     beforeEach(function() {
         gd = createGraphDiv();
         ptData = {};
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
     });
 
     afterEach(function() {

@@ -260,6 +260,7 @@ var list = [
     'date_histogram',
     'dendrogram',
     'display-text_zero-number',
+    'domain_refs',
     'earth_heatmap',
     'electric_heatmap',
     'empty',
@@ -1322,6 +1323,7 @@ figs['date_axes_period_breaks_automargin'] = require('@mocks/date_axes_period_br
 figs['date_histogram'] = require('@mocks/date_histogram');
 // figs['dendrogram'] = require('@mocks/dendrogram');
 figs['display-text_zero-number'] = require('@mocks/display-text_zero-number');
+figs['domain_refs'] = require('@mocks/domain_refs');
 figs['earth_heatmap'] = require('@mocks/earth_heatmap');
 figs['electric_heatmap'] = require('@mocks/electric_heatmap');
 figs['empty'] = require('@mocks/empty');
