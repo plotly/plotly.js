@@ -521,6 +521,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
+    ax._dtickInit = ax.dtick;
+
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
         var nt = ax.nticks;
@@ -545,7 +547,7 @@ axes.prepTicks = function(ax, opts) {
         if(ax.tickmode === 'array') nt *= 100;
 
 
-        ax._roughDTick = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / nt;
+        ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
         axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
@@ -557,7 +559,10 @@ axes.prepTicks = function(ax, opts) {
 
     // check for missing tick0
     if(!ax.tick0) {
-        ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
+        ax.tick0 = 0;
+        if(ax.type === 'date') {
+            ax.tick0 = '2000-01-01';
+        }
     }
 
     // ensure we don't try to make ticks below our minimum precision
@@ -580,9 +585,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // in case we're missing some ticktext, we can break out for array ticks
     if(ax.tickmode === 'array') return arrayTicks(ax);
 
-    // find the first tick
-    ax._tmin = axes.tickFirst(ax, opts);
-
     // add a tiny bit so we get ticks which may have rounded out
     var exRng = expandRange(rng);
     var startTick = exRng[0];
@@ -591,8 +593,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
-    var tickformat = axes.getTickFormat(ax);
-    var isPeriod = ax.ticklabelmode === 'period';
+
+    // find the first tick
+    var firstTick = axes.tickFirst(ax, opts);
+    if(ax.rangebreaks) firstTick = moveOutsideBreak(firstTick, ax, axrev);
+    ax._tmin = firstTick;
 
     // No visible ticks? Quit.
     // I've only seen this on category axes with all categories off the edge.
@@ -606,13 +611,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
 
+    var tickformat = axes.getTickFormat(ax);
+    var isPeriod = ax.ticklabelmode === 'period';
     var definedDelta;
-    var resetDtick;
     if(isPeriod && tickformat) {
-        var noDtick = !!ax._dtickInit;
-        resetDtick = true;
+        var noDtick = !ax._dtickInit;
         if(
-            /%[fLQsSMX]/.test(tickformat)
+            !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
             // %L: milliseconds as a decimal number [000, 999]
             // %Q: milliseconds since UNIX epoch
@@ -621,8 +626,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
             // %M: minute as a decimal number [00,59]
             // %X: the locale’s time, such as %-I:%M:%S %p
         ) {
-            resetDtick = false;
-        } else {
             if(
                 /%[HI]/.test(tickformat)
                 // %H: hour (24-hour clock) as a decimal number [00,23]
@@ -681,84 +684,153 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    var tickVals;
-    function generateTicks() {
-        var xPrevious = null;
-        var maxTicks = Math.max(1000, ax._length || 0);
-        tickVals = [];
-        for(var x = ax._tmin;
-                (axrev) ? (x >= endTick) : (x <= endTick);
-                x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
-            // prevent infinite loops - no more than one tick per pixel,
-            // and make sure each value is different from the previous
-            if(tickVals.length > maxTicks || x === xPrevious) break;
-            xPrevious = x;
+    var tickVals = [];
 
-            var minor = false;
-            if(isDLog && (x !== (x | 0))) {
-                minor = true;
+    var xPrevious = null;
+    var maxTicks = Math.max(1000, ax._length || 0);
+    tickVals = [];
+    for(var x = ax._tmin;
+            (axrev) ? (x >= endTick) : (x <= endTick);
+            x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
+    ) {
+        if(ax.rangebreaks && moveOutsideBreak(x, ax) === maxRange) continue;
+
+        // prevent infinite loops - no more than one tick per pixel,
+        // and make sure each value is different from the previous
+        if(tickVals.length > maxTicks || x === xPrevious) break;
+        xPrevious = x;
+
+        var minor = false;
+        if(isDLog && (x !== (x | 0))) {
+            minor = true;
+        }
+
+        tickVals.push({
+            minor: minor,
+            value: x
+        });
+    }
+
+    var i;
+    if(isPeriod) {
+        if(tickVals[0]) {
+            // add one label to show pre tick0 period
+            tickVals.unshift({
+                minor: false,
+                value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.calendar)
+            });
+        }
+
+        for(i = 0; i < tickVals.length; i++) {
+            var v = tickVals[i].value;
+
+            var a = i;
+            var b = i + 1;
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
+            } else if(i > 0) {
+                a = i - 1;
+                b = i;
+            } else {
+                a = i;
+                b = i;
             }
 
-            tickVals.push({
-                minor: minor,
-                value: x
-            });
+            var A = tickVals[a].value;
+            var B = tickVals[b].value;
+            var actualDelta = Math.abs(B - A);
+            var delta = definedDelta || actualDelta;
+            var periodLength = 0;
+
+            if(delta >= ONEMINYEAR) {
+                if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
+                    periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGYEAR;
+                }
+            } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
+                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+                    periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGQUARTER;
+                }
+            } else if(delta >= ONEMINMONTH) {
+                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+                    periodLength = actualDelta;
+                } else {
+                    periodLength = ONEAVGMONTH;
+                }
+            } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
+                periodLength = ONEWEEK;
+            } else if(delta >= ONEDAY) {
+                periodLength = ONEDAY;
+            } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
+                periodLength = HALFDAY;
+            } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
+                periodLength = ONEHOUR;
+            }
+
+            var inBetween;
+            if(periodLength >= actualDelta) {
+                // ensure new label positions remain between ticks
+                periodLength = actualDelta;
+                inBetween = true;
+            }
+
+            var endPeriod = v + periodLength;
+            if(ax.rangebreaks && periodLength > 0) {
+                var nAll = 84; // highly divisible 7 * 12
+                var n = 0;
+                for(var c = 0; c < nAll; c++) {
+                    var r = (c + 0.5) / nAll;
+                    if(ax.maskBreaks(v * (1 - r) + r * endPeriod) !== BADNUM) n++;
+                }
+                periodLength *= n / nAll;
+
+                if(!periodLength) {
+                    tickVals[i].drop = true;
+                }
+
+                if(inBetween && actualDelta > ONEWEEK) periodLength = actualDelta; // center monthly & longer periods
+            }
+
+            if(
+                periodLength > 0 || // not instant
+                i === 0 // taking care first tick added
+            ) {
+                tickVals[i].periodX = v + periodLength / 2;
+            }
         }
     }
 
-    generateTicks();
-
-    var addedPreTick0Label = false;
-    if(isPeriod && tickVals[0]) {
-        // add one label to show pre tick0 period
-        tickVals.unshift({
-            minor: false,
-            value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.caldendar)
-        });
-        addedPreTick0Label = true;
-    }
-
     if(ax.rangebreaks) {
-        // replace ticks inside breaks that would get a tick
-        // and reduce ticks
-        var len = tickVals.length;
-        if(len) {
-            var tf = 0;
-            if(ax.tickmode === 'auto') {
-                tf =
-                    (ax._id.charAt(0) === 'y' ? 2 : 6) *
-                    (ax.tickfont ? ax.tickfont.size : 12);
+        var flip = ax._id.charAt(0) === 'y';
+
+        var fontSize = 1; // one pixel minimum
+        if(ax.tickmode === 'auto') {
+            fontSize = ax.tickfont ? ax.tickfont.size : 12;
+        }
+
+        var prevL = NaN;
+        for(i = tickVals.length - 1; i > -1; i--) {
+            if(tickVals[i].drop) {
+                tickVals.splice(i, 1);
+                continue;
             }
 
-            var newTickVals = [];
-            var prevPos;
+            tickVals[i].value = moveOutsideBreak(tickVals[i].value, ax);
 
-            var dir = axrev ? 1 : -1;
-            var first = axrev ? 0 : len - 1;
-            var last = axrev ? len - 1 : 0;
-            for(var q = first; dir * q <= dir * last; q += dir) {
-                var tickVal = tickVals[q];
-                if(ax.maskBreaks(tickVal.value) === BADNUM) {
-                    tickVal.value = moveOutsideBreak(tickVal.value, ax);
-
-                    if(ax._rl && (
-                        ax._rl[0] === tickVal.value ||
-                        ax._rl[1] === tickVal.value
-                    )) continue;
-                }
-
-                var pos = ax.c2p(tickVal.value);
-
-                if(pos === prevPos) {
-                    if(newTickVals[newTickVals.length - 1].value < tickVal.value) {
-                        newTickVals[newTickVals.length - 1] = tickVal;
-                    }
-                } else if(prevPos === undefined || Math.abs(pos - prevPos) > tf) {
-                    prevPos = pos;
-                    newTickVals.push(tickVal);
-                }
+            // avoid overlaps
+            var l = ax.c2p(tickVals[i].value);
+            if(flip ?
+                (prevL > l - fontSize) :
+                (prevL < l + fontSize)
+            ) { // ensure one pixel minimum
+                tickVals.splice(i, 1);
+            } else {
+                prevL = l;
             }
-            tickVals = newTickVals.reverse();
         }
     }
 
@@ -780,7 +852,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._inCalcTicks = true;
 
     var ticksOut = [];
-    var i, t;
+    var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
@@ -792,106 +864,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
             _minor // noSuffixPrefix
         );
 
+        p = tickVals[i].periodX;
+        if(p !== undefined) {
+            t.periodX = p;
+            if(p > maxRange || p < minRange) { // hide label if outside the range
+                t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
+                ax._prevDateHead = '';
+            }
+        }
+
         ticksOut.push(t);
-    }
-
-    if(isPeriod && addedPreTick0Label) {
-        var removedPreTick0Label = false;
-
-        for(i = 0; i < ticksOut.length; i++) {
-            var v = ticksOut[i].x;
-
-            var a = i;
-            var b = i + 1;
-            if(i < ticksOut.length - 1) {
-                a = i;
-                b = i + 1;
-            } else if(i > 0) {
-                a = i - 1;
-                b = i;
-            } else {
-                a = i;
-                b = i;
-            }
-
-            var A = ticksOut[a].x;
-            var B = ticksOut[b].x;
-            var actualDelta = Math.abs(B - A);
-            var delta = definedDelta || actualDelta;
-            var periodLength = 0;
-
-            if(delta >= ONEMINYEAR || ax.dtick === 'M12') {
-                if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGYEAR;
-                }
-            } else if((definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) || ax.dtick === 'M3') {
-                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGQUARTER;
-                }
-            } else if(delta >= ONEMINMONTH || ax.dtick === 'M1') {
-                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGMONTH;
-                }
-            } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
-                periodLength = ONEWEEK;
-                if(ax._hasDayOfWeekBreaks) periodLength -= 2 * ONEDAY; // hack to center labels | TODO: improve this based on the actual number of days
-            } else if(delta >= ONEDAY) {
-                periodLength = ONEDAY;
-            } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
-                periodLength = HALFDAY;
-            } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
-                periodLength = ONEHOUR;
-            }
-
-            // ensure new label positions remain between ticks
-            v += Math.min(periodLength, actualDelta) / 2;
-
-            if(periodLength && ax.rangebreaks) {
-                v = moveOutsideBreak(v, ax, true);
-            }
-
-            ticksOut[i].periodX = v;
-
-            if(v > maxRange || v < minRange) { // hide label if outside the range
-                ticksOut[i].text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
-                removedPreTick0Label = true;
-            }
-        }
-
-        if(removedPreTick0Label) {
-            for(i = 0; i < ticksOut.length; i++) {
-                if(ticksOut[i].periodX <= maxRange && ticksOut[i].periodX >= minRange) {
-                    // redo first visible tick
-                    ax._prevDateHead = '';
-                    ticksOut[i].text = axes.tickText(ax, ticksOut[i].x).text;
-                    break;
-                }
-            }
-        }
-    }
-
-    if(isPeriod && resetDtick) {
-        // join duplicate labels
-        var prevText;
-        var startX, endX;
-        for(i = ticksOut.length - 1; i > -1; i--) {
-            t = ticksOut[i];
-            if(prevText === t.text) {
-                endX = t.periodX;
-                ticksOut[i].x = t.x;
-                ticksOut[i].periodX = (startX + endX) / 2;
-                ticksOut.splice(i + 1, 1); // remove previous item
-            } else {
-                startX = t.periodX;
-                prevText = t.text;
-            }
-        }
     }
 
     ax._inCalcTicks = false;
@@ -983,10 +965,9 @@ axes.autoTicks = function(ax, roughDTick) {
         return Math.pow(v, Math.floor(Math.log(roughDTick) / Math.LN10));
     }
 
-    ax._dtickInit = ax.dtick;
-
     if(ax.type === 'date') {
         ax.tick0 = Lib.dateTick0(ax.calendar, 0);
+
         // the criteria below are all based on the rough spacing we calculate
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
@@ -2430,8 +2411,8 @@ axes.makeTransPeriodFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
     return axLetter === 'x' ?
-        function(d) { return 'translate(' + (offset + ax.l2p(d.periodX)) + ',0)'; } :
-        function(d) { return 'translate(0,' + (offset + ax.l2p(d.periodX)) + ')'; };
+        function(d) { return 'translate(' + (offset + ax.l2p(d.periodX !== undefined ? d.periodX : d.x)) + ',0)'; } :
+        function(d) { return 'translate(0,' + (offset + ax.l2p(d.periodX !== undefined ? d.periodX : d.x)) + ')'; };
 };
 
 /**

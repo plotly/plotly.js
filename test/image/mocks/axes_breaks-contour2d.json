@@ -128,6 +128,7 @@
             "text": "2D-z-array contour with rangebreaks"
         },
         "xaxis": {
+            "dtick": 1800000,
             "rangebreaks": [
                 {
                     "pattern": "hour",
