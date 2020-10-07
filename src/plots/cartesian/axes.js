@@ -868,6 +868,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(p !== undefined) {
             t.periodX = p;
             if(p > maxRange || p < minRange) { // hide label if outside the range
+                if(p > maxRange) t.periodX = maxRange;
+                if(p < minRange) t.periodX = minRange;
+
                 t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
                 ax._prevDateHead = '';
             }

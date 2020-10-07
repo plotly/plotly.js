@@ -5267,10 +5267,14 @@ describe('Test axes', function() {
             var ax = gd._fullLayout.xaxis;
 
             var positions = ax._vals.map(function(d) { return ax.c2d(d.periodX !== undefined ? d.periodX : d.x); });
-            expect(positions).withContext(msg).toEqual(expPositions);
-
             var labels = ax._vals.map(function(d) { return d.text; });
-            expect(labels).withContext(msg).toEqual(expLabels);
+
+            for(var i = 0; i < labels.length; i++) {
+                expect(labels[i]).withContext(msg).toBe(expLabels[i]);
+                if(labels[i] !== ' ') {
+                    expect(positions[i]).withContext(msg).toBe(expPositions[i]);
+                }
+            }
         }
 
         ['%Y', '%y'].forEach(function(formatter, i) {
