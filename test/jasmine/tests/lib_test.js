@@ -778,7 +778,7 @@ describe('Test lib.js:', function() {
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
 
-            it('should set and return the default if the user input is not valid', function() {
+            it('should set the default and return false if the user input is not valid', function() {
                 var colVal = 'r';
                 var sizeVal = 'aaaaah!';
                 var attrs = {
@@ -792,10 +792,78 @@ describe('Test lib.js:', function() {
                 var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
                 var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
-                expect(colOut).toBe('rgba(0, 0, 0, 0)');
+                expect(colOut).toBe(false);
+                expect(outObj.testMarker.testColor).toBe('rgba(0, 0, 0, 0)');
+                expect(sizeOut).toBe(false);
+                expect(outObj.testMarker.testSize).toBe(20);
+            });
+
+            it('should set the user input', function() {
+                var colVal = 'red';
+                var sizeVal = '1e2';
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var outObj = {};
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('red');
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(100);
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
-                expect(sizeOut).toBe(20);
+            });
+
+            it('should set to template if the container input is not valid', function() {
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {
+                    testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                };
+                var outObj = {
+                    _template: {
+                        testMarker: {testColor: 'red', testSize: '1e2'}
+                    }
+                };
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('red');
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(100);
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
+            it('should set to default and return false if the both container and template inputs are not valid', function() {
+                var attrs = {
+                    testMarker: {
+                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                        testSize: {valType: 'number', dflt: 20}
+                    }
+                };
+                var obj = {
+                    testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                };
+                var outObj = {
+                    _template: {
+                        testMarker: {testColor: 'invalid', testSize: 'invalid'}
+                    }
+                };
+                var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
+                var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe(false);
+                expect(outObj.testMarker.testColor).toBe('rgba(0, 0, 0, 0)');
+                expect(sizeOut).toBe(false);
+                expect(outObj.testMarker.testSize).toBe(20);
             });
 
             it('should return false if there is no user input', function() {
