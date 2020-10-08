@@ -827,7 +827,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 (prevL > l - fontSize) :
                 (prevL < l + fontSize)
             ) { // ensure one pixel minimum
-                tickVals.splice(i, 1);
+                tickVals.splice(axrev ? i + 1 : i, 1);
             } else {
                 prevL = l;
             }
