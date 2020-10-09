@@ -522,6 +522,7 @@ axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     ax._dtickInit = ax.dtick;
+    ax._tick0Init = ax.tick0;
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -559,10 +560,7 @@ axes.prepTicks = function(ax, opts) {
 
     // check for missing tick0
     if(!ax.tick0) {
-        ax.tick0 = 0;
-        if(ax.type === 'date') {
-            ax.tick0 = '2000-01-01';
-        }
+        ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
     }
 
     // ensure we don't try to make ticks below our minimum precision
@@ -595,9 +593,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxRange = Math.max(rng[0], rng[1]);
 
     // find the first tick
-    var firstTick = axes.tickFirst(ax, opts);
-    if(ax.rangebreaks) firstTick = moveOutsideBreak(firstTick, ax, axrev);
-    ax._tmin = firstTick;
+    ax._tmin = axes.tickFirst(ax, opts);
 
     // No visible ticks? Quit.
     // I've only seen this on category axes with all categories off the edge.
@@ -615,7 +611,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isPeriod = ax.ticklabelmode === 'period';
     var definedDelta;
     if(isPeriod && tickformat) {
-        var noDtick = !ax._dtickInit;
+        var noDtick = ax._dtickInit !== ax.dtick;
         if(
             !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
@@ -684,16 +680,34 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    var tickVals = [];
-
-    var xPrevious = null;
     var maxTicks = Math.max(1000, ax._length || 0);
-    tickVals = [];
-    for(var x = ax._tmin;
-            (axrev) ? (x >= endTick) : (x <= endTick);
-            x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
+    var tickVals = [];
+    var xPrevious = null;
+    var x = ax._tmin;
+
+    if(ax.rangebreaks && ax._tick0Init !== ax.tick0) {
+        // adjust tick0
+        x = moveOutsideBreak(x, ax);
+        if(!axrev) {
+            x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
+        }
+    }
+
+    if(isPeriod) {
+        // add one item to label period before tick0
+        x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
+    }
+
+    for(;
+        (axrev) ? (x >= endTick) : (x <= endTick);
+        x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
     ) {
-        if(ax.rangebreaks && moveOutsideBreak(x, ax) === maxRange) continue;
+        if(ax.rangebreaks) {
+            if(!axrev) {
+                if(x < startTick) continue;
+                if(ax.maskBreaks(x) === BADNUM && moveOutsideBreak(x, ax) >= maxRange) break;
+            }
+        }
 
         // prevent infinite loops - no more than one tick per pixel,
         // and make sure each value is different from the previous
@@ -713,14 +727,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var i;
     if(isPeriod) {
-        if(tickVals[0]) {
-            // add one label to show pre tick0 period
-            tickVals.unshift({
-                minor: false,
-                value: axes.tickIncrement(tickVals[0].value, ax.dtick, !axrev, ax.calendar)
-            });
-        }
-
         for(i = 0; i < tickVals.length; i++) {
             var v = tickVals[i].value;
 
@@ -3389,12 +3395,12 @@ function isAngular(ax) {
     return ax._id === 'angularaxis';
 }
 
-function moveOutsideBreak(v, ax, isStart) {
+function moveOutsideBreak(v, ax) {
     var len = ax._rangebreaks.length;
     for(var k = 0; k < len; k++) {
         var brk = ax._rangebreaks[k];
         if(v >= brk.min && v < brk.max) {
-            return isStart ? brk.min : brk.max;
+            return brk.max;
         }
     }
     return v;
