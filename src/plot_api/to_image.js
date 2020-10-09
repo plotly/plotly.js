@@ -142,12 +142,12 @@ function toImage(gd, opts) {
     var layoutImage = Lib.extendFlat({}, layout);
     if(width) {
         layoutImage.width = width;
-    } else if(opts.width === null && isNumeric(fullLayout.width)) {
+    } else if(opts.width == null && isNumeric(fullLayout.width)) {
         layoutImage.width = fullLayout.width;
     }
     if(height) {
         layoutImage.height = height;
-    } else if(opts.height === null && isNumeric(fullLayout.height)) {
+    } else if(opts.height == null && isNumeric(fullLayout.height)) {
         layoutImage.height = fullLayout.height;
     }
 
