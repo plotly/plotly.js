@@ -2164,7 +2164,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         obj.layout = stripObj(layout);
         if(useDefaults) {
             var gs = layout._size;
-            obj.layout._computed = {
+            obj.layout.computed = {
                 margin: {
                     b: gs.b,
                     l: gs.l,

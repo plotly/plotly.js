@@ -307,7 +307,7 @@ describe('Plotly.toImage', function() {
             Plotly.toImage(pieAutoMargin, imgOpts)
             .then(function(fig) {
                 fig = JSON.parse(fig);
-                var computed = fig.layout._computed;
+                var computed = fig.layout.computed;
                 expect(computed).toBeDefined('no computed');
                 expect(computed.margin).toBeDefined('no computed margin');
                 expect(computed.margin.t).toBeDefined('no top');
