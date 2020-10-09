@@ -571,6 +571,10 @@ axes.prepTicks = function(ax, opts) {
     autoTickRound(ax);
 };
 
+function nMonths(dtick) {
+    return +(dtick.substring(1));
+}
+
 // calculate the ticks: text, values, positioning
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
@@ -663,20 +667,26 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %m: month as a decimal number [01,12]
             ) {
                 definedDelta = ONEAVGMONTH;
-                if(noDtick && ax.dtick < (isMDate ? 'M1' : ONEMINMONTH)) ax.dtick = 'M1';
+                if(noDtick && (
+                    isMDate ? nMonths(ax.dtick) < 1 : ax.dtick < ONEMINMONTH)
+                ) ax.dtick = 'M1';
             } else if(
                 /%[q]/.test(tickformat)
                 // %q: quarter of the year as a decimal number [1,4]
             ) {
                 definedDelta = ONEAVGQUARTER;
-                if(noDtick && ax.dtick < (isMDate ? 'M3' : ONEMINQUARTER)) ax.dtick = 'M3';
+                if(noDtick && (
+                    isMDate ? nMonths(ax.dtick) < 3 : ax.dtick < ONEMINQUARTER)
+                ) ax.dtick = 'M3';
             } else if(
                 /%[Yy]/.test(tickformat)
                 // %Y: year with century as a decimal number, such as 1999
                 // %y: year without century as a decimal number [00,99]
             ) {
                 definedDelta = ONEAVGYEAR;
-                if(noDtick && ax.dtick < (isMDate ? 'M12' : ONEMINYEAR)) ax.dtick = 'M12';
+                if(noDtick && (
+                    isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR)
+                ) ax.dtick = 'M12';
             }
         }
     }
