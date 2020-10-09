@@ -606,6 +606,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
 
     var tickformat = axes.getTickFormat(ax);
     var isPeriod = ax.ticklabelmode === 'period';
@@ -628,12 +629,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %I: hour (12-hour clock) as a decimal number [01,12]
             ) {
                 definedDelta = ONEHOUR;
-                if(noDtick) ax.dtick = ONEHOUR;
+                if(noDtick && !isMDate && ax.dtick < ONEHOUR) ax.dtick = ONEHOUR;
             } else if(
                 /%p/.test(tickformat) // %p: either AM or PM
             ) {
                 definedDelta = HALFDAY;
-                if(noDtick) ax.dtick = HALFDAY;
+                if(noDtick && !isMDate && ax.dtick < HALFDAY) ax.dtick = HALFDAY;
             } else if(
                 /%[Aadejuwx]/.test(tickformat)
                 // %A: full weekday name
@@ -646,7 +647,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %x: the locale’s date, such as %-m/%-d/%Y
             ) {
                 definedDelta = ONEDAY;
-                if(noDtick) ax.dtick = ONEDAY;
+                if(noDtick && !isMDate && ax.dtick < ONEDAY) ax.dtick = ONEDAY;
             } else if(
                 /%[UVW]/.test(tickformat)
                 // %U: Sunday-based week of the year as a decimal number [00,53]
@@ -654,7 +655,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %W: Monday-based week of the year as a decimal number [00,53]
             ) {
                 definedDelta = ONEWEEK;
-                if(noDtick) ax.dtick = ONEWEEK;
+                if(noDtick && !isMDate && ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
             } else if(
                 /%[Bbm]/.test(tickformat)
                 // %B: full month name
@@ -662,20 +663,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 // %m: month as a decimal number [01,12]
             ) {
                 definedDelta = ONEAVGMONTH;
-                if(noDtick) ax.dtick = 'M1';
+                if(noDtick && ax.dtick < (isMDate ? 'M1' : ONEMINMONTH)) ax.dtick = 'M1';
             } else if(
                 /%[q]/.test(tickformat)
                 // %q: quarter of the year as a decimal number [1,4]
             ) {
                 definedDelta = ONEAVGQUARTER;
-                if(noDtick) ax.dtick = 'M3';
+                if(noDtick && ax.dtick < (isMDate ? 'M3' : ONEMINQUARTER)) ax.dtick = 'M3';
             } else if(
                 /%[Yy]/.test(tickformat)
                 // %Y: year with century as a decimal number, such as 1999
                 // %y: year without century as a decimal number [00,99]
             ) {
                 definedDelta = ONEAVGYEAR;
-                if(noDtick) ax.dtick = 'M12';
+                if(noDtick && ax.dtick < (isMDate ? 'M12' : ONEMINYEAR)) ax.dtick = 'M12';
             }
         }
     }
