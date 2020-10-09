@@ -1244,3 +1244,20 @@ lib.ensureUniformFontSize = function(gd, baseFont) {
     );
     return out;
 };
+
+/**
+ * provide a human-readable lists with an optional ending separator such as A, B, C and D
+ *
+ * @param {array} arr : the array to join
+ * @param {string} mainSeparator : main separator
+ * @param {string} lastSeparator : optional last separator
+ *
+ * @return {string} : joined list
+ */
+lib.join2 = function(arr, mainSeparator, lastSeparator) {
+    var len = arr.length;
+    if(len > 2 && lastSeparator) {
+        return arr.slice(0, -1).join(mainSeparator) + lastSeparator + arr[len - 1];
+    }
+    return arr.join(mainSeparator);
+};
