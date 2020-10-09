@@ -29,6 +29,7 @@ var attrs = {
     width: {
         valType: 'number',
         min: 1,
+        dflt: null,
         description: [
             'Sets the exported image width.',
             'Defaults to the value found in `layout.width`',
@@ -38,6 +39,7 @@ var attrs = {
     height: {
         valType: 'number',
         min: 1,
+        dflt: null,
         description: [
             'Sets the exported image height.',
             'Defaults to the value found in `layout.height`',
