@@ -634,6 +634,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var definedDelta;
     if(isPeriod && tickformat) {
         var noDtick = ax._dtickInit !== ax.dtick;
+        var prevDtick = ax.dtick;
         if(
             !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
@@ -706,11 +707,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 ) ax.dtick = 'M12';
             }
         }
+
+        if(prevDtick !== ax.dtick) {
+            // move tick0 back
+            ax.tick0 = axes.tickIncrement(ax.tick0, prevDtick, !axrev, ax.calendar);
+
+            // redo first tick
+            ax._tmin = axes.tickFirst(ax, opts);
+        }
     }
 
-    var maxTicks = Math.max(1000, ax._length || 0);
-    var tickVals = [];
-    var xPrevious = null;
     var x = ax._tmin;
 
     if(ax.rangebreaks && ax._tick0Init !== ax.tick0) {
@@ -726,6 +732,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
     }
 
+    var maxTicks = Math.max(1000, ax._length || 0);
+    var tickVals = [];
+    var xPrevious = null;
     for(;
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
