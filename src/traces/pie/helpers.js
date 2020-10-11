@@ -40,3 +40,7 @@ exports.castOption = function castOption(item, indices) {
     if(Array.isArray(item)) return exports.getFirstFilled(item, indices);
     else if(item) return item;
 };
+
+exports.getRotationAngle = function(rotation) {
+    return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
+};
