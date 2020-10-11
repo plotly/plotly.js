@@ -460,6 +460,8 @@ function ensureLength(str, maxLength) {
 }
 
 function setupTraceToggle(g, gd) {
+    if(gd._context.staticPlot) return;
+
     var doubleClickDelay = gd._context.doubleClickDelay;
     var newMouseDownTime;
     var numClicks = 1;
