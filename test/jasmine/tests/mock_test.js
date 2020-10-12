@@ -118,6 +118,7 @@ var list = [
     'bar_hide_nulls',
     'bar_line',
     'bar_marker_array',
+    'bar_annotation_max_range_eq_category',
     'bar_multiline_labels',
     'bar_nonnumeric_sizes',
     'bar_show_narrow',
@@ -1181,6 +1182,7 @@ figs['bar_group_percent'] = require('@mocks/bar_group_percent');
 figs['bar_hide_nulls'] = require('@mocks/bar_hide_nulls');
 figs['bar_line'] = require('@mocks/bar_line');
 figs['bar_marker_array'] = require('@mocks/bar_marker_array');
+figs['bar_annotation_max_range_eq_category'] = require('@mocks/bar_annotation_max_range_eq_category');
 figs['bar_multiline_labels'] = require('@mocks/bar_multiline_labels');
 figs['bar_nonnumeric_sizes'] = require('@mocks/bar_nonnumeric_sizes');
 figs['bar_show_narrow'] = require('@mocks/bar_show_narrow');
