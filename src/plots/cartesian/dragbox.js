@@ -326,7 +326,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
-        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
+        box = Lib.transformRectToNode(gd, {left: x0, right: x0, w: 0, top: y0, bottom: y0, height: 0});
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
             tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
@@ -348,15 +348,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var dx = Math.abs(x1 - x0);
         var dy = Math.abs(y1 - y0);
 
-        box.l = Math.min(x0, x1);
-        box.r = Math.max(x0, x1);
-        box.t = Math.min(y0, y1);
-        box.b = Math.max(y0, y1);
+        box.left = Math.min(x0, x1);
+        box.right = Math.max(x0, x1);
+        box.top = Math.min(y0, y1);
+        box.bottom = Math.max(y0, y1);
+
+        box = Lib.transformRectToNode(gd, box);
 
         function noZoom() {
             zoomMode = '';
-            box.r = box.l;
-            box.t = box.b;
+            box.right = box.left;
+            box.top = box.bottom;
             corners.attr('d', 'M0,0Z');
         }
 
@@ -365,12 +367,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 zoomMode = 'xy';
                 if(dx / pw > dy / ph) {
                     dy = dx * ph / pw;
-                    if(y0 > y1) box.t = y0 - dy;
-                    else box.b = y0 + dy;
+                    if(y0 > y1) box.top = y0 - dy;
+                    else box.bottom = y0 + dy;
                 } else {
                     dx = dy * pw / ph;
-                    if(x0 > x1) box.l = x0 - dx;
-                    else box.r = x0 + dx;
+                    if(x0 > x1) box.left = x0 - dx;
+                    else box.right = x0 + dx;
                 }
                 corners.attr('d', xyCorners(box));
             } else {
@@ -380,13 +382,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(dx > MINZOOM || dy > MINZOOM) {
                 zoomMode = 'xy';
 
-                var r0 = Math.min(box.l / pw, (ph - box.b) / ph);
-                var r1 = Math.max(box.r / pw, (ph - box.t) / ph);
+                var r0 = Math.min(box.left / pw, (ph - box.bottom) / ph);
+                var r1 = Math.max(box.right / pw, (ph - box.top) / ph);
 
-                box.l = r0 * pw;
-                box.r = r1 * pw;
-                box.b = (1 - r0) * ph;
-                box.t = (1 - r1) * ph;
+                box.left = r0 * pw;
+                box.right = r1 * pw;
+                box.bottom = (1 - r0) * ph;
+                box.top = (1 - r1) * ph;
                 corners.attr('d', xyCorners(box));
             } else {
                 noZoom();
@@ -398,22 +400,22 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(dx < MINDRAG || !xActive) {
                 noZoom();
             } else {
-                box.t = 0;
-                box.b = ph;
+                box.top = 0;
+                box.bottom = ph;
                 zoomMode = 'x';
                 corners.attr('d', xCorners(box, y0));
             }
         } else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
-            box.l = 0;
-            box.r = pw;
+            box.left = 0;
+            box.right = pw;
             zoomMode = 'y';
             corners.attr('d', yCorners(box, x0));
         } else {
             zoomMode = 'xy';
             corners.attr('d', xyCorners(box));
         }
-        box.w = box.r - box.l;
-        box.h = box.b - box.t;
+        box.width = box.right - box.left;
+        box.height = box.bottom - box.top;
 
         if(zoomMode) zoomDragged = true;
         gd._dragged = zoomDragged;
@@ -429,11 +431,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // TODO: edit linked axes in zoomAxRanges and in dragTail
         if(zoomMode === 'xy' || zoomMode === 'x') {
-            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
+            zoomAxRanges(xaxes, box.left / pw, box.right / pw, updates, links.xaxes);
             updateMatchedAxRange('x', updates);
         }
         if(zoomMode === 'xy' || zoomMode === 'y') {
-            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
+            zoomAxRanges(yaxes, (ph - box.bottom) / ph, (ph - box.top) / ph, updates, links.yaxes);
             updateMatchedAxRange('y', updates);
         }
     }
@@ -1091,8 +1093,8 @@ function makeCorners(zoomlayer, xs, ys) {
 
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
-        path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
-        'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+        path0 + 'M' + (box.left) + ',' + (box.top) + 'v' + (box.height) +
+        'h' + (box.width) + 'v-' + (box.height) + 'h-' + (box.width) + 'Z');
     transitionZoombox(zb, corners, dimmed, lum);
 }
 
@@ -1123,30 +1125,30 @@ function showDoubleClickNotifier(gd) {
 
 function xCorners(box, y0) {
     return 'M' +
-        (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+        (box.left - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
         'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
-        (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+        (box.right + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
         'h3v' + (2 * MINZOOM + 1) + 'h-3Z';
 }
 
 function yCorners(box, x0) {
     return 'M' +
-        (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
+        (x0 - MINZOOM - 0.5) + ',' + (box.top - 0.5) +
         'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
-        (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
+        (x0 - MINZOOM - 0.5) + ',' + (box.bottom + 0.5) +
         'v3h' + (2 * MINZOOM + 1) + 'v-3Z';
 }
 
 function xyCorners(box) {
-    var clen = Math.floor(Math.min(box.b - box.t, box.r - box.l, MINZOOM) / 2);
+    var clen = Math.floor(Math.min(box.bottom - box.top, box.right - box.left, MINZOOM) / 2);
     return 'M' +
-        (box.l - 3.5) + ',' + (box.t - 0.5 + clen) + 'h3v' + (-clen) +
+        (box.left - 3.5) + ',' + (box.top - 0.5 + clen) + 'h3v' + (-clen) +
             'h' + clen + 'v-3h-' + (clen + 3) + 'ZM' +
-        (box.r + 3.5) + ',' + (box.t - 0.5 + clen) + 'h-3v' + (-clen) +
+        (box.right + 3.5) + ',' + (box.top - 0.5 + clen) + 'h-3v' + (-clen) +
             'h' + (-clen) + 'v-3h' + (clen + 3) + 'ZM' +
-        (box.r + 3.5) + ',' + (box.b + 0.5 - clen) + 'h-3v' + clen +
+        (box.right + 3.5) + ',' + (box.bottom + 0.5 - clen) + 'h-3v' + clen +
             'h' + (-clen) + 'v3h' + (clen + 3) + 'ZM' +
-        (box.l - 3.5) + ',' + (box.b + 0.5 - clen) + 'h3v' + clen +
+        (box.left - 3.5) + ',' + (box.bottom + 0.5 - clen) + 'h3v' + clen +
             'h' + clen + 'v3h-' + (clen + 3) + 'Z';
 }
 
