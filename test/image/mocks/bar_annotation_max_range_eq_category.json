@@ -1,12 +1,14 @@
 {
-  "data": [{
-    "x" : [ "1.5", "2.5", "3.5", "Not Known" ],
-    "y" : [ "1.0", "1.0", "2.0", "1.0" ],
-    "type" : "bar"
-  }],
+  "data": [
+    {
+      "x": ["1.5", "2.5", "3.5", "Not Known"],
+      "y": ["1.0", "1.0", "2.0", "1.0"],
+      "type": "bar"
+    }
+  ],
   "layout": {
-    "xaxis" : {
-      "type" : "category",
+    "xaxis": {
+      "type": "category",
       "autorange": true
     },
     "annotations": [
@@ -25,4 +27,3 @@
     ]
   }
 }
-
