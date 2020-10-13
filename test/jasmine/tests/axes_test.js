@@ -1781,6 +1781,25 @@ describe('Test axes', function() {
         });
     });
 
+    describe('bar category autorange', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        describe('a category has the same value of one of the auto range computed extreme', function() {
+            it('should compute the right range for X axis', function() {
+                Plotly.plot(gd, [{x: ['0', '-0.5', '3.5', 'Not Known'], y: [ '1.0', '1.0', '2.0', '1.0'], type: 'bar'}], {
+                    xaxis: {type: 'category', autorange: true}
+                });
+                expect(gd._fullLayout.xaxis._rl).toEqual([-0.5, 3.5]);
+            });
+        });
+    });
+
     describe('handleTickDefaults', function() {
         var data = [{ x: [1, 2, 3], y: [3, 4, 5] }];
         var gd;

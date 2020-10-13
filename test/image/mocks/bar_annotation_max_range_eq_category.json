@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "x": ["1.5", "2.5", "3.5", "Not Known"],
+      "y": ["1.0", "1.0", "2.0", "1.0"],
+      "type": "bar"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "type": "category",
+      "autorange": true
+    },
+    "annotations": [
+      {
+        "x": "Not Known",
+        "y": 1,
+        "text": "Should point to category",
+        "showarrow": true
+      },
+      {
+        "x": 1.5,
+        "y": 1.0,
+        "text": "Should point to serial number",
+        "showarrow": true
+      }
+    ]
+  }
+}
