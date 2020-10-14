@@ -634,7 +634,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var definedDelta;
     if(isPeriod && tickformat) {
         var noDtick = ax._dtickInit !== ax.dtick;
-        var prevDtick = ax.dtick;
         if(
             !(/%[fLQsSMX]/.test(tickformat))
             // %f: microseconds as a decimal number [000000, 999999]
@@ -706,14 +705,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR)
                 ) ax.dtick = 'M12';
             }
-        }
-
-        if(prevDtick !== ax.dtick && ax._tick0Init !== ax.tick0) {
-            // move tick0 back
-            ax.tick0 = axes.tickIncrement(ax.tick0, prevDtick, !axrev, ax.calendar);
-
-            // redo first tick
-            ax._tmin = axes.tickFirst(ax, opts);
         }
     }
 
