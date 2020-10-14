@@ -613,19 +613,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    // find the first tick
-    ax._tmin = axes.tickFirst(ax, opts);
-
-    // No visible ticks? Quit.
-    // I've only seen this on category axes with all categories off the edge.
-    if((ax._tmin < startTick) !== axrev) return [];
-
-    // return the full set of tick vals
-    if(ax.type === 'category' || ax.type === 'multicategory') {
-        endTick = (axrev) ? Math.max(-0.5, endTick) :
-            Math.min(ax._categories.length - 0.5, endTick);
-    }
-
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
     var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
 
@@ -706,6 +693,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 ) ax.dtick = 'M12';
             }
         }
+    }
+
+    // find the first tick
+    ax._tmin = axes.tickFirst(ax, opts);
+
+    // No visible ticks? Quit.
+    // I've only seen this on category axes with all categories off the edge.
+    if((ax._tmin < startTick) !== axrev) return [];
+
+    // return the full set of tick vals
+    if(ax.type === 'category' || ax.type === 'multicategory') {
+        endTick = (axrev) ? Math.max(-0.5, endTick) :
+            Math.min(ax._categories.length - 0.5, endTick);
     }
 
     var x = ax._tmin;
