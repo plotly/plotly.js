@@ -1246,11 +1246,10 @@ lib.ensureUniformFontSize = function(gd, baseFont) {
 };
 
 /**
- * provide a human-readable lists with an optional ending separator such as A, B, C and D
+ * provide a human-readable list e.g. "A, B, C and D" with an ending separator
  *
  * @param {array} arr : the array to join
  * @param {string} mainSeparator : main separator
- * @param {string} lastSeparator : optional last separator
  *
  * @return {string} : joined list
  */
