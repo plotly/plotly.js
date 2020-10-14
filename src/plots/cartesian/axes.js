@@ -708,12 +708,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if(prevDtick !== ax.dtick) {
+        if(prevDtick !== ax.dtick && ax._tick0Init !== ax.tick0) {
+            var prevTick0 = ax.tick0;
+
             // move tick0 back
             ax.tick0 = axes.tickIncrement(ax.tick0, prevDtick, !axrev, ax.calendar);
 
             // redo first tick
             ax._tmin = axes.tickFirst(ax, opts);
+
+            // maintain tick0 value
+            ax.tick0 = prevTick0;
         }
     }
 
