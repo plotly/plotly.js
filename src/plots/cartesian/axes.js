@@ -592,34 +592,12 @@ function nMonths(dtick) {
     return +(dtick.substring(1));
 }
 
-// calculate the ticks: text, values, positioning
-// if ticks are set to automatic, determine the right values (tick0,dtick)
-// in any case, set tickround to # of digits to round tick labels to,
-// or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax, opts) {
-    axes.prepTicks(ax, opts);
-    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    // now that we've figured out the auto values for formatting
-    // in case we're missing some ticktext, we can break out for array ticks
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
-    // add a tiny bit so we get ticks which may have rounded out
-    var exRng = expandRange(rng);
-    var startTick = exRng[0];
-    var endTick = exRng[1];
-    // check for reversed axis
-    var axrev = (rng[1] < rng[0]);
-    var minRange = Math.min(rng[0], rng[1]);
-    var maxRange = Math.max(rng[0], rng[1]);
-
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
-    var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
-
-    var tickformat = axes.getTickFormat(ax);
-    var isPeriod = ax.ticklabelmode === 'period';
+function adjustPeriodDelta(ax) { // adjusts ax.dtick and returns definedDelta
     var definedDelta;
-    if(isPeriod && tickformat) {
+
+    var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
+    var tickformat = axes.getTickFormat(ax);
+    if(tickformat) {
         var noDtick = ax._dtickInit !== ax.dtick;
         if(
             !(/%[fLQsSMX]/.test(tickformat))
@@ -694,6 +672,34 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
     }
+
+    return definedDelta;
+}
+
+// calculate the ticks: text, values, positioning
+// if ticks are set to automatic, determine the right values (tick0,dtick)
+// in any case, set tickround to # of digits to round tick labels to,
+// or codes to this effect for log and date scales
+axes.calcTicks = function calcTicks(ax, opts) {
+    axes.prepTicks(ax, opts);
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
+
+    // now that we've figured out the auto values for formatting
+    // in case we're missing some ticktext, we can break out for array ticks
+    if(ax.tickmode === 'array') return arrayTicks(ax);
+
+    // add a tiny bit so we get ticks which may have rounded out
+    var exRng = expandRange(rng);
+    var startTick = exRng[0];
+    var endTick = exRng[1];
+    // check for reversed axis
+    var axrev = (rng[1] < rng[0]);
+    var minRange = Math.min(rng[0], rng[1]);
+    var maxRange = Math.max(rng[0], rng[1]);
+
+    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var isPeriod = ax.ticklabelmode === 'period';
+    var definedDelta = isPeriod ? adjustPeriodDelta(ax) : undefined;
 
     // find the first tick
     ax._tmin = axes.tickFirst(ax, opts);
