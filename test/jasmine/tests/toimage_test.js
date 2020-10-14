@@ -65,7 +65,7 @@ describe('Plotly.toImage', function() {
         Plotly.plot(gd, fig.data, fig.layout)
         .then(function(gd) {
             expect(function() { Plotly.toImage(gd, {format: 'x'}); })
-                .toThrow(new Error('Image format is not jpeg, png, svg or webp.'));
+                .toThrow(new Error('Export format is not png, jpeg, webp, svg or full-json.'));
         })
         .catch(failTest)
         .then(done);
