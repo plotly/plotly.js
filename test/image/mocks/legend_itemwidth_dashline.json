@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "x": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "y": [
+        16,
+        5,
+        11,
+        9
+      ],
+      "line": {
+        "dash": "dashdot"
+      },
+      "type": "scatter"
+    },
+    {
+      "x": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "y": [
+        12,
+        9,
+        15,
+        12
+      ],
+      "line": {
+        "dash": "dash"
+      },
+      "type": "scatter"
+    }
+  ],
+  "layout": {
+    "legend": {
+      "itemwidth": 60
+    }
+  }
+}
