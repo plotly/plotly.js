@@ -1256,7 +1256,7 @@ lib.ensureUniformFontSize = function(gd, baseFont) {
  */
 lib.join2 = function(arr, mainSeparator, lastSeparator) {
     var len = arr.length;
-    if(len > 2 && lastSeparator) {
+    if(len > 1 && lastSeparator) {
         return arr.slice(0, -1).join(mainSeparator) + lastSeparator + arr[len - 1];
     }
     return arr.join(mainSeparator);
