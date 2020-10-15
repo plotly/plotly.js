@@ -575,6 +575,10 @@ axes.prepTicks = function(ax, opts) {
         }
     }
 
+    if(ax.ticklabelmode === 'period') {
+        adjustPeriodDelta(ax);
+    }
+
     // check for missing tick0
     if(!ax.tick0) {
         ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
@@ -592,47 +596,18 @@ function nMonths(dtick) {
     return +(dtick.substring(1));
 }
 
-// calculate the ticks: text, values, positioning
-// if ticks are set to automatic, determine the right values (tick0,dtick)
-// in any case, set tickround to # of digits to round tick labels to,
-// or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax, opts) {
-    axes.prepTicks(ax, opts);
-    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    // now that we've figured out the auto values for formatting
-    // in case we're missing some ticktext, we can break out for array ticks
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
-    // add a tiny bit so we get ticks which may have rounded out
-    var exRng = expandRange(rng);
-    var startTick = exRng[0];
-    var endTick = exRng[1];
-    // check for reversed axis
-    var axrev = (rng[1] < rng[0]);
-    var minRange = Math.min(rng[0], rng[1]);
-    var maxRange = Math.max(rng[0], rng[1]);
-
-    // find the first tick
-    ax._tmin = axes.tickFirst(ax, opts);
-
-    // No visible ticks? Quit.
-    // I've only seen this on category axes with all categories off the edge.
-    if((ax._tmin < startTick) !== axrev) return [];
-
-    // return the full set of tick vals
-    if(ax.type === 'category' || ax.type === 'multicategory') {
-        endTick = (axrev) ? Math.max(-0.5, endTick) :
-            Math.min(ax._categories.length - 0.5, endTick);
-    }
-
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
-    var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
-
-    var tickformat = axes.getTickFormat(ax);
-    var isPeriod = ax.ticklabelmode === 'period';
+function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
     var definedDelta;
-    if(isPeriod && tickformat) {
+
+    function mDate() {
+        return !(
+            isNumeric(ax.dtick) ||
+            ax.dtick.charAt(0) !== 'M'
+        );
+    }
+    var isMDate = mDate();
+    var tickformat = axes.getTickFormat(ax);
+    if(tickformat) {
         var noDtick = ax._dtickInit !== ax.dtick;
         if(
             !(/%[fLQsSMX]/.test(tickformat))
@@ -708,9 +683,136 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    var maxTicks = Math.max(1000, ax._length || 0);
-    var tickVals = [];
-    var xPrevious = null;
+    isMDate = mDate();
+    if(isMDate && ax.tick0 === ax._dowTick0) {
+        // discard Sunday/Monday tweaks
+        ax.tick0 = ax._rawTick0;
+    }
+
+    ax._definedDelta = definedDelta;
+}
+
+function positionPeriodTicks(tickVals, ax, definedDelta) {
+    for(var i = 0; i < tickVals.length; i++) {
+        var v = tickVals[i].value;
+
+        var a = i;
+        var b = i + 1;
+        if(i < tickVals.length - 1) {
+            a = i;
+            b = i + 1;
+        } else if(i > 0) {
+            a = i - 1;
+            b = i;
+        } else {
+            a = i;
+            b = i;
+        }
+
+        var A = tickVals[a].value;
+        var B = tickVals[b].value;
+        var actualDelta = Math.abs(B - A);
+        var delta = definedDelta || actualDelta;
+        var periodLength = 0;
+
+        if(delta >= ONEMINYEAR) {
+            if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
+                periodLength = actualDelta;
+            } else {
+                periodLength = ONEAVGYEAR;
+            }
+        } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
+            if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+                periodLength = actualDelta;
+            } else {
+                periodLength = ONEAVGQUARTER;
+            }
+        } else if(delta >= ONEMINMONTH) {
+            if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+                periodLength = actualDelta;
+            } else {
+                periodLength = ONEAVGMONTH;
+            }
+        } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
+            periodLength = ONEWEEK;
+        } else if(delta >= ONEDAY) {
+            periodLength = ONEDAY;
+        } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
+            periodLength = HALFDAY;
+        } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
+            periodLength = ONEHOUR;
+        }
+
+        var inBetween;
+        if(periodLength >= actualDelta) {
+            // ensure new label positions remain between ticks
+            periodLength = actualDelta;
+            inBetween = true;
+        }
+
+        var endPeriod = v + periodLength;
+        if(ax.rangebreaks && periodLength > 0) {
+            var nAll = 84; // highly divisible 7 * 12
+            var n = 0;
+            for(var c = 0; c < nAll; c++) {
+                var r = (c + 0.5) / nAll;
+                if(ax.maskBreaks(v * (1 - r) + r * endPeriod) !== BADNUM) n++;
+            }
+            periodLength *= n / nAll;
+
+            if(!periodLength) {
+                tickVals[i].drop = true;
+            }
+
+            if(inBetween && actualDelta > ONEWEEK) periodLength = actualDelta; // center monthly & longer periods
+        }
+
+        if(
+            periodLength > 0 || // not instant
+            i === 0 // taking care first tick added
+        ) {
+            tickVals[i].periodX = v + periodLength / 2;
+        }
+    }
+}
+
+// calculate the ticks: text, values, positioning
+// if ticks are set to automatic, determine the right values (tick0,dtick)
+// in any case, set tickround to # of digits to round tick labels to,
+// or codes to this effect for log and date scales
+axes.calcTicks = function calcTicks(ax, opts) {
+    axes.prepTicks(ax, opts);
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
+
+    // now that we've figured out the auto values for formatting
+    // in case we're missing some ticktext, we can break out for array ticks
+    if(ax.tickmode === 'array') return arrayTicks(ax);
+
+    // add a tiny bit so we get ticks which may have rounded out
+    var exRng = expandRange(rng);
+    var startTick = exRng[0];
+    var endTick = exRng[1];
+    // check for reversed axis
+    var axrev = (rng[1] < rng[0]);
+    var minRange = Math.min(rng[0], rng[1]);
+    var maxRange = Math.max(rng[0], rng[1]);
+
+    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var isPeriod = ax.ticklabelmode === 'period';
+
+    // find the first tick
+    ax._tmin = axes.tickFirst(ax, opts);
+
+    // No visible ticks? Quit.
+    // I've only seen this on category axes with all categories off the edge.
+    if((ax._tmin < startTick) !== axrev) return [];
+
+    // return the full set of tick vals
+    if(ax.type === 'category' || ax.type === 'multicategory') {
+        endTick = (axrev) ? Math.max(-0.5, endTick) :
+            Math.min(ax._categories.length - 0.5, endTick);
+    }
+
     var x = ax._tmin;
 
     if(ax.rangebreaks && ax._tick0Init !== ax.tick0) {
@@ -726,6 +828,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
     }
 
+    var maxTicks = Math.max(1000, ax._length || 0);
+    var tickVals = [];
+    var xPrevious = null;
     for(;
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
@@ -753,91 +858,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         });
     }
 
+    if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
+
     var i;
-    if(isPeriod) {
-        for(i = 0; i < tickVals.length; i++) {
-            var v = tickVals[i].value;
-
-            var a = i;
-            var b = i + 1;
-            if(i < tickVals.length - 1) {
-                a = i;
-                b = i + 1;
-            } else if(i > 0) {
-                a = i - 1;
-                b = i;
-            } else {
-                a = i;
-                b = i;
-            }
-
-            var A = tickVals[a].value;
-            var B = tickVals[b].value;
-            var actualDelta = Math.abs(B - A);
-            var delta = definedDelta || actualDelta;
-            var periodLength = 0;
-
-            if(delta >= ONEMINYEAR) {
-                if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGYEAR;
-                }
-            } else if(definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
-                if(actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGQUARTER;
-                }
-            } else if(delta >= ONEMINMONTH) {
-                if(actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
-                    periodLength = actualDelta;
-                } else {
-                    periodLength = ONEAVGMONTH;
-                }
-            } else if(definedDelta === ONEWEEK && delta >= ONEWEEK) {
-                periodLength = ONEWEEK;
-            } else if(delta >= ONEDAY) {
-                periodLength = ONEDAY;
-            } else if(definedDelta === HALFDAY && delta >= HALFDAY) {
-                periodLength = HALFDAY;
-            } else if(definedDelta === ONEHOUR && delta >= ONEHOUR) {
-                periodLength = ONEHOUR;
-            }
-
-            var inBetween;
-            if(periodLength >= actualDelta) {
-                // ensure new label positions remain between ticks
-                periodLength = actualDelta;
-                inBetween = true;
-            }
-
-            var endPeriod = v + periodLength;
-            if(ax.rangebreaks && periodLength > 0) {
-                var nAll = 84; // highly divisible 7 * 12
-                var n = 0;
-                for(var c = 0; c < nAll; c++) {
-                    var r = (c + 0.5) / nAll;
-                    if(ax.maskBreaks(v * (1 - r) + r * endPeriod) !== BADNUM) n++;
-                }
-                periodLength *= n / nAll;
-
-                if(!periodLength) {
-                    tickVals[i].drop = true;
-                }
-
-                if(inBetween && actualDelta > ONEWEEK) periodLength = actualDelta; // center monthly & longer periods
-            }
-
-            if(
-                periodLength > 0 || // not instant
-                i === 0 // taking care first tick added
-            ) {
-                tickVals[i].periodX = v + periodLength / 2;
-            }
-        }
-    }
-
     if(ax.rangebreaks) {
         var flip = ax._id.charAt(0) === 'y';
 
@@ -1022,11 +1045,16 @@ axes.autoTicks = function(ax, roughDTick) {
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             var tickformat = axes.getTickFormat(ax);
+            var isPeriod = ax.ticklabelmode === 'period';
+            if(isPeriod) ax._rawTick0 = ax.tick0;
+
             if(/%[uVW]/.test(tickformat)) {
                 ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
             } else {
                 ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
             }
+
+            if(isPeriod) ax._dowTick0 = ax.tick0;
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {

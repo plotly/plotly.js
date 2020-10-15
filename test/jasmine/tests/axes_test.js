@@ -5702,6 +5702,53 @@ describe('Test axes', function() {
 
         [
             {
+                range: ['2019-12-10', '2020-01-10'],
+                positions: ['2019-12-16 12:00', '2020-01-10'],
+                labels: ['2019-Dec', ' ']
+            },
+            {
+                range: ['2019-12-20', '2020-01-20'],
+                positions: ['2019-12-20', '2020-01-16 12:00'],
+                labels: [' ', '2020-Jan']
+            },
+            {
+                range: ['2020-01-20', '2019-12-20'],
+                positions: ['2020-01-20', '2020-01-16 12:00'],
+                labels: [' ', '2020-Jan']
+            }
+        ].forEach(function(t) {
+            it('should position labels with monthly tickformat when auto dtick is weekly | range:' + t.range, function(done) {
+                Plotly.newPlot(gd, {
+                    data: [{
+                        x: [
+                            '2020-01-01',
+                            '2020-01-02'
+                        ],
+                        mode: 'lines+text',
+                        text: [
+                            'Jan 01',
+                            'Jan 02'
+                        ]
+                    }],
+                    layout: {
+                        width: 600,
+                        xaxis: {
+                            range: t.range,
+                            ticklabelmode: 'period',
+                            tickformat: '%Y-%b'
+                        }
+                    }
+                })
+                .then(function() {
+                    _assert('', t.positions, t.labels);
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        [
+            {
                 range: ['2020-12-15', '2084-12-15'],
                 positions: ['2020-07-01 15:00', '2030-07-02 15:00', '2040-07-01 15:00', '2050-07-02 15:00', '2060-07-01 15:00', '2070-07-02 15:00', '2080-07-01 15:00'],
                 labels: [' ', '2030', '2040', '2050', '2060', '2070', '2080']
