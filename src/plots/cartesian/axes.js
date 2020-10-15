@@ -575,6 +575,10 @@ axes.prepTicks = function(ax, opts) {
         }
     }
 
+    if(ax.ticklabelmode === 'period') {
+        adjustPeriodDelta(ax);
+    }
+
     // check for missing tick0
     if(!ax.tick0) {
         ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
@@ -592,10 +596,16 @@ function nMonths(dtick) {
     return +(dtick.substring(1));
 }
 
-function adjustPeriodDelta(ax) { // adjusts ax.dtick and returns definedDelta
+function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
     var definedDelta;
 
-    var isMDate = (ax.type === 'date') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'M');
+    function mDate() {
+        return !(
+            isNumeric(ax.dtick) ||
+            ax.dtick.charAt(0) !== 'M'
+        );
+    }
+    var isMDate = mDate();
     var tickformat = axes.getTickFormat(ax);
     if(tickformat) {
         var noDtick = ax._dtickInit !== ax.dtick;
@@ -673,7 +683,13 @@ function adjustPeriodDelta(ax) { // adjusts ax.dtick and returns definedDelta
         }
     }
 
-    return definedDelta;
+    isMDate = mDate();
+    if(isMDate && ax.tick0 === ax._dowTick0) {
+        // discard Sunday/Monday tweaks
+        ax.tick0 = ax._rawTick0;
+    }
+
+    ax._definedDelta = definedDelta;
 }
 
 function positionPeriodTicks(tickVals, ax, definedDelta) {
@@ -783,7 +799,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
     var isPeriod = ax.ticklabelmode === 'period';
-    var definedDelta = isPeriod ? adjustPeriodDelta(ax) : undefined;
 
     // find the first tick
     ax._tmin = axes.tickFirst(ax, opts);
@@ -843,7 +858,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         });
     }
 
-    if(isPeriod) positionPeriodTicks(tickVals, ax, definedDelta);
+    if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
 
     var i;
     if(ax.rangebreaks) {
@@ -1030,11 +1045,16 @@ axes.autoTicks = function(ax, roughDTick) {
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
             var tickformat = axes.getTickFormat(ax);
+            var isPeriod = ax.ticklabelmode === 'period';
+            if(isPeriod) ax._rawTick0 = ax.tick0;
+
             if(/%[uVW]/.test(tickformat)) {
                 ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
             } else {
                 ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
             }
+
+            if(isPeriod) ax._dowTick0 = ax.tick0;
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
