@@ -592,8 +592,6 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
-    if(gd._context.staticPlot) return;
-
     // <g grabber />
     var grabberMin = Lib.ensureSingle(rangeSlider, 'g', constants.grabberMinClassName);
     var grabberMax = Lib.ensureSingle(rangeSlider, 'g', constants.grabberMaxClassName);
@@ -628,7 +626,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         x: 0,
         y: 0,
         fill: constants.grabAreaFill,
-        cursor: constants.grabAreaCursor
+        cursor: !gd._context.staticPlot ? constants.grabAreaCursor : undefined,
     };
 
     var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
