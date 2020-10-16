@@ -460,17 +460,18 @@ function ensureLength(str, maxLength) {
 }
 
 function setupTraceToggle(g, gd) {
-    if(gd._context.staticPlot) return;
-
     var doubleClickDelay = gd._context.doubleClickDelay;
     var newMouseDownTime;
     var numClicks = 1;
 
     var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
-        s.style('cursor', 'pointer')
-            .attr('pointer-events', 'all')
-            .call(Color.fill, 'rgba(0,0,0,0)');
+        if(!gd._context.staticPlot) {
+            s.style('cursor', 'pointer').attr('pointer-events', 'all');
+        }
+        s.call(Color.fill, 'rgba(0,0,0,0)');
     });
+
+    if(gd._context.staticPlot) return;
 
     traceToggle.on('mousedown', function() {
         newMouseDownTime = (new Date()).getTime();
