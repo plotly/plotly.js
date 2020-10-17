@@ -201,7 +201,7 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
-    fit('should not react to any interactions when staticPlot is set', function(done) {
+    it('should not react to any interactions when staticPlot is set', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         var moveDelta = 50;
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { staticPlot: true })
