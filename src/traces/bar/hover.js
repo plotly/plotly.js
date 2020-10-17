@@ -164,6 +164,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 
     pointData.labelLabel = hoverLabelText(pa, pointData[posLetter + 'LabelVal']);
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal']);
+    pointData.baseLabel = hoverLabelText(sa, di.b);
 
     // spikelines always want "closest" distance regardless of hovermode
     pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 - maxHoverDistance;
