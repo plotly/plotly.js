@@ -1289,6 +1289,47 @@ describe('legend interaction', function() {
         });
     });
 
+    describe('staticPlot', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function toggleTrace() {
+            var toggle = d3.select('.legendtoggle').node();
+            expect(toggle).not.toEqual(null);
+
+            toggle.dispatchEvent(new MouseEvent('mousedown'));
+            toggle.dispatchEvent(new MouseEvent('mouseup'));
+
+            // Delay needs to be long enough for Plotly to react
+            return delay(300)();
+        }
+
+        function assertToggled(toggled) {
+            return function() {
+                var container = d3.select('g.traces').node();
+                expect(container).not.toEqual(null);
+                expect(container.style.opacity).toBe(toggled ? '0.5' : '1');
+            };
+        }
+
+        it('should prevent toggling if set', function(done) {
+            var data = [{ x: [0, 1], y: [0, 1], type: 'scatter' }];
+            var layout = { showlegend: true };
+            var config = { staticPlot: true };
+
+            Plotly.newPlot(gd, data, layout, config)
+                .then(toggleTrace)
+                .then(assertToggled(false))
+                .catch(failTest)
+                .then(done);
+        });
+    });
+
     describe('visible toggle', function() {
         var gd;
 
