@@ -65,6 +65,9 @@ var autorange = require('./autorange');
 axes.getAutoRange = autorange.getAutoRange;
 axes.findExtremes = autorange.findExtremes;
 
+var gridsync = require('./gridsync');
+axes.gridsync = gridsync.gridsync;
+
 var epsilon = 0.0001;
 function expandRange(range) {
     var delta = (range[1] - range[0]) * epsilon;

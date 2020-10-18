@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "name": "Apples",
+      "type": "bar",
+      "x": ["Jan", "Feb", "Mar", "Apr", "May"],
+      "y": [232, 2206, 37, 1629, 190]
+    },
+    {
+      "name": "Oranges",
+      "type": "line",
+      "x": ["Jan", "Feb", "Mar", "Apr", "May"],
+      "y": [141.21, 365.24, 265.21, 204.34, 129],
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "margin": {
+      "t": 40, "r": 70, "b": 40, "l": 70
+    },
+    "legend": {
+      "orientation": "h",
+      "x": 0.6,
+      "y": 1.1
+    },
+    "yaxis": {
+      "title": "Apples",
+      "side": "left",
+      "range": [0, 2206]
+    },
+    "yaxis2": {
+      "title": "Oranges",
+      "side": "right",
+      "range": [0, 365.24],
+      "overlaying": "y"
+    }
+  },
+  "config": {
+    "displaylogo": false,
+    "displayModeBar": false
+  }
+}

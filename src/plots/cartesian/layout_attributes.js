@@ -116,6 +116,16 @@ module.exports = {
             'If `range` is provided, then `autorange` is set to *false*.'
         ].join(' ')
     },
+    gridsync: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'If set to true, your overlayed yaxis gridlines will synchronize with those of the primary yaxis.',
+            'Dtick values will automatically be adjusted to scale your overlayed yaxis accordingly.'
+        ].join(' ')
+    },
     rangemode: {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
