@@ -9,6 +9,21 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.57.1] -- 2020-10-20
+
+### Changed
+ - Update template for new pull requests [#5220]
+ - Provide a default `hovertemplate` label for attribute "base" in `bar` traces [#5216]
+
+### Fixed
+ - Fix `staticPlot` behaviour for `rangeslider` and `legend` [#5210],
+   with thanks to @miqh for the contribution!
+ - Fix `colorbar` react to new styles [#5217],
+   with thanks to @anaplian for the contribution!
+ - Fix `computed` margins when plot involves too many redraws [#5225]
+ - Fix build issue for Chart Studio Cloud (regression introduced in 1.56.0) [#5223]
+
+
 ## [1.57.0] -- 2020-10-15
 
 ### Added
