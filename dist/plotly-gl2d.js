@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.57.0
+* plotly.js (gl2d) v1.57.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11395,6 +11395,7 @@ module.exports = {
 'use strict'
 
 var rgba = _dereq_('color-rgba')
+var clamp = _dereq_('clamp')
 var dtype = _dereq_('dtype')
 
 module.exports = function normalize (color, type) {
@@ -11434,10 +11435,10 @@ module.exports = function normalize (color, type) {
 	}
 
 	if (!normalize) {
-		output[0] = Math.min(Math.max(Math.floor(color[0] * 255), 0), 255)
-		output[1] = Math.min(Math.max(Math.floor(color[1] * 255), 0), 255)
-		output[2] = Math.min(Math.max(Math.floor(color[2] * 255), 0), 255)
-		output[3] = color[3] == null ? 255 : Math.min(Math.max(Math.floor(color[3] * 255), 0), 255)
+		output[0] = clamp(Math.floor(color[0] * 255), 0, 255)
+		output[1] = clamp(Math.floor(color[1] * 255), 0, 255)
+		output[2] = clamp(Math.floor(color[2] * 255), 0, 255)
+		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
 	} else {
 		output[0] = color[0]
 		output[1] = color[1]
@@ -11461,7 +11462,8 @@ function isInt(color) {
 	return false
 }
 
-},{"color-rgba":65,"dtype":91}],64:[function(_dereq_,module,exports){
+},{"clamp":58,"color-rgba":65,"dtype":91}],64:[function(_dereq_,module,exports){
+(function (global){
 /**
  * @module color-parse
  */
@@ -11469,6 +11471,8 @@ function isInt(color) {
 'use strict'
 
 var names = _dereq_('color-name')
+var isObject = _dereq_('is-plain-obj')
+var defined = _dereq_('defined')
 
 module.exports = parse
 
@@ -11551,7 +11555,7 @@ function parse (cstr) {
 			space = base
 			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
 			parts = m[2].trim()
-				.split(/\s*[,\/]\s*|\s+/)
+				.split(/\s*,\s*/)
 				.map(function (x, i) {
 					//<percentage>
 					if (/%$/.test(x)) {
@@ -11596,35 +11600,37 @@ function parse (cstr) {
 		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
 	}
 
-	//array-like
-	else if (Array.isArray(cstr) || cstr.length) {
-		parts = [cstr[0], cstr[1], cstr[2]]
-		space = 'rgb'
-		alpha = cstr.length === 4 ? cstr[3] : 1
-	}
-
 	//object case - detects css cases of rgb and hsl
-	else if (cstr instanceof Object) {
-		if (cstr.r != null || cstr.red != null || cstr.R != null) {
+	else if (isObject(cstr)) {
+		var r = defined(cstr.r, cstr.red, cstr.R, null)
+
+		if (r !== null) {
 			space = 'rgb'
 			parts = [
-				cstr.r || cstr.red || cstr.R || 0,
-				cstr.g || cstr.green || cstr.G || 0,
-				cstr.b || cstr.blue || cstr.B || 0
+				r,
+				defined(cstr.g, cstr.green, cstr.G),
+				defined(cstr.b, cstr.blue, cstr.B)
 			]
 		}
 		else {
 			space = 'hsl'
 			parts = [
-				cstr.h || cstr.hue || cstr.H || 0,
-				cstr.s || cstr.saturation || cstr.S || 0,
-				cstr.l || cstr.lightness || cstr.L || cstr.b || cstr.brightness
+				defined(cstr.h, cstr.hue, cstr.H),
+				defined(cstr.s, cstr.saturation, cstr.S),
+				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
 			]
 		}
 
-		alpha = cstr.a || cstr.alpha || cstr.opacity || 1
+		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
 
 		if (cstr.opacity != null) alpha /= 100
+	}
+
+	//array
+	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
+		parts = [cstr[0], cstr[1], cstr[2]]
+		space = 'rgb'
+		alpha = cstr.length === 4 ? cstr[3] : 1
 	}
 
 	return {
@@ -11634,18 +11640,17 @@ function parse (cstr) {
 	}
 }
 
-},{"color-name":62}],65:[function(_dereq_,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"color-name":62,"defined":87,"is-plain-obj":214}],65:[function(_dereq_,module,exports){
 /** @module  color-rgba */
 
 'use strict'
 
 var parse = _dereq_('color-parse')
 var hsl = _dereq_('color-space/hsl')
+var clamp = _dereq_('clamp')
 
 module.exports = function rgba (color) {
-	// template literals
-	if (Array.isArray(color) && color.raw) color = String.raw.apply(null, arguments)
-
 	var values, i, l
 
 	//attempt to parse non-array arguments
@@ -11654,20 +11659,20 @@ module.exports = function rgba (color) {
 	if (!parsed.space) return []
 
 	values = Array(3)
-	values[0] = Math.min(Math.max(parsed.values[0], 0), 255)
-	values[1] = Math.min(Math.max(parsed.values[1], 0), 255)
-	values[2] = Math.min(Math.max(parsed.values[2], 0), 255)
+	values[0] = clamp(parsed.values[0], 0, 255)
+	values[1] = clamp(parsed.values[1], 0, 255)
+	values[2] = clamp(parsed.values[2], 0, 255)
 
 	if (parsed.space[0] === 'h') {
 		values = hsl.rgb(values)
 	}
 
-	values.push(Math.min(Math.max(parsed.alpha, 0), 1))
+	values.push(clamp(parsed.alpha, 0, 1))
 
 	return values
 }
 
-},{"color-parse":64,"color-space/hsl":66}],66:[function(_dereq_,module,exports){
+},{"clamp":58,"color-parse":64,"color-space/hsl":66}],66:[function(_dereq_,module,exports){
 /**
  * @module color-space/hsl
  */
@@ -52508,6 +52513,7 @@ function drawColorBar(g, opts, gd) {
 
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
+            .attr('style', '')
             .data(fillLevels);
         fills.enter().append('rect')
             .classed(cn.cbfill, true)
@@ -61287,10 +61293,13 @@ function setupTraceToggle(g, gd) {
     var numClicks = 1;
 
     var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
-        s.style('cursor', 'pointer')
-            .attr('pointer-events', 'all')
-            .call(Color.fill, 'rgba(0,0,0,0)');
+        if(!gd._context.staticPlot) {
+            s.style('cursor', 'pointer').attr('pointer-events', 'all');
+        }
+        s.call(Color.fill, 'rgba(0,0,0,0)');
     });
+
+    if(gd._context.staticPlot) return;
 
     traceToggle.on('mousedown', function() {
         newMouseDownTime = (new Date()).getTime();
@@ -65105,6 +65114,8 @@ module.exports = function(gd) {
 };
 
 function setupDragElement(rangeSlider, gd, axisOpts, opts) {
+    if(gd._context.staticPlot) return;
+
     var slideBox = rangeSlider.select('rect.' + constants.slideBoxClassName).node();
     var grabAreaMin = rangeSlider.select('rect.' + constants.grabAreaMinClassName).node();
     var grabAreaMax = rangeSlider.select('rect.' + constants.grabAreaMaxClassName).node();
@@ -65492,14 +65503,12 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     handleMax.attr(handleDynamicAttrs);
 
     // <g grabarea />
-    if(gd._context.staticPlot) return;
-
     var grabAreaFixAttrs = {
         width: constants.grabAreaWidth,
         x: 0,
         y: 0,
         fill: constants.grabAreaFill,
-        cursor: constants.grabAreaCursor
+        cursor: !gd._context.staticPlot ? constants.grabAreaCursor : undefined,
     };
 
     var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
@@ -103065,6 +103074,7 @@ plots.doAutoMargin = function(gd) {
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
             return Registry.call('plot', gd);
         } else {
+            fullLayout._size = oldMargins;
             Lib.warn('Too many auto-margin redraws.');
         }
     }
@@ -120209,7 +120219,7 @@ module.exports = function select(searchInfo, selectionTester) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.57.0';
+exports.version = '1.57.1';
 
 },{}]},{},[5])(5)
 });

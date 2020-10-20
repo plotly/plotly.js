@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.57.0
+* plotly.js (geo) v1.57.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -21637,6 +21637,7 @@ function drawColorBar(g, opts, gd) {
 
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
+            .attr('style', '')
             .data(fillLevels);
         fills.enter().append('rect')
             .classed(cn.cbfill, true)
@@ -30416,10 +30417,13 @@ function setupTraceToggle(g, gd) {
     var numClicks = 1;
 
     var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
-        s.style('cursor', 'pointer')
-            .attr('pointer-events', 'all')
-            .call(Color.fill, 'rgba(0,0,0,0)');
+        if(!gd._context.staticPlot) {
+            s.style('cursor', 'pointer').attr('pointer-events', 'all');
+        }
+        s.call(Color.fill, 'rgba(0,0,0,0)');
     });
+
+    if(gd._context.staticPlot) return;
 
     traceToggle.on('mousedown', function() {
         newMouseDownTime = (new Date()).getTime();
@@ -34234,6 +34238,8 @@ module.exports = function(gd) {
 };
 
 function setupDragElement(rangeSlider, gd, axisOpts, opts) {
+    if(gd._context.staticPlot) return;
+
     var slideBox = rangeSlider.select('rect.' + constants.slideBoxClassName).node();
     var grabAreaMin = rangeSlider.select('rect.' + constants.grabAreaMinClassName).node();
     var grabAreaMax = rangeSlider.select('rect.' + constants.grabAreaMaxClassName).node();
@@ -34621,14 +34627,12 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     handleMax.attr(handleDynamicAttrs);
 
     // <g grabarea />
-    if(gd._context.staticPlot) return;
-
     var grabAreaFixAttrs = {
         width: constants.grabAreaWidth,
         x: 0,
         y: 0,
         fill: constants.grabAreaFill,
-        cursor: constants.grabAreaCursor
+        cursor: !gd._context.staticPlot ? constants.grabAreaCursor : undefined,
     };
 
     var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
@@ -73567,6 +73571,7 @@ plots.doAutoMargin = function(gd) {
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
             return Registry.call('plot', gd);
         } else {
+            fullLayout._size = oldMargins;
             Lib.warn('Too many auto-margin redraws.');
         }
     }
@@ -82709,7 +82714,7 @@ function styleTrace(gd, calcTrace) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.57.0';
+exports.version = '1.57.1';
 
 },{}]},{},[4])(4)
 });
