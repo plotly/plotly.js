@@ -318,5 +318,37 @@ describe('Plotly.toImage', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('record and export computed margins with "Too many auto-margin redraws"', function(done) {
+            Plotly.toImage({
+                data: [{
+                    x: [
+                        'a',
+                        'b',
+                        'looooooooooooooooooooooooooooooooooog',
+                        'd'
+                    ]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    paper_bgcolor: 'lightblue',
+                    xaxis: {
+                        automargin: true
+                    },
+                    yaxis: {
+                        automargin: true
+                    }
+                }
+            }, imgOpts)
+            .then(function(fig) {
+                fig = JSON.parse(fig);
+                var computed = fig.layout.computed;
+                expect(computed.margin.b).toBeGreaterThan(80);
+                expect(computed.margin.r).toBeGreaterThan(80);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
