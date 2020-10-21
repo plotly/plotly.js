@@ -93,14 +93,14 @@ function deleteRelatedStyleRule(uid) {
 }
 
 function getFullTransformMatrix(element) {
-    var ancestors = getElementAncestors(element);
+    var allAncestors = getElementAncestors(element);
     // the identity matrix
     var transform = [
         [1, 0, 0],
         [0, 1, 0],
         [0, 0, 1]
     ];
-    ancestors.forEach(function(ancestor) {
+    allAncestors.forEach(function(ancestor) {
         var ancestorTransform = getElementTransformMatrix(ancestor);
         if(ancestorTransform) {
             transform = matrix.dot(transform, matrix.convertCssMatrix(ancestorTransform));
@@ -147,18 +147,18 @@ function getElementTransformMatrix(element) {
 
     if(transform === 'none') return null;
     // the slice is because the transform string returns eg "matrix(0.5, 0, 1, 0, 1, 1)"
-    return transform.slice(7, -1).split(',').map(function(n) {return parseFloat(n);});
+    return transform.slice(7, -1).split(',').map(function(n) {return +n;});
 }
 /**
  * retrieve all DOM elements that are ancestors of the specified one (including itself)
  */
 function getElementAncestors(element) {
-    var elements = [];
+    var allElements = [];
     while(isTransformableElement(element)) {
-        elements.push(element);
+        allElements.push(element);
         element = element.parentElement;
     }
-    return elements;
+    return allElements;
 }
 
 function isTransformableElement(element) {
