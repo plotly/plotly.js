@@ -90,7 +90,7 @@ exports.apply2DTransform = function(transform) {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
-        }// from map
+        } // from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
@@ -110,8 +110,8 @@ exports.apply2DTransformToRect = function(transform) {
     var at = exports.apply2DTransform2(transform);
     return function(rect) {
         var rectArray = [
-            rect.left, 
-            rect.top, 
+            rect.left,
+            rect.top,
             rect.hasOwnProperty('right') ? rect.right : rect.left + rect.width,
             rect.hasOwnProperty('bottom') ? rect.bottom : rect.top + rect.height
         ];
@@ -124,25 +124,29 @@ exports.apply2DTransformToRect = function(transform) {
             width: transformed[2] - transformed[0],
             height: transformed[3] - transformed[1]
         };
-    }
-}
+    };
+};
 
 // converts a 2x3 css transform matrix, represented as a length 6 array, to a 3x3 matrix.
 exports.convertCssMatrix = function(m) {
-    if (m.length != 6)
-        throw new Error("Css transform matrix not of length 6");
+    if(m.length !== 6) {
+        throw new Error('Css transform matrix not of length 6');
+    }
+
     return [
-        [m[0],  m[2],   m[4]],
-        [m[1],  m[3],   m[5]],
-        [0,     0,      1   ]
+        [m[0], m[2], m[4]],
+        [m[1], m[3], m[5]],
+        [0, 0, 1]
     ];
-}
+};
 
 // find the inverse for a 3x3 affine transform matrix
 exports.inverseTransformMatrix = function(m) {
-    const determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
-    if (Math.abs(determinant) < Number.EPSILON)
-        throw new Error("Matrix is singular");
+    var determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
+    if(Math.abs(determinant) < Number.EPSILON) {
+        throw new Error('Matrix is singular');
+    }
+
     var inv = 1.0 / determinant;
     var invTranslateX = inv * (-m[1][1] * m[0][2] + m[0][1] * m[1][2]);
     var invTranslateY = inv * (m[1][0] * m[0][2] + -m[0][0] * m[1][2]);
@@ -151,4 +155,4 @@ exports.inverseTransformMatrix = function(m) {
         [inv * -m[1][0], inv * m[0][0], invTranslateY],
         [0, 0, 1]
     ];
-}
+};
