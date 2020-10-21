@@ -123,12 +123,12 @@ function transformRectToNode(element, rect) {
     ];
     var transformed = at(rectArray);
     return {
-        left: transformed[0],
-        top: transformed[1],
-        right: transformed[2],
-        bottom: transformed[3],
-        width: transformed[2] - transformed[0],
-        height: transformed[3] - transformed[1]
+        l: transformed[0],
+        t: transformed[1],
+        r: transformed[2],
+        b: transformed[3],
+        w: transformed[2] - transformed[0],
+        h: transformed[3] - transformed[1]
     };
 }
 
