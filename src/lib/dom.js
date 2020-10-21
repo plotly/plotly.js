@@ -110,29 +110,6 @@ function getFullTransformMatrix(element) {
 }
 
 /**
- * transforms a rect with {left, top, right?, bottom?, width?, height?} according to an element's css transform styles
- */
-function transformRectToNode(element, rect) {
-    var inverse = matrix.inverseTransformMatrix(getFullTransformMatrix(element));
-    var at = matrix.apply2DTransform2(inverse);
-    var rectArray = [
-        rect.left,
-        rect.top,
-        rect.hasOwnProperty('right') ? rect.right : rect.left + rect.width,
-        rect.hasOwnProperty('bottom') ? rect.bottom : rect.top + rect.height
-    ];
-    var transformed = at(rectArray);
-    return {
-        l: transformed[0],
-        t: transformed[1],
-        r: transformed[2],
-        b: transformed[3],
-        w: transformed[2] - transformed[0],
-        h: transformed[3] - transformed[1]
-    };
-}
-
-/**
  * extracts and parses the 2d css style transform matrix from some element
  */
 function getElementTransformMatrix(element) {
@@ -175,5 +152,4 @@ module.exports = {
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
     getElementAndAncestors: getElementAndAncestors,
-    transformRectToNode: transformRectToNode,
 };

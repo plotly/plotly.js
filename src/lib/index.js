@@ -150,7 +150,6 @@ lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;
-lib.transformRectToNode = domModule.transformRectToNode;
 
 lib.clearResponsive = require('./clear_responsive');
 
