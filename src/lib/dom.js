@@ -93,17 +93,17 @@ function deleteRelatedStyleRule(uid) {
 }
 
 function getFullTransformMatrix(element) {
-    var allAncestors = getElementAncestors(element);
+    var allElements = getElementAndAncestors(element);
     // the identity matrix
     var transform = [
         [1, 0, 0],
         [0, 1, 0],
         [0, 0, 1]
     ];
-    allAncestors.forEach(function(ancestor) {
-        var ancestorTransform = getElementTransformMatrix(ancestor);
-        if(ancestorTransform) {
-            transform = matrix.dot(transform, matrix.convertCssMatrix(ancestorTransform));
+    allElements.forEach(function(e) {
+        var t = getElementTransformMatrix(e);
+        if(t) {
+            transform = matrix.dot(transform, matrix.convertCssMatrix(t));
         }
     });
     return transform;
@@ -152,7 +152,7 @@ function getElementTransformMatrix(element) {
 /**
  * retrieve all DOM elements that are ancestors of the specified one (including itself)
  */
-function getElementAncestors(element) {
+function getElementAndAncestors(element) {
     var allElements = [];
     while(isTransformableElement(element)) {
         allElements.push(element);
@@ -174,6 +174,6 @@ module.exports = {
     deleteRelatedStyleRule: deleteRelatedStyleRule,
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
-    getElementAncestors: getElementAncestors,
+    getElementAndAncestors: getElementAndAncestors,
     transformRectToNode: transformRectToNode,
 };
