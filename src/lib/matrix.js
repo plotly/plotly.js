@@ -9,6 +9,7 @@
 
 'use strict';
 
+var mat3X3 = require('gl-mat3');
 
 exports.init2dArray = function(rowLength, colLength) {
     var array = new Array(rowLength);
@@ -119,17 +120,16 @@ exports.convertCssMatrix = function(m) {
 
 // find the inverse for a 3x3 affine transform matrix
 exports.inverseTransformMatrix = function(m) {
-    var determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
-    if(Math.abs(determinant) < Number.EPSILON) {
-        throw new Error('Matrix is singular');
-    }
-
-    var inv = 1.0 / determinant;
-    var invTranslateX = inv * (m[0][1] * m[1][2] - m[1][1] * m[0][2]);
-    var invTranslateY = inv * (m[1][0] * m[0][2] - m[0][0] * m[1][2]);
+    var out = [];
+    mat3X3.invert(out, [
+        m[0][0], m[0][1], m[0][2],
+        m[1][0], m[1][1], m[1][2],
+        m[2][0], m[2][1], m[2][2]
+    ]);
+    mat3X3.transpose(out, out);
     return [
-        [inv * m[1][1], -inv * m[0][1], 0],
-        [-inv * m[1][0], inv * m[0][0], 0],
-        [invTranslateX, invTranslateY, 1]
+        [out[0], out[1], out[2]],
+        [out[3], out[4], out[5]],
+        [out[6], out[7], out[8]]
     ];
 };

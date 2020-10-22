@@ -83,6 +83,7 @@
     "gl-error3d": "^1.0.16",
     "gl-heatmap2d": "^1.1.0",
     "gl-line3d": "1.2.1",
+    "gl-mat3": "^2.0.0",
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "^2.3.1",
     "gl-plot2d": "^1.4.5",
