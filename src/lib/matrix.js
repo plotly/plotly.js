@@ -104,29 +104,6 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-// applies a 2D transform to something with either the form {left, top, right, bottom}
-// or {left, top, width, height}, and returns it in the same format
-exports.apply2DTransformToRect = function(transform) {
-    var at = exports.apply2DTransform2(transform);
-    return function(rect) {
-        var rectArray = [
-            rect.left,
-            rect.top,
-            rect.hasOwnProperty('right') ? rect.right : rect.left + rect.width,
-            rect.hasOwnProperty('bottom') ? rect.bottom : rect.top + rect.height
-        ];
-        var transformed = at(rectArray);
-        return {
-            left: transformed[0],
-            top: transformed[1],
-            right: transformed[2],
-            bottom: transformed[3],
-            width: transformed[2] - transformed[0],
-            height: transformed[3] - transformed[1]
-        };
-    };
-};
-
 // converts a 2x3 css transform matrix, represented as a length 6 array, to a 3x3 matrix.
 exports.convertCssMatrix = function(m) {
     if(m.length !== 6) {
