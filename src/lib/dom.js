@@ -133,7 +133,7 @@ function getElementAndAncestors(element) {
     var allElements = [];
     while(isTransformableElement(element)) {
         allElements.push(element);
-        element = element.parentElement;
+        element = element.parentNode;
     }
     return allElements;
 }
