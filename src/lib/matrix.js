@@ -125,11 +125,11 @@ exports.inverseTransformMatrix = function(m) {
     }
 
     var inv = 1.0 / determinant;
-    var invTranslateX = inv * (-m[1][1] * m[0][2] + m[0][1] * m[1][2]);
-    var invTranslateY = inv * (m[1][0] * m[0][2] + -m[0][0] * m[1][2]);
+    var invTranslateX = inv * (m[0][1] * m[1][2] - m[1][1] * m[0][2]);
+    var invTranslateY = inv * (m[1][0] * m[0][2] - m[0][0] * m[1][2]);
     return [
-        [inv * m[1][1], inv * -m[0][1], invTranslateX],
-        [inv * -m[1][0], inv * m[0][0], invTranslateY],
+        [inv * m[1][1], -inv * m[0][1], invTranslateX],
+        [-inv * m[1][0], inv * m[0][0], invTranslateY],
         [0, 0, 1]
     ];
 };
