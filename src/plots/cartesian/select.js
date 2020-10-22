@@ -67,6 +67,15 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var transform = getTransform(plotinfo);
     var x0 = startX - dragBBox.left;
     var y0 = startY - dragBBox.top;
+
+    e.inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(e.target));
+    var transformedCoords = Lib.apply2DTransform(e.inverseTransform)(x0, y0);
+    x0 = transformedCoords[0];
+    y0 = transformedCoords[1];
+    var m = e.inverseTransform;
+    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
+    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+
     var x1 = x0;
     var y1 = y0;
     var path0 = 'M' + x0 + ',' + y0;
@@ -156,8 +165,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     }
 
     dragOptions.moveFn = function(dx0, dy0) {
-        x1 = Math.max(0, Math.min(pw, dx0 + x0));
-        y1 = Math.max(0, Math.min(ph, dy0 + y0));
+        x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
+        y1 = Math.max(0, Math.min(ph, scaleY * dy0 + y0));
 
         var dx = Math.abs(x1 - x0);
         var dy = Math.abs(y1 - y0);
