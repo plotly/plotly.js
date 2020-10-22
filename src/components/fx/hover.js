@@ -1500,7 +1500,8 @@ function alignHoverText(hoverLabels, rotateLabels) {
         var offsetX = 0;
         var offsetY = d.offset;
 
-        if(anchor === 'middle') {
+        var isMiddle = anchor === 'middle';
+        if(isMiddle) {
             txx -= d.tx2width / 2;
             tx2x += d.txwidth / 2 + HOVERTEXTPAD;
         }
@@ -1509,7 +1510,8 @@ function alignHoverText(hoverLabels, rotateLabels) {
             offsetX = d.offset * YSHIFTX;
         }
 
-        g.select('path').attr('d', anchor === 'middle' ?
+        g.select('path')
+            .attr('d', isMiddle ?
             // middle aligned: rect centered on data
             ('M-' + (d.bx / 2 + d.tx2width / 2) + ',' + (offsetY - d.by / 2) +
               'h' + d.bx + 'v' + d.by + 'h-' + d.bx + 'Z') :
@@ -1529,12 +1531,12 @@ function alignHoverText(hoverLabels, rotateLabels) {
         if(textAlign !== 'auto') {
             if(textAlign === 'left' && anchor !== 'start') {
                 tx.attr('text-anchor', 'start');
-                posX = anchor === 'middle' ?
+                posX = isMiddle ?
                     -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD :
                     -d.bx - HOVERTEXTPAD;
             } else if(textAlign === 'right' && anchor !== 'end') {
                 tx.attr('text-anchor', 'end');
-                posX = anchor === 'middle' ?
+                posX = isMiddle ?
                     d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD :
                     d.bx + HOVERTEXTPAD;
             }
