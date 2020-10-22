@@ -107,8 +107,12 @@ exports.apply2DTransform2 = function(transform) {
 
 // converts a 2x3 css transform matrix, represented as a length 6 array, to a 3x3 matrix.
 exports.convertCssMatrix = function(m) {
-    if(m.length !== 6) {
-        throw new Error('Css transform matrix not of length 6');
+    if(!m || m.length !== 6) {
+        return [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ];
     }
 
     return [
