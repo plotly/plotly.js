@@ -332,7 +332,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
 
-        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
+        var m = e.inverseTransform;
+        var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
+        var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+
+        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0, scaleX: scaleX, scaleY: scaleY};
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
             tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
@@ -349,8 +353,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return false;
         }
 
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0));
-        var y1 = Math.max(0, Math.min(ph, dy0 + y0));
+        var x1 = Math.max(0, Math.min(pw, box.scaleX * dx0 + x0));
+        var y1 = Math.max(0, Math.min(ph, box.scaleY * dy0 + y0));
         var dx = Math.abs(x1 - x0);
         var dy = Math.abs(y1 - y0);
 
