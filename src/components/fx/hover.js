@@ -1485,8 +1485,13 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
 }
 
 function alignHoverText(hoverLabels, rotateLabels, evt) {
-    var scaleX = evt ? evt.inverseTransform[0][0] : 1;
-    var scaleY = evt ? evt.inverseTransform[1][1] : 1;
+    var scaleX = 1;
+    var scaleY = 1;
+    if(evt) {
+        var m = evt.inverseTransform;
+        scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
+        scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+    }
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
 
