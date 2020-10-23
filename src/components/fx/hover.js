@@ -1557,13 +1557,13 @@ function alignHoverText(hoverLabels, rotateLabels, evt) {
         if(d.tx2width) {
             g.select('text.name')
                 .call(svgTextUtils.positionText,
-                    tx2x + alignShift * HOVERTEXTPAD + offsetX,
-                    offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
+                    pX(tx2x + alignShift * HOVERTEXTPAD + offsetX),
+                    pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
             g.select('rect')
                 .call(Drawing.setRect,
-                    tx2x + (alignShift - 1) * d.tx2width / 2 + offsetX,
-                    offsetY - d.by / 2 - 1,
-                    d.tx2width, d.by + 2);
+                    pX(tx2x + (alignShift - 1) * d.tx2width / 2 + offsetX),
+                    pY(offsetY - d.by / 2 - 1),
+                    pX(d.tx2width), pY(d.by + 2));
         }
     });
 }
