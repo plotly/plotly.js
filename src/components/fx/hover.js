@@ -1502,7 +1502,7 @@ function alignHoverText(hoverLabels, rotateLabels, inverseTransform) {
         var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
         var tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD);
         var offsetX = 0;
-        var offsetY = pY(d.offset);
+        var offsetY = d.offset;
 
         var isMiddle = anchor === 'middle';
         if(isMiddle) {
