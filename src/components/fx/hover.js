@@ -1534,8 +1534,8 @@ function alignHoverText(hoverLabels, rotateLabels, evt) {
                 'V' + pY(offsetY - HOVERARROWSIZE) +
                 'Z'));
 
-        var posX = pX(offsetX + txx);
-        var posY = pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
+        var posX = offsetX + txx;
+        var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
         var textAlign = d.textAlign || 'auto';
 
         if(textAlign !== 'auto') {
@@ -1552,7 +1552,7 @@ function alignHoverText(hoverLabels, rotateLabels, evt) {
             }
         }
 
-        tx.call(svgTextUtils.positionText, posX, posY);
+        tx.call(svgTextUtils.positionText, pX(posX), pY(posY));
 
         if(d.tx2width) {
             g.select('text.name')
