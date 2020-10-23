@@ -72,7 +72,9 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
 
-    evt.inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(evt.target));
+    if(gd._inverseTransform === undefined) {
+        gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    }
 
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
@@ -194,7 +196,11 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, false);
+    var gd = opts.gd;
+    if(gd._inverseTransform === undefined) {
+        gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    }
+    alignHoverText(hoverLabel, fullOpts.rotateLabels, gd._inverseTransform);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -338,7 +344,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
 
-            var transformedCoords = Lib.apply2DTransform(evt.inverseTransform)(xpx, ypx);
+            var transformedCoords = Lib.apply2DTransform(gd._inverseTransform)(xpx, ypx);
 
             xpx = transformedCoords[0];
             ypx = transformedCoords[1];
@@ -723,7 +729,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
-        alignHoverText(hoverLabels, rotateLabels, evt);
+        alignHoverText(hoverLabels, rotateLabels, gd._inverseTransform);
     }
 
     // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
@@ -1484,14 +1490,10 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
     }
 }
 
-function alignHoverText(hoverLabels, rotateLabels, evt) {
-    var scaleX = 1;
-    var scaleY = 1;
-    if(evt) {
-        var m = evt.inverseTransform;
-        scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-        scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
-    }
+function alignHoverText(hoverLabels, rotateLabels, inverseTransform) {
+    var m = inverseTransform;
+    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
+    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
 

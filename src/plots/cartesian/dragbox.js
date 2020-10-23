@@ -327,12 +327,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
 
-        e.inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(e.target));
-        var transformedCoords = Lib.apply2DTransform(e.inverseTransform)(x0, y0);
+        if(gd._inverseTransform === undefined) {
+            gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(e.target));
+        }
+        var transformedCoords = Lib.apply2DTransform(gd._inverseTransform)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
 
-        var m = e.inverseTransform;
+        var m = gd._inverseTransform;
         var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
         var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
 
