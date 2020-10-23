@@ -3714,6 +3714,9 @@ function purge(gd) {
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
+    if(fullLayout._inverseTransform === undefined) {
+        fullLayout._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    }
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

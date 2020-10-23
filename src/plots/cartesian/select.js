@@ -68,14 +68,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var x0 = startX - dragBBox.left;
     var y0 = startY - dragBBox.top;
 
-    if(gd._inverseTransform === undefined) {
-        gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(e.target));
-    }
-
-    var transformedCoords = Lib.apply2DTransform(gd._inverseTransform)(x0, y0);
+    var transformedCoords = Lib.apply2DTransform(fullLayout._inverseTransform)(x0, y0);
     x0 = transformedCoords[0];
     y0 = transformedCoords[1];
-    var m = gd._inverseTransform;
+    var m = fullLayout._inverseTransform;
     var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
     var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
 

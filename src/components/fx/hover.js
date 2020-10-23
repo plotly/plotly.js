@@ -72,10 +72,6 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
 
-    if(gd._inverseTransform === undefined) {
-        gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-    }
-
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
@@ -196,11 +192,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var gd = opts.gd;
-    if(gd._inverseTransform === undefined) {
-        gd._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-    }
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, gd._inverseTransform);
+    alignHoverText(hoverLabel, fullOpts.rotateLabels, opts.gd._fullLayout._inverseTransform);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -344,7 +336,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
 
-            var transformedCoords = Lib.apply2DTransform(gd._inverseTransform)(xpx, ypx);
+            var transformedCoords = Lib.apply2DTransform(fullLayout._inverseTransform)(xpx, ypx);
 
             xpx = transformedCoords[0];
             ypx = transformedCoords[1];
@@ -729,7 +721,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
-        alignHoverText(hoverLabels, rotateLabels, gd._inverseTransform);
+        alignHoverText(hoverLabels, rotateLabels, fullLayout._inverseTransform);
     }
 
     // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
