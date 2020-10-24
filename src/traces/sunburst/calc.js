@@ -278,7 +278,7 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
             } else {
                 // root gets no coloring by default
                 cdi.color = 'rgba(0,0,0,0)';
-                if (cdi.trace.root) {
+                if(cdi.trace.root) {
                     cdi.color = cdi.trace.root.color;
                 }
             }
