@@ -215,5 +215,18 @@ module.exports = {
     },
     sort: pieAttrs.sort,
 
+    root: {
+        color: {
+            valType: 'color',
+            editType: 'style',
+            role: 'style',
+            dflt: null, // rgba(0,0,0,0),
+            description: [
+                'sets the color of the root node for a sunburst or a treemap trace.'
+            ].join(' ')
+        },
+        editType: 'plot'
+    },
+
     domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
 };

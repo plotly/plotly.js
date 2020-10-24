@@ -269,6 +269,7 @@ module.exports = {
         ].join(' ')
     },
     sort: pieAttrs.sort,
+    root: sunburstAttrs.root,
 
     domain: domainAttrs({name: 'treemap', trace: true, editType: 'calc'}),
 };
