@@ -68,12 +68,12 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var x0 = startX - dragBBox.left;
     var y0 = startY - dragBBox.top;
 
-    var transformedCoords = Lib.apply2DTransform(fullLayout._inverseTransform)(x0, y0);
+    var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
     x0 = transformedCoords[0];
     y0 = transformedCoords[1];
     var m = fullLayout._inverseTransform;
-    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
 
     var x1 = x0;
     var y1 = y0;

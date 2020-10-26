@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var loggers = require('./loggers');
 var matrix = require('./matrix');
+var mat4X4 = require('gl-mat4');
 
 /**
  * Allow referencing a graph DOM element either directly
@@ -95,18 +96,20 @@ function deleteRelatedStyleRule(uid) {
 function getFullTransformMatrix(element) {
     var allElements = getElementAndAncestors(element);
     // the identity matrix
-    var transform = [
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1]
+    var out = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
     allElements.forEach(function(e) {
         var t = getElementTransformMatrix(e);
         if(t) {
-            transform = matrix.dot(transform, matrix.convertCssMatrix(t));
+            var m = matrix.convertCssMatrix(t);
+            out = mat4X4.multiply(out, out, m);
         }
     });
-    return transform;
+    return out;
 }
 
 /**

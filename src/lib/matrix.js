@@ -9,7 +9,7 @@
 
 'use strict';
 
-var mat3X3 = require('gl-mat3');
+var mat4X4 = require('gl-mat4');
 
 exports.init2dArray = function(rowLength, colLength) {
     var array = new Array(rowLength);
@@ -85,6 +85,16 @@ exports.rotationXYMatrix = function(a, x, y) {
         exports.translationMatrix(-x, -y));
 };
 
+// applies a 3D transformation matrix to either x, y and z params
+// Note: z is optional
+exports.apply3DTransform = function(transform) {
+    return function() {
+        var args = arguments;
+        var xyz = arguments.length === 1 ? args[0] : [args[0], args[1], args[2] || 0];
+        return exports.dot(transform, [xyz[0], xyz[1], xyz[2], 1]).slice(0, 3);
+    };
+};
+
 // applies a 2D transformation matrix to either x and y params or an [x,y] array
 exports.apply2DTransform = function(transform) {
     return function() {
@@ -105,35 +115,44 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-// converts a 2x3 css transform matrix, represented as a length 6 array, to a 3x3 matrix.
 exports.convertCssMatrix = function(m) {
-    if(!m || m.length !== 6) {
-        return [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]
-        ];
+    if(m) {
+        var len = m.length;
+        if(len === 16) {
+            // validate values
+            return [
+                m[0] || 1, m[1] || 0, m[2] || 0, m[3] || 0,
+                m[4] || 0, m[5] || 1, m[6] || 0, m[7] || 0,
+                m[8] || 0, m[9] || 0, m[10] || 1, m[11] || 0,
+                m[12] || 0, m[13] || 0, m[14] || 0, m[15] || 1
+            ];
+        }
+        if(len === 6) {
+            // converts a 2x3 css transform matrix to a 4x4 matrix see https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/matrix
+            return [
+                m[0], m[1], 0, 0,
+                m[2], m[3], 0, 0,
+                0, 0, 1, 0,
+                m[4], m[5], 0, 1
+            ];
+        }
     }
-
     return [
-        [m[0], m[2], m[4]],
-        [m[1], m[3], m[5]],
-        [0, 0, 1]
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
 };
 
-// find the inverse for a 3x3 affine transform matrix
+// find the inverse for a 4x4 affine transform matrix
 exports.inverseTransformMatrix = function(m) {
     var out = [];
-    mat3X3.invert(out, [
-        m[0][0], m[0][1], m[0][2],
-        m[1][0], m[1][1], m[1][2],
-        m[2][0], m[2][1], m[2][2]
-    ]);
-    mat3X3.transpose(out, out);
+    mat4X4.invert(out, m);
     return [
-        [out[0], out[1], out[2]],
-        [out[3], out[4], out[5]],
-        [out[6], out[7], out[8]]
+        [out[0], out[4], out[8], out[12]],
+        [out[1], out[5], out[9], out[13]],
+        [out[2], out[6], out[10], out[14]],
+        [out[3], out[7], out[11], out[15]],
     ];
 };

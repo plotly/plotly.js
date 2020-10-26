@@ -88,6 +88,7 @@ lib.dot = matrixModule.dot;
 lib.translationMatrix = matrixModule.translationMatrix;
 lib.rotationMatrix = matrixModule.rotationMatrix;
 lib.rotationXYMatrix = matrixModule.rotationXYMatrix;
+lib.apply3DTransform = matrixModule.apply3DTransform;
 lib.apply2DTransform = matrixModule.apply2DTransform;
 lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 lib.convertCssMatrix = matrixModule.convertCssMatrix;

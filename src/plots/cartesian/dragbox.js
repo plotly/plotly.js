@@ -327,13 +327,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
 
-        var transformedCoords = Lib.apply2DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
 
         var m = gd._fullLayout._inverseTransform;
-        var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-        var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+        var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+        var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
 
         box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0, scaleX: scaleX, scaleY: scaleY};
         lum = gd._hmpixcount ?
