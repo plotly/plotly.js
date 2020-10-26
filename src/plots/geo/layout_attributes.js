@@ -190,7 +190,7 @@ var attrs = module.exports = overrideAll({
         maxscale: {
             valType: 'number',
             min: 0,
-            dflt: null,
+            dflt: -1,
             description: [
                 'Maximal zoom level of the map view.',
                 'A maxScale of *2* (200%) corresponds to a zoom level',
