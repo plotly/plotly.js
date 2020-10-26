@@ -543,16 +543,16 @@ function handleGeo(gd, ev) {
 
         if(attr === 'zoom') {
             var scale = geoLayout.projection.scale;
-            var minScale = geoLayout.projection.minScale;
-            var maxScale = geoLayout.projection.maxScale;
+            var minscale = geoLayout.projection.minscale;
+            var maxscale = geoLayout.projection.maxscale;
 
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
             // make sure the scale is within the min/max bounds
-            if(newScale > maxScale) {
-                newScale = maxScale;
-            } else if(newScale < minScale) {
-                newScale = minScale;
+            if(newScale > maxscale) {
+                newScale = maxscale;
+            } else if(newScale < minscale) {
+                newScale = minscale;
             }
 
             Registry.call('_guiRelayout', gd, id + '.projection.scale', newScale);

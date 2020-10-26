@@ -177,7 +177,7 @@ var attrs = module.exports = overrideAll({
                 'that fits the map\'s lon and lat ranges. '
             ].join(' ')
         },
-        minScale: {
+        minscale: {
             valType: 'number',
             min: 0,
             dflt: 0,
@@ -187,10 +187,10 @@ var attrs = module.exports = overrideAll({
                 'where the map has half the size of base zoom level.'
             ].join(' ')
         },
-        maxScale: {
+        maxscale: {
             valType: 'number',
             min: 0,
-            dflt: Infinity,
+            dflt: null,
             description: [
                 'Maximal zoom level of the map view.',
                 'A maxScale of *2* (200%) corresponds to a zoom level',
