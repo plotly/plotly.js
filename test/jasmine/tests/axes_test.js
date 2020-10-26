@@ -591,69 +591,6 @@ describe('Test axes', function() {
             ]);
         });
 
-        var warnTxt = ' to avoid either an infinite loop and possibly ' +
-            'inconsistent scaleratios, or because the target axis has ' +
-            'fixed range or this axis declares a *matches* constraint.';
-
-        it('breaks scaleanchor loops and drops conflicting ratios', function() {
-            var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
-            });
-
-            layoutIn = {
-                xaxis: {scaleanchor: 'y', scaleratio: 2},
-                yaxis: {scaleanchor: 'x', scaleratio: 3}, // dropped loop
-
-                xaxis2: {scaleanchor: 'y2', scaleratio: 5},
-                yaxis2: {scaleanchor: 'x3', scaleratio: 7},
-                xaxis3: {scaleanchor: 'y3', scaleratio: 9},
-                yaxis3: {scaleanchor: 'x2', scaleratio: 11}, // dropped loop
-
-                xaxis4: {scaleanchor: 'x', scaleratio: 13}, // x<->x is OK now
-                yaxis4: {scaleanchor: 'y', scaleratio: 17}, // y<->y is OK now
-            };
-            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
-            layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'y2', 'y3', 'y4');
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-
-            expect(layoutOut._axisConstraintGroups).toEqual([
-                {x: 2, y: 1, x4: 2 * 13, y4: 17},
-                {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
-            ]);
-
-            expect(warnings).toEqual([
-                'ignored yaxis.scaleanchor: "x"' + warnTxt,
-                'ignored yaxis3.scaleanchor: "x2"' + warnTxt
-            ]);
-        });
-
-        it('silently drops invalid scaleanchor values', function() {
-            var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
-            });
-
-            layoutIn = {
-                xaxis: {scaleanchor: 'x', scaleratio: 2}, // can't link to itself - this one isn't ignored...
-                yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
-                xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
-            };
-            layoutOut._subplots.cartesian.push('x2y');
-            layoutOut._subplots.yaxis.push('x2');
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-
-            expect(layoutOut._axisConstraintGroups).toEqual([]);
-            expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"' + warnTxt]);
-
-            ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
-                expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
-                expect(layoutOut[axName].scaleratio).toBeUndefined(axName);
-            });
-        });
-
         it('will not link axes of different types', function() {
             layoutIn = {
                 xaxis: {type: 'linear'},

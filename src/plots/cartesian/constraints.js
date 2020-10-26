@@ -87,11 +87,6 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
         if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
 
         updateConstraintGroups(constraintGroups, scaleOpts.thisGroup, thisID, scaleanchor, scaleratio);
-    } else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
-            containerIn.scaleanchor + '" to avoid either an infinite loop ' +
-            'and possibly inconsistent scaleratios, or because the target ' +
-            'axis has fixed range or this axis declares a *matches* constraint.');
     }
 };
 
