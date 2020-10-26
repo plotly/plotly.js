@@ -218,11 +218,12 @@ module.exports = {
     root: {
         color: {
             valType: 'color',
-            editType: 'style',
+            editType: 'calc',
             role: 'style',
             dflt: 'rgba(0,0,0,0)',
             description: [
-                'sets the color of the root node for a sunburst or a treemap trace.'
+                'sets the color of the root node for a sunburst or a treemap trace.',
+                'this has no effect when a colorscale is used to set the markers.'
             ].join(' ')
         },
         editType: 'calc'
