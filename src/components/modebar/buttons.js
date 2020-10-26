@@ -561,7 +561,9 @@ function handleGeo(gd, ev) {
                 newScale = minscale;
             }
 
-            Registry.call('_guiRelayout', gd, id + '.projection.scale', newScale);
+            if(newScale !== scale) {
+                Registry.call('_guiRelayout', gd, id + '.projection.scale', newScale);
+            }
         }
     }
 
