@@ -183,7 +183,7 @@ var attrs = module.exports = overrideAll({
             dflt: 0,
             description: [
                 'Minimal zoom level of the map view.',
-                'A minScale of *0.5* (50%) corresponds to a zoom level',
+                'A minscale of *0.5* (50%) corresponds to a zoom level',
                 'where the map has half the size of base zoom level.'
             ].join(' ')
         },
@@ -193,7 +193,7 @@ var attrs = module.exports = overrideAll({
             dflt: -1,
             description: [
                 'Maximal zoom level of the map view.',
-                'A maxScale of *2* (200%) corresponds to a zoom level',
+                'A maxscale of *2* (200%) corresponds to a zoom level',
                 'where the map is twice as big as the base layer.'
             ].join(' ')
         },
