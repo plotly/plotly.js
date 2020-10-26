@@ -377,7 +377,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     // sets of axes linked by `scaleanchor` along with the scaleratios compounded
     // together, populated in handleConstraintDefaults
-    var constraintGroups = layoutOut._axisConstraintGroups = [];
+    layoutOut._axisConstraintGroups = [];
     // similar to _axisConstraintGroups, but for matching axes
     var matchGroups = layoutOut._axisMatchGroups = [];
     // make sure to include 'missing' axes here
