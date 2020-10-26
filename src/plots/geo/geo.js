@@ -711,9 +711,10 @@ function getProjection(geoLayout) {
 
     // https://github.com/d3/d3-zoom/blob/master/README.md#zoom_scaleExtent
     projection.scaleExtent = function() {
-        var minscale = projLayout.minscale * 100;
-        var maxscale = projLayout.maxscale * 100;
-        return [ minscale, maxscale ];
+        var minscale = projLayout.minscale;
+        var maxscale = projLayout.maxscale;
+        if(maxscale === -1) maxscale = Infinity;
+        return [ 100 * minscale, 100 * maxscale ];
     };
 
     // adapted from d3 v4:
