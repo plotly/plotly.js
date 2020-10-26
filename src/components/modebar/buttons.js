@@ -546,7 +546,7 @@ function handleGeo(gd, ev) {
             var minscale = geoLayout.projection.minscale;
             var maxscale = geoLayout.projection.maxscale;
 
-            if(maxscale < 0) maxscale = Infinity;
+            if(maxscale === -1) maxscale = Infinity;
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
             // make sure the scale is within the min/max bounds
