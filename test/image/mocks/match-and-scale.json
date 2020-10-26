@@ -1,0 +1,49 @@
+{
+    "data":[
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]]},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "xaxis": "x2"},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "xaxis": "x3"},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "yaxis": "y2"},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "yaxis": "y3"},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "yaxis": "y3", "xaxis": "x3"},
+        {"type": "image", "z": [[[0, 0, 255], [255, 0, 0]], [[255, 0, 0], [0, 0, 255]]], "yaxis": "y2", "xaxis": "x2"}
+    ],
+    "layout":{
+        "width": 600,
+        "height": 600,
+        "showlegend": false,
+        "xaxis": {
+            "scaleanchor": "y",
+            "constrain": "domain",
+            "domain": [0, 0.3]
+        },
+        "xaxis2": {
+            "scaleanchor": "y",
+            "matches": "x",
+            "scaleratio": 2,
+            "domain": [0.35, 0.65]
+        },
+        "xaxis3": {
+            "scaleanchor": "y",
+            "matches": "x",
+            "scaleratio": 1,
+            "domain": [0.7, 1]
+        },
+        "yaxis": {
+            "constrain": "domain",
+            "domain": [0, 0.3]
+        },
+        "yaxis2": {
+            "matches": "y",
+            "scaleanchor": "x",
+            "scaleratio": 2,
+            "domain": [0.35, 0.65]
+        },
+        "yaxis3": {
+            "matches": "y",
+            "scaleanchor": "x",
+            "scaleratio": 1,
+            "domain": [0.7, 1]
+        }
+    }
+}

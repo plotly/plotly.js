@@ -726,6 +726,7 @@ var list = [
     'marker_colorscale_template',
     'marker_line_width',
     'marker_symbols',
+    'match-and-scale',
     'matching-categories',
     'matching-missing-axes',
     'mathjax',
@@ -1790,6 +1791,7 @@ figs['mapbox_white-bg-style'] = require('@mocks/mapbox_white-bg-style');
 figs['marker_colorscale_template'] = require('@mocks/marker_colorscale_template');
 figs['marker_line_width'] = require('@mocks/marker_line_width');
 figs['marker_symbols'] = require('@mocks/marker_symbols');
+figs['match-and-scale'] = require('@mocks/match-and-scale');
 figs['matching-categories'] = require('@mocks/matching-categories');
 // figs['matching-missing-axes'] = require('@mocks/matching-missing-axes');
 // figs['mathjax'] = require('@mocks/mathjax');
