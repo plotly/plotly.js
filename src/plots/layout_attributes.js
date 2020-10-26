@@ -265,6 +265,15 @@ module.exports = {
         },
         editType: 'plot'
     },
+    computed: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Placeholder for exporting automargin-impacting values namely',
+            '`margin.t`, `margin.b`, `margin.l` and `margin.r` in *full-json* mode.',
+        ].join(' ')
+    },
     paper_bgcolor: {
         valType: 'color',
         role: 'style',

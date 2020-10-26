@@ -201,6 +201,40 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
+    it('should not react to any interactions when staticPlot is set', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        var moveDelta = 50;
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { staticPlot: true })
+            .then(function() {
+                // Try move minimum handle
+                var minHandle = d3.select('.' + constants.grabberMinClassName).node();
+                expect(minHandle).not.toEqual(null);
+                var minHandleRect = minHandle.getBoundingClientRect();
+                var x = minHandleRect.x + minHandleRect.width / 2;
+                var y = minHandleRect.y + minHandleRect.height / 2;
+                return slide(x, y, x + moveDelta, y);
+            })
+            .then(function() {
+                // Try move maximum handle
+                var maxHandle = d3.select('.' + constants.grabberMaxClassName).node();
+                expect(maxHandle).not.toEqual(null);
+                var maxHandleRect = maxHandle.getBoundingClientRect();
+                var x = maxHandleRect.x + maxHandleRect.width / 2;
+                var y = maxHandleRect.y + maxHandleRect.height / 2;
+                return slide(x, y, x - moveDelta, y);
+            })
+            .then(function() {
+                // Slidebox should not exist
+                var slidebox = d3.select('.' + constants.slideBoxClassName).node();
+                expect(slidebox).toEqual(null);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
     it('should update correctly when moving slider on an axis with rangebreaks', function(done) {
         var start = 250;
         var end = 300;

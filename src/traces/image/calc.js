@@ -13,9 +13,7 @@ var constants = require('./constants');
 var isNumeric = require('fast-isnumeric');
 var Axes = require('../../plots/cartesian/axes');
 var maxRowLength = require('../../lib').maxRowLength;
-var sizeOf = require('image-size');
-var dataUri = require('../../snapshot/helpers').IMAGE_URL_PREFIX;
-var Buffer = require('buffer/').Buffer;  // note: the trailing slash is important!
+var getImageSize = require('./helpers').getImageSize;
 
 module.exports = function calc(gd, trace) {
     var h;
@@ -95,11 +93,4 @@ function makeScaler(trace) {
         }
         return c;
     };
-}
-
-// Get image size
-function getImageSize(src) {
-    var data = src.replace(dataUri, '');
-    var buff = new Buffer(data, 'base64');
-    return sizeOf(buff);
 }

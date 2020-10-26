@@ -75,6 +75,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('sort');
 
+    coerce('rotation');
+
     handleDomainDefaults(traceOut, layout, coerce);
 
     // do not support transforms for now

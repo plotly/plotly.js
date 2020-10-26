@@ -1,0 +1,221 @@
+{
+    "data": [{
+            "type": "scatter",
+            "x": [],
+            "xaxis": "x",
+            "y": [],
+            "yaxis": "y"
+        },
+        {
+            "type": "scatter",
+            "x": [],
+            "xaxis": "x2",
+            "y": [],
+            "yaxis": "y2"
+        },
+        {
+            "type": "scatter",
+            "x": [],
+            "xaxis": "x3",
+            "y": [],
+            "yaxis": "y3"
+        },
+        {
+            "type": "scatter",
+            "x": [],
+            "xaxis": "x4",
+            "y": [],
+            "yaxis": "y4"
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [
+                0.0,
+                0.45
+            ],
+            "range": [
+                1,
+                10
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "type": "log",
+            "domain": [
+                0.55,
+                1.0
+            ],
+            "range": [
+                0,
+                1
+            ]
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [
+                0.0,
+                0.45
+            ],
+            "range": [
+                1,
+                10
+            ]
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "type": "log",
+            "domain": [
+                0.55,
+                1.0
+            ],
+            "range": [
+                0,
+                1
+            ]
+        },
+        "yaxis": {
+            "anchor": "x",
+            "type": "log",
+            "domain": [
+                0.575,
+                1
+            ],
+            "range": [
+                0,
+                1
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.575,
+                1
+            ],
+            "range": [
+                1,
+                10
+            ]
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "type": "log",
+            "domain": [
+                0.0,
+                0.425
+            ],
+            "range": [
+                0,
+                1
+            ]
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [
+                0.0,
+                0.425
+            ],
+            "range": [
+                1,
+                10
+            ]
+        },
+        "shapes": [{
+            "type": "line",
+            "xref": "x3",
+            "yref": "y3 domain",
+            "x0": 6,
+            "y0": 0,
+            "x1": 6,
+            "y1": 1,
+            "line": {
+                "color": "rgb(10, 20, 30)"
+            }
+        }, {
+            "type": "line",
+            "xref": "x4 domain",
+            "yref": "y4",
+            "x0": 0,
+            "y0": 8,
+            "x1": 1,
+            "y1": 8,
+            "line": {
+                "color": "rgb(10, 20, 31)"
+            }
+        },{
+            "type": "rect",
+            "xref": "x domain",
+            "yref": "y",
+            "x0": 0,
+            "y0": 4,
+            "x1": 1,
+            "y1": 9,
+            "line": {
+                "color": "rgb(10, 20, 32)"
+            }
+        }, {
+            "type": "rect",
+            "xref": "x2",
+            "yref": "y2 domain",
+            "x0": 1,
+            "y0": 0,
+            "x1": 3,
+            "y1": 1,
+            "line": {
+                "color": "rgb(10, 20, 33)"
+            }
+        }],
+        "annotations": [{
+            "text": "A",
+            "bordercolor": "rgb(100, 200, 232)",
+            "xref": "x3 domain",
+            "yref": "y3 domain",
+            "x": 0,
+            "y": 0,
+            "axref": "x3 domain",
+            "ayref": "y3 domain",
+            "ax": 0.5,
+            "ay": 0.5,
+            "arrowcolor": "rgb(231, 200, 100)"
+        }, {
+            "text": "B",
+            "bordercolor": "rgb(200, 200, 232)",
+            "xref": "x4 domain",
+            "yref": "y4 domain",
+            "x": 1,
+            "y": 1,
+            "axref": "x4 domain",
+            "ayref": "y4 domain",
+            "ax": 0.5,
+            "ay": 0.5,
+            "arrowcolor": "rgb(231, 200, 200)"
+        }],
+        "images": [{
+            "source": "https://images.plot.ly/language-icons/api-home/js-logo.png",
+            "xref": "x domain",
+            "yref": "y domain",
+            "x": 0,
+            "y": 0,
+            "xanchor": "left",
+            "yanchor": "bottom",
+            "sizex": 0.5,
+            "sizey": 0.5,
+            "sizing": "stretch"
+        }, {
+            "source": "https://images.plot.ly/language-icons/api-home/python-logo.png",
+            "xref": "x2 domain",
+            "yref": "y2 domain",
+            "x": 1,
+            "y": 1,
+            "xanchor": "right",
+            "yanchor": "top",
+            "sizex": 0.5,
+            "sizey": 0.5,
+            "sizing": "stretch"
+        }]
+    },
+    "config": {
+        "editable": true
+    }
+}

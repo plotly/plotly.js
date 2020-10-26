@@ -10,6 +10,7 @@
 
 var cartesianConstants = require('../../plots/cartesian/constants');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 
 
 module.exports = templatedArray('image', {
@@ -57,7 +58,9 @@ module.exports = templatedArray('image', {
             'Sets the image container size horizontally.',
             'The image will be sized based on the `position` value.',
             'When `xref` is set to `paper`, units are sized relative',
-            'to the plot width.'
+            'to the plot width.',
+            'When `xref` ends with ` domain`, units are sized relative',
+            'to the axis width.',
         ].join(' ')
     },
 
@@ -70,7 +73,9 @@ module.exports = templatedArray('image', {
             'Sets the image container size vertically.',
             'The image will be sized based on the `position` value.',
             'When `yref` is set to `paper`, units are sized relative',
-            'to the plot height.'
+            'to the plot height.',
+            'When `yref` ends with ` domain`, units are sized relative',
+            'to the axis height.'
         ].join(' ')
     },
 
@@ -150,11 +155,7 @@ module.exports = templatedArray('image', {
         editType: 'arraydraw',
         description: [
             'Sets the images\'s x coordinate axis.',
-            'If set to a x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x data coordinate',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left of plot in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right).'
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
         ].join(' ')
     },
 
@@ -169,11 +170,7 @@ module.exports = templatedArray('image', {
         editType: 'arraydraw',
         description: [
             'Sets the images\'s y coordinate axis.',
-            'If set to a y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to a y data coordinate.',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plot in normalized coordinates',
-            'where *0* (*1*) corresponds to the bottom (top).'
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
         ].join(' ')
     },
     editType: 'arraydraw'

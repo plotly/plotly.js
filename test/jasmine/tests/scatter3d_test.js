@@ -106,7 +106,7 @@ describe('Test scatter3d interactions:', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
     });
 
     afterEach(function() {

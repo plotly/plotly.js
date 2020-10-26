@@ -524,5 +524,42 @@ describe('Test colorbar:', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('creates the same colorbars attributes in newPlot and react', function(done) {
+            function getCBFillAttributes() {
+                var attrs = [];
+                var colorbars = d3.select(gd).selectAll('.colorbar');
+                colorbars.selectAll('.cbfill').each(function() {
+                    var attrsForElem = {};
+                    for(var i = 0; i < this.attributes.length; i++) {
+                        var attr = this.attributes.item(i);
+                        attrsForElem[attr.name] = attr.value;
+                    }
+                    attrs.push(attrsForElem);
+                });
+                return attrs;
+            }
+
+            var z = [[1, 10], [100, 1000]];
+
+            var expectedAttrs;
+            var actualAttrs;
+
+            Plotly.newPlot(gd, [{type: 'contour', z: z}])
+            .then(function() {
+                expectedAttrs = getCBFillAttributes();
+
+                return Plotly.newPlot(gd, [{type: 'heatmap', z: z}])
+                .then(function() {
+                    return Plotly.react(gd, [{type: 'contour', z: z}]);
+                });
+            })
+            .then(function() {
+                actualAttrs = getCBFillAttributes();
+                expect(actualAttrs).toEqual(expectedAttrs);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

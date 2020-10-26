@@ -12,7 +12,7 @@ var delay = require('../assets/delay');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
-var CALLBACK_DELAY = 500;
+var CALLBACK_DELAY = 3000;
 
 // Testing constants
 // =================

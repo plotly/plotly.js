@@ -9,6 +9,43 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.57.1] -- 2020-10-20
+
+### Changed
+ - Update template for new pull requests [#5220]
+ - Provide a default `hovertemplate` label for attribute "base" in `bar` traces [#5216]
+
+### Fixed
+ - Fix `staticPlot` behaviour for `rangeslider` and `legend` [#5210],
+   with thanks to @miqh for the contribution!
+ - Fix `colorbar` react to new styles [#5217],
+   with thanks to @anaplian for the contribution!
+ - Fix `computed` margins when plot involves too many redraws [#5225]
+ - Fix build issue for Chart Studio Cloud (regression introduced in 1.56.0) [#5223]
+
+
+## [1.57.0] -- 2020-10-15
+
+### Added
+ - Introduce "domain" axis references in layout `images`, `shapes` and `annotations` [#5014]
+ - Add `rotation` attribute to `sunburst` traces [#5171, #5201],
+   with thanks to @thierryVergult for the contribution!
+ - Provide computed margins in "full-json" export [#5203],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Mention the "full-json" option in the `Plotly.toImage` warning [#5204]
+ - Use current graph dimensions in `Plotly.downloadImage` [#5209]
+
+### Fixed
+ - Fix importing color modules for webpack users (regression introduced in 1.56.0) [#5189]
+ - Fix positioning ticks and labels on axes with `rangebreaks` and/or "period" `ticklabelmode` [#5187, #5208]
+ - Fix autorange computation when a category matches a range extreme [#5211],
+   with thanks to @LoganWlv for the contribution!
+ - Fix displaying modebar after `Plotly.restyle` [#5181],
+   with thanks to @Yook74 for the contribution!
+
+
 ## [1.56.0] -- 2020-09-30
 
 ### Added

@@ -2495,6 +2495,52 @@ describe('bar hover', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('should provide a default label for base in hovertemplate', function(done) {
+            gd = createGraphDiv();
+
+            function _hover(xpx, ypx) {
+                return function() {
+                    Fx.hover(gd, {xpx: xpx, ypx: ypx}, 'xy');
+                    Lib.clearThrottle();
+                };
+            }
+
+            Plotly.plot(gd, {
+                data: [{
+                    type: 'bar',
+                    orientation: 'h',
+                    base: ['2020-04-06 22:17:00'],
+                    x: [11520000.0],
+                    y: ['test'],
+                    hovertemplate: ['%{base}<br>%{x}']
+                }],
+                layout: {
+                    xaxis: { type: 'date', tickprefix: '*', ticksuffix: '*' },
+                    width: 400,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    hovermode: 'closest'
+                }
+            })
+            .then(_hover(200, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*Apr 6, 2020, 22:17*\n*Apr 7, 2020, 01:29*',
+                    name: 'trace 0'
+                });
+                return Plotly.relayout(gd, 'xaxis.tickformat', '%d');
+            })
+            .then(_hover(200, 200))
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '*06*\n*07*',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('with special width/offset combinations', function() {

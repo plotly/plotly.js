@@ -1,0 +1,1234 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "xaxis": "x",
+      "y": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "yaxis": "y"
+    },
+    {
+      "type": "bar",
+      "x": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "xaxis": "x2",
+      "y": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+      "x": [
+        0,
+        86400000,
+        172800000,
+        259200000
+      ],
+      "xaxis": "x3",
+      "y": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "yaxis": "y3"
+    },
+    {
+      "type": "bar",
+      "x": [
+        "dog",
+        "cat",
+        "bear",
+        "alex"
+      ],
+      "xaxis": "x4",
+      "y": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "yaxis": "y4"
+    },
+    {
+      "type": "bar",
+      "x": [
+        [
+          "A",
+          "B",
+          "B",
+          "C"
+        ],
+        [
+          "table",
+          "chair",
+          "piano",
+          "mojtaba"
+        ]
+      ],
+      "xaxis": "x5",
+      "y": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "yaxis": "y5"
+    },
+    {
+      "orientation": "h",
+      "type": "bar",
+      "x": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "xaxis": "x6",
+      "y": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "yaxis": "y6"
+    },
+    {
+      "orientation": "h",
+      "type": "bar",
+      "x": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "xaxis": "x7",
+      "y": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "yaxis": "y7"
+    },
+    {
+      "orientation": "h",
+      "type": "bar",
+      "x": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "xaxis": "x8",
+      "y": [
+        0,
+        86400000,
+        172800000,
+        259200000
+      ],
+      "yaxis": "y8"
+    },
+    {
+      "orientation": "h",
+      "type": "bar",
+      "x": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "xaxis": "x9",
+      "y": [
+        "dog",
+        "cat",
+        "bear",
+        "alex"
+      ],
+      "yaxis": "y9"
+    },
+    {
+      "orientation": "h",
+      "type": "bar",
+      "x": [
+        3,
+        1,
+        6,
+        10
+      ],
+      "xaxis": "x10",
+      "y": [
+        [
+          "A",
+          "B",
+          "B",
+          "C"
+        ],
+        [
+          "table",
+          "chair",
+          "piano",
+          "mojtaba"
+        ]
+      ],
+      "yaxis": "y10"
+    }
+  ],
+  "layout": {
+    "annotations": [
+      {
+        "font": {
+          "size": 16
+        },
+        "showarrow": false,
+        "text": "linear",
+        "x": 0.08399999999999999,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1.0,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "size": 16
+        },
+        "showarrow": false,
+        "text": "log",
+        "x": 0.292,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1.0,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "size": 16
+        },
+        "showarrow": false,
+        "text": "date",
+        "x": 0.5,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1.0,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "size": 16
+        },
+        "showarrow": false,
+        "text": "category",
+        "x": 0.708,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1.0,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "size": 16
+        },
+        "showarrow": false,
+        "text": "multicategory",
+        "x": 0.9159999999999999,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 1.0,
+        "yanchor": "bottom",
+        "yref": "paper"
+      }
+    ],
+    "shapes": [
+      {
+        "type": "line",
+        "x0": 3,
+        "x1": 3,
+        "xref": "x",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y domain"
+      },
+      {
+        "type": "line",
+        "x0": 4,
+        "x1": 4,
+        "xref": "x",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x domain",
+        "y0": 2,
+        "y1": 2,
+        "yref": "y"
+      },
+      {
+        "type": "rect",
+        "x0": 1,
+        "x1": 2,
+        "xref": "x",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x domain",
+        "y0": 3,
+        "y1": 5,
+        "yref": "y"
+      },
+      {
+        "type": "line",
+        "x0": 3,
+        "x1": 3,
+        "xref": "x2",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y2 domain"
+      },
+      {
+        "type": "line",
+        "x0": 4,
+        "x1": 4,
+        "xref": "x2",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y2 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x2 domain",
+        "y0": 2,
+        "y1": 2,
+        "yref": "y2"
+      },
+      {
+        "type": "rect",
+        "x0": 1,
+        "x1": 2,
+        "xref": "x2",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y2 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x2 domain",
+        "y0": 3,
+        "y1": 5,
+        "yref": "y2"
+      },
+      {
+        "type": "line",
+        "x0": 172800000,
+        "x1": 172800000,
+        "xref": "x3",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y3 domain"
+      },
+      {
+        "type": "line",
+        "x0": 259200000,
+        "x1": 259200000,
+        "xref": "x3",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y3 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x3 domain",
+        "y0": 2,
+        "y1": 2,
+        "yref": "y3"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 86400000,
+        "xref": "x3",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y3 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x3 domain",
+        "y0": 3,
+        "y1": 5,
+        "yref": "y3"
+      },
+      {
+        "type": "line",
+        "x0": "bear",
+        "x1": "bear",
+        "xref": "x4",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y4 domain"
+      },
+      {
+        "type": "line",
+        "x0": "alex",
+        "x1": "alex",
+        "xref": "x4",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y4 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x4 domain",
+        "y0": 2,
+        "y1": 2,
+        "yref": "y4"
+      },
+      {
+        "type": "rect",
+        "x0": "dog",
+        "x1": "cat",
+        "xref": "x4",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y4 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x4 domain",
+        "y0": 3,
+        "y1": 5,
+        "yref": "y4"
+      },
+      {
+        "type": "line",
+        "x0": [
+          "B",
+          "piano"
+        ],
+        "x1": [
+          "B",
+          "piano"
+        ],
+        "xref": "x5",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y5 domain"
+      },
+      {
+        "type": "line",
+        "x0": [
+          "C",
+          "mojtaba"
+        ],
+        "x1": [
+          "C",
+          "mojtaba"
+        ],
+        "xref": "x5",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y5 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x5 domain",
+        "y0": 2,
+        "y1": 2,
+        "yref": "y5"
+      },
+      {
+        "type": "rect",
+        "x0": [
+          "A",
+          "table"
+        ],
+        "x1": [
+          "B",
+          "chair"
+        ],
+        "xref": "x5",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y5 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x5 domain",
+        "y0": 3,
+        "y1": 5,
+        "yref": "y5"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x6 domain",
+        "y0": 3,
+        "y1": 3,
+        "yref": "y6"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x6 domain",
+        "y0": 4,
+        "y1": 4,
+        "yref": "y6"
+      },
+      {
+        "type": "line",
+        "x0": 2,
+        "x1": 2,
+        "xref": "x6",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y6 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x6 domain",
+        "y0": 1,
+        "y1": 2,
+        "yref": "y6"
+      },
+      {
+        "type": "rect",
+        "x0": 3,
+        "x1": 5,
+        "xref": "x6",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y6 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x7 domain",
+        "y0": 3,
+        "y1": 3,
+        "yref": "y7"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x7 domain",
+        "y0": 4,
+        "y1": 4,
+        "yref": "y7"
+      },
+      {
+        "type": "line",
+        "x0": 2,
+        "x1": 2,
+        "xref": "x7",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y7 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x7 domain",
+        "y0": 1,
+        "y1": 2,
+        "yref": "y7"
+      },
+      {
+        "type": "rect",
+        "x0": 3,
+        "x1": 5,
+        "xref": "x7",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y7 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x8 domain",
+        "y0": 172800000,
+        "y1": 172800000,
+        "yref": "y8"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x8 domain",
+        "y0": 259200000,
+        "y1": 259200000,
+        "yref": "y8"
+      },
+      {
+        "type": "line",
+        "x0": 2,
+        "x1": 2,
+        "xref": "x8",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y8 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x8 domain",
+        "y0": 0,
+        "y1": 86400000,
+        "yref": "y8"
+      },
+      {
+        "type": "rect",
+        "x0": 3,
+        "x1": 5,
+        "xref": "x8",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y8 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x9 domain",
+        "y0": "bear",
+        "y1": "bear",
+        "yref": "y9"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x9 domain",
+        "y0": "alex",
+        "y1": "alex",
+        "yref": "y9"
+      },
+      {
+        "type": "line",
+        "x0": 2,
+        "x1": 2,
+        "xref": "x9",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y9 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x9 domain",
+        "y0": "dog",
+        "y1": "cat",
+        "yref": "y9"
+      },
+      {
+        "type": "rect",
+        "x0": 3,
+        "x1": 5,
+        "xref": "x9",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y9 domain"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x10 domain",
+        "y0": [
+          "B",
+          "piano"
+        ],
+        "y1": [
+          "B",
+          "piano"
+        ],
+        "yref": "y10"
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x10 domain",
+        "y0": [
+          "C",
+          "mojtaba"
+        ],
+        "y1": [
+          "C",
+          "mojtaba"
+        ],
+        "yref": "y10"
+      },
+      {
+        "type": "line",
+        "x0": 2,
+        "x1": 2,
+        "xref": "x10",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y10 domain"
+      },
+      {
+        "type": "rect",
+        "x0": 0,
+        "x1": 1,
+        "xref": "x10 domain",
+        "y0": [
+          "A",
+          "table"
+        ],
+        "y1": [
+          "B",
+          "chair"
+        ],
+        "yref": "y10"
+      },
+      {
+        "type": "rect",
+        "x0": 3,
+        "x1": 5,
+        "xref": "x10",
+        "y0": 0,
+        "y1": 1,
+        "yref": "y10 domain"
+      }
+    ],
+    "template": {
+      "data": {
+        "bar": [
+          {
+            "error_x": {
+              "color": "#2a3f5f"
+            },
+            "error_y": {
+              "color": "#2a3f5f"
+            },
+            "marker": {
+              "line": {
+                "color": "#E5ECF6",
+                "width": 0.5
+              }
+            },
+            "type": "bar"
+          }
+        ]
+      },
+      "layout": {
+        "coloraxis": {
+          "colorbar": {
+            "outlinewidth": 0,
+            "ticks": ""
+          }
+        },
+        "colorscale": {
+          "diverging": [
+            [
+              0,
+              "#8e0152"
+            ],
+            [
+              0.1,
+              "#c51b7d"
+            ],
+            [
+              0.2,
+              "#de77ae"
+            ],
+            [
+              0.3,
+              "#f1b6da"
+            ],
+            [
+              0.4,
+              "#fde0ef"
+            ],
+            [
+              0.5,
+              "#f7f7f7"
+            ],
+            [
+              0.6,
+              "#e6f5d0"
+            ],
+            [
+              0.7,
+              "#b8e186"
+            ],
+            [
+              0.8,
+              "#7fbc41"
+            ],
+            [
+              0.9,
+              "#4d9221"
+            ],
+            [
+              1,
+              "#276419"
+            ]
+          ],
+          "sequential": [
+            [
+              0.0,
+              "#0d0887"
+            ],
+            [
+              0.1111111111111111,
+              "#46039f"
+            ],
+            [
+              0.2222222222222222,
+              "#7201a8"
+            ],
+            [
+              0.3333333333333333,
+              "#9c179e"
+            ],
+            [
+              0.4444444444444444,
+              "#bd3786"
+            ],
+            [
+              0.5555555555555556,
+              "#d8576b"
+            ],
+            [
+              0.6666666666666666,
+              "#ed7953"
+            ],
+            [
+              0.7777777777777778,
+              "#fb9f3a"
+            ],
+            [
+              0.8888888888888888,
+              "#fdca26"
+            ],
+            [
+              1.0,
+              "#f0f921"
+            ]
+          ],
+          "sequentialminus": [
+            [
+              0.0,
+              "#0d0887"
+            ],
+            [
+              0.1111111111111111,
+              "#46039f"
+            ],
+            [
+              0.2222222222222222,
+              "#7201a8"
+            ],
+            [
+              0.3333333333333333,
+              "#9c179e"
+            ],
+            [
+              0.4444444444444444,
+              "#bd3786"
+            ],
+            [
+              0.5555555555555556,
+              "#d8576b"
+            ],
+            [
+              0.6666666666666666,
+              "#ed7953"
+            ],
+            [
+              0.7777777777777778,
+              "#fb9f3a"
+            ],
+            [
+              0.8888888888888888,
+              "#fdca26"
+            ],
+            [
+              1.0,
+              "#f0f921"
+            ]
+          ]
+        },
+        "colorway": [
+          "#636efa",
+          "#EF553B",
+          "#00cc96",
+          "#ab63fa",
+          "#FFA15A",
+          "#19d3f3",
+          "#FF6692",
+          "#B6E880",
+          "#FF97FF",
+          "#FECB52"
+        ],
+        "font": {
+          "color": "#2a3f5f"
+        },
+        "hoverlabel": {
+          "align": "left"
+        },
+        "hovermode": "closest",
+        "paper_bgcolor": "white",
+        "plot_bgcolor": "#E5ECF6",
+        "polar": {
+          "angularaxis": {
+            "gridcolor": "white",
+            "linecolor": "white",
+            "ticks": ""
+          },
+          "bgcolor": "#E5ECF6",
+          "radialaxis": {
+            "gridcolor": "white",
+            "linecolor": "white",
+            "ticks": ""
+          }
+        },
+        "scene": {
+          "xaxis": {
+            "backgroundcolor": "#E5ECF6",
+            "gridcolor": "white",
+            "gridwidth": 2,
+            "linecolor": "white",
+            "showbackground": true,
+            "ticks": "",
+            "zerolinecolor": "white"
+          },
+          "yaxis": {
+            "backgroundcolor": "#E5ECF6",
+            "gridcolor": "white",
+            "gridwidth": 2,
+            "linecolor": "white",
+            "showbackground": true,
+            "ticks": "",
+            "zerolinecolor": "white"
+          },
+          "zaxis": {
+            "backgroundcolor": "#E5ECF6",
+            "gridcolor": "white",
+            "gridwidth": 2,
+            "linecolor": "white",
+            "showbackground": true,
+            "ticks": "",
+            "zerolinecolor": "white"
+          }
+        },
+        "shapedefaults": {
+          "line": {
+            "color": "#2a3f5f"
+          }
+        },
+        "ternary": {
+          "aaxis": {
+            "gridcolor": "white",
+            "linecolor": "white",
+            "ticks": ""
+          },
+          "baxis": {
+            "gridcolor": "white",
+            "linecolor": "white",
+            "ticks": ""
+          },
+          "bgcolor": "#E5ECF6",
+          "caxis": {
+            "gridcolor": "white",
+            "linecolor": "white",
+            "ticks": ""
+          }
+        },
+        "title": {
+          "x": 0.05
+        },
+        "xaxis": {
+          "automargin": true,
+          "gridcolor": "white",
+          "linecolor": "white",
+          "ticks": "",
+          "title": {
+            "standoff": 15
+          },
+          "zerolinecolor": "white",
+          "zerolinewidth": 2
+        },
+        "yaxis": {
+          "automargin": true,
+          "gridcolor": "white",
+          "linecolor": "white",
+          "ticks": "",
+          "title": {
+            "standoff": 15
+          },
+          "zerolinecolor": "white",
+          "zerolinewidth": 2
+        }
+      }
+    },
+    "xaxis": {
+      "anchor": "y",
+      "domain": [
+        0.0,
+        0.16799999999999998
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "linear"
+    },
+    "xaxis10": {
+      "anchor": "y10",
+      "domain": [
+        0.832,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [
+        0.208,
+        0.376
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "log"
+    },
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [
+        0.416,
+        0.584
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "date"
+    },
+    "xaxis4": {
+      "anchor": "y4",
+      "domain": [
+        0.624,
+        0.792
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "category"
+    },
+    "xaxis5": {
+      "anchor": "y5",
+      "domain": [
+        0.832,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "multicategory"
+    },
+    "xaxis6": {
+      "anchor": "y6",
+      "domain": [
+        0.0,
+        0.16799999999999998
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "xaxis7": {
+      "anchor": "y7",
+      "domain": [
+        0.208,
+        0.376
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "xaxis8": {
+      "anchor": "y8",
+      "domain": [
+        0.416,
+        0.584
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "xaxis9": {
+      "anchor": "y9",
+      "domain": [
+        0.624,
+        0.7248
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis": {
+      "anchor": "x",
+      "domain": [
+        0.625,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis10": {
+      "anchor": "x10",
+      "domain": [
+        0.0,
+        0.375
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "multicategory"
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [
+        0.625,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [
+        0.625,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis4": {
+      "anchor": "x4",
+      "domain": [
+        0.625,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis5": {
+      "anchor": "x5",
+      "domain": [
+        0.625,
+        1.0
+      ],
+      "tickfont": {
+        "size": 8
+      }
+    },
+    "yaxis6": {
+      "anchor": "x6",
+      "domain": [
+        0.0,
+        0.375
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "linear"
+    },
+    "yaxis7": {
+      "anchor": "x7",
+      "domain": [
+        0.0,
+        0.375
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "log"
+    },
+    "yaxis8": {
+      "anchor": "x8",
+      "domain": [
+        0.0,
+        0.375
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "date"
+    },
+    "yaxis9": {
+      "anchor": "x9",
+      "domain": [
+        0.0,
+        0.375
+      ],
+      "tickfont": {
+        "size": 8
+      },
+      "type": "category"
+    }
+  }
+}
