@@ -1900,11 +1900,11 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l + o.r > fullLayout.width * 0.5) {
+            if(o.l + o.r > fullLayout.width) {
                 Lib.log('Margin push', id, 'is too big in x, dropping');
                 o.l = o.r = 0;
             }
-            if(o.b + o.t > fullLayout.height * 0.5) {
+            if(o.b + o.t > fullLayout.height) {
                 Lib.log('Margin push', id, 'is too big in y, dropping');
                 o.b = o.t = 0;
             }
