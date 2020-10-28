@@ -40,6 +40,7 @@ var list = [
     'annotations-autorange',
     'arrow-markers',
     'automargin-large-margins',
+    'automargin-large-margins-horizontal',
     'automargin-mirror-all',
     'automargin-mirror-allticks',
     'automargin-multiline-titles',
@@ -1105,6 +1106,7 @@ figs['animation_bar'] = require('@mocks/animation_bar');
 // figs['annotations-autorange'] = require('@mocks/annotations-autorange');
 figs['arrow-markers'] = require('@mocks/arrow-markers');
 figs['automargin-large-margins'] = require('@mocks/automargin-large-margins');
+figs['automargin-large-margins-horizontal'] = require('@mocks/automargin-large-margins-horizontal');
 figs['automargin-mirror-all'] = require('@mocks/automargin-mirror-all');
 figs['automargin-mirror-allticks'] = require('@mocks/automargin-mirror-allticks');
 figs['automargin-multiline-titles'] = require('@mocks/automargin-multiline-titles');
