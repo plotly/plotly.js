@@ -1881,6 +1881,12 @@ function initMargins(fullLayout) {
  */
 plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
+    var minFinalWidth = Math.max(0, fullLayout.width -
+        64 // TODO: could be exposed as layout.margin.minfinalwidth
+    );
+    var minFinalHeight = Math.max(0, fullLayout.height -
+        64 // TODO: could be exposed as layout.margin.minfinalheight
+    );
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
@@ -1900,11 +1906,11 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l + o.r > fullLayout.width) {
+            if(o.l + o.r > minFinalWidth) {
                 Lib.log('Margin push', id, 'is too big in x, dropping');
                 o.l = o.r = 0;
             }
-            if(o.b + o.t > fullLayout.height) {
+            if(o.b + o.t > minFinalHeight) {
                 Lib.log('Margin push', id, 'is too big in y, dropping');
                 o.b = o.t = 0;
             }
