@@ -1,0 +1,204 @@
+{
+    "data": [
+        {
+            "scene": "scene1",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [0, 0, 0, 0, 1],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#ff0000", "#0000ff"],
+            "showlegend": true,
+            "name": "0.2",
+            "opacity": 0.2
+        },
+        {
+            "scene": "scene1",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [1, 1, 1, 1, 2],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#0000ff", "#ff0000"],
+            "showlegend": true,
+            "name": "0.2",
+            "opacity": 0.2
+        },
+        {
+            "scene": "scene2",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [0, 0, 0, 0, 1],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#ff0000", "#0000ff"],
+            "showlegend": true,
+            "name": "0.4",
+            "opacity": 0.4
+        },
+        {
+            "scene": "scene2",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [1, 1, 1, 1, 2],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#0000ff", "#ff0000"],
+            "showlegend": true,
+            "name": "0.4",
+            "opacity": 0.4
+        },
+        {
+            "scene": "scene3",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [0, 0, 0, 0, 1],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#ff0000", "#0000ff"],
+            "showlegend": true,
+            "name": "0.6",
+            "opacity": 0.6
+        },
+        {
+            "scene": "scene3",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [1, 1, 1, 1, 2],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#0000ff", "#ff0000"],
+            "showlegend": true,
+            "name": "0.6",
+            "opacity": 0.6
+        },
+        {
+            "scene": "scene4",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [0, 0, 0, 0, 1],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#ff0000", "#0000ff"],
+            "showlegend": true,
+            "name": "0.8",
+            "opacity": 0.8
+        },
+        {
+            "scene": "scene4",
+            "type": "mesh3d",
+            "x": [0, 1, 0, -1, 0],
+            "y": [1, 0, -1, 0, 0],
+            "z": [1, 1, 1, 1, 2],
+            "i": [0, 1],
+            "j": [2, 3],
+            "k": [4, 4],
+            "facecolor": ["#0000ff", "#ff0000"],
+            "showlegend": true,
+            "name": "0.8",
+            "opacity": 0.8
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "mesh3d face order with different opacity values"
+        },
+        "legend": {
+            "title": {
+                "text": "<b>opacity</b>"
+            }
+        },
+        "width": 800,
+        "height": 800,
+        "scene1": {
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 1.5
+                }
+            }
+        },
+        "scene2": {
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0.52,
+                    1
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 1.5
+                }
+            }
+        },
+        "scene3": {
+            "domain": {
+                "x": [
+                    0,
+                    0.48
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 1.5
+                }
+            }
+        },
+        "scene4": {
+            "domain": {
+                "x": [
+                    0.52,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.48
+                ]
+            },
+            "camera": {
+                "eye": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 1.5
+                }
+            }
+        }
+    }
+}
