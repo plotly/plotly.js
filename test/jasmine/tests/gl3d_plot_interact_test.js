@@ -946,10 +946,10 @@ describe('Test gl3d drag and wheel interactions', function() {
             relayoutCallback();
         }
 
-        gd.addEventListener('touchend', (e) => assertEvent(e, true));
-        gd.addEventListener('touchstart', (e) => assertEvent(e, true));
-        gd.addEventListener('touchmove', (e) => assertEvent(e, false));
-        gd.addEventListener('wheel', (e) =>  assertEvent(e, false));
+        gd.addEventListener('touchend', function(e) { assertEvent(e, true); });
+        gd.addEventListener('touchstart', function(e) { assertEvent(e, true); });
+        gd.addEventListener('touchmove', function(e) { assertEvent(e, true); });
+        gd.addEventListener('wheel', function(e) { assertEvent(e, true); });
 
         Plotly.plot(gd, mock)
         .then(function() {
