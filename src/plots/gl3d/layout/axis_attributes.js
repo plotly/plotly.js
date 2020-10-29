@@ -78,6 +78,7 @@ module.exports = overrideAll({
     type: extendFlat({}, axesAttrs.type, {
         values: ['-', 'linear', 'log', 'date', 'category']
     }),
+    convertnumeric: axesAttrs.convertnumeric,
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: extendFlat({}, axesAttrs.range, {

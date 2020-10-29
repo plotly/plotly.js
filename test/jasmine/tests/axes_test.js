@@ -190,6 +190,7 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             layoutOut = {
+                axesconvertnumeric: true,
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
                 _dfltTitle: {x: 'x', y: 'y'},

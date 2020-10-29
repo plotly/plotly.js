@@ -15,22 +15,26 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar, opts) {
-    opts = opts || {};
+    var convertNumeric = opts.convertNumeric;
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
-    if(moreDates(array, calendar)) return 'date';
+    if(moreDates(array, calendar, convertNumeric)) return 'date';
     if(category(array)) return 'category';
-    if(linearOK(array)) return 'linear';
+    if(linearOK(array, convertNumeric)) return 'linear';
     else return '-';
 };
 
+function hasTypeNumber(v, convertNumeric) {
+    return convertNumeric ? isNumeric(v) : typeof v === 'number';
+}
+
 // is there at least one number in array? If not, we should leave
 // ax.type empty so it can be autoset later
-function linearOK(array) {
+function linearOK(array, convertNumeric) {
     if(!array) return false;
 
     for(var i = 0; i < array.length; i++) {
-        if(isNumeric(array[i])) return true;
+        if(hasTypeNumber(array[i], convertNumeric)) return true;
     }
 
     return false;
@@ -42,7 +46,7 @@ function linearOK(array) {
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
 // as with categories, consider DISTINCT values only.
-function moreDates(a, calendar) {
+function moreDates(a, calendar, convertNumeric) {
     // test at most 1000 points, evenly spaced
     var inc = Math.max(1, (a.length - 1) / 1000);
     var dcnt = 0;
@@ -56,7 +60,7 @@ function moreDates(a, calendar) {
         seen[stri] = 1;
 
         if(Lib.isDateTime(ai, calendar)) dcnt += 1;
-        if(isNumeric(ai)) ncnt += 1;
+        if(hasTypeNumber(ai, convertNumeric)) ncnt += 1;
     }
 
     return (dcnt > ncnt * 2);

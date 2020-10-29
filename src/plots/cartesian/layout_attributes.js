@@ -97,9 +97,19 @@ module.exports = {
         _noTemplating: true,
         description: [
             'Sets the axis type.',
-            'By default, plotly attempts to determined the axis type',
+            'By default, plotly.js attempts to determined the axis type',
             'by looking into the data of the traces that referenced',
             'the axis in question.'
+        ].join(' ')
+    },
+    convertnumeric: {
+        valType: 'boolean',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines whether or not a numeric string in this axis may be',
+            'treated as a number during automatic axis `type` detection.',
+            'Defaults to layout.axesconvertnumeric.'
         ].join(' ')
     },
     autorange: {

@@ -109,6 +109,11 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var yLen = yDims && Lib.minRowLength(y);
     var xLen = xDims && Lib.minRowLength(x);
 
+    var calendar = null; // TODO: should we use ax.calendar here?
+    var opts = {
+        convertNumeric: true // TODO: should we use ax.convertnumeric here?
+    };
+
     var defaultOrientation, len;
     if(traceOut._hasPreCompStats) {
         switch(String(xDims) + String(yDims)) {
@@ -160,7 +165,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
                 var hasCategories = false;
                 var i;
                 for(i = 0; i < x.length; i++) {
-                    if(autoType(x[i]) === 'category') {
+                    if(autoType(x[i], calendar, opts) === 'category') {
                         hasCategories = true;
                         break;
                     }
@@ -171,7 +176,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
                     len = Math.min(sLen, xLen, y.length);
                 } else {
                     for(i = 0; i < y.length; i++) {
-                        if(autoType(y[i]) === 'category') {
+                        if(autoType(y[i], calendar, opts) === 'category') {
                             hasCategories = true;
                             break;
                         }

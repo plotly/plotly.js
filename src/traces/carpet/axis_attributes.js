@@ -83,11 +83,12 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the axis type.',
-            'By default, plotly attempts to determined the axis type',
+            'By default, plotly.js attempts to determined the axis type',
             'by looking into the data of the traces that referenced',
             'the axis in question.'
         ].join(' ')
     },
+    convertnumeric: axesAttrs.convertnumeric,
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],

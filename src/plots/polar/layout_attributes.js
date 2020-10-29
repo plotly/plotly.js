@@ -61,6 +61,7 @@ var radialAxisAttrs = {
     type: extendFlat({}, axesAttrs.type, {
         values: ['-', 'linear', 'log', 'date', 'category']
     }),
+    convertnumeric: axesAttrs.convertnumeric,
 
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {

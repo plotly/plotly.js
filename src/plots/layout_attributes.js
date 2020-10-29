@@ -292,6 +292,16 @@ module.exports = {
             'Sets the background color of the plotting area in-between x and y axes.'
         ].join(' ')
     },
+    axesconvertnumeric: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines whether or not a numeric string in axes of the plot may be',
+            'treated as a number during automatic axis `type` detection.'
+        ].join(' ')
+    },
     separators: {
         valType: 'string',
         role: 'style',
