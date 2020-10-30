@@ -636,13 +636,11 @@ describe('Test boxes supplyDefaults', function() {
     });
 });
 
-describe('Test box converting numeric strings', function() {
+describe('Test box autoType', function() {
     it('should disable converting numeric strings using axis.convertnumeric', function() {
         var gd = {
             layout: {
-                xaxis: {
-                    convertnumeric: false
-                }
+                xaxis: { convertnumeric: false }
             },
             data: [{
                 type: 'box',
@@ -667,9 +665,7 @@ describe('Test box converting numeric strings', function() {
         var gd = {
             layout: {
                 axesconvertnumeric: false,
-                xaxis: {
-                    convertnumeric: true
-                }
+                xaxis: { convertnumeric: true }
             },
             data: [{
                 type: 'box',

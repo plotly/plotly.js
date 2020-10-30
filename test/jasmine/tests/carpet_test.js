@@ -217,6 +217,55 @@ describe('supplyDefaults visibility check', function() {
     });
 });
 
+describe('Test carpet autoType', function() {
+    it('should disable converting numeric strings using axis.convertnumeric', function() {
+        var gd = {
+            layout: {
+                xaxis: { convertnumeric: false },
+                yaxis: {}
+            },
+            data: [{
+                type: 'carpet',
+                a: ['1', '2', '3'],
+                b: ['1', '2'],
+                x: [['1', '2', '3'], ['4', '5', '6']],
+                y: [['1', '2', '3'], ['4', '5', '6']],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.yaxis.convertnumeric).toBe(true);
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+        expect(gd._fullLayout.yaxis.type).toBe('linear');
+    });
+
+    it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
+        var gd = {
+            layout: {
+                axesconvertnumeric: false,
+                xaxis: { convertnumeric: true },
+                yaxis: {}
+            },
+            data: [{
+                type: 'carpet',
+                a: ['1', '2', '3'],
+                b: ['1', '2'],
+                x: [['1', '2', '3'], ['4', '5', '6']],
+                y: [['1', '2', '3'], ['4', '5', '6']],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        expect(gd._fullLayout.xaxis.convertnumeric).toBe(true);
+        expect(gd._fullLayout.yaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.xaxis.type).toBe('linear');
+        expect(gd._fullLayout.yaxis.type).toBe('category');
+    });
+});
+
 describe('carpet smooth_fill_2d_array', function() {
     var _;
 
