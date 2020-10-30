@@ -387,29 +387,23 @@ describe('Test Gl3d layout defaults', function() {
         it('should disable converting numeric strings using axis.convertnumeric', function() {
             supplyLayoutDefaults({
                 scene: {
-                    xaxis: {
-                        convertnumeric: false
-                    },
-                    yaxis: {
-                        convertnumeric: false
-                    },
-                    zaxis: {
-                        convertnumeric: false
-                    }
+                    xaxis: { convertnumeric: false },
+                    yaxis: {},
+                    zaxis: { convertnumeric: false }
                 }
             }, layoutOut, [{
                 type: 'scatter3d',
-                x: ['0', '1', '1970', '2000'],
-                y: ['0', '1', '1970', '2000'],
-                z: ['0', '1', '1970', '2000'],
+                x: ['1970', '2000', '0', '1'],
+                y: ['1970', '2000', '0', '1'],
+                z: ['1970', '2000', '0', '1'],
                 scene: 'scene'
             }]);
 
             expect(layoutOut.scene.xaxis.convertnumeric).toBe(false);
-            expect(layoutOut.scene.yaxis.convertnumeric).toBe(false);
+            expect(layoutOut.scene.yaxis.convertnumeric).toBe(true);
             expect(layoutOut.scene.zaxis.convertnumeric).toBe(false);
             expect(layoutOut.scene.xaxis.type).toBe('category');
-            expect(layoutOut.scene.yaxis.type).toBe('category');
+            expect(layoutOut.scene.yaxis.type).toBe('linear');
             expect(layoutOut.scene.zaxis.type).toBe('category');
         });
 
@@ -418,29 +412,23 @@ describe('Test Gl3d layout defaults', function() {
 
             supplyLayoutDefaults({
                 scene: {
-                    xaxis: {
-                        convertnumeric: true
-                    },
-                    yaxis: {
-                        convertnumeric: true
-                    },
-                    zaxis: {
-                        convertnumeric: true
-                    }
+                    xaxis: { convertnumeric: true },
+                    yaxis: {},
+                    zaxis: { convertnumeric: true }
                 }
             }, layoutOut, [{
                 type: 'scatter3d',
-                x: ['0', '1', '1970', '2000'],
-                y: ['0', '1', '1970', '2000'],
-                z: ['0', '1', '1970', '2000'],
+                x: ['1970', '2000', '0', '1'],
+                y: ['1970', '2000', '0', '1'],
+                z: ['1970', '2000', '0', '1'],
                 scene: 'scene'
             }]);
 
             expect(layoutOut.scene.xaxis.convertnumeric).toBe(true);
-            expect(layoutOut.scene.yaxis.convertnumeric).toBe(true);
+            expect(layoutOut.scene.yaxis.convertnumeric).toBe(false);
             expect(layoutOut.scene.zaxis.convertnumeric).toBe(true);
             expect(layoutOut.scene.xaxis.type).toBe('linear');
-            expect(layoutOut.scene.yaxis.type).toBe('linear');
+            expect(layoutOut.scene.yaxis.type).toBe('category');
             expect(layoutOut.scene.zaxis.type).toBe('linear');
         });
     });

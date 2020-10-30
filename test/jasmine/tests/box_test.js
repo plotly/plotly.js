@@ -636,6 +636,86 @@ describe('Test boxes supplyDefaults', function() {
     });
 });
 
+describe('Test box converting numeric strings', function() {
+    it('should disable converting numeric strings using axis.convertnumeric', function() {
+        var gd = {
+            layout: {
+                xaxis: {
+                    convertnumeric: false
+                }
+            },
+            data: [{
+                type: 'box',
+                x: ['3', '0', '1', '2'],
+
+                xaxis: 'x',
+                lowerfence: ['0', '0', '0', '0'],
+                q1: ['0.5', '1', '1.5', '2'],
+                median: ['1', '2', '3', '4'],
+                q3: ['1.5', '3', '4.5', '6'],
+                upperfence: ['2', '4', '6', '8'],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+    });
+
+    it('should enable converting numeric strings using axis.convertnumeric', function() {
+        var gd = {
+            layout: {
+                axesconvertnumeric: false,
+                xaxis: {
+                    convertnumeric: true
+                }
+            },
+            data: [{
+                type: 'box',
+                x: ['3', '0', '1', '2'],
+
+                xaxis: 'x',
+                lowerfence: ['0', '0', '0', '0'],
+                q1: ['0.5', '1', '1.5', '2'],
+                median: ['1', '2', '3', '4'],
+                q3: ['1.5', '3', '4.5', '6'],
+                upperfence: ['2', '4', '6', '8'],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        expect(gd._fullLayout.xaxis.convertnumeric).toBe(true);
+        expect(gd._fullLayout.xaxis.type).toBe('linear');
+    });
+
+    it('should enable converting numeric inherit defaults from layout.axesconvertnumeric', function() {
+        var gd = {
+            layout: {
+                axesconvertnumeric: false,
+                xaxis: {}
+            },
+            data: [{
+                type: 'box',
+                x: ['3', '0', '1', '2'],
+
+                xaxis: 'x',
+                lowerfence: ['0', '0', '0', '0'],
+                q1: ['0.5', '1', '1.5', '2'],
+                median: ['1', '2', '3', '4'],
+                q3: ['1.5', '3', '4.5', '6'],
+                upperfence: ['2', '4', '6', '8'],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.xaxis.type).toBe('category');
+    });
+});
+
 describe('Test box hover:', function() {
     var gd;
 
