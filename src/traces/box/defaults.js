@@ -109,7 +109,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var yLen = yDims && Lib.minRowLength(y);
     var xLen = xDims && Lib.minRowLength(x);
 
-    var calendar = null; // TODO: should we use ax.calendar here?
+    var calendar = 'gregorian'; // TODO: should we use ax.calendar here?
     var opts = {
         convertNumeric: true // TODO: should we use ax.convertnumeric here?
     };

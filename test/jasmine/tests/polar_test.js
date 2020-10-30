@@ -74,6 +74,7 @@ describe('Test polar plots defaults:', function() {
         }];
 
         layoutOut = {
+            axesconvertnumeric: true,
             font: {color: 'red'},
             _subplots: {polar: ['polar']}
         };
@@ -208,6 +209,56 @@ describe('Test polar plots defaults:', function() {
 
         expect(layoutOut.polar.radialaxis.hoverformat).toBe('g');
         expect(layoutOut.polar.angularaxis.hoverformat).toBe('g');
+    });
+
+    it('should disable converting numeric strings using axis.convertnumeric', function() {
+        _supply({
+            polar: {
+                radialaxis: {
+                    convertnumeric: false
+                },
+                angularaxis: {
+                    convertnumeric: false
+                }
+            }
+        }, [{
+            visible: true,
+            type: 'scatterpolar',
+            r: ['0', '1', '1970', '2000'],
+            theta: ['0', '1', '1970', '2000'],
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.angularaxis.convertnumeric).toBe(false);
+        expect(layoutOut.polar.radialaxis.convertnumeric).toBe(false);
+        expect(layoutOut.polar.radialaxis.type).toBe('category');
+        expect(layoutOut.polar.angularaxis.type).toBe('category');
+    });
+
+    it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
+        layoutOut.axesconvertnumeric = false;
+
+        _supply({
+            polar: {
+                radialaxis: {
+                    convertnumeric: true
+                },
+                angularaxis: {
+                    convertnumeric: true
+                }
+            }
+        }, [{
+            visible: true,
+            type: 'scatterpolar',
+            r: ['0', '1', '1970', '2000'],
+            theta: ['0', '1', '1970', '2000'],
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.angularaxis.convertnumeric).toBe(true);
+        expect(layoutOut.polar.radialaxis.convertnumeric).toBe(true);
+        expect(layoutOut.polar.radialaxis.type).toBe('linear');
+        expect(layoutOut.polar.angularaxis.type).toBe('linear');
     });
 });
 

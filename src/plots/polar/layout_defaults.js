@@ -57,7 +57,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
-        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr, opts.convertnumericDflt);
+        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr, opts);
 
         handleCategoryOrderDefaults(axIn, axOut, coerceAxis, {
             axData: subplotData,
@@ -188,7 +188,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 }
 
 function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, options) {
-    var convertnumeric = dataAttr.convertnumeric ? coerce('convertnumeric', options.convertnumericDflt) : false;
+    var convertnumeric = coerce('convertnumeric', options.convertnumericDflt);
     var axType = coerce('type');
 
     if(axType === '-') {
@@ -203,7 +203,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, opti
 
         if(trace && trace[dataAttr]) {
             axOut.type = autoType(trace[dataAttr], 'gregorian', {
-                convertNumeric: !convertnumeric
+                convertNumeric: convertnumeric
             });
         }
 

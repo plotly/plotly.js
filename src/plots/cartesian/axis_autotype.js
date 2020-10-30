@@ -18,7 +18,7 @@ module.exports = function autoType(array, calendar, opts) {
     var convertNumeric = opts.convertNumeric;
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
-    if(moreDates(array, calendar, convertNumeric)) return 'date';
+    if(convertNumeric && moreDates(array, calendar)) return 'date';
     if(category(array)) return 'category';
     if(linearOK(array, convertNumeric)) return 'linear';
     else return convertNumeric ? '-' : 'category';
@@ -46,7 +46,7 @@ function linearOK(array, convertNumeric) {
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
 // as with categories, consider DISTINCT values only.
-function moreDates(a, calendar, convertNumeric) {
+function moreDates(a, calendar) {
     // test at most 1000 points, evenly spaced
     var inc = Math.max(1, (a.length - 1) / 1000);
     var dcnt = 0;
@@ -60,7 +60,7 @@ function moreDates(a, calendar, convertNumeric) {
         seen[stri] = 1;
 
         if(Lib.isDateTime(ai, calendar)) dcnt += 1;
-        if(hasTypeNumber(ai, convertNumeric)) ncnt += 1;
+        if(isNumeric(ai)) ncnt += 1;
     }
 
     return (dcnt > ncnt * 2);

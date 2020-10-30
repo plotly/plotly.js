@@ -180,6 +180,7 @@ var angularAxisAttrs = {
             'If *category, use `period` to set the number of integer coordinates around polar axis.'
         ].join(' ')
     },
+    convertnumeric: axesAttrs.convertnumeric,
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,

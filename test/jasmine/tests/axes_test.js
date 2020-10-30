@@ -347,10 +347,12 @@ describe('Test axes', function() {
                     type: 'scatter',
                     xaxis: 'x',
                     yaxis: 'y',
-                    x: ['0', '1'],
-                    y: ['0', '1']
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
                 }]);
 
+                expect(layoutOut.xaxis.convertnumeric).toBe(true);
+                expect(layoutOut.yaxis.convertnumeric).toBe(false);
                 expect(layoutOut.xaxis.type).toBe('linear');
                 expect(layoutOut.yaxis.type).toBe('category');
             });
@@ -367,10 +369,12 @@ describe('Test axes', function() {
                     type: 'scatter',
                     xaxis: 'x',
                     yaxis: 'y',
-                    x: ['0', '1'],
-                    y: ['0', '1']
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
                 }]);
 
+                expect(layoutOut.xaxis.convertnumeric).toBe(true);
+                expect(layoutOut.yaxis.convertnumeric).toBe(false);
                 expect(layoutOut.xaxis.type).toBe('linear');
                 expect(layoutOut.yaxis.type).toBe('category');
             });
