@@ -26,7 +26,9 @@ describe('Test gl3d axes defaults', function() {
         };
 
         beforeEach(function() {
-            layoutOut = {};
+            layoutOut = {
+                axesconvertnumeric: true
+            };
         });
 
         it('should define specific default set with empty initial layout', function() {
@@ -128,6 +130,7 @@ describe('Test Gl3d layout defaults', function() {
 
         beforeEach(function() {
             layoutOut = {
+                axesconvertnumeric: true,
                 _basePlotModules: ['gl3d'],
                 _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'},
                 _subplots: {gl3d: ['scene']}
@@ -379,6 +382,66 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.yaxis.gridcolor).toEqual('blue');
             expect(layoutOut.scene.zaxis.gridcolor)
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+        });
+
+        it('should disable converting numeric strings using axis.convertnumeric', function() {
+            supplyLayoutDefaults({
+                scene: {
+                    xaxis: {
+                        convertnumeric: false
+                    },
+                    yaxis: {
+                        convertnumeric: false
+                    },
+                    zaxis: {
+                        convertnumeric: false
+                    }
+                }
+            }, layoutOut, [{
+                type: 'scatter3d',
+                x: ['0', '1', '1970', '2000'],
+                y: ['0', '1', '1970', '2000'],
+                z: ['0', '1', '1970', '2000'],
+                scene: 'scene'
+            }]);
+
+            expect(layoutOut.scene.xaxis.convertnumeric).toBe(false);
+            expect(layoutOut.scene.yaxis.convertnumeric).toBe(false);
+            expect(layoutOut.scene.zaxis.convertnumeric).toBe(false);
+            expect(layoutOut.scene.xaxis.type).toBe('category');
+            expect(layoutOut.scene.yaxis.type).toBe('category');
+            expect(layoutOut.scene.zaxis.type).toBe('category');
+        });
+
+        it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
+            layoutOut.axesconvertnumeric = false;
+
+            supplyLayoutDefaults({
+                scene: {
+                    xaxis: {
+                        convertnumeric: true
+                    },
+                    yaxis: {
+                        convertnumeric: true
+                    },
+                    zaxis: {
+                        convertnumeric: true
+                    }
+                }
+            }, layoutOut, [{
+                type: 'scatter3d',
+                x: ['0', '1', '1970', '2000'],
+                y: ['0', '1', '1970', '2000'],
+                z: ['0', '1', '1970', '2000'],
+                scene: 'scene'
+            }]);
+
+            expect(layoutOut.scene.xaxis.convertnumeric).toBe(true);
+            expect(layoutOut.scene.yaxis.convertnumeric).toBe(true);
+            expect(layoutOut.scene.zaxis.convertnumeric).toBe(true);
+            expect(layoutOut.scene.xaxis.type).toBe('linear');
+            expect(layoutOut.scene.yaxis.type).toBe('linear');
+            expect(layoutOut.scene.zaxis.type).toBe('linear');
         });
     });
 });
