@@ -21,7 +21,7 @@ module.exports = function autoType(array, calendar, opts) {
     if(moreDates(array, calendar, convertNumeric)) return 'date';
     if(category(array)) return 'category';
     if(linearOK(array, convertNumeric)) return 'linear';
-    else return '-';
+    else return convertNumeric ? '-' : 'category';
 };
 
 function hasTypeNumber(v, convertNumeric) {

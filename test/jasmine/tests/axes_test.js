@@ -336,6 +336,46 @@ describe('Test axes', function() {
             });
         });
 
+        describe('autotype disable/enable converting numeric strings', function() {
+            it('should disable converting numeric strings using axis.convertnumeric', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { convertnumeric: false }
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1'],
+                    y: ['0', '1']
+                }]);
+
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+
+            it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
+                layoutOut.axesconvertnumeric = false;
+
+                layoutIn = {
+                    xaxis: { convertnumeric: true },
+                    yaxis: {}
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1'],
+                    y: ['0', '1']
+                }]);
+
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+        });
+
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
             layoutIn = {
                 xaxis: {},
