@@ -3856,7 +3856,7 @@ describe('Test axes', function() {
             .then(function() { return Plotly.relayout(gd, 'height', 100); })
             .then(function() {
                 _assert('after relayout to *small* height', {
-                    bottomLowerBound: 30,
+                    bottomLowerBound: 15,
                     totalHeight: 100
                 });
             })
@@ -3896,7 +3896,7 @@ describe('Test axes', function() {
             .then(function() { return Plotly.relayout(gd, 'width', 100); })
             .then(function() {
                 _assert('after relayout to *small* width', {
-                    leftLowerBound: 30,
+                    leftLowerBound: 15,
                     totalWidth: 100
                 });
             })

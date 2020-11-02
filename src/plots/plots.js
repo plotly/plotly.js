@@ -1864,6 +1864,9 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
+var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
+var minFinalHeight = 64; // could possibly be exposed as layout.margin.minfinalheight
+
 /**
  * autoMargin: called by components that may need to expand the margins to
  * be rendered on-plot.
@@ -1881,12 +1884,10 @@ function initMargins(fullLayout) {
  */
 plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
-    var minFinalWidth = Math.max(0, fullLayout.width -
-        64 // TODO: could be exposed as layout.margin.minfinalwidth
-    );
-    var minFinalHeight = Math.max(0, fullLayout.height -
-        64 // TODO: could be exposed as layout.margin.minfinalheight
-    );
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
@@ -1906,15 +1907,13 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            var rW = (o.l + o.r) / minFinalWidth;
+            var rW = (o.l + o.r) / maxSpaceW;
             if(rW > 1) {
-                Lib.log('Margin push', id, 'is too big in x, adjusting');
                 o.l /= rW;
                 o.r /= rW;
             }
-            var rH = (o.t + o.b) / minFinalHeight;
+            var rH = (o.t + o.b) / maxSpaceH;
             if(rH > 1) {
-                Lib.log('Margin push', id, 'is too big in y, adjusting');
                 o.t /= rH;
                 o.b /= rH;
             }
@@ -1941,6 +1940,11 @@ plots.autoMargin = function(gd, id, o) {
 
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
+
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
 
@@ -1955,8 +1959,6 @@ plots.doAutoMargin = function(gd) {
     var mr = margin.r;
     var mt = margin.t;
     var mb = margin.b;
-    var width = fullLayout.width;
-    var height = fullLayout.height;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
@@ -1988,11 +1990,10 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pl) && pushMargin[k2].r) {
                     var fr = pushMargin[k2].r.val;
                     var pr = pushMargin[k2].r.size;
-
                     if(fr > fl) {
                         var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
                         var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
-                        if(newL >= 0 && newR >= 0 && width - (newL + newR) > 0 && newL + newR > ml + mr) {
+                        if(newL + newR > ml + mr) {
                             ml = newL;
                             mr = newR;
                         }
@@ -2002,11 +2003,10 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pb) && pushMargin[k2].t) {
                     var ft = pushMargin[k2].t.val;
                     var pt = pushMargin[k2].t.size;
-
                     if(ft > fb) {
                         var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
                         var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
-                        if(newB >= 0 && newT >= 0 && height - (newT + newB) > 0 && newB + newT > mb + mt) {
+                        if(newB + newT > mb + mt) {
                             mb = newB;
                             mt = newT;
                         }
@@ -2014,6 +2014,18 @@ plots.doAutoMargin = function(gd) {
                 }
             }
         }
+    }
+
+    var rW = (ml + mr) / maxSpaceW;
+    if(rW > 1) {
+        ml /= rW;
+        mr /= rW;
+    }
+
+    var rH = (mb + mt) / maxSpaceH;
+    if(rH > 1) {
+        mb /= rH;
+        mt /= rH;
     }
 
     gs.l = Math.round(ml);
