@@ -298,7 +298,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Determines whether or not a numeric string in axes of the plot may be',
+            'Determines whether or not a numeric string in trace data may be',
             'treated as a number during automatic axis `type` detection.'
         ].join(' ')
     },
