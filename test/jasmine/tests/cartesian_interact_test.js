@@ -12,14 +12,17 @@ var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
 var drag = require('../assets/drag');
+var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 var getNodeCoords = require('../assets/get_node_coords');
 var delay = require('../assets/delay');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var MODEBAR_DELAY = 500;
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 describe('zoom box element', function() {
     var mock = require('@mocks/14.json');
@@ -2243,4 +2246,101 @@ describe('Event data:', function() {
         .catch(fail)
         .then(done);
     });
+});
+
+describe('Cartesian plots with css transforms', function() {
+    var gd;
+    var eventRecordings = {};
+
+    beforeEach(function() {
+        eventRecordings = {};
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _getLocalPos(element, point) {
+        var bb = element.getBoundingClientRect();
+        return [
+            bb.left + point[0],
+            bb.top + point[1]
+        ];
+    }
+
+    function _hover(pos) {
+        return new Promise(function(resolve, reject) {
+            var localPos = _getLocalPos(gd, pos);
+            gd.once('plotly_hover', function(d) {
+                Lib.clearThrottle();
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', localPos[0], localPos[1]);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    function _unhover(pos) {
+        var localPos = _getLocalPos(gd, pos);
+        mouseEvent('mouseout', localPos[0], localPos[1]);
+    }
+
+    function _hoverAndAssertEventOccurred(point, label) {
+        return _hover(point)
+        .then(function() {
+            expect(eventRecordings[label]).toBe(1);
+        })
+        .then(function() {
+            _unhover(point);
+        });
+    }
+
+    function transformPlot(gd, scale, transX, transY) {
+        var transformString = `scale(${scale}) translate(${transX}, ${transY})`;
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function recalculateInverse(gd) {
+        var inverse = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+        gd._fullLayout._inverseTransform = inverse;
+    }
+
+    var points = [[50, 180], [150, 180], [250, 180]];
+    var xLabels = ['one', 'two', 'three'];
+    var data = [{
+        x: xLabels,
+        y: [1, 2, 3],
+        type: 'bar'
+    }];
+    var layout = {
+        width: 600,
+        height: 400,
+        margin: {l: 0, t: 0, r: 0, b: 0}
+    };
+
+    it('hover behaves correctly after css transform', function(done) {
+        Plotly.plot(gd, data, layout)
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventRecordings[d.points[0].x] = 1;
+            });
+        })
+        .then(function() {
+            transformPlot(gd, '0.5', '0px', '0px');
+            recalculateInverse(gd);
+        })
+        .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
+        .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
+        .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
+        .catch(failTest)
+        .then(done);
+    });
+
 });
