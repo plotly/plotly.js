@@ -1906,13 +1906,17 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l + o.r > minFinalWidth) {
-                Lib.log('Margin push', id, 'is too big in x, dropping');
-                o.l = o.r = 0;
+            var rW = (o.l + o.r) / minFinalWidth;
+            if(rW > 1) {
+                Lib.log('Margin push', id, 'is too big in x, adjusting');
+                o.l /= rW;
+                o.r /= rW;
             }
-            if(o.b + o.t > minFinalHeight) {
-                Lib.log('Margin push', id, 'is too big in y, dropping');
-                o.b = o.t = 0;
+            var rH = (o.t + o.b) / minFinalHeight;
+            if(rH > 1) {
+                Lib.log('Margin push', id, 'is too big in y, adjusting');
+                o.t /= rH;
+                o.b /= rH;
             }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
