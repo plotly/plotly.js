@@ -107,7 +107,7 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'Determines whether or not a numeric string in this axis may be',
+            'Determines whether or not a numeric string in data for this axis may be',
             'treated as a number during automatic axis `type` detection.',
             'Defaults to layout.axesconvertnumeric.'
         ].join(' ')
