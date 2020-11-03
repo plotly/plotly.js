@@ -47,8 +47,8 @@ function styleOne(s, pt, trace, opts) {
         lineColor = trace._hovered.marker.line.color;
         lineWidth = trace._hovered.marker.line.width;
     } else {
-        if(isRoot && fillColor === 'rgba(0,0,0,0)') {
-            opacity = 0;
+        if(isRoot && fillColor === trace.root.color) {
+            opacity = 100;
             lineColor = 'rgba(0,0,0,0)';
             lineWidth = 0;
         } else {
