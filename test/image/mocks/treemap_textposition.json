@@ -2,6 +2,7 @@
     "data": [
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom left textposition",
             "textposition": "bottom left",
@@ -110,6 +111,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom center textposition",
             "textposition": "bottom center",
@@ -219,6 +221,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "bottom right textposition",
             "textposition": "bottom right",
@@ -330,6 +333,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle left textposition",
             "textposition": "middle left",
@@ -436,6 +440,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle center textposition",
             "textposition": "middle center",
@@ -543,6 +548,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "middle right textposition",
             "textposition": "middle right",
@@ -649,6 +655,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top left textposition",
             "textposition": "top left",
@@ -759,6 +766,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top center textposition",
             "textposition": "top center",
@@ -869,6 +877,7 @@
         },
         {
             "type": "treemap",
+            "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
             "name": "top right textposition",
             "textposition": "top right",
