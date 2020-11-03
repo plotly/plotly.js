@@ -2267,39 +2267,7 @@ describe('Cartesian plots with css transforms', function() {
         ];
     }
 
-    function _hover(pos) {
-        return new Promise(function(resolve, reject) {
-            var localPos = _getLocalPos(gd, pos);
-            gd.once('plotly_hover', function(d) {
-                Lib.clearThrottle();
-                resolve(d);
-            });
-
-            mouseEvent('mousemove', localPos[0], localPos[1]);
-
-            setTimeout(function() {
-                reject('plotly_hover did not get called!');
-            }, 100);
-        });
-    }
-
-    function _unhover(pos) {
-        var localPos = _getLocalPos(gd, pos);
-        mouseEvent('mouseout', localPos[0], localPos[1]);
-    }
-
-    function _hoverAndAssertEventOccurred(point, label) {
-        return _hover(point)
-        .then(function() {
-            expect(eventRecordings[label]).toBe(1);
-        })
-        .then(function() {
-            _unhover(point);
-        });
-    }
-
-    function transformPlot(gd, scale, transX, transY) {
-        var transformString = `scale(${scale}) translate(${transX}, ${transY})`;
+    function transformPlot(gd, transformString) {
         gd.style.webkitTransform = transformString;
         gd.style.MozTransform = transformString;
         gd.style.msTransform = transformString;
@@ -2326,6 +2294,38 @@ describe('Cartesian plots with css transforms', function() {
     };
 
     it('hover behaves correctly after css transform', function(done) {
+
+        function _hover(pos) {
+            return new Promise(function(resolve, reject) {
+                var localPos = _getLocalPos(gd, pos);
+                gd.once('plotly_hover', function(d) {
+                    Lib.clearThrottle();
+                    resolve(d);
+                });
+    
+                mouseEvent('mousemove', localPos[0], localPos[1]);
+    
+                setTimeout(function() {
+                    reject('plotly_hover did not get called!');
+                }, 100);
+            });
+        }
+    
+        function _unhover(pos) {
+            var localPos = _getLocalPos(gd, pos);
+            mouseEvent('mouseout', localPos[0], localPos[1]);
+        }
+    
+        function _hoverAndAssertEventOccurred(point, label) {
+            return _hover(point)
+            .then(function() {
+                expect(eventRecordings[label]).toBe(1);
+            })
+            .then(function() {
+                _unhover(point);
+            });
+        }
+
         Plotly.plot(gd, data, layout)
         .then(function() {
             gd.on('plotly_hover', function(d) {
@@ -2333,12 +2333,57 @@ describe('Cartesian plots with css transforms', function() {
             });
         })
         .then(function() {
-            transformPlot(gd, '0.5', '0px', '0px');
+            transformPlot(gd, 'scale(0.5)');
             recalculateInverse(gd);
         })
         .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
         .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
         .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('drag-zoom behaves correctly after css transform', function(done) {
+
+        // asserts that the zoombox path must go from the start to end positions,
+        // in css-transformed coordinates.
+        function _assertTransformedZoombox(startPos, endPos) {
+            startPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(startPos[0], startPos[1]);
+            endPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(endPos[0], endPos[1]);
+            var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
+            var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+            var d = zb.attr('d');
+            var v = Number(d.split('v')[1].split('h')[0]);
+            var h = Number(d.split('h')[1].split('v')[0]);
+            var startCoordsString = d.split('M')[2].split('v')[0];
+            var startX = Number(startCoordsString.split(',')[0]);
+            var startY = Number(startCoordsString.split(',')[1]);
+            expect(startX).toBeCloseTo(startPos[0]);
+            expect(startY).toBeCloseTo(startPos[1]);
+            expect(h).toBeCloseTo(size[0]);
+            expect(v).toBeCloseTo(size[1]);
+        }
+
+        function _dragRaw(start, end) {
+            var localStart = _getLocalPos(gd, start);
+            var localEnd = _getLocalPos(gd, end);
+            mouseEvent('mousemove', localStart[0], localStart[1]);
+            mouseEvent('mousedown', localStart[0], localStart[1]);
+            mouseEvent('mousemove', localEnd[0], localEnd[1]);
+        }
+
+        var start = [50, 50];
+        var end = [150, 150]
+    
+        Plotly.plot(gd, data, layout)
+        .then(function() {
+            transformPlot(gd, 'scale(0.5)');
+            recalculateInverse(gd);
+        })
+        .then(function()  {_dragRaw(start, end); })
+        .then(function()  {
+            _assertTransformedZoombox(start, end); 
+        })
         .catch(failTest)
         .then(done);
     });
