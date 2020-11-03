@@ -111,7 +111,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
 
     var calendar = 'gregorian'; // TODO: should we use ax.calendar here?
     var opts = {
-        convertNumeric: true // TODO: should we use ax.convertnumeric here?
+        autotypenumbers: 'convert types' // TODO: should we use ax.autotypenumbers here?
     };
 
     var defaultOrientation, len;

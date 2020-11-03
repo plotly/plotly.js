@@ -190,7 +190,7 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             layoutOut = {
-                axesconvertnumeric: true,
+                autotypenumbers: 'convert types',
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
                 _dfltTitle: {x: 'x', y: 'y'},
@@ -337,10 +337,10 @@ describe('Test axes', function() {
         });
 
         describe('autotype disable/enable converting numeric strings', function() {
-            it('should disable converting numeric strings using axis.convertnumeric', function() {
+            it('should disable converting numeric strings using axis.autotypenumbers', function() {
                 layoutIn = {
                     xaxis: {},
-                    yaxis: { convertnumeric: false }
+                    yaxis: { autotypenumbers: 'strict' }
                 };
 
                 supplyLayoutDefaults(layoutIn, layoutOut, [{
@@ -351,17 +351,17 @@ describe('Test axes', function() {
                     y: ['0', '1', '1970', '2000']
                 }]);
 
-                expect(layoutOut.xaxis.convertnumeric).toBe(true);
-                expect(layoutOut.yaxis.convertnumeric).toBe(false);
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
                 expect(layoutOut.xaxis.type).toBe('linear');
                 expect(layoutOut.yaxis.type).toBe('category');
             });
 
-            it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
-                layoutOut.axesconvertnumeric = false;
+            it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+                layoutOut.autotypenumbers = 'strict';
 
                 layoutIn = {
-                    xaxis: { convertnumeric: true },
+                    xaxis: { autotypenumbers: 'convert types' },
                     yaxis: {}
                 };
 
@@ -373,8 +373,8 @@ describe('Test axes', function() {
                     y: ['0', '1', '1970', '2000']
                 }]);
 
-                expect(layoutOut.xaxis.convertnumeric).toBe(true);
-                expect(layoutOut.yaxis.convertnumeric).toBe(false);
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
                 expect(layoutOut.xaxis.type).toBe('linear');
                 expect(layoutOut.yaxis.type).toBe('category');
             });

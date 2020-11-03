@@ -27,7 +27,7 @@ describe('Test gl3d axes defaults', function() {
 
         beforeEach(function() {
             layoutOut = {
-                axesconvertnumeric: true
+                autotypenumbers: 'convert types'
             };
         });
 
@@ -130,7 +130,7 @@ describe('Test Gl3d layout defaults', function() {
 
         beforeEach(function() {
             layoutOut = {
-                axesconvertnumeric: true,
+                autotypenumbers: 'convert types',
                 _basePlotModules: ['gl3d'],
                 _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'},
                 _subplots: {gl3d: ['scene']}
@@ -384,12 +384,12 @@ describe('Test Gl3d layout defaults', function() {
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
 
-        it('should disable converting numeric strings using axis.convertnumeric', function() {
+        it('should disable converting numeric strings using axis.autotypenumbers', function() {
             supplyLayoutDefaults({
                 scene: {
-                    xaxis: { convertnumeric: false },
+                    xaxis: { autotypenumbers: 'strict' },
                     yaxis: {},
-                    zaxis: { convertnumeric: false }
+                    zaxis: { autotypenumbers: 'strict' }
                 }
             }, layoutOut, [{
                 type: 'scatter3d',
@@ -399,22 +399,22 @@ describe('Test Gl3d layout defaults', function() {
                 scene: 'scene'
             }]);
 
-            expect(layoutOut.scene.xaxis.convertnumeric).toBe(false);
-            expect(layoutOut.scene.yaxis.convertnumeric).toBe(true);
-            expect(layoutOut.scene.zaxis.convertnumeric).toBe(false);
+            expect(layoutOut.scene.xaxis.autotypenumbers).toBe('strict');
+            expect(layoutOut.scene.yaxis.autotypenumbers).toBe('convert types');
+            expect(layoutOut.scene.zaxis.autotypenumbers).toBe('strict');
             expect(layoutOut.scene.xaxis.type).toBe('category');
             expect(layoutOut.scene.yaxis.type).toBe('linear');
             expect(layoutOut.scene.zaxis.type).toBe('category');
         });
 
-        it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
-            layoutOut.axesconvertnumeric = false;
+        it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+            layoutOut.autotypenumbers = 'strict';
 
             supplyLayoutDefaults({
                 scene: {
-                    xaxis: { convertnumeric: true },
+                    xaxis: { autotypenumbers: 'convert types' },
                     yaxis: {},
-                    zaxis: { convertnumeric: true }
+                    zaxis: { autotypenumbers: 'convert types' }
                 }
             }, layoutOut, [{
                 type: 'scatter3d',
@@ -424,9 +424,9 @@ describe('Test Gl3d layout defaults', function() {
                 scene: 'scene'
             }]);
 
-            expect(layoutOut.scene.xaxis.convertnumeric).toBe(true);
-            expect(layoutOut.scene.yaxis.convertnumeric).toBe(false);
-            expect(layoutOut.scene.zaxis.convertnumeric).toBe(true);
+            expect(layoutOut.scene.xaxis.autotypenumbers).toBe('convert types');
+            expect(layoutOut.scene.yaxis.autotypenumbers).toBe('strict');
+            expect(layoutOut.scene.zaxis.autotypenumbers).toBe('convert types');
             expect(layoutOut.scene.xaxis.type).toBe('linear');
             expect(layoutOut.scene.yaxis.type).toBe('category');
             expect(layoutOut.scene.zaxis.type).toBe('linear');

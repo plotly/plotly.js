@@ -74,7 +74,7 @@ describe('Test polar plots defaults:', function() {
         }];
 
         layoutOut = {
-            axesconvertnumeric: true,
+            autotypenumbers: 'convert types',
             font: {color: 'red'},
             _subplots: {polar: ['polar']}
         };
@@ -211,14 +211,14 @@ describe('Test polar plots defaults:', function() {
         expect(layoutOut.polar.angularaxis.hoverformat).toBe('g');
     });
 
-    it('should disable converting numeric strings using axis.convertnumeric', function() {
+    it('should disable converting numeric strings using axis.autotypenumbers', function() {
         _supply({
             polar: {
                 radialaxis: {
-                    convertnumeric: false
+                    autotypenumbers: 'strict'
                 },
                 angularaxis: {
-                    convertnumeric: false
+                    autotypenumbers: 'strict'
                 }
             }
         }, [{
@@ -229,22 +229,22 @@ describe('Test polar plots defaults:', function() {
             subplot: 'polar'
         }]);
 
-        expect(layoutOut.polar.angularaxis.convertnumeric).toBe(false);
-        expect(layoutOut.polar.radialaxis.convertnumeric).toBe(false);
+        expect(layoutOut.polar.angularaxis.autotypenumbers).toBe('strict');
+        expect(layoutOut.polar.radialaxis.autotypenumbers).toBe('strict');
         expect(layoutOut.polar.radialaxis.type).toBe('category');
         expect(layoutOut.polar.angularaxis.type).toBe('category');
     });
 
-    it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
-        layoutOut.axesconvertnumeric = false;
+    it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+        layoutOut.autotypenumbers = 'strict';
 
         _supply({
             polar: {
                 radialaxis: {
-                    convertnumeric: true
+                    autotypenumbers: 'convert types'
                 },
                 angularaxis: {
-                    convertnumeric: true
+                    autotypenumbers: 'convert types'
                 }
             }
         }, [{
@@ -255,8 +255,8 @@ describe('Test polar plots defaults:', function() {
             subplot: 'polar'
         }]);
 
-        expect(layoutOut.polar.angularaxis.convertnumeric).toBe(true);
-        expect(layoutOut.polar.radialaxis.convertnumeric).toBe(true);
+        expect(layoutOut.polar.angularaxis.autotypenumbers).toBe('convert types');
+        expect(layoutOut.polar.radialaxis.autotypenumbers).toBe('convert types');
         expect(layoutOut.polar.radialaxis.type).toBe('linear');
         expect(layoutOut.polar.angularaxis.type).toBe('linear');
     });

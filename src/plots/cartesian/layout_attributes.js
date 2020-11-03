@@ -102,14 +102,17 @@ module.exports = {
             'the axis in question.'
         ].join(' ')
     },
-    convertnumeric: {
-        valType: 'boolean',
+    autotypenumbers: {
+        valType: 'enumerated',
+        values: ['convert types', 'strict'],
+        dflt: 'convert types',
         role: 'info',
         editType: 'calc',
         description: [
-            'Determines whether or not a numeric string in data for this axis may be',
+            'Using *strict* a numeric string in trace data is not converted to a number.',
+            'Using *accept strings* a numeric string in trace data may be',
             'treated as a number during automatic axis `type` detection.',
-            'Defaults to layout.axesconvertnumeric.'
+            'Defaults to layout.autotypenumbers.'
         ].join(' ')
     },
     autorange: {

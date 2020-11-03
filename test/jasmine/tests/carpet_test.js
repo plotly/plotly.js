@@ -218,10 +218,10 @@ describe('supplyDefaults visibility check', function() {
 });
 
 describe('Test carpet autoType', function() {
-    it('should disable converting numeric strings using axis.convertnumeric', function() {
+    it('should disable converting numeric strings using axis.autotypenumbers', function() {
         var gd = {
             layout: {
-                xaxis: { convertnumeric: false },
+                xaxis: { autotypenumbers: 'strict' },
                 yaxis: {}
             },
             data: [{
@@ -235,17 +235,27 @@ describe('Test carpet autoType', function() {
 
         supplyAllDefaults(gd);
 
-        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
-        expect(gd._fullLayout.yaxis.convertnumeric).toBe(true);
-        expect(gd._fullLayout.xaxis.type).toBe('category');
-        expect(gd._fullLayout.yaxis.type).toBe('linear');
+        var xaxis = gd._fullLayout.xaxis;
+        var yaxis = gd._fullLayout.yaxis;
+        expect(xaxis.autotypenumbers).toBe('strict');
+        expect(yaxis.autotypenumbers).toBe('convert types');
+        expect(xaxis.type).toBe('category');
+        expect(yaxis.type).toBe('linear');
+
+        // inherit default from layout.autotypenumbers
+        var aaxis = gd._fullData[0].aaxis;
+        var baxis = gd._fullData[0].baxis;
+        expect(aaxis.autotypenumbers).toBe('convert types');
+        expect(baxis.autotypenumbers).toBe('convert types');
+        expect(aaxis.type).toBe('linear');
+        expect(baxis.type).toBe('linear');
     });
 
-    it('should enable converting numeric strings using axis.convertnumeric and inherit defaults from layout.axesconvertnumeric', function() {
+    it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
         var gd = {
             layout: {
-                axesconvertnumeric: false,
-                xaxis: { convertnumeric: true },
+                autotypenumbers: 'strict',
+                xaxis: { autotypenumbers: 'convert types' },
                 yaxis: {}
             },
             data: [{
@@ -259,10 +269,20 @@ describe('Test carpet autoType', function() {
 
         supplyAllDefaults(gd);
 
-        expect(gd._fullLayout.xaxis.convertnumeric).toBe(true);
-        expect(gd._fullLayout.yaxis.convertnumeric).toBe(false);
-        expect(gd._fullLayout.xaxis.type).toBe('linear');
-        expect(gd._fullLayout.yaxis.type).toBe('category');
+        var xaxis = gd._fullLayout.xaxis;
+        var yaxis = gd._fullLayout.yaxis;
+        expect(xaxis.autotypenumbers).toBe('convert types');
+        expect(yaxis.autotypenumbers).toBe('strict');
+        expect(xaxis.type).toBe('linear');
+        expect(yaxis.type).toBe('category');
+
+        // inherit default from layout.autotypenumbers
+        var aaxis = gd._fullData[0].aaxis;
+        var baxis = gd._fullData[0].baxis;
+        expect(aaxis.autotypenumbers).toBe('strict');
+        expect(baxis.autotypenumbers).toBe('strict');
+        expect(aaxis.type).toBe('category');
+        expect(baxis.type).toBe('category');
     });
 });
 

@@ -637,10 +637,10 @@ describe('Test boxes supplyDefaults', function() {
 });
 
 describe('Test box autoType', function() {
-    it('should disable converting numeric strings using axis.convertnumeric', function() {
+    it('should disable converting numeric strings using axis.autotypenumbers', function() {
         var gd = {
             layout: {
-                xaxis: { convertnumeric: false }
+                xaxis: { autotypenumbers: 'strict' }
             },
             data: [{
                 type: 'box',
@@ -657,15 +657,15 @@ describe('Test box autoType', function() {
 
         supplyAllDefaults(gd);
 
-        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.xaxis.autotypenumbers).toBe('strict');
         expect(gd._fullLayout.xaxis.type).toBe('category');
     });
 
-    it('should enable converting numeric strings using axis.convertnumeric', function() {
+    it('should enable converting numeric strings using axis.autotypenumbers', function() {
         var gd = {
             layout: {
-                axesconvertnumeric: false,
-                xaxis: { convertnumeric: true }
+                autotypenumbers: 'strict',
+                xaxis: { autotypenumbers: 'convert types' }
             },
             data: [{
                 type: 'box',
@@ -682,14 +682,14 @@ describe('Test box autoType', function() {
 
         supplyAllDefaults(gd);
 
-        expect(gd._fullLayout.xaxis.convertnumeric).toBe(true);
+        expect(gd._fullLayout.xaxis.autotypenumbers).toBe('convert types');
         expect(gd._fullLayout.xaxis.type).toBe('linear');
     });
 
-    it('should enable converting numeric inherit defaults from layout.axesconvertnumeric', function() {
+    it('should enable converting numeric inherit defaults from layout.autotypenumbers', function() {
         var gd = {
             layout: {
-                axesconvertnumeric: false,
+                autotypenumbers: 'strict',
                 xaxis: {}
             },
             data: [{
@@ -707,7 +707,7 @@ describe('Test box autoType', function() {
 
         supplyAllDefaults(gd);
 
-        expect(gd._fullLayout.xaxis.convertnumeric).toBe(false);
+        expect(gd._fullLayout.xaxis.autotypenumbers).toBe('strict');
         expect(gd._fullLayout.xaxis.type).toBe('category');
     });
 });

@@ -27,7 +27,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         attributes: layoutAttributes,
         handleDefaults: handleTernaryDefaults,
         font: layoutOut.font,
-        convertnumericDflt: layoutOut.axesconvertnumeric,
+        autotypenumbersDflt: layoutOut.autotypenumbers,
         paper_bgcolor: layoutOut.paper_bgcolor
     });
 };

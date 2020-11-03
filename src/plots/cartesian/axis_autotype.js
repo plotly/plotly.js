@@ -15,12 +15,12 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar, opts) {
-    var convertNumeric = opts.convertNumeric;
+    var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
     if(convertNumeric && moreDates(array, calendar)) return 'date';
     if(category(array)) return 'category';
-    if(linearOK(array, convertNumeric)) return 'linear';
+    if(linearOK(array)) return 'linear';
     else return convertNumeric ? '-' : 'category';
 };
 

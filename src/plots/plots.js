@@ -1476,7 +1476,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         layoutOut._dataTemplate = template.data;
     }
 
-    coerce('axesconvertnumeric');
+    coerce('autotypenumbers');
 
     var globalFont = Lib.coerceFont(coerce, 'font');
 

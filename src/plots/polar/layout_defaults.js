@@ -188,7 +188,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 }
 
 function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, options) {
-    var convertnumeric = coerce('convertnumeric', options.convertnumericDflt);
+    var autotypenumbers = coerce('autotypenumbers', options.autotypenumbersDflt);
     var axType = coerce('type');
 
     if(axType === '-') {
@@ -203,7 +203,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, opti
 
         if(trace && trace[dataAttr]) {
             axOut.type = autoType(trace[dataAttr], 'gregorian', {
-                convertNumeric: convertnumeric
+                autotypenumbers: autotypenumbers
             });
         }
 
@@ -227,7 +227,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
         font: layoutOut.font,
-        convertnumericDflt: layoutOut.axesconvertnumeric,
+        autotypenumbersDflt: layoutOut.autotypenumbers,
         paper_bgcolor: layoutOut.paper_bgcolor,
         fullData: fullData,
         layoutOut: layoutOut

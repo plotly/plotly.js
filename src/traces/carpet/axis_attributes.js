@@ -88,7 +88,7 @@ module.exports = {
             'the axis in question.'
         ].join(' ')
     },
-    convertnumeric: axesAttrs.convertnumeric,
+    autotypenumbers: axesAttrs.autotypenumbers,
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],

@@ -61,7 +61,7 @@ var radialAxisAttrs = {
     type: extendFlat({}, axesAttrs.type, {
         values: ['-', 'linear', 'log', 'date', 'category']
     }),
-    convertnumeric: axesAttrs.convertnumeric,
+    autotypenumbers: axesAttrs.autotypenumbers,
 
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
@@ -180,7 +180,7 @@ var angularAxisAttrs = {
             'If *category, use `period` to set the number of integer coordinates around polar axis.'
         ].join(' ')
     },
-    convertnumeric: axesAttrs.convertnumeric,
+    autotypenumbers: axesAttrs.autotypenumbers,
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
