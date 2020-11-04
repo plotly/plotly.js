@@ -669,6 +669,7 @@ var list = [
     'legend_horizontal_one_row',
     'legend_horizontal_wrap-alll-lines',
     'legend_inside',
+    'legend_itemwidth_dashline',
     'legend_labels',
     'legend_large_margin',
     'legend_margin-autoexpand-false',
@@ -1733,6 +1734,7 @@ figs['legend_horizontal_groups'] = require('@mocks/legend_horizontal_groups');
 figs['legend_horizontal_one_row'] = require('@mocks/legend_horizontal_one_row');
 figs['legend_horizontal_wrap-alll-lines'] = require('@mocks/legend_horizontal_wrap-alll-lines');
 figs['legend_inside'] = require('@mocks/legend_inside');
+figs['legend_itemwidth_dashline'] = require('@mocks/legend_itemwidth_dashline');
 figs['legend_labels'] = require('@mocks/legend_labels');
 figs['legend_large_margin'] = require('@mocks/legend_large_margin');
 figs['legend_margin-autoexpand-false'] = require('@mocks/legend_margin-autoexpand-false');
