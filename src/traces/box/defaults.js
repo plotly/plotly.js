@@ -109,9 +109,9 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var yLen = yDims && Lib.minRowLength(y);
     var xLen = xDims && Lib.minRowLength(x);
 
-    var calendar = 'gregorian'; // TODO: should we use ax.calendar here?
+    var calendar = layout.calendar;
     var opts = {
-        autotypenumbers: 'convert types' // TODO: should we use ax.autotypenumbers here?
+        autotypenumbers: layout.autotypenumbers
     };
 
     var defaultOrientation, len;
