@@ -19,8 +19,16 @@ module.exports = function autoType(array, calendar, opts) {
 
     if(Lib.isArrayOrTypedArray(a) && !a.length) return '-';
     if(!opts.noMultiCategory && multiCategory(a)) return 'multicategory';
-    if(opts.noMultiCategory && Lib.isArrayOrTypedArray(a[0])) {
-        a = a.flat(); // TODO: add support for IE
+    if(opts.noMultiCategory && Array.isArray(a[0])) {
+        var b = [];
+        for(var i = 0; i < a.length; i++) {
+            if(Array.isArray(a[i])) {
+                for(var j = 0; j < a[i].length; j++) {
+                    b.push(a[i][j]);
+                }
+            }
+        }
+        a = b;
     }
 
     if(moreDates(a, calendar)) return 'date';
