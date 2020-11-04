@@ -332,7 +332,7 @@ describe('Test axes', function() {
                         ['d', 'e', 'f']
                     ]
                 });
-                checkTypes('linear', 'linear');
+                checkTypes('linear', 'category');
             });
         });
 

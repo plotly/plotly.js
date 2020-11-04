@@ -15,15 +15,19 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar, opts) {
-    if(Lib.isArrayOrTypedArray(array) && !array.length) return '-';
-    if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
+    var a = array;
 
-    if(Lib.isArrayOrTypedArray(array[0])) return '-';
-    if(moreDates(array, calendar)) return 'date';
+    if(Lib.isArrayOrTypedArray(a) && !a.length) return '-';
+    if(!opts.noMultiCategory && multiCategory(a)) return 'multicategory';
+    if(opts.noMultiCategory && Lib.isArrayOrTypedArray(a[0])) {
+        a = a.flat(); // TODO: add support for IE
+    }
+
+    if(moreDates(a, calendar)) return 'date';
 
     var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
-    if(category(array, convertNumeric)) return 'category';
-    if(linearOK(array, convertNumeric)) return 'linear';
+    if(category(a, convertNumeric)) return 'category';
+    if(linearOK(a, convertNumeric)) return 'linear';
 
     return '-';
 };
