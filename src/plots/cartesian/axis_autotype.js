@@ -15,13 +15,14 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar, opts) {
-    var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
-
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
     if(moreDates(array, calendar)) return 'date';
+
+    var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
     if(category(array, convertNumeric)) return 'category';
     if(linearOK(array, convertNumeric)) return 'linear';
-    else return '-';
+
+    return '-';
 };
 
 function hasTypeNumber(v, convertNumeric) {
@@ -30,11 +31,11 @@ function hasTypeNumber(v, convertNumeric) {
 
 // is there at least one number in array? If not, we should leave
 // ax.type empty so it can be autoset later
-function linearOK(array, convertNumeric) {
-    if(!array) return false;
+function linearOK(a, convertNumeric) {
+    var len = a.length;
 
-    for(var i = 0; i < array.length; i++) {
-        if(hasTypeNumber(array[i], convertNumeric)) return true;
+    for(var i = 0; i < len; i++) {
+        if(hasTypeNumber(a[i], convertNumeric)) return true;
     }
 
     return false;
@@ -47,23 +48,31 @@ function linearOK(array, convertNumeric) {
 // numbers and a few dates
 // as with categories, consider DISTINCT values only.
 function moreDates(a, calendar) {
-    // test at most 1000 points, evenly spaced
-    var inc = Math.max(1, (a.length - 1) / 1000);
-    var dcnt = 0;
-    var ncnt = 0;
+    var len = a.length;
+    if(!len) return false;
+
+    var inc = getIncrement(len);
+    var dats = 0;
+    var nums = 0;
     var seen = {};
 
-    for(var i = 0; i < a.length; i += inc) {
-        var ai = a[Math.round(i)];
+    for(var f = 0; f < len; f += inc) {
+        var i = Math.round(f);
+        var ai = a[i];
         var stri = String(ai);
         if(seen[stri]) continue;
         seen[stri] = 1;
 
-        if(Lib.isDateTime(ai, calendar)) dcnt += 1;
-        if(isNumeric(ai)) ncnt += 1;
+        if(Lib.isDateTime(ai, calendar)) dats++;
+        if(isNumeric(ai)) nums++;
     }
 
-    return (dcnt > ncnt * 2);
+    return dats > nums * 2;
+}
+
+// return increment to test at most 1000 points, evenly spaced
+function getIncrement(len) {
+    return Math.max(1, (len - 1) / 1000);
 }
 
 // are the (x,y)-values in gd.data mostly text?
@@ -72,10 +81,9 @@ function category(a, convertNumeric) {
     var len = a.length;
     if(!len) return false;
 
-    // test at most 1000 points
-    var inc = Math.max(1, (len - 1) / 1000);
-    var curvenums = 0;
-    var curvecats = 0;
+    var inc = getIncrement(len);
+    var nums = 0;
+    var cats = 0;
     var seen = {};
 
     for(var f = 0; f < len; f += inc) {
@@ -86,12 +94,12 @@ function category(a, convertNumeric) {
         seen[stri] = 1;
 
         var t = typeof ai;
-        if(t === 'boolean') curvecats++;
-        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : t === 'number') curvenums++;
-        else if(t === 'string') curvecats++;
+        if(t === 'boolean') cats++;
+        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : t === 'number') nums++;
+        else if(t === 'string') cats++;
     }
 
-    return curvecats > curvenums * 2;
+    return cats > nums * 2;
 }
 
 // very-loose requirements for multicategory,
