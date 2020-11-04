@@ -203,6 +203,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, opti
 
         if(trace && trace[dataAttr]) {
             axOut.type = autoType(trace[dataAttr], 'gregorian', {
+                noMultiCategory: true,
                 autotypenumbers: autotypenumbers
             });
         }
