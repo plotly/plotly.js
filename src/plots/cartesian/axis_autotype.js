@@ -18,7 +18,7 @@ module.exports = function autoType(array, calendar, opts) {
     var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
-    if(convertNumeric && moreDates(array, calendar)) return 'date';
+    if(moreDates(array, calendar)) return 'date';
     if(category(array)) return 'category';
     if(linearOK(array)) return 'linear';
     else return convertNumeric ? '-' : 'category';

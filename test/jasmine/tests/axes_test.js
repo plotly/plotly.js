@@ -378,6 +378,47 @@ describe('Test axes', function() {
                 expect(layoutOut.xaxis.type).toBe('linear');
                 expect(layoutOut.yaxis.type).toBe('category');
             });
+
+            it('should autotype date having more dates with & without strict autotypenumbers', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { autotypenumbers: 'strict' }
+                };
+
+                var dates = [
+                    0,
+                    '0',
+                    '00',
+                    '0000',
+                    '1970',
+                    '2000',
+                    '2001-01',
+                    '2001-02',
+                    '2001-03',
+                    '2001-04',
+                    '2001-05',
+                    '2001-06',
+                    '2001-07',
+                    '2001-08',
+                    '2001-09',
+                    '2001-10',
+                    '2001-11',
+                    '2001-12'
+                ];
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: dates,
+                    y: dates
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('date');
+                expect(layoutOut.yaxis.type).toBe('date');
+            });
         });
 
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
