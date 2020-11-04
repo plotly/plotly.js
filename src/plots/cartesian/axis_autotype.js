@@ -15,7 +15,10 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array, calendar, opts) {
+    if(Lib.isArrayOrTypedArray(array) && !array.length) return '-';
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
+
+    if(Lib.isArrayOrTypedArray(array[0])) return '-';
     if(moreDates(array, calendar)) return 'date';
 
     var convertNumeric = opts.autotypenumbers !== 'strict'; // compare against strict, just in case autotypenumbers was not provided in opts
@@ -49,7 +52,6 @@ function linearOK(a, convertNumeric) {
 // as with categories, consider DISTINCT values only.
 function moreDates(a, calendar) {
     var len = a.length;
-    if(!len) return false;
 
     var inc = getIncrement(len);
     var dats = 0;
@@ -79,7 +81,6 @@ function getIncrement(len) {
 // require twice as many DISTINCT categories as distinct numbers
 function category(a, convertNumeric) {
     var len = a.length;
-    if(!len) return false;
 
     var inc = getIncrement(len);
     var nums = 0;
