@@ -85,9 +85,10 @@ function category(a, convertNumeric) {
         if(seen[stri]) continue;
         seen[stri] = 1;
 
-        if(typeof ai === 'boolean') curvecats++;
-        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : typeof ai === 'number') curvenums++;
-        else if(typeof ai === 'string') curvecats++;
+        var t = typeof ai;
+        if(t === 'boolean') curvecats++;
+        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : t === 'number') curvenums++;
+        else if(t === 'string') curvecats++;
     }
 
     return curvecats > curvenums * 2;
