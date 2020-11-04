@@ -217,6 +217,75 @@ describe('supplyDefaults visibility check', function() {
     });
 });
 
+describe('Test carpet autoType', function() {
+    it('should disable converting numeric strings using axis.autotypenumbers', function() {
+        var gd = {
+            layout: {
+                xaxis: { autotypenumbers: 'strict' },
+                yaxis: {}
+            },
+            data: [{
+                type: 'carpet',
+                a: ['1', '2', '3'],
+                b: ['1', '2'],
+                x: [['1', '2', '3'], ['4', '5', '6']],
+                y: [['1', '2', '3'], ['4', '5', '6']],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        var xaxis = gd._fullLayout.xaxis;
+        var yaxis = gd._fullLayout.yaxis;
+        expect(xaxis.autotypenumbers).toBe('strict');
+        expect(yaxis.autotypenumbers).toBe('convert types');
+        expect(xaxis.type).toBe('category');
+        expect(yaxis.type).toBe('linear');
+
+        // inherit default from layout.autotypenumbers
+        var aaxis = gd._fullData[0].aaxis;
+        var baxis = gd._fullData[0].baxis;
+        expect(aaxis.autotypenumbers).toBe('convert types');
+        expect(baxis.autotypenumbers).toBe('convert types');
+        expect(aaxis.type).toBe('linear');
+        expect(baxis.type).toBe('linear');
+    });
+
+    it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+        var gd = {
+            layout: {
+                autotypenumbers: 'strict',
+                xaxis: { autotypenumbers: 'convert types' },
+                yaxis: {}
+            },
+            data: [{
+                type: 'carpet',
+                a: ['1', '2', '3'],
+                b: ['1', '2'],
+                x: [['1', '2', '3'], ['4', '5', '6']],
+                y: [['1', '2', '3'], ['4', '5', '6']],
+            }]
+        };
+
+        supplyAllDefaults(gd);
+
+        var xaxis = gd._fullLayout.xaxis;
+        var yaxis = gd._fullLayout.yaxis;
+        expect(xaxis.autotypenumbers).toBe('convert types');
+        expect(yaxis.autotypenumbers).toBe('strict');
+        expect(xaxis.type).toBe('linear');
+        expect(yaxis.type).toBe('category');
+
+        // inherit default from layout.autotypenumbers
+        var aaxis = gd._fullData[0].aaxis;
+        var baxis = gd._fullData[0].baxis;
+        expect(aaxis.autotypenumbers).toBe('strict');
+        expect(baxis.autotypenumbers).toBe('strict');
+        expect(aaxis.type).toBe('category');
+        expect(baxis.type).toBe('category');
+    });
+});
+
 describe('carpet smooth_fill_2d_array', function() {
     var _;
 

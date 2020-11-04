@@ -51,6 +51,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     }
 
     // now figure out type and do some more initialization
+    coerce('autotypenumbers', options.autotypenumbersDflt);
     var axType = coerce('type');
     if(axType === '-') {
         if(options.data) setAutoType(containerOut, options.data);
@@ -219,5 +220,7 @@ function setAutoType(ax, data) {
     var calAttr = axLetter + 'calendar';
     var calendar = ax[calAttr];
 
-    ax.type = autoType(data, calendar);
+    ax.type = autoType(data, calendar, {
+        autotypenumbers: ax.autotypenumbers
+    });
 }

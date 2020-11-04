@@ -190,6 +190,7 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             layoutOut = {
+                autotypenumbers: 'convert types',
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
                 _dfltTitle: {x: 'x', y: 'y'},
@@ -331,7 +332,92 @@ describe('Test axes', function() {
                         ['d', 'e', 'f']
                     ]
                 });
-                checkTypes('linear', 'linear');
+                checkTypes('linear', 'category');
+            });
+        });
+
+        describe('autotype disable/enable converting numeric strings', function() {
+            it('should disable converting numeric strings using axis.autotypenumbers', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { autotypenumbers: 'strict' }
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+
+            it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+                layoutOut.autotypenumbers = 'strict';
+
+                layoutIn = {
+                    xaxis: { autotypenumbers: 'convert types' },
+                    yaxis: {}
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+
+            it('should autotype date having more dates with & without strict autotypenumbers', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { autotypenumbers: 'strict' }
+                };
+
+                var dates = [
+                    0,
+                    '0',
+                    '00',
+                    '0000',
+                    '1970',
+                    '2000',
+                    '2001-01',
+                    '2001-02',
+                    '2001-03',
+                    '2001-04',
+                    '2001-05',
+                    '2001-06',
+                    '2001-07',
+                    '2001-08',
+                    '2001-09',
+                    '2001-10',
+                    '2001-11',
+                    '2001-12'
+                ];
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: dates,
+                    y: dates
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('date');
+                expect(layoutOut.yaxis.type).toBe('date');
             });
         });
 

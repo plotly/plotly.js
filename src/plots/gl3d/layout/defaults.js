@@ -40,6 +40,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         font: layoutOut.font,
         fullData: fullData,
         getDfltFromLayout: getDfltFromLayout,
+        autotypenumbersDflt: layoutOut.autotypenumbers,
         paper_bgcolor: layoutOut.paper_bgcolor,
         calendar: layoutOut.calendar
     });
@@ -109,6 +110,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         data: fullGl3dData,
         bgColor: bgColorCombined,
         calendar: opts.calendar,
+        autotypenumbersDflt: opts.autotypenumbersDflt,
         fullLayout: opts.fullLayout
     });
 
