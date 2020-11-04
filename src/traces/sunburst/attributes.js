@@ -34,7 +34,7 @@ module.exports = {
             'Empty string items \'\' are understood to reference',
             'the root node in the hierarchy.',
             'If `ids` is filled, `parents` items are understood to be "ids" themselves.',
-            'When `ids` is not set, plotly.js attempts to find matching items in `labels`,',
+            'When `ids` is not set, plotly attempts to find matching items in `labels`,',
             'but beware they must be unique.'
         ].join(' ')
     },
@@ -83,7 +83,7 @@ module.exports = {
         description: [
             'Sets the level from which this trace hierarchy is rendered.',
             'Set `level` to `\'\'` to start from the root node in the hierarchy.',
-            'Must be an "id" if `ids` is filled in, otherwise plotly.js attempts to find a matching',
+            'Must be an "id" if `ids` is filled in, otherwise plotly attempts to find a matching',
             'item in `labels`.'
         ].join(' ')
     },

@@ -97,7 +97,7 @@ module.exports = {
         _noTemplating: true,
         description: [
             'Sets the axis type.',
-            'By default, plotly.js attempts to determined the axis type',
+            'By default, plotly attempts to determined the axis type',
             'by looking into the data of the traces that referenced',
             'the axis in question.'
         ].join(' ')
