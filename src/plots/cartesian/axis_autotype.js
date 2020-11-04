@@ -14,15 +14,21 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
+var isDateTime = Lib.isDateTime;
+var cleanNumber = Lib.cleanNumber;
+var round = Math.round;
+
 module.exports = function autoType(array, calendar, opts) {
     var a = array;
 
-    if(Lib.isArrayOrTypedArray(a) && !a.length) return '-';
-    if(!opts.noMultiCategory && multiCategory(a)) return 'multicategory';
-    if(opts.noMultiCategory && Array.isArray(a[0])) {
+    var noMultiCategory = opts.noMultiCategory;
+    if(isArrayOrTypedArray(a) && !a.length) return '-';
+    if(!noMultiCategory && multiCategory(a)) return 'multicategory';
+    if(noMultiCategory && Array.isArray(a[0])) { // no need to flat typed arrays here
         var b = [];
         for(var i = 0; i < a.length; i++) {
-            if(Array.isArray(a[i])) {
+            if(isArrayOrTypedArray(a[i])) {
                 for(var j = 0; j < a[i].length; j++) {
                     b.push(a[i][j]);
                 }
@@ -71,13 +77,13 @@ function moreDates(a, calendar) {
     var seen = {};
 
     for(var f = 0; f < len; f += inc) {
-        var i = Math.round(f);
+        var i = round(f);
         var ai = a[i];
         var stri = String(ai);
         if(seen[stri]) continue;
         seen[stri] = 1;
 
-        if(Lib.isDateTime(ai, calendar)) dats++;
+        if(isDateTime(ai, calendar)) dats++;
         if(isNumeric(ai)) nums++;
     }
 
@@ -100,7 +106,7 @@ function category(a, convertNumeric) {
     var seen = {};
 
     for(var f = 0; f < len; f += inc) {
-        var i = Math.round(f);
+        var i = round(f);
         var ai = a[i];
         var stri = String(ai);
         if(seen[stri]) continue;
@@ -108,7 +114,7 @@ function category(a, convertNumeric) {
 
         var t = typeof ai;
         if(t === 'boolean') cats++;
-        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : t === 'number') nums++;
+        else if(convertNumeric ? cleanNumber(ai) !== BADNUM : t === 'number') nums++;
         else if(t === 'string') cats++;
     }
 
@@ -119,5 +125,5 @@ function category(a, convertNumeric) {
 // trace modules that should never auto-type to multicategory
 // should be declared with 'noMultiCategory'
 function multiCategory(a) {
-    return Lib.isArrayOrTypedArray(a[0]) && Lib.isArrayOrTypedArray(a[1]);
+    return isArrayOrTypedArray(a[0]) && isArrayOrTypedArray(a[1]);
 }
