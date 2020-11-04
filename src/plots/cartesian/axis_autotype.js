@@ -19,9 +19,9 @@ module.exports = function autoType(array, calendar, opts) {
 
     if(!opts.noMultiCategory && multiCategory(array)) return 'multicategory';
     if(moreDates(array, calendar)) return 'date';
-    if(category(array)) return 'category';
-    if(linearOK(array)) return 'linear';
-    else return convertNumeric ? '-' : 'category';
+    if(category(array, convertNumeric)) return 'category';
+    if(linearOK(array, convertNumeric)) return 'linear';
+    else return '-';
 };
 
 function hasTypeNumber(v, convertNumeric) {
@@ -68,7 +68,7 @@ function moreDates(a, calendar) {
 
 // are the (x,y)-values in gd.data mostly text?
 // require twice as many DISTINCT categories as distinct numbers
-function category(a) {
+function category(a, convertNumeric) {
     var len = a.length;
     if(!len) return false;
 
@@ -86,7 +86,7 @@ function category(a) {
         seen[stri] = 1;
 
         if(typeof ai === 'boolean') curvecats++;
-        else if(Lib.cleanNumber(ai) !== BADNUM) curvenums++;
+        else if(convertNumeric ? Lib.cleanNumber(ai) !== BADNUM : typeof ai === 'number') curvenums++;
         else if(typeof ai === 'string') curvecats++;
     }
 
