@@ -2330,129 +2330,118 @@ describe('Cartesian plots with css transforms', function() {
             margin: {l: 0, t: 0, r: 0, b: 0}
         }
     };
-    // var data = [{
-    //     x: xLabels,
-    //     y: [1, 2, 3],
-    //     type: 'bar'
-    // }];
-    // var layout = {
-    //     width: 600,
-    //     height: 400,
-    //     margin: {l: 0, t: 0, r: 0, b: 0}
-    // };
     var transforms = ['scale(0.5)'];
 
     transforms.forEach(function(transform) {
 
-    });
-
-    it('hover behaves correctly after css transform', function(done) {
+        it(`hover behaves correctly after css transform: ${transform}`, function(done) {
     
-        function _hoverAndAssertEventOccurred(point, label) {
-            return _hover(point)
+            function _hoverAndAssertEventOccurred(point, label) {
+                return _hover(point)
+                .then(function() {
+                    expect(eventRecordings[label]).toBe(1);
+                })
+                .then(function() {
+                    _unhover(point);
+                });
+            }
+    
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
-                expect(eventRecordings[label]).toBe(1);
+                gd.on('plotly_hover', function(d) {
+                    eventRecordings[d.points[0].x] = 1;
+                });
             })
             .then(function() {
-                _unhover(point);
-            });
-        }
-
-        Plotly.plot(gd, Lib.extendDeep({}, mock))
-        .then(function() {
-            gd.on('plotly_hover', function(d) {
-                eventRecordings[d.points[0].x] = 1;
-            });
-        })
-        .then(function() {
-            transformPlot(gd, 'scale(0.5)');
-            recalculateInverse(gd);
-        })
-        .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
-        .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
-        .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('drag-zoom behaves correctly after css transform', function(done) {
-
-        // return a rect of form {left, top, width, height} from the zoomlayer
-        // svg path.
-        function _getZoomlayerPathRect(pathStr) {
-            var rect = {};
-            rect.height = Number(pathStr.split('v')[1].split('h')[0]);
-            rect.width = Number(pathStr.split('h')[1].split('v')[0]);
-            var startCoordsString = pathStr.split('M')[2].split('v')[0];
-            rect.left = Number(startCoordsString.split(',')[0]);
-            rect.top = Number(startCoordsString.split(',')[1]);
-            return rect;
-        }
-
-        // asserts that the zoombox path must go from the start to end positions,
-        // in css-transformed coordinates.
-        function _assertTransformedZoombox(startPos, endPos) {
-            startPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(startPos[0], startPos[1]);
-            endPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(endPos[0], endPos[1]);
-            var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
-            var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
-            var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
-            expect(zoomboxRect.left).toBeCloseTo(startPos[0]);
-            expect(zoomboxRect.top).toBeCloseTo(startPos[1]);
-            expect(zoomboxRect.width).toBeCloseTo(size[0]);
-            expect(zoomboxRect.height).toBeCloseTo(size[1]);
-        }
-
-        var start = [50, 50];
-        var end = [150, 150]
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
+            .catch(failTest)
+            .then(done);
+        });
     
-        Plotly.plot(gd, Lib.extendDeep({}, mock))
-        .then(function() {
-            transformPlot(gd, 'scale(0.5)');
-            recalculateInverse(gd);
-        })
-        .then(function()  {_drag(start, end); })
-        .then(function()  {
-            _assertTransformedZoombox(start, end); 
-        })
-        .then(function() { mouseEvent('mouseup', 0, 0); })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('select behaves correctly after css transform', function(done) {
-
-        function _assertSelected(expectation) {
-            var data = gd._fullData[0];
-            var points = data.selectedpoints;
-            expect(typeof(points) !== 'undefined').toBeTrue();
-            if (expectation.numPoints)
-                expect(points.length).toBe(expectation.numPoints);
-            if (expectation.selectedLabels) {
-                var selectedLabels = points.map(function(i) { return data.x[i]; })
-                expect(selectedLabels).toEqual(expectation.selectedLabels);
+        it(`drag-zoom behaves correctly after css transform: ${transform}`, function(done) {
+    
+            // return a rect of form {left, top, width, height} from the zoomlayer
+            // svg path.
+            function _getZoomlayerPathRect(pathStr) {
+                var rect = {};
+                rect.height = Number(pathStr.split('v')[1].split('h')[0]);
+                rect.width = Number(pathStr.split('h')[1].split('v')[0]);
+                var startCoordsString = pathStr.split('M')[2].split('v')[0];
+                rect.left = Number(startCoordsString.split(',')[0]);
+                rect.top = Number(startCoordsString.split(',')[1]);
+                return rect;
             }
-        }
-
-        var start = [10, 10];
-        var end = [200, 200];
-
-        Plotly.plot(gd, Lib.extendDeep({}, mock))
-        .then(function() {
-            transformPlot(gd, 'scale(0.5)');
-            recalculateInverse(gd);
-        })
-        .then(function() {
-            return Plotly.relayout(gd, 'dragmode', 'select');
-        })
-        .then(function() {
-            _dragRelease(start, end);
-        })
-        .then(function() {
-            _assertSelected({numPoints: 2, selectedLabels: ["one", "two"]});
-        })
-        .catch(failTest)
-        .then(done);
+    
+            // asserts that the zoombox path must go from the start to end positions,
+            // in css-transformed coordinates.
+            function _assertTransformedZoombox(startPos, endPos) {
+                startPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(startPos[0], startPos[1]);
+                endPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(endPos[0], endPos[1]);
+                var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
+                var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
+                expect(zoomboxRect.left).toBeCloseTo(startPos[0]);
+                expect(zoomboxRect.top).toBeCloseTo(startPos[1]);
+                expect(zoomboxRect.width).toBeCloseTo(size[0]);
+                expect(zoomboxRect.height).toBeCloseTo(size[1]);
+            }
+    
+            var start = [50, 50];
+            var end = [150, 150]
+        
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function()  {_drag(start, end); })
+            .then(function()  {
+                _assertTransformedZoombox(start, end); 
+            })
+            .then(function() { mouseEvent('mouseup', 0, 0); })
+            .catch(failTest)
+            .then(done);
+        });
+    
+        it(`select behaves correctly after css transform: ${transform}`, function(done) {
+    
+            function _assertSelected(expectation) {
+                var data = gd._fullData[0];
+                var points = data.selectedpoints;
+                expect(typeof(points) !== 'undefined').toBeTrue();
+                if (expectation.numPoints)
+                    expect(points.length).toBe(expectation.numPoints);
+                if (expectation.selectedLabels) {
+                    var selectedLabels = points.map(function(i) { return data.x[i]; })
+                    expect(selectedLabels).toEqual(expectation.selectedLabels);
+                }
+            }
+    
+            var start = [10, 10];
+            var end = [200, 200];
+    
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() {
+                _dragRelease(start, end);
+            })
+            .then(function() {
+                _assertSelected({numPoints: 2, selectedLabels: ["one", "two"]});
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
 });
