@@ -69,14 +69,18 @@ function moreDates(a, calendar) {
 // are the (x,y)-values in gd.data mostly text?
 // require twice as many DISTINCT categories as distinct numbers
 function category(a) {
+    var len = a.length;
+    if(!len) return false;
+
     // test at most 1000 points
-    var inc = Math.max(1, (a.length - 1) / 1000);
+    var inc = Math.max(1, (len - 1) / 1000);
     var curvenums = 0;
     var curvecats = 0;
     var seen = {};
 
-    for(var i = 0; i < a.length; i += inc) {
-        var ai = a[Math.round(i)];
+    for(var f = 0; f < len; f += inc) {
+        var i = Math.round(f);
+        var ai = a[i];
         var stri = String(ai);
         if(seen[stri]) continue;
         seen[stri] = 1;
