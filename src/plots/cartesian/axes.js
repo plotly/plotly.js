@@ -2043,9 +2043,7 @@ axes.drawOne = function(gd, ax, opts) {
     if(!ax.visible) return;
 
     var transTickFn = axes.makeTransTickFn(ax);
-    var transTickLabelFn = ax.ticklabelmode === 'period' ?
-        axes.makeTransPeriodFn(ax) :
-        axes.makeTransTickFn(ax);
+    var transTickLabelFn = axes.makeTransTickLabelFn(ax);
 
     var tickVals;
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
@@ -2473,15 +2471,19 @@ axes.getTickSigns = function(ax) {
 axes.makeTransTickFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
+
     return axLetter === 'x' ?
         function(d) { return strTranslate(offset + ax.l2p(d.x), 0); } :
         function(d) { return strTranslate(0, offset + ax.l2p(d.x)); };
 };
 
-axes.makeTransPeriodFn = function(ax) {
+axes.makeTransTickLabelFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
-    return axLetter === 'x' ?
+    var isX = axLetter === 'x';
+
+    if(ax.ticklabelmode === 'period') {
+        return isX ?
         function(d) {
             return strTranslate(
                 offset + ax.l2p(getPeriodX(d)),
@@ -2494,6 +2496,9 @@ axes.makeTransPeriodFn = function(ax) {
                 offset + ax.l2p(getPeriodX(d))
             );
         };
+    }
+
+    return axes.makeTransTickFn(ax);
 };
 
 function getPeriodX(d) {
