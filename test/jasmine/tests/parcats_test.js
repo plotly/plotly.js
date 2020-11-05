@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var strTranslate = Lib.strTranslate;
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -104,7 +105,7 @@ function checkParcatsSvg(gd) {
     var parcatsTraceSelection = d3.select('g.trace.parcats');
 
     expect(parcatsTraceSelection.attr('transform')).toEqual(
-        makeTranslate(
+        strTranslate(
             size.w * domain.x[0] + margin.r,
             size.h * domain.y[0] + margin.t));
 
@@ -116,7 +117,7 @@ function checkParcatsSvg(gd) {
     dimensionSelection.each(function(dimension, dimInd) {
         var expectedX = categoryLabelPad + dimInd * dimDx;
         var expectedY = 0;
-        var expectedTransform = makeTranslate(expectedX, expectedY);
+        var expectedTransform = strTranslate(expectedX, expectedY);
         expect(d3.select(this).attr('transform')).toEqual(expectedTransform);
     });
 
@@ -130,7 +131,7 @@ function checkParcatsSvg(gd) {
             var catWidth = catSel.datum().width;
             var catHeight = catSel.datum().height;
 
-            var expectedTransform = 'translate(0, ' + nextY + ')';
+            var expectedTransform = strTranslate(0, nextY);
             expect(catSel.attr('transform')).toEqual(expectedTransform);
             nextY += category.height + catSpacing;
 
@@ -149,10 +150,6 @@ function checkParcatsSvg(gd) {
             expect(catLabel.attr('y')).toEqual(expectedY.toString());
         });
     });
-}
-
-function makeTranslate(x, y) {
-    return 'translate(' + x + ', ' + y + ')';
 }
 
 

@@ -79,19 +79,19 @@ describe('Drawing', function() {
 
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
-            el.setAttribute('transform', 'translate(123.45px, 67)');
+            el.setAttribute('transform', 'translate(123.45px,67)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
 
             el.setAttribute('transform', 'translate(123.45)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
 
-            el.setAttribute('transform', 'translate(1 2)');
+            el.setAttribute('transform', 'translate(1,2)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
-            el.setAttribute('transform', 'translate(1 2); rotate(20deg)');
+            el.setAttribute('transform', 'translate(1,2); rotate(20deg)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
-            el.setAttribute('transform', 'rotate(20deg) translate(1 2);');
+            el.setAttribute('transform', 'rotate(20deg)translate(1,2);');
             expect(Drawing.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
             el.setAttribute('transform', 'rotate(20deg)');
@@ -101,16 +101,16 @@ describe('Drawing', function() {
         it('should work with d3 elements', function() {
             var el = d3.select(document.createElement('div'));
 
-            el.attr('transform', 'translate(123.45px, 67)');
+            el.attr('transform', 'translate(123.45px,67)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
 
             el.attr('transform', 'translate(123.45)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
 
-            el.attr('transform', 'translate(1 2)');
+            el.attr('transform', 'translate(1,2)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
-            el.attr('transform', 'translate(1 2); rotate(20)');
+            el.attr('transform', 'translate(1,2); rotate(20)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
             el.attr('transform', 'rotate(20)');
@@ -124,19 +124,19 @@ describe('Drawing', function() {
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
             var testCases = [
-                { transform: 'translate(-123.45px, -67)', x: -123.45, y: -67 },
-                { transform: 'translate(-123.45px, 67)', x: -123.45, y: 67 },
-                { transform: 'translate(123.45px, -67)', x: 123.45, y: -67 },
+                { transform: 'translate(-123.45px,-67)', x: -123.45, y: -67 },
+                { transform: 'translate(-123.45px,67)', x: -123.45, y: 67 },
+                { transform: 'translate(123.45px,-67)', x: 123.45, y: -67 },
                 { transform: 'translate(-123.45)', x: -123.45, y: 0 },
-                { transform: 'translate(-1 -2)', x: -1, y: -2 },
-                { transform: 'translate(-1 2)', x: -1, y: 2 },
-                { transform: 'translate(1 -2)', x: 1, y: -2 },
-                { transform: 'translate(-1 -2); rotate(20deg)', x: -1, y: -2 },
-                { transform: 'translate(-1 2); rotate(20deg)', x: -1, y: 2 },
-                { transform: 'translate(1 -2); rotate(20deg)', x: 1, y: -2 },
-                { transform: 'rotate(20deg) translate(-1 -2);', x: -1, y: -2 },
-                { transform: 'rotate(20deg) translate(-1 2);', x: -1, y: 2 },
-                { transform: 'rotate(20deg) translate(1 -2);', x: 1, y: -2 }
+                { transform: 'translate(-1,-2)', x: -1, y: -2 },
+                { transform: 'translate(-1,2)', x: -1, y: 2 },
+                { transform: 'translate(1,-2)', x: 1, y: -2 },
+                { transform: 'translate(-1,-2); rotate(20deg)', x: -1, y: -2 },
+                { transform: 'translate(-1,2); rotate(20deg)', x: -1, y: 2 },
+                { transform: 'translate(1,-2); rotate(20deg)', x: 1, y: -2 },
+                { transform: 'rotate(20deg)translate(-1,-2);', x: -1, y: -2 },
+                { transform: 'rotate(20deg)translate(-1,2);', x: -1, y: 2 },
+                { transform: 'rotate(20deg)translate(1,-2);', x: 1, y: -2 }
             ];
 
             for(var i = 0; i < testCases.length; i++) {
@@ -159,34 +159,34 @@ describe('Drawing', function() {
             var el = document.createElement('div');
 
             Drawing.setTranslate(el, 5);
-            expect(el.getAttribute('transform')).toBe('translate(5, 0)');
+            expect(el.getAttribute('transform')).toBe('translate(5,0)');
 
             Drawing.setTranslate(el, 10, 20);
-            expect(el.getAttribute('transform')).toBe('translate(10, 20)');
+            expect(el.getAttribute('transform')).toBe('translate(10,20)');
 
             Drawing.setTranslate(el);
-            expect(el.getAttribute('transform')).toBe('translate(0, 0)');
+            expect(el.getAttribute('transform')).toBe('');
 
-            el.setAttribute('transform', 'translate(0, 0); rotate(30)');
+            el.setAttribute('transform', 'rotate(30)');
             Drawing.setTranslate(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('rotate(30) translate(30, 40)');
+            expect(el.getAttribute('transform')).toBe('rotate(30)translate(30,40)');
         });
 
         it('should work with d3 elements', function() {
             var el = d3.select(document.createElement('div'));
 
             Drawing.setTranslate(el, 5);
-            expect(el.attr('transform')).toBe('translate(5, 0)');
+            expect(el.attr('transform')).toBe('translate(5,0)');
 
             Drawing.setTranslate(el, 30, 40);
-            expect(el.attr('transform')).toBe('translate(30, 40)');
+            expect(el.attr('transform')).toBe('translate(30,40)');
 
             Drawing.setTranslate(el);
-            expect(el.attr('transform')).toBe('translate(0, 0)');
+            expect(el.attr('transform')).toBe('');
 
-            el.attr('transform', 'translate(0, 0); rotate(30)');
+            el.attr('transform', 'rotate(30)');
             Drawing.setTranslate(el, 30, 40);
-            expect(el.attr('transform')).toBe('rotate(30) translate(30, 40)');
+            expect(el.attr('transform')).toBe('rotate(30)translate(30,40)');
         });
     });
 
@@ -202,13 +202,13 @@ describe('Drawing', function() {
             el.setAttribute('transform', 'scale(123.45)');
             expect(Drawing.getScale(el)).toEqual({ x: 123.45, y: 1 });
 
-            el.setAttribute('transform', 'scale(0.1 2)');
+            el.setAttribute('transform', 'scale(0.1,2)');
             expect(Drawing.getScale(el)).toEqual({ x: 0.1, y: 2 });
 
-            el.setAttribute('transform', 'scale(0.1 2); rotate(20deg)');
+            el.setAttribute('transform', 'scale(0.1,2); rotate(20deg)');
             expect(Drawing.getScale(el)).toEqual({ x: 0.1, y: 2 });
 
-            el.setAttribute('transform', 'rotate(20deg) scale(0.1 2);');
+            el.setAttribute('transform', 'rotate(20deg)scale(0.1,2);');
             expect(Drawing.getScale(el)).toEqual({ x: 0.1, y: 2 });
 
             el.setAttribute('transform', 'rotate(20deg)');
@@ -218,16 +218,16 @@ describe('Drawing', function() {
         it('should work with d3 elements', function() {
             var el = d3.select(document.createElement('div'));
 
-            el.attr('transform', 'scale(1.23, 45)');
+            el.attr('transform', 'scale(1.23,45)');
             expect(Drawing.getScale(el)).toEqual({ x: 1.23, y: 45 });
 
             el.attr('transform', 'scale(123.45)');
             expect(Drawing.getScale(el)).toEqual({ x: 123.45, y: 1 });
 
-            el.attr('transform', 'scale(0.1 2)');
+            el.attr('transform', 'scale(0.1,2)');
             expect(Drawing.getScale(el)).toEqual({ x: 0.1, y: 2 });
 
-            el.attr('transform', 'scale(0.1 2); rotate(20)');
+            el.attr('transform', 'scale(0.1,2); rotate(20)');
             expect(Drawing.getScale(el)).toEqual({ x: 0.1, y: 2 });
 
             el.attr('transform', 'rotate(20)');
@@ -240,34 +240,34 @@ describe('Drawing', function() {
             var el = document.createElement('div');
 
             Drawing.setScale(el, 5);
-            expect(el.getAttribute('transform')).toBe('scale(5, 1)');
+            expect(el.getAttribute('transform')).toBe('scale(5,1)');
 
             Drawing.setScale(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('scale(30, 40)');
+            expect(el.getAttribute('transform')).toBe('scale(30,40)');
 
             Drawing.setScale(el);
-            expect(el.getAttribute('transform')).toBe('scale(1, 1)');
+            expect(el.getAttribute('transform')).toBe('scale(1,1)');
 
-            el.setAttribute('transform', 'scale(1, 1); rotate(30)');
+            el.setAttribute('transform', 'scale(1,1); rotate(30)');
             Drawing.setScale(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('rotate(30) scale(30, 40)');
+            expect(el.getAttribute('transform')).toBe('rotate(30)scale(30,40)');
         });
 
         it('should work with d3 elements', function() {
             var el = d3.select(document.createElement('div'));
 
             Drawing.setScale(el, 5);
-            expect(el.attr('transform')).toBe('scale(5, 1)');
+            expect(el.attr('transform')).toBe('scale(5,1)');
 
             Drawing.setScale(el, 30, 40);
-            expect(el.attr('transform')).toBe('scale(30, 40)');
+            expect(el.attr('transform')).toBe('scale(30,40)');
 
             Drawing.setScale(el);
-            expect(el.attr('transform')).toBe('scale(1, 1)');
+            expect(el.attr('transform')).toBe('scale(1,1)');
 
-            el.attr('transform', 'scale(0, 0); rotate(30)');
+            el.attr('transform', 'scale(0,0); rotate(30)');
             Drawing.setScale(el, 30, 40);
-            expect(el.attr('transform')).toBe('rotate(30) scale(30, 40)');
+            expect(el.attr('transform')).toBe('rotate(30)scale(30,40)');
         });
     });
 
@@ -287,23 +287,23 @@ describe('Drawing', function() {
         it('appends the scale of a point', function() {
             el.setAttribute('transform', 'translate(1,2)');
             Drawing.setPointGroupScale(sel, 2, 2);
-            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+            expect(el.getAttribute('transform')).toBe('translate(1,2)scale(2,2)');
         });
 
         it('modifies the scale of a point', function() {
-            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+            el.setAttribute('transform', 'translate(1,2)scale(3,4)');
             Drawing.setPointGroupScale(sel, 2, 2);
-            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+            expect(el.getAttribute('transform')).toBe('translate(1,2)scale(2,2)');
         });
 
-        it('does not apply the scale of a point if scale (1, 1)', function() {
+        it('does not apply the scale of a point if scale (1,1)', function() {
             el.setAttribute('transform', 'translate(1,2)');
             Drawing.setPointGroupScale(sel, 1, 1);
             expect(el.getAttribute('transform')).toBe('translate(1,2)');
         });
 
-        it('removes the scale of a point if scale (1, 1)', function() {
-            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+        it('removes the scale of a point if scale (1,1)', function() {
+            el.setAttribute('transform', 'translate(1,2)scale(3,4)');
             Drawing.setPointGroupScale(sel, 1, 1);
             expect(el.getAttribute('transform')).toBe('translate(1,2)');
         });
@@ -320,7 +320,7 @@ describe('Drawing', function() {
 
         it('sets the transform on an empty element', function() {
             Drawing.setTextPointsScale(g, 2, 3);
-            expect(g.attr('transform')).toEqual('translate(0,0) scale(2,3) translate(0,0)');
+            expect(g.attr('transform')).toEqual('scale(2,3)');
         });
 
         it('unsets the transform', function() {
@@ -330,16 +330,16 @@ describe('Drawing', function() {
 
         it('preserves a leading translate', function() {
             Drawing.setTextPointsScale(g, 1, 1);
-            g.attr('transform', 'translate(1, 2)');
-            expect(g.attr('transform')).toEqual('translate(1, 2)');
+            g.attr('transform', 'translate(1,2)');
+            expect(g.attr('transform')).toEqual('translate(1,2)');
         });
 
         it('preserves transforms', function() {
             text.attr('x', 8);
             text.attr('y', 9);
-            g.attr('transform', 'translate(1, 2)');
+            g.attr('transform', 'translate(1,2)');
             Drawing.setTextPointsScale(g, 4, 5);
-            expect(g.attr('transform')).toEqual('translate(8,9) scale(4,5) translate(-8,-9) translate(1, 2)');
+            expect(g.attr('transform')).toEqual('translate(8,9)scale(4,5)translate(-8,-9)translate(1,2)');
         });
 
         it('should not break when <text> is not present', function() {

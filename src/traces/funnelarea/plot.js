@@ -12,6 +12,8 @@ var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var strScale = Lib.strScale;
+var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var barPlot = require('../bar/plot');
@@ -167,9 +169,9 @@ module.exports = function plot(gd, cdModule) {
                 var transform = positionTitleOutside(cd0, fullLayout._size);
 
                 titleText.attr('transform',
-                    'translate(' + transform.x + ',' + transform.y + ')' +
-                    (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
-                    'translate(' + transform.tx + ',' + transform.ty + ')');
+                    strTranslate(transform.x, transform.y) +
+                    strScale(Math.min(1, transform.scale)) +
+                    strTranslate(transform.tx, transform.ty));
             });
         });
     });

@@ -13,6 +13,8 @@ var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strRotate = Lib.strRotate;
+var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
@@ -379,7 +381,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // easier to set rotate angle with custom translate function
     var transFn = function(d) {
-        return 'translate(' + (ax.l2p(d.x) + innerRadius) + ',0)';
+        return strTranslate(ax.l2p(d.x) + innerRadius, 0);
     };
 
     // set special grid path function
@@ -1418,12 +1420,4 @@ function updateElement(sel, showAttr, attrs) {
         sel.attr('display', 'none');
     }
     return sel;
-}
-
-function strTranslate(x, y) {
-    return 'translate(' + x + ',' + y + ')';
-}
-
-function strRotate(angle) {
-    return 'rotate(' + angle + ')';
 }

@@ -13,6 +13,7 @@ var d3 = require('d3');
 var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
 var sortAsc = require('../../lib').sorterAsc;
+var strTranslate = require('../../lib').strTranslate;
 
 var snapRatio = c.bar.snapRatio;
 function snapOvershoot(v, vAdjacent) { return v * (1 - snapRatio) + vAdjacent * snapRatio; }
@@ -370,7 +371,7 @@ function renderAxisBrush(axisBrush) {
         .call(barHorizontalSetup)
         .call(backgroundBarHorizontalSetup)
         .style('pointer-events', 'auto') // parent pointer events are disabled; we must have it to register events
-        .attr('transform', 'translate(0 ' + c.verticalPadding + ')');
+        .attr('transform', strTranslate(0, c.verticalPadding));
 
     background
         .call(attachDragBehavior)

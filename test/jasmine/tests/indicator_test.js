@@ -154,8 +154,7 @@ describe('Indicator plot', function() {
             expect(numbers.length).toBe(1);
 
             var transform = numbers.attr('transform');
-            expect(transform.match('scale')).toBeTruthy('cannot find scale attribute on text.numbers[0]');
-            var scale = transform.match(/.*scale\((.*)\)/)[1];
+            var scale = transform.match('scale') ? transform.match(/.*scale\((.*)\)/)[1] : 1;
 
             expect(scale).toBeCloseTo(value, 1, msg);
         }

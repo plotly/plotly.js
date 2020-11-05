@@ -11,6 +11,8 @@
 var mapboxgl = require('mapbox-gl');
 
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
+var strScale = Lib.strScale;
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var d3 = require('d3');
@@ -127,7 +129,7 @@ exports.toSVG = function(gd) {
         var hidden = subplotDiv.select('.mapboxgl-ctrl-logo').node().offsetParent === null;
         if(!hidden) {
             var logo = fullLayout._glimages.append('g');
-            logo.attr('transform', 'translate(' + (size.l + size.w * domain.x[0] + 10) + ', ' + (size.t + size.h * (1 - domain.y[0]) - 31) + ')');
+            logo.attr('transform', strTranslate(size.l + size.w * domain.x[0] + 10, size.t + size.h * (1 - domain.y[0]) - 31));
             logo.append('path')
               .attr('d', constants.mapboxLogo.path0)
               .style({
@@ -187,7 +189,7 @@ exports.toSVG = function(gd) {
 
             bBox = Drawing.bBox(attributionText.node());
         }
-        attributionText.attr('transform', 'translate(-3, ' + (-bBox.height + 8) + ')');
+        attributionText.attr('transform', strTranslate(-3, -bBox.height + 8));
 
         // Draw white rectangle behind text
         attributionGroup
@@ -205,7 +207,7 @@ exports.toSVG = function(gd) {
         if((bBox.width + 6) > maxWidth) scaleRatio = maxWidth / (bBox.width + 6);
 
         var offset = [(size.l + size.w * domain.x[1]), (size.t + size.h * (1 - domain.y[0]))];
-        attributionGroup.attr('transform', 'translate(' + offset[0] + ',' + offset[1] + ') scale(' + scaleRatio + ')');
+        attributionGroup.attr('transform', strTranslate(offset[0], offset[1]) + strScale(scaleRatio));
     }
 };
 

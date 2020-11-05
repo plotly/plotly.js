@@ -12,6 +12,7 @@ var d3 = require('d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var Drawing = require('../drawing');
 var Color = require('../color');
 var extractOpts = require('../colorscale/helpers').extractOpts;
@@ -34,7 +35,7 @@ module.exports = function style(s, gd, legend) {
     var constantItemSizing = legend.itemsizing === 'constant';
     var itemWidth = legend.itemwidth;
     var centerPos = (itemWidth + constants.itemGap * 2) / 2;
-    var centerTransform = 'translate(' + centerPos + ',0)';
+    var centerTransform = strTranslate(centerPos, 0);
 
     var boundLineWidth = function(mlw, cont, max, cst) {
         var v;
@@ -63,7 +64,7 @@ module.exports = function style(s, gd, legend) {
         } else {
             var factor = {top: 1, bottom: -1}[valign];
             var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
-            layers.attr('transform', 'translate(0,' + markerOffsetY + ')');
+            layers.attr('transform', strTranslate(0, markerOffsetY));
         }
 
         var fill = layers

@@ -13,6 +13,8 @@ var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var strRotate = Lib.strRotate;
+var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
@@ -518,7 +520,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .style('pointer-events', 'none');
 
     controlOverlay.attr('transform', function(d) {
-        return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
+        return strTranslate(d.model.translateX, d.model.translateY);
     });
 
     var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
@@ -529,7 +531,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.parcoordsControlView, true);
 
     parcoordsControlView.attr('transform', function(d) {
-        return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';
+        return strTranslate(d.model.pad.l, d.model.pad.t);
     });
 
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
@@ -560,7 +562,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     yAxis.attr('transform', function(d) {
-        return 'translate(' + d.xScale(d.xIndex) + ', 0)';
+        return strTranslate(d.xScale(d.xIndex), 0);
     });
 
     // drag column for reordering columns
@@ -582,8 +584,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             updatePanelLayout(yAxis, p);
 
             yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
-                .attr('transform', function(d) { return 'translate(' + d.xScale(d.xIndex) + ', 0)'; });
-            d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
+                .attr('transform', function(d) { return strTranslate(d.xScale(d.xIndex), 0); });
+            d3.select(this).attr('transform', strTranslate(d.x, 0));
             yAxis.each(function(e, i0, i1) { if(i1 === d.parent.key) p.dimensions[i0] = e; });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
@@ -594,7 +596,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             d.canvasX = d.x * d.model.canvasPixelRatio;
             updatePanelLayout(yAxis, p);
             d3.select(this)
-                .attr('transform', function(d) { return 'translate(' + d.x + ', 0)'; });
+                .attr('transform', function(d) { return strTranslate(d.x, 0); });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer && p.focusLayer.render(p.panels);
             p.pickLayer && p.pickLayer.render(p.panels, true);
@@ -684,9 +686,9 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var tilt = calcTilt(d.model.labelAngle, d.model.labelSide);
             var r = c.axisTitleOffset;
             return (
-                (tilt.dir > 0 ? '' : 'translate(0,' + (2 * r + d.model.height) + ')') +
-                'rotate(' + tilt.degrees + ')' +
-                'translate(' + (-r * tilt.dx) + ',' + (-r * tilt.dy) + ')'
+                (tilt.dir > 0 ? '' : strTranslate(0, 2 * r + d.model.height)) +
+                strRotate(tilt.degrees) +
+                strTranslate(-r * tilt.dx, -r * tilt.dy)
             );
         })
         .attr('text-anchor', function(d) {
@@ -716,7 +718,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axisExtentTop, true);
 
     axisExtentTop
-        .attr('transform', 'translate(' + 0 + ',' + -c.axisExtentOffset + ')');
+        .attr('transform', strTranslate(0, -c.axisExtentOffset));
 
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
         .data(repeat, keyFun);
@@ -739,7 +741,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     axisExtentBottom
         .attr('transform', function(d) {
-            return 'translate(' + 0 + ',' + (d.model.height + c.axisExtentOffset) + ')';
+            return strTranslate(0, d.model.height + c.axisExtentOffset);
         });
 
     var axisExtentBottomText = axisExtentBottom.selectAll('.' + c.cn.axisExtentBottomText)
