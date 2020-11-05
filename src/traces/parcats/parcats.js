@@ -12,6 +12,7 @@ var d3 = require('d3');
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var Drawing = require('../../components/drawing');
 var tinycolor = require('tinycolor2');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -41,7 +42,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update properties for each trace
     traceSelection
         .attr('transform', function(d) {
-            return 'translate(' + d.x + ', ' + d.y + ')';
+            return strTranslate(d.x, d.y);
         });
 
     // Initialize paths group
@@ -122,7 +123,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Update dimension group transforms
     dimensionSelection.attr('transform', function(d) {
-        return 'translate(' + d.x + ', 0)';
+        return strTranslate(d.x, 0);
     });
 
     // Remove any old dimensions
@@ -144,7 +145,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update category transforms
     categorySelection
         .attr('transform', function(d) {
-            return 'translate(0, ' + d.y + ')';
+            return strTranslate(0, d.y);
         });
 
 
@@ -1401,13 +1402,13 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // Update dimension position
     transition(parcatsViewModel.dimensionSelection)
         .attr('transform', function(d) {
-            return 'translate(' + d.x + ', 0)';
+            return strTranslate(d.x, 0);
         });
 
     // Update category position
     transition(categorySelection)
         .attr('transform', function(d) {
-            return 'translate(0, ' + d.y + ')';
+            return strTranslate(0, d.y);
         });
 
     var dimLabelSelection = categorySelection.select('.dimlabel');

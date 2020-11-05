@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var _ = Lib._;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -301,7 +302,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     var triangleClipRelative = 'M0,' + h + 'h' + w + 'l-' + (w / 2) + ',-' + h + 'Z';
     _this.clipDefRelative.select('path').attr('d', triangleClipRelative);
 
-    var plotTransform = 'translate(' + x0 + ',' + y0 + ')';
+    var plotTransform = strTranslate(x0, y0);
     _this.plotContainer.selectAll('.scatterlayer,.maplayer')
         .attr('transform', plotTransform);
 
@@ -310,18 +311,18 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
 
     // TODO: there's probably an easier way to handle these translations/offsets now...
-    var bTransform = 'translate(' + (x0 - baxis._offset) + ',' + (y0 + h) + ')';
+    var bTransform = strTranslate(x0 - baxis._offset, y0 + h);
 
     _this.layers.baxis.attr('transform', bTransform);
     _this.layers.bgrid.attr('transform', bTransform);
 
-    var aTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(30)translate(0,' + -aaxis._offset + ')';
+    var aTransform = strTranslate(x0 + w / 2, y0) +
+        'rotate(30)' + strTranslate(0, -aaxis._offset);
     _this.layers.aaxis.attr('transform', aTransform);
     _this.layers.agrid.attr('transform', aTransform);
 
-    var cTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(-30)translate(0,' + -caxis._offset + ')';
+    var cTransform = strTranslate(x0 + w / 2, y0) +
+        'rotate(-30)' + strTranslate(0, -caxis._offset);
     _this.layers.caxis.attr('transform', cTransform);
     _this.layers.cgrid.attr('transform', cTransform);
 
@@ -588,7 +589,7 @@ proto.initInteractions = function() {
 
         zb = zoomLayer.append('path')
             .attr('class', 'zoombox')
-            .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
+            .attr('transform', strTranslate(_this.x0, _this.y0))
             .style({
                 'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
@@ -597,7 +598,7 @@ proto.initInteractions = function() {
 
         corners = zoomLayer.append('path')
             .attr('class', 'zoombox-corners')
-            .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
+            .attr('transform', strTranslate(_this.x0, _this.y0))
             .style({
                 fill: Color.background,
                 stroke: Color.defaultLine,
@@ -714,11 +715,11 @@ proto.initInteractions = function() {
         }
 
         // move the data (translate, don't redraw)
-        var plotTransform = 'translate(' + (_this.x0 + dx) + ',' + (_this.y0 + dy) + ')';
+        var plotTransform = strTranslate(_this.x0 + dx, _this.y0 + dy);
         _this.plotContainer.selectAll('.scatterlayer,.maplayer')
             .attr('transform', plotTransform);
 
-        var plotTransform2 = 'translate(' + -dx + ',' + -dy + ')';
+        var plotTransform2 = strTranslate(-dx, -dy);
         _this.clipDefRelative.select('path').attr('transform', plotTransform2);
 
         // move the ticks

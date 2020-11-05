@@ -17,6 +17,7 @@ var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
@@ -527,7 +528,7 @@ function nodeModel(d, n) {
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return 'translate(' + d.node.x0.toFixed(3) + ', ' + (d.node.y0).toFixed(3) + ')';
+            return strTranslate(d.node.x0.toFixed(3), (d.node.y0).toFixed(3));
         });
 }
 
@@ -549,12 +550,12 @@ function sizeNode(rect) {
 function salientEnough(d) {return (d.link.width > 1 || d.linkLineWidth > 0);}
 
 function sankeyTransform(d) {
-    var offset = 'translate(' + d.translateX + ',' + d.translateY + ')';
+    var offset = strTranslate(d.translateX, d.translateY);
     return offset + (d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)');
 }
 
 function nodeCentering(d) {
-    return 'translate(' + (d.horizontal ? 0 : d.labelY) + ' ' + (d.horizontal ? d.labelY : 0) + ')';
+    return strTranslate(d.horizontal ? 0 : d.labelY, d.horizontal ? d.labelY : 0);
 }
 
 function textGuidePath(d) {

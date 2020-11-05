@@ -15,6 +15,8 @@ var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var strScale = Lib.strScale;
+var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;
@@ -244,9 +246,9 @@ function plot(gd, cdModule) {
                 }
 
                 titleText.attr('transform',
-                    'translate(' + transform.x + ',' + transform.y + ')' +
-                    (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
-                    'translate(' + transform.tx + ',' + transform.ty + ')');
+                    strTranslate(transform.x, transform.y) +
+                    strScale(Math.min(1, transform.scale)) +
+                    strTranslate(transform.tx, transform.ty));
             });
 
             // now make sure no labels overlap (at least within one pie)

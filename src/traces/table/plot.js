@@ -14,6 +14,7 @@ var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
+var strTranslate = require('../../lib').strTranslate;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
 var prepareData = require('./data_preparation_helper');
 var splitData = require('./data_split_helpers');
@@ -46,7 +47,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('width', function(d) {return d.width + d.size.l + d.size.r;})
         .attr('height', function(d) {return d.height + d.size.t + d.size.b;})
         .attr('transform', function(d) {
-            return 'translate(' + d.translateX + ',' + d.translateY + ')';
+            return strTranslate(d.translateX, d.translateY);
         });
 
     var tableControlView = table.selectAll('.' + c.cn.tableControlView)
@@ -79,7 +80,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     }
 
     tableControlView
-        .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
+        .attr('transform', function(d) {return strTranslate(d.size.l, d.size.t);});
 
     // scrollBackground merely ensures that mouse events are captured even on crazy fast scrollwheeling
     // otherwise rendering glitches may occur
@@ -108,7 +109,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     yColumn.exit().remove();
 
-    yColumn.attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+    yColumn.attr('transform', function(d) {return strTranslate(d.x, 0);});
 
     if(dynamic) {
         yColumn.call(d3.behavior.drag()
@@ -136,10 +137,10 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                     .transition()
                     .ease(c.transitionEase)
                     .duration(c.transitionDuration)
-                    .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+                    .attr('transform', function(d) {return strTranslate(d.x, 0);});
                 movedColumn
                     .call(cancelEeaseColumn)
-                    .attr('transform', 'translate(' + d.x + ' -' + c.uplift + ' )');
+                    .attr('transform', strTranslate(d.x, -c.uplift));
             })
             .on('dragend', function(d) {
                 var movedColumn = d3.select(this);
@@ -294,7 +295,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         })
         .attr('transform', function(d) {
             var xPosition = d.width + c.scrollbarWidth / 2 + c.scrollbarOffset;
-            return 'translate(' + xPosition + ' ' + headerHeight(d) + ')';
+            return strTranslate(xPosition, headerHeight(d));
         });
 
     var scrollbar = scrollbarKit.selectAll('.' + c.cn.scrollbar)
@@ -313,7 +314,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
 
     scrollbarSlider
         .attr('transform', function(d) {
-            return 'translate(0 ' + (d.scrollbarState.topY || 0) + ')';
+            return strTranslate(0, d.scrollbarState.topY || 0);
         });
 
     var scrollbarGlyph = scrollbarSlider.selectAll('.' + c.cn.scrollbarGlyph)
@@ -572,7 +573,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             } else {
                 d3.select(element.parentNode)
                     // basic cell adjustment - compliance with `cellPad`
-                    .attr('transform', function(d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';})
+                    .attr('transform', function(d) {return strTranslate(xPosition(d), c.cellPad);})
                     .attr('text-anchor', function(d) {
                         return ({
                             left: 'start',
@@ -622,7 +623,7 @@ function easeColumn(selection, d, y) {
         .transition()
         .ease(c.releaseTransitionEase)
         .duration(c.releaseTransitionDuration)
-        .attr('transform', 'translate(' + d.x + ' ' + y + ')');
+        .attr('transform', strTranslate(d.x, y));
 }
 
 function cellsBlock(d) {return d.type === 'cells';}
@@ -703,7 +704,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     cellsColumnBlock
         .attr('transform', function(d) {
             var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
-            return 'translate(0 ' + yTranslate + ')';
+            return strTranslate(0, yTranslate);
         });
 
     // conditionally rerendering panel 0 and 1
@@ -829,7 +830,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
                 var rectBox = d3.select(element.parentNode).select('.' + c.cn.cellRect).node().getBoundingClientRect();
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                return 'translate(' + xPosition(d, d3.select(element.parentNode).select('.' + c.cn.cellTextHolder).node().getBoundingClientRect().width) + ' ' + yPosition + ')';
+                return strTranslate(xPosition(d, d3.select(element.parentNode).select('.' + c.cn.cellTextHolder).node().getBoundingClientRect().width), yPosition);
             });
 
         d.settledY = true;
@@ -852,7 +853,7 @@ function setCellHeightAndPositionY(columnCell) {
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
             var yOffset = rowAnchor + headerHeight;
-            return 'translate(0 ' + yOffset + ')';
+            return strTranslate(0, yOffset);
         })
         .selectAll('.' + c.cn.cellRect)
         .attr('height', function(d) {return getRow(getBlock(d), d.key).rowHeight;});
