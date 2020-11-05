@@ -1595,3 +1595,103 @@ describe('Test polar *gridshape linear* interactions', function() {
         .then(done);
     });
 });
+
+
+describe('Polar plots with css transforms', function() {
+    var gd;
+
+    beforeEach(function() {
+        eventRecordings = {};
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _getLocalPos(element, point) {
+        var bb = element.getBoundingClientRect();
+        return [
+            bb.left + point[0],
+            bb.top + point[1]
+        ];
+    }
+
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function recalculateInverse(gd) {
+        var inverse = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+        gd._fullLayout._inverseTransform = inverse;
+    }
+
+    function _hover(pos) {
+        return new Promise(function(resolve, reject) {
+            var localPos = _getLocalPos(gd, pos);
+            gd.once('plotly_hover', function(d) {
+                Lib.clearThrottle();
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', localPos[0], localPos[1]);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    var rVals = [100, 50, 50, 100];
+    var thetaVals = [135, 135, 315, 315];
+    var plotSize = [400, 400];
+    var mock = {
+        data: [{
+            type: 'scatterpolar',
+            r: rVals,
+            theta: thetaVals,
+            mode: 'markers',
+            marker: {
+                size: 20,
+            }
+        }],
+        layout: {
+            width: plotSize[0],
+            height: plotSize[1],
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            hovermode: 'closest'
+        }
+    };
+    var transforms = ['scale(0.5)'];
+
+    transforms.forEach(function(transform) {
+
+        it(`@transform_test @alex_test hover behaves correctly after css transform: ${transform}`, function(done) {
+
+            var hoverEvents = {};
+    
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                gd.on('plotly_hover', function(d) {
+                    hoverEvents[d.points[0].pointIndex] = true;
+                });
+            })
+            .then(function() {
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function() { _hover([32, 32]); })
+            .then(function() { _hover([65, 65]); })
+            .then(function() { _hover([132, 132]); })
+            .then(function() { _hover([165, 165]); })
+            .then(function() { 
+                expect(Object.keys(hoverEvents).length).toBe(4); 
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+});
