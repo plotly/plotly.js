@@ -2042,10 +2042,10 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(!ax.visible) return;
 
-    var transFn = axes.makeTransFn(ax);
+    var transFn = axes.makeTransTickFn(ax);
     var transTickLabelFn = ax.ticklabelmode === 'period' ?
         axes.makeTransPeriodFn(ax) :
-        axes.makeTransFn(ax);
+        axes.makeTransTickFn(ax);
 
     var tickVals;
     // We remove zero lines, grid lines, and inside ticks if they're within 1px of the end
@@ -2470,7 +2470,7 @@ axes.getTickSigns = function(ax) {
  *  - {fn} l2p
  * @return {fn} function of calcTicks items
  */
-axes.makeTransFn = function(ax) {
+axes.makeTransTickFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
     return axLetter === 'x' ?

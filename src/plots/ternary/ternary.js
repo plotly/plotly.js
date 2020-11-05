@@ -428,7 +428,7 @@ proto.drawAx = function(ax) {
 
     var vals = Axes.calcTicks(ax);
     var valsClipped = Axes.clipEnds(ax, vals);
-    var transFn = Axes.makeTransFn(ax);
+    var transFn = Axes.makeTransTickFn(ax);
     var tickSign = Axes.getTickSigns(ax)[2];
 
     var caRad = Lib.deg2rad(counterAngle);

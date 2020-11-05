@@ -462,7 +462,7 @@ function drawColorBar(g, opts, gd) {
             (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
-        var transFn = Axes.makeTransFn(ax);
+        var transFn = Axes.makeTransTickFn(ax);
         var tickSign = Axes.getTickSigns(ax)[2];
 
         Axes.drawTicks(gd, ax, {
