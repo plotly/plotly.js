@@ -333,7 +333,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 return;
             }
 
-            var dbb = evt.target.getBoundingClientRect();
+            var target = evt.composedPath && evt.composedPath()[0];
+            if (!target) {
+                return;
+            }
+            var dbb = target.getBoundingClientRect();
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
