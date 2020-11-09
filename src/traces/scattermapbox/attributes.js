@@ -31,7 +31,6 @@ module.exports = overrideAll({
             valType: 'boolean',
             role: 'info',
             dflt: false,
-            editType: 'plot',
             description: 'Determines whether clustering is enabled or disabled.'
         },
         maxzoom: {
