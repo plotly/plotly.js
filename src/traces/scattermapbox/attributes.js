@@ -18,7 +18,7 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var mapboxLayoutAtributes = require('../../plots/mapbox/layout_attributes')
+var mapboxLayoutAtributes = require('../../plots/mapbox/layout_attributes');
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
