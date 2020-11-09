@@ -837,8 +837,15 @@ proto.updateMainDrag = function(fullLayout) {
     }
 
     function zoomMove(dx, dy) {
+        
+        var inverse = gd._fullLayout._inverseTransform;
+        var transformedDelta = Lib.apply3DTransform(inverse)(dx, dy);
+        dx = transformedDelta[0];
+        dy = transformedDelta[1];
+
         var x1 = x0 + dx;
         var y1 = y0 + dy;
+
         var rr0 = xy2r(x0, y0);
         var rr1 = Math.min(xy2r(x1, y1), radius);
         var a0 = xy2a(x0, y0);
@@ -934,8 +941,10 @@ proto.updateMainDrag = function(fullLayout) {
         var dragModeNow = gd._fullLayout.dragmode;
 
         var bbox = mainDrag.getBoundingClientRect();
-        x0 = startX - bbox.left;
-        y0 = startY - bbox.top;
+        var inverse = gd._fullLayout._inverseTransform;
+        var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
 
         // need to offset x/y as bbox center does not
         // match origin for asymmetric polygons
