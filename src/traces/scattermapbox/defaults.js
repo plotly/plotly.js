@@ -35,6 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('cluster.step');
         coerce('cluster.color', defaultColor);
         coerce('cluster.size');
+        coerce('cluster.opacity');
     }
 
     coerce('text');

@@ -76,6 +76,7 @@ module.exports = overrideAll({
                 'Sets the color for each cluster step.'
             ].join(' ')
         },
+        opacity: markerAttrs.opacity,
     },
 
     // locations
