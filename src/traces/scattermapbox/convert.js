@@ -91,7 +91,7 @@ module.exports = function convert(gd, calcTrace) {
                 layout: {visibility: 'visible'},
                 paint: {
                     'circle-color': createClusterColors(trace.cluster.color, trace.cluster.step),
-                    'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.step)
+                    'circle-opacity': trace.cluster.opacity
                 },
             };
             opts.clusterCount = {
