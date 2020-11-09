@@ -69,9 +69,9 @@ module.exports = overrideAll({
             ].join(' ')
         },
         color: {
-            role: 'info',
             valType: 'color',
             arrayOk: true,
+            role: 'style',
             description: [
                 'Sets the color for each cluster step.'
             ].join(' ')
