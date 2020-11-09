@@ -20,7 +20,7 @@
         }
     ],
     "layout": {
-        "title": "Testplot",
+        "title": {"text": "Testplot"},
         "width": 400,
         "height": 300,
         "legend": {"orientation": "h"},

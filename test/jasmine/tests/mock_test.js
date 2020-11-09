@@ -265,6 +265,7 @@ var list = [
     'dendrogram',
     'display-text_zero-number',
     'domain_refs',
+    'domain_ref_axis_types',
     'earth_heatmap',
     'electric_heatmap',
     'empty',
@@ -572,6 +573,7 @@ var list = [
     'gl3d_surface-lighting',
     'gl3d_tetrahedra',
     'gl3d_text-weirdness',
+    'gl3d_ticks-milliseconds',
     'gl3d_traces-with-legend',
     'gl3d_traces-with-opacity',
     'gl3d_transparent_same-depth',
@@ -670,6 +672,7 @@ var list = [
     'legend_horizontal_bg_fit',
     'legend_horizontal_groups',
     'legend_horizontal_one_row',
+    'legend_horizontal_testwrap',
     'legend_horizontal_wrap-alll-lines',
     'legend_inside',
     'legend_itemwidth_dashline',
@@ -835,6 +838,7 @@ var list = [
     'range_slider_reversed-range',
     'range_slider_top_axis',
     'rdbu_heatmap',
+    'reversed-axis-dividers',
     'sankey_circular',
     'sankey_circular_large',
     'sankey_circular_process',
@@ -1333,6 +1337,7 @@ figs['date_histogram'] = require('@mocks/date_histogram');
 // figs['dendrogram'] = require('@mocks/dendrogram');
 figs['display-text_zero-number'] = require('@mocks/display-text_zero-number');
 figs['domain_refs'] = require('@mocks/domain_refs');
+figs['domain_ref_axis_types'] = require('@mocks/domain_ref_axis_types');
 figs['earth_heatmap'] = require('@mocks/earth_heatmap');
 figs['electric_heatmap'] = require('@mocks/electric_heatmap');
 figs['empty'] = require('@mocks/empty');
@@ -1640,6 +1645,7 @@ figs['gl3d_surface-circular-opacityscale'] = require('@mocks/gl3d_surface-circul
 // figs['gl3d_surface-lighting'] = require('@mocks/gl3d_surface-lighting');
 figs['gl3d_tetrahedra'] = require('@mocks/gl3d_tetrahedra');
 figs['gl3d_text-weirdness'] = require('@mocks/gl3d_text-weirdness');
+figs['gl3d_ticks-milliseconds'] = require('@mocks/gl3d_ticks-milliseconds');
 // figs['gl3d_traces-with-legend'] = require('@mocks/gl3d_traces-with-legend');
 // figs['gl3d_traces-with-opacity'] = require('@mocks/gl3d_traces-with-opacity');
 figs['gl3d_transparent_same-depth'] = require('@mocks/gl3d_transparent_same-depth');
@@ -1738,6 +1744,7 @@ figs['layout-colorway'] = require('@mocks/layout-colorway');
 figs['legend_horizontal_bg_fit'] = require('@mocks/legend_horizontal_bg_fit');
 figs['legend_horizontal_groups'] = require('@mocks/legend_horizontal_groups');
 figs['legend_horizontal_one_row'] = require('@mocks/legend_horizontal_one_row');
+figs['legend_horizontal_testwrap'] = require('@mocks/legend_horizontal_testwrap');
 figs['legend_horizontal_wrap-alll-lines'] = require('@mocks/legend_horizontal_wrap-alll-lines');
 figs['legend_inside'] = require('@mocks/legend_inside');
 figs['legend_itemwidth_dashline'] = require('@mocks/legend_itemwidth_dashline');
@@ -1903,6 +1910,7 @@ figs['range_slider_rangemode'] = require('@mocks/range_slider_rangemode');
 figs['range_slider_reversed-range'] = require('@mocks/range_slider_reversed-range');
 figs['range_slider_top_axis'] = require('@mocks/range_slider_top_axis');
 figs['rdbu_heatmap'] = require('@mocks/rdbu_heatmap');
+figs['reversed-axis-dividers'] = require('@mocks/reversed-axis-dividers');
 figs['sankey_circular'] = require('@mocks/sankey_circular');
 figs['sankey_circular_large'] = require('@mocks/sankey_circular_large');
 figs['sankey_circular_process'] = require('@mocks/sankey_circular_process');
