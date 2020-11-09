@@ -18,6 +18,7 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var mapboxLayoutAtributes = require('../../plots/mapbox/layout_attributes')
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
@@ -33,14 +34,7 @@ module.exports = overrideAll({
             dflt: false,
             description: 'Determines whether clustering is enabled or disabled.'
         },
-        maxzoom: {
-            valType: 'number',
-            role: 'info',
-            min: 0,
-            max: 22,
-            dflt: 14,
-            description: 'Sets the maximum zoom level for the cluster.',
-        },
+        maxzoom: mapboxLayoutAtributes.maxzoom,
         radius: {
             role: 'info',
             valType: 'number',
