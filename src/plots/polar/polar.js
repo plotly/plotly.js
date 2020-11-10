@@ -678,6 +678,10 @@ proto.updateMainDrag = function(fullLayout) {
     var chw = constants.cornerHalfWidth;
     var chl = constants.cornerLen / 2;
 
+    var m = gd._fullLayout._inverseTransform;
+    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
+    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
     d3.select(mainDrag)
@@ -838,10 +842,8 @@ proto.updateMainDrag = function(fullLayout) {
 
     function zoomMove(dx, dy) {
         
-        var inverse = gd._fullLayout._inverseTransform;
-        var transformedDelta = Lib.apply3DTransform(inverse)(dx, dy);
-        dx = transformedDelta[0];
-        dy = transformedDelta[1];
+        dx = dx * scaleX;
+        dy = dy * scaleY;
 
         var x1 = x0 + dx;
         var y1 = y0 + dy;
