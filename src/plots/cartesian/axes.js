@@ -2061,7 +2061,7 @@ axes.drawOne = function(gd, ax, opts) {
         tickVals = insideTicks ? valsClipped : boundaryVals;
     } else {
         valsClipped = axes.clipEnds(ax, vals);
-        tickVals = insideTicks ? valsClipped : vals;
+        tickVals = (insideTicks && ax.ticklabelmode !== 'period') ? valsClipped : vals;
     }
 
     var gridVals = ax._gridVals = valsClipped;
