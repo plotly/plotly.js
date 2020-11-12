@@ -737,6 +737,7 @@ var list = [
     'matching-missing-axes',
     'mathjax',
     'mirror-all-vs-allticks',
+    'missing-category-order',
     'multicategory',
     'multicategory_histograms',
     'multicategory-inside-ticks',
@@ -1809,6 +1810,7 @@ figs['matching-categories'] = require('@mocks/matching-categories');
 // figs['matching-missing-axes'] = require('@mocks/matching-missing-axes');
 // figs['mathjax'] = require('@mocks/mathjax');
 figs['mirror-all-vs-allticks'] = require('@mocks/mirror-all-vs-allticks');
+figs['missing-category-order'] = require('@mocks/missing-category-order');
 figs['multicategory'] = require('@mocks/multicategory');
 figs['multicategory_histograms'] = require('@mocks/multicategory_histograms');
 figs['multicategory-inside-ticks'] = require('@mocks/multicategory-inside-ticks');
