@@ -9,74 +9,253 @@
 'use strict';
 
 var Lib = require('../../lib');
-var id2name = require('./axis_ids').id2name;
+var axisIds = require('./axis_ids');
+var id2name = axisIds.id2name;
+var layoutAttributes = require('./layout_attributes');
 var scaleZoom = require('./scale_zoom');
-var makePadFn = require('./autorange').makePadFn;
-var concatExtremes = require('./autorange').concatExtremes;
+var autorange = require('./autorange');
+var makePadFn = autorange.makePadFn;
+var concatExtremes = autorange.concatExtremes;
 
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 var FROM_BL = require('../../constants/alignment').FROM_BL;
 
-exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, opts) {
-    var allAxisIds = opts.allAxisIds;
+exports.handleDefaults = function(layoutIn, layoutOut, opts) {
+    var axIds = opts.axIds;
+    var axHasImage = opts.axHasImage;
+
+    // sets of axes linked by `scaleanchor` OR `matches` along with the
+    // scaleratios compounded together, populated in handleConstraintDefaults
+    var constraintGroups = layoutOut._axisConstraintGroups = [];
+    // similar to _axisConstraintGroups, but only matching axes
+    var matchGroups = layoutOut._axisMatchGroups = [];
+
+    var i, group, axId, axName, axIn, axOut;
+
+    for(i = 0; i < axIds.length; i++) {
+        axName = id2name(axIds[i]);
+        axIn = layoutIn[axName];
+        axOut = layoutOut[axName];
+
+        handleOneAxDefaults(axIn, axOut, {
+            axIds: axIds,
+            layoutOut: layoutOut,
+            hasImage: axHasImage[axName]
+        });
+    }
+
+    // save matchGroup on each matching axis
+    function stash(groups, stashAttr) {
+        for(i = 0; i < groups.length; i++) {
+            group = groups[i];
+            for(axId in group) {
+                layoutOut[id2name(axId)][stashAttr] = group;
+            }
+        }
+    }
+    stash(matchGroups, '_matchGroup');
+
+    // remove constraint groups that simply duplicate match groups
+    i = 0;
+    while(i < constraintGroups.length) {
+        group = constraintGroups[i];
+        for(axId in group) {
+            axOut = layoutOut[id2name(axId)];
+            if(axOut._matchGroup && Object.keys(axOut._matchGroup).length === Object.keys(group).length) {
+                constraintGroups.splice(i, 1);
+                i--;
+            }
+            break;
+        }
+        i++;
+    }
+
+    // save constraintGroup on each constrained axis
+    stash(constraintGroups, '_constraintGroup');
+
+    // If any axis in a constraint group is fixedrange, they all get fixed
+    // This covers matches axes, as they're now in the constraintgroup too.
+    for(i = 0; i < constraintGroups.length; i++) {
+        group = constraintGroups[i];
+        for(axId in group) {
+            axOut = layoutOut[id2name(axId)];
+            if(axOut.fixedrange) {
+                for(var axId2 in group) {
+                    var axName2 = id2name(axId2);
+                    if((layoutIn[axName2] || {}).fixedrange === false) {
+                        Lib.warn(
+                            'fixedrange was specified as false for axis ' +
+                            axName2 + ' but was overridden because another ' +
+                            'axis in its constraint group has fixedrange true'
+                        );
+                    }
+                    layoutOut[id2name(axId2)].fixedrange = true;
+                }
+                break;
+            }
+        }
+    }
+
+    // make sure `matching` axes share values of necessary attributes
+    // Precedence (base axis is the one that doesn't list a `matches`, ie others
+    // all point to it):
+    // (1) explicitly defined value in the base axis
+    // (2) explicitly defined in another axis (arbitrary order)
+    // (3) default in the base axis
+    var matchAttrs = {
+        constrain: 1,
+        range: 1,
+        autorange: 1,
+        rangemode: 1,
+        rangebreaks: 1,
+        categoryorder: 1,
+        categoryarray: 1
+    };
+    for(i = 0; i < matchGroups.length; i++) {
+        group = matchGroups[i];
+
+        // find 'matching' range attrs
+        for(var attr in matchAttrs) {
+            var val = null;
+            var baseAx;
+            for(axId in group) {
+                axName = id2name(axId);
+                axIn = layoutIn[axName];
+                axOut = layoutOut[axName];
+                if(!(attr in axOut)) {
+                    continue;
+                }
+                if(!axOut.matches) {
+                    baseAx = axOut;
+                    // top priority: explicit value in base axis
+                    if(attr in axIn) {
+                        val = axOut[attr];
+                        break;
+                    }
+                }
+                if(val === null && attr in axIn) {
+                    // second priority: first explicit value in another axis
+                    val = axOut[attr];
+                }
+            }
+            if(val === null && attr in baseAx) {
+                // fallback: default value in base axis
+                val = baseAx[attr];
+            }
+            // but we still might not have a value, which is fine.
+            if(val !== null) {
+                for(axId in group) {
+                    // TODO: do we also need to (deep) copy rangebreaks?
+                    layoutOut[id2name(axId)][attr] = attr === 'range' ? val.slice() : val;
+                }
+            }
+        }
+    }
+};
+
+function handleOneAxDefaults(axIn, axOut, opts) {
+    var axIds = opts.axIds;
     var layoutOut = opts.layoutOut;
-    var scaleanchorDflt = opts.scaleanchorDflt;
-    var constrainDflt = opts.constrainDflt;
+    var hasImage = opts.hasImage;
     var constraintGroups = layoutOut._axisConstraintGroups;
     var matchGroups = layoutOut._axisMatchGroups;
-    var axId = containerOut._id;
+    var axId = axOut._id;
     var axLetter = axId.charAt(0);
     var splomStash = ((layoutOut._splomAxes || {})[axLetter] || {})[axId] || {};
-    var thisID = containerOut._id;
-    var letter = thisID.charAt(0);
+    var thisID = axOut._id;
+    var isX = thisID.charAt(0) === 'x';
+
+    // Clear _matchGroup & _constraintGroup so relinkPrivateKeys doesn't keep
+    // an old one around. If this axis is in a group we'll set this again later
+    axOut._matchGroup = null;
+    axOut._constraintGroup = null;
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(axIn, axOut, layoutAttributes, attr, dflt);
+    }
 
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
-    var constrain = coerce('constrain', constrainDflt);
-    Lib.coerce(containerIn, containerOut, {
+    coerce('constrain', hasImage ? 'domain' : 'range');
+    Lib.coerce(axIn, axOut, {
         constraintoward: {
             valType: 'enumerated',
-            values: letter === 'x' ? ['left', 'center', 'right'] : ['bottom', 'middle', 'top'],
-            dflt: letter === 'x' ? 'center' : 'middle'
+            values: isX ? ['left', 'center', 'right'] : ['bottom', 'middle', 'top'],
+            dflt: isX ? 'center' : 'middle'
         }
     }, 'constraintoward');
 
-    var matches, matchOpts;
+    // If this axis is already part of a constraint group, we can't
+    // scaleanchor any other axis in that group, or we'd make a loop.
+    // Filter axIds to enforce this, also matching axis types.
+    var thisType = axOut.type;
+    var i, idi;
 
-    if((containerIn.matches || splomStash.matches) && !containerOut.fixedrange) {
-        matchOpts = getConstraintOpts(matchGroups, thisID, allAxisIds, layoutOut);
-        matches = Lib.coerce(containerIn, containerOut, {
+    var linkableAxes = [];
+    for(i = 0; i < axIds.length; i++) {
+        idi = axIds[i];
+        if(idi === thisID) continue;
+
+        var axi = layoutOut[id2name(idi)];
+        if(axi.type === thisType) {
+            linkableAxes.push(idi);
+        }
+    }
+
+    var thisGroup = getConstraintGroup(constraintGroups, thisID);
+    if(thisGroup) {
+        var linkableAxesNoLoops = [];
+        for(i = 0; i < linkableAxes.length; i++) {
+            idi = linkableAxes[i];
+            if(!thisGroup[idi]) linkableAxesNoLoops.push(idi);
+        }
+        linkableAxes = linkableAxesNoLoops;
+    }
+
+    var canLink = linkableAxes.length;
+
+    var matches, scaleanchor;
+
+    if(canLink && (axIn.matches || splomStash.matches)) {
+        matches = Lib.coerce(axIn, axOut, {
             matches: {
                 valType: 'enumerated',
-                values: matchOpts.linkableAxes || [],
-                dflt: splomStash.matches
+                values: linkableAxes,
+                dflt: linkableAxes.indexOf(splomStash.matches) !== -1 ? splomStash.matches : undefined
             }
         }, 'matches');
     }
 
-    // 'matches' wins over 'scaleanchor' (for now)
-    var scaleanchor, scaleOpts;
-
-    if(!matches &&
-       !(containerOut.fixedrange && constrain !== 'domain') &&
-       (containerIn.scaleanchor || scaleanchorDflt)
-     ) {
-        scaleOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut, constrain);
-        scaleanchor = Lib.coerce(containerIn, containerOut, {
+    // 'matches' wins over 'scaleanchor' - each axis can only specify one
+    // constraint, but you can chain matches and scaleanchor constraints by
+    // specifying them in separate axes.
+    var scaleanchorDflt = hasImage && !isX ? axOut.anchor : undefined;
+    if(canLink && !matches && (axIn.scaleanchor || scaleanchorDflt)) {
+        scaleanchor = Lib.coerce(axIn, axOut, {
             scaleanchor: {
                 valType: 'enumerated',
-                values: scaleOpts.linkableAxes || []
+                values: linkableAxes
             }
         }, 'scaleanchor', scaleanchorDflt);
     }
 
     if(matches) {
-        delete containerOut.constrain;
-        updateConstraintGroups(matchGroups, matchOpts.thisGroup, thisID, matches, 1);
-    } else if(allAxisIds.indexOf(containerIn.matches) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.matches: "' +
-            containerIn.matches + '" to avoid either an infinite loop ' +
-            'or because the target axis has fixed range.');
+        axOut._matchGroup = updateConstraintGroups(matchGroups, thisID, matches, 1);
+
+        // Also include match constraints in the scale groups
+        var matchedAx = layoutOut[id2name(matches)];
+        var matchRatio = extent(axOut) / extent(matchedAx);
+        if(isX !== (matches.charAt(0) === 'x')) {
+            // We don't yet know the actual scale ratio of x/y matches constraints,
+            // due to possible automargins, so just leave a placeholder for this:
+            // 'x' means "x size over y size", 'y' means the inverse.
+            // in principle in the constraint group you could get multiple of these.
+            matchRatio = (isX ? 'x' : 'y') + matchRatio;
+        }
+        updateConstraintGroups(constraintGroups, thisID, matches, matchRatio);
+    } else if(axIn.matches && axIds.indexOf(axIn.matches) !== -1) {
+        Lib.warn('ignored ' + axOut._name + '.matches: "' +
+            axIn.matches + '" to avoid an infinite loop');
     }
 
     if(scaleanchor) {
@@ -87,64 +266,33 @@ exports.handleConstraintDefaults = function(containerIn, containerOut, coerce, o
         // Of course if you use several super-tiny values you could eventually
         // force a product of these to zero and all hell would break loose...
         // Likewise with super-huge values.
-        if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
+        if(!scaleratio) scaleratio = axOut.scaleratio = 1;
 
-        updateConstraintGroups(constraintGroups, scaleOpts.thisGroup, thisID, scaleanchor, scaleratio);
-    } else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
-            containerIn.scaleanchor + '" to avoid either an infinite loop ' +
-            'and possibly inconsistent scaleratios, or because the target ' +
-            'axis has fixed range or this axis declares a *matches* constraint.');
+        updateConstraintGroups(constraintGroups, thisID, scaleanchor, scaleratio);
+    } else if(axIn.scaleanchor && axIds.indexOf(axIn.scaleanchor) !== -1) {
+        Lib.warn('ignored ' + axOut._name + '.scaleanchor: "' +
+            axIn.scaleanchor + '" to avoid either an infinite loop ' +
+            'and possibly inconsistent scaleratios, or because this axis ' +
+            'declares a *matches* constraint.');
     }
-};
+}
 
-// If this axis is already part of a constraint group, we can't
-// scaleanchor any other axis in that group, or we'd make a loop.
-// Filter allAxisIds to enforce this, also matching axis types.
-function getConstraintOpts(groups, thisID, allAxisIds, layoutOut, constrain) {
-    var doesNotConstrainRange = constrain !== 'range';
-    var thisType = layoutOut[id2name(thisID)].type;
-    var i, j, idj, axj;
+function extent(ax) {
+    return ax.domain[1] - ax.domain[0];
+}
 
-    var linkableAxes = [];
-    for(j = 0; j < allAxisIds.length; j++) {
-        idj = allAxisIds[j];
-        if(idj === thisID) continue;
-
-        axj = layoutOut[id2name(idj)];
-        if(axj.type === thisType) {
-            if(!axj.fixedrange) {
-                linkableAxes.push(idj);
-            } else if(doesNotConstrainRange && axj.anchor) {
-                // allow domain constraints on subplots where
-                // BOTH axes have fixedrange:true and constrain:domain
-                var counterAxj = layoutOut[id2name(axj.anchor)];
-                if(counterAxj.fixedrange) {
-                    linkableAxes.push(idj);
-                }
-            }
-        }
-    }
-
-    for(i = 0; i < groups.length; i++) {
+function getConstraintGroup(groups, thisID) {
+    for(var i = 0; i < groups.length; i++) {
         if(groups[i][thisID]) {
-            var thisGroup = groups[i];
-
-            var linkableAxesNoLoops = [];
-            for(j = 0; j < linkableAxes.length; j++) {
-                idj = linkableAxes[j];
-                if(!thisGroup[idj]) linkableAxesNoLoops.push(idj);
-            }
-            return {linkableAxes: linkableAxesNoLoops, thisGroup: thisGroup};
+            return groups[i];
         }
     }
-
-    return {linkableAxes: linkableAxes, thisGroup: null};
+    return null;
 }
 
 /*
  * Add this axis to the axis constraint groups, which is the collection
- * of axes that are all constrained together on scale.
+ * of axes that are all constrained together on scale (or matching).
  *
  * constraintGroups: a list of objects. each object is
  * {axis_id: scale_within_group}, where scale_within_group is
@@ -153,11 +301,13 @@ function getConstraintOpts(groups, thisID, allAxisIds, layoutOut, constrain) {
  *
  * thisGroup: the group the current axis is already in
  * thisID: the id if the current axis
- * scaleanchor: the id of the axis to scale it with
- * scaleratio: the ratio of this axis to the scaleanchor axis
+ * thatID: the id of the axis to scale it with
+ * scaleratio: the ratio of this axis to the thatID axis
  */
-function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor, scaleratio) {
+function updateConstraintGroups(constraintGroups, thisID, thatID, scaleratio) {
     var i, j, groupi, keyj, thisGroupIndex;
+
+    var thisGroup = getConstraintGroup(constraintGroups, thisID);
 
     if(thisGroup === null) {
         thisGroup = {};
@@ -171,38 +321,109 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
     var thisGroupKeys = Object.keys(thisGroup);
 
     // we know that this axis isn't in any other groups, but we don't know
-    // about the scaleanchor axis. If it is, we need to merge the groups.
+    // about the thatID axis. If it is, we need to merge the groups.
     for(i = 0; i < constraintGroups.length; i++) {
         groupi = constraintGroups[i];
-        if(i !== thisGroupIndex && groupi[scaleanchor]) {
-            var baseScale = groupi[scaleanchor];
+        if(i !== thisGroupIndex && groupi[thatID]) {
+            var baseScale = groupi[thatID];
             for(j = 0; j < thisGroupKeys.length; j++) {
                 keyj = thisGroupKeys[j];
-                groupi[keyj] = baseScale * scaleratio * thisGroup[keyj];
+                groupi[keyj] = multiplyScales(baseScale, multiplyScales(scaleratio, thisGroup[keyj]));
             }
             constraintGroups.splice(thisGroupIndex, 1);
             return;
         }
     }
 
-    // otherwise, we insert the new scaleanchor axis as the base scale (1)
+    // otherwise, we insert the new thatID axis as the base scale (1)
     // in its group, and scale the rest of the group to it
     if(scaleratio !== 1) {
         for(j = 0; j < thisGroupKeys.length; j++) {
-            thisGroup[thisGroupKeys[j]] *= scaleratio;
+            var key = thisGroupKeys[j];
+            thisGroup[key] = multiplyScales(scaleratio, thisGroup[key]);
         }
     }
-    thisGroup[scaleanchor] = 1;
+    thisGroup[thatID] = 1;
+}
+
+// scales may be numbers or 'x1.3', 'yy4.5' etc to multiply by as-yet-unknown
+// ratios between x and y plot sizes n times
+function multiplyScales(a, b) {
+    var aPrefix = '';
+    var bPrefix = '';
+    var aLen, bLen;
+
+    if(typeof a === 'string') {
+        aPrefix = a.match(/^[xy]*/)[0];
+        aLen = aPrefix.length;
+        a = +a.substr(aLen);
+    }
+
+    if(typeof b === 'string') {
+        bPrefix = b.match(/^[xy]*/)[0];
+        bLen = bPrefix.length;
+        b = +b.substr(bLen);
+    }
+
+    var c = a * b;
+
+    // just two numbers
+    if(!aLen && !bLen) {
+        return c;
+    }
+
+    // one or more prefixes of the same type
+    if(!aLen || !bLen || aPrefix.charAt(0) === bPrefix.charAt(0)) {
+        return aPrefix + bPrefix + (a * b);
+    }
+
+    // x and y cancel each other out exactly - back to a number
+    if(aLen === bLen) {
+        return c;
+    }
+
+    // partial cancelation of prefixes
+    return (aLen > bLen ? aPrefix.substr(bLen) : bPrefix.substr(aLen)) + c;
+}
+
+function finalRatios(group, fullLayout) {
+    var size = fullLayout._size;
+    var yRatio = size.h / size.w;
+    var out = {};
+    var keys = Object.keys(group);
+    for(var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var val = group[key];
+
+        if(typeof val === 'string') {
+            var prefix = val.match(/^[xy]*/)[0];
+            var pLen = prefix.length;
+            val = +val.substr(pLen);
+            var mult = prefix.charAt(0) === 'y' ? yRatio : (1 / yRatio);
+            for(var j = 0; j < pLen; j++) {
+                val *= mult;
+            }
+        }
+
+        out[key] = val;
+    }
+    return out;
 }
 
 exports.enforce = function enforce(gd) {
     var fullLayout = gd._fullLayout;
     var constraintGroups = fullLayout._axisConstraintGroups || [];
 
-    var i, j, axisID, ax, normScale, mode, factor;
+    var i, j, group, axisID, ax, normScale, mode, factor;
 
+    // matching constraints are handled in the autorange code when autoranged,
+    // or in the supplyDefaults code when explicitly ranged.
+    // now we just need to handle scaleanchor constraints
+    // matches constraints that chain with scaleanchor constraints are included
+    // here too, but because matches has already been satisfied,
+    // any changes here should preserve that.
     for(i = 0; i < constraintGroups.length; i++) {
-        var group = constraintGroups[i];
+        group = finalRatios(constraintGroups[i], fullLayout);
         var axisIDs = Object.keys(group);
 
         var minScale = Infinity;
@@ -349,6 +570,16 @@ exports.enforce = function enforce(gd) {
             }
         }
     }
+};
+
+exports.getAxisGroup = function getAxisGroup(fullLayout, axId) {
+    var matchGroups = fullLayout._axisMatchGroups;
+
+    for(var i = 0; i < matchGroups.length; i++) {
+        var group = matchGroups[i];
+        if(group[axId]) return 'g' + i;
+    }
+    return axId;
 };
 
 // For use before autoranging, check if this axis was previously constrained

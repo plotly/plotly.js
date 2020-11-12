@@ -10,7 +10,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
-var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
+var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 
 var orientations = ['v', 'h'];
 

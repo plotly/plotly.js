@@ -14,6 +14,8 @@ var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 var Registry = require('../../registry');
 
+var getFromId = require('./axis_ids').getFromId;
+
 module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
@@ -213,7 +215,7 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function concatExtremes(gd, ax) {
+function concatExtremes(gd, ax, noMatch) {
     var axId = ax._id;
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
@@ -241,6 +243,28 @@ function concatExtremes(gd, ax) {
     _concat(fullData, ax._traceIndices);
     _concat(fullLayout.annotations || [], ax._annIndices || []);
     _concat(fullLayout.shapes || [], ax._shapeIndices || []);
+
+    // Include the extremes from other matched axes with this one
+    // TODO: find a way to only do this calculation once, rather than
+    // repeating it for every axis in the matched group
+    if(ax._matchGroup && !noMatch) {
+        for(var axId2 in ax._matchGroup) {
+            if(axId2 !== ax._id) {
+                var ax2 = getFromId(gd, axId2);
+                var extremes2 = concatExtremes(gd, ax2, true);
+                // convert padding on the second axis to the first with lenRatio
+                var lenRatio = ax._length / ax2._length;
+                for(j = 0; j < extremes2.min.length; j++) {
+                    d = extremes2.min[j];
+                    collapseMinArray(minArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                }
+                for(j = 0; j < extremes2.max.length; j++) {
+                    d = extremes2.max[j];
+                    collapseMaxArray(maxArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                }
+            }
+        }
+    }
 
     return {min: minArray, max: maxArray};
 }

@@ -2283,21 +2283,18 @@ function _relayout(gd, aobj) {
     }
 
     // figure out if we need to recalculate axis constraints
-    var constraints = fullLayout._axisConstraintGroups || [];
     for(axId in rangesAltered) {
-        for(i = 0; i < constraints.length; i++) {
-            var group = constraints[i];
-            if(group[axId]) {
-                // Always recalc if we're changing constrained ranges.
-                // Otherwise it's possible to violate the constraints by
-                // specifying arbitrary ranges for all axes in the group.
-                // this way some ranges may expand beyond what's specified,
-                // as they do at first draw, to satisfy the constraints.
-                flags.calc = true;
-                for(var groupAxId in group) {
-                    if(!rangesAltered[groupAxId]) {
-                        Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
-                    }
+        var group = Axes.getFromId(gd, axId)._constraintGroup;
+        if(group) {
+            // Always recalc if we're changing constrained ranges.
+            // Otherwise it's possible to violate the constraints by
+            // specifying arbitrary ranges for all axes in the group.
+            // this way some ranges may expand beyond what's specified,
+            // as they do at first draw, to satisfy the constraints.
+            flags.calc = true;
+            for(var groupAxId in group) {
+                if(!rangesAltered[groupAxId]) {
+                    Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
                 }
             }
         }

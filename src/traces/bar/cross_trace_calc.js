@@ -14,7 +14,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
+var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var Sieve = require('./sieve.js');
 
 /*
