@@ -73,7 +73,7 @@ proto.needsNewSource = function(opts) {
     // stay safe and make new source on type changes
     return (
         this.sourceType !== opts.sourcetype ||
-        this.source !== opts.source ||
+        JSON.stringify(this.source) !== JSON.stringify(opts.source) ||
         this.layerType !== opts.type
     );
 };
