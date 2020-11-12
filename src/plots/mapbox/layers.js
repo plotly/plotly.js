@@ -94,6 +94,14 @@ proto.updateImage = function(opts) {
     map.getSource(this.idSource).updateImage({
         url: opts.source, coordinates: opts.coordinates
     });
+
+    // Since the `updateImage` control flow doesn't call updateLayer,
+    // We need to take care of moving the image layer to match the location
+    // where updateLayer would have placed it.
+    var _below = this.findFollowingMapboxLayerId(this.lookupBelow());
+    if(_below !== null) {
+        this.subplot.map.moveLayer(this.idLayer, _below);
+    }
 };
 
 proto.updateSource = function(opts) {
