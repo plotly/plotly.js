@@ -948,10 +948,15 @@ describe('@noCI, mapbox plots', function() {
                 layout: {
                     mapbox: {
                         layers: [{
+                            'sourcetype': 'raster',
+                            'source': ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                            'below': 'traces',
+                        }, {
                             'sourcetype': 'image',
                             'coordinates': coords,
-                            'source': source
-                        }]
+                            'source': source,
+                            'below': 'traces',
+                        }],
                     }
                 }
             };
@@ -970,7 +975,7 @@ describe('@noCI, mapbox plots', function() {
         Plotly.react(gd, makeFigure(redImage)).then(function() {
             var mapbox = gd._fullLayout.mapbox._subplot;
             map = mapbox.map;
-            layerSource = map.getSource(mapbox.layerList[0].idSource);
+            layerSource = map.getSource(mapbox.layerList[1].idSource);
 
             spyOn(layerSource, 'updateImage').and.callThrough();
             spyOn(map, 'removeSource').and.callThrough();
@@ -981,6 +986,23 @@ describe('@noCI, mapbox plots', function() {
                 {url: greenImage, coordinates: coords}
             );
             expect(map.removeSource).not.toHaveBeenCalled();
+
+            // Check order of layers
+            var mapbox = gd._fullLayout.mapbox._subplot;
+            var mapboxLayers = mapbox.getMapLayers();
+            var plotlyjsLayers = mapbox.layerList;
+
+            var indexLower = mapboxLayers.findIndex(function(layer) {
+                return layer.id === 'plotly-layout-layer-' + plotlyjsLayers[0].uid;
+            });
+
+            var indexUpper = mapboxLayers.findIndex(function(layer) {
+                return layer.id === 'plotly-layout-layer-' + plotlyjsLayers[1].uid;
+            });
+
+            expect(indexLower).toBeGreaterThan(-1);
+            expect(indexUpper).toBeGreaterThan(0);
+            expect(indexUpper).toBe(indexLower + 1);
         })
         .catch(failTest)
         .then(done);
