@@ -959,6 +959,9 @@ var list = [
     'tick-percent',
     'tickformat',
     'tickformatstops',
+    'ticklabelposition-0',
+    'ticklabelposition-1',
+    'ticklabelposition-2',
     'tickson_boundaries',
     'titles-avoid-labels',
     'trace_metatext',
@@ -2032,6 +2035,9 @@ figs['tick-increment'] = require('@mocks/tick-increment');
 figs['tick-percent'] = require('@mocks/tick-percent');
 figs['tickformat'] = require('@mocks/tickformat');
 figs['tickformatstops'] = require('@mocks/tickformatstops');
+figs['ticklabelposition-0'] = require('@mocks/ticklabelposition-0');
+figs['ticklabelposition-1'] = require('@mocks/ticklabelposition-1');
+figs['ticklabelposition-2'] = require('@mocks/ticklabelposition-2');
 figs['tickson_boundaries'] = require('@mocks/tickson_boundaries');
 // figs['titles-avoid-labels'] = require('@mocks/titles-avoid-labels');
 // figs['trace_metatext'] = require('@mocks/trace_metatext');
