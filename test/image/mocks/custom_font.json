@@ -1,0 +1,14 @@
+{
+  "data": [{
+    "y": [2, 1, 2],
+    "line": {
+      "shape": "spline"
+    }
+  }],
+  "layout": {
+    "title": "Graph with custom font",
+    "font": {
+      "family": "'Stalinist One', sans-serif"
+    }
+  }
+}
