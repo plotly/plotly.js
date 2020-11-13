@@ -505,6 +505,27 @@ module.exports = {
             'between ticks.'
         ].join(' ')
     },
+    ticklabelposition: {
+        valType: 'enumerated',
+        values: [
+            'outside', 'inside',
+            'outside top', 'inside top',
+            'outside left', 'inside left',
+            'outside right', 'inside right',
+            'outside bottom', 'inside bottom'
+        ],
+        dflt: 'outside',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines where tick labels are drawn with respect to the axis',
+            'Please note that',
+            'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*.',
+            'Similarly',
+            'left or right has no effect on y axes or when `ticklabelmode` is set to *period*.',
+            'Has no effect on *multicategory* axes or when `tickson` is set *boundaries*.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

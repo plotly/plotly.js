@@ -57,6 +57,14 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+
+        if(!options.noTicklabelmode) {
+            coerce('ticklabelmode');
+        }
+    }
+
+    if(!options.noTicklabelposition || axType === 'multicategory') {
+        coerce('ticklabelposition');
     }
 
     setConvert(containerOut, layoutOut);
@@ -117,6 +125,38 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         coerce('tickson', ticksonDflt);
     }
 
+    // adjust ticklabelposition to in respect to axis orientation & in-between modes
+    if(containerOut.ticklabelposition) {
+        if(letter === 'x') {
+            containerOut.ticklabelposition =
+            containerOut.ticklabelposition
+                .replace(' top', '')
+                .replace(' bottom', '');
+        } else if(letter === 'y') {
+            containerOut.ticklabelposition =
+            containerOut.ticklabelposition
+                .replace(' left', '')
+                .replace(' right', '');
+        }
+
+        if(
+            containerOut.tickson === 'boundaries' ||
+            containerOut.ticklabelmode === 'period'
+        ) {
+            if(letter === 'x') {
+                containerOut.ticklabelposition =
+                containerOut.ticklabelposition
+                    .replace(' left', '')
+                    .replace(' right', '');
+            } else if(letter === 'y') {
+                containerOut.ticklabelposition =
+                containerOut.ticklabelposition
+                    .replace(' top', '')
+                    .replace(' bottom', '');
+            }
+        }
+    }
+
     if(isMultiCategory) {
         var showDividers = coerce('showdividers');
         if(showDividers) {
@@ -126,8 +166,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        if(!options.noTicklabelmode) coerce('ticklabelmode');
-
         handleArrayContainerDefaults(containerIn, containerOut, {
             name: 'rangebreaks',
             inclusionAttr: 'enabled',

@@ -2060,7 +2060,19 @@ plots.doAutoMargin = function(gd) {
             Lib.warn('Too many auto-margin redraws.');
         }
     }
+
+    hideOutOfRangeInsideTickLabels(gd);
 };
+
+function hideOutOfRangeInsideTickLabels(gd) {
+    var axList = axisIDs.list(gd, '', true);
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+
+        var hideFn = ax._hideOutOfRangeInsideTickLabels;
+        if(hideFn) hideFn();
+    }
+}
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
 

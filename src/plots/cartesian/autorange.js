@@ -54,7 +54,8 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPad = makePadFn(ax);
+    var getPadMin = makePadFn(ax, 0);
+    var getPadMax = makePadFn(ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -104,7 +105,7 @@ function getAutoRange(gd, ax) {
             maxpt = maxArray[j];
             dv = maxpt.val - minpt.val - calcBreaksLength(ax, minpt.val, maxpt.val);
             if(dv > 0) {
-                dp = axLen - getPad(minpt) - getPad(maxpt);
+                dp = axLen - getPadMin(minpt) - getPadMax(maxpt);
                 if(dp > minSpan) {
                     if(dv / dp > mbest) {
                         minbest = minpt;
@@ -122,8 +123,8 @@ function getAutoRange(gd, ax) {
         }
     }
 
-    function getMaxPad(prev, pt) {
-        return Math.max(prev, getPad(pt));
+    function maximumPad(prev, pt) {
+        return Math.max(prev, getPadMax(pt));
     }
 
     if(minmin === maxmax) {
@@ -137,7 +138,7 @@ function getAutoRange(gd, ax) {
                 // 'tozero' pins 0 to the low end, so follow that.
                 newRange = [0, 1];
             } else {
-                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(getMaxPad, 0);
+                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(maximumPad, 0);
                 // we're pushing a single value away from the edge due to its
                 // padding, with the other end clamped at zero
                 // 0.5 means don't push it farther than the center.
@@ -158,7 +159,7 @@ function getAutoRange(gd, ax) {
                 maxbest = {val: 0, pad: 0};
             }
         } else if(nonNegative) {
-            if(minbest.val - mbest * getPad(minbest) < 0) {
+            if(minbest.val - mbest * getPadMin(minbest) < 0) {
                 minbest = {val: 0, pad: 0};
             }
             if(maxbest.val <= 0) {
@@ -168,11 +169,11 @@ function getAutoRange(gd, ax) {
 
         // in case it changed again...
         mbest = (maxbest.val - minbest.val - calcBreaksLength(ax, minpt.val, maxpt.val)) /
-            (axLen - getPad(minbest) - getPad(maxbest));
+            (axLen - getPadMin(minbest) - getPadMax(maxbest));
 
         newRange = [
-            minbest.val - mbest * getPad(minbest),
-            maxbest.val + mbest * getPad(maxbest)
+            minbest.val - mbest * getPadMin(minbest),
+            maxbest.val + mbest * getPadMax(maxbest)
         ];
     }
 
@@ -199,9 +200,41 @@ function calcBreaksLength(ax, v0, v1) {
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax) {
+function makePadFn(ax, max) {
     // 5% padding for points that specify extrapad: true
-    var extrappad = ax._length / 20;
+    var extrappad = 0.05 * ax._length;
+
+    var anchorAxis = (ax._anchorAxis || {});
+    if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+        var axReverse = ax.autorange === 'reversed';
+        if(!axReverse) {
+            var rng = Lib.simpleMap(ax.range, ax.r2l);
+            axReverse = rng[1] < rng[0];
+        }
+        if(axReverse) max = !max;
+
+        // increase padding to make more room for inside tick labels of the counter axis
+        if((
+            !max && (
+                anchorAxis.side === 'left' ||
+                anchorAxis.side === 'bottom'
+            )
+        ) || (
+            max && (
+                anchorAxis.side === 'top' ||
+                anchorAxis.side === 'right'
+            )
+        )) {
+            var fontSize = anchorAxis.tickfont ? anchorAxis.tickfont.size : 12;
+            var newPad = fontSize * (ax._id.charAt(0) === 'x' ? 4 : 1);
+
+            if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                newPad += anchorAxis.ticklen || 0;
+            }
+
+            extrappad = Math.max(extrappad, newPad);
+        }
+    }
 
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
@@ -210,7 +243,11 @@ function makePadFn(ax) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    if(max) {
+        return function getPadMax(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    } else {
+        return function getPadMin(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    }
 }
 
 function concatExtremes(gd, ax) {

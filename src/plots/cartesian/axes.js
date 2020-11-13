@@ -2469,40 +2469,77 @@ axes.getTickSigns = function(ax) {
  * @return {fn} function of calcTicks items
  */
 axes.makeTransTickFn = function(ax) {
-    var axLetter = ax._id.charAt(0);
-    var offset = ax._offset;
-
-    return axLetter === 'x' ?
-        function(d) { return strTranslate(offset + ax.l2p(d.x), 0); } :
-        function(d) { return strTranslate(0, offset + ax.l2p(d.x)); };
+    return ax._id.charAt(0) === 'x' ?
+        function(d) { return strTranslate(ax._offset + ax.l2p(d.x), 0); } :
+        function(d) { return strTranslate(0, ax._offset + ax.l2p(d.x)); };
 };
 
 axes.makeTransTickLabelFn = function(ax) {
-    var axLetter = ax._id.charAt(0);
-    var offset = ax._offset;
-    var isX = axLetter === 'x';
+    var uv = getTickLabelUV(ax);
+    var u = uv[0];
+    var v = uv[1];
 
-    if(ax.ticklabelmode === 'period') {
-        return isX ?
+    return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
-                offset + ax.l2p(getPeriodX(d)),
-                0
+                u + ax._offset + ax.l2p(getPosX(d)),
+                v
             );
         } :
         function(d) {
             return strTranslate(
-                0,
-                offset + ax.l2p(getPeriodX(d))
+                v,
+                u + ax._offset + ax.l2p(getPosX(d))
             );
         };
-    }
-
-    return axes.makeTransTickFn(ax);
 };
 
-function getPeriodX(d) {
+function getPosX(d) {
     return d.periodX !== undefined ? d.periodX : d.x;
+}
+
+function getTickLabelUV(ax) {
+    var ticklabelposition = ax.ticklabelposition || '';
+    var has = function(str) {
+        return ticklabelposition.indexOf(str) !== -1;
+    };
+
+    var isTop = has('top');
+    var isLeft = has('left');
+    var isRight = has('right');
+    var isBottom = has('bottom');
+    var isInside = has('inside');
+
+    var isAligned = isBottom || isLeft || isTop || isRight;
+
+    // early return
+    if(!isAligned && !isInside) return [0, 0];
+
+    var side = ax.side;
+    var isX = ax._id.charAt(0) === 'x';
+
+    var dx = (ax.tickwidth || 0) / 2;
+    var dy = (ax.linewidth || 0) / 2;
+    var u = isX ? dx : dy;
+    var v = isX ? dy : dx;
+
+    var fontSize = ax.tickfont ? ax.tickfont.size : 12;
+    if(isAligned) {
+        u += fontSize * MID_SHIFT * (isX ? 0.25 : 2);
+    }
+    if(!isX) {
+        v += fontSize * MID_SHIFT;
+    } else if(side === 'bottom') {
+        v += fontSize * MID_SHIFT / 2;
+    }
+
+    if(isLeft || isTop) u = -u;
+    if(side === 'bottom' || side === 'right') v = -v;
+
+    return [
+        isAligned ? u : 0,
+        isInside ? v : 0
+    ];
 }
 
 /**
@@ -2550,54 +2587,109 @@ axes.makeTickPath = function(ax, shift, sgn, len) {
  *  - {number} labelShift (gap perpendicular to ticks)
  */
 axes.makeLabelFns = function(ax, shift, angle) {
-    var axLetter = ax._id.charAt(0);
-    var outsideTicks = ax.ticks === 'outside';
-    var ticksOnOutsideLabels = outsideTicks && ax.tickson !== 'boundaries';
+    var ticklabelposition = ax.ticklabelposition || '';
+    var has = function(str) {
+        return ticklabelposition.indexOf(str) !== -1;
+    };
+
+    var isTop = has('top');
+    var isLeft = has('left');
+    var isRight = has('right');
+    var isBottom = has('bottom');
+    var isAligned = isBottom || isLeft || isTop || isRight;
+
+    var insideTickLabels = has('inside');
+    var labelsOverTicks =
+        (ticklabelposition === 'inside' && ax.ticks === 'inside') ||
+        (!insideTickLabels && ax.ticks === 'outside' && ax.tickson !== 'boundaries');
 
     var labelStandoff = 0;
     var labelShift = 0;
 
-    if(ticksOnOutsideLabels) {
-        labelStandoff += ax.ticklen;
+    var tickLen = labelsOverTicks ? ax.ticklen : 0;
+    if(insideTickLabels) {
+        tickLen *= -1;
+    } else if(isAligned) {
+        tickLen = 0;
     }
-    if(angle && outsideTicks) {
-        var rad = Lib.deg2rad(angle);
-        labelStandoff = ax.ticklen * Math.cos(rad) + 1;
-        labelShift = ax.ticklen * Math.sin(rad);
+
+    if(labelsOverTicks) {
+        labelStandoff += tickLen;
+        if(angle) {
+            var rad = Lib.deg2rad(angle);
+            labelStandoff = tickLen * Math.cos(rad) + 1;
+            labelShift = tickLen * Math.sin(rad);
+        }
     }
-    if(ax.showticklabels && (ticksOnOutsideLabels || ax.showline)) {
+
+    if(ax.showticklabels && (labelsOverTicks || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
-    labelStandoff += (ax.linewidth || 1) / 2;
+    if(!insideTickLabels) {
+        labelStandoff += (ax.linewidth || 1) / 2;
+    }
 
     var out = {
         labelStandoff: labelStandoff,
         labelShift: labelShift
     };
 
+    var isPeriod = ax.ticklabelmode === 'period';
+
     var x0, y0, ff, flipIt;
 
+    var side = ax.side;
+    var axLetter = ax._id.charAt(0);
     if(axLetter === 'x') {
-        flipIt = ax.side === 'bottom' ? 1 : -1;
+        var bottomSide =
+            (!insideTickLabels && side === 'bottom') ||
+            (insideTickLabels && side === 'top');
+
+        flipIt = bottomSide ? 1 : -1;
+        if(insideTickLabels) flipIt *= -1;
+
         x0 = labelShift * flipIt;
         y0 = shift + labelStandoff * flipIt;
-        ff = ax.side === 'bottom' ? 1 : -0.2;
+        ff = bottomSide ? 1 : -0.2;
 
         out.xFn = function(d) { return d.dx + x0; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
         out.anchorFn = function(d, a) {
-            if(!isNumeric(a) || a === 0 || a === 180) {
+            if(insideTickLabels || isAligned) {
+                if(isPeriod) return 'middle';
+                if(isLeft) return 'end';
+                if(isRight) return 'start';
+            }
+
+            if((
+                !isNumeric(a) || a === 0 || a === 180
+            )) {
                 return 'middle';
             }
-            return (a * flipIt < 0) ? 'end' : 'start';
+
+            var whichSide = a * flipIt < 0;
+            if(insideTickLabels) {
+                return whichSide ? 'start' : 'end';
+            }
+            return whichSide ? 'end' : 'start';
         };
         out.heightFn = function(d, a, h) {
+            if(insideTickLabels) {
+                return (ax.side === 'top') ? 0 : -h;
+            }
+
             return (a < -60 || a > 60) ? -0.5 * h :
                 ax.side === 'top' ? -h :
                 0;
         };
     } else if(axLetter === 'y') {
-        flipIt = ax.side === 'right' ? 1 : -1;
+        var rightSide =
+            (!insideTickLabels && side === 'right') ||
+            (insideTickLabels && side === 'left');
+
+        flipIt = rightSide ? 1 : -1;
+        if(insideTickLabels) flipIt *= -1;
+
         x0 = labelStandoff;
         y0 = -labelShift * flipIt;
         ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
@@ -2605,10 +2697,11 @@ axes.makeLabelFns = function(ax, shift, angle) {
         out.xFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
         out.anchorFn = function(d, a) {
-            if(isNumeric(a) && Math.abs(a) === 90) {
+            if(!insideTickLabels && !isAligned && isNumeric(a) && Math.abs(a) === 90) {
                 return 'middle';
             }
-            return ax.side === 'right' ? 'start' : 'end';
+
+            return rightSide ? 'start' : 'end';
         };
         out.heightFn = function(d, a, h) {
             a *= ax.side === 'left' ? 1 : -1;
@@ -2863,6 +2956,8 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
+        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+
         s.each(function(d) {
             var thisLabel = d3.select(this);
             var mathjaxGroup = thisLabel.select('.text-math-group');
@@ -2884,16 +2979,54 @@ axes.drawLabels = function(gd, ax, opts) {
             }
 
             if(mathjaxGroup.empty()) {
-                thisLabel.select('text').attr({
+                var thisText = thisLabel.select('text');
+                thisText.attr({
                     transform: transform,
                     'text-anchor': anchor
                 });
+
+                if(isInside) {
+                    // ensure visible
+                    thisText.style({ opacity: 100 });
+                }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
                 var mjShift = mjWidth * {end: -0.5, start: 0.5}[anchor];
                 mathjaxGroup.attr('transform', transform + strTranslate(mjShift, 0));
             }
         });
+    }
+
+    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+        ax._hideOutOfRangeInsideTickLabels = function() {
+            // hide inside tick labels that go outside axis end points
+
+            var gridLayer = fullLayout._cartesianlayer
+                .select('.subplot.' + ax._subplotsWith[0]) // is it the best way to get?
+                .select('.gridlayer');
+
+            var gridBb = Drawing.bBox(gridLayer.node());
+
+            var isX = ax._id.charAt(0) === 'x';
+
+            tickLabels.each(function() {
+                var thisLabel = d3.select(this);
+                var mathjaxGroup = thisLabel.select('.text-math-group');
+
+                if(mathjaxGroup.empty()) {
+                    var bb = Drawing.bBox(thisLabel.node());
+                    var hide = false;
+                    if(isX) {
+                        if(bb.right > gridBb.right) hide = true;
+                        else if(bb.left < gridBb.left) hide = true;
+                    } else {
+                        if(bb.bottom > gridBb.bottom) hide = true;
+                        else if(bb.top < gridBb.top) hide = true;
+                    }
+                    if(hide) thisLabel.select('text').style({ opacity: 0 });
+                } // TODO: hide mathjax?
+            });
+        };
     }
 
     // make sure all labels are correctly positioned at their base angle
