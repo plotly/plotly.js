@@ -18,7 +18,7 @@ var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
 var DUMMY_SUB = 'TOBESTRIPPED';
-var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ')|(' + DUMMY_SUB + '")', 'g');
+var DUMMY_REGEX = new RegExp('("?' + DUMMY_SUB + '"?)', 'g');
 
 function htmlEntityDecode(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
