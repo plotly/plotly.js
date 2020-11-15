@@ -336,7 +336,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Discover event target, traversing open shadow roots.
             var target = evt.composedPath && evt.composedPath()[0];
             if(!target) {
-                return;
+                // Fallback for browsers not supporting composedPath
+                target = evt.target;
             }
             var dbb = target.getBoundingClientRect();
 
