@@ -76,7 +76,7 @@ module.exports = overrideAll({
         },
         opacity: extendFlat({}, markerAttrs.opacity, {
             dflt: 1
-         })
+        })
     },
 
     // locations
