@@ -34,7 +34,12 @@ module.exports = overrideAll({
             dflt: false,
             description: 'Determines whether clustering is enabled or disabled.'
         },
-        maxzoom: mapboxLayoutAtributes.maxzoom,
+        maxzoom: extendFlat({}, mapboxLayoutAtributes.layers.maxzoom, {
+            description: [
+                'Sets the maximum zoom level.',
+                'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
+            ].join(' ')
+        }),
         radius: {
             role: 'info',
             valType: 'number',
@@ -69,7 +74,9 @@ module.exports = overrideAll({
                 'Sets the color for each cluster step.'
             ].join(' ')
         },
-        opacity: markerAttrs.opacity,
+        opacity: extendFlat({}, markerAttrs.opacity, {
+            dflt: 1
+         })
     },
 
     // locations
