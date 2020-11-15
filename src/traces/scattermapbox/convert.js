@@ -92,7 +92,7 @@ module.exports = function convert(gd, calcTrace) {
                 paint: {
                     'circle-color': createClusterColors(trace.cluster.color, trace.cluster.step),
                     'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.step),
-                    'circle-opacity': trace.cluster.opacity
+                    'circle-opacity': createClusterOpacities(trace.cluster.opacity, trace.cluster.step),
                 },
             };
             opts.clusterCount = {
@@ -389,4 +389,20 @@ function createClusterSizes(sizes, step) {
         newSizes = sizes;
     }
     return newSizes;
+}
+
+function createClusterOpacities(opacities, step) {
+    var idx, newOpacities;
+    if(
+    Lib.isArrayOrTypedArray(opacities) &&
+    Lib.isArrayOrTypedArray(step)
+  ) {
+        newOpacities = ['step', ['get', 'point_count'], opacities[0]];
+        for(idx = 1; idx < opacities.length; idx++) {
+            newOpacities.push(step[idx - 1], opacities[idx]);
+        }
+    } else {
+        newOpacities = opacities;
+    }
+    return newOpacities;
 }
