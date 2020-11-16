@@ -22,6 +22,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var ya = pointData.ya;
     var subplot = pointData.subplot;
 
+    var gd = subplot.gd;
+    var scaleX = gd._fullLayout._inverseScaleX;
+    var scaleY = gd._fullLayout._inverseScaleY;
+
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
         Math.floor((xval + 180) / 360) :
@@ -52,11 +56,12 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var di = cd[pointData.index];
     var lonlat = di.lonlat;
+
     var lonlatShifted = [Lib.modHalf(lonlat[0], 360) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
-    var xc = xa.c2p(lonlatShifted);
-    var yc = ya.c2p(lonlatShifted);
+    var xc = xa.c2p(lonlatShifted) / scaleX;
+    var yc = ya.c2p(lonlatShifted) / scaleY;
     var rad = di.mrc || 1;
 
     pointData.x0 = xc - rad;
