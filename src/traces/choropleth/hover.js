@@ -49,7 +49,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.zLabel = Axes.tickText(geo.mockAxis, geo.mockAxis.c2l(pt.z), 'hover').text;
     pointData.hovertemplate = pt.hovertemplate;
 
-    makeHoverInfo(pointData, trace, pt, geo.mockAxis);
+    makeHoverInfo(pointData, trace, pt);
 
     return [pointData];
 };
