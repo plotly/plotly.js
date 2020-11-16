@@ -1197,6 +1197,9 @@ proto.updateAngularDrag = function(fullLayout) {
         var fullLayoutNow = _this.gd._fullLayout;
         var polarLayoutNow = fullLayoutNow[_this.id];
 
+        dx *= fullLayout._inverseScaleX;
+        dy *= fullLayout._inverseScaleY;
+
         var x1 = x0 + dx;
         var y1 = y0 + dy;
         var a1 = xy2a(x1, y1);
@@ -1291,6 +1294,11 @@ proto.updateAngularDrag = function(fullLayout) {
         var bbox = angularDrag.getBoundingClientRect();
         x0 = startX - bbox.left;
         y0 = startY - bbox.top;
+
+        var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         a0 = xy2a(x0, y0);
 
         dragOpts.moveFn = moveFn;
