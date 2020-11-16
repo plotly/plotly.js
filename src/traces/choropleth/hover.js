@@ -19,17 +19,20 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var pt, i, j, isInside;
 
+    var xy = [xval, yval];
+    var altXy = [xval + 360, yval];
+
     for(i = 0; i < cd.length; i++) {
         pt = cd[i];
         isInside = false;
 
         if(pt._polygons) {
             for(j = 0; j < pt._polygons.length; j++) {
-                if(pt._polygons[j].contains([xval, yval])) {
+                if(pt._polygons[j].contains(xy)) {
                     isInside = !isInside;
                 }
                 // for polygons that cross antimeridian as xval is in [-180, 180]
-                if(pt._polygons[j].contains([xval + 360, yval])) {
+                if(pt._polygons[j].contains(altXy)) {
                     isInside = !isInside;
                 }
             }
