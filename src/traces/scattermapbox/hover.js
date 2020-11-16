@@ -42,8 +42,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];
         var pt = subplot.project([lon, lat]);
-        var dx = pt.x - xa.c2p([xval2, lat]);
-        var dy = pt.y - ya.c2p([lon, yval]);
+        var dx = pt.x - xa.c2p([xval2, lat]) * scaleX;
+        var dy = pt.y - ya.c2p([lon, yval]) * scaleY;
         var rad = Math.max(3, d.mrc || 0);
 
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
@@ -60,8 +60,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var lonlatShifted = [Lib.modHalf(lonlat[0], 360) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
-    var xc = xa.c2p(lonlatShifted) / scaleX;
-    var yc = ya.c2p(lonlatShifted) / scaleY;
+    var xc = xa.c2p(lonlatShifted);
+    var yc = ya.c2p(lonlatShifted);
     var rad = di.mrc || 1;
 
     pointData.x0 = xc - rad;

@@ -382,18 +382,14 @@ proto.createFramework = function(fullLayout) {
     div.style.position = 'absolute';
     self.container.appendChild(div);
 
-    var gd = self.gd;
-    var scaleX = gd._fullLayout._inverseScaleX;
-    var scaleY = gd._fullLayout._inverseScaleY;
-
     // create mock x/y axes for hover routine
     self.xaxis = {
         _id: 'x',
-        c2p: function(v) { return self.project(v).x * scaleX; }
+        c2p: function(v) { return self.project(v).x; }
     };
     self.yaxis = {
         _id: 'y',
-        c2p: function(v) { return self.project(v).y * scaleY; }
+        c2p: function(v) { return self.project(v).y; }
     };
 
     self.updateFramework(fullLayout);
