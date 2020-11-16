@@ -12,17 +12,14 @@ var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
 var drag = require('../assets/drag');
-var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 var getNodeCoords = require('../assets/get_node_coords');
 var delay = require('../assets/delay');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
-var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var MODEBAR_DELAY = 500;
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 describe('zoom box element', function() {
     var mock = require('@mocks/14.json');
@@ -2292,7 +2289,7 @@ describe('Cartesian plots with css transforms', function() {
     function _dragRelease(start, end) {
         var localEnd = _getLocalPos(gd, end);
         _drag(start, end);
-        mouseEvent('mouseup',localEnd[0], localEnd[1]);
+        mouseEvent('mouseup', localEnd[0], localEnd[1]);
     }
 
     function _hover(pos) {
@@ -2333,9 +2330,7 @@ describe('Cartesian plots with css transforms', function() {
     var transforms = ['scale(0.5)'];
 
     transforms.forEach(function(transform) {
-
-        it(`hover behaves correctly after css transform: ${transform}`, function(done) {
-    
+        it('hover behaves correctly after css transform: ' + transform, function(done) {
             function _hoverAndAssertEventOccurred(point, label) {
                 return _hover(point)
                 .then(function() {
@@ -2345,7 +2340,7 @@ describe('Cartesian plots with css transforms', function() {
                     _unhover(point);
                 });
             }
-    
+
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 gd.on('plotly_hover', function(d) {
@@ -2362,9 +2357,8 @@ describe('Cartesian plots with css transforms', function() {
             .catch(failTest)
             .then(done);
         });
-    
-        it(`drag-zoom behaves correctly after css transform: ${transform}`, function(done) {
-    
+
+        it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
             // return a rect of form {left, top, width, height} from the zoomlayer
             // svg path.
             function _getZoomlayerPathRect(pathStr) {
@@ -2376,7 +2370,7 @@ describe('Cartesian plots with css transforms', function() {
                 rect.top = Number(startCoordsString.split(',')[1]);
                 return rect;
             }
-    
+
             // asserts that the zoombox path must go from the start to end positions,
             // in css-transformed coordinates.
             function _assertTransformedZoombox(startPos, endPos) {
@@ -2390,41 +2384,41 @@ describe('Cartesian plots with css transforms', function() {
                 expect(zoomboxRect.width).toBeCloseTo(size[0]);
                 expect(zoomboxRect.height).toBeCloseTo(size[1]);
             }
-    
+
             var start = [50, 50];
-            var end = [150, 150]
-        
+            var end = [150, 150];
+
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 transformPlot(gd, transform);
                 recalculateInverse(gd);
             })
-            .then(function()  {_drag(start, end); })
-            .then(function()  {
-                _assertTransformedZoombox(start, end); 
+            .then(function() {_drag(start, end); })
+            .then(function() {
+                _assertTransformedZoombox(start, end);
             })
             .then(function() { mouseEvent('mouseup', 0, 0); })
             .catch(failTest)
             .then(done);
         });
-    
-        it(`select behaves correctly after css transform: ${transform}`, function(done) {
-    
+
+        it('select behaves correctly after css transform: ' + transform, function(done) {
             function _assertSelected(expectation) {
                 var data = gd._fullData[0];
                 var points = data.selectedpoints;
                 expect(typeof(points) !== 'undefined').toBeTrue();
-                if (expectation.numPoints)
+                if(expectation.numPoints) {
                     expect(points.length).toBe(expectation.numPoints);
-                if (expectation.selectedLabels) {
-                    var selectedLabels = points.map(function(i) { return data.x[i]; })
+                }
+                if(expectation.selectedLabels) {
+                    var selectedLabels = points.map(function(i) { return data.x[i]; });
                     expect(selectedLabels).toEqual(expectation.selectedLabels);
                 }
             }
-    
+
             var start = [10, 10];
             var end = [200, 200];
-    
+
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 transformPlot(gd, transform);
@@ -2437,11 +2431,10 @@ describe('Cartesian plots with css transforms', function() {
                 _dragRelease(start, end);
             })
             .then(function() {
-                _assertSelected({numPoints: 2, selectedLabels: ["one", "two"]});
+                _assertSelected({numPoints: 2, selectedLabels: ['one', 'two']});
             })
             .catch(failTest)
             .then(done);
         });
     });
-
 });

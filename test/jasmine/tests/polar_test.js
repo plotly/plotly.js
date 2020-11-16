@@ -1601,7 +1601,6 @@ describe('Polar plots with css transforms', function() {
     var gd;
 
     beforeEach(function() {
-        eventRecordings = {};
         gd = createGraphDiv();
     });
 
@@ -1667,11 +1666,9 @@ describe('Polar plots with css transforms', function() {
     var transforms = ['scale(0.5)'];
 
     transforms.forEach(function(transform) {
-
-        it(`@transform_test @alex_test hover behaves correctly after css transform: ${transform}`, function(done) {
-
+        it('@transform_test @alex_test hover behaves correctly after css transform: ' + transform, function(done) {
             var hoverEvents = {};
-    
+
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 gd.on('plotly_hover', function(d) {
@@ -1686,12 +1683,11 @@ describe('Polar plots with css transforms', function() {
             .then(function() { _hover([65, 65]); })
             .then(function() { _hover([132, 132]); })
             .then(function() { _hover([165, 165]); })
-            .then(function() { 
-                expect(Object.keys(hoverEvents).length).toBe(4); 
+            .then(function() {
+                expect(Object.keys(hoverEvents).length).toBe(4);
             })
             .catch(failTest)
             .then(done);
         });
     });
-
 });

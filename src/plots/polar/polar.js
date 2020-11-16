@@ -840,7 +840,6 @@ proto.updateMainDrag = function(fullLayout) {
     }
 
     function zoomMove(dx, dy) {
-        
         dx = dx * scaleX;
         dy = dy * scaleY;
 
