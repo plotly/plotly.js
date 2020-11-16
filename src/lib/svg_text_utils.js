@@ -743,9 +743,17 @@ function alignHTMLWith(_base, container, options) {
 
     return function() {
         thisRect = this.node().getBoundingClientRect();
+
+        var x0 = getLeft() - cRect.left;
+        var y0 = getTop() - cRect.top;
+        var gd = options.gd || {};
+        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         this.style({
-            top: (getTop() - cRect.top) + 'px',
-            left: (getLeft() - cRect.left) + 'px',
+            top: y0 + 'px',
+            left: x0 + 'px',
             'z-index': 1000
         });
         return this;
