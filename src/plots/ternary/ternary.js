@@ -502,6 +502,8 @@ proto.initInteractions = function() {
     var dragger = _this.layers.plotbg.select('path').node();
     var gd = _this.graphDiv;
     var zoomLayer = gd._fullLayout._zoomlayer;
+    var scaleX;
+    var scaleY;
 
     // use plotbg for the main interactions
     this.dragOptions = {
@@ -519,6 +521,9 @@ proto.initInteractions = function() {
             // is called
             _this.dragOptions.xaxes = [_this.xaxis];
             _this.dragOptions.yaxes = [_this.yaxis];
+
+            scaleX = gd._fullLayout._inverseScaleX;
+            scaleY = gd._fullLayout._inverseScaleY;
 
             var dragModeNow = _this.dragOptions.dragmode = gd._fullLayout.dragmode;
 
@@ -573,8 +578,13 @@ proto.initInteractions = function() {
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
+        var inverse = gd._fullLayout._inverseTransform;
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
+        var transformedCoords = Lib.apply3DTransform(inverse)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         mins0 = {
             a: _this.aaxis.range[0],
             b: _this.baxis.range[1],
@@ -614,8 +624,8 @@ proto.initInteractions = function() {
     function getCFrac(x, y) { return ((x - (_this.h - y) / Math.sqrt(3)) / _this.w); }
 
     function zoomMove(dx0, dy0) {
-        var x1 = x0 + dx0;
-        var y1 = y0 + dy0;
+        var x1 = x0 + dx0 * scaleX;
+        var y1 = y0 + dy0 * scaleY;
         var afrac = Math.max(0, Math.min(1, getAFrac(x0, y0), getAFrac(x1, y1)));
         var bfrac = Math.max(0, Math.min(1, getBFrac(x0, y0), getBFrac(x1, y1)));
         var cfrac = Math.max(0, Math.min(1, getCFrac(x0, y0), getCFrac(x1, y1)));

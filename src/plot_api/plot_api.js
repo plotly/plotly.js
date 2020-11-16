@@ -3716,6 +3716,9 @@ function makePlotFramework(gd) {
     var fullLayout = gd._fullLayout;
     if(fullLayout._inverseTransform === undefined) {
         fullLayout._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+        var m = fullLayout._inverseTransform;
+        fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+        fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
     }
 
     // Plot container

@@ -296,9 +296,8 @@ proto.render = function() {
     // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
-    var m = gd._fullLayout._inverseTransform;
-    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+    var scaleX = gd._fullLayout._inverseScaleX;
+    var scaleY = gd._fullLayout._inverseScaleY;
     var width = clientRect.width * scaleX;
     var height = clientRect.height * scaleY;
     svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);

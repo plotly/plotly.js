@@ -164,9 +164,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         recomputeAxisLists();
 
-        var m = gd._fullLayout._inverseTransform;
-        scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-        scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+        scaleX = gd._fullLayout._inverseScaleX;
+        scaleY = gd._fullLayout._inverseScaleY;
 
         if(!allFixedRanges) {
             if(isMainDrag) {

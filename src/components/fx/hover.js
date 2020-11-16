@@ -192,7 +192,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, opts.gd._fullLayout._inverseTransform);
+    var scaleX = opts.gd._fullLayout._inverseScaleX;
+    var scaleY = opts.gd._fullLayout._inverseScaleY;
+    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -721,10 +723,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
-        alignHoverText(hoverLabels, rotateLabels, fullLayout._inverseTransform);
-    }
-
-    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
+        alignHoverText(hoverLabels, rotateLabels, fullLayout._inverseScaleX, fullLayout._inverseScaleY);
+    }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
     // we should improve the "fx" API so other plots can use it without these hack.
     if(evt.target && evt.target.tagName) {
         var hasClickToShow = Registry.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
@@ -1482,10 +1482,7 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
     }
 }
 
-function alignHoverText(hoverLabels, rotateLabels, inverseTransform) {
-    var m = inverseTransform;
-    var scaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1]);
-    var scaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1]);
+function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
 
