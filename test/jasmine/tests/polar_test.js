@@ -1623,8 +1623,17 @@ describe('Polar plots with css transforms', function() {
     }
 
     function recalculateInverse(gd) {
-        var inverse = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-        gd._fullLayout._inverseTransform = inverse;
+        var m = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+        gd._fullLayout._inverseTransform = m;
+        gd._fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+        gd._fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
+    }
+
+
+    function _drag(start, dp) {
+        var node = d3.select('.polar > .draglayer > .maindrag').node();
+        var localStart = _getLocalPos(gd, start);
+        return drag({node: node, dpos: dp, pos0: localStart});
     }
 
     function _hover(pos) {
@@ -1641,6 +1650,15 @@ describe('Polar plots with css transforms', function() {
                 reject('plotly_hover did not get called!');
             }, 100);
         });
+    }
+
+    function _getVisiblePointsData(gd) {
+        return Array.from(
+            document.querySelectorAll('.point').entries(), 
+            ([key, value]) => value,
+        )
+        .filter(e => window.getComputedStyle(e).display !== 'none')
+        .map(e => e.__data__);
     }
 
     var rVals = [100, 50, 50, 100];
@@ -1666,7 +1684,7 @@ describe('Polar plots with css transforms', function() {
     var transforms = ['scale(0.5)'];
 
     transforms.forEach(function(transform) {
-        it('@transform_test @alex_test hover behaves correctly after css transform: ' + transform, function(done) {
+        it('hover behaves correctly after css transform: ' + transform, function(done) {
             var hoverEvents = {};
 
             Plotly.plot(gd, Lib.extendDeep({}, mock))
@@ -1685,6 +1703,52 @@ describe('Polar plots with css transforms', function() {
             .then(function() { _hover([165, 165]); })
             .then(function() {
                 expect(Object.keys(hoverEvents).length).toBe(4);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    
+        it(`drag-zoom behaves correctly after css transform: ${transform}`, function(done) {
+            
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function()  {
+                return _drag([30, 30], [50, 50]);
+            })
+            .then(function() {
+                var points = _getVisiblePointsData(gd);
+                expect(points.length).toBe(2);
+                expect(points[0].i).toBe(0);
+                expect(points[1].i).toBe(3);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    
+        it(`select behaves correctly after css transform: ${transform}`, function(done) {
+    
+            function _assertSelected(expectation) {
+                var data = gd._fullData[0];
+                var points = data.selectedpoints;
+                expect(typeof(points) !== 'undefined').toBeTrue();
+                if (expectation.numPoints)
+                    expect(points.length).toBe(expectation.numPoints);
+            }
+    
+            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+                recalculateInverse(gd);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() { return _drag([30, 30], [130, 130]) })
+            .then(function() {
+                _assertSelected({numPoints: 3});
             })
             .catch(failTest)
             .then(done);

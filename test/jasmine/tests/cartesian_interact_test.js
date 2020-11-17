@@ -2273,8 +2273,10 @@ describe('Cartesian plots with css transforms', function() {
     }
 
     function recalculateInverse(gd) {
-        var inverse = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-        gd._fullLayout._inverseTransform = inverse;
+        var m = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+        gd._fullLayout._inverseTransform = m;
+        gd._fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+        gd._fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
     }
 
     function _drag(start, end) {
