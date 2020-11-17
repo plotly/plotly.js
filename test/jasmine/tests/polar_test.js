@@ -1652,13 +1652,13 @@ describe('Polar plots with css transforms', function() {
         });
     }
 
-    function _getVisiblePointsData(gd) {
+    function _getVisiblePointsData() {
         return Array.from(
-            document.querySelectorAll('.point').entries(), 
-            ([key, value]) => value,
+            document.querySelectorAll('.point').entries(),
+            function(e) { return e[1]; }
         )
-        .filter(e => window.getComputedStyle(e).display !== 'none')
-        .map(e => e.__data__);
+        .filter(function(e) { return window.getComputedStyle(e).display !== 'none'; })
+        .map(function(e) { return e.__data__; });
     }
 
     var rVals = [100, 50, 50, 100];
@@ -1707,19 +1707,18 @@ describe('Polar plots with css transforms', function() {
             .catch(failTest)
             .then(done);
         });
-    
-        it(`drag-zoom behaves correctly after css transform: ${transform}`, function(done) {
-            
+
+        it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 transformPlot(gd, transform);
                 recalculateInverse(gd);
             })
-            .then(function()  {
+            .then(function() {
                 return _drag([30, 30], [50, 50]);
             })
             .then(function() {
-                var points = _getVisiblePointsData(gd);
+                var points = _getVisiblePointsData();
                 expect(points.length).toBe(2);
                 expect(points[0].i).toBe(0);
                 expect(points[1].i).toBe(3);
@@ -1727,17 +1726,17 @@ describe('Polar plots with css transforms', function() {
             .catch(failTest)
             .then(done);
         });
-    
-        it(`select behaves correctly after css transform: ${transform}`, function(done) {
-    
+
+        it('select behaves correctly after css transform: ' + transform, function(done) {
             function _assertSelected(expectation) {
                 var data = gd._fullData[0];
                 var points = data.selectedpoints;
                 expect(typeof(points) !== 'undefined').toBeTrue();
-                if (expectation.numPoints)
+                if(expectation.numPoints) {
                     expect(points.length).toBe(expectation.numPoints);
+                }
             }
-    
+
             Plotly.plot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 transformPlot(gd, transform);
@@ -1746,7 +1745,7 @@ describe('Polar plots with css transforms', function() {
             .then(function() {
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
-            .then(function() { return _drag([30, 30], [130, 130]) })
+            .then(function() { return _drag([30, 30], [130, 130]); })
             .then(function() {
                 _assertSelected({numPoints: 3});
             })
