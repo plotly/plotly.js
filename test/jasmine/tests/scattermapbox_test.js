@@ -951,7 +951,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             click(pointPos[0], pointPos[1]);
 
             var pt = futureData.points[0];
-            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
@@ -963,9 +962,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             expect(pt.lat).toEqual(10, 'points[0].lat');
             expect(pt.lon).toEqual(10, 'points[0].lon');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
         });
     });
 
@@ -1013,8 +1009,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             // expect(pt.lon).toEqual(10, 'points[0].lon');
             // expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
 
-            // expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            // expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
             // Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
             //     expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
             // });
@@ -1035,7 +1029,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
             var pt = futureData.points[0];
-            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
@@ -1047,9 +1040,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             expect(pt.lat).toEqual(10, 'points[0].lat');
             expect(pt.lon).toEqual(10, 'points[0].lon');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
         });
     });
 
@@ -1065,7 +1055,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         it('@gl should contain the correct fields', function(done) {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
                 var pt = futureData.points[0];
-                var evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
@@ -1077,9 +1066,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 expect(pt.lat).toEqual(10, 'points[0].lat');
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-
-                expect(evt.clientX).toEqual(nearPos[0], 'event.clientX');
-                expect(evt.clientY).toEqual(nearPos[1], 'event.clientY');
             }).then(done);
         });
     });

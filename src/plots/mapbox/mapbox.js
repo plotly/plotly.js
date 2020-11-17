@@ -450,13 +450,12 @@ proto.initFx = function(calcData, fullLayout) {
 
     map.on('mousemove', function(evt) {
         var bb = self.div.getBoundingClientRect();
-
-        evt.target.getBoundingClientRect = function() { return bb; };
-
         var xy = [
             evt.originalEvent.offsetX,
             evt.originalEvent.offsetY
         ];
+
+        evt.target.getBoundingClientRect = function() { return bb; };
 
         self.xaxis.p2c = function() { return map.unproject(xy).lng; };
         self.yaxis.p2c = function() { return map.unproject(xy).lat; };
