@@ -1622,14 +1622,6 @@ describe('Polar plots with css transforms', function() {
         gd.style.transform = transformString;
     }
 
-    function recalculateInverse(gd) {
-        var m = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-        gd._fullLayout._inverseTransform = m;
-        gd._fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
-        gd._fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
-    }
-
-
     function _drag(start, dp) {
         var node = d3.select('.polar > .draglayer > .maindrag').node();
         var localStart = _getLocalPos(gd, start);
@@ -1681,47 +1673,56 @@ describe('Polar plots with css transforms', function() {
             hovermode: 'closest'
         }
     };
-    var transforms = ['scale(0.5)'];
 
-    transforms.forEach(function(transform) {
+    [{
+        transform: 'scaleX(0.75)',
+        hovered: 1,
+        zoomed: [0, 1, 2, 3],
+        selected: {numPoints: 2}
+    }, {
+        transform: 'scale(0.5)',
+        hovered: 4,
+        zoomed: [0, 3],
+        selected: {numPoints: 3}
+    }, {
+        transform: 'scale(0.5) translate(-200px, 25%)',
+        hovered: 4,
+        zoomed: [0, 3],
+        selected: {numPoints: 3}
+    }].forEach(function(t) {
+        var transform = t.transform;
+
         it('hover behaves correctly after css transform: ' + transform, function(done) {
             var hoverEvents = {};
 
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 gd.on('plotly_hover', function(d) {
                     hoverEvents[d.points[0].pointIndex] = true;
                 });
-            })
-            .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
             })
             .then(function() { _hover([32, 32]); })
             .then(function() { _hover([65, 65]); })
             .then(function() { _hover([132, 132]); })
             .then(function() { _hover([165, 165]); })
             .then(function() {
-                expect(Object.keys(hoverEvents).length).toBe(4);
+                expect(Object.keys(hoverEvents).length).toBe(t.hovered);
             })
             .catch(failTest)
             .then(done);
         });
 
         it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+
             .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
-            })
-            .then(function() {
-                return _drag([30, 30], [50, 50]);
+                return _drag([10, 10], [50, 50]);
             })
             .then(function() {
                 var points = _getVisiblePointsData();
-                expect(points.length).toBe(2);
-                expect(points[0].i).toBe(0);
-                expect(points[1].i).toBe(3);
+                expect(points.map(function(e) { return e.i; })).toEqual(t.zoomed);
             })
             .catch(failTest)
             .then(done);
@@ -1737,17 +1738,14 @@ describe('Polar plots with css transforms', function() {
                 }
             }
 
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
-            .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
-            })
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
             .then(function() { return _drag([30, 30], [130, 130]); })
             .then(function() {
-                _assertSelected({numPoints: 3});
+                _assertSelected(t.selected);
             })
             .catch(failTest)
             .then(done);

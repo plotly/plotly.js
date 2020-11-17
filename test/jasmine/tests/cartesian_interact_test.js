@@ -2272,13 +2272,6 @@ describe('Cartesian plots with css transforms', function() {
         gd.style.transform = transformString;
     }
 
-    function recalculateInverse(gd) {
-        var m = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-        gd._fullLayout._inverseTransform = m;
-        gd._fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
-        gd._fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
-    }
-
     function _drag(start, end) {
         var localStart = _getLocalPos(gd, start);
         var localEnd = _getLocalPos(gd, end);
@@ -2329,29 +2322,39 @@ describe('Cartesian plots with css transforms', function() {
             margin: {l: 0, t: 0, r: 0, b: 0}
         }
     };
-    var transforms = ['scale(0.5)'];
 
-    transforms.forEach(function(transform) {
+    [{
+        transform: 'scaleX(0.5)',
+        hovered: 1,
+        selected: {numPoints: 1, selectedLabels: ['two']}
+    }, {
+        transform: 'scale(0.5)',
+        hovered: 1,
+        selected: {numPoints: 2, selectedLabels: ['one', 'two']}
+    }, {
+        transform: 'scale(0.25) translate(150px, 25%) scaleY(2)',
+        hovered: 1,
+        selected: {numPoints: 3, selectedLabels: ['one', 'two', 'three']}
+    }].forEach(function(t) {
+        var transform = t.transform;
+
         it('hover behaves correctly after css transform: ' + transform, function(done) {
             function _hoverAndAssertEventOccurred(point, label) {
                 return _hover(point)
                 .then(function() {
-                    expect(eventRecordings[label]).toBe(1);
+                    expect(eventRecordings[label]).toBe(t.hovered);
                 })
                 .then(function() {
                     _unhover(point);
                 });
             }
 
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 gd.on('plotly_hover', function(d) {
                     eventRecordings[d.points[0].x] = 1;
                 });
-            })
-            .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
             })
             .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
             .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
@@ -2381,7 +2384,7 @@ describe('Cartesian plots with css transforms', function() {
                 var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
                 var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
                 var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
-                expect(zoomboxRect.left).toBeCloseTo(startPos[0]);
+                expect(zoomboxRect.left).toBeCloseTo(startPos[0], -1);
                 expect(zoomboxRect.top).toBeCloseTo(startPos[1]);
                 expect(zoomboxRect.width).toBeCloseTo(size[0]);
                 expect(zoomboxRect.height).toBeCloseTo(size[1]);
@@ -2390,11 +2393,8 @@ describe('Cartesian plots with css transforms', function() {
             var start = [50, 50];
             var end = [150, 150];
 
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
-            .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
-            })
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {_drag(start, end); })
             .then(function() {
                 _assertTransformedZoombox(start, end);
@@ -2421,11 +2421,8 @@ describe('Cartesian plots with css transforms', function() {
             var start = [10, 10];
             var end = [200, 200];
 
-            Plotly.plot(gd, Lib.extendDeep({}, mock))
-            .then(function() {
-                transformPlot(gd, transform);
-                recalculateInverse(gd);
-            })
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
@@ -2433,7 +2430,7 @@ describe('Cartesian plots with css transforms', function() {
                 _dragRelease(start, end);
             })
             .then(function() {
-                _assertSelected({numPoints: 2, selectedLabels: ['one', 'two']});
+                _assertSelected(t.selected);
             })
             .catch(failTest)
             .then(done);
