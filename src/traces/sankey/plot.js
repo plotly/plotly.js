@@ -292,10 +292,13 @@ module.exports = function plot(gd, calcData) {
         var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
         d.node.fullData = d.node.trace;
 
+        var scaleX = gd._fullLayout._inverseScaleX;
+        var scaleY = gd._fullLayout._inverseScaleY;
+
         var tooltip = Fx.loneHover({
-            x0: hoverCenterX0,
-            x1: hoverCenterX1,
-            y: hoverCenterY,
+            x0: scaleX * hoverCenterX0,
+            x1: scaleX * hoverCenterX1,
+            y: scaleY * hoverCenterY,
             name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,

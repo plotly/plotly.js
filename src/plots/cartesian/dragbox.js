@@ -91,6 +91,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var hasScatterGl, hasSplom, hasSVG;
     // collected changes to be made to the plot by relayout at the end
     var updates;
+    // scaling factors from css transform
+    var scaleX;
+    var scaleY;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -161,6 +164,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         recomputeAxisLists();
+
+        scaleX = gd._fullLayout._inverseScaleX;
+        scaleY = gd._fullLayout._inverseScaleY;
 
         if(!allFixedRanges) {
             if(isMainDrag) {
@@ -327,6 +333,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
+
+        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
@@ -344,8 +355,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return false;
         }
 
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0));
-        var y1 = Math.max(0, Math.min(ph, dy0 + y0));
+        var x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
+        var y1 = Math.max(0, Math.min(ph, scaleY * dy0 + y0));
         var dx = Math.abs(x1 - x0);
         var dy = Math.abs(y1 - y0);
 
@@ -545,6 +556,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx, dy) {
+        dx = dx * scaleX;
+        dy = dy * scaleY;
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
             return;
