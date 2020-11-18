@@ -126,8 +126,13 @@ function getElementTransformMatrix(element) {
     );
 
     if(transform === 'none') return null;
-    // the slice is because the transform string returns eg "matrix(0.5, 0, 1, 0, 1, 1)"
-    return transform.slice(7, -1).split(',').map(function(n) {return +n;});
+    // the transform is a string in the form of matrix(a, b, ...) or matrix3d(...)
+    return transform
+        .replace('matrix', '')
+        .replace('3d', '')
+        .slice(1, -1)
+        .split(',')
+        .map(function(n) { return +n; });
 }
 /**
  * retrieve all DOM elements that are ancestors of the specified one (including itself)
