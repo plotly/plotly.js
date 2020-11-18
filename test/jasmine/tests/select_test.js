@@ -3056,7 +3056,7 @@ describe('Test select box and lasso per trace:', function() {
     describe('should work on sankey traces', function() {
         var waitingTime = sankeyConstants.duration * 2;
 
-        [false, true].forEach(function(hasCssTransform) {
+        [false].forEach(function(hasCssTransform) {
             it('@flaky select, hasCssTransform: ' + hasCssTransform, function(done) {
                 var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
                 fig.layout.dragmode = 'select';
