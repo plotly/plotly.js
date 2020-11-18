@@ -3147,11 +3147,19 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    if(
-        (ax._anchorAxis || {}).autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1
-    ) {
-        seq.push(computeFinalTickLabelBoundingBoxes);
+    if(!gd._fullLayout._insideTickLabelsAutorangeDone) {
+        var anchorAxisAutorange = (ax._anchorAxis || {}).autorange;
+        if(
+            anchorAxisAutorange &&
+            (ax.ticklabelposition || '').indexOf('inside') !== -1
+        ) {
+            if(!fullLayout._insideTickLabelsAutorange) {
+                fullLayout._insideTickLabelsAutorange = {};
+            }
+            fullLayout._insideTickLabelsAutorange[ax._anchorAxis._name + '.autorange'] = anchorAxisAutorange;
+
+            seq.push(computeFinalTickLabelBoundingBoxes);
+        }
     }
 
     var done = Lib.syncOrAsync(seq);

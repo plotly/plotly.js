@@ -381,6 +381,7 @@ function plot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
+        insideTickLabelsAutorange,
         Plots.previousPromises
     );
 
@@ -393,6 +394,13 @@ function plot(gd, data, layout, config) {
         emitAfterPlot(gd);
         return gd;
     });
+}
+
+function insideTickLabelsAutorange(gd) {
+    var obj = gd._fullLayout._insideTickLabelsAutorange;
+    if(!obj) return;
+    gd._fullLayout._insideTickLabelsAutorangeDone = true;
+    return relayout(gd, obj);
 }
 
 function emitAfterPlot(gd) {
