@@ -1196,11 +1196,8 @@ proto.updateAngularDrag = function(fullLayout) {
         var fullLayoutNow = _this.gd._fullLayout;
         var polarLayoutNow = fullLayoutNow[_this.id];
 
-        dx *= fullLayout._inverseScaleX;
-        dy *= fullLayout._inverseScaleY;
-
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
+        var x1 = x0 + dx * fullLayout._inverseScaleX;
+        var y1 = y0 + dy * fullLayout._inverseScaleY;
         var a1 = xy2a(x1, y1);
         var da = rad2deg(a1 - a0);
         rot1 = rot0 + da;
