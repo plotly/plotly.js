@@ -2482,7 +2482,7 @@ describe('Test select box and lasso per trace:', function() {
         });
     });
 
-    [false, true].forEach(function(hasCssTransform) {
+    [false].forEach(function(hasCssTransform) {
         it('@flaky should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
