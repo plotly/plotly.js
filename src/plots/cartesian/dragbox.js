@@ -633,7 +633,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         yStart = (yActive === 'n') ? dy : 0;
 
         if(
-            links.isSubplotConstrained ||
+            (links.isSubplotConstrained && !matches.isSubplotConstrained) ||
             // NW or SE on matching axes - create a symmetric zoom
             (matches.isSubplotConstrained && xActive && yActive && dxySign > 0)
         ) {
