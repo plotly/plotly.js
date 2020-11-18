@@ -225,14 +225,24 @@ function makePadFn(ax, max) {
                 anchorAxis.side === 'right'
             )
         )) {
-            var fontSize = anchorAxis.tickfont ? anchorAxis.tickfont.size : 12;
-            var newPad = fontSize * (ax._id.charAt(0) === 'x' ? 4 : 1);
+            var isX = ax._id.charAt(0) === 'x';
 
-            if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
-                newPad += anchorAxis.ticklen || 0;
+            var morePad = 0;
+            if(anchorAxis._vals) {
+                // use bounding boxes
+                morePad = 0;
+                anchorAxis._vals.forEach(function(t) {
+                    if(t.bb) {
+                        morePad = Math.max(morePad, isX ? t.bb.width : t.bb.height);
+                    }
+                });
             }
 
-            extrappad = Math.max(extrappad, newPad);
+            if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                morePad += anchorAxis.ticklen || 0;
+            }
+
+            extrappad += morePad;
         }
     }
 

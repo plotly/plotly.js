@@ -3140,6 +3140,20 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
+    function computeFinalTickLabelBoundingBoxes() {
+        tickLabels.each(function(d, i) {
+            var thisLabel = selectTickLabel(this);
+            ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+        });
+    }
+
+    if(
+        (ax._anchorAxis || {}).autorange &&
+        (ax.ticklabelposition || '').indexOf('inside') !== -1
+    ) {
+        seq.push(computeFinalTickLabelBoundingBoxes);
+    }
+
     var done = Lib.syncOrAsync(seq);
     if(done && done.then) gd._promises.push(done);
     return done;
