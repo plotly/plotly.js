@@ -94,7 +94,7 @@
     "gl-streamtube3d": "^1.4.1",
     "gl-surface3d": "^1.6.0",
     "gl-text": "^1.1.8",
-    "glslify": "^7.1.1",
+    "glslify": "git://github.com/glslify/glslify.git#2042e1e8a3ca822a9214fd4ec7b82366e9e210cb",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "image-size": "^0.7.5",
