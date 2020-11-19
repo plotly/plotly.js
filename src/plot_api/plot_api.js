@@ -404,10 +404,10 @@ function plot(gd, data, layout, config) {
 }
 
 function insideTickLabelsAutorange(gd) {
-    gd._fullLayout._insideTickLabelsAutorangeDone = true;
-
     var obj = gd._fullLayout._insideTickLabelsAutorange;
     if(!obj) return;
+
+    gd._fullLayout._insideTickLabelsAutorangeDone = true;
     return relayout(gd, obj);
 }
 
