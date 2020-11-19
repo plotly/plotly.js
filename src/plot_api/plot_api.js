@@ -382,8 +382,15 @@ function plot(gd, data, layout, config) {
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
         insideTickLabelsAutorange,
+        saveRangeInitialForInsideTickLabels,
         Plots.previousPromises
     );
+
+    function saveRangeInitialForInsideTickLabels(gd) {
+        if(gd._fullLayout._insideTickLabelsAutorangeDone) {
+            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
+        }
+    }
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -399,6 +406,8 @@ function plot(gd, data, layout, config) {
 function insideTickLabelsAutorange(gd) {
     var obj = gd._fullLayout._insideTickLabelsAutorange;
     if(!obj) return;
+
+
     gd._fullLayout._insideTickLabelsAutorangeDone = true;
     return relayout(gd, obj);
 }
