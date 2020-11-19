@@ -404,11 +404,10 @@ function plot(gd, data, layout, config) {
 }
 
 function insideTickLabelsAutorange(gd) {
+    gd._fullLayout._insideTickLabelsAutorangeDone = true;
+
     var obj = gd._fullLayout._insideTickLabelsAutorange;
     if(!obj) return;
-
-
-    gd._fullLayout._insideTickLabelsAutorangeDone = true;
     return relayout(gd, obj);
 }
 
@@ -2451,6 +2450,8 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
  */
 function guiEdit(func) {
     return function wrappedEdit(gd) {
+        gd._fullLayout._insideTickLabelsAutorangeDone = false;
+
         gd._fullLayout._guiEditing = true;
         var p = func.apply(null, arguments);
         gd._fullLayout._guiEditing = false;

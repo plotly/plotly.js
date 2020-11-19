@@ -250,7 +250,7 @@ function handleCartesian(gd, ev) {
     var val = button.getAttribute('data-val') || true;
     var fullLayout = gd._fullLayout;
     if(val === 'auto') {
-        fullLayout._insideTickLabelsAutorangeDone = undefined;
+        fullLayout._insideTickLabelsAutorangeDone = false;
     }
 
     var aobj = {};
