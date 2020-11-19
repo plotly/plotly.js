@@ -229,11 +229,25 @@ function makePadFn(ax, max) {
 
             var morePad = 0;
             if(anchorAxis._vals) {
+                var A = (anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0) * Math.PI / 180;
+                var cosA = Math.abs(Math.cos(A));
+                var sinA = Math.abs(Math.sin(A));
+
                 // use bounding boxes
                 morePad = 0;
                 anchorAxis._vals.forEach(function(t) {
                     if(t.bb) {
-                        morePad = Math.max(morePad, isX ? t.bb.width : t.bb.height);
+                        var w = t.bb.width;
+                        var h = t.bb.height;
+
+                        morePad = Math.max(morePad, isX ?
+                            Math.max(w * cosA, h * sinA) :
+                            Math.max(h * cosA, w * sinA)
+                        );
+
+                        var fontSize = anchorAxis.tickfont ? anchorAxis.tickfont.size : 12;
+                        // add extra pad around label
+                        morePad += fontSize / 5;
                     }
                 });
             }
@@ -242,7 +256,7 @@ function makePadFn(ax, max) {
                 morePad += anchorAxis.ticklen || 0;
             }
 
-            extrappad += morePad;
+            extrappad = Math.max(extrappad, morePad);
         }
     }
 
