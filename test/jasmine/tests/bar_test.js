@@ -2119,6 +2119,21 @@ describe('A bar plot', function() {
         .then(done);
     });
 
+    it('should display bar of zero-length as M0,0Z when staticPlot is true', function(done) {
+        // otherwise Chromium produces a PDF with visual artifacts in place of zero-length bar: https://github.com/plotly/orca/issues/345
+        var mock = {data: [{type: 'bar', x: ['a', 'b'], y: [0, 5]}], config: {staticPlot: true}};
+
+        Plotly.newPlot(gd, mock)
+        .then(function() {
+            var nodes = gd.querySelectorAll('g.point > path');
+            expect(nodes.length).toBe(2, '# of bars');
+            var d = nodes[0].getAttribute('d');
+            expect(d).toBe('M0,0Z');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     describe('show narrow bars', function() {
         ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
             it(zoomStr, function(done) {
