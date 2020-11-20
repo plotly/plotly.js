@@ -2055,7 +2055,7 @@ function _relayout(gd, aobj) {
     // we're editing the (auto)range of, so we can tell the others constrained
     // to scale with them that it's OK for them to shrink
     var rangesAltered = {};
-    var axId;
+    var axId, ax;
 
     function recordAlteredAxis(pleafPlus) {
         var axId = Axes.name2id(pleafPlus.split('.')[0]);
@@ -2145,7 +2145,7 @@ function _relayout(gd, aobj) {
         // previously we did this for log <-> not-log, but now only do it
         // for log <-> linear
         if(pleaf === 'type') {
-            var ax = parentIn;
+            ax = parentIn;
             var toLog = parentFull.type === 'linear' && vi === 'log';
             var fromLog = parentFull.type === 'log' && vi === 'linear';
 
@@ -2284,7 +2284,8 @@ function _relayout(gd, aobj) {
 
     // figure out if we need to recalculate axis constraints
     for(axId in rangesAltered) {
-        var group = Axes.getFromId(gd, axId)._constraintGroup;
+        ax = Axes.getFromId(gd, axId);
+        var group = ax && ax._constraintGroup;
         if(group) {
             // Always recalc if we're changing constrained ranges.
             // Otherwise it's possible to violate the constraints by

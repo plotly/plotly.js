@@ -970,14 +970,14 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'zoom'
             };
 
-            var xr0 = [-0.245, 3.245];
+            var xr0 = [-0.285, 3.246];
             var yr0 = [-0.211, 3.211];
 
             var specs = [{
                 desc: 'zoombox on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'xy'
@@ -985,7 +985,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'x-only zoombox on xy',
                 drag: ['xy', 'nsew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1003,7 +1003,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 exp: [
                     // N.B. slightly different range result
                     // due difference in ax._length
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.492, 2.062]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.468, 2.049]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1013,7 +1013,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 exp: [
                     // Similarly here slightly different range result
                     // due difference in ax._length
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.485, 1.974]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.470, 1.974]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'xy'
@@ -1021,7 +1021,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag ew on x2y',
                 drag: ['x2y', 'ew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.866, 2.665], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1029,7 +1029,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag ew on x3y',
                 drag: ['x3y', 'ew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.783, 2.748], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1037,7 +1037,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag e on xy',
                 drag: ['xy', 'e', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [xr0[0], 1.366], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [xr0[0], 1.317], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1045,7 +1045,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag nw on x3y',
                 drag: ['xy', 'nw', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.379, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.442, xr0[1]], {dragged: true}],
                     [['yaxis'], [-0.211, 3.565], {dragged: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1054,7 +1054,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.101, 2.390], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.157, 2.374], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1063,7 +1063,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['x2y', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.866, 2.665], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1072,7 +1072,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['x3y', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.783, 2.748], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1080,7 +1080,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on x3y subplot',
                 scroll: ['x3y', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1088,7 +1088,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on x2y subplot',
                 scroll: ['x2y', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1096,7 +1096,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on xy subplot',
                 scroll: ['xy', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1150,14 +1150,14 @@ describe('axis zoom/pan and main plot zoom', function() {
             };
 
             var xr0 = [-0.211, 3.211];
-            var yr0 = [-0.077, 3.163];
+            var yr0 = [-0.234, 3.244];
 
             var specs = [{
                 desc: 'pan on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.706, 3.947], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.607, 4.085], {dragged: true}],
                 ],
                 trans: [-30, -30, -30, -45, -30, -52.5]
             }, {
@@ -1165,7 +1165,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy2', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.327, 3.805], {dragged: true}],
                 ],
                 trans: [-30, -20, -30, -30, -30, -35]
             }, {
@@ -1173,7 +1173,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy3', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.370, 3.611], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.247, 3.725], {dragged: true}],
                 ],
                 trans: [-30, -17.142, -30, -25.71, -30, -30]
             }, {
@@ -1181,7 +1181,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy2', 'ns', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.327, 3.805], {dragged: true}],
                 ],
                 trans: [0, -20, 0, -30, 0, -35]
             }, {
@@ -1189,7 +1189,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy3', 'n', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [yr0[0], 3.683], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [yr0[0], 3.802], {dragged: true}],
                 ],
                 trans: [0, -19.893, 0, -29.839, 0, -34.812],
                 scale: [1, 1.160, 1, 1.160, 1, 1.160]
@@ -1198,7 +1198,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy', 's', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [1.617, yr0[1]], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [1.586, yr0[1]], {dragged: true}],
                 ],
                 trans: [0, 0, 0, 0, 0, 0],
                 scale: [1, 0.476, 1, 0.476, 1, 0.476]

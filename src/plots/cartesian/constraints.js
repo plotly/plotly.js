@@ -55,6 +55,30 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
     }
     stash(matchGroups, '_matchGroup');
 
+    // If any axis in a constraint group is fixedrange, they all get fixed
+    // This covers matches axes, as they're now in the constraintgroup too
+    // and have not yet been removed (if the group is *only* matching)
+    for(i = 0; i < constraintGroups.length; i++) {
+        group = constraintGroups[i];
+        for(axId in group) {
+            axOut = layoutOut[id2name(axId)];
+            if(axOut.fixedrange) {
+                for(var axId2 in group) {
+                    var axName2 = id2name(axId2);
+                    if((layoutIn[axName2] || {}).fixedrange === false) {
+                        Lib.warn(
+                            'fixedrange was specified as false for axis ' +
+                            axName2 + ' but was overridden because another ' +
+                            'axis in its constraint group has fixedrange true'
+                        );
+                    }
+                    layoutOut[axName2].fixedrange = true;
+                }
+                break;
+            }
+        }
+    }
+
     // remove constraint groups that simply duplicate match groups
     i = 0;
     while(i < constraintGroups.length) {
@@ -73,49 +97,28 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
     // save constraintGroup on each constrained axis
     stash(constraintGroups, '_constraintGroup');
 
-    // If any axis in a constraint group is fixedrange, they all get fixed
-    // This covers matches axes, as they're now in the constraintgroup too.
-    for(i = 0; i < constraintGroups.length; i++) {
-        group = constraintGroups[i];
-        for(axId in group) {
-            axOut = layoutOut[id2name(axId)];
-            if(axOut.fixedrange) {
-                for(var axId2 in group) {
-                    var axName2 = id2name(axId2);
-                    if((layoutIn[axName2] || {}).fixedrange === false) {
-                        Lib.warn(
-                            'fixedrange was specified as false for axis ' +
-                            axName2 + ' but was overridden because another ' +
-                            'axis in its constraint group has fixedrange true'
-                        );
-                    }
-                    layoutOut[id2name(axId2)].fixedrange = true;
-                }
-                break;
-            }
-        }
-    }
-
     // make sure `matching` axes share values of necessary attributes
     // Precedence (base axis is the one that doesn't list a `matches`, ie others
     // all point to it):
     // (1) explicitly defined value in the base axis
     // (2) explicitly defined in another axis (arbitrary order)
     // (3) default in the base axis
-    var matchAttrs = {
-        constrain: 1,
-        range: 1,
-        autorange: 1,
-        rangemode: 1,
-        rangebreaks: 1,
-        categoryorder: 1,
-        categoryarray: 1
-    };
+    var matchAttrs = [
+        'constrain',
+        'range',
+        'autorange',
+        'rangemode',
+        'rangebreaks',
+        'categoryorder',
+        'categoryarray'
+    ];
+    var hasRange = false;
     for(i = 0; i < matchGroups.length; i++) {
         group = matchGroups[i];
 
         // find 'matching' range attrs
-        for(var attr in matchAttrs) {
+        for(var j = 0; j < matchAttrs.length; j++) {
+            var attr = matchAttrs[j];
             var val = null;
             var baseAx;
             for(axId in group) {
@@ -138,6 +141,17 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
                     val = axOut[attr];
                 }
             }
+
+            // special logic for coupling of range and autorange
+            // if nobody explicitly specifies autorange, but someone does
+            // explicitly specify range, autorange must be disabled.
+            if(attr === 'range' && val) {
+                hasRange = true;
+            }
+            if(attr === 'autorange' && val === null && hasRange) {
+                val = false;
+            }
+
             if(val === null && attr in baseAx) {
                 // fallback: default value in base axis
                 val = baseAx[attr];
@@ -244,7 +258,7 @@ function handleOneAxDefaults(axIn, axOut, opts) {
 
         // Also include match constraints in the scale groups
         var matchedAx = layoutOut[id2name(matches)];
-        var matchRatio = extent(axOut) / extent(matchedAx);
+        var matchRatio = extent(layoutOut, axOut) / extent(layoutOut, matchedAx);
         if(isX !== (matches.charAt(0) === 'x')) {
             // We don't yet know the actual scale ratio of x/y matches constraints,
             // due to possible automargins, so just leave a placeholder for this:
@@ -277,8 +291,14 @@ function handleOneAxDefaults(axIn, axOut, opts) {
     }
 }
 
-function extent(ax) {
-    return ax.domain[1] - ax.domain[0];
+function extent(layoutOut, ax) {
+    var domain = ax.domain;
+    if(!domain) {
+        // at this point overlaying axes haven't yet inherited their main domains
+        // TODO: constrain: domain with overlaying axes is likely a bug.
+        domain = layoutOut[id2name(ax.overlaying)].domain;
+    }
+    return domain[1] - domain[0];
 }
 
 function getConstraintGroup(groups, thisID) {

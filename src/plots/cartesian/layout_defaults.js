@@ -379,7 +379,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // (so we link only axes of the same type) and
     // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
     constraints.handleDefaults(layoutIn, layoutOut, {
-        axIds: allAxisIds.concat(missingMatchedAxisIds),
+        axIds: allAxisIds.concat(missingMatchedAxisIds).sort(axisIds.idSort),
         axHasImage: axHasImage
     });
 };
