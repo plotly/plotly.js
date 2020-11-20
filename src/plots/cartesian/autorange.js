@@ -245,8 +245,6 @@ function concatExtremes(gd, ax, noMatch) {
     _concat(fullLayout.shapes || [], ax._shapeIndices || []);
 
     // Include the extremes from other matched axes with this one
-    // TODO: find a way to only do this calculation once, rather than
-    // repeating it for every axis in the matched group
     if(ax._matchGroup && !noMatch) {
         for(var axId2 in ax._matchGroup) {
             if(axId2 !== ax._id) {
@@ -269,11 +267,11 @@ function concatExtremes(gd, ax, noMatch) {
     return {min: minArray, max: maxArray};
 }
 
-function doAutoRange(gd, ax) {
+function doAutoRange(gd, ax, presetRange) {
     ax.setScale();
 
     if(ax.autorange) {
-        ax.range = getAutoRange(gd, ax);
+        ax.range = presetRange ? presetRange.slice() : getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);
