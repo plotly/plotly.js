@@ -112,9 +112,6 @@ function assertSrcContents() {
     // Forbidden in IE in any context
     var IE_BLACK_LIST = ['classList'];
 
-    // not implemented in FF, or inconsistent with others
-    var FF_BLACK_LIST = ['offsetX', 'offsetY'];
-
     // require'd built-in modules
     var BUILTINS = ['events'];
 
@@ -151,8 +148,6 @@ function assertSrcContents() {
                         if(!(isSunburstOrTreemap && isLinkedToObject)) {
                             logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
                         }
-                    } else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        logs.push(file + ' : contains .' + lastPart + ' (FF failure)');
                     }
                 } else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
                     if(node.parent.source() !== 'window.getComputedStyle') {
@@ -213,7 +208,7 @@ function assertSrcContents() {
          * - If you use conforms to these rules, you may update
          *   KNOWN_GET_COMPUTED_STYLE_CALLS to count the new use.
          */
-        var KNOWN_GET_COMPUTED_STYLE_CALLS = 5;
+        var KNOWN_GET_COMPUTED_STYLE_CALLS = 6;
         if(getComputedStyleCnt !== KNOWN_GET_COMPUTED_STYLE_CALLS) {
             logs.push('Expected ' + KNOWN_GET_COMPUTED_STYLE_CALLS +
                 ' window.getComputedStyle calls, found ' + getComputedStyleCnt +

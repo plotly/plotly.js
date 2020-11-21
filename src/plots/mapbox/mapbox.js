@@ -450,15 +450,15 @@ proto.initFx = function(calcData, fullLayout) {
 
     map.on('mousemove', function(evt) {
         var bb = self.div.getBoundingClientRect();
-
-        // some hackery to get Fx.hover to work
-        evt.clientX = evt.point.x + bb.left;
-        evt.clientY = evt.point.y + bb.top;
+        var xy = [
+            evt.originalEvent.offsetX,
+            evt.originalEvent.offsetY
+        ];
 
         evt.target.getBoundingClientRect = function() { return bb; };
 
-        self.xaxis.p2c = function() { return evt.lngLat.lng; };
-        self.yaxis.p2c = function() { return evt.lngLat.lat; };
+        self.xaxis.p2c = function() { return map.unproject(xy).lng; };
+        self.yaxis.p2c = function() { return map.unproject(xy).lat; };
 
         gd._fullLayout._rehover = function() {
             if(gd._fullLayout._hoversubplot === self.id && gd._fullLayout[self.id]) {

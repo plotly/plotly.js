@@ -2244,3 +2244,196 @@ describe('Event data:', function() {
         .then(done);
     });
 });
+
+describe('Cartesian plots with css transforms', function() {
+    var gd;
+    var eventRecordings = {};
+
+    beforeEach(function() {
+        eventRecordings = {};
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _getLocalPos(element, point) {
+        var bb = element.getBoundingClientRect();
+        return [
+            bb.left + point[0],
+            bb.top + point[1]
+        ];
+    }
+
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function _drag(start, end) {
+        var localStart = _getLocalPos(gd, start);
+        var localEnd = _getLocalPos(gd, end);
+        Lib.clearThrottle();
+        mouseEvent('mousemove', localStart[0], localStart[1]);
+        mouseEvent('mousedown', localStart[0], localStart[1]);
+        mouseEvent('mousemove', localEnd[0], localEnd[1]);
+    }
+
+    function _dragRelease(start, end) {
+        var localEnd = _getLocalPos(gd, end);
+        _drag(start, end);
+        mouseEvent('mouseup', localEnd[0], localEnd[1]);
+    }
+
+    function _hover(pos) {
+        return new Promise(function(resolve, reject) {
+            var localPos = _getLocalPos(gd, pos);
+            gd.once('plotly_hover', function(d) {
+                Lib.clearThrottle();
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', localPos[0], localPos[1]);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    function _unhover(pos) {
+        var localPos = _getLocalPos(gd, pos);
+        mouseEvent('mouseout', localPos[0], localPos[1]);
+    }
+
+    var points = [[50, 180], [150, 180], [250, 180]];
+    var xLabels = ['one', 'two', 'three'];
+    var mock = {
+        data: [{
+            x: xLabels,
+            y: [1, 2, 3],
+            type: 'bar'
+        }],
+        layout: {
+            width: 600,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        }
+    };
+
+    [{
+        transform: 'scaleX(0.5)',
+        hovered: 1,
+        selected: {numPoints: 1, selectedLabels: ['two']}
+    }, {
+        transform: 'scale(0.5)',
+        hovered: 1,
+        selected: {numPoints: 2, selectedLabels: ['one', 'two']}
+    }, {
+        transform: 'scale(0.25) translate(150px, 25%) scaleY(2)',
+        hovered: 1,
+        selected: {numPoints: 3, selectedLabels: ['one', 'two', 'three']}
+    }].forEach(function(t) {
+        var transform = t.transform;
+
+        it('hover behaves correctly after css transform: ' + transform, function(done) {
+            function _hoverAndAssertEventOccurred(point, label) {
+                return _hover(point)
+                .then(function() {
+                    expect(eventRecordings[label]).toBe(t.hovered);
+                })
+                .then(function() {
+                    _unhover(point);
+                });
+            }
+
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                gd.on('plotly_hover', function(d) {
+                    eventRecordings[d.points[0].x] = 1;
+                });
+            })
+            .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
+            // return a rect of form {left, top, width, height} from the zoomlayer
+            // svg path.
+            function _getZoomlayerPathRect(pathStr) {
+                var rect = {};
+                rect.height = Number(pathStr.split('v')[1].split('h')[0]);
+                rect.width = Number(pathStr.split('h')[1].split('v')[0]);
+                var startCoordsString = pathStr.split('M')[2].split('v')[0];
+                rect.left = Number(startCoordsString.split(',')[0]);
+                rect.top = Number(startCoordsString.split(',')[1]);
+                return rect;
+            }
+
+            // asserts that the zoombox path must go from the start to end positions,
+            // in css-transformed coordinates.
+            function _assertTransformedZoombox(startPos, endPos) {
+                startPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(startPos[0], startPos[1]);
+                endPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(endPos[0], endPos[1]);
+                var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
+                var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
+                expect(zoomboxRect.left).toBeCloseTo(startPos[0], -1);
+                expect(zoomboxRect.top).toBeCloseTo(startPos[1]);
+                expect(zoomboxRect.width).toBeCloseTo(size[0]);
+                expect(zoomboxRect.height).toBeCloseTo(size[1]);
+            }
+
+            var start = [50, 50];
+            var end = [150, 150];
+
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {_drag(start, end); })
+            .then(function() {
+                _assertTransformedZoombox(start, end);
+            })
+            .then(function() { mouseEvent('mouseup', 0, 0); })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('select behaves correctly after css transform: ' + transform, function(done) {
+            function _assertSelected(expectation) {
+                var data = gd._fullData[0];
+                var points = data.selectedpoints;
+                expect(typeof(points) !== 'undefined').toBeTrue();
+                if(expectation.numPoints) {
+                    expect(points.length).toBe(expectation.numPoints);
+                }
+                if(expectation.selectedLabels) {
+                    var selectedLabels = points.map(function(i) { return data.x[i]; });
+                    expect(selectedLabels).toEqual(expectation.selectedLabels);
+                }
+            }
+
+            var start = [10, 10];
+            var end = [200, 200];
+
+            transformPlot(gd, transform);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() {
+                _dragRelease(start, end);
+            })
+            .then(function() {
+                _assertSelected(t.selected);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+});
