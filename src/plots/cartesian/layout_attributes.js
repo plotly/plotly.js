@@ -223,13 +223,13 @@ module.exports = {
     constrain: {
         valType: 'enumerated',
         values: ['range', 'domain'],
-        dflt: 'range',
         role: 'info',
         editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
             '`scaleratio` or those of the other axis), determines how that happens:',
-            'by increasing the *range* (default), or by decreasing the *domain*.'
+            'by increasing the *range*, or by decreasing the *domain*.',
+            'Default is *domain* for axes containing image traces, *range* otherwise.'
         ].join(' ')
     },
     // constraintoward: not used directly, just put here for reference

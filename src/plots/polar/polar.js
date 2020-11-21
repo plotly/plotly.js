@@ -680,6 +680,9 @@ proto.updateMainDrag = function(fullLayout) {
     var chw = constants.cornerHalfWidth;
     var chl = constants.cornerLen / 2;
 
+    var scaleX = gd._fullLayout._inverseScaleX;
+    var scaleY = gd._fullLayout._inverseScaleY;
+
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
     d3.select(mainDrag)
@@ -839,8 +842,12 @@ proto.updateMainDrag = function(fullLayout) {
     }
 
     function zoomMove(dx, dy) {
+        dx = dx * scaleX;
+        dy = dy * scaleY;
+
         var x1 = x0 + dx;
         var y1 = y0 + dy;
+
         var rr0 = xy2r(x0, y0);
         var rr1 = Math.min(xy2r(x1, y1), radius);
         var a0 = xy2a(x0, y0);
@@ -936,8 +943,10 @@ proto.updateMainDrag = function(fullLayout) {
         var dragModeNow = gd._fullLayout.dragmode;
 
         var bbox = mainDrag.getBoundingClientRect();
-        x0 = startX - bbox.left;
-        y0 = startY - bbox.top;
+        var inverse = gd._fullLayout._inverseTransform;
+        var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
 
         // need to offset x/y as bbox center does not
         // match origin for asymmetric polygons
@@ -1189,8 +1198,8 @@ proto.updateAngularDrag = function(fullLayout) {
         var fullLayoutNow = _this.gd._fullLayout;
         var polarLayoutNow = fullLayoutNow[_this.id];
 
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
+        var x1 = x0 + dx * fullLayout._inverseScaleX;
+        var y1 = y0 + dy * fullLayout._inverseScaleY;
         var a1 = xy2a(x1, y1);
         var da = rad2deg(a1 - a0);
         rot1 = rot0 + da;
@@ -1283,6 +1292,11 @@ proto.updateAngularDrag = function(fullLayout) {
         var bbox = angularDrag.getBoundingClientRect();
         x0 = startX - bbox.left;
         y0 = startY - bbox.top;
+
+        var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         a0 = xy2a(x0, y0);
 
         dragOpts.moveFn = moveFn;
