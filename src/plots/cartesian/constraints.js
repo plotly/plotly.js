@@ -9,13 +9,12 @@
 'use strict';
 
 var Lib = require('../../lib');
-var axisIds = require('./axis_ids');
-var id2name = axisIds.id2name;
+
+var autorange = require('./autorange');
+var id2name = require('./axis_ids').id2name;
 var layoutAttributes = require('./layout_attributes');
 var scaleZoom = require('./scale_zoom');
-var autorange = require('./autorange');
-var makePadFn = autorange.makePadFn;
-var concatExtremes = autorange.concatExtremes;
+var setConvert = require('./set_convert');
 
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 var FROM_BL = require('../../constants/alignment').FROM_BL;
@@ -30,7 +29,7 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
     // similar to _axisConstraintGroups, but only matching axes
     var matchGroups = layoutOut._axisMatchGroups = [];
 
-    var i, group, axId, axName, axIn, axOut;
+    var i, group, axId, axName, axIn, axOut, attr, val;
 
     for(i = 0; i < axIds.length; i++) {
         axName = id2name(axIds[i]);
@@ -113,13 +112,22 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
         'categoryarray'
     ];
     var hasRange = false;
+    var hasDayOfWeekBreaks = false;
+
+    function setAttrVal() {
+        val = axOut[attr];
+        if(attr === 'rangebreaks') {
+            hasDayOfWeekBreaks = axOut._hasDayOfWeekBreaks;
+        }
+    }
+
     for(i = 0; i < matchGroups.length; i++) {
         group = matchGroups[i];
 
         // find 'matching' range attrs
         for(var j = 0; j < matchAttrs.length; j++) {
-            var attr = matchAttrs[j];
-            var val = null;
+            attr = matchAttrs[j];
+            val = null;
             var baseAx;
             for(axId in group) {
                 axName = id2name(axId);
@@ -132,13 +140,13 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
                     baseAx = axOut;
                     // top priority: explicit value in base axis
                     if(attr in axIn) {
-                        val = axOut[attr];
+                        setAttrVal();
                         break;
                     }
                 }
                 if(val === null && attr in axIn) {
                     // second priority: first explicit value in another axis
-                    val = axOut[attr];
+                    setAttrVal();
                 }
             }
 
@@ -159,8 +167,14 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
             // but we still might not have a value, which is fine.
             if(val !== null) {
                 for(axId in group) {
+                    axOut = layoutOut[id2name(axId)];
                     // TODO: do we also need to (deep) copy rangebreaks?
-                    layoutOut[id2name(axId)][attr] = attr === 'range' ? val.slice() : val;
+                    axOut[attr] = attr === 'range' ? val.slice() : val;
+
+                    if(attr === 'rangebreaks') {
+                        axOut._hasDayOfWeekBreaks = hasDayOfWeekBreaks;
+                        setConvert(axOut, layoutOut);
+                    }
                 }
             }
         }
@@ -552,11 +566,11 @@ exports.enforce = function enforce(gd) {
                         // *are* expanding to the full domain
                         var outerMin = rangeCenter - halfRange * factor * 1.0001;
                         var outerMax = rangeCenter + halfRange * factor * 1.0001;
-                        var getPad = makePadFn(ax);
+                        var getPad = autorange.makePadFn(ax);
 
                         updateDomain(ax, factor);
                         var m = Math.abs(ax._m);
-                        var extremes = concatExtremes(gd, ax);
+                        var extremes = autorange.concatExtremes(gd, ax);
                         var minArray = extremes.min;
                         var maxArray = extremes.max;
                         var newVal;
