@@ -168,7 +168,6 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
             if(val !== null) {
                 for(axId in group) {
                     axOut = layoutOut[id2name(axId)];
-                    // TODO: do we also need to (deep) copy rangebreaks?
                     axOut[attr] = attr === 'range' ? val.slice() : val;
 
                     if(attr === 'rangebreaks') {
