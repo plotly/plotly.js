@@ -15,7 +15,7 @@ var traceIs = require('../../registry').traceIs;
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 
 var nestedProperty = Lib.nestedProperty;
-var getAxisGroup = axisIds.getAxisGroup;
+var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 
 var BINATTRS = [
     {aStr: {x: 'xbins.start', y: 'ybins.start'}, name: 'start'},
