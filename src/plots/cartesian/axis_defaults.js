@@ -54,17 +54,33 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var axTemplate = containerOut._template || {};
     var axType = containerOut.type || axTemplate.type || '-';
 
+    var ticklabelmode;
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
 
         if(!options.noTicklabelmode) {
-            coerce('ticklabelmode');
+            ticklabelmode = coerce('ticklabelmode');
         }
     }
 
     if(!options.noTicklabelposition || axType === 'multicategory') {
-        coerce('ticklabelposition');
+        Lib.coerce(containerIn, containerOut, {
+            ticklabelposition: {
+                valType: 'enumerated',
+                dflt: 'outside',
+                values: ticklabelmode === 'period' ? ['outside', 'inside'] :
+                letter === 'x' ? [
+                    'outside', 'inside',
+                    'outside left', 'inside left',
+                    'outside right', 'inside right'
+                ] : [
+                    'outside', 'inside',
+                    'outside top', 'inside top',
+                    'outside bottom', 'inside bottom'
+                ]
+            }
+        }, 'ticklabelposition');
     }
 
     setConvert(containerOut, layoutOut);
@@ -122,38 +138,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     ) {
         var ticksonDflt;
         if(isMultiCategory) ticksonDflt = 'boundaries';
-        coerce('tickson', ticksonDflt);
-    }
-
-    // adjust ticklabelposition to in respect to axis orientation & in-between modes
-    if(containerOut.ticklabelposition) {
-        if(letter === 'x') {
-            containerOut.ticklabelposition =
-            containerOut.ticklabelposition
-                .replace(' top', '')
-                .replace(' bottom', '');
-        } else if(letter === 'y') {
-            containerOut.ticklabelposition =
-            containerOut.ticklabelposition
-                .replace(' left', '')
-                .replace(' right', '');
-        }
-
-        if(
-            containerOut.tickson === 'boundaries' ||
-            containerOut.ticklabelmode === 'period'
-        ) {
-            if(letter === 'x') {
-                containerOut.ticklabelposition =
-                containerOut.ticklabelposition
-                    .replace(' left', '')
-                    .replace(' right', '');
-            } else if(letter === 'y') {
-                containerOut.ticklabelposition =
-                containerOut.ticklabelposition
-                    .replace(' top', '')
-                    .replace(' bottom', '');
-            }
+        var tickson = coerce('tickson', ticksonDflt);
+        if(tickson === 'boundaries') {
+            delete containerOut.ticklabelposition;
         }
     }
 

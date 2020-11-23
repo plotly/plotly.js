@@ -505,6 +505,8 @@ module.exports = {
             'between ticks.'
         ].join(' ')
     },
+    // ticklabelposition: not used directly, as values depend on direction (similar to side)
+    // left/right options are for x axes, and top/bottom options are for y axes
     ticklabelposition: {
         valType: 'enumerated',
         values: [
