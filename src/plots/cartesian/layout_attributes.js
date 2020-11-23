@@ -523,7 +523,7 @@ module.exports = {
             'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*.',
             'Similarly',
             'left or right has no effect on y axes or when `ticklabelmode` is set to *period*.',
-            'Has no effect on *multicategory* axes or when `tickson` is set *boundaries*.'
+            'Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*.'
         ].join(' ')
     },
     mirror: {
