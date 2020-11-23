@@ -81,6 +81,8 @@ var list = [
     'axes_category_descending',
     'axes_category_descending_with_gaps',
     'axes_category_null',
+    'axes_chain_scaleanchor_matches',
+    'axes_chain_scaleanchor_matches2',
     'axes_custom-ticks_log-date',
     'axes_enumerated_ticks',
     'axes_free_default',
@@ -1157,6 +1159,8 @@ figs['axes_category_categoryarray_truncated_tails'] = require('@mocks/axes_categ
 // figs['axes_category_descending'] = require('@mocks/axes_category_descending');
 // figs['axes_category_descending_with_gaps'] = require('@mocks/axes_category_descending_with_gaps');
 figs['axes_category_null'] = require('@mocks/axes_category_null');
+figs['axes_chain_scaleanchor_matches'] = require('@mocks/axes_chain_scaleanchor_matches');
+figs['axes_chain_scaleanchor_matches2'] = require('@mocks/axes_chain_scaleanchor_matches2');
 figs['axes_custom-ticks_log-date'] = require('@mocks/axes_custom-ticks_log-date');
 figs['axes_enumerated_ticks'] = require('@mocks/axes_enumerated_ticks');
 figs['axes_free_default'] = require('@mocks/axes_free_default');
