@@ -2529,11 +2529,11 @@ function getTickLabelUV(ax) {
     if(isAligned) {
         u += fontSize * MID_SHIFT * (isX ? 0.25 : 2);
     }
-    if(!isX) {
-        v += fontSize * MID_SHIFT;
-    } else if(side === 'bottom') {
+    if(!isX || side === 'bottom') {
         v += fontSize * MID_SHIFT / 2;
+        v += 3; // add extra pad
     }
+
 
     if(isLeft || isTop) u = -u;
     if(side === 'bottom' || side === 'right') v = -v;

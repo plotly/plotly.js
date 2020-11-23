@@ -247,9 +247,8 @@ function makePadFn(ax, max) {
                             Math.max(h * cosA, w * sinA)
                         );
 
-                        var fontSize = anchorAxis.tickfont ? anchorAxis.tickfont.size : 12;
                         // add extra pad around label
-                        morePad += fontSize / 5;
+                        morePad += 3;
                     }
                 });
             }
