@@ -2534,7 +2534,6 @@ function getTickLabelUV(ax) {
         v += 3; // add extra pad
     }
 
-
     if(isLeft || isTop) u = -u;
     if(side === 'bottom' || side === 'right') v = -v;
 
@@ -3102,11 +3101,24 @@ axes.drawLabels = function(gd, ax, opts) {
             } else {
                 var vLen = vals.length;
                 var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+
+                var ticklabelposition = ax.ticklabelposition || '';
+                var has = function(str) {
+                    return ticklabelposition.indexOf(str) !== -1;
+                };
+                var isTop = has('top');
+                var isLeft = has('left');
+                var isRight = has('right');
+                var isBottom = has('bottom');
+                var isAligned = isBottom || isLeft || isTop || isRight;
+                var pad = !isAligned ? 0 :
+                    (ax.tickwidth || 0) + 2 * 3; // extra pad
+
                 var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory';
 
                 // any overlap at all - set 30 degrees or 90 degrees
                 for(i = 0; i < lbbArray.length - 1; i++) {
-                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
+                    if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
                         autoangle = rotate90 ? 90 : 30;
                         break;
                     }

@@ -2,12 +2,12 @@
     "data": [{
         "xaxis": "x",
         "yaxis": "y",
-        "x": ["20-12-15", "21-01-15"],
+        "x": ["20-12-20", "21-01-20"],
         "y": [1e-1, 1e+6]
     }, {
         "xaxis": "x2",
         "yaxis": "y2",
-        "x": ["20-10", "21-06"],
+        "x": ["20-10", "21-05-15"],
         "y": [1e-1, 1e+6]
     }, {
         "xaxis": "x3",
@@ -45,7 +45,7 @@
             "ticklabelposition": "inside top",
             "tickfont": { "size": 20 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -59,7 +59,7 @@
             "ticklabelposition": "inside left",
             "tickfont": { "size": 20 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -99,7 +99,7 @@
             "ticklabelposition": "inside bottom",
             "tickfont": { "size": 16 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -114,7 +114,7 @@
             "ticklabelposition": "inside",
             "tickfont": { "size": 16 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },

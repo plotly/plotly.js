@@ -43,7 +43,7 @@
             "ticklabelposition": "outside top",
             "tickfont": { "size": 20 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -56,7 +56,7 @@
             "ticklabelposition": "outside right",
             "tickfont": { "size": 20 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -95,7 +95,7 @@
             "ticklabelposition": "outside bottom",
             "tickfont": { "size": 16 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
@@ -109,7 +109,7 @@
             "tickangle": -60,
             "tickfont": { "size": 16 },
             "ticklen": 8,
-            "tickwidth": 2,
+            "tickwidth": 4,
             "linewidth": 4,
             "gridcolor": "white"
         },
