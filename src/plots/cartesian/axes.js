@@ -2990,6 +2990,10 @@ axes.drawLabels = function(gd, ax, opts) {
                 if(isInside) {
                     // ensure visible
                     thisText.style({ opacity: 100 });
+
+                    if(ax._hideOutOfRangeInsideTickLabels) {
+                        ax._hideOutOfRangeInsideTickLabels();
+                    }
                 }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
