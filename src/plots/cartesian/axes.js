@@ -2682,7 +2682,17 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
         x0 = labelStandoff;
         y0 = labelShift * flipIt;
-        ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
+        ff = 0;
+        if(Math.abs(ax.tickangle) === 90) {
+            if(
+                (ax.tickangle === -90 && side === 'left') ||
+                (ax.tickangle === 90 && side === 'right')
+            ) {
+                ff = CAP_SHIFT;
+            } else {
+                ff = 0.5;
+            }
+        }
 
         out.xFn = function(d) { return d.dx + shift - (x0 + d.fontSize * ff) * flipIt; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
