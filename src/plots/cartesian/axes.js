@@ -2522,20 +2522,20 @@ function getTickLabelUV(ax) {
     var side = ax.side;
 
     var u = isAligned ? (ax.tickwidth || 0) / 2 : 0;
-    var v = (ax.linewidth || 0) / 2 + TEXTPAD;
+    var v = TEXTPAD;
 
     var fontSize = ax.tickfont ? ax.tickfont.size : 12;
     if(isBottom || isTop) {
         u += fontSize * CAP_SHIFT;
+        v += (ax.linewidth || 0) / 2;
     }
     if(isLeft || isRight) {
-        u += TEXTPAD;
+        u += (ax.linewidth || 0) / 2;
+        v += TEXTPAD;
     }
-    if(isInside) {
-        if(side === 'top') {
-            v -= fontSize * MID_SHIFT;
-            v += TEXTPAD;
-        }
+    if(isInside && side === 'top') {
+        v -= fontSize * MID_SHIFT;
+        v += TEXTPAD;
     }
 
     if(isLeft || isTop) u = -u;
