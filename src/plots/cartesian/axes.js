@@ -2526,12 +2526,14 @@ function getTickLabelUV(ax) {
     var v = isX ? dy : dx;
 
     var fontSize = ax.tickfont ? ax.tickfont.size : 12;
-    if(isAligned) {
-        u += fontSize * MID_SHIFT * (isX ? 0.25 : 2);
-    }
-    if(!isX || side === 'bottom') {
-        v += fontSize * MID_SHIFT / 2;
+    if(isX) {
+        u += 3; // add extra pad
+    } else {
         v += 3; // add extra pad
+
+        if(isAligned) {
+            u += fontSize * CAP_SHIFT;
+        }
     }
 
     if(isLeft || isTop) u = -u;
@@ -2626,83 +2628,70 @@ axes.makeLabelFns = function(ax, shift, angle) {
     if(ax.showticklabels && (labelsOverTicks || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
-    if(!insideTickLabels) {
-        labelStandoff += (ax.linewidth || 1) / 2;
-    }
+    labelStandoff += (ax.linewidth || 1) / 2 * (insideTickLabels ? -1 : 1);
 
     var out = {
         labelStandoff: labelStandoff,
         labelShift: labelShift
     };
 
-    var isPeriod = ax.ticklabelmode === 'period';
-
     var x0, y0, ff, flipIt;
 
     var side = ax.side;
     var axLetter = ax._id.charAt(0);
+
+    var endSide;
     if(axLetter === 'x') {
-        var bottomSide =
+        endSide =
             (!insideTickLabels && side === 'bottom') ||
             (insideTickLabels && side === 'top');
 
-        flipIt = bottomSide ? 1 : -1;
+        flipIt = endSide ? 1 : -1;
         if(insideTickLabels) flipIt *= -1;
 
         x0 = labelShift * flipIt;
         y0 = shift + labelStandoff * flipIt;
-        ff = bottomSide ? 1 : -0.2;
+        ff = endSide ? 1 : -0.2;
 
         out.xFn = function(d) { return d.dx + x0; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
         out.anchorFn = function(d, a) {
             if(insideTickLabels || isAligned) {
-                if(isPeriod) return 'middle';
                 if(isLeft) return 'end';
                 if(isRight) return 'start';
             }
 
-            if((
-                !isNumeric(a) || a === 0 || a === 180
-            )) {
+            if(!isNumeric(a) || a === 0 || a === 180) {
                 return 'middle';
             }
 
-            var whichSide = a * flipIt < 0;
-            if(insideTickLabels) {
-                return whichSide ? 'start' : 'end';
-            }
-            return whichSide ? 'end' : 'start';
+            return ((a * flipIt < 0) !== insideTickLabels) ? 'end' : 'start';
         };
         out.heightFn = function(d, a, h) {
-            if(insideTickLabels) {
-                return (ax.side === 'top') ? 0 : -h;
-            }
-
             return (a < -60 || a > 60) ? -0.5 * h :
                 ax.side === 'top' ? -h :
                 0;
         };
     } else if(axLetter === 'y') {
-        var rightSide =
-            (!insideTickLabels && side === 'right') ||
-            (insideTickLabels && side === 'left');
+        endSide =
+            (!insideTickLabels && side === 'left') ||
+            (insideTickLabels && side === 'right');
 
-        flipIt = rightSide ? 1 : -1;
+        flipIt = endSide ? 1 : -1;
         if(insideTickLabels) flipIt *= -1;
 
         x0 = labelStandoff;
-        y0 = -labelShift * flipIt;
+        y0 = labelShift * flipIt;
         ff = Math.abs(ax.tickangle) === 90 ? 0.5 : 0;
 
-        out.xFn = function(d) { return d.dx + shift + (x0 + d.fontSize * ff) * flipIt; };
+        out.xFn = function(d) { return d.dx + shift - (x0 + d.fontSize * ff) * flipIt; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
         out.anchorFn = function(d, a) {
-            if(!insideTickLabels && !isAligned && isNumeric(a) && Math.abs(a) === 90) {
+            if(isNumeric(a) && Math.abs(a) === 90) {
                 return 'middle';
             }
 
-            return rightSide ? 'start' : 'end';
+            return endSide ? 'end' : 'start';
         };
         out.heightFn = function(d, a, h) {
             a *= ax.side === 'left' ? 1 : -1;
