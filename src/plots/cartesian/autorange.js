@@ -231,9 +231,9 @@ function makePadFn(ax, max) {
 
             var morePad = 0;
             if(anchorAxis._vals) {
-                var A = (anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0) * Math.PI / 180;
-                var cosA = Math.abs(Math.cos(A));
-                var sinA = Math.abs(Math.sin(A));
+                var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
+                var cosA = Math.abs(Math.cos(rad));
+                var sinA = Math.abs(Math.sin(rad));
 
                 // use bounding boxes
                 morePad = 0;
