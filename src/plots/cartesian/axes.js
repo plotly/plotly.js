@@ -48,6 +48,8 @@ var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var OPPOSITE_SIDE = alignmentConstants.OPPOSITE_SIDE;
 
+var TEXTPAD = 3;
+
 var axes = module.exports = {};
 
 axes.setConvert = require('./set_convert');
@@ -2518,21 +2520,21 @@ function getTickLabelUV(ax) {
     if(!isAligned && !isInside) return [0, 0];
 
     var side = ax.side;
-    var isX = ax._id.charAt(0) === 'x';
 
-    var dx = (ax.tickwidth || 0) / 2;
-    var dy = (ax.linewidth || 0) / 2;
-    var u = isX ? dx : dy;
-    var v = isX ? dy : dx;
+    var u = isAligned ? (ax.tickwidth || 0) / 2 : 0;
+    var v = (ax.linewidth || 0) / 2 + TEXTPAD;
 
     var fontSize = ax.tickfont ? ax.tickfont.size : 12;
-    if(isX) {
-        u += 3; // add extra pad
-    } else {
-        v += 3; // add extra pad
-
-        if(isAligned) {
-            u += fontSize * CAP_SHIFT;
+    if(isBottom || isTop) {
+        u += fontSize * CAP_SHIFT;
+    }
+    if(isLeft || isRight) {
+        u += TEXTPAD;
+    }
+    if(isInside) {
+        if(side === 'top') {
+            v -= fontSize * MID_SHIFT;
+            v += TEXTPAD;
         }
     }
 
@@ -3111,7 +3113,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isBottom = has('bottom');
                 var isAligned = isBottom || isLeft || isTop || isRight;
                 var pad = !isAligned ? 0 :
-                    (ax.tickwidth || 0) + 2 * 3; // extra pad
+                    (ax.tickwidth || 0) + 2 * TEXTPAD;
 
                 var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory';
 
