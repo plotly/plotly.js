@@ -2658,7 +2658,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         out.xFn = function(d) { return d.dx + x0; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
         out.anchorFn = function(d, a) {
-            if(insideTickLabels || isAligned) {
+            if(isAligned) {
                 if(isLeft) return 'end';
                 if(isRight) return 'start';
             }
@@ -2684,11 +2684,12 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
         x0 = labelStandoff;
         y0 = labelShift * flipIt;
+        var tickangle = ax.tickangle;
         ff = 0;
-        if(Math.abs(ax.tickangle) === 90) {
+        if(Math.abs(tickangle) === 90) {
             if(
-                (ax.tickangle === -90 && side === 'left') ||
-                (ax.tickangle === 90 && side === 'right')
+                (tickangle === -90 && side === 'left') ||
+                (tickangle === 90 && side === 'right')
             ) {
                 ff = CAP_SHIFT;
             } else {
@@ -2696,7 +2697,17 @@ axes.makeLabelFns = function(ax, shift, angle) {
             }
         }
 
-        out.xFn = function(d) { return d.dx + shift - (x0 + d.fontSize * ff) * flipIt; };
+        var xQ = 0;
+        if(insideTickLabels) {
+            var ang = isNumeric(tickangle) ? +tickangle : 0;
+            if(ang !== 0) {
+                var rA = Lib.deg2rad(ang);
+                xQ = Math.abs(Math.sin(rA)) * CAP_SHIFT * flipIt;
+                ff = 0;
+            }
+        }
+
+        out.xFn = function(d) { return d.dx + shift - (x0 + d.fontSize * ff) * flipIt + xQ * d.fontSize; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * MID_SHIFT; };
         out.anchorFn = function(d, a) {
             if(isNumeric(a) && Math.abs(a) === 90) {
@@ -2706,7 +2717,8 @@ axes.makeLabelFns = function(ax, shift, angle) {
             return endSide ? 'end' : 'start';
         };
         out.heightFn = function(d, a, h) {
-            a *= ax.side === 'left' ? 1 : -1;
+            if(ax.side === 'right') a *= -1;
+
             return a < -30 ? -h :
                 a < 30 ? -0.5 * h :
                 0;
