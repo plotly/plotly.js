@@ -2671,7 +2671,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         };
         out.heightFn = function(d, a, h) {
             return (a < -60 || a > 60) ? -0.5 * h :
-                ax.side === 'top' ? -h :
+                ((ax.side === 'top') !== insideTickLabels) ? -h :
                 0;
         };
     } else if(axLetter === 'y') {

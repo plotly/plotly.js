@@ -966,6 +966,8 @@ var list = [
     'ticklabelposition-2',
     'ticklabelposition-a',
     'ticklabelposition-b',
+    'ticklabelposition-c',
+    'ticklabelposition-d',
     'tickson_boundaries',
     'titles-avoid-labels',
     'trace_metatext',
@@ -2046,6 +2048,8 @@ figs['ticklabelposition-1'] = require('@mocks/ticklabelposition-1');
 figs['ticklabelposition-2'] = require('@mocks/ticklabelposition-2');
 figs['ticklabelposition-a'] = require('@mocks/ticklabelposition-a');
 figs['ticklabelposition-b'] = require('@mocks/ticklabelposition-b');
+figs['ticklabelposition-c'] = require('@mocks/ticklabelposition-c');
+figs['ticklabelposition-d'] = require('@mocks/ticklabelposition-d');
 figs['tickson_boundaries'] = require('@mocks/tickson_boundaries');
 // figs['titles-avoid-labels'] = require('@mocks/titles-avoid-labels');
 // figs['trace_metatext'] = require('@mocks/trace_metatext');
