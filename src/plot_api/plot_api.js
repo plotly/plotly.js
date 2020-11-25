@@ -3712,11 +3712,7 @@ function purge(gd) {
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
-    if(fullLayout._inverseTransform === undefined) {
-        var m = fullLayout._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-        fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
-        fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
-    }
+    recalculateTransformInverseIfNecessary(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
@@ -3856,7 +3852,23 @@ function makePlotFramework(gd) {
         .style('top', '0px')
         .style('right', '0px');
 
+    fullLayout._lastBBox = gd.getBoundingClientRect();
+
     gd.emit('plotly_framework');
+}
+
+// determines if the graph div requires a recalculation of its inverse matrix transforms by comparing old + new bounding boxes.
+function recalculateTransformInverseIfNecessary(gd, newBBox = null) {
+    gd = Lib.getGraphDiv(gd);
+    var fullLayout = gd._fullLayout;
+    if (!newBBox)
+        newBBox = gd.getBoundingClientRect();
+    if (Lib.domRectsAreEqual(newBBox, fullLayout._lastBBox))
+        return;
+    var m = fullLayout._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+    fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
+    fullLayout._lastBBox = gd.getBoundingClientRect();
 }
 
 exports.animate = animate;
@@ -3885,5 +3897,7 @@ exports.update = update;
 exports._guiRelayout = guiEdit(relayout);
 exports._guiRestyle = guiEdit(restyle);
 exports._guiUpdate = guiEdit(update);
+
+exports.recalculateTransformInverseIfNecessary = recalculateTransformInverseIfNecessary;
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;

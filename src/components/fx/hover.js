@@ -23,6 +23,7 @@ var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
 var Registry = require('../../registry');
+var plotApi = require('../../plot_api/plot_api');
 
 var helpers = require('./helpers');
 var constants = require('./constants');
@@ -339,7 +340,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
-
+            
+            plotApi.recalculateTransformInverseIfNecessary(gd);
             var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(xpx, ypx);
 
             xpx = transformedCoords[0];

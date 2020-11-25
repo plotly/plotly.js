@@ -150,6 +150,16 @@ function isTransformableElement(element) {
     return element && (element instanceof Element || element instanceof HTMLElement);
 }
 
+function domRectsAreEqual(a, b) {
+    return a && b
+        && a.left === b.left
+        && a.top === b.top
+        && a.right === b.right
+        && a.bottom === b.bottom
+        && a.x === b.x
+        && a.y === b.y;
+}
+
 module.exports = {
     getGraphDiv: getGraphDiv,
     isPlotDiv: isPlotDiv,
@@ -160,4 +170,5 @@ module.exports = {
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
     getElementAndAncestors: getElementAndAncestors,
+    domRectsAreEqual: domRectsAreEqual
 };
