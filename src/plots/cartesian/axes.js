@@ -3016,15 +3016,14 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     ax._hideOutOfRangeInsideTickLabels = undefined;
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1 && ax._subplotsWith) {
+    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
         ax._hideOutOfRangeInsideTickLabels = function() {
             // hide inside tick labels that go outside axis end points
+            var p0 = ax.l2p(ax._rl[0]);
+            var p1 = ax.l2p(ax._rl[1]);
 
-            var gridLayer = fullLayout._cartesianlayer
-                .select('.subplot.' + ax._subplotsWith[0]) // is it the best way to get?
-                .select('.gridlayer');
-
-            var gridBb = Drawing.bBox(gridLayer.node());
+            var min = Math.min(p0, p1) + ax._offset;
+            var max = Math.max(p0, p1) + ax._offset;
 
             var isX = ax._id.charAt(0) === 'x';
 
@@ -3036,11 +3035,11 @@ axes.drawLabels = function(gd, ax, opts) {
                     var bb = Drawing.bBox(thisLabel.node());
                     var hide = false;
                     if(isX) {
-                        if(bb.right > gridBb.right) hide = true;
-                        else if(bb.left < gridBb.left) hide = true;
+                        if(bb.right > max) hide = true;
+                        else if(bb.left < min) hide = true;
                     } else {
-                        if(bb.bottom > gridBb.bottom) hide = true;
-                        else if(bb.top < gridBb.top) hide = true;
+                        if(bb.bottom > max) hide = true;
+                        else if(bb.top < min) hide = true;
                     }
                     if(hide) thisLabel.select('text').style({ opacity: 0 });
                 } // TODO: hide mathjax?
