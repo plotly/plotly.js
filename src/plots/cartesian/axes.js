@@ -3015,7 +3015,8 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+    ax._hideOutOfRangeInsideTickLabels = undefined;
+    if((ax.ticklabelposition || '').indexOf('inside') !== -1 && ax._subplotsWith) {
         ax._hideOutOfRangeInsideTickLabels = function() {
             // hide inside tick labels that go outside axis end points
 
