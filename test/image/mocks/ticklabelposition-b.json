@@ -96,7 +96,6 @@
         "xaxis4": {
             "anchor": "y4",
             "domain": [0, 0.475],
-            "ticklabelmode": "period",
             "side": "top",
             "ticks": "inside",
             "ticklabelposition": "inside right",

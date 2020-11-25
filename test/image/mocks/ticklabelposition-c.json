@@ -30,7 +30,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": 30,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "yaxis": {
@@ -42,7 +41,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": -60,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "xaxis2": {
@@ -54,7 +52,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": 60,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "yaxis2": {
@@ -66,7 +63,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": -30,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "xaxis3": {
@@ -78,7 +74,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": -30,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "yaxis3": {
@@ -90,20 +85,17 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": 60,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "xaxis4": {
             "anchor": "y4",
             "domain": [0, 0.475],
-            "ticklabelmode": "period",
             "side": "top",
             "ticks": "inside",
             "ticklabelposition": "inside",
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": -60,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "yaxis4": {
@@ -115,7 +107,6 @@
             "tickfont": { "size": 16 },
             "ticklen": 0,
             "tickangle": 30,
-            "linewidth": 0,
             "gridcolor": "white"
         },
         "font": {
