@@ -206,15 +206,77 @@ function makePadFn(ax, max) {
     // 5% padding for points that specify extrapad: true
     var extrappad = 0.05 * ax._length;
 
-    var anchorAxis = (ax._anchorAxis || {});
-    if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+    if(
+        (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
+        ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+    ) {
         var axReverse = ax.autorange === 'reversed';
         if(!axReverse) {
             var rng = Lib.simpleMap(ax.range, ax.r2l);
             axReverse = rng[1] < rng[0];
         }
         if(axReverse) max = !max;
+    }
 
+    extrappad = adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max);
+    extrappad = adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max);
+
+    // domain-constrained axes: base extrappad on the unconstrained
+    // domain so it's consistent as the domain changes
+    if((ax.constrain === 'domain') && ax._inputDomain) {
+        extrappad *= (ax._inputDomain[1] - ax._inputDomain[0]) /
+            (ax.domain[1] - ax.domain[0]);
+    }
+
+    if(max) {
+        return function getPadMax(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    } else {
+        return function getPadMin(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    }
+}
+
+var TEXTPAD = 3;
+
+function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
+    var ticklabelposition = ax.ticklabelposition || '';
+    var has = function(str) {
+        return ticklabelposition.indexOf(str) !== -1;
+    };
+
+    if(!has('inside')) return extrappad;
+    var isTop = has('top');
+    var isLeft = has('left');
+    var isRight = has('right');
+    var isBottom = has('bottom');
+    var isAligned = isBottom || isLeft || isTop || isRight;
+
+    if(
+        (max && (isLeft || isBottom)) ||
+        (!max && (isRight || isTop))
+    ) {
+        return extrappad;
+    }
+
+    // increase padding to make more room for inside tick labels of the axis
+    var fontSize = ax.tickfont ? ax.tickfont.size : 12;
+    var isX = ax._id.charAt(0) === 'x';
+    var morePad = (isX ? 1.2 : 0.6) * fontSize;
+
+    if(isAligned) {
+        morePad *= 2;
+        morePad += (ax.tickwidth || 0) / 2;
+    }
+
+    morePad += TEXTPAD;
+
+    extrappad = Math.max(extrappad, morePad);
+
+    return extrappad;
+}
+
+function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
+    var anchorAxis = (ax._anchorAxis || {});
+    if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
         // increase padding to make more room for inside tick labels of the counter axis
         if((
             !max && (
@@ -236,7 +298,6 @@ function makePadFn(ax, max) {
                 var sinA = Math.abs(Math.sin(rad));
 
                 // use bounding boxes
-                morePad = 0;
                 anchorAxis._vals.forEach(function(t) {
                     if(t.bb) {
                         var w = t.bb.width;
@@ -261,18 +322,7 @@ function makePadFn(ax, max) {
         }
     }
 
-    // domain-constrained axes: base extrappad on the unconstrained
-    // domain so it's consistent as the domain changes
-    if((ax.constrain === 'domain') && ax._inputDomain) {
-        extrappad *= (ax._inputDomain[1] - ax._inputDomain[0]) /
-            (ax.domain[1] - ax.domain[0]);
-    }
-
-    if(max) {
-        return function getPadMax(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
-    } else {
-        return function getPadMin(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
-    }
+    return extrappad;
 }
 
 function concatExtremes(gd, ax, noMatch) {
