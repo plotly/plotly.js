@@ -3018,6 +3018,7 @@ axes.drawLabels = function(gd, ax, opts) {
     ax._hideOutOfRangeInsideTickLabels = undefined;
     if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
         ax._hideOutOfRangeInsideTickLabels = function() {
+            if(!ax._rl) return;
             // hide inside tick labels that go outside axis end points
             var p0 = ax.l2p(ax._rl[0]);
             var p1 = ax.l2p(ax._rl[1]);
