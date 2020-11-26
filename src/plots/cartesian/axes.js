@@ -2534,8 +2534,7 @@ function getTickLabelUV(ax) {
         v += TEXTPAD;
     }
     if(isInside && side === 'top') {
-        v -= fontSize * MID_SHIFT;
-        v += TEXTPAD;
+        v -= fontSize * (1 - CAP_SHIFT);
     }
 
     if(isLeft || isTop) u = -u;
