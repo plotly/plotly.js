@@ -62,7 +62,7 @@
             "ticklabelposition": "inside",
             "tickfont": { "size": 16 },
             "ticklen": 0,
-            "tickangle": 90,
+            "tickangle": -90,
             "gridcolor": "white"
         },
         "xaxis3": {
