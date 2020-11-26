@@ -2637,6 +2637,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
     };
 
     var x0, y0, ff, flipIt;
+    var xQ = 0;
 
     var side = ax.side;
     var axLetter = ax._id.charAt(0);
@@ -2666,9 +2667,11 @@ axes.makeLabelFns = function(ax, shift, angle) {
                     ff = 0.5;
                 }
             }
+
+            xQ = (MID_SHIFT / 2) * (tickangle / 90);
         }
 
-        out.xFn = function(d) { return d.dx + x0; };
+        out.xFn = function(d) { return d.dx + x0 + xQ * d.fontSize; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
         out.anchorFn = function(d, a) {
             if(isAligned) {
@@ -2709,7 +2712,6 @@ axes.makeLabelFns = function(ax, shift, angle) {
             }
         }
 
-        var xQ = 0;
         if(insideTickLabels) {
             var ang = isNumeric(tickangle) ? +tickangle : 0;
             if(ang !== 0) {
