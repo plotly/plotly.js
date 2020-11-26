@@ -68,6 +68,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var x0 = startX - dragBBox.left;
     var y0 = startY - dragBBox.top;
 
+    fullLayout._recalculateTransformInverseIfNecessary(gd);
     var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
     x0 = transformedCoords[0];
     y0 = transformedCoords[1];

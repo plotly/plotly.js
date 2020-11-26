@@ -944,6 +944,7 @@ proto.updateMainDrag = function(fullLayout) {
 
         var bbox = mainDrag.getBoundingClientRect();
         var inverse = gd._fullLayout._inverseTransform;
+        gd._fullLayout._recalculateTransformInverseIfNecessary(gd);
         var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];

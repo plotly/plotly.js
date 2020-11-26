@@ -582,6 +582,7 @@ proto.initInteractions = function() {
         var inverse = gd._fullLayout._inverseTransform;
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
+        gd._fullLayout._recalculateTransformInverseIfNecessary(gd);
         var transformedCoords = Lib.apply3DTransform(inverse)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
