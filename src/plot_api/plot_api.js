@@ -3707,7 +3707,7 @@ function purge(gd) {
 }
 
 // determines if the graph div requires a recalculation of its inverse matrix transforms by comparing old + new bounding boxes.
-function recalculateTransformInverseIfNecessary(gd, newBBox) {
+function calcInverseTransform(gd, newBBox) {
     gd = Lib.getGraphDiv(gd);
     var fullLayout = gd._fullLayout;
     if (!newBBox)
@@ -3727,8 +3727,8 @@ function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
 
-    fullLayout._recalculateTransformInverseIfNecessary = recalculateTransformInverseIfNecessary;
-    fullLayout._recalculateTransformInverseIfNecessary(gd);
+    fullLayout._calcInverseTransform = calcInverseTransform;
+    fullLayout._calcInverseTransform(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

@@ -340,7 +340,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
             
-            fullLayout._recalculateTransformInverseIfNecessary(gd);
+            fullLayout._calcInverseTransform(gd);
             var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(xpx, ypx);
 
             xpx = transformedCoords[0];

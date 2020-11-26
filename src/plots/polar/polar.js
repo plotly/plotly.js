@@ -944,7 +944,7 @@ proto.updateMainDrag = function(fullLayout) {
 
         var bbox = mainDrag.getBoundingClientRect();
         var inverse = gd._fullLayout._inverseTransform;
-        gd._fullLayout._recalculateTransformInverseIfNecessary(gd);
+        gd._fullLayout._calcInverseTransform(gd);
         var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
@@ -1294,6 +1294,7 @@ proto.updateAngularDrag = function(fullLayout) {
         x0 = startX - bbox.left;
         y0 = startY - bbox.top;
 
+        gd._fullLayout._calcInverseTransform(gd);
         var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
