@@ -1025,6 +1025,7 @@ var list = [
     'updatemenus',
     'updatemenus_positioning',
     'updatemenus_toggle',
+    'vertical-tickangles',
     'violin_bandwidth-edge-cases',
     'violin_box_multiple_widths',
     'violin_box_overlay',
@@ -2107,6 +2108,7 @@ figs['uniformtext_treemap_coffee-maxdepth3'] = require('@mocks/uniformtext_treem
 // figs['updatemenus'] = require('@mocks/updatemenus');
 figs['updatemenus_positioning'] = require('@mocks/updatemenus_positioning');
 figs['updatemenus_toggle'] = require('@mocks/updatemenus_toggle');
+figs['vertical-tickangles'] = require('@mocks/vertical-tickangles');
 figs['violin_bandwidth-edge-cases'] = require('@mocks/violin_bandwidth-edge-cases');
 figs['violin_box_multiple_widths'] = require('@mocks/violin_box_multiple_widths');
 figs['violin_box_overlay'] = require('@mocks/violin_box_overlay');
