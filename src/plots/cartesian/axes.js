@@ -2654,13 +2654,17 @@ axes.makeLabelFns = function(ax, shift, angle) {
         y0 = shift + labelStandoff * flipIt;
         ff = endSide ? 1 : -0.2;
         if(Math.abs(tickangle) === 90) {
-            if(
-                (tickangle === -90 && side === 'bottom') ||
-                (tickangle === 90 && side === 'top')
-            ) {
-                ff = CAP_SHIFT;
+            if(insideTickLabels) {
+                ff += MID_SHIFT;
             } else {
-                ff = 0.5;
+                if(
+                    (tickangle === -90 && side === 'bottom') ||
+                    (tickangle === 90 && side === 'top')
+                ) {
+                    ff = CAP_SHIFT;
+                } else {
+                    ff = 0.5;
+                }
             }
         }
 
@@ -2694,7 +2698,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         x0 = labelStandoff;
         y0 = labelShift * flipIt;
         ff = 0;
-        if(Math.abs(tickangle) === 90) {
+        if(!insideTickLabels && Math.abs(tickangle) === 90) {
             if(
                 (tickangle === -90 && side === 'left') ||
                 (tickangle === 90 && side === 'right')
