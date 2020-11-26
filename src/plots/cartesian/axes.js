@@ -2641,7 +2641,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
     var side = ax.side;
     var axLetter = ax._id.charAt(0);
-
+    var tickangle = ax.tickangle;
     var endSide;
     if(axLetter === 'x') {
         endSide =
@@ -2654,6 +2654,16 @@ axes.makeLabelFns = function(ax, shift, angle) {
         x0 = labelShift * flipIt;
         y0 = shift + labelStandoff * flipIt;
         ff = endSide ? 1 : -0.2;
+        if(Math.abs(tickangle) === 90) {
+            if(
+                (tickangle === -90 && side === 'bottom') ||
+                (tickangle === 90 && side === 'top')
+            ) {
+                ff = CAP_SHIFT;
+            } else {
+                ff = 0.5;
+            }
+        }
 
         out.xFn = function(d) { return d.dx + x0; };
         out.yFn = function(d) { return d.dy + y0 + d.fontSize * ff; };
@@ -2684,7 +2694,6 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
         x0 = labelStandoff;
         y0 = labelShift * flipIt;
-        var tickangle = ax.tickangle;
         ff = 0;
         if(Math.abs(tickangle) === 90) {
             if(
