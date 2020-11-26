@@ -32,6 +32,10 @@
                         "rgba(0,0,255,1)"
                     ]
                 ],
+                "colorbar": {
+                    "ticks": "inside",
+                    "ticklabelposition": "inside"
+                },
                 "showscale": true
             },
             "type": "parcoords"

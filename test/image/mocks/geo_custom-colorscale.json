@@ -16,6 +16,11 @@
                 60,
                 40
             ],
+            "colorbar": {
+                "ticks": "inside",
+                "ticklen": 16,
+                "ticklabelposition": "inside bottom"
+            },
             "colorscale": "Greens",
             "reversescale": true,
             "zmin": 0,

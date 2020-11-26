@@ -391,6 +391,12 @@
             ],
             "zmin": 0.1,
             "zmax": 17.5,
+            "colorbar": {
+                "dtick": 1,
+                "ticks": "inside",
+                "ticklen": 16,
+                "ticklabelposition": "inside bottom"
+            },
             "colorscale": [
                 [
                     0,
