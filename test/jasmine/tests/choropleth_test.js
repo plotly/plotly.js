@@ -182,8 +182,7 @@ describe('Test choropleth hover:', function() {
                 scale = 0.5;
                 transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
             }
-        })
-        .then(function() {
+
             mouseEvent('mousemove', scale * pos[0], scale * pos[1]);
             assertHoverLabelContent({
                 nums: content[0],

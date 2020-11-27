@@ -2475,9 +2475,10 @@ describe('Cartesian plots with css transforms', function() {
                 });
             }
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 gd.on('plotly_hover', function(d) {
                     eventRecordings[d.points[0].x] = 1;
                 });
@@ -2520,8 +2521,11 @@ describe('Cartesian plots with css transforms', function() {
             var end = [150, 150];
 
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
-            .then(function() { transformPlot(gd, transform); })
-            .then(function() {_drag(start, end); })
+            .then(function() {
+                transformPlot(gd, transform);
+
+                _drag(start, end);
+            })
             .then(function() {
                 _assertTransformedZoombox(start, end);
             })
@@ -2547,9 +2551,10 @@ describe('Cartesian plots with css transforms', function() {
             var start = [10, 10];
             var end = [200, 200];
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
             .then(function() {

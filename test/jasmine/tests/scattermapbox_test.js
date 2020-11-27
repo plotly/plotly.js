@@ -1099,8 +1099,9 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
         mockCopy.layout.width = 800;
         mockCopy.layout.height = 500;
 
-        transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
-        Plotly.plot(gd, mockCopy).then(done);
+        Plotly.plot(gd, mockCopy)
+            .then(function() { transformPlot(gd, 'translate(-25%, -25%) scale(0.5)'); })
+            .then(done);
     });
 
     afterEach(destroyGraphDiv);
