@@ -15,12 +15,6 @@ var constants = require('./constants');
 
 var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
 
-function compatibleAxis(ax) {
-    return ax.type === 'linear' &&
-        // y axis must be reversed but x axis mustn't be
-        ((ax.range[1] > ax.range[0]) === (ax._id.charAt(0) === 'x'));
-}
-
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -31,7 +25,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && compatibleAxis(xa) && compatibleAxis(ya);
+        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
         trace._fastImage = fastImage;
 
         var z = cd0.z;
@@ -144,8 +138,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         // Pixelated image rendering
         // http://phrogz.net/tmp/canvas_image_zoom.html
         // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-        image3
-            .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
+        var initialStyle = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
 
         var p = new Promise(function(resolve) {
             if(trace._hasZ) {
@@ -181,13 +174,21 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             }
         })
         .then(function() {
-            var href, canvas;
+            var href, canvas, localStyle;
+            localStyle = initialStyle;
             if(trace._hasZ) {
                 canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
                 if(fastImage) {
                     href = trace.source;
+                    // Flip the SVG image as needed
+                    var axis_scale = [(xa.range[0] < xa.range[1]) ? 1 : -1, (ya.range[0] < ya.range[1]) ? -1 : 1];
+                    var trans = '';
+                    trans += 'translate(' + (left + imageWidth / 2) + 'px,' + (top + imageHeight / 2) + 'px)';
+                    trans += 'scale(' + axis_scale[0] + ',' + axis_scale[1] + ')';
+                    trans += 'translate(' + (-left - imageWidth / 2) + 'px,' + (-top - imageHeight / 2) + 'px)';
+                    localStyle += 'transform:' + trans + ';';
                 } else {
                     var context = trace._canvas.el.getContext('2d');
                     var data = context.getImageData(0, 0, w, h).data;
@@ -209,7 +210,8 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 height: imageHeight,
                 width: imageWidth,
                 x: left,
-                y: top
+                y: top,
+                style: localStyle
             });
         });
 
