@@ -748,10 +748,12 @@ function alignHTMLWith(_base, container, options) {
         var x0 = getLeft() - cRect.left;
         var y0 = getTop() - cRect.top;
         var gd = options.gd || {};
-        gd._fullLayout._calcInverseTransform(gd);
-        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
-        x0 = transformedCoords[0];
-        y0 = transformedCoords[1];
+        if(options.gd) {
+            gd._fullLayout._calcInverseTransform(gd);
+            var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+            x0 = transformedCoords[0];
+            y0 = transformedCoords[1];
+        }
 
         this.style({
             top: y0 + 'px',
