@@ -151,13 +151,15 @@ function isTransformableElement(element) {
 }
 
 function domRectsAreEqual(a, b) {
-    return a && b
-        && a.left === b.left
-        && a.top === b.top
-        && a.right === b.right
-        && a.bottom === b.bottom
-        && a.x === b.x
-        && a.y === b.y;
+    return (
+        a && b &&
+        a.left === b.left &&
+        a.top === b.top &&
+        a.right === b.right &&
+        a.bottom === b.bottom &&
+        a.x === b.x &&
+        a.y === b.y
+    );
 }
 
 module.exports = {
