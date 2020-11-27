@@ -680,8 +680,8 @@ proto.updateMainDrag = function(fullLayout) {
     var chw = constants.cornerHalfWidth;
     var chl = constants.cornerLen / 2;
 
-    var scaleX = gd._fullLayout._inverseScaleX;
-    var scaleY = gd._fullLayout._inverseScaleY;
+    var scaleX;
+    var scaleY;
 
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
@@ -943,8 +943,10 @@ proto.updateMainDrag = function(fullLayout) {
         var dragModeNow = gd._fullLayout.dragmode;
 
         var bbox = mainDrag.getBoundingClientRect();
-        var inverse = gd._fullLayout._inverseTransform;
         gd._fullLayout._calcInverseTransform(gd);
+        var inverse = gd._fullLayout._inverseTransform;
+        scaleX = gd._fullLayout._inverseScaleX;
+        scaleY = gd._fullLayout._inverseScaleY;
         var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];

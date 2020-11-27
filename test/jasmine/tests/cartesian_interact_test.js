@@ -2519,8 +2519,8 @@ describe('Cartesian plots with css transforms', function() {
             var start = [50, 50];
             var end = [150, 150];
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() { transformPlot(gd, transform); })
             .then(function() {_drag(start, end); })
             .then(function() {
                 _assertTransformedZoombox(start, end);

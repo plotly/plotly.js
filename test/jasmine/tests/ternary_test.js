@@ -585,8 +585,9 @@ describe('ternary plots when css transform is present', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        transformPlot(gd, cssTransform);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() { transformPlot(gd, cssTransform); })
+            .then(done);
     });
 
     it('should respond zoom drag interactions', function(done) {
