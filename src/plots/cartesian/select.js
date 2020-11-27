@@ -69,11 +69,11 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var y0 = startY - dragBBox.top;
 
     fullLayout._calcInverseTransform(gd);
-    var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
+    var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
     x0 = transformedCoords[0];
     y0 = transformedCoords[1];
-    var scaleX = fullLayout._inverseScaleX;
-    var scaleY = fullLayout._inverseScaleY;
+    var scaleX = fullLayout._invScaleX;
+    var scaleY = fullLayout._invScaleY;
 
     var x1 = x0;
     var y1 = y0;

@@ -944,9 +944,9 @@ proto.updateMainDrag = function(fullLayout) {
 
         var bbox = mainDrag.getBoundingClientRect();
         gd._fullLayout._calcInverseTransform(gd);
-        var inverse = gd._fullLayout._inverseTransform;
-        scaleX = gd._fullLayout._inverseScaleX;
-        scaleY = gd._fullLayout._inverseScaleY;
+        var inverse = gd._fullLayout._invTransform;
+        scaleX = gd._fullLayout._invScaleX;
+        scaleY = gd._fullLayout._invScaleY;
         var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
@@ -1201,8 +1201,8 @@ proto.updateAngularDrag = function(fullLayout) {
         var fullLayoutNow = _this.gd._fullLayout;
         var polarLayoutNow = fullLayoutNow[_this.id];
 
-        var x1 = x0 + dx * fullLayout._inverseScaleX;
-        var y1 = y0 + dy * fullLayout._inverseScaleY;
+        var x1 = x0 + dx * fullLayout._invScaleX;
+        var y1 = y0 + dy * fullLayout._invScaleY;
         var a1 = xy2a(x1, y1);
         var da = rad2deg(a1 - a0);
         rot1 = rot0 + da;
@@ -1297,7 +1297,7 @@ proto.updateAngularDrag = function(fullLayout) {
         y0 = startY - bbox.top;
 
         gd._fullLayout._calcInverseTransform(gd);
-        var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(x0, y0);
+        var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
 

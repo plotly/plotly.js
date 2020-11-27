@@ -166,8 +166,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         recomputeAxisLists();
 
-        scaleX = gd._fullLayout._inverseScaleX;
-        scaleY = gd._fullLayout._inverseScaleY;
+        scaleX = gd._fullLayout._invScaleX;
+        scaleY = gd._fullLayout._invScaleY;
 
         if(!allFixedRanges) {
             if(isMainDrag) {
@@ -336,7 +336,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         y0 = startY - dragBBox.top;
 
         gd._fullLayout._calcInverseTransform(gd);
-        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+        var transformedCoords = Lib.apply3DTransform(gd._fullLayout._invTransform)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];
 

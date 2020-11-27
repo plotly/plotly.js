@@ -3713,9 +3713,9 @@ function calcInverseTransform(gd) {
     var newBBox = gd.getBoundingClientRect();
     if(Lib.equalDomRects(newBBox, fullLayout._lastBBox)) return;
 
-    var m = fullLayout._inverseTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
-    fullLayout._inverseScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
-    fullLayout._inverseScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
+    var m = fullLayout._invTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    fullLayout._invScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+    fullLayout._invScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
     fullLayout._lastBBox = newBBox;
 }
 

@@ -194,8 +194,8 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._inverseScaleX;
-    var scaleY = opts.gd._fullLayout._inverseScaleY;
+    var scaleX = opts.gd._fullLayout._invScaleX;
+    var scaleY = opts.gd._fullLayout._invScaleY;
     alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
@@ -341,7 +341,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             ypx = evt.clientY - dbb.top;
 
             fullLayout._calcInverseTransform(gd);
-            var transformedCoords = Lib.apply3DTransform(fullLayout._inverseTransform)(xpx, ypx);
+            var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(xpx, ypx);
 
             xpx = transformedCoords[0];
             ypx = transformedCoords[1];
@@ -726,7 +726,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
-        alignHoverText(hoverLabels, rotateLabels, fullLayout._inverseScaleX, fullLayout._inverseScaleY);
+        alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
     // we should improve the "fx" API so other plots can use it without these hack.
     if(evt.target && evt.target.tagName) {

@@ -750,7 +750,7 @@ function alignHTMLWith(_base, container, options) {
         var gd = options.gd || {};
         if(options.gd) {
             gd._fullLayout._calcInverseTransform(gd);
-            var transformedCoords = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(x0, y0);
+            var transformedCoords = Lib.apply3DTransform(gd._fullLayout._invTransform)(x0, y0);
             x0 = transformedCoords[0];
             y0 = transformedCoords[1];
         }
