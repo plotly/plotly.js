@@ -182,11 +182,11 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             } else if(trace._hasSource) {
                 if(fastImage) {
                     href = trace.source;
-                    // Flip the SVG image as needed
-                    var axis_scale = [(xa.range[0] < xa.range[1]) ? 1 : -1, (ya.range[0] < ya.range[1]) ? -1 : 1];
+                    // Flip the SVG image as needed (around the proper center location)
+                    var axisScale = [(xa.range[0] < xa.range[1]) ? 1 : -1, (ya.range[0] < ya.range[1]) ? -1 : 1];
                     var trans = '';
                     trans += 'translate(' + (left + imageWidth / 2) + 'px,' + (top + imageHeight / 2) + 'px)';
-                    trans += 'scale(' + axis_scale[0] + ',' + axis_scale[1] + ')';
+                    trans += 'scale(' + axisScale[0] + ',' + axisScale[1] + ')';
                     trans += 'translate(' + (-left - imageWidth / 2) + 'px,' + (-top - imageHeight / 2) + 'px)';
                     localStyle += 'transform:' + trans + ';';
                 } else {
