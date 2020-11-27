@@ -150,15 +150,15 @@ function isTransformableElement(element) {
     return element && (element instanceof Element || element instanceof HTMLElement);
 }
 
-function domRectsAreEqual(a, b) {
+function equalDomRects(a, b) {
     return (
         a && b &&
-        a.left === b.left &&
-        a.top === b.top &&
-        a.right === b.right &&
-        a.bottom === b.bottom &&
         a.x === b.x &&
-        a.y === b.y
+        a.y === b.y &&
+        a.top === b.top &&
+        a.left === b.left &&
+        a.right === b.right &&
+        a.bottom === b.bottom
     );
 }
 
@@ -172,5 +172,5 @@ module.exports = {
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
     getElementAndAncestors: getElementAndAncestors,
-    domRectsAreEqual: domRectsAreEqual
+    equalDomRects: equalDomRects
 };

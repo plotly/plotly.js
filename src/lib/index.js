@@ -151,7 +151,7 @@ lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;
-lib.domRectsAreEqual = domModule.domRectsAreEqual;
+lib.equalDomRects = domModule.equalDomRects;
 
 lib.clearResponsive = require('./clear_responsive');
 
