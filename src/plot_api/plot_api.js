@@ -3867,8 +3867,6 @@ function makePlotFramework(gd) {
         .style('top', '0px')
         .style('right', '0px');
 
-    fullLayout._lastBBox = gd.getBoundingClientRect();
-
     gd.emit('plotly_framework');
 }
 

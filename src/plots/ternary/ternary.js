@@ -579,10 +579,11 @@ proto.initInteractions = function() {
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
-        var inverse = gd._fullLayout._invTransform;
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
+
         gd._fullLayout._calcInverseTransform(gd);
+        var inverse = gd._fullLayout._invTransform;
         var transformedCoords = Lib.apply3DTransform(inverse)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];

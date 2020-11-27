@@ -292,6 +292,7 @@ module.exports = function plot(gd, calcData) {
         var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
         d.node.fullData = d.node.trace;
 
+        gd._fullLayout._calcInverseTransform(gd);
         var scaleX = gd._fullLayout._invScaleX;
         var scaleY = gd._fullLayout._invScaleY;
 

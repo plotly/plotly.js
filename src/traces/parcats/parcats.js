@@ -767,6 +767,7 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
  *
  */
 function createHoverLabelForCategoryHovermode(gd, rootBBox, bandElement) {
+    gd._fullLayout._calcInverseTransform(gd);
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
 
@@ -871,6 +872,7 @@ function createHoverLabelForDimensionHovermode(gd, rootBBox, bandElement) {
  *
  */
 function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
+    gd._fullLayout._calcInverseTransform(gd);
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
 
