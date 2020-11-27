@@ -1894,8 +1894,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[400, 200], [445, 235]],
                     function() {
@@ -1950,8 +1952,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[300, 200], [400, 250]],
                     function() {
@@ -1997,8 +2001,10 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[370, 120], [500, 200]],
                     function() {
@@ -2056,8 +2062,10 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[150, 150], [300, 300]],
                     function() {
@@ -2128,9 +2136,10 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[350, 200], [450, 400]],
                     function() {
@@ -2202,8 +2211,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[150, 150], [350, 250]],
                     function() {
@@ -2245,8 +2256,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.plot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[150, 150], [250, 250]],
                     function() {
@@ -2313,9 +2326,10 @@ describe('Test select box and lasso per trace:', function() {
             emptyChoroplethTrace.z = [];
             fig.data.push(emptyChoroplethTrace);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[350, 200], [400, 250]],
                     function() {
@@ -2369,9 +2383,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[400, 300], [200, 400], [400, 500], [600, 400], [500, 350]],
                     function() {
@@ -2430,9 +2445,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[400, 300], [200, 400], [400, 500], [600, 400], [500, 350]],
                     function() {
@@ -2493,9 +2509,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[350, 200], [400, 200], [400, 250], [350, 250], [350, 200]],
                     function() {
@@ -2600,9 +2617,10 @@ describe('Test select box and lasso per trace:', function() {
             var x1 = 250;
             var y1 = 250;
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]],
                     function() {
@@ -2649,9 +2667,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 500;
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
                     function() {
@@ -2705,9 +2724,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
                     function() {
@@ -2778,9 +2798,10 @@ describe('Test select box and lasso per trace:', function() {
                 }
             };
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
                     function() {
@@ -2821,9 +2842,10 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 500;
             addInvisible(fig);
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, fig)
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
                     function() {
@@ -2903,7 +2925,6 @@ describe('Test select box and lasso per trace:', function() {
                     return unselected;
                 }
 
-                if(hasCssTransform) transformPlot(gd, cssTransform);
                 Plotly.newPlot(gd, [{
                     type: type,
                     x: ['2011-01-02', '2011-01-03', '2011-01-04'],
@@ -2919,6 +2940,8 @@ describe('Test select box and lasso per trace:', function() {
                     dragmode: 'lasso'
                 })
                 .then(function() {
+                    if(hasCssTransform) transformPlot(gd, cssTransform);
+
                     return _run(hasCssTransform,
                         [[l0, t], [l0, b], [r0, b], [r0, t], [l0, t]],
                         function() {
@@ -2958,7 +2981,6 @@ describe('Test select box and lasso per trace:', function() {
         it('@flaky should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, [{
                 x: [1, 2, 3, 4, 5],
                 y: [2, 3, 1, 7, 9],
@@ -2986,6 +3008,8 @@ describe('Test select box and lasso per trace:', function() {
                 margin: {l: 0, t: 0, r: 0, b: 0}
             })
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[5, 5], [395, 395]],
                     function() {
@@ -3015,7 +3039,6 @@ describe('Test select box and lasso per trace:', function() {
                 });
             }
 
-            if(hasCssTransform) transformPlot(gd, cssTransform);
             Plotly.plot(gd, [{
                 mode: 'markers+text',
                 x: [1, 2, 3],
@@ -3036,6 +3059,8 @@ describe('Test select box and lasso per trace:', function() {
                 margin: {l: 0, t: 0, r: 0, b: 0}
             })
             .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
                 return _run(hasCssTransform,
                     [[10, 10], [100, 300]],
                     function() {
@@ -3062,9 +3087,10 @@ describe('Test select box and lasso per trace:', function() {
                 fig.layout.dragmode = 'select';
                 var dblClickPos = [250, 400];
 
-                if(hasCssTransform) transformPlot(gd, cssTransform);
                 Plotly.plot(gd, fig)
                 .then(function() {
+                    if(hasCssTransform) transformPlot(gd, cssTransform);
+
                     // No groups initially
                     expect(gd._fullData[0].node.groups).toEqual([]);
                 })

@@ -1746,9 +1746,10 @@ describe('Polar plots with css transforms', function() {
         it('hover behaves correctly after css transform: ' + transform, function(done) {
             var hoverEvents = {};
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 gd.on('plotly_hover', function(d) {
                     hoverEvents[d.points[0].pointIndex] = true;
                 });
@@ -1765,10 +1766,11 @@ describe('Polar plots with css transforms', function() {
         });
 
         it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
 
             .then(function() {
+                transformPlot(gd, transform);
+
                 return _drag([10, 10], [50, 50]);
             })
             .then(function() {
@@ -1789,9 +1791,10 @@ describe('Polar plots with css transforms', function() {
                 }
             }
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
             .then(function() { return _drag([30, 30], [130, 130]); })

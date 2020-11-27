@@ -523,8 +523,8 @@ proto.initInteractions = function() {
             _this.dragOptions.xaxes = [_this.xaxis];
             _this.dragOptions.yaxes = [_this.yaxis];
 
-            scaleX = gd._fullLayout._inverseScaleX;
-            scaleY = gd._fullLayout._inverseScaleY;
+            scaleX = gd._fullLayout._invScaleX;
+            scaleY = gd._fullLayout._invScaleY;
 
             var dragModeNow = _this.dragOptions.dragmode = gd._fullLayout.dragmode;
 
@@ -579,9 +579,11 @@ proto.initInteractions = function() {
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
-        var inverse = gd._fullLayout._inverseTransform;
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
+
+        gd._fullLayout._calcInverseTransform(gd);
+        var inverse = gd._fullLayout._invTransform;
         var transformedCoords = Lib.apply3DTransform(inverse)(x0, y0);
         x0 = transformedCoords[0];
         y0 = transformedCoords[1];

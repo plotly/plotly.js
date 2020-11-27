@@ -538,7 +538,6 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         var scale = 1;
         if(hasCssTransform) {
             scale = 0.5;
-            transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
         }
 
         var fig = Lib.extendDeep({},
@@ -556,6 +555,8 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         var pos = s.pos || [270, 220];
 
         return Plotly.plot(gd, fig).then(function() {
+            if(hasCssTransform) transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
+
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();

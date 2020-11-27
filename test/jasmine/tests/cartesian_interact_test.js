@@ -2475,9 +2475,10 @@ describe('Cartesian plots with css transforms', function() {
                 });
             }
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 gd.on('plotly_hover', function(d) {
                     eventRecordings[d.points[0].x] = 1;
                 });
@@ -2505,8 +2506,8 @@ describe('Cartesian plots with css transforms', function() {
             // asserts that the zoombox path must go from the start to end positions,
             // in css-transformed coordinates.
             function _assertTransformedZoombox(startPos, endPos) {
-                startPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(startPos[0], startPos[1]);
-                endPos = Lib.apply3DTransform(gd._fullLayout._inverseTransform)(endPos[0], endPos[1]);
+                startPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(startPos[0], startPos[1]);
+                endPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(endPos[0], endPos[1]);
                 var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
                 var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
                 var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
@@ -2519,9 +2520,12 @@ describe('Cartesian plots with css transforms', function() {
             var start = [50, 50];
             var end = [150, 150];
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
-            .then(function() {_drag(start, end); })
+            .then(function() {
+                transformPlot(gd, transform);
+
+                _drag(start, end);
+            })
             .then(function() {
                 _assertTransformedZoombox(start, end);
             })
@@ -2547,9 +2551,10 @@ describe('Cartesian plots with css transforms', function() {
             var start = [10, 10];
             var end = [200, 200];
 
-            transformPlot(gd, transform);
             Plotly.newPlot(gd, Lib.extendDeep({}, mock))
             .then(function() {
+                transformPlot(gd, transform);
+
                 return Plotly.relayout(gd, 'dragmode', 'select');
             })
             .then(function() {

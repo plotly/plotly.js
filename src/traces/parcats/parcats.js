@@ -767,8 +767,9 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
  *
  */
 function createHoverLabelForCategoryHovermode(gd, rootBBox, bandElement) {
-    var scaleX = gd._fullLayout._inverseScaleX;
-    var scaleY = gd._fullLayout._inverseScaleY;
+    gd._fullLayout._calcInverseTransform(gd);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
 
     // Selections
     var rectSelection = d3.select(bandElement.parentNode).select('rect.catrect');
@@ -871,8 +872,9 @@ function createHoverLabelForDimensionHovermode(gd, rootBBox, bandElement) {
  *
  */
 function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
-    var scaleX = gd._fullLayout._inverseScaleX;
-    var scaleY = gd._fullLayout._inverseScaleY;
+    gd._fullLayout._calcInverseTransform(gd);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
 
     var bandBoundingBox = bandElement.getBoundingClientRect();
 

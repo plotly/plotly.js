@@ -167,10 +167,6 @@ describe('Test choropleth hover:', function() {
     function run(hasCssTransform, pos, fig, content, style) {
         gd = createGraphDiv();
         var scale = 1;
-        if(hasCssTransform) {
-            scale = 0.5;
-            transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
-        }
 
         style = style || {
             bgcolor: 'rgb(68, 68, 68)',
@@ -180,7 +176,13 @@ describe('Test choropleth hover:', function() {
             fontFamily: 'Arial'
         };
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.plot(gd, fig)
+        .then(function() {
+            if(hasCssTransform) {
+                scale = 0.5;
+                transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
+            }
+
             mouseEvent('mousemove', scale * pos[0], scale * pos[1]);
             assertHoverLabelContent({
                 nums: content[0],
