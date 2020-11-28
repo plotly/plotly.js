@@ -86,12 +86,12 @@ exports.decodeTypedArraySpec = function(v) {
     v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
     var buffer;
-    if(v.bvals.constructor === ArrayBuffer) {
+    if(v.buffer.constructor === ArrayBuffer) {
         // Already an ArrayBuffer
-        buffer = v.bvals;
+        buffer = v.buffer;
     } else {
         // Decode, assuming a string
-        buffer = b64.decode(v.bvals);
+        buffer = b64.decode(v.buffer);
     }
 
     // Check if 1d shape. If so, we're done
@@ -143,7 +143,7 @@ exports.decodeTypedArraySpec = function(v) {
 
 function isTypedArraySpec(v) {
     // Assume v has not passed through
-    return isPlainObject(v) && typedArrays[v.dtype] && v.bvals && (
+    return isPlainObject(v) && typedArrays[v.dtype] && v.buffer && (
         Number.isInteger(v.shape) ||
         (isArrayOrTypedArray(v.shape) &&
             v.shape.length > 0 &&
@@ -154,7 +154,7 @@ exports.isTypedArraySpec = isTypedArraySpec;
 
 function coerceTypedArraySpec(v) {
     // Assume isTypedArraySpec passed
-    var coerced = {dtype: v.dtype, bvals: v.bvals};
+    var coerced = {dtype: v.dtype, buffer: v.buffer};
 
     // Normalize shape to a list
     if(Number.isInteger(v.shape)) {
