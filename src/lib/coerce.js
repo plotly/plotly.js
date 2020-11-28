@@ -32,7 +32,7 @@ exports.valObjectMeta = {
             'The value could be an {array}',
             'noting that typed arrays (e.g. Float32Array) are also supported.',
             'It could also be an object in the form of',
-            'v: {, dtype: \'float32\', buffer: [/* ... */]}, shape: [dim0 (, dim1, (dim3))]',
+            'v: {, dtype: \'float32\', bvals: [/* ... */]}, shape: [dim0 (, dim1, (dim3))]',
             'otherwise, it would be ignored.'
         ].join(' '),
         requiredOpts: [],
@@ -50,7 +50,7 @@ exports.valObjectMeta = {
                 var uid = propOut.obj.uid;
                 var module = propOut.obj._module;
 
-                if(v.buffer.constructor === ArrayBuffer || !uid || !module) {
+                if(v.bvals.constructor === ArrayBuffer || !uid || !module) {
                     // Already an ArrayBuffer
                     // decoding is cheap
                     propOut.set(decodeTypedArraySpec(v));
@@ -59,11 +59,11 @@ exports.valObjectMeta = {
                     var cache = module._b64BufferCache || {};
 
                     // Check cache
-                    var cachedBuffer = ((cache[uid] || {})[prop] || {})[v.buffer];
+                    var cachedBuffer = ((cache[uid] || {})[prop] || {})[v.bvals];
                     if(cachedBuffer !== undefined) {
                         // Use cached array buffer instead of base64 encoded
                         // string
-                        v.buffer = cachedBuffer;
+                        v.bvals = cachedBuffer;
                         propOut.set(decodeTypedArraySpec(v));
                     } else {
                         // Not in so cache decode
@@ -76,7 +76,7 @@ exports.valObjectMeta = {
                         // Clear any prior cache value (only store one per
                         // trace property
                         cache[uid][prop] = {};
-                        cache[uid][prop][v.buffer] = decoded.buffer;
+                        cache[uid][prop][v.bvals] = decoded.buffer;
                         module._b64BufferCache = cache;
                     }
                 }
