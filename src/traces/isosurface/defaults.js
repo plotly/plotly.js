@@ -38,8 +38,6 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var z = coerce('z');
     var value = coerce('value');
 
-    console.log(["x", x]);
-
     if(
         !x || !x.length ||
         !y || !y.length ||

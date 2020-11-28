@@ -41,7 +41,7 @@ exports.isArrayOrTypedArray = isArrayOrTypedArray;
  * not consistent we won't figure that out here.
  */
 function isArray1D(a) {
-    return !(isArrayOrTypedArray(a[0]) || (isTypedArraySpec(a) && a.ndims === 1));
+    return !isArrayOrTypedArray(a[0]);
 }
 exports.isArray1D = isArray1D;
 
@@ -83,6 +83,7 @@ exports.typedArrays = typedArrays;
 
 exports.decodeTypedArraySpec = function(v) {
     // Assume processed by coerceTypedArraySpec
+    v = coerceTypedArraySpec(v)
     var T = typedArrays[v.dtype];
     var buffer;
     if(v.bvals.constructor === ArrayBuffer) {
@@ -259,8 +260,6 @@ function _rowLength(z, fn, len0) {
         } else {
             return z.length;
         }
-    } else if(isTypedArraySpec(z)) {
-        return z.shape[z.shape.length - 1];
     }
     return 0;
 }

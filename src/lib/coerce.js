@@ -20,7 +20,7 @@ var counterRegex = require('./regex').counter;
 var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 var isTypedArraySpec = require('./array').isTypedArraySpec;
-var coerceTypedArraySpec = require('./array').coerceTypedArraySpec;
+var decodeTypedArraySpec = require('./array').decodeTypedArraySpec;
 
 
 exports.valObjectMeta = {
@@ -42,7 +42,7 @@ exports.valObjectMeta = {
                 propOut.set(v);
                 wasSet = true;
             } else if(isTypedArraySpec(v)) {
-                propOut.set(coerceTypedArraySpec(v));
+                propOut.set(decodeTypedArraySpec(v));
                 wasSet = true;
             }
             if(!wasSet && dflt !== undefined) propOut.set(dflt);

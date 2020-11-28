@@ -11,8 +11,6 @@
 var d3 = require('d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
-var decodeTypedArraySpec = require('../lib/array').decodeTypedArraySpec;
-var isTypedArraySpec = require('../lib/array').isTypedArraySpec;
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -2850,36 +2848,7 @@ function _transition(gd, transitionOpts, opts) {
     return transitionStarting.then(function() { return gd; });
 }
 
-function _decode(cont) {
-    if(isTypedArraySpec(cont)) {
-        return decodeTypedArraySpec(cont);
-    }
-    for(var prop in cont) {
-        if(prop[0] !== '_' && cont.hasOwnProperty(prop)) {
-            var item = cont[prop];
-            if(Lib.isPlainObject(item)) {
-                var r = _decode(item);
-                if(r !== undefined) cont[prop] = r;
-            } else if(Array.isArray(cont) && cont.length > 0 && Lib.isPlainObject(cont[0])) {
-                for(var i = 0; i < cont.length; i++) {
-                    _decode(cont[i]);
-                }
-            }
-        }
-    }
-}
-
-function decodeTypedArrays(gd) {
-    for(var i = 0; i < gd._fullData.length; i++) {
-        _decode(gd._fullData[i]);
-    }
-
-    _decode(gd._fullLayout);
-}
-
 plots.doCalcdata = function(gd, traces) {
-    decodeTypedArrays(gd);
-
     var axList = axisIDs.list(gd);
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
