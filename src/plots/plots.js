@@ -11,7 +11,8 @@
 var d3 = require('d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
-var b64 = require('base64-arraybuffer');
+var decodeTypedArraySpec = require('../lib/array').decodeTypedArraySpec;
+var isTypedArraySpec = require('../lib/array').isTypedArraySpec;
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -2849,40 +2850,26 @@ function _transition(gd, transitionOpts, opts) {
     return transitionStarting.then(function() { return gd; });
 }
 
-var typedArrays = {
-    int8: typeof Int8Array !== 'undefined' ? Int8Array : null,
-    uint8: typeof Uint8Array !== 'undefined' ? Uint8Array : null,
-    uint8clamped: typeof Uint8ClampedArray !== 'undefined' ? Uint8ClampedArray : null,
-    int16: typeof Int16Array !== 'undefined' ? Int16Array : null,
-    uint16: typeof Uint16Array !== 'undefined' ? Uint16Array : null,
-    int32: typeof Int32Array !== 'undefined' ? Int32Array : null,
-    uint32: typeof Uint32Array !== 'undefined' ? Uint32Array : null,
-    float32: typeof Float32Array !== 'undefined' ? Float32Array : null,
-    float64: typeof Float64Array !== 'undefined' ? Float64Array : null,
-    bigint64: typeof BigInt64Array !== 'undefined' ? BigInt64Array : null,
-    biguint64: typeof BigUint64Array !== 'undefined' ? BigUint64Array : null
-};
-
 function _decode(cont) {
-    if(cont.dtype && cont.bvals) {
-        var T = typedArrays[cont.dtype];
-        if(T) {
-            return new T(b64.decode(cont.bvals));
-        }
+    if(isTypedArraySpec(cont)) {
+        return decodeTypedArraySpec(cont);
     }
-
     for(var prop in cont) {
         if(prop[0] !== '_' && cont.hasOwnProperty(prop)) {
             var item = cont[prop];
             if(Lib.isPlainObject(item)) {
                 var r = _decode(item);
                 if(r !== undefined) cont[prop] = r;
+            } else if(Array.isArray(cont) && cont.length > 0 && Lib.isPlainObject(cont[0])) {
+                for(var i = 0; i < cont.length; i++) {
+                    _decode(cont[i]);
+                }
             }
         }
     }
 }
 
-function decodeB64Arrays(gd) {
+function decodeTypedArrays(gd) {
     for(var i = 0; i < gd._fullData.length; i++) {
         _decode(gd._fullData[i]);
     }
@@ -2891,7 +2878,7 @@ function decodeB64Arrays(gd) {
 }
 
 plots.doCalcdata = function(gd, traces) {
-    decodeB64Arrays(gd);
+    decodeTypedArrays(gd);
 
     var axList = axisIDs.list(gd);
     var fullData = gd._fullData;

@@ -18,22 +18,10 @@ var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var modHalf = require('./mod').modHalf;
-var isPlainObject = require('./is_plain_object');
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
+var isTypedArraySpec = require('./array').isTypedArraySpec;
+var coerceTypedArraySpec = require('./array').coerceTypedArraySpec;
 
-var typedArrays = {
-    int8: typeof Int8Array !== 'undefined' ? 1 : 0,
-    uint8: typeof Uint8Array !== 'undefined' ? 1 : 0,
-    uint8clamped: typeof Uint8ClampedArray !== 'undefined' ? 1 : 0,
-    int16: typeof Int16Array !== 'undefined' ? 1 : 0,
-    uint16: typeof Uint16Array !== 'undefined' ? 1 : 0,
-    int32: typeof Int32Array !== 'undefined' ? 1 : 0,
-    uint32: typeof Uint32Array !== 'undefined' ? 1 : 0,
-    float32: typeof Float32Array !== 'undefined' ? 1 : 0,
-    float64: typeof Float64Array !== 'undefined' ? 1 : 0,
-    bigint64: typeof BigInt64Array !== 'undefined' ? 1 : 0,
-    biguint64: typeof BigUint64Array !== 'undefined' ? 1 : 0
-};
 
 exports.valObjectMeta = {
     data_array: {
@@ -53,12 +41,9 @@ exports.valObjectMeta = {
             if(isArrayOrTypedArray(v)) {
                 propOut.set(v);
                 wasSet = true;
-            } else if(isPlainObject(v)) {
-                var T = typedArrays[v.dtype];
-                if(T) {
-                    propOut.set(v);
-                    wasSet = true;
-                }
+            } else if(isTypedArraySpec(v)) {
+                propOut.set(coerceTypedArraySpec(v));
+                wasSet = true;
             }
             if(!wasSet && dflt !== undefined) propOut.set(dflt);
         }

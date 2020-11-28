@@ -7,6 +7,8 @@
 */
 
 'use strict';
+var b64 = require('base64-arraybuffer');
+var isPlainObject = require('./is_plain_object');
 
 var isArray = Array.isArray;
 
@@ -39,7 +41,7 @@ exports.isArrayOrTypedArray = isArrayOrTypedArray;
  * not consistent we won't figure that out here.
  */
 function isArray1D(a) {
-    return !isArrayOrTypedArray(a[0]);
+    return !(isArrayOrTypedArray(a[0]) || (isTypedArraySpec(a) && a.ndims === 1));
 }
 exports.isArray1D = isArray1D;
 
@@ -62,6 +64,113 @@ exports.ensureArray = function(out, n) {
 
     return out;
 };
+
+var typedArrays = {
+    int8: typeof Int8Array !== 'undefined' ? Int8Array : null,
+    uint8: typeof Uint8Array !== 'undefined' ? Uint8Array : null,
+    uint8clamped: typeof Uint8ClampedArray !== 'undefined' ? Uint8ClampedArray : null,
+    int16: typeof Int16Array !== 'undefined' ? Int16Array : null,
+    uint16: typeof Uint16Array !== 'undefined' ? Uint16Array : null,
+    int32: typeof Int32Array !== 'undefined' ? Int32Array : null,
+    uint32: typeof Uint32Array !== 'undefined' ? Uint32Array : null,
+    float32: typeof Float32Array !== 'undefined' ? Float32Array : null,
+    float64: typeof Float64Array !== 'undefined' ? Float64Array : null,
+    bigint64: typeof BigInt64Array !== 'undefined' ? BigInt64Array : null,
+    biguint64: typeof BigUint64Array !== 'undefined' ? BigUint64Array : null
+};
+exports.typedArrays = typedArrays;
+
+
+exports.decodeTypedArraySpec = function(v) {
+    // Assume processed by coerceTypedArraySpec
+    var T = typedArrays[v.dtype];
+    var buffer;
+    if(v.bvals.constructor === ArrayBuffer) {
+        // Already an ArrayBuffer
+        buffer = v.bvals;
+    } else {
+        // Decode, assuming a string
+        buffer = b64.decode(v.bvals);
+    }
+
+    // Check if 1d shape. If so, we're done
+    if(v.ndims === 1) {
+        // Construct single Typed array over entire buffer
+        return new T(buffer);
+    } else {
+        // Reshape into nested plain arrays with innermost
+        // level containing typed arrays
+        // We could eventually adopt an ndarray library
+
+        // Build cumulative product of dimensions
+        var cumulativeShape = v.shape.map(function(a, i) {
+            return a * (v.shape[i - 1] || 1);
+        });
+
+        // Loop of dimensions in reverse order
+        var nestedArray = [];
+        for(var dimInd = v.ndims - 1; dimInd > 0; dimInd--) {
+            var subArrayLength = v.shape[dimInd];
+            var numSubArrays = cumulativeShape[dimInd - 1];
+            var nextArray = [];
+
+            if(dimInd === v.ndims - 1) {
+                // First time through, we build the
+                // inner most typed arrays
+                for(var typedInd = 0; typedInd < numSubArrays; typedInd++) {
+                    var typedOffset = typedInd * subArrayLength;
+                    nextArray.push(
+                        new T(buffer, typedOffset * T.BYTES_PER_ELEMENT, subArrayLength)
+                    );
+                }
+            } else {
+                // Following times through, build
+                // next layer of nested arrays
+                for(var i = 0; i < numSubArrays; i++) {
+                    var offset = i * subArrayLength;
+                    nextArray.push(nextArray.slice(offset, offset + subArrayLength - 1));
+                }
+            }
+
+            // Update nested array with next nesting level
+            nestedArray = nextArray;
+        }
+
+        return nestedArray;
+    }
+};
+
+function isTypedArraySpec(v) {
+    // Assume v has not passed through
+    return isPlainObject(v) && typedArrays[v.dtype] && v.bvals && (
+        Number.isInteger(v.shape) ||
+        (isArrayOrTypedArray(v.shape) &&
+            v.shape.length > 0 &&
+            v.shape.every(function(d) { return Number.isInteger(d); }))
+    );
+}
+exports.isTypedArraySpec = isTypedArraySpec;
+
+function coerceTypedArraySpec(v) {
+    // Assume isTypedArraySpec passed
+    var coerced = {dtype: v.dtype, bvals: v.bvals};
+
+    // Normalize shape to a list
+    if(Number.isInteger(v.shape)) {
+        coerced.shape = [v.shape];
+    } else {
+        coerced.shape = v.shape;
+    }
+
+    // Add length property
+    coerced.length = v.shape.reduce(function(a, b) { return a * b; });
+
+    // Add ndims
+    coerced.ndims = v.shape.length;
+
+    return coerced;
+}
+exports.coerceTypedArraySpec = coerceTypedArraySpec;
 
 /*
  * TypedArray-compatible concatenation of n arrays
@@ -150,6 +259,8 @@ function _rowLength(z, fn, len0) {
         } else {
             return z.length;
         }
+    } else if(isTypedArraySpec(z)) {
+        return z.shape[z.shape.length - 1];
     }
     return 0;
 }
