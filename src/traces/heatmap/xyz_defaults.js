@@ -21,7 +21,7 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
 
     if(z === undefined || !z.length) return 0;
 
-    if(Lib.isArray1D(traceIn.z)) {
+    if(Lib.isArray1D(z)) {
         x = coerce(xName);
         y = coerce(yName);
 
