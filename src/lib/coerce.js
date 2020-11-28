@@ -21,6 +21,7 @@ var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 var isTypedArraySpec = require('./array').isTypedArraySpec;
 var decodeTypedArraySpec = require('./array').decodeTypedArraySpec;
+var coerceTypedArraySpec = require('./array').coerceTypedArraySpec;
 
 
 exports.valObjectMeta = {
@@ -42,7 +43,43 @@ exports.valObjectMeta = {
                 propOut.set(v);
                 wasSet = true;
             } else if(isTypedArraySpec(v)) {
-                propOut.set(decodeTypedArraySpec(v));
+                // Copy and coerce spec
+                v = coerceTypedArraySpec(v);
+
+                // See if caching location is available
+                var uid = propOut.obj.uid;
+                var module = propOut.obj._module;
+
+                if(v.bvals.constructor === ArrayBuffer || !uid || !module) {
+                    // Already an ArrayBuffer
+                    // decoding is cheap
+                    propOut.set(decodeTypedArraySpec(v));
+                } else {
+                    var prop = propOut.astr;
+                    var cache = module._b64BufferCache || {};
+
+                    // Check cache
+                    var cachedBuffer = ((cache[uid] || {})[prop] || {})[v.bvals];
+                    if(cachedBuffer !== undefined) {
+                        // Use cached array buffer instead of base64 encoded
+                        // string
+                        v.bvals = cachedBuffer;
+                        propOut.set(decodeTypedArraySpec(v));
+                    } else {
+                        // Not in so cache decode
+                        var decoded = decodeTypedArraySpec(v);
+                        propOut.set(decoded);
+
+                        // Update cache for next time
+                        cache[uid] = (cache[uid] || {});
+
+                        // Clear any prior cache value (only store one per
+                        // trace property
+                        cache[uid][prop] = {};
+                        cache[uid][prop][v.bvals] = decoded.buffer;
+                        module._b64BufferCache = cache;
+                    }
+                }
                 wasSet = true;
             }
             if(!wasSet && dflt !== undefined) propOut.set(dflt);

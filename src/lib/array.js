@@ -83,7 +83,7 @@ exports.typedArrays = typedArrays;
 
 exports.decodeTypedArraySpec = function(v) {
     // Assume processed by coerceTypedArraySpec
-    v = coerceTypedArraySpec(v)
+    v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
     var buffer;
     if(v.bvals.constructor === ArrayBuffer) {
