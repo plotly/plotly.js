@@ -75,8 +75,8 @@ var typedArrays = {
     uint32: typeof Uint32Array !== 'undefined' ? Uint32Array : null,
     float32: typeof Float32Array !== 'undefined' ? Float32Array : null,
     float64: typeof Float64Array !== 'undefined' ? Float64Array : null,
-    bigint64: typeof BigInt64Array !== 'undefined' ? BigInt64Array : null,
-    biguint64: typeof BigUint64Array !== 'undefined' ? BigUint64Array : null
+    int64: typeof BigInt64Array !== 'undefined' ? BigInt64Array : null,
+    uint64: typeof BigUint64Array !== 'undefined' ? BigUint64Array : null
 };
 exports.typedArrays = typedArrays;
 
