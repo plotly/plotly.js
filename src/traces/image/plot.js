@@ -10,6 +10,7 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
@@ -185,9 +186,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     // Flip the SVG image as needed (around the proper center location)
                     var axisScale = [(xa.range[0] < xa.range[1]) ? 1 : -1, (ya.range[0] < ya.range[1]) ? -1 : 1];
                     var trans = '';
-                    trans += 'translate(' + (left + imageWidth / 2) + 'px,' + (top + imageHeight / 2) + 'px)';
+                    trans += strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px');
                     trans += 'scale(' + axisScale[0] + ',' + axisScale[1] + ')';
-                    trans += 'translate(' + (-left - imageWidth / 2) + 'px,' + (-top - imageHeight / 2) + 'px)';
+                    trans += strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px');
                     localStyle += 'transform:' + trans + ';';
                 } else {
                     var context = trace._canvas.el.getContext('2d');
