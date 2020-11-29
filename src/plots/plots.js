@@ -11,7 +11,6 @@
 var d3 = require('d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
-var b64 = require('base64-arraybuffer');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -2849,50 +2848,7 @@ function _transition(gd, transitionOpts, opts) {
     return transitionStarting.then(function() { return gd; });
 }
 
-var typedArrays = {
-    int8: typeof Int8Array !== 'undefined' ? Int8Array : null,
-    uint8: typeof Uint8Array !== 'undefined' ? Uint8Array : null,
-    uint8clamped: typeof Uint8ClampedArray !== 'undefined' ? Uint8ClampedArray : null,
-    int16: typeof Int16Array !== 'undefined' ? Int16Array : null,
-    uint16: typeof Uint16Array !== 'undefined' ? Uint16Array : null,
-    int32: typeof Int32Array !== 'undefined' ? Int32Array : null,
-    uint32: typeof Uint32Array !== 'undefined' ? Uint32Array : null,
-    float32: typeof Float32Array !== 'undefined' ? Float32Array : null,
-    float64: typeof Float64Array !== 'undefined' ? Float64Array : null,
-    bigint64: typeof BigInt64Array !== 'undefined' ? BigInt64Array : null,
-    biguint64: typeof BigUint64Array !== 'undefined' ? BigUint64Array : null
-};
-
-function _decode(cont) {
-    if(cont.dtype && cont.bvals) {
-        var T = typedArrays[cont.dtype];
-        if(T) {
-            return new T(b64.decode(cont.bvals));
-        }
-    }
-
-    for(var prop in cont) {
-        if(prop[0] !== '_' && cont.hasOwnProperty(prop)) {
-            var item = cont[prop];
-            if(Lib.isPlainObject(item)) {
-                var r = _decode(item);
-                if(r !== undefined) cont[prop] = r;
-            }
-        }
-    }
-}
-
-function decodeB64Arrays(gd) {
-    for(var i = 0; i < gd._fullData.length; i++) {
-        _decode(gd._fullData[i]);
-    }
-
-    _decode(gd._fullLayout);
-}
-
 plots.doCalcdata = function(gd, traces) {
-    decodeB64Arrays(gd);
-
     var axList = axisIDs.list(gd);
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
