@@ -20,8 +20,6 @@
     "Uint16Array": true,
     "Int32Array": true,
     "Uint32Array": true,
-    "BigInt64Array": true,
-    "BigUint64Array": true,
     "ArrayBuffer": true,
     "DataView": true,
     "SVGElement": false
