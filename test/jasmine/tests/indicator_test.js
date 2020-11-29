@@ -154,8 +154,7 @@ describe('Indicator plot', function() {
             expect(numbers.length).toBe(1);
 
             var transform = numbers.attr('transform');
-            expect(transform.match('scale')).toBeTruthy('cannot find scale attribute on text.numbers[0]');
-            var scale = transform.match(/.*scale\((.*)\)/)[1];
+            var scale = transform.match('scale') ? transform.match(/.*scale\((.*)\)/)[1] : 1;
 
             expect(scale).toBeCloseTo(value, 1, msg);
         }
@@ -171,7 +170,7 @@ describe('Indicator plot', function() {
                 return Plotly.relayout(gd, {width: 200, height: 200});
             })
             .then(function() {
-                checkNumbersScale(0.2, 'should scale down');
+                checkNumbersScale(0.4794007490636704, 'should scale down');
                 return Plotly.relayout(gd, {width: 400, height: 400});
             })
             .then(function() {

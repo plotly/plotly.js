@@ -525,8 +525,20 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         setTimeout(done, 200);
     });
 
-    function run(s, done) {
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function run(hasCssTransform, s, done) {
         gd = createGraphDiv();
+        var scale = 1;
+        if(hasCssTransform) {
+            scale = 0.5;
+        }
 
         var fig = Lib.extendDeep({},
             s.mock || require('@mocks/mapbox_choropleth0.json')
@@ -543,6 +555,8 @@ describe('@noCI Test choroplethmapbox hover:', function() {
         var pos = s.pos || [270, 220];
 
         return Plotly.plot(gd, fig).then(function() {
+            if(hasCssTransform) transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
+
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();
@@ -569,7 +583,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
                 setTimeout(done, 0);
             });
 
-            mouseEvent('mousemove', pos[0], pos[1]);
+            mouseEvent('mousemove', scale * pos[0], scale * pos[1]);
         })
         .catch(failTest);
     }
@@ -631,8 +645,10 @@ describe('@noCI Test choroplethmapbox hover:', function() {
     }];
 
     specs.forEach(function(s) {
-        it('@gl should generate correct hover labels ' + s.desc, function(done) {
-            run(s, done);
+        [false, true].forEach(function(hasCssTransform) {
+            it('@gl should generate correct hover labels ' + s.desc + ', hasCssTransform: ' + hasCssTransform, function(done) {
+                run(hasCssTransform, s, done);
+            });
         });
     });
 });

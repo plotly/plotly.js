@@ -74,6 +74,7 @@ describe('Test polar plots defaults:', function() {
         }];
 
         layoutOut = {
+            autotypenumbers: 'convert types',
             font: {color: 'red'},
             _subplots: {polar: ['polar']}
         };
@@ -208,6 +209,56 @@ describe('Test polar plots defaults:', function() {
 
         expect(layoutOut.polar.radialaxis.hoverformat).toBe('g');
         expect(layoutOut.polar.angularaxis.hoverformat).toBe('g');
+    });
+
+    it('should disable converting numeric strings using axis.autotypenumbers', function() {
+        _supply({
+            polar: {
+                radialaxis: {
+                    autotypenumbers: 'strict'
+                },
+                angularaxis: {
+                    autotypenumbers: 'strict'
+                }
+            }
+        }, [{
+            visible: true,
+            type: 'scatterpolar',
+            r: ['0', '1', '1970', '2000'],
+            theta: ['0', '1', '1970', '2000'],
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.angularaxis.autotypenumbers).toBe('strict');
+        expect(layoutOut.polar.radialaxis.autotypenumbers).toBe('strict');
+        expect(layoutOut.polar.radialaxis.type).toBe('category');
+        expect(layoutOut.polar.angularaxis.type).toBe('category');
+    });
+
+    it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+        layoutOut.autotypenumbers = 'strict';
+
+        _supply({
+            polar: {
+                radialaxis: {
+                    autotypenumbers: 'convert types'
+                },
+                angularaxis: {
+                    autotypenumbers: 'convert types'
+                }
+            }
+        }, [{
+            visible: true,
+            type: 'scatterpolar',
+            r: ['0', '1', '1970', '2000'],
+            theta: ['0', '1', '1970', '2000'],
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.angularaxis.autotypenumbers).toBe('convert types');
+        expect(layoutOut.polar.radialaxis.autotypenumbers).toBe('convert types');
+        expect(layoutOut.polar.radialaxis.type).toBe('linear');
+        expect(layoutOut.polar.angularaxis.type).toBe('linear');
     });
 });
 
@@ -1593,5 +1644,165 @@ describe('Test polar *gridshape linear* interactions', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+});
+
+
+describe('Polar plots with css transforms', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _getLocalPos(element, point) {
+        var bb = element.getBoundingClientRect();
+        return [
+            bb.left + point[0],
+            bb.top + point[1]
+        ];
+    }
+
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function _drag(start, dp) {
+        var node = d3.select('.polar > .draglayer > .maindrag').node();
+        var localStart = _getLocalPos(gd, start);
+        return drag({node: node, dpos: dp, pos0: localStart});
+    }
+
+    function _hover(pos) {
+        return new Promise(function(resolve, reject) {
+            var localPos = _getLocalPos(gd, pos);
+            gd.once('plotly_hover', function(d) {
+                Lib.clearThrottle();
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', localPos[0], localPos[1]);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    function _getVisiblePointsData() {
+        return Array.from(
+            document.querySelectorAll('.point').entries(),
+            function(e) { return e[1]; }
+        )
+        .filter(function(e) { return window.getComputedStyle(e).display !== 'none'; })
+        .map(function(e) { return e.__data__; });
+    }
+
+    var rVals = [100, 50, 50, 100];
+    var thetaVals = [135, 135, 315, 315];
+    var plotSize = [400, 400];
+    var mock = {
+        data: [{
+            type: 'scatterpolar',
+            r: rVals,
+            theta: thetaVals,
+            mode: 'markers',
+            marker: {
+                size: 20,
+            }
+        }],
+        layout: {
+            width: plotSize[0],
+            height: plotSize[1],
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            hovermode: 'closest'
+        }
+    };
+
+    [{
+        transform: 'scaleX(0.75)',
+        hovered: 1,
+        zoomed: [0, 1, 2, 3],
+        selected: {numPoints: 2}
+    }, {
+        transform: 'scale(0.5)',
+        hovered: 4,
+        zoomed: [0, 3],
+        selected: {numPoints: 3}
+    }, {
+        transform: 'scale(0.5) translate(-200px, 25%)',
+        hovered: 4,
+        zoomed: [0, 3],
+        selected: {numPoints: 3}
+    }].forEach(function(t) {
+        var transform = t.transform;
+
+        it('hover behaves correctly after css transform: ' + transform, function(done) {
+            var hoverEvents = {};
+
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+
+                gd.on('plotly_hover', function(d) {
+                    hoverEvents[d.points[0].pointIndex] = true;
+                });
+            })
+            .then(function() { _hover([32, 32]); })
+            .then(function() { _hover([65, 65]); })
+            .then(function() { _hover([132, 132]); })
+            .then(function() { _hover([165, 165]); })
+            .then(function() {
+                expect(Object.keys(hoverEvents).length).toBe(t.hovered);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+
+            .then(function() {
+                transformPlot(gd, transform);
+
+                return _drag([10, 10], [50, 50]);
+            })
+            .then(function() {
+                var points = _getVisiblePointsData();
+                expect(points.map(function(e) { return e.i; })).toEqual(t.zoomed);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('select behaves correctly after css transform: ' + transform, function(done) {
+            function _assertSelected(expectation) {
+                var data = gd._fullData[0];
+                var points = data.selectedpoints;
+                expect(typeof(points) !== 'undefined').toBeTrue();
+                if(expectation.numPoints) {
+                    expect(points.length).toBe(expectation.numPoints);
+                }
+            }
+
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() { return _drag([30, 30], [130, 130]); })
+            .then(function() {
+                _assertSelected(t.selected);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

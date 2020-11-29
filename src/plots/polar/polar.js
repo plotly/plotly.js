@@ -13,6 +13,8 @@ var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strRotate = Lib.strRotate;
+var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
@@ -379,7 +381,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // easier to set rotate angle with custom translate function
     var transFn = function(d) {
-        return 'translate(' + (ax.l2p(d.x) + innerRadius) + ',0)';
+        return strTranslate(ax.l2p(d.x) + innerRadius, 0);
     };
 
     // set special grid path function
@@ -678,6 +680,9 @@ proto.updateMainDrag = function(fullLayout) {
     var chw = constants.cornerHalfWidth;
     var chl = constants.cornerLen / 2;
 
+    var scaleX;
+    var scaleY;
+
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
     d3.select(mainDrag)
@@ -837,8 +842,12 @@ proto.updateMainDrag = function(fullLayout) {
     }
 
     function zoomMove(dx, dy) {
+        dx = dx * scaleX;
+        dy = dy * scaleY;
+
         var x1 = x0 + dx;
         var y1 = y0 + dy;
+
         var rr0 = xy2r(x0, y0);
         var rr1 = Math.min(xy2r(x1, y1), radius);
         var a0 = xy2a(x0, y0);
@@ -934,8 +943,13 @@ proto.updateMainDrag = function(fullLayout) {
         var dragModeNow = gd._fullLayout.dragmode;
 
         var bbox = mainDrag.getBoundingClientRect();
-        x0 = startX - bbox.left;
-        y0 = startY - bbox.top;
+        gd._fullLayout._calcInverseTransform(gd);
+        var inverse = gd._fullLayout._invTransform;
+        scaleX = gd._fullLayout._invScaleX;
+        scaleY = gd._fullLayout._invScaleY;
+        var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
 
         // need to offset x/y as bbox center does not
         // match origin for asymmetric polygons
@@ -1187,8 +1201,8 @@ proto.updateAngularDrag = function(fullLayout) {
         var fullLayoutNow = _this.gd._fullLayout;
         var polarLayoutNow = fullLayoutNow[_this.id];
 
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
+        var x1 = x0 + dx * fullLayout._invScaleX;
+        var y1 = y0 + dy * fullLayout._invScaleY;
         var a1 = xy2a(x1, y1);
         var da = rad2deg(a1 - a0);
         rot1 = rot0 + da;
@@ -1281,6 +1295,12 @@ proto.updateAngularDrag = function(fullLayout) {
         var bbox = angularDrag.getBoundingClientRect();
         x0 = startX - bbox.left;
         y0 = startY - bbox.top;
+
+        gd._fullLayout._calcInverseTransform(gd);
+        var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+        x0 = transformedCoords[0];
+        y0 = transformedCoords[1];
+
         a0 = xy2a(x0, y0);
 
         dragOpts.moveFn = moveFn;
@@ -1418,12 +1438,4 @@ function updateElement(sel, showAttr, attrs) {
         sel.attr('display', 'none');
     }
     return sel;
-}
-
-function strTranslate(x, y) {
-    return 'translate(' + x + ',' + y + ')';
-}
-
-function strRotate(angle) {
-    return 'rotate(' + angle + ')';
 }

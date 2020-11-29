@@ -73,7 +73,7 @@ proto.needsNewSource = function(opts) {
     // stay safe and make new source on type changes
     return (
         this.sourceType !== opts.sourcetype ||
-        this.source !== opts.source ||
+        JSON.stringify(this.source) !== JSON.stringify(opts.source) ||
         this.layerType !== opts.type
     );
 };
@@ -85,11 +85,23 @@ proto.needsNewLayer = function(opts) {
     );
 };
 
+proto.lookupBelow = function() {
+    return this.subplot.belowLookup['layout-' + this.index];
+};
+
 proto.updateImage = function(opts) {
     var map = this.subplot.map;
     map.getSource(this.idSource).updateImage({
         url: opts.source, coordinates: opts.coordinates
     });
+
+    // Since the `updateImage` control flow doesn't call updateLayer,
+    // We need to take care of moving the image layer to match the location
+    // where updateLayer would have placed it.
+    var _below = this.findFollowingMapboxLayerId(this.lookupBelow());
+    if(_below !== null) {
+        this.subplot.map.moveLayer(this.idLayer, _below);
+    }
 };
 
 proto.updateSource = function(opts) {
@@ -107,15 +119,9 @@ proto.updateSource = function(opts) {
     map.addSource(this.idSource, sourceOpts);
 };
 
-proto.updateLayer = function(opts) {
-    var subplot = this.subplot;
-    var convertedOpts = convertOpts(opts);
-
-    var below = this.subplot.belowLookup['layout-' + this.index];
-    var _below;
-
+proto.findFollowingMapboxLayerId = function(below) {
     if(below === 'traces') {
-        var mapLayers = subplot.getMapLayers();
+        var mapLayers = this.subplot.getMapLayers();
 
         // find id of first plotly trace layer
         for(var i = 0; i < mapLayers.length; i++) {
@@ -123,13 +129,19 @@ proto.updateLayer = function(opts) {
             if(typeof layerId === 'string' &&
                 layerId.indexOf(constants.traceLayerPrefix) === 0
             ) {
-                _below = layerId;
+                below = layerId;
                 break;
             }
         }
-    } else {
-        _below = below;
     }
+    return below;
+};
+
+proto.updateLayer = function(opts) {
+    var subplot = this.subplot;
+    var convertedOpts = convertOpts(opts);
+    var below = this.lookupBelow();
+    var _below = this.findFollowingMapboxLayerId(below);
 
     this.removeLayer();
 

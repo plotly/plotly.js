@@ -1083,7 +1083,7 @@ describe('Test click interactions:', function() {
             var fns = drag.makeFns({pos0: [start, start], posN: [end, end]});
 
             fns.start().then(function() {
-                expect(plot.attr('transform')).toBe('translate(250, 280) scale(1, 1)');
+                expect(plot.attr('transform')).toBe('translate(250,280)scale(1,1)');
             })
             .then(fns.end)
             .catch(failTest)

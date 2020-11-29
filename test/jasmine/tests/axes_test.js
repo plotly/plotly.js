@@ -21,6 +21,7 @@ var ONEWEEK = numerical.ONEWEEK;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var negateIf = require('../assets/negate_if');
 var selectButton = require('../assets/modebar_button');
 var supplyDefaults = require('../assets/supply_defaults');
 
@@ -190,6 +191,7 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             layoutOut = {
+                autotypenumbers: 'convert types',
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
                 _dfltTitle: {x: 'x', y: 'y'},
@@ -331,7 +333,92 @@ describe('Test axes', function() {
                         ['d', 'e', 'f']
                     ]
                 });
-                checkTypes('linear', 'linear');
+                checkTypes('linear', 'category');
+            });
+        });
+
+        describe('autotype disable/enable converting numeric strings', function() {
+            it('should disable converting numeric strings using axis.autotypenumbers', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { autotypenumbers: 'strict' }
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+
+            it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+                layoutOut.autotypenumbers = 'strict';
+
+                layoutIn = {
+                    xaxis: { autotypenumbers: 'convert types' },
+                    yaxis: {}
+                };
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: ['0', '1', '1970', '2000'],
+                    y: ['0', '1', '1970', '2000']
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('linear');
+                expect(layoutOut.yaxis.type).toBe('category');
+            });
+
+            it('should autotype date having more dates with & without strict autotypenumbers', function() {
+                layoutIn = {
+                    xaxis: {},
+                    yaxis: { autotypenumbers: 'strict' }
+                };
+
+                var dates = [
+                    0,
+                    '0',
+                    '00',
+                    '0000',
+                    '1970',
+                    '2000',
+                    '2001-01',
+                    '2001-02',
+                    '2001-03',
+                    '2001-04',
+                    '2001-05',
+                    '2001-06',
+                    '2001-07',
+                    '2001-08',
+                    '2001-09',
+                    '2001-10',
+                    '2001-11',
+                    '2001-12'
+                ];
+
+                supplyLayoutDefaults(layoutIn, layoutOut, [{
+                    type: 'scatter',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    x: dates,
+                    y: dates
+                }]);
+
+                expect(layoutOut.xaxis.autotypenumbers).toBe('convert types');
+                expect(layoutOut.yaxis.autotypenumbers).toBe('strict');
+                expect(layoutOut.xaxis.type).toBe('date');
+                expect(layoutOut.yaxis.type).toBe('date');
             });
         });
 
@@ -591,14 +678,10 @@ describe('Test axes', function() {
             ]);
         });
 
-        var warnTxt = ' to avoid either an infinite loop and possibly ' +
-            'inconsistent scaleratios, or because the target axis has ' +
-            'fixed range or this axis declares a *matches* constraint.';
-
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
+                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -614,7 +697,8 @@ describe('Test axes', function() {
                 yaxis4: {scaleanchor: 'y', scaleratio: 17}, // y<->y is OK now
             };
             layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
-            layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'y2', 'y3', 'y4');
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -624,15 +708,15 @@ describe('Test axes', function() {
             ]);
 
             expect(warnings).toEqual([
-                'ignored yaxis.scaleanchor: "x"' + warnTxt,
-                'ignored yaxis3.scaleanchor: "x2"' + warnTxt
+                'ignored yaxis.scaleanchor: "x"',
+                'ignored yaxis3.scaleanchor: "x2"'
             ]);
         });
 
         it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
+                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -646,7 +730,7 @@ describe('Test axes', function() {
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
-            expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"' + warnTxt]);
+            expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"']);
 
             ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
                 expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
@@ -705,23 +789,23 @@ describe('Test axes', function() {
 
             expect(layoutOut.xaxis2.matches).toBe('x');
             expect(layoutOut.xaxis2.scaleanchor).toBe(undefined);
-            expect(layoutOut.xaxis2.constrain).toBe(undefined);
+            // constrain is still coerced in case someone else scales to xaxis2
+            expect(layoutOut.xaxis2.constrain).toBe('range');
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
             expect(layoutOut._axisMatchGroups).toEqual([{x: 1, x2: 1}]);
         });
 
-        it('remove axes from constraint groups if they are in a match group', function() {
+        it('combines all chained scaled/matched axes into a group but drops match-only groups from constraintGroups', function() {
             layoutIn = {
-                // this one is ok
+                // this one big group
                 xaxis: {},
                 yaxis: {scaleanchor: 'x'},
-                // this one too
-                xaxis2: {},
-                yaxis2: {matches: 'x2'},
-                // not these ones
-                xaxis3: {scaleanchor: 'x2'},
-                yaxis3: {scaleanchor: 'y2'}
+                xaxis2: {matches: 'x'},
+                yaxis2: {matches: 'y'},
+                // this is another group but only shows up in matchGroups
+                xaxis3: {},
+                yaxis3: {matches: 'x3'}
             };
             layoutOut._subplots.cartesian.push('x2y2, x3y3');
             layoutOut._subplots.xaxis.push('x2', 'x3');
@@ -729,74 +813,76 @@ describe('Test axes', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-            expect(layoutOut._axisMatchGroups.length).toBe(1);
-            expect(layoutOut._axisMatchGroups).toContain({x2: 1, y2: 1});
+            expect(layoutOut._axisMatchGroups).toEqual([{x: 1, x2: 1}, {y: 1, y2: 1}, {x3: 1, y3: 1}]);
 
-            expect(layoutOut._axisConstraintGroups.length).toBe(1);
-            expect(layoutOut._axisConstraintGroups).toContain({x: 1, y: 1});
+            expect(layoutOut._axisConstraintGroups).toEqual([{x: 1, y: 1, x2: 1, y2: 1}]);
         });
 
-        it('remove constraint group if they are one or zero items left in it', function() {
+        it('includes matches in constraintGroup when combined with scaleanchor', function() {
             layoutIn = {
                 xaxis: {},
                 yaxis: {matches: 'x'},
-                xaxis2: {scaleanchor: 'y'}
+                xaxis2: {scaleanchor: 'x'}
             };
             layoutOut._subplots.cartesian.push('x2y');
             layoutOut._subplots.xaxis.push('x2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-            expect(layoutOut._axisMatchGroups.length).toBe(1);
-            expect(layoutOut._axisMatchGroups).toContain({x: 1, y: 1});
-
-            expect(layoutOut._axisConstraintGroups.length).toBe(0);
+            expect(layoutOut._axisMatchGroups).toEqual([{x: 1, y: 1}]);
+            expect(layoutOut._axisConstraintGroups).toEqual([{x: 1, y: 'y1', x2: 1}]);
         });
 
-        it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
+        it('turns all scaled axes fixedrange if any is fixedrange', function() {
             // some of these will create warnings... not too important, so not going to test,
             // just want to keep the output clean
             // spyOn(Lib, 'warn');
 
             layoutIn = {
                 xaxis: {fixedrange: true, scaleanchor: 'y', scaleratio: 2},
-                yaxis: {scaleanchor: 'x2', scaleratio: 3}, // only this one should survive
+                yaxis: {scaleanchor: 'x2', scaleratio: 3},
                 xaxis2: {},
                 yaxis2: {scaleanchor: 'x', scaleratio: 5}
             };
             layoutOut._subplots.cartesian.push('x2y2');
-            layoutOut._subplots.yaxis.push('x2', 'y2');
+            layoutOut._subplots.xaxis.push('x2');
+            layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-            expect(layoutOut._axisConstraintGroups).toEqual([{x2: 1, y: 3}]);
+            expect(layoutOut._axisConstraintGroups).toEqual([{x2: 1, y: 3, x: 6, y2: 30}]);
 
+            expect(layoutOut.xaxis.scaleanchor).toBe('y');
+            expect(layoutOut.xaxis.scaleratio).toBe(2);
             expect(layoutOut.yaxis.scaleanchor).toBe('x2');
             expect(layoutOut.yaxis.scaleratio).toBe(3);
+            expect(layoutOut.yaxis2.scaleanchor).toBe('x');
+            expect(layoutOut.yaxis2.scaleratio).toBe(5);
 
-            ['xaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
-                expect(layoutOut[axName].scaleanchor).toBeUndefined();
-                expect(layoutOut[axName].scaleratio).toBeUndefined();
+            ['xaxis', 'yaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].fixedrange).toBe(true, axName);
             });
         });
 
-        it('drops *matches* settings if either the axis or target has fixedrange', function() {
+        it('turns all matching axes fixedrange if any is fixedrange', function() {
             layoutIn = {
                 xaxis: {fixedrange: true, matches: 'y'},
-                yaxis: {matches: 'x2'}, // only this one should survive
+                yaxis: {matches: 'x2'},
                 xaxis2: {},
                 yaxis2: {matches: 'x'}
             };
             layoutOut._subplots.cartesian.push('x2y2');
-            layoutOut._subplots.yaxis.push('x2', 'y2');
+            layoutOut._subplots.xaxis.push('x2');
+            layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-            expect(layoutOut._axisMatchGroups).toEqual([{x2: 1, y: 1}]);
+            expect(layoutOut._axisMatchGroups).toEqual([{x: 1, x2: 1, y: 1, y2: 1}]);
             expect(layoutOut.yaxis.matches).toBe('x2');
 
-            ['xaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
-                expect(layoutOut[axName].matches).toBeUndefined();
+            ['xaxis', 'xaxis2', 'yaxis', 'yaxis2'].forEach(function(axName) {
+                negateIf(axName !== 'xaxis2', expect(layoutOut[axName].matches)).toBeUndefined(axName);
+                expect(layoutOut[axName].fixedrange).toBe(true, axName);
             });
         });
 
@@ -904,7 +990,7 @@ describe('Test axes', function() {
                 // matchee ax has range
                 yaxis: {range: [0, 1]},
                 yaxis2: {matches: 'y'},
-                // matcher ax has range (gets ignored)
+                // first explicit range gets copied to both
                 xaxis3: {},
                 yaxis3: {range: [-1, 1], matches: 'x3'},
                 // both ax have range
@@ -927,13 +1013,14 @@ describe('Test axes', function() {
                 names.forEach(function(n) {
                     var ax = layoutOut[n];
                     expect(ax.autorange).toBe(autorange, n);
-                    expect(ax.range).toEqual(rng);
+                    expect(ax.range[0]).toBe(rng[0], n);
+                    expect(ax.range[1]).toBe(rng[1], n);
                 });
             }
 
             _assertMatchingAxes(['xaxis', 'xaxis2'], true, [-1, 6]);
             _assertMatchingAxes(['yaxis', 'yaxis2'], false, [0, 1]);
-            _assertMatchingAxes(['xaxis3', 'yaxis3'], true, [-1, 6]);
+            _assertMatchingAxes(['xaxis3', 'yaxis3'], false, [-1, 1]);
             _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
         });
 
@@ -1632,7 +1719,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 assertRanges('base (autoranged)', [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.245, 3.245], true],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.285, 3.245], true],
                     [['yaxis'], [-0.211, 3.211], true]
                 ]);
             })
@@ -1646,7 +1733,7 @@ describe('Test axes', function() {
             .then(function() { return Plotly.relayout(gd, 'xaxis2.autorange', true); })
             .then(function() {
                 assertRanges('back to autorange', [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.245, 3.245], true],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.285, 3.245], true],
                     [['yaxis'], [-0.211, 3.211], true]
                 ]);
             })
@@ -3856,7 +3943,7 @@ describe('Test axes', function() {
             .then(function() { return Plotly.relayout(gd, 'height', 100); })
             .then(function() {
                 _assert('after relayout to *small* height', {
-                    bottomLowerBound: 30,
+                    bottomLowerBound: 15,
                     totalHeight: 100
                 });
             })
@@ -3896,7 +3983,7 @@ describe('Test axes', function() {
             .then(function() { return Plotly.relayout(gd, 'width', 100); })
             .then(function() {
                 _assert('after relayout to *small* width', {
-                    leftLowerBound: 30,
+                    leftLowerBound: 15,
                     totalWidth: 100
                 });
             })

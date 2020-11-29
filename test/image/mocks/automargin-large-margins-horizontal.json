@@ -1,0 +1,55 @@
+{
+    "data": [{
+            "name": "< D E A T H >",
+            "marker": { "color": "red" },
+            "y": [
+                "Antonio Vivaldi",
+                "Johann Sebastian Bach",
+                "Wolfgang Amadeus Mozart",
+                "Ludwig van Beethoven"
+            ],
+            "x": [
+                "1741",
+                "1750",
+                "1791",
+                "1827"
+            ]
+    },
+    {
+        "name": "< B I R T H >",
+        "marker": { "color": "blue" },
+        "y": [
+            "Antonio Vivaldi",
+            "Johann Sebastian Bach",
+            "Wolfgang Amadeus Mozart",
+            "Ludwig van Beethoven"
+        ],
+        "x": [
+            "1678",
+            "1685",
+            "1756",
+            "1770"
+        ]
+    }],
+    "layout": {
+        "showlegend": false,
+        "title": {
+            "text": "Longest and shortest<br>names and time periods"
+        },
+        "width": 240,
+        "height": 200,
+        "margin": {
+            "t": 80,
+            "b": 20,
+            "l": 20,
+            "r": 20
+        },
+        "xaxis": {
+            "type": "date",
+            "automargin": true
+        },
+        "yaxis": {
+            "automargin": true
+        }
+    }
+}

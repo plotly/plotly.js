@@ -57,7 +57,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
-        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
+        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr, opts);
 
         handleCategoryOrderDefaults(axIn, axOut, coerceAxis, {
             axData: subplotData,
@@ -187,7 +187,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     }
 }
 
-function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
+function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, options) {
+    var autotypenumbers = coerce('autotypenumbers', options.autotypenumbersDflt);
     var axType = coerce('type');
 
     if(axType === '-') {
@@ -201,7 +202,10 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
         }
 
         if(trace && trace[dataAttr]) {
-            axOut.type = autoType(trace[dataAttr], 'gregorian');
+            axOut.type = autoType(trace[dataAttr], 'gregorian', {
+                noMultiCategory: true,
+                autotypenumbers: autotypenumbers
+            });
         }
 
         if(axOut.type === '-') {
@@ -224,6 +228,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
         font: layoutOut.font,
+        autotypenumbersDflt: layoutOut.autotypenumbers,
         paper_bgcolor: layoutOut.paper_bgcolor,
         fullData: fullData,
         layoutOut: layoutOut

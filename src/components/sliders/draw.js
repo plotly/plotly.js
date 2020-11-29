@@ -14,6 +14,7 @@ var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
@@ -572,7 +573,7 @@ function setGripPosition(sliderGroup, sliderOpts, doTransition) {
 
     // Drawing.setTranslate doesn't work here becasue of the transition duck-typing.
     // It's also not necessary because there are no other transitions to preserve.
-    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + (sliderOpts._dims.currentValueTotalHeight) + ')');
+    el.attr('transform', strTranslate(x - constants.gripWidth * 0.5, sliderOpts._dims.currentValueTotalHeight));
 }
 
 // Convert a number from [0-1] to a pixel position relative to the slider group container:

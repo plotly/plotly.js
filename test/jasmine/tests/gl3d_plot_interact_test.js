@@ -941,15 +941,15 @@ describe('Test gl3d drag and wheel interactions', function() {
         var sceneTarget;
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        function assertEvent(e) {
-            expect(e.defaultPrevented).toEqual(true);
+        function assertEvent(e, passive) {
+            expect(e.defaultPrevented).not.toEqual(passive);
             relayoutCallback();
         }
 
-        gd.addEventListener('touchend', assertEvent);
-        gd.addEventListener('touchstart', assertEvent);
-        gd.addEventListener('touchmove', assertEvent);
-        gd.addEventListener('wheel', assertEvent);
+        gd.addEventListener('touchend', function(e) { assertEvent(e, true); });
+        gd.addEventListener('touchstart', function(e) { assertEvent(e, true); });
+        gd.addEventListener('touchmove', function(e) { assertEvent(e, false); });
+        gd.addEventListener('wheel', function(e) { assertEvent(e, false); });
 
         Plotly.plot(gd, mock)
         .then(function() {

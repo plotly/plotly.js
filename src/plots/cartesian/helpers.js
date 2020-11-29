@@ -9,6 +9,8 @@
 
 'use strict';
 
+var strTranslate = require('../../lib').strTranslate;
+
 // in v2 (once log ranges are fixed),
 // we'll be able to p2r here for all axis types
 function p2r(ax, v) {
@@ -39,9 +41,10 @@ function axValue(ax) {
 }
 
 function getTransform(plotinfo) {
-    return 'translate(' +
-        plotinfo.xaxis._offset + ',' +
-        plotinfo.yaxis._offset + ')';
+    return strTranslate(
+        plotinfo.xaxis._offset,
+        plotinfo.yaxis._offset
+    );
 }
 
 module.exports = {

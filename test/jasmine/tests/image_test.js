@@ -208,11 +208,11 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
     });
 
-    it('should NOT set scaleanchor if it\'s already defined', function() {
-        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+    it('should NOT reset scaleanchor if it\'s already defined', function() {
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {y: [5, 3, 2], xaxis: 'x3'}];
         gd.layout = {yaxis: {scaleanchor: 'x3'}};
         supplyAllDefaults(gd);
-        expect(gd._fullLayout.yaxis.scaleanchor).toBe(undefined);
+        expect(gd._fullLayout.yaxis.scaleanchor).toBe('x3');
     });
 
     it('should constrain axes to domain if images are present', function() {
@@ -233,7 +233,7 @@ describe('image smart layout defaults', function() {
 
     it('should NOT constrain axes to domain if it\'s already defined', function() {
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
-        gd.layout = {yaxis: {constrain: false}, xaxis: {constrain: false}};
+        gd.layout = {yaxis: {constrain: 'range'}, xaxis: {constrain: 'range'}};
         supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.constrain).toBe('range');
         expect(gd._fullLayout.yaxis.constrain).toBe('range');

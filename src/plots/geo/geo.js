@@ -14,6 +14,7 @@ var d3 = require('d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
@@ -632,7 +633,7 @@ proto.render = function() {
     function translatePoints(d) {
         var lonlatPx = projection(d.lonlat);
         return lonlatPx ?
-            'translate(' + lonlatPx[0] + ',' + lonlatPx[1] + ')' :
+            strTranslate(lonlatPx[0], lonlatPx[1]) :
              null;
     }
 

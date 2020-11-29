@@ -4,6 +4,7 @@
             "name": "horizontal",
             "insidetextorientation": "horizontal",
             "type": "sunburst",
+            "root": { "color": "yellow" },
             "parents": [
                 "",
                 "A",
@@ -77,6 +78,7 @@
             "name": "radial",
             "insidetextorientation": "radial",
             "type": "sunburst",
+            "root": { "color": "yellow" },
             "parents": [
                 "",
                 "A",
@@ -150,6 +152,7 @@
             "name": "tangential",
             "insidetextorientation": "tangential",
             "type": "sunburst",
+            "root": { "color": "yellow" },
             "parents": [
                 "",
                 "A",
@@ -223,6 +226,7 @@
             "name": "auto",
             "insidetextorientation": "auto",
             "type": "sunburst",
+            "root": { "color": "yellow" },
             "parents": [
                 "",
                 "A",

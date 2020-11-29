@@ -537,9 +537,10 @@ describe('Test splom trace defaults:', function() {
 
         var fullLayout = gd._fullLayout;
         expect(fullLayout.xaxis.matches).toBe('y');
-        expect(fullLayout.yaxis.matches).toBe('x');
         expect(fullLayout.xaxis2.matches).toBe('y2');
-        expect(fullLayout.yaxis2.matches).toBe('x2');
+        // not necessary to set y axes matching x, since x already matches y
+        expect(fullLayout.yaxis.matches).toBe(undefined);
+        expect(fullLayout.yaxis2.matches).toBe(undefined);
 
         var groups = fullLayout._axisMatchGroups;
         expect(groups.length).toBe(2);
@@ -562,7 +563,7 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.xaxis).toBe(undefined);
         expect(fullLayout.yaxis.matches).toBe(undefined);
         expect(fullLayout.xaxis2.matches).toBe('y2');
-        expect(fullLayout.yaxis2.matches).toBe('x2');
+        expect(fullLayout.yaxis2.matches).toBe(undefined);
         expect(fullLayout.xaxis3.matches).toBe(undefined);
         expect(fullLayout.yaxis3).toBe(undefined);
 
@@ -586,7 +587,7 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.xaxis.matches).toBe(undefined);
         expect(fullLayout.yaxis).toBe(undefined);
         expect(fullLayout.xaxis2.matches).toBe('y2');
-        expect(fullLayout.yaxis2.matches).toBe('x2');
+        expect(fullLayout.yaxis2.matches).toBe(undefined);
         expect(fullLayout.xaxis3).toBe(undefined);
         expect(fullLayout.yaxis3.matches).toBe(undefined);
 
@@ -608,7 +609,7 @@ describe('Test splom trace defaults:', function() {
 
         var fullLayout = gd._fullLayout;
         expect(fullLayout.xaxis.matches).toBe('y');
-        expect(fullLayout.yaxis.matches).toBe('x');
+        expect(fullLayout.yaxis.matches).toBe(undefined);
         expect(fullLayout.xaxis2.matches).toBe('x');
         expect(fullLayout.yaxis2.matches).toBe('x2');
 

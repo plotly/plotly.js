@@ -667,7 +667,7 @@ function emptySubplotLists() {
  */
 function getFormatObj(gd, formatKeys) {
     var locale = gd._context.locale;
-    if(!locale) locale === 'en-US';
+    if(!locale) locale = 'en-US';
 
     var formatDone = false;
     var formatObj = {};
@@ -1476,6 +1476,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         layoutOut._dataTemplate = template.data;
     }
 
+    coerce('autotypenumbers');
+
     var globalFont = Lib.coerceFont(coerce, 'font');
 
     coerce('title.text', layoutOut._dfltTitle.plot);
@@ -1864,6 +1866,9 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
+var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
+var minFinalHeight = 64; // could possibly be exposed as layout.margin.minfinalheight
+
 /**
  * autoMargin: called by components that may need to expand the margins to
  * be rendered on-plot.
@@ -1881,6 +1886,10 @@ function initMargins(fullLayout) {
  */
 plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
@@ -1900,13 +1909,15 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l + o.r > fullLayout.width * 0.5) {
-                Lib.log('Margin push', id, 'is too big in x, dropping');
-                o.l = o.r = 0;
+            var rW = (o.l + o.r) / maxSpaceW;
+            if(rW > 1) {
+                o.l /= rW;
+                o.r /= rW;
             }
-            if(o.b + o.t > fullLayout.height * 0.5) {
-                Lib.log('Margin push', id, 'is too big in y, dropping');
-                o.b = o.t = 0;
+            var rH = (o.t + o.b) / maxSpaceH;
+            if(rH > 1) {
+                o.t /= rH;
+                o.b /= rH;
             }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
@@ -1931,6 +1942,11 @@ plots.autoMargin = function(gd, id, o) {
 
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
+
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
 
@@ -1945,8 +1961,6 @@ plots.doAutoMargin = function(gd) {
     var mr = margin.r;
     var mt = margin.t;
     var mb = margin.b;
-    var width = fullLayout.width;
-    var height = fullLayout.height;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
@@ -1978,11 +1992,10 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pl) && pushMargin[k2].r) {
                     var fr = pushMargin[k2].r.val;
                     var pr = pushMargin[k2].r.size;
-
                     if(fr > fl) {
                         var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
                         var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
-                        if(newL >= 0 && newR >= 0 && width - (newL + newR) > 0 && newL + newR > ml + mr) {
+                        if(newL + newR > ml + mr) {
                             ml = newL;
                             mr = newR;
                         }
@@ -1992,11 +2005,10 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pb) && pushMargin[k2].t) {
                     var ft = pushMargin[k2].t.val;
                     var pt = pushMargin[k2].t.size;
-
                     if(ft > fb) {
                         var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
                         var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
-                        if(newB >= 0 && newT >= 0 && height - (newT + newB) > 0 && newB + newT > mb + mt) {
+                        if(newB + newT > mb + mt) {
                             mb = newB;
                             mt = newT;
                         }
@@ -2004,6 +2016,18 @@ plots.doAutoMargin = function(gd) {
                 }
             }
         }
+    }
+
+    var rW = (ml + mr) / maxSpaceW;
+    if(rW > 1) {
+        ml /= rW;
+        mr /= rW;
+    }
+
+    var rH = (mb + mt) / maxSpaceH;
+    if(rH > 1) {
+        mb /= rH;
+        mt /= rH;
     }
 
     gs.l = Math.round(ml);
@@ -3074,6 +3098,9 @@ function sortAxisCategoriesByValue(axList, gd) {
             var aggregator = match[1];
             var order = match[2];
 
+            var axLetter = ax._id.charAt(0);
+            var isX = axLetter === 'x';
+
             // Store values associated with each category
             var categoriesValue = [];
             for(j = 0; j < ax._categories.length; j++) {
@@ -3084,7 +3111,6 @@ function sortAxisCategoriesByValue(axList, gd) {
             for(j = 0; j < ax._traceIndices.length; j++) {
                 var traceIndex = ax._traceIndices[j];
                 var fullTrace = gd._fullData[traceIndex];
-                var axLetter = ax._id.charAt(0);
 
                 // Skip over invisible traces
                 if(fullTrace.visible !== true) continue;
@@ -3094,27 +3120,28 @@ function sortAxisCategoriesByValue(axList, gd) {
                     delete fullTrace._xautoBinFinished;
                     delete fullTrace._yautoBinFinished;
                 }
+                var isSplom = type === 'splom';
+                var isScattergl = type === 'scattergl';
 
                 var cd = gd.calcdata[traceIndex];
                 for(k = 0; k < cd.length; k++) {
                     var cdi = cd[k];
-                    var cat, catIndex, value;
+                    var catIndex, value;
 
-                    if(type === 'splom') {
+                    if(isSplom) {
                         // If `splom`, collect values across dimensions
                         // Find which dimension the current axis is representing
                         var currentDimensionIndex = fullTrace._axesDim[ax._id];
 
                         // Apply logic to associated x axis if it's defined
-                        if(axLetter === 'y') {
+                        if(!isX) {
                             var associatedXAxisID = fullTrace._diag[currentDimensionIndex][0];
                             if(associatedXAxisID) ax = gd._fullLayout[axisIDs.id2name(associatedXAxisID)];
                         }
 
                         var categories = cdi.trace.dimensions[currentDimensionIndex].values;
                         for(l = 0; l < categories.length; l++) {
-                            cat = categories[l];
-                            catIndex = ax._categoriesMap[cat];
+                            catIndex = ax._categoriesMap[categories[l]];
 
                             // Collect associated values at index `l` over all other dimensions
                             for(o = 0; o < cdi.trace.dimensions.length; o++) {
@@ -3123,18 +3150,14 @@ function sortAxisCategoriesByValue(axList, gd) {
                                 categoriesValue[catIndex][1].push(dimension.values[l]);
                             }
                         }
-                    } else if(type === 'scattergl') {
+                    } else if(isScattergl) {
                         // If `scattergl`, collect all values stashed under cdi.t
                         for(l = 0; l < cdi.t.x.length; l++) {
-                            if(axLetter === 'x') {
-                                cat = cdi.t.x[l];
-                                catIndex = cat;
+                            if(isX) {
+                                catIndex = cdi.t.x[l];
                                 value = cdi.t.y[l];
-                            }
-
-                            if(axLetter === 'y') {
-                                cat = cdi.t.y[l];
-                                catIndex = cat;
+                            } else {
+                                catIndex = cdi.t.y[l];
                                 value = cdi.t.x[l];
                             }
                             categoriesValue[catIndex][1].push(value);
@@ -3157,16 +3180,19 @@ function sortAxisCategoriesByValue(axList, gd) {
                         }
                     } else {
                         // For all other 2d cartesian traces
-                        if(axLetter === 'x') {
-                            cat = cdi.p + 1 ? cdi.p : cdi.x;
-                            value = cdi.s || cdi.v || cdi.y;
-                        } else if(axLetter === 'y') {
-                            cat = cdi.p + 1 ? cdi.p : cdi.y;
-                            value = cdi.s || cdi.v || cdi.x;
+                        catIndex = cdi.p;
+                        if(catIndex === undefined) catIndex = cdi[axLetter];
+
+                        value = cdi.s;
+                        if(value === undefined) value = cdi.v;
+                        if(value === undefined) value = isX ? cdi.y : cdi.x;
+
+                        if(!Array.isArray(value)) {
+                            if(value === undefined) value = [];
+                            else value = [value];
                         }
-                        if(!Array.isArray(value)) value = [value];
                         for(l = 0; l < value.length; l++) {
-                            categoriesValue[cat][1].push(value[l]);
+                            categoriesValue[catIndex][1].push(value[l]);
                         }
                     }
                 }
@@ -3208,12 +3234,8 @@ function sortAxisCategoriesByValue(axList, gd) {
 
 function setupAxisCategories(axList, fullData, fullLayout) {
     var axLookup = {};
-    var i, ax, axId;
 
-    for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
-        axId = ax._id;
-
+    function setupOne(ax) {
         ax.clearCalc();
         if(ax.type === 'multicategory') {
             ax.setupMultiCategory(fullData);
@@ -3222,13 +3244,14 @@ function setupAxisCategories(axList, fullData, fullLayout) {
         axLookup[ax._id] = 1;
     }
 
+    Lib.simpleMap(axList, setupOne);
+
     // look into match groups for 'missing' axes
     var matchGroups = fullLayout._axisMatchGroups || [];
-    for(i = 0; i < matchGroups.length; i++) {
-        for(axId in matchGroups[i]) {
+    for(var i = 0; i < matchGroups.length; i++) {
+        for(var axId in matchGroups[i]) {
             if(!axLookup[axId]) {
-                ax = fullLayout[axisIDs.id2name(axId)];
-                ax.clearCalc();
+                setupOne(fullLayout[axisIDs.id2name(axId)]);
             }
         }
     }

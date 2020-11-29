@@ -109,7 +109,7 @@ describe('The legend', function() {
 
             expect(getScroll(gd)).toBe(finalDataScroll);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + -finalDataScroll + ')');
+                'translate(0,' + -finalDataScroll + ')');
         });
 
         function dragScroll(element, rightClick, mainClick) {
@@ -158,7 +158,7 @@ describe('The legend', function() {
             var dataScroll = getScroll(gd);
             expect(dataScroll).toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + -dataScroll + ')');
+                'translate(0,' + -dataScroll + ')');
         });
 
         it('should not scroll on dragging the scrollbox with a mouse', function() {
@@ -167,8 +167,7 @@ describe('The legend', function() {
 
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
-            expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + -dataScroll + ')');
+            expect(scrollBox.getAttribute('transform')).toBe('');
         });
 
         it('should handle touch events on scrollbox', function(done) {
@@ -227,8 +226,7 @@ describe('The legend', function() {
 
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
-            expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + -dataScroll + ')');
+            expect(scrollBox.getAttribute('transform')).toBe('');
         });
 
         it('removes scroll bar and handlers when switching to horizontal', function(done) {
@@ -307,7 +305,7 @@ describe('The legend', function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
                 expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + -dataScroll + ')');
+                    'translate(0,' + -dataScroll + ')');
                 done();
             }, DBLCLICKDELAY * 2);
         });
@@ -345,7 +343,7 @@ describe('The legend', function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
                 expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + -dataScroll + ')');
+                    'translate(0,' + -dataScroll + ')');
                 expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
                 expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
                 done();
@@ -357,10 +355,10 @@ describe('The legend', function() {
             var scrollBox = getScrollBox();
 
             legend.dispatchEvent(scrollTo(-100));
-            expect(scrollBox.getAttribute('transform')).toBe('translate(0, 0)');
+            expect(scrollBox.getAttribute('transform')).toBe('');
 
             legend.dispatchEvent(scrollTo(100000));
-            expect(scrollBox.getAttribute('transform')).toBe('translate(0, -179)');
+            expect(scrollBox.getAttribute('transform')).toBe('translate(0,-179)');
         });
 
         it('should scale the scrollbar movement from top to bottom', function() {
@@ -405,7 +403,7 @@ describe('The legend', function() {
                 expect(countLegendClipPaths(gd)).toBe(1);
 
                 // clippath resized to new height less than new plot height
-                expect(+legendHeight).toBe(getPlotHeight(gd));
+                expect(+legendHeight).toBeGreaterThan(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
 
                 done();

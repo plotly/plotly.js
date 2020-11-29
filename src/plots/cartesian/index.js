@@ -335,6 +335,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
         delete oldFullLayout._axisConstraintGroups;
+        delete oldFullLayout._axisMatchGroups;
     } else if(oldSubplotList.cartesian) {
         // otherwise look for subplots we need to remove
 

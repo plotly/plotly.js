@@ -12,6 +12,7 @@ var d3 = require('d3');
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var Drawing = require('../../components/drawing');
 var tinycolor = require('tinycolor2');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -41,7 +42,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update properties for each trace
     traceSelection
         .attr('transform', function(d) {
-            return 'translate(' + d.x + ', ' + d.y + ')';
+            return strTranslate(d.x, d.y);
         });
 
     // Initialize paths group
@@ -122,7 +123,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Update dimension group transforms
     dimensionSelection.attr('transform', function(d) {
-        return 'translate(' + d.x + ', 0)';
+        return strTranslate(d.x, 0);
     });
 
     // Remove any old dimensions
@@ -144,7 +145,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update category transforms
     categorySelection
         .attr('transform', function(d) {
-            return 'translate(0, ' + d.y + ')';
+            return strTranslate(0, d.y);
         });
 
 
@@ -765,7 +766,11 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
  *  HTML element for band
  *
  */
-function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
+function createHoverLabelForCategoryHovermode(gd, rootBBox, bandElement) {
+    gd._fullLayout._calcInverseTransform(gd);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
+
     // Selections
     var rectSelection = d3.select(bandElement.parentNode).select('rect.catrect');
     var rectBoundingBox = rectSelection.node().getBoundingClientRect();
@@ -813,8 +818,8 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
     var hovertext = hoverinfoParts.join('<br>');
     return {
         trace: trace,
-        x: hoverCenterX - rootBBox.left,
-        y: hoverCenterY - rootBBox.top,
+        x: scaleX * (hoverCenterX - rootBBox.left),
+        y: scaleY * (hoverCenterY - rootBBox.top),
         text: hovertext,
         color: 'lightgray',
         borderColor: 'black',
@@ -843,7 +848,7 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
  *  HTML element for band
  *
  */
-function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
+function createHoverLabelForDimensionHovermode(gd, rootBBox, bandElement) {
     var allHoverlabels = [];
 
     d3.select(bandElement.parentNode.parentNode)
@@ -851,7 +856,7 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
         .select('rect.catrect')
         .each(function() {
             var bandNode = this;
-            allHoverlabels.push(createHoverLabelForCategoryHovermode(rootBBox, bandNode));
+            allHoverlabels.push(createHoverLabelForCategoryHovermode(gd, rootBBox, bandNode));
         });
 
     return allHoverlabels;
@@ -866,7 +871,11 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
  *  HTML element for band
  *
  */
-function createHoverLabelForColorHovermode(rootBBox, bandElement) {
+function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
+    gd._fullLayout._calcInverseTransform(gd);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
+
     var bandBoundingBox = bandElement.getBoundingClientRect();
 
     // Models
@@ -944,8 +953,8 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
 
     return {
         trace: trace,
-        x: hoverCenterX - rootBBox.left,
-        y: hoverCenterY - rootBBox.top,
+        x: scaleX * (hoverCenterX - rootBBox.left),
+        y: scaleY * (hoverCenterY - rootBBox.top),
         // name: 'NAME',
         text: hovertext,
         color: bandViewModel.color,
@@ -1008,11 +1017,11 @@ function mouseoverCategoryBand(bandViewModel) {
             if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
                 var hoverItems;
                 if(hoveron === 'category') {
-                    hoverItems = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
+                    hoverItems = createHoverLabelForCategoryHovermode(gd, rootBBox, bandElement);
                 } else if(hoveron === 'color') {
-                    hoverItems = createHoverLabelForColorHovermode(rootBBox, bandElement);
+                    hoverItems = createHoverLabelForColorHovermode(gd, rootBBox, bandElement);
                 } else if(hoveron === 'dimension') {
-                    hoverItems = createHoverLabelForDimensionHovermode(rootBBox, bandElement);
+                    hoverItems = createHoverLabelForDimensionHovermode(gd, rootBBox, bandElement);
                 }
 
                 if(hoverItems) {
@@ -1401,13 +1410,13 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // Update dimension position
     transition(parcatsViewModel.dimensionSelection)
         .attr('transform', function(d) {
-            return 'translate(' + d.x + ', 0)';
+            return strTranslate(d.x, 0);
         });
 
     // Update category position
     transition(categorySelection)
         .attr('transform', function(d) {
-            return 'translate(0, ' + d.y + ')';
+            return strTranslate(0, d.y);
         });
 
     var dimLabelSelection = categorySelection.select('.dimlabel');

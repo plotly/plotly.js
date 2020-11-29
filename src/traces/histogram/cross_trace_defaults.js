@@ -15,7 +15,7 @@ var traceIs = require('../../registry').traceIs;
 var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
 
 var nestedProperty = Lib.nestedProperty;
-var getAxisGroup = axisIds.getAxisGroup;
+var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 
 var BINATTRS = [
     {aStr: {x: 'xbins.start', y: 'ybins.start'}, name: 'start'},
@@ -174,10 +174,9 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         }
 
         var binGroupFound = false;
-        for(i = 0; i < traces.length; i++) {
-            traceOut = traces[i];
+        if(traces.length) {
+            traceOut = traces[0];
             binGroupFound = coerce('bingroup');
-            break;
         }
 
         groupName = binGroupFound || groupName;

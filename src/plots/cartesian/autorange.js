@@ -14,6 +14,8 @@ var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 var Registry = require('../../registry');
 
+var getFromId = require('./axis_ids').getFromId;
+
 module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
@@ -213,7 +215,7 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function concatExtremes(gd, ax) {
+function concatExtremes(gd, ax, noMatch) {
     var axId = ax._id;
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
@@ -242,14 +244,34 @@ function concatExtremes(gd, ax) {
     _concat(fullLayout.annotations || [], ax._annIndices || []);
     _concat(fullLayout.shapes || [], ax._shapeIndices || []);
 
+    // Include the extremes from other matched axes with this one
+    if(ax._matchGroup && !noMatch) {
+        for(var axId2 in ax._matchGroup) {
+            if(axId2 !== ax._id) {
+                var ax2 = getFromId(gd, axId2);
+                var extremes2 = concatExtremes(gd, ax2, true);
+                // convert padding on the second axis to the first with lenRatio
+                var lenRatio = ax._length / ax2._length;
+                for(j = 0; j < extremes2.min.length; j++) {
+                    d = extremes2.min[j];
+                    collapseMinArray(minArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                }
+                for(j = 0; j < extremes2.max.length; j++) {
+                    d = extremes2.max[j];
+                    collapseMaxArray(maxArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                }
+            }
+        }
+    }
+
     return {min: minArray, max: maxArray};
 }
 
-function doAutoRange(gd, ax) {
+function doAutoRange(gd, ax, presetRange) {
     ax.setScale();
 
     if(ax.autorange) {
-        ax.range = getAutoRange(gd, ax);
+        ax.range = presetRange ? presetRange.slice() : getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);

@@ -338,8 +338,8 @@ describe('Test colorbar:', function() {
                 var yAxes = d3.select(gd).selectAll('.parcoords .y-axis');
                 expect(yAxes.size()).toBe(2);
                 var transform = yAxes[0][1].getAttribute('transform');
-                if(expandedMargin) expect(transform).not.toBe('translate(400, 0)');
-                else expect(transform).toBe('translate(400, 0)');
+                if(expandedMargin) expect(transform).not.toBe('translate(400,0)');
+                else expect(transform).toBe('translate(400,0)');
 
                 var cbfills = colorbars.selectAll('.cbfill');
                 expect(cbfills.size()).toBe(present ? 1 : 0);

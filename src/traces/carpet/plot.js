@@ -16,6 +16,8 @@ var makepath = require('./makepath');
 var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
+var strRotate = Lib.strRotate;
+var strTranslate = Lib.strTranslate;
 var alignmentConstants = require('../../constants/alignment');
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
@@ -154,11 +156,11 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
 
         labelEl.attr('transform',
                 // Translate to the correct point:
-                'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
+                strTranslate(orientation.p[0], orientation.p[1]) +
                 // Rotate to line up with grid line tangent:
-                'rotate(' + orientation.angle + ')' +
+                strRotate(orientation.angle) +
                 // Adjust the baseline and indentation:
-                'translate(' + label.axis.labelpadding * direction + ',' + bbox.height * 0.3 + ')'
+                strTranslate(label.axis.labelpadding * direction, bbox.height * 0.3)
             );
 
         maxExtent = Math.max(maxExtent, bbox.width + label.axis.labelpadding);
@@ -235,9 +237,9 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
         }
 
         el.attr('transform',
-                'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
-                'rotate(' + orientation.angle + ') ' +
-                'translate(0,' + offset + ')'
+                strTranslate(orientation.p[0], orientation.p[1]) +
+                strRotate(orientation.angle) +
+                strTranslate(0, offset)
             )
             .attr('text-anchor', 'middle')
             .call(Drawing.font, axis.title.font);

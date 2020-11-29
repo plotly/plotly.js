@@ -92,6 +92,14 @@ module.exports = {
             'or remain *constant* independent of the symbol size on the graph.'
         ].join(' ')
     },
+    itemwidth: {
+        valType: 'number',
+        min: 30,
+        dflt: 30,
+        role: 'style',
+        editType: 'legend',
+        description: 'Sets the width (in px) of the legend item symbols (the part other than the title.text).',
+    },
 
     itemclick: {
         valType: 'enumerated',

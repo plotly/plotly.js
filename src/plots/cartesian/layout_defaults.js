@@ -19,7 +19,7 @@ var basePlotLayoutAttributes = require('../layout_attributes');
 var layoutAttributes = require('./layout_attributes');
 var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
-var handleConstraintDefaults = require('./constraints').handleConstraintDefaults;
+var constraints = require('./constraints');
 var handlePositionDefaults = require('./position_defaults');
 
 var axisIds = require('./axis_ids');
@@ -38,6 +38,8 @@ function appendList(cont, k, item) {
 }
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    var autotypenumbersDflt = layoutOut.autotypenumbers;
+
     var ax2traces = {};
     var xaMayHide = {};
     var yaMayHide = {};
@@ -246,6 +248,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             automargin: true,
             visibleDflt: visibleDflt,
             reverseDflt: reverseDflt,
+            autotypenumbersDflt: autotypenumbersDflt,
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId]
         };
 
@@ -310,6 +313,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             automargin: true,
             visibleDflt: false,
             reverseDflt: false,
+            autotypenumbersDflt: autotypenumbersDflt,
             splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId]
         };
 
@@ -374,96 +378,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // We need to do this after all axes have coerced both `type`
     // (so we link only axes of the same type) and
     // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
-
-    // sets of axes linked by `scaleanchor` along with the scaleratios compounded
-    // together, populated in handleConstraintDefaults
-    var constraintGroups = layoutOut._axisConstraintGroups = [];
-    // similar to _axisConstraintGroups, but for matching axes
-    var matchGroups = layoutOut._axisMatchGroups = [];
-    // make sure to include 'missing' axes here
-    var allAxisIdsIncludingMissing = allAxisIds.concat(missingMatchedAxisIds);
-    var axNamesIncludingMissing = axNames.concat(Lib.simpleMap(missingMatchedAxisIds, id2name));
-
-    for(i = 0; i < axNamesIncludingMissing.length; i++) {
-        axName = axNamesIncludingMissing[i];
-        axLetter = axName.charAt(0);
-        axLayoutIn = layoutIn[axName];
-        axLayoutOut = layoutOut[axName];
-
-        var scaleanchorDflt;
-        if(axLetter === 'y' && !axLayoutIn.hasOwnProperty('scaleanchor') && axHasImage[axName]) {
-            scaleanchorDflt = axLayoutOut.anchor;
-        } else {
-            scaleanchorDflt = undefined;
-        }
-
-        var constrainDflt;
-        if(!axLayoutIn.hasOwnProperty('constrain') && axHasImage[axName]) {
-            constrainDflt = 'domain';
-        } else {
-            constrainDflt = undefined;
-        }
-
-        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, {
-            allAxisIds: allAxisIdsIncludingMissing,
-            layoutOut: layoutOut,
-            scaleanchorDflt: scaleanchorDflt,
-            constrainDflt: constrainDflt
-        });
-    }
-
-    for(i = 0; i < matchGroups.length; i++) {
-        var group = matchGroups[i];
-        var rng = null;
-        var autorange = null;
-
-        // find 'matching' range attrs
-        for(axId in group) {
-            axLayoutOut = layoutOut[id2name(axId)];
-            if(!axLayoutOut.matches) {
-                rng = axLayoutOut.range;
-                autorange = axLayoutOut.autorange;
-            }
-        }
-        // if `ax.matches` values are reciprocal,
-        // pick values of first axis in group
-        if(rng === null || autorange === null) {
-            for(axId in group) {
-                axLayoutOut = layoutOut[id2name(axId)];
-                rng = axLayoutOut.range;
-                autorange = axLayoutOut.autorange;
-                break;
-            }
-        }
-        // apply matching range attrs
-        for(axId in group) {
-            axLayoutOut = layoutOut[id2name(axId)];
-            if(axLayoutOut.matches) {
-                axLayoutOut.range = rng.slice();
-                axLayoutOut.autorange = autorange;
-            }
-            axLayoutOut._matchGroup = group;
-        }
-
-        // remove matching axis from scaleanchor constraint groups (for now)
-        if(constraintGroups.length) {
-            for(axId in group) {
-                for(j = 0; j < constraintGroups.length; j++) {
-                    var group2 = constraintGroups[j];
-                    for(var axId2 in group2) {
-                        if(axId === axId2) {
-                            Lib.warn('Axis ' + axId2 + ' is set with both ' +
-                                'a *scaleanchor* and *matches* constraint; ' +
-                                'ignoring the scale constraint.');
-
-                            delete group2[axId2];
-                            if(Object.keys(group2).length < 2) {
-                                constraintGroups.splice(j, 1);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    constraints.handleDefaults(layoutIn, layoutOut, {
+        axIds: allAxisIds.concat(missingMatchedAxisIds).sort(axisIds.idSort),
+        axHasImage: axHasImage
+    });
 };

@@ -872,7 +872,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     var msgi = n + ' - ' + msg;
                     if(opts.autorange) {
                         expect(eventData[n + '.autorange']).toBe(true, 2, msgi + '|event data');
-                    } else if(!opts.noChange) {
+                    } else if(!opts.noChange && !opts.noEventData) {
                         expect(eventData[n + '.range[0]']).toBeCloseTo(rng[0], TOL, msgi + '|event data [0]');
                         expect(eventData[n + '.range[1]']).toBeCloseTo(rng[1], TOL, msgi + '|event data [1]');
                     }
@@ -970,14 +970,14 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'zoom'
             };
 
-            var xr0 = [-0.245, 3.245];
+            var xr0 = [-0.285, 3.246];
             var yr0 = [-0.211, 3.211];
 
             var specs = [{
                 desc: 'zoombox on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'xy'
@@ -985,7 +985,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'x-only zoombox on xy',
                 drag: ['xy', 'nsew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.494, 2.350]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1003,7 +1003,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 exp: [
                     // N.B. slightly different range result
                     // due difference in ax._length
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.492, 2.062]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.468, 2.049]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1013,7 +1013,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 exp: [
                     // Similarly here slightly different range result
                     // due difference in ax._length
-                    [['xaxis', 'xaxis2', 'xaxis3'], [1.485, 1.974]],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [1.470, 1.974]],
                     [['yaxis'], [1.179, 1.50]]
                 ],
                 dblclickSubplot: 'xy'
@@ -1021,7 +1021,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag ew on x2y',
                 drag: ['x2y', 'ew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.866, 2.665], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1029,7 +1029,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag ew on x3y',
                 drag: ['x3y', 'ew', 30, 0],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.783, 2.748], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1037,7 +1037,8 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag e on xy',
                 drag: ['xy', 'e', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [xr0[0], 1.366], {dragged: true}],
+                    // FIXME On CI we need 1.359 but locally it's 1.317 ??
+                    [['xaxis', 'xaxis2', 'xaxis3'], [xr0[0], 1.359], {dragged: true}],
                     [['yaxis'], yr0, {noChange: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1045,7 +1046,8 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'drag nw on x3y',
                 drag: ['xy', 'nw', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.379, 3.245], {dragged: true}],
+                    // FIXME On CI we need -1.425 but locally it's -1.442 ??
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.425, xr0[1]], {dragged: true}],
                     [['yaxis'], [-0.211, 3.565], {dragged: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1054,7 +1056,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.101, 2.390], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-1.157, 2.374], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'x3y'
@@ -1063,7 +1065,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['x2y', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.816, 2.675], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.866, 2.665], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1072,7 +1074,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 dragmode: 'pan',
                 drag: ['x3y', 'nsew', 30, 30],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.734, 2.756], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.783, 2.748], {dragged: true}],
                     [['yaxis'], [0.109, 3.532], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1080,7 +1082,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on x3y subplot',
                 scroll: ['x3y', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1088,7 +1090,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on x2y subplot',
                 scroll: ['x2y', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'xy'
@@ -1096,7 +1098,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 desc: 'scrolling on xy subplot',
                 scroll: ['xy', 20],
                 exp: [
-                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.613, 3.245], {dragged: true}],
+                    [['xaxis', 'xaxis2', 'xaxis3'], [-0.655, 3.247], {dragged: true}],
                     [['yaxis'], [-0.211, 3.571], {dragged: true}]
                 ],
                 dblclickSubplot: 'x2y'
@@ -1150,14 +1152,14 @@ describe('axis zoom/pan and main plot zoom', function() {
             };
 
             var xr0 = [-0.211, 3.211];
-            var yr0 = [-0.077, 3.163];
+            var yr0 = [-0.234, 3.244];
 
             var specs = [{
                 desc: 'pan on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.706, 3.947], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.607, 4.085], {dragged: true}],
                 ],
                 trans: [-30, -30, -30, -45, -30, -52.5]
             }, {
@@ -1165,7 +1167,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy2', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.327, 3.805], {dragged: true}],
                 ],
                 trans: [-30, -20, -30, -30, -30, -35]
             }, {
@@ -1173,7 +1175,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy3', 'nsew', 30, 30],
                 exp: [
                     [['xaxis'], [-0.534, 2.888], {dragged: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.370, 3.611], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.247, 3.725], {dragged: true}],
                 ],
                 trans: [-30, -17.142, -30, -25.71, -30, -30]
             }, {
@@ -1181,7 +1183,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy2', 'ns', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [0.444, 3.685], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [0.327, 3.805], {dragged: true}],
                 ],
                 trans: [0, -20, 0, -30, 0, -35]
             }, {
@@ -1189,7 +1191,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy3', 'n', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [yr0[0], 3.683], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [yr0[0], 3.802], {dragged: true}],
                 ],
                 trans: [0, -19.893, 0, -29.839, 0, -34.812],
                 scale: [1, 1.160, 1, 1.160, 1, 1.160]
@@ -1198,7 +1200,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 drag: ['xy', 's', 0, 30],
                 exp: [
                     [['xaxis'], xr0, {noChange: true}],
-                    [['yaxis', 'yaxis2', 'yaxis3'], [1.617, yr0[1]], {dragged: true}],
+                    [['yaxis', 'yaxis2', 'yaxis3'], [1.586, yr0[1]], {dragged: true}],
                 ],
                 trans: [0, 0, 0, 0, 0, 0],
                 scale: [1, 0.476, 1, 0.476, 1, 0.476]
@@ -1584,6 +1586,130 @@ describe('axis zoom/pan and main plot zoom', function() {
             .then(_assert('after double-click on x3y3 subplot', [
                 [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179], {autorange: true}],
                 [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896], {autorange: true}]
+            ]))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('matching and constrained subplots play nice together', function(done) {
+            var data = [
+                {x: [0, 3], y: [0, 3]},
+                {x: [0, 3], y: [1, 8], xaxis: 'x2', yaxis: 'y2'}
+            ];
+
+            var layout = {
+                width: 400, height: 350, margin: {l: 50, r: 50, t: 50, b: 50},
+                yaxis: {domain: [0, 0.4], scaleanchor: 'x'},
+                xaxis2: {anchor: 'y2'},
+                yaxis2: {domain: [0.6, 1], matches: 'x2'},
+                showlegend: false
+            };
+            var x2y2, mx, my;
+
+            makePlot(data, layout).then(function() {
+                assertRanges('base', [
+                    [['xaxis'], [-3.955, 6.955]],
+                    [['yaxis'], [-0.318, 3.318]],
+                    [['xaxis2', 'yaxis2'], [-0.588, 8.824]]
+                ]);
+                x2y2 = d3.select('.subplot.x2y2 .plot');
+                expect(x2y2.attr('transform')).toBe('translate(50,50)');
+                mx = gd._fullLayout.xaxis._m;
+                my = gd._fullLayout.yaxis._m;
+            })
+            .then(function() {
+                var drag = makeDragFns('x2y2', 'ns', 30, 30);
+                return drag.start().then(function() {
+                    assertRanges('during drag', [
+                        [['xaxis'], [-3.955, 6.955]],
+                        [['yaxis'], [-0.318, 3.318]],
+                        [['xaxis2', 'yaxis2'], [2.236, 11.648], {skipInput: true}]
+                    ]);
+                    // Check that the data container moves as it should with the axes
+                    expect(x2y2.attr('transform')).toBe('translate(-40,80)scale(1,1)');
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag on x2y2 subplot', [
+                [['xaxis'], [-3.955, 6.955], {noChange: true}],
+                [['yaxis'], [-0.318, 3.318], {noChange: true}],
+                [['xaxis2', 'yaxis2'], [2.236, 11.648], {dragged: true}]
+            ]))
+            .then(function() {
+                // make sure the ranges were correct when xy was redrawn
+                expect(gd._fullLayout.xaxis._m).toBe(mx);
+                expect(gd._fullLayout.yaxis._m).toBe(my);
+            })
+            .then(doDblClick('x2y2', 'ew'))
+            .then(_assert('after double-click on x2', [
+                [['xaxis'], [-3.955, 6.955], {noChange: true}],
+                [['yaxis'], [-0.318, 3.318], {noChange: true}],
+                [['xaxis2'], [-0.588, 8.824], {autorange: true}],
+                [['yaxis2'], [-0.588, 8.824], {noEventData: true}]
+            ]))
+            .then(function() {
+                expect(gd._fullLayout.xaxis._m).toBe(mx);
+                expect(gd._fullLayout.yaxis._m).toBe(my);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('handles matching & scaleanchor chained together', function(done) {
+            var data = [
+                {y: [1, 2]},
+                {y: [0, 1], xaxis: 'x2', yaxis: 'y2'}
+            ];
+
+            var layout = {
+                width: 350,
+                height: 300,
+                margin: {l: 50, r: 50, t: 50, b: 50},
+                showlegend: false,
+                xaxis: {domain: [0, 0.4]},
+                yaxis: {domain: [0, 0.5], matches: 'x'},
+                xaxis2: {domain: [0.6, 1], scaleanchor: 'x', anchor: 'y2'},
+                yaxis2: {domain: [0.5, 1], matches: 'x2', anchor: 'x2'}
+            };
+
+            makePlot(data, layout).then(function() {
+                assertRanges('base', [
+                    [['xaxis', 'yaxis'], [-0.212, 2.212]],
+                    [['xaxis2', 'yaxis2'], [-0.712, 1.712]]
+                ]);
+            })
+            .then(function() {
+                var drag = makeDragFns('xy', 'sw', 30, -30);
+                return drag.start().then(function() {
+                    assertRanges('during drag sw', [
+                        [['xaxis', 'yaxis'], [-1.251, 2.212], {skipInput: true}],
+                        [['xaxis2', 'yaxis2'], [-1.232, 2.232], {skipInput: true}]
+                    ]);
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag sw on xy subplot', [
+                [['xaxis', 'yaxis'], [-1.251, 2.212], {dragged: true}],
+                [['xaxis2', 'yaxis2'], [-1.232, 2.232], {dragged: true}]
+            ]))
+            .then(doDblClick('x2y2', 'nsew'))
+            .then(_assert('after double-click on x2', [
+                [['xaxis', 'yaxis'], [-0.212, 2.212], {autorange: true}],
+                [['xaxis2', 'yaxis2'], [-0.712, 1.712], {autorange: true}]
+            ]))
+            .then(function() {
+                var drag = makeDragFns('xy', 'nw', 30, 30);
+                return drag.start().then(function() {
+                    assertRanges('during drag nw', [
+                        [['xaxis', 'yaxis'], [-0.732, 2.732], {skipInput: true}],
+                        [['xaxis2', 'yaxis2'], [-1.232, 2.232], {skipInput: true}]
+                    ]);
+                })
+                .then(drag.end);
+            })
+            .then(_assert('after drag nw on xy subplot', [
+                [['xaxis', 'yaxis'], [-0.732, 2.732], {dragged: true}],
+                [['xaxis2', 'yaxis2'], [-1.232, 2.232], {dragged: true}]
             ]))
             .catch(failTest)
             .then(done);
@@ -2242,5 +2368,203 @@ describe('Event data:', function() {
         })
         .catch(fail)
         .then(done);
+    });
+});
+
+describe('Cartesian plots with css transforms', function() {
+    var gd;
+    var eventRecordings = {};
+
+    beforeEach(function() {
+        eventRecordings = {};
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _getLocalPos(element, point) {
+        var bb = element.getBoundingClientRect();
+        return [
+            bb.left + point[0],
+            bb.top + point[1]
+        ];
+    }
+
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function _drag(start, end) {
+        var localStart = _getLocalPos(gd, start);
+        var localEnd = _getLocalPos(gd, end);
+        Lib.clearThrottle();
+        mouseEvent('mousemove', localStart[0], localStart[1]);
+        mouseEvent('mousedown', localStart[0], localStart[1]);
+        mouseEvent('mousemove', localEnd[0], localEnd[1]);
+    }
+
+    function _dragRelease(start, end) {
+        var localEnd = _getLocalPos(gd, end);
+        _drag(start, end);
+        mouseEvent('mouseup', localEnd[0], localEnd[1]);
+    }
+
+    function _hover(pos) {
+        return new Promise(function(resolve, reject) {
+            var localPos = _getLocalPos(gd, pos);
+            gd.once('plotly_hover', function(d) {
+                Lib.clearThrottle();
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', localPos[0], localPos[1]);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    function _unhover(pos) {
+        var localPos = _getLocalPos(gd, pos);
+        mouseEvent('mouseout', localPos[0], localPos[1]);
+    }
+
+    var points = [[50, 180], [150, 180], [250, 180]];
+    var xLabels = ['one', 'two', 'three'];
+    var mock = {
+        data: [{
+            x: xLabels,
+            y: [1, 2, 3],
+            type: 'bar'
+        }],
+        layout: {
+            width: 600,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        }
+    };
+
+    [{
+        transform: 'scaleX(0.5)',
+        hovered: 1,
+        selected: {numPoints: 1, selectedLabels: ['two']}
+    }, {
+        transform: 'scale(0.5)',
+        hovered: 1,
+        selected: {numPoints: 2, selectedLabels: ['one', 'two']}
+    }, {
+        transform: 'scale(0.25) translate(150px, 25%) scaleY(2)',
+        hovered: 1,
+        selected: {numPoints: 3, selectedLabels: ['one', 'two', 'three']}
+    }].forEach(function(t) {
+        var transform = t.transform;
+
+        it('hover behaves correctly after css transform: ' + transform, function(done) {
+            function _hoverAndAssertEventOccurred(point, label) {
+                return _hover(point)
+                .then(function() {
+                    expect(eventRecordings[label]).toBe(t.hovered);
+                })
+                .then(function() {
+                    _unhover(point);
+                });
+            }
+
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+
+                gd.on('plotly_hover', function(d) {
+                    eventRecordings[d.points[0].x] = 1;
+                });
+            })
+            .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
+            .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
+            // return a rect of form {left, top, width, height} from the zoomlayer
+            // svg path.
+            function _getZoomlayerPathRect(pathStr) {
+                var rect = {};
+                rect.height = Number(pathStr.split('v')[1].split('h')[0]);
+                rect.width = Number(pathStr.split('h')[1].split('v')[0]);
+                var startCoordsString = pathStr.split('M')[2].split('v')[0];
+                rect.left = Number(startCoordsString.split(',')[0]);
+                rect.top = Number(startCoordsString.split(',')[1]);
+                return rect;
+            }
+
+            // asserts that the zoombox path must go from the start to end positions,
+            // in css-transformed coordinates.
+            function _assertTransformedZoombox(startPos, endPos) {
+                startPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(startPos[0], startPos[1]);
+                endPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(endPos[0], endPos[1]);
+                var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
+                var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
+                expect(zoomboxRect.left).toBeCloseTo(startPos[0], -1);
+                expect(zoomboxRect.top).toBeCloseTo(startPos[1]);
+                expect(zoomboxRect.width).toBeCloseTo(size[0]);
+                expect(zoomboxRect.height).toBeCloseTo(size[1]);
+            }
+
+            var start = [50, 50];
+            var end = [150, 150];
+
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+
+                _drag(start, end);
+            })
+            .then(function() {
+                _assertTransformedZoombox(start, end);
+            })
+            .then(function() { mouseEvent('mouseup', 0, 0); })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('select behaves correctly after css transform: ' + transform, function(done) {
+            function _assertSelected(expectation) {
+                var data = gd._fullData[0];
+                var points = data.selectedpoints;
+                expect(typeof(points) !== 'undefined').toBeTrue();
+                if(expectation.numPoints) {
+                    expect(points.length).toBe(expectation.numPoints);
+                }
+                if(expectation.selectedLabels) {
+                    var selectedLabels = points.map(function(i) { return data.x[i]; });
+                    expect(selectedLabels).toEqual(expectation.selectedLabels);
+                }
+            }
+
+            var start = [10, 10];
+            var end = [200, 200];
+
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+            .then(function() {
+                transformPlot(gd, transform);
+
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() {
+                _dragRelease(start, end);
+            })
+            .then(function() {
+                _assertSelected(t.selected);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });

@@ -102,6 +102,19 @@ module.exports = {
             'the axis in question.'
         ].join(' ')
     },
+    autotypenumbers: {
+        valType: 'enumerated',
+        values: ['convert types', 'strict'],
+        dflt: 'convert types',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Using *strict* a numeric string in trace data is not converted to a number.',
+            'Using *convert types* a numeric string in trace data may be',
+            'treated as a number during automatic axis `type` detection.',
+            'Defaults to layout.autotypenumbers.'
+        ].join(' ')
+    },
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
@@ -210,13 +223,13 @@ module.exports = {
     constrain: {
         valType: 'enumerated',
         values: ['range', 'domain'],
-        dflt: 'range',
         role: 'info',
         editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
             '`scaleratio` or those of the other axis), determines how that happens:',
-            'by increasing the *range* (default), or by decreasing the *domain*.'
+            'by increasing the *range*, or by decreasing the *domain*.',
+            'Default is *domain* for axes containing image traces, *range* otherwise.'
         ].join(' ')
     },
     // constraintoward: not used directly, just put here for reference

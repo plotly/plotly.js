@@ -2055,7 +2055,7 @@ function _relayout(gd, aobj) {
     // we're editing the (auto)range of, so we can tell the others constrained
     // to scale with them that it's OK for them to shrink
     var rangesAltered = {};
-    var axId;
+    var axId, ax;
 
     function recordAlteredAxis(pleafPlus) {
         var axId = Axes.name2id(pleafPlus.split('.')[0]);
@@ -2145,7 +2145,7 @@ function _relayout(gd, aobj) {
         // previously we did this for log <-> not-log, but now only do it
         // for log <-> linear
         if(pleaf === 'type') {
-            var ax = parentIn;
+            ax = parentIn;
             var toLog = parentFull.type === 'linear' && vi === 'log';
             var fromLog = parentFull.type === 'log' && vi === 'linear';
 
@@ -2283,21 +2283,19 @@ function _relayout(gd, aobj) {
     }
 
     // figure out if we need to recalculate axis constraints
-    var constraints = fullLayout._axisConstraintGroups || [];
     for(axId in rangesAltered) {
-        for(i = 0; i < constraints.length; i++) {
-            var group = constraints[i];
-            if(group[axId]) {
-                // Always recalc if we're changing constrained ranges.
-                // Otherwise it's possible to violate the constraints by
-                // specifying arbitrary ranges for all axes in the group.
-                // this way some ranges may expand beyond what's specified,
-                // as they do at first draw, to satisfy the constraints.
-                flags.calc = true;
-                for(var groupAxId in group) {
-                    if(!rangesAltered[groupAxId]) {
-                        Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
-                    }
+        ax = Axes.getFromId(gd, axId);
+        var group = ax && ax._constraintGroup;
+        if(group) {
+            // Always recalc if we're changing constrained ranges.
+            // Otherwise it's possible to violate the constraints by
+            // specifying arbitrary ranges for all axes in the group.
+            // this way some ranges may expand beyond what's specified,
+            // as they do at first draw, to satisfy the constraints.
+            flags.calc = true;
+            for(var groupAxId in group) {
+                if(!rangesAltered[groupAxId]) {
+                    Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
                 }
             }
         }
@@ -3708,12 +3706,28 @@ function purge(gd) {
     return gd;
 }
 
+// determines if the graph div requires a recalculation of its inverse matrix transforms by comparing old + new bounding boxes.
+function calcInverseTransform(gd) {
+    var fullLayout = gd._fullLayout;
+
+    var newBBox = gd.getBoundingClientRect();
+    if(Lib.equalDomRects(newBBox, fullLayout._lastBBox)) return;
+
+    var m = fullLayout._invTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    fullLayout._invScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+    fullLayout._invScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
+    fullLayout._lastBBox = newBBox;
+}
+
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd);
     var fullLayout = gd._fullLayout;
+
+    fullLayout._calcInverseTransform = calcInverseTransform;
+    fullLayout._calcInverseTransform(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

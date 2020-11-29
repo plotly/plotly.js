@@ -23,4 +23,5 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
         ax.l2r(center + (rangeLinear[0] - center) * factor),
         ax.l2r(center + (rangeLinear[1] - center) * factor)
     ];
+    ax.setScale();
 };

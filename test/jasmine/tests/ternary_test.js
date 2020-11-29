@@ -559,6 +559,177 @@ describe('ternary plots', function() {
     }
 });
 
+describe('ternary plots when css transform is present', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    var mock = require('@mocks/ternary_simple.json');
+    var gd;
+
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    var cssTransform = 'translate(-25%, -25%) scale(0.5)';
+    var scale = 0.5;
+    var pointPos = [scale * 391, scale * 219];
+    var blankPos = [scale * 200, scale * 200];
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() { transformPlot(gd, cssTransform); })
+            .then(done);
+    });
+
+    it('should respond zoom drag interactions', function(done) {
+        function assertRange(gd, expected) {
+            var ternary = gd._fullLayout.ternary;
+            var actual = [
+                ternary.aaxis.min,
+                ternary.baxis.min,
+                ternary.caxis.min
+            ];
+            expect(actual).toBeCloseToArray(expected);
+        }
+
+        assertRange(gd, [0.231, 0.2, 0.11]);
+
+        drag({path: [[scale * 383, scale * 213], [scale * 293, scale * 243]]})
+        .then(function() { assertRange(gd, [0.4486, 0.2480, 0.1453]); })
+        .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
+        .then(function() { assertRange(gd, [0, 0, 0]); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should display to hover labels', function(done) {
+        mouseEvent('mousemove', blankPos[0], blankPos[1]);
+        assertHoverLabelContent([null, null], 'only on data points');
+
+        function check(content, style, msg) {
+            Lib.clearThrottle();
+            mouseEvent('mousemove', pointPos[0], pointPos[1]);
+
+            assertHoverLabelContent({nums: content}, msg);
+            assertHoverLabelStyle(d3.select('g.hovertext'), style, msg);
+        }
+
+        check([
+            'Component A: 0.5',
+            'B: 0.25',
+            'Component C: 0.25'
+        ].join('\n'), {
+            bgcolor: 'rgb(31, 119, 180)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontColor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial'
+        }, 'one label per data pt');
+
+        Plotly.restyle(gd, {
+            'hoverlabel.bordercolor': 'blue',
+            'hoverlabel.font.family': [['Gravitas', 'Arial', 'Roboto']]
+        })
+        .then(function() {
+            check([
+                'Component A: 0.5',
+                'B: 0.25',
+                'Component C: 0.25'
+            ].join('\n'), {
+                bgcolor: 'rgb(31, 119, 180)',
+                bordercolor: 'rgb(0, 0, 255)',
+                fontColor: 'rgb(0, 0, 255)',
+                fontSize: 13,
+                fontFamily: 'Gravitas'
+            }, 'after hoverlabel styling restyle call');
+
+            return Plotly.restyle(gd, 'hoverinfo', [['a', 'b+c', 'b']]);
+        })
+        .then(function() {
+            check('Component A: 0.5', {
+                bgcolor: 'rgb(31, 119, 180)',
+                bordercolor: 'rgb(0, 0, 255)',
+                fontColor: 'rgb(0, 0, 255)',
+                fontSize: 13,
+                fontFamily: 'Gravitas'
+            }, 'after hoverlabel styling restyle call');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should respond to hover interactions by', function() {
+        var hoverCnt = 0;
+        var unhoverCnt = 0;
+
+        var hoverData, unhoverData;
+
+        gd.on('plotly_hover', function(eventData) {
+            hoverCnt++;
+            hoverData = eventData.points[0];
+        });
+
+        gd.on('plotly_unhover', function(eventData) {
+            unhoverCnt++;
+            unhoverData = eventData.points[0];
+        });
+
+        mouseEvent('mousemove', blankPos[0], blankPos[1]);
+        expect(hoverData).toBe(undefined, 'not firing on blank points');
+        expect(unhoverData).toBe(undefined, 'not firing on blank points');
+
+        mouseEvent('mousemove', pointPos[0], pointPos[1]);
+        expect(hoverData).not.toBe(undefined, 'firing on data points');
+        expect(Object.keys(hoverData)).toEqual([
+            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            'xaxis', 'yaxis', 'a', 'b', 'c'
+        ], 'returning the correct event data keys');
+        expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
+        expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
+
+        mouseEvent('mouseout', pointPos[0], pointPos[1]);
+        expect(unhoverData).not.toBe(undefined, 'firing on data points');
+        expect(Object.keys(unhoverData)).toEqual([
+            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            'xaxis', 'yaxis', 'a', 'b', 'c'
+        ], 'returning the correct event data keys');
+        expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
+        expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
+
+        expect(hoverCnt).toEqual(1);
+        expect(unhoverCnt).toEqual(1);
+    });
+
+    it('should respond to click interactions by', function() {
+        var ptData;
+
+        gd.on('plotly_click', function(eventData) {
+            ptData = eventData.points[0];
+        });
+
+        click(blankPos[0], blankPos[1]);
+        expect(ptData).toBe(undefined, 'not firing on blank points');
+
+        click(pointPos[0], pointPos[1]);
+        expect(ptData).not.toBe(undefined, 'firing on data points');
+        expect(Object.keys(ptData)).toEqual([
+            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            'xaxis', 'yaxis', 'a', 'b', 'c'
+        ], 'returning the correct event data keys');
+        expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
+        expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
+    });
+});
+
 describe('ternary defaults', function() {
     'use strict';
 

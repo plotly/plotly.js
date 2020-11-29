@@ -14,6 +14,7 @@ var Plots = require('../../plots/plots');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Titles = require('../../components/titles');
 var Color = require('../../components/color');
@@ -216,7 +217,9 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
     // setup the data-to-calc method.
     if(Array.isArray(d2cTarget)) {
         ax = {
-            type: autoType(targetArray),
+            type: autoType(targetArray, undefined, {
+                autotypenumbers: gd._fullLayout.autotypenumbers
+            }),
             _categories: []
         };
         axes.setConvert(ax);
@@ -2468,17 +2471,31 @@ axes.makeTransFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
     return axLetter === 'x' ?
-        function(d) { return 'translate(' + (offset + ax.l2p(d.x)) + ',0)'; } :
-        function(d) { return 'translate(0,' + (offset + ax.l2p(d.x)) + ')'; };
+        function(d) { return strTranslate(offset + ax.l2p(d.x), 0); } :
+        function(d) { return strTranslate(0, offset + ax.l2p(d.x)); };
 };
 
 axes.makeTransPeriodFn = function(ax) {
     var axLetter = ax._id.charAt(0);
     var offset = ax._offset;
     return axLetter === 'x' ?
-        function(d) { return 'translate(' + (offset + ax.l2p(d.periodX !== undefined ? d.periodX : d.x)) + ',0)'; } :
-        function(d) { return 'translate(0,' + (offset + ax.l2p(d.periodX !== undefined ? d.periodX : d.x)) + ')'; };
+        function(d) {
+            return strTranslate(
+                offset + ax.l2p(getPeriodX(d)),
+                0
+            );
+        } :
+        function(d) {
+            return strTranslate(
+                0,
+                offset + ax.l2p(getPeriodX(d))
+            );
+        };
 };
+
+function getPeriodX(d) {
+    return d.periodX !== undefined ? d.periodX : d.x;
+}
 
 /**
  * Make axis tick path string
@@ -2854,7 +2871,7 @@ axes.drawLabels = function(gd, ax, opts) {
             var anchorHeight = labelFns.heightFn(d, isNumeric(angle) ? +angle : 0, (nLines - 1) * lineHeight);
 
             if(anchorHeight) {
-                transform += ' translate(0, ' + anchorHeight + ')';
+                transform += strTranslate(0, anchorHeight);
             }
 
             if(mathjaxGroup.empty()) {
@@ -2865,7 +2882,7 @@ axes.drawLabels = function(gd, ax, opts) {
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
                 var mjShift = mjWidth * {end: -0.5, start: 0.5}[anchor];
-                mathjaxGroup.attr('transform', transform + (mjShift ? 'translate(' + mjShift + ',0)' : ''));
+                mathjaxGroup.attr('transform', transform + strTranslate(mjShift, 0));
             }
         });
     }

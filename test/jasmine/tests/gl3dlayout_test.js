@@ -26,7 +26,9 @@ describe('Test gl3d axes defaults', function() {
         };
 
         beforeEach(function() {
-            layoutOut = {};
+            layoutOut = {
+                autotypenumbers: 'convert types'
+            };
         });
 
         it('should define specific default set with empty initial layout', function() {
@@ -128,6 +130,7 @@ describe('Test Gl3d layout defaults', function() {
 
         beforeEach(function() {
             layoutOut = {
+                autotypenumbers: 'convert types',
                 _basePlotModules: ['gl3d'],
                 _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'},
                 _subplots: {gl3d: ['scene']}
@@ -379,6 +382,157 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.yaxis.gridcolor).toEqual('blue');
             expect(layoutOut.scene.zaxis.gridcolor)
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+        });
+
+        it('should disable converting numeric strings using axis.autotypenumbers', function() {
+            supplyLayoutDefaults({
+                scene: {
+                    xaxis: { autotypenumbers: 'strict' },
+                    yaxis: {},
+                    zaxis: { autotypenumbers: 'strict' }
+                }
+            }, layoutOut, [{
+                type: 'scatter3d',
+                x: ['1970', '2000', '0', '1'],
+                y: ['1970', '2000', '0', '1'],
+                z: ['1970', '2000', '0', '1'],
+                scene: 'scene'
+            }]);
+
+            var xaxis = layoutOut.scene.xaxis;
+            var yaxis = layoutOut.scene.yaxis;
+            var zaxis = layoutOut.scene.zaxis;
+            expect(xaxis.autotypenumbers).toBe('strict');
+            expect(yaxis.autotypenumbers).toBe('convert types');
+            expect(zaxis.autotypenumbers).toBe('strict');
+            expect(xaxis.type).toBe('category');
+            expect(yaxis.type).toBe('linear');
+            expect(zaxis.type).toBe('category');
+        });
+
+        it('should enable converting numeric strings using axis.autotypenumbers and inherit defaults from layout.autotypenumbers', function() {
+            layoutOut.autotypenumbers = 'strict';
+
+            supplyLayoutDefaults({
+                scene: {
+                    xaxis: { autotypenumbers: 'convert types' },
+                    yaxis: {},
+                    zaxis: { autotypenumbers: 'convert types' }
+                }
+            }, layoutOut, [{
+                type: 'scatter3d',
+                x: ['1970', '2000', '0', '1'],
+                y: ['1970', '2000', '0', '1'],
+                z: ['1970', '2000', '0', '1'],
+                scene: 'scene'
+            }]);
+
+            var xaxis = layoutOut.scene.xaxis;
+            var yaxis = layoutOut.scene.yaxis;
+            var zaxis = layoutOut.scene.zaxis;
+            expect(xaxis.autotypenumbers).toBe('convert types');
+            expect(yaxis.autotypenumbers).toBe('strict');
+            expect(zaxis.autotypenumbers).toBe('convert types');
+            expect(xaxis.type).toBe('linear');
+            expect(yaxis.type).toBe('category');
+            expect(zaxis.type).toBe('linear');
+        });
+
+        ['convert types', 'strict'].forEach(function(autotypenumbers) {
+            it('with autotypenumbers: *' + autotypenumbers + '* should autotype *linear* case of 2d array', function() {
+                var typedArray = new Float32Array(2);
+                typedArray[0] = 0;
+                typedArray[1] = 1;
+
+                supplyLayoutDefaults({
+                    scene: {
+                        xaxis: { autotypenumbers: autotypenumbers },
+                        yaxis: { autotypenumbers: autotypenumbers },
+                        zaxis: { autotypenumbers: autotypenumbers }
+                    }
+                }, layoutOut, [{
+                    scene: 'scene',
+                    type: 'surface',
+                    x: [0, 1],
+                    y: typedArray,
+                    z: [
+                        typedArray,
+                        [1, 0]
+                    ]
+                }]);
+
+                var xaxis = layoutOut.scene.xaxis;
+                var yaxis = layoutOut.scene.yaxis;
+                var zaxis = layoutOut.scene.zaxis;
+                expect(xaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(yaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(zaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(xaxis.type).toBe('linear');
+                expect(yaxis.type).toBe('linear');
+                expect(zaxis.type).toBe('linear');
+            });
+        });
+
+        ['convert types', 'strict'].forEach(function(autotypenumbers) {
+            it('with autotypenumbers: *' + autotypenumbers + '* should autotype *category* case of 2d array', function() {
+                supplyLayoutDefaults({
+                    scene: {
+                        xaxis: { autotypenumbers: autotypenumbers },
+                        yaxis: { autotypenumbers: autotypenumbers },
+                        zaxis: { autotypenumbers: autotypenumbers }
+                    }
+                }, layoutOut, [{
+                    scene: 'scene',
+                    type: 'surface',
+                    x: ['A', 'B'],
+                    y: ['C', 'D'],
+                    z: [
+                        ['E', 'F'],
+                        ['F', 'E']
+                    ]
+                }]);
+
+                var xaxis = layoutOut.scene.xaxis;
+                var yaxis = layoutOut.scene.yaxis;
+                var zaxis = layoutOut.scene.zaxis;
+                expect(xaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(yaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(zaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(xaxis.type).toBe('category');
+                expect(yaxis.type).toBe('category');
+                expect(zaxis.type).toBe('category');
+            });
+        });
+
+        ['convert types', 'strict'].forEach(function(autotypenumbers) {
+            it('with autotypenumbers: *' + autotypenumbers + '* should autotype *date* case of 2d array', function() {
+                supplyLayoutDefaults({
+                    scene: {
+                        xaxis: { autotypenumbers: autotypenumbers },
+                        yaxis: { autotypenumbers: autotypenumbers },
+                        zaxis: { autotypenumbers: autotypenumbers }
+                    }
+                }, layoutOut, [{
+                    scene: 'scene',
+                    type: 'surface',
+                    x: ['00-01', '00-02'],
+                    y: ['00-01', '00-02'],
+                    z: [
+                        ['00-01', '00-02'],
+                        ['00-02', '00-01']
+                    ]
+                }]);
+
+                var xaxis = layoutOut.scene.xaxis;
+                var yaxis = layoutOut.scene.yaxis;
+                var zaxis = layoutOut.scene.zaxis;
+                expect(xaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(yaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(zaxis.autotypenumbers).toBe(autotypenumbers);
+                expect(xaxis.type).toBe('date');
+                expect(yaxis.type).toBe('date');
+                expect(zaxis.type).toBe('date');
+            });
         });
     });
 });

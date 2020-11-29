@@ -15,7 +15,7 @@ var Registry = require('../../registry');
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleStyleDefaults = require('./style_defaults');
-var getAxisGroup = require('../../plots/cartesian/axis_ids').getAxisGroup;
+var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var attributes = require('./attributes');
 
 var coerceFont = Lib.coerceFont;

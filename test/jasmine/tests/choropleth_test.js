@@ -156,8 +156,17 @@ describe('Test choropleth hover:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function run(pos, fig, content, style) {
+    function transformPlot(gd, transformString) {
+        gd.style.webkitTransform = transformString;
+        gd.style.MozTransform = transformString;
+        gd.style.msTransform = transformString;
+        gd.style.OTransform = transformString;
+        gd.style.transform = transformString;
+    }
+
+    function run(hasCssTransform, pos, fig, content, style) {
         gd = createGraphDiv();
+        var scale = 1;
 
         style = style || {
             bgcolor: 'rgb(68, 68, 68)',
@@ -167,8 +176,14 @@ describe('Test choropleth hover:', function() {
             fontFamily: 'Arial'
         };
 
-        return Plotly.plot(gd, fig).then(function() {
-            mouseEvent('mousemove', pos[0], pos[1]);
+        return Plotly.plot(gd, fig)
+        .then(function() {
+            if(hasCssTransform) {
+                scale = 0.5;
+                transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
+            }
+
+            mouseEvent('mousemove', scale * pos[0], scale * pos[1]);
             assertHoverLabelContent({
                 nums: content[0],
                 name: content[1]
@@ -180,102 +195,123 @@ describe('Test choropleth hover:', function() {
         });
     }
 
-    it('should generate hover label info (base)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover label info (base), hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
 
-        run(
-            [400, 160],
-            fig,
-            ['RUS\n10', 'trace 1']
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['RUS\n10', 'trace 1']
+            )
+            .then(done);
+        });
     });
 
-    it('should use the hovertemplate', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
+    [false, true].forEach(function(hasCssTransform) {
+        it('should use the hovertemplate, hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
 
-        run(
-            [400, 160],
-            fig,
-            ['tpl 10', 'x']
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['tpl 10', 'x']
+            )
+            .then(done);
+        });
     });
 
-    it('should generate hover label info (\'text\' single value case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].text = 'tExT';
-        fig.data[1].hoverinfo = 'text';
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover label info (\'text\' single value case), hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].text = 'tExT';
+            fig.data[1].hoverinfo = 'text';
 
-        run(
-            [400, 160],
-            fig,
-            ['tExT', null]
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['tExT', null]
+            )
+            .then(done);
+        });
     });
 
-    it('should generate hover label info (\'text\' array case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].text = ['tExT', 'TeXt', '-text-'];
-        fig.data[1].hoverinfo = 'text';
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover label info (\'text\' array case), hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].text = ['tExT', 'TeXt', '-text-'];
+            fig.data[1].hoverinfo = 'text';
 
-        run(
-            [400, 160],
-            fig,
-            ['-text-', null]
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['-text-', null]
+            )
+            .then(done);
+        });
     });
 
-    it('should generate hover labels from `hovertext`', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].hovertext = ['tExT', 'TeXt', '-text-'];
-        fig.data[1].text = ['N', 'O', 'P'];
-        fig.data[1].hoverinfo = 'text';
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover labels from `hovertext`, hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].hovertext = ['tExT', 'TeXt', '-text-'];
+            fig.data[1].text = ['N', 'O', 'P'];
+            fig.data[1].hoverinfo = 'text';
 
-        run(
-            [400, 160],
-            fig,
-            ['-text-', null]
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['-text-', null]
+            )
+            .then(done);
+        });
     });
 
-    it('should generate hover label with custom styling', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].hoverlabel = {
-            bgcolor: 'red',
-            bordercolor: ['blue', 'black', 'green'],
-            font: {family: 'Roboto'}
-        };
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover label with custom styling, hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].hoverlabel = {
+                bgcolor: 'red',
+                bordercolor: ['blue', 'black', 'green'],
+                font: {family: 'Roboto'}
+            };
 
-        run(
-            [400, 160],
-            fig,
-            ['RUS\n10', 'trace 1'],
-            {
-                bgcolor: 'rgb(255, 0, 0)',
-                bordercolor: 'rgb(0, 128, 0)',
-                fontColor: 'rgb(0, 128, 0)',
-                fontSize: 13,
-                fontFamily: 'Roboto'
-            }
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['RUS\n10', 'trace 1'],
+                {
+                    bgcolor: 'rgb(255, 0, 0)',
+                    bordercolor: 'rgb(0, 128, 0)',
+                    fontColor: 'rgb(0, 128, 0)',
+                    fontSize: 13,
+                    fontFamily: 'Roboto'
+                }
+            )
+            .then(done);
+        });
     });
 
-    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
-        fig.data[1].hoverinfo = ['location', 'z', 'location+name'];
+    [false, true].forEach(function(hasCssTransform) {
+        it('should generate hover label with arrayOk \'hoverinfo\' settings, hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            fig.data[1].hoverinfo = ['location', 'z', 'location+name'];
 
-        run(
-            [400, 160],
-            fig,
-            ['RUS', 'trace 1']
-        )
-        .then(done);
+            run(
+                hasCssTransform,
+                [400, 160],
+                fig,
+                ['RUS', 'trace 1']
+            )
+            .then(done);
+        });
     });
 
     describe('should preserve z formatting hovetemplate equivalence', function() {
@@ -292,24 +328,30 @@ describe('Test choropleth hover:', function() {
         var pos = [400, 160];
         var exp = ['10.02132', 'RUS'];
 
-        it('- base case (truncate z decimals)', function(done) {
-            run(pos, base(), exp).then(done);
+        [false, true].forEach(function(hasCssTransform) {
+            it('- base case (truncate z decimals), hasCssTransform: ' + hasCssTransform, function(done) {
+                run(hasCssTransform, pos, base(), exp).then(done);
+            });
         });
 
-        it('- hovertemplate case (same z truncation)', function(done) {
-            var fig = base();
-            fig.hovertemplate = '%{z}<extra>%{location}</extra>';
-            run(pos, fig, exp).then(done);
+        [false, true].forEach(function(hasCssTransform) {
+            it('- hovertemplate case (same z truncation), hasCssTransform: ' + hasCssTransform, function(done) {
+                var fig = base();
+                fig.hovertemplate = '%{z}<extra>%{location}</extra>';
+                run(hasCssTransform, pos, fig, exp).then(done);
+            });
         });
     });
 
-    it('should include *properties* from input custom geojson', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
-        fig.data = [fig.data[1]];
-        fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
-        fig.layout.geo.projection = {scale: 20};
+    [false, true].forEach(function(hasCssTransform) {
+        it('should include *properties* from input custom geojson, hasCssTransform: ' + hasCssTransform, function(done) {
+            var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
+            fig.data = [fig.data[1]];
+            fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
+            fig.layout.geo.projection = {scale: 20};
 
-        run([300, 200], fig, ['New York', '-75.1 | 42.6']).then(done);
+            run(hasCssTransform, [300, 200], fig, ['New York', '-75.1 | 42.6']).then(done);
+        });
     });
 });
 
