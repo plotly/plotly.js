@@ -48,9 +48,6 @@ if(argv.info) {
         'Run all tests with the `noCI` tag on Firefox in a 1500px wide window:',
         '  $ npm run test-jasmine -- --tags=noCI --FF --width=1500',
         '',
-        'Run the `ie9_test.js` bundle test with the verbose reporter:',
-        '  $ npm run test-jasmine -- --bundleTest=ie9 --verbose',
-        '',
         'Arguments:',
         '  - All non-flagged arguments corresponds to the test suites in `test/jasmine/tests/` to be run.',
         '    No need to add the `_test.js` suffix, we expand them correctly here.',
@@ -122,7 +119,6 @@ if(isFullSuite) {
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
 var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
-var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
@@ -321,13 +317,6 @@ if(isBundleTest) {
             break;
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-            break;
-        case 'ie9':
-            // load ie9_mock.js before plotly.js+test bundle
-            // to catch reference errors that could occur
-            // when plotly.js is first loaded.
-            func.defaultConfig.files.push(pathToIE9mock);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'plotschema':
