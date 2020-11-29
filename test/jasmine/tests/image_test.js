@@ -667,5 +667,30 @@ describe('image hover:', function() {
                 .then(done);
             });
         });
+
+        [
+            ['auto', 'auto'],
+            ['auto', 'reversed'],
+            ['reversed', 'auto'],
+            ['reversed', 'reversed']
+        ].forEach(function(test) {
+            it('should show correct hover info regardless of axis directions ' + test, function(done) {
+                var mockCopy = Lib.extendDeep({}, mock);
+                mockCopy.layout.xaxis.autorange = test[0];
+                mockCopy.layout.yaxis.autorange = test[1];
+                mockCopy.data[0].colormodel = 'rgba';
+                mockCopy.data[0].hovertemplate = '%{color}<extra></extra>';
+                Plotly.newPlot(gd, mockCopy)
+                .then(function() {_hover(205, 125);})
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: '[202, 148, 125, 255]',
+                        name: ''
+                    }, 'variable `z` should be correct!');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });
