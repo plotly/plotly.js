@@ -423,9 +423,7 @@ describe('image plot', function() {
 
     [
       ['yaxis.type', 'log'],
-      ['xaxis.type', 'log'],
-      ['xaxis.range', [50, 0]],
-      ['yaxis.range', [0, 50]]
+      ['xaxis.type', 'log']
     ].forEach(function(attr) {
         it('does not renders pixelated image when the axes are not compatible', function(done) {
             var mock = require('@mocks/image_astronaut_source.json');
