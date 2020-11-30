@@ -184,12 +184,14 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 if(fastImage) {
                     href = trace.source;
                     // Flip the SVG image as needed (around the proper center location)
-                    var axisScale = [(xa.range[0] < xa.range[1]) ? 1 : -1, (ya.range[0] < ya.range[1]) ? -1 : 1];
-                    var trans = '';
-                    trans += strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px');
-                    trans += 'scale(' + axisScale[0] + ',' + axisScale[1] + ')';
-                    trans += strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px');
-                    localStyle += 'transform:' + trans + ';';
+                    var axisScale = [
+                        (xa.range[0] < xa.range[1]) ? 1 : -1,
+                        (ya.range[0] < ya.range[1]) ? -1 : 1
+                    ];
+                    localStyle += 'transform:' +
+                        strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px') +
+                        'scale(' + axisScale[0] + ',' + axisScale[1] + ')' +
+                        strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px') + ';';
                 } else {
                     var context = trace._canvas.el.getContext('2d');
                     var data = context.getImageData(0, 0, w, h).data;
