@@ -679,7 +679,7 @@ describe('image hover:', function() {
                 mockCopy.layout.xaxis.autorange = test[0];
                 mockCopy.layout.yaxis.autorange = test[1];
                 mockCopy.data[0].colormodel = 'rgba';
-                mockCopy.data[0].hovertemplate = '%{color}<extra></extra>';
+                mockCopy.data[0].hovertemplate = '%{z}<extra></extra>';
                 Plotly.newPlot(gd, mockCopy)
                 .then(function() {_hover(205, 125);})
                 .then(function() {
