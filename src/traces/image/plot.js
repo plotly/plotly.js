@@ -139,7 +139,19 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         // Pixelated image rendering
         // http://phrogz.net/tmp/canvas_image_zoom.html
         // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-        var initialStyle = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
+        var style = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
+        if(fastImage) {
+            // Flip the SVG image as needed (around the proper center location)
+            var axisScale = [
+                (xa.range[0] < xa.range[1]) ? 1 : -1,
+                (ya.range[0] < ya.range[1]) ? -1 : 1
+            ];
+            style += 'transform:' +
+                strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px') +
+                'scale(' + axisScale[0] + ',' + axisScale[1] + ')' +
+                strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px') + ';';
+        }
+        image3.attr('style', style);
 
         var p = new Promise(function(resolve) {
             if(trace._hasZ) {
@@ -175,23 +187,13 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             }
         })
         .then(function() {
-            var href, canvas, localStyle;
-            localStyle = initialStyle;
+            var href, canvas;
             if(trace._hasZ) {
                 canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
                 if(fastImage) {
                     href = trace.source;
-                    // Flip the SVG image as needed (around the proper center location)
-                    var axisScale = [
-                        (xa.range[0] < xa.range[1]) ? 1 : -1,
-                        (ya.range[0] < ya.range[1]) ? -1 : 1
-                    ];
-                    localStyle += 'transform:' +
-                        strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px') +
-                        'scale(' + axisScale[0] + ',' + axisScale[1] + ')' +
-                        strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px') + ';';
                 } else {
                     var context = trace._canvas.el.getContext('2d');
                     var data = context.getImageData(0, 0, w, h).data;
@@ -213,8 +215,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 height: imageHeight,
                 width: imageWidth,
                 x: left,
-                y: top,
-                style: localStyle
+                y: top
             });
         });
 
