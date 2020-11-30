@@ -10,7 +10,6 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
-var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
@@ -147,9 +146,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 (ya.range[0] < ya.range[1]) ? -1 : 1
             ];
             style += 'transform:' +
-                strTranslate(left + imageWidth / 2 + 'px', top + imageHeight / 2 + 'px') +
+                'translate(50%,50%)' +
                 'scale(' + axisScale[0] + ',' + axisScale[1] + ')' +
-                strTranslate(-left - imageWidth / 2 + 'px', -top - imageHeight / 2 + 'px') + ';';
+                'translate(-50%,-50%)' + ';';
         }
         image3.attr('style', style);
 
