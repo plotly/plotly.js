@@ -669,15 +669,15 @@ describe('image hover:', function() {
         });
 
         [
-            ['auto', 'auto'],
-            ['auto', 'reversed'],
-            ['reversed', 'auto'],
-            ['reversed', 'reversed']
+            [[0, 512], [0, 512]],
+            [[0, 512], [512, 0]],  // the default image layout
+            [[512, 0], [0, 512]],
+            [[512, 0], [512, 0]]
         ].forEach(function(test) {
             it('should show correct hover info regardless of axis directions ' + test, function(done) {
                 var mockCopy = Lib.extendDeep({}, mock);
-                mockCopy.layout.xaxis.autorange = test[0];
-                mockCopy.layout.yaxis.autorange = test[1];
+                mockCopy.layout.xaxis.range = test[0];
+                mockCopy.layout.yaxis.range = test[1];
                 mockCopy.data[0].colormodel = 'rgba';
                 mockCopy.data[0].hovertemplate = '%{z}<extra></extra>';
                 Plotly.newPlot(gd, mockCopy)
