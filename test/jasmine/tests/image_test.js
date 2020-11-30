@@ -669,10 +669,35 @@ describe('image hover:', function() {
         });
 
         [
-            [[0, 512], [0, 512]],
-            [[0, 512], [512, 0]],  // the default image layout
-            [[512, 0], [0, 512]],
-            [[512, 0], [512, 0]]
+            [true, true],
+            [true, 'reversed'],  // the default image layout
+            ['reversed', true],
+            ['reversed', 'reversed']
+        ].forEach(function(test) {
+            it('should show correct hover info regardless of axis directions ' + test, function(done) {
+                var mockCopy = Lib.extendDeep({}, mock);
+                mockCopy.layout.xaxis.autorange = test[0];
+                mockCopy.layout.yaxis.autorange = test[1];
+                mockCopy.data[0].colormodel = 'rgba';
+                mockCopy.data[0].hovertemplate = '%{z}<extra></extra>';
+                Plotly.newPlot(gd, mockCopy)
+                .then(function() {_hover(205, 125);})
+                .then(function() {
+                    assertHoverLabelContent({
+                        nums: '[202, 148, 125, 255]',
+                        name: ''
+                    }, 'variable `z` should be correct!');
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
+
+        [
+            [[-0.5, 511.5], [-0.5, 511.5]],
+            [[-0.5, 511.5], [511.5, -0.5]],  // the default image layout
+            [[511.5, -0.5], [-0.5, 511.5]],
+            [[511.5, -0.5], [511.5, -0.5]]
         ].forEach(function(test) {
             it('should show correct hover info regardless of axis directions ' + test, function(done) {
                 var mockCopy = Lib.extendDeep({}, mock);
