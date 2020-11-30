@@ -10,16 +10,11 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
 var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
-
-function compatibleAxis(ax) {
-    return ax.type === 'linear' &&
-        // y axis must be reversed but x axis mustn't be
-        ((ax.range[1] > ax.range[0]) === (ax._id.charAt(0) === 'x'));
-}
 
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
@@ -31,7 +26,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && compatibleAxis(xa) && compatibleAxis(ya);
+        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
         trace._fastImage = fastImage;
 
         var z = cd0.z;
@@ -144,8 +139,23 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         // Pixelated image rendering
         // http://phrogz.net/tmp/canvas_image_zoom.html
         // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-        image3
-            .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
+        var style = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
+        if(fastImage) {
+            var xRange = Lib.simpleMap(xa.range, xa.r2l);
+            var yRange = Lib.simpleMap(ya.range, ya.r2l);
+
+            var flipX = xRange[1] < xRange[0];
+            var flipY = yRange[1] > yRange[0];
+            if(flipX || flipY) {
+                var tx = left + imageWidth / 2;
+                var ty = top + imageHeight / 2;
+                style += 'transform:' +
+                    strTranslate(tx + 'px', ty + 'px') +
+                    'scale(' + (flipX ? -1 : 1) + ',' + (flipY ? -1 : 1) + ')' +
+                    strTranslate(-tx + 'px', -ty + 'px') + ';';
+            }
+        }
+        image3.attr('style', style);
 
         var p = new Promise(function(resolve) {
             if(trace._hasZ) {
