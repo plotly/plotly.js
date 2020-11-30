@@ -10,6 +10,7 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
@@ -140,15 +141,19 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
         var style = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
         if(fastImage) {
-            // Flip the SVG image as needed (around the proper center location)
-            var axisScale = [
-                (xa.range[0] < xa.range[1]) ? 1 : -1,
-                (ya.range[0] < ya.range[1]) ? -1 : 1
-            ];
-            style += 'transform:' +
-                'translate(50%,50%)' +
-                'scale(' + axisScale[0] + ',' + axisScale[1] + ')' +
-                'translate(-50%,-50%)' + ';';
+            var xRange = Lib.simpleMap(xa.range, xa.r2l);
+            var yRange = Lib.simpleMap(ya.range, ya.r2l);
+
+            var flipX = xRange[1] < xRange[0];
+            var flipY = yRange[1] > yRange[0];
+            if(flipX || flipY) {
+                var tx = left + imageWidth / 2;
+                var ty = top + imageHeight / 2;
+                style += 'transform:' +
+                    strTranslate(tx + 'px', ty + 'px') +
+                    'scale(' + (flipX ? -1 : 1) + ',' + (flipY ? -1 : 1) + ')' +
+                    strTranslate(-tx + 'px', -ty + 'px') + ';';
+            }
         }
         image3.attr('style', style);
 

@@ -679,39 +679,22 @@ describe('image hover:', function() {
                 mockCopy.layout.xaxis.autorange = test[0];
                 mockCopy.layout.yaxis.autorange = test[1];
                 mockCopy.data[0].colormodel = 'rgba';
-                mockCopy.data[0].hovertemplate = '%{z}<extra></extra>';
+                mockCopy.data[0].hovertemplate = 'x:%{x}, y:%{y}, z:%{z}<extra></extra>';
                 Plotly.newPlot(gd, mockCopy)
-                .then(function() {_hover(205, 125);})
                 .then(function() {
-                    assertHoverLabelContent({
-                        nums: '[202, 148, 125, 255]',
-                        name: ''
-                    }, 'variable `z` should be correct!');
-                })
-                .catch(failTest)
-                .then(done);
-            });
-        });
+                    var x = 205;
+                    var y = 125;
 
-        [
-            [[-0.5, 511.5], [-0.5, 511.5]],
-            [[-0.5, 511.5], [511.5, -0.5]],  // the default image layout
-            [[511.5, -0.5], [-0.5, 511.5]],
-            [[511.5, -0.5], [511.5, -0.5]]
-        ].forEach(function(test) {
-            it('should show correct hover info regardless of axis directions ' + test, function(done) {
-                var mockCopy = Lib.extendDeep({}, mock);
-                mockCopy.layout.xaxis.range = test[0];
-                mockCopy.layout.yaxis.range = test[1];
-                mockCopy.data[0].colormodel = 'rgba';
-                mockCopy.data[0].hovertemplate = '%{z}<extra></extra>';
-                Plotly.newPlot(gd, mockCopy)
-                .then(function() {_hover(205, 125);})
+                    // adjust considering css
+                    if(test[0] === 'reversed') x = 512 - x;
+                    if(test[1] !== 'reversed') y = 512 - y;
+                    _hover(x, y);
+                })
                 .then(function() {
                     assertHoverLabelContent({
-                        nums: '[202, 148, 125, 255]',
+                        nums: 'x:205, y:125, z:[202, 148, 125, 255]',
                         name: ''
-                    }, 'variable `z` should be correct!');
+                    }, 'positions should be correct!');
                 })
                 .catch(failTest)
                 .then(done);

@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "colormodel": "rgba",
+      "type": "image",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAlCAYAAAAA7LqSAAADmklEQVR4nO2XUWhTVxjHfyfdmKMN1oelK9QSLUVY2RWHrEKtLw66KQX30Ifpg0qxz31wb8O0UNjL1I3h09iDAy000D0Z0DJhEdslBXN7SwZBJmmbErKwNuU2UXDes4d4r700bib33KflD+Ge8+We78sv3/fdcy401VRTTTXVVFMIvxwnEhG5c97fP+lbLPARZHz8qBwY+AAA0zTp69MA/4B8cTo+flRq2n4MY42dMMFgEICRkZ+Uxw2odgigafudq2majn3nWLV8ATGMNdf44cPfd9lVyxeQwcF3MIw1gsEgY2OLzM9fYmDgPebnLzlQquVLj1y//pFcWan+R1eujLm+KxYTHDr0o/K4b6l2GI2efPnY3eTUqSMUiwmgBQDD+ANNC6sOCSgurUxmVAKUSpfp6tpHLJYiFksBL4AXaFr45Vy9lGUkkxmVhpEll9ukra1q6+raB+D68d3d76oK6ZKSjGQyozIWS5HLbVIujwCQyz0jHL4LVIHsT3f3r0xNfS3/zV8jUlpaNsT6eoS2tq/Q9TnSaZOZmRAzMyFKpcvo+hz5fEE5jGcQOxt2GeXzBQC2t6fY3p5y3bu+HnFsqmE8gdh9AThlZGtr67kzDoU6CIU6nPnGxioXLnzD0NCXLC7+rQTGE4jd3MePJ9H1OQBu3PjW2SO2tp6TTvfQ2dnhWjc9PSvs++2rVyl7aun6XTY2Vl22dLqHw4erp97Ozg6WlnqIRqfFqzVqIMADiL3x7cyGrb1733bGds8ArvK6f/+HRkPXVMNHhWj0pMzlNkkmw46tvT1NofAUTXtfPnnyrKbvgwf3yImJpPIznufSOns2C8Dt22EKhafMzq6KfL7XKpfZ1cStrUEeP/YasbY8Hd6KxS/kvXvfkc3eQdO+Z3j4kTh27BMrELCoVCpYlvUqkBBIKWltrb5cLSz8ojQrnpzZEOHwaYaHHwkAISSVSgWAlpYWDCMZMIxkwLIshBAIoXxTBzyA3Lr1p8xm7zA4+DnnzoUEwNWrnzkpEEKQSi04/peXFwMA5XKZoSGT8+c/tHZ7bVwNgcTjJQfixIl2AXDt2qeWlILe3iKAC8LW0lIicOZMdXzggNrDY90g8XhJPnjwswsCqiVlmn8hhETXf3ut38nJhC9vpXU5fR2ErWy2ws2by//pc2WlXE/YN9Ibg9gQ4fDpmhCgvlx8UTxekvF4qeYjJxLptyYmPq6reS9e7Kt7zf9C/wDLc4opp/2WUgAAAABJRU5ErkJggg=="
+    },
+    {
+      "colormodel": "rgba",
+      "type": "image",
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAlCAYAAAAA7LqSAAADmklEQVR4nO2XUWhTVxjHfyfdmKMN1oelK9QSLUVY2RWHrEKtLw66KQX30Ifpg0qxz31wb8O0UNjL1I3h09iDAy000D0Z0DJhEdslBXN7SwZBJmmbErKwNuU2UXDes4d4r700bib33KflD+Ge8+We78sv3/fdcy401VRTTTXVVFMIvxwnEhG5c97fP+lbLPARZHz8qBwY+AAA0zTp69MA/4B8cTo+flRq2n4MY42dMMFgEICRkZ+Uxw2odgigafudq2majn3nWLV8ATGMNdf44cPfd9lVyxeQwcF3MIw1gsEgY2OLzM9fYmDgPebnLzlQquVLj1y//pFcWan+R1eujLm+KxYTHDr0o/K4b6l2GI2efPnY3eTUqSMUiwmgBQDD+ANNC6sOCSgurUxmVAKUSpfp6tpHLJYiFksBL4AXaFr45Vy9lGUkkxmVhpEll9ukra1q6+raB+D68d3d76oK6ZKSjGQyozIWS5HLbVIujwCQyz0jHL4LVIHsT3f3r0xNfS3/zV8jUlpaNsT6eoS2tq/Q9TnSaZOZmRAzMyFKpcvo+hz5fEE5jGcQOxt2GeXzBQC2t6fY3p5y3bu+HnFsqmE8gdh9AThlZGtr67kzDoU6CIU6nPnGxioXLnzD0NCXLC7+rQTGE4jd3MePJ9H1OQBu3PjW2SO2tp6TTvfQ2dnhWjc9PSvs++2rVyl7aun6XTY2Vl22dLqHw4erp97Ozg6WlnqIRqfFqzVqIMADiL3x7cyGrb1733bGds8ArvK6f/+HRkPXVMNHhWj0pMzlNkkmw46tvT1NofAUTXtfPnnyrKbvgwf3yImJpPIznufSOns2C8Dt22EKhafMzq6KfL7XKpfZ1cStrUEeP/YasbY8Hd6KxS/kvXvfkc3eQdO+Z3j4kTh27BMrELCoVCpYlvUqkBBIKWltrb5cLSz8ojQrnpzZEOHwaYaHHwkAISSVSgWAlpYWDCMZMIxkwLIshBAIoXxTBzyA3Lr1p8xm7zA4+DnnzoUEwNWrnzkpEEKQSi04/peXFwMA5XKZoSGT8+c/tHZ7bVwNgcTjJQfixIl2AXDt2qeWlILe3iKAC8LW0lIicOZMdXzggNrDY90g8XhJPnjwswsCqiVlmn8hhETXf3ut38nJhC9vpXU5fR2ErWy2ws2by//pc2WlXE/YN9Ibg9gQ4fDpmhCgvlx8UTxekvF4qeYjJxLptyYmPq6reS9e7Kt7zf9C/wDLc4opp/2WUgAAAABJRU5ErkJggg=="
+    },
+    {
+      "colormodel": "rgba",
+      "type": "image",
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAlCAYAAAAA7LqSAAADmklEQVR4nO2XUWhTVxjHfyfdmKMN1oelK9QSLUVY2RWHrEKtLw66KQX30Ifpg0qxz31wb8O0UNjL1I3h09iDAy000D0Z0DJhEdslBXN7SwZBJmmbErKwNuU2UXDes4d4r700bib33KflD+Ge8+We78sv3/fdcy401VRTTTXVVFMIvxwnEhG5c97fP+lbLPARZHz8qBwY+AAA0zTp69MA/4B8cTo+flRq2n4MY42dMMFgEICRkZ+Uxw2odgigafudq2majn3nWLV8ATGMNdf44cPfd9lVyxeQwcF3MIw1gsEgY2OLzM9fYmDgPebnLzlQquVLj1y//pFcWan+R1eujLm+KxYTHDr0o/K4b6l2GI2efPnY3eTUqSMUiwmgBQDD+ANNC6sOCSgurUxmVAKUSpfp6tpHLJYiFksBL4AXaFr45Vy9lGUkkxmVhpEll9ukra1q6+raB+D68d3d76oK6ZKSjGQyozIWS5HLbVIujwCQyz0jHL4LVIHsT3f3r0xNfS3/zV8jUlpaNsT6eoS2tq/Q9TnSaZOZmRAzMyFKpcvo+hz5fEE5jGcQOxt2GeXzBQC2t6fY3p5y3bu+HnFsqmE8gdh9AThlZGtr67kzDoU6CIU6nPnGxioXLnzD0NCXLC7+rQTGE4jd3MePJ9H1OQBu3PjW2SO2tp6TTvfQ2dnhWjc9PSvs++2rVyl7aun6XTY2Vl22dLqHw4erp97Ozg6WlnqIRqfFqzVqIMADiL3x7cyGrb1733bGds8ArvK6f/+HRkPXVMNHhWj0pMzlNkkmw46tvT1NofAUTXtfPnnyrKbvgwf3yImJpPIznufSOns2C8Dt22EKhafMzq6KfL7XKpfZ1cStrUEeP/YasbY8Hd6KxS/kvXvfkc3eQdO+Z3j4kTh27BMrELCoVCpYlvUqkBBIKWltrb5cLSz8ojQrnpzZEOHwaYaHHwkAISSVSgWAlpYWDCMZMIxkwLIshBAIoXxTBzyA3Lr1p8xm7zA4+DnnzoUEwNWrnzkpEEKQSi04/peXFwMA5XKZoSGT8+c/tHZ7bVwNgcTjJQfixIl2AXDt2qeWlILe3iKAC8LW0lIicOZMdXzggNrDY90g8XhJPnjwswsCqiVlmn8hhETXf3ut38nJhC9vpXU5fR2ErWy2ws2by//pc2WlXE/YN9Ibg9gQ4fDpmhCgvlx8UTxekvF4qeYjJxLptyYmPq6reS9e7Kt7zf9C/wDLc4opp/2WUgAAAABJRU5ErkJggg=="
+    },
+    {
+      "colormodel": "rgba",
+      "type": "image",
+      "xaxis": "x4",
+      "yaxis": "y4",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAlCAYAAAAA7LqSAAADmklEQVR4nO2XUWhTVxjHfyfdmKMN1oelK9QSLUVY2RWHrEKtLw66KQX30Ifpg0qxz31wb8O0UNjL1I3h09iDAy000D0Z0DJhEdslBXN7SwZBJmmbErKwNuU2UXDes4d4r700bib33KflD+Ge8+We78sv3/fdcy401VRTTTXVVFMIvxwnEhG5c97fP+lbLPARZHz8qBwY+AAA0zTp69MA/4B8cTo+flRq2n4MY42dMMFgEICRkZ+Uxw2odgigafudq2majn3nWLV8ATGMNdf44cPfd9lVyxeQwcF3MIw1gsEgY2OLzM9fYmDgPebnLzlQquVLj1y//pFcWan+R1eujLm+KxYTHDr0o/K4b6l2GI2efPnY3eTUqSMUiwmgBQDD+ANNC6sOCSgurUxmVAKUSpfp6tpHLJYiFksBL4AXaFr45Vy9lGUkkxmVhpEll9ukra1q6+raB+D68d3d76oK6ZKSjGQyozIWS5HLbVIujwCQyz0jHL4LVIHsT3f3r0xNfS3/zV8jUlpaNsT6eoS2tq/Q9TnSaZOZmRAzMyFKpcvo+hz5fEE5jGcQOxt2GeXzBQC2t6fY3p5y3bu+HnFsqmE8gdh9AThlZGtr67kzDoU6CIU6nPnGxioXLnzD0NCXLC7+rQTGE4jd3MePJ9H1OQBu3PjW2SO2tp6TTvfQ2dnhWjc9PSvs++2rVyl7aun6XTY2Vl22dLqHw4erp97Ozg6WlnqIRqfFqzVqIMADiL3x7cyGrb1733bGds8ArvK6f/+HRkPXVMNHhWj0pMzlNkkmw46tvT1NofAUTXtfPnnyrKbvgwf3yImJpPIznufSOns2C8Dt22EKhafMzq6KfL7XKpfZ1cStrUEeP/YasbY8Hd6KxS/kvXvfkc3eQdO+Z3j4kTh27BMrELCoVCpYlvUqkBBIKWltrb5cLSz8ojQrnpzZEOHwaYaHHwkAISSVSgWAlpYWDCMZMIxkwLIshBAIoXxTBzyA3Lr1p8xm7zA4+DnnzoUEwNWrnzkpEEKQSi04/peXFwMA5XKZoSGT8+c/tHZ7bVwNgcTjJQfixIl2AXDt2qeWlILe3iKAC8LW0lIicOZMdXzggNrDY90g8XhJPnjwswsCqiVlmn8hhETXf3ut38nJhC9vpXU5fR2ErWy2ws2by//pc2WlXE/YN9Ibg9gQ4fDpmhCgvlx8UTxekvF4qeYjJxLptyYmPq6reS9e7Kt7zf9C/wDLc4opp/2WUgAAAABJRU5ErkJggg=="
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "pattern": "independent"
+    },
+    "width": 600,
+    "height": 600,
+    "margin": {
+      "t": 35,
+      "l": 35,
+      "b": 35,
+      "r": 35
+    },
+    "xaxis2": {
+      "autorange": "reversed"
+    },
+    "yaxis3": {
+      "range": [
+        "8",
+        "32"
+      ]
+    },
+    "yaxis4": {
+      "autorange": true
+    },
+    "xaxis4": {
+      "autorange": "reversed"
+    }
+  }
+}
