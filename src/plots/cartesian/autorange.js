@@ -228,11 +228,7 @@ function makePadFn(ax, max) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    if(max) {
-        return function getPadMax(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
-    } else {
-        return function getPadMin(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
-    }
+    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
 var TEXTPAD = 3;
