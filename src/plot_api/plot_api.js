@@ -407,8 +407,8 @@ function insideTickLabelsAutorange(gd) {
     var obj = gd._fullLayout._insideTickLabelsAutorange;
     if(!obj) return;
 
+    relayout(gd, obj);
     gd._fullLayout._insideTickLabelsAutorangeDone = true;
-    return relayout(gd, obj);
 }
 
 function emitAfterPlot(gd) {
@@ -2448,8 +2448,6 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
  */
 function guiEdit(func) {
     return function wrappedEdit(gd) {
-        gd._fullLayout._insideTickLabelsAutorangeDone = false;
-
         gd._fullLayout._guiEditing = true;
         var p = func.apply(null, arguments);
         gd._fullLayout._guiEditing = false;

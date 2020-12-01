@@ -674,6 +674,14 @@ exports.doAutoRangeAndConstraints = function(gd) {
 
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
+
+        if(
+            gd._fullLayout._insideTickLabelsAutorangeDone &&
+            ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+        ) {
+            continue;
+        }
+
         if(!autoRangeDone[ax._id]) {
             autoRangeDone[ax._id] = 1;
             cleanAxisConstraints(gd, ax);
