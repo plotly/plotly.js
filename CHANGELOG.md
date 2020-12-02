@@ -9,6 +9,38 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.58.0] -- 2020-12-02
+
+### Added
+ - Add `ticklabelposition` attribute to cartesian axes and colorbars [#5275],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Add "strict" `autotypenumbers` to axes and `layout` [#5240]
+ - Add `itemwidth` to legends [#5212],
+   with thanks to @thierryVergult for the contribution!
+ - Add `root.color` attribute to `sunburst` and `treemap` traces [#5232, #5245],
+   with thanks to @thierryVergult for the contribution!
+
+### Changed
+ - Enable fast `image` rendering for all linear axes [#5307],
+   with thanks to @almarklein for the contribution!
+ - Rework `matches` and `scaleanchor` so they work together [#5287]
+
+### Fixed
+ - Fix hover on mobile and tablet devices for gl3d subplots [#5239]
+   (regression introduced in 1.34.0), with thanks to @jdpaterson for the contribution!
+ - Fix interactions when static/dynamic CSS transforms e.g. scale and translate are applied to the
+   graph div or its parents [#5193, #5302], with thanks to @alexhartstone for the contribution!
+ - Fix reordering of mapbox raster and image layers on update [#5269]
+ - Fix `categoryorder` for missing values in cartesian traces [#5268]
+ - Fix `automargin` bug to provide space for long axis labels [#5237]
+ - Avoid styling of backgrounds during `automargin` redraws [#5236]
+ - Fix displaying zero length bars with `staticPlot` config option [#5294]
+ - Fix setting false locale to "en-US" [#5293]
+ - Fix typo in Czech locale file [#5255],
+   with thanks to @helb for the contribution!
+ - Fix `gl3d` scene initialization [#5233]
+
+
 ## [1.57.1] -- 2020-10-20
 
 ### Changed
