@@ -1,0 +1,94 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "x": ["Gg", "Pp"],
+        "y": ["Qq", "Yy"]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": ["Gg", "Pp"],
+        "y": ["Qq", "Yy"]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": ["Gg", "Pp"],
+        "y": ["Qq", "Yy"]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": ["Gg", "Pp"],
+        "y": ["Qq", "Yy"]
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "side": "bottom",
+            "tickangle": 90,
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "side": "left",
+            "tickangle": 0,
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "side": "bottom",
+            "tickangle": 0,
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "side": "right",
+            "tickangle": 0,
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "side": "top",
+            "tickangle": -90,
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "side": "right",
+            "tickangle": 90,
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "side": "top",
+            "tickangle": 0,
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "side": "left",
+            "tickangle": -90,
+            "gridcolor": "white"
+        },
+        "font": {
+            "size": 40
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 600,
+        "height": 600,
+        "margin": {
+            "t": 80,
+            "b": 80,
+            "l": 80,
+            "r": 80
+        }
+    }
+}

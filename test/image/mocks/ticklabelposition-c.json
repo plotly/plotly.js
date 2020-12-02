@@ -1,0 +1,126 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "x": [-5000, 10000],
+        "y": [-5000, 10000]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": [-5000, 10000],
+        "y": [-5000, 10000]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": [-5000, 10000],
+        "y": [-5000, 10000]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": [-5000, 10000],
+        "y": [-5000, 10000]
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": 30,
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": -60,
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": 60,
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": -30,
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": -30,
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": 60,
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": -60,
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 0,
+            "tickangle": 30,
+            "gridcolor": "white"
+        },
+        "font": {
+            "family": "Raleway"
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 800,
+        "height": 800,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}

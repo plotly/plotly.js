@@ -565,7 +565,8 @@ exports.enforce = function enforce(gd) {
                         // *are* expanding to the full domain
                         var outerMin = rangeCenter - halfRange * factor * 1.0001;
                         var outerMax = rangeCenter + halfRange * factor * 1.0001;
-                        var getPad = autorange.makePadFn(ax);
+                        var getPadMin = autorange.makePadFn(ax, 0);
+                        var getPadMax = autorange.makePadFn(ax, 1);
 
                         updateDomain(ax, factor);
                         var m = Math.abs(ax._m);
@@ -576,14 +577,14 @@ exports.enforce = function enforce(gd) {
                         var k;
 
                         for(k = 0; k < minArray.length; k++) {
-                            newVal = minArray[k].val - getPad(minArray[k]) / m;
+                            newVal = minArray[k].val - getPadMin(minArray[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
                         for(k = 0; k < maxArray.length; k++) {
-                            newVal = maxArray[k].val + getPad(maxArray[k]) / m;
+                            newVal = maxArray[k].val + getPadMax(maxArray[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }

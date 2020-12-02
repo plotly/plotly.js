@@ -56,7 +56,8 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPad = makePadFn(ax);
+    var getPadMin = makePadFn(ax, 0);
+    var getPadMax = makePadFn(ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -97,19 +98,6 @@ function getAutoRange(gd, ax) {
     // don't allow padding to reduce the data to < 10% of the length
     var minSpan = axLen / 10;
 
-    // find axis rangebreaks in [v0,v1] and compute its length in value space
-    var calcBreaksLength = function(v0, v1) {
-        var lBreaks = 0;
-        if(ax.rangebreaks) {
-            var rangebreaksOut = ax.locateBreaks(v0, v1);
-            for(var i = 0; i < rangebreaksOut.length; i++) {
-                var brk = rangebreaksOut[i];
-                lBreaks += brk.max - brk.min;
-            }
-        }
-        return lBreaks;
-    };
-
     var mbest = 0;
     var minpt, maxpt, minbest, maxbest, dp, dv;
 
@@ -117,9 +105,9 @@ function getAutoRange(gd, ax) {
         minpt = minArray[i];
         for(j = 0; j < maxArray.length; j++) {
             maxpt = maxArray[j];
-            dv = maxpt.val - minpt.val - calcBreaksLength(minpt.val, maxpt.val);
+            dv = maxpt.val - minpt.val - calcBreaksLength(ax, minpt.val, maxpt.val);
             if(dv > 0) {
-                dp = axLen - getPad(minpt) - getPad(maxpt);
+                dp = axLen - getPadMin(minpt) - getPadMax(maxpt);
                 if(dp > minSpan) {
                     if(dv / dp > mbest) {
                         minbest = minpt;
@@ -137,8 +125,8 @@ function getAutoRange(gd, ax) {
         }
     }
 
-    function getMaxPad(prev, pt) {
-        return Math.max(prev, getPad(pt));
+    function maximumPad(prev, pt) {
+        return Math.max(prev, getPadMax(pt));
     }
 
     if(minmin === maxmax) {
@@ -152,7 +140,7 @@ function getAutoRange(gd, ax) {
                 // 'tozero' pins 0 to the low end, so follow that.
                 newRange = [0, 1];
             } else {
-                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(getMaxPad, 0);
+                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(maximumPad, 0);
                 // we're pushing a single value away from the edge due to its
                 // padding, with the other end clamped at zero
                 // 0.5 means don't push it farther than the center.
@@ -173,7 +161,7 @@ function getAutoRange(gd, ax) {
                 maxbest = {val: 0, pad: 0};
             }
         } else if(nonNegative) {
-            if(minbest.val - mbest * getPad(minbest) < 0) {
+            if(minbest.val - mbest * getPadMin(minbest) < 0) {
                 minbest = {val: 0, pad: 0};
             }
             if(maxbest.val <= 0) {
@@ -182,12 +170,12 @@ function getAutoRange(gd, ax) {
         }
 
         // in case it changed again...
-        mbest = (maxbest.val - minbest.val - calcBreaksLength(minpt.val, maxpt.val)) /
-            (axLen - getPad(minbest) - getPad(maxbest));
+        mbest = (maxbest.val - minbest.val - calcBreaksLength(ax, minpt.val, maxpt.val)) /
+            (axLen - getPadMin(minbest) - getPadMax(maxbest));
 
         newRange = [
-            minbest.val - mbest * getPad(minbest),
-            maxbest.val + mbest * getPad(maxbest)
+            minbest.val - mbest * getPadMin(minbest),
+            maxbest.val + mbest * getPadMax(maxbest)
         ];
     }
 
@@ -197,13 +185,41 @@ function getAutoRange(gd, ax) {
     return Lib.simpleMap(newRange, ax.l2r || Number);
 }
 
+// find axis rangebreaks in [v0,v1] and compute its length in value space
+function calcBreaksLength(ax, v0, v1) {
+    var lBreaks = 0;
+    if(ax.rangebreaks) {
+        var rangebreaksOut = ax.locateBreaks(v0, v1);
+        for(var i = 0; i < rangebreaksOut.length; i++) {
+            var brk = rangebreaksOut[i];
+            lBreaks += brk.max - brk.min;
+        }
+    }
+    return lBreaks;
+}
+
 /*
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax) {
+function makePadFn(ax, max) {
     // 5% padding for points that specify extrapad: true
-    var extrappad = ax._length / 20;
+    var extrappad = 0.05 * ax._length;
+
+    if(
+        (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
+        ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+    ) {
+        var axReverse = ax.autorange === 'reversed';
+        if(!axReverse) {
+            var rng = Lib.simpleMap(ax.range, ax.r2l);
+            axReverse = rng[1] < rng[0];
+        }
+        if(axReverse) max = !max;
+    }
+
+    extrappad = adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max);
+    extrappad = adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max);
 
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
@@ -213,6 +229,96 @@ function makePadFn(ax) {
     }
 
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+}
+
+var TEXTPAD = 3;
+
+function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
+    var ticklabelposition = ax.ticklabelposition || '';
+    var has = function(str) {
+        return ticklabelposition.indexOf(str) !== -1;
+    };
+
+    if(!has('inside')) return extrappad;
+    var isTop = has('top');
+    var isLeft = has('left');
+    var isRight = has('right');
+    var isBottom = has('bottom');
+    var isAligned = isBottom || isLeft || isTop || isRight;
+
+    if(
+        (max && (isLeft || isBottom)) ||
+        (!max && (isRight || isTop))
+    ) {
+        return extrappad;
+    }
+
+    // increase padding to make more room for inside tick labels of the axis
+    var fontSize = ax.tickfont ? ax.tickfont.size : 12;
+    var isX = ax._id.charAt(0) === 'x';
+    var morePad = (isX ? 1.2 : 0.6) * fontSize;
+
+    if(isAligned) {
+        morePad *= 2;
+        morePad += (ax.tickwidth || 0) / 2;
+    }
+
+    morePad += TEXTPAD;
+
+    extrappad = Math.max(extrappad, morePad);
+
+    return extrappad;
+}
+
+function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
+    var anchorAxis = (ax._anchorAxis || {});
+    if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+        // increase padding to make more room for inside tick labels of the counter axis
+        if((
+            !max && (
+                anchorAxis.side === 'left' ||
+                anchorAxis.side === 'bottom'
+            )
+        ) || (
+            max && (
+                anchorAxis.side === 'top' ||
+                anchorAxis.side === 'right'
+            )
+        )) {
+            var isX = ax._id.charAt(0) === 'x';
+
+            var morePad = 0;
+            if(anchorAxis._vals) {
+                var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
+                var cosA = Math.abs(Math.cos(rad));
+                var sinA = Math.abs(Math.sin(rad));
+
+                // use bounding boxes
+                anchorAxis._vals.forEach(function(t) {
+                    if(t.bb) {
+                        var w = t.bb.width;
+                        var h = t.bb.height;
+
+                        morePad = Math.max(morePad, isX ?
+                            Math.max(w * cosA, h * sinA) :
+                            Math.max(h * cosA, w * sinA)
+                        );
+
+                        // add extra pad around label
+                        morePad += 3;
+                    }
+                });
+            }
+
+            if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                morePad += anchorAxis.ticklen || 0;
+            }
+
+            extrappad = Math.max(extrappad, morePad);
+        }
+    }
+
+    return extrappad;
 }
 
 function concatExtremes(gd, ax, noMatch) {

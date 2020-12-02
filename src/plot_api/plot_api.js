@@ -367,7 +367,18 @@ function plot(gd, data, layout, config) {
     if(hasCartesian) seq.push(positionAndAutorange);
 
     seq.push(subroutines.layoutStyles);
-    if(hasCartesian) seq.push(drawAxes);
+    if(hasCartesian) {
+        seq.push(
+            drawAxes,
+            function insideTickLabelsAutorange(gd) {
+                if(gd._fullLayout._insideTickLabelsAutorange) {
+                    relayout(gd, gd._fullLayout._insideTickLabelsAutorange).then(function() {
+                        gd._fullLayout._insideTickLabelsAutorange = undefined;
+                    });
+                }
+            }
+        );
+    }
 
     seq.push(
         subroutines.drawData,
@@ -381,8 +392,15 @@ function plot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
+        saveRangeInitialForInsideTickLabels,
         Plots.previousPromises
     );
+
+    function saveRangeInitialForInsideTickLabels(gd) {
+        if(gd._fullLayout._insideTickLabelsAutorange) {
+            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
+        }
+    }
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -1961,6 +1979,12 @@ function addAxRangeSequence(seq, rangesAltered) {
                 var ax = Axes.getFromId(gd, id);
                 axIds.push(id);
 
+                if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+                    if(ax._anchorAxis) {
+                        axIds.push(ax._anchorAxis._id);
+                    }
+                }
+
                 if(ax._matchGroup) {
                     for(var id2 in ax._matchGroup) {
                         if(!rangesAltered[id2]) {
@@ -2055,7 +2079,7 @@ function _relayout(gd, aobj) {
     // we're editing the (auto)range of, so we can tell the others constrained
     // to scale with them that it's OK for them to shrink
     var rangesAltered = {};
-    var axId, ax;
+    var ax;
 
     function recordAlteredAxis(pleafPlus) {
         var axId = Axes.name2id(pleafPlus.split('.')[0]);
@@ -2283,7 +2307,7 @@ function _relayout(gd, aobj) {
     }
 
     // figure out if we need to recalculate axis constraints
-    for(axId in rangesAltered) {
+    for(var axId in rangesAltered) {
         ax = Axes.getFromId(gd, axId);
         var group = ax && ax._constraintGroup;
         if(group) {

@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var contrast = require('../../components/color').contrast;
 var layoutAttributes = require('./layout_attributes');
 var handleArrayContainerDefaults = require('../array_container_defaults');
 
@@ -46,10 +47,14 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
     if(showTickLabels) {
         var font = options.font || {};
         var contColor = containerOut.color;
-        // as with titlefont.color, inherit axis.color only if one was
-        // explicitly provided
-        var dfltFontColor = (contColor && contColor !== layoutAttributes.color.dflt) ?
+        var position = containerOut.ticklabelposition || '';
+        var dfltFontColor = position.indexOf('inside') !== -1 ?
+            contrast(options.bgColor) :
+            // as with titlefont.color, inherit axis.color only if one was
+            // explicitly provided
+            (contColor && contColor !== layoutAttributes.color.dflt) ?
             contColor : font.color;
+
         Lib.coerceFont(coerce, 'tickfont', {
             family: font.family,
             size: font.size,

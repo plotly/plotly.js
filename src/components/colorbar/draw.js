@@ -462,20 +462,19 @@ function drawColorBar(g, opts, gd) {
             (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
-        var transFn = Axes.makeTransFn(ax);
         var tickSign = Axes.getTickSigns(ax)[2];
 
         Axes.drawTicks(gd, ax, {
             vals: ax.ticks === 'inside' ? Axes.clipEnds(ax, vals) : vals,
             layer: axLayer,
             path: Axes.makeTickPath(ax, shift, tickSign),
-            transFn: transFn
+            transFn: Axes.makeTransTickFn(ax)
         });
 
         return Axes.drawLabels(gd, ax, {
             vals: vals,
             layer: axLayer,
-            transFn: transFn,
+            transFn: Axes.makeTransTickLabelFn(ax),
             labelFns: Axes.makeLabelFns(ax, shift)
         });
     }
@@ -485,7 +484,11 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + opts.outlinewidth / 2 + Drawing.bBox(axLayer.node()).width;
+        var innerWidth = thickPx + opts.outlinewidth / 2;
+        if(ax.ticklabelposition.indexOf('inside') === -1) {
+            innerWidth += Drawing.bBox(axLayer.node()).width;
+        }
+
         titleEl = titleCont.select('text');
 
         if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
@@ -681,6 +684,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         tickwidth: opts.tickwidth,
         tickcolor: opts.tickcolor,
         showticklabels: opts.showticklabels,
+        ticklabelposition: opts.ticklabelposition,
         tickfont: opts.tickfont,
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,

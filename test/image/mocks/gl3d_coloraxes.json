@@ -1247,7 +1247,9 @@
       "colorscale": "Viridis",
       "colorbar": {
         "x": -0.1,
-        "xanchor": "right"
+        "xanchor": "right",
+        "ticks": "inside",
+        "ticklabelposition": "inside bottom"
       }
     },
     "coloraxis2": {
@@ -1255,7 +1257,9 @@
       "reversescale": true,
       "colorbar": {
         "x": 1.1,
-        "xanchor": "left"
+        "xanchor": "left",
+        "ticks": "outside",
+        "ticklabelposition": "outside bottom"
       }
     }
   }

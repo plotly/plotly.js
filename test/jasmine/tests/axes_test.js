@@ -573,6 +573,119 @@ describe('Test axes', function() {
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
 
+        it('should default to a dark color for tickfont when plotting background is light', function() {
+            layoutIn = {
+                plot_bgcolor: 'lightblue',
+                xaxis: {
+                    showgrid: true,
+                    ticklabelposition: 'inside'
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.tickfont.color).toEqual('#444');
+        });
+
+        it('should default to a light color for tickfont when plotting background is dark', function() {
+            layoutIn = {
+                plot_bgcolor: 'darkblue',
+                xaxis: {
+                    showgrid: true,
+                    ticklabelposition: 'inside'
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.tickfont.color).toEqual('#fff');
+        });
+
+        it('should not coerce ticklabelposition on *multicategory* axes for now', function() {
+            layoutIn = {
+                xaxis: {type: 'multicategory'},
+                yaxis: {type: 'multicategory'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.ticklabelposition).toBeUndefined();
+            expect(layoutOut.yaxis.ticklabelposition).toBeUndefined();
+        });
+
+        ['category', 'linear', 'date'].forEach(function(type) {
+            it('should coerce ticklabelposition on *' + type + '* axes', function() {
+                layoutIn = {
+                    xaxis: {type: type},
+                    yaxis: {type: type}
+                };
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                expect(layoutOut.xaxis.ticklabelposition).toBe('outside');
+                expect(layoutOut.yaxis.ticklabelposition).toBe('outside');
+            });
+        });
+
+        ['category', 'linear', 'date'].forEach(function(type) {
+            it('should be able to set ticklabelposition to *inside* on *' + type + '* axes', function() {
+                layoutIn = {
+                    xaxis: {type: type, ticklabelposition: 'inside'},
+                    yaxis: {type: type, ticklabelposition: 'inside'}
+                };
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                expect(layoutOut.xaxis.ticklabelposition).toBe('inside');
+                expect(layoutOut.yaxis.ticklabelposition).toBe('inside');
+            });
+        });
+
+        ['inside left', 'inside right', 'outside left', 'outside right'].forEach(function(ticklabelposition) {
+            ['category', 'linear', 'date'].forEach(function(type) {
+                it('should be able to set ticklabelposition to *' + ticklabelposition + '* on xaxis for *' + type + '* axes', function() {
+                    layoutIn = {
+                        xaxis: {type: type, ticklabelposition: ticklabelposition},
+                        yaxis: {type: type, ticklabelposition: ticklabelposition}
+                    };
+                    supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                    expect(layoutOut.xaxis.ticklabelposition).toBe(ticklabelposition);
+                    expect(layoutOut.yaxis.ticklabelposition).toBe('outside', ticklabelposition + ' is not a valid input on yaxis');
+                });
+            });
+        });
+
+        ['inside top', 'inside bottom', 'outside top', 'outside bottom'].forEach(function(ticklabelposition) {
+            ['category', 'linear', 'date'].forEach(function(type) {
+                it('should be able to set ticklabelposition to *' + ticklabelposition + '* on yaxis for *' + type + '* axes', function() {
+                    layoutIn = {
+                        xaxis: {type: type, ticklabelposition: ticklabelposition},
+                        yaxis: {type: type, ticklabelposition: ticklabelposition}
+                    };
+                    supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                    expect(layoutOut.xaxis.ticklabelposition).toBe('outside', ticklabelposition + ' is not a valid input on yaxis');
+                    expect(layoutOut.yaxis.ticklabelposition).toBe(ticklabelposition);
+                });
+            });
+        });
+
+        [
+            'inside left', 'inside right', 'outside left', 'outside right',
+            'inside top', 'inside bottom', 'outside top', 'outside bottom'
+        ].forEach(function(ticklabelposition) {
+            it('should not be able to set ticklabelposition to *' + ticklabelposition + '* when ticklabelmode is *period*', function() {
+                layoutIn = {
+                    xaxis: {type: 'date', ticklabelmode: 'period', ticklabelposition: ticklabelposition},
+                    yaxis: {type: 'date', ticklabelmode: 'period', ticklabelposition: ticklabelposition}
+                };
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                expect(layoutOut.xaxis.ticklabelposition).toBe('outside', ticklabelposition + ' is not a valid input with period mode');
+                expect(layoutOut.yaxis.ticklabelposition).toBe('outside', ticklabelposition + ' is not a valid input with period mode');
+            });
+        });
+
+        it('should be able to set ticklabelposition to *inside* on yaxis when ticklabelmode is *period*', function() {
+            layoutIn = {
+                xaxis: {type: 'date', ticklabelmode: 'period', ticklabelposition: 'inside'},
+                yaxis: {type: 'date', ticklabelmode: 'period', ticklabelposition: 'inside'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.ticklabelposition).toBe('inside');
+            expect(layoutOut.yaxis.ticklabelposition).toBe('inside');
+        });
+
         it('should inherit calendar from the layout', function() {
             layoutOut.calendar = 'nepali';
             layoutIn = {

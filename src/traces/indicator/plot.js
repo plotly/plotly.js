@@ -264,7 +264,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     ax.setScale();
 
     vals = Axes.calcTicks(ax);
-    transFn = Axes.makeTransFn(ax);
+    transFn = Axes.makeTransTickFn(ax);
     tickSign = Axes.getTickSigns(ax)[2];
 
     shift = size.t + size.h;

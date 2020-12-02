@@ -1,0 +1,149 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "x": ["20-12-20", "21-01-20"],
+        "y": [1e-1, 1e+6]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": ["20-10", "21-05-15"],
+        "y": [1e-1, 1e+6]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": ["20", "23"],
+        "y": [1e-1, 1e+6]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": ["20-12-20", "21-01-20"],
+        "y": [1e-1, 1e+6]
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "type": "date",
+            "ticklabelmode": "period",
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "autorange": "reversed",
+            "type": "log",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside top",
+            "tickfont": { "size": 20 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "autorange": "reversed",
+            "type": "date",
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside left",
+            "tickfont": { "size": 20 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "type": "log",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "type": "date",
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside right",
+            "tickfont": { "size": 20 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "autorange": "reversed",
+            "type": "log",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "tickfont": { "size": 16 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "autorange": "reversed",
+            "type": "date",
+            "ticklabelmode": "period",
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "type": "log",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "tickangle": 30,
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "gridcolor": "white"
+        },
+        "font": {
+            "family": "Raleway"
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 1000,
+        "height": 1000,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}

@@ -54,9 +54,33 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var axTemplate = containerOut._template || {};
     var axType = containerOut.type || axTemplate.type || '-';
 
+    var ticklabelmode;
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+
+        if(!options.noTicklabelmode) {
+            ticklabelmode = coerce('ticklabelmode');
+        }
+    }
+
+    if(!options.noTicklabelposition || axType === 'multicategory') {
+        Lib.coerce(containerIn, containerOut, {
+            ticklabelposition: {
+                valType: 'enumerated',
+                dflt: 'outside',
+                values: ticklabelmode === 'period' ? ['outside', 'inside'] :
+                letter === 'x' ? [
+                    'outside', 'inside',
+                    'outside left', 'inside left',
+                    'outside right', 'inside right'
+                ] : [
+                    'outside', 'inside',
+                    'outside top', 'inside top',
+                    'outside bottom', 'inside bottom'
+                ]
+            }
+        }, 'ticklabelposition');
     }
 
     setConvert(containerOut, layoutOut);
@@ -114,7 +138,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     ) {
         var ticksonDflt;
         if(isMultiCategory) ticksonDflt = 'boundaries';
-        coerce('tickson', ticksonDflt);
+        var tickson = coerce('tickson', ticksonDflt);
+        if(tickson === 'boundaries') {
+            delete containerOut.ticklabelposition;
+        }
     }
 
     if(isMultiCategory) {
@@ -126,8 +153,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        if(!options.noTicklabelmode) coerce('ticklabelmode');
-
         handleArrayContainerDefaults(containerIn, containerOut, {
             name: 'rangebreaks',
             inclusionAttr: 'enabled',
