@@ -2071,7 +2071,7 @@ function _relayout(gd, aobj) {
     // we're editing the (auto)range of, so we can tell the others constrained
     // to scale with them that it's OK for them to shrink
     var rangesAltered = {};
-    var axId, ax;
+    var ax;
 
     function recordAlteredAxis(pleafPlus) {
         var axId = Axes.name2id(pleafPlus.split('.')[0]);
@@ -2299,7 +2299,7 @@ function _relayout(gd, aobj) {
     }
 
     // figure out if we need to recalculate axis constraints
-    for(axId in rangesAltered) {
+    for(var axId in rangesAltered) {
         ax = Axes.getFromId(gd, axId);
         var group = ax && ax._constraintGroup;
         if(group) {
