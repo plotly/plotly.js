@@ -2502,6 +2502,8 @@ function getPosX(d) {
     return d.periodX !== undefined ? d.periodX : d.x;
 }
 
+// u is a shift along the axis,
+// v is a shift perpendicular to the axis
 function getTickLabelUV(ax) {
     var ticklabelposition = ax.ticklabelposition || '';
     var has = function(str) {
