@@ -3043,7 +3043,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var isX = ax._id.charAt(0) === 'x';
 
-            tickLabels.each(function() {
+            tickLabels.each(function(d) {
                 var thisLabel = d3.select(this);
                 var mathjaxGroup = thisLabel.select('.text-math-group');
 
@@ -3055,7 +3055,7 @@ axes.drawLabels = function(gd, ax, opts) {
                         else if(bb.left < min) hide = true;
                     } else {
                         if(bb.bottom > max) hide = true;
-                        else if(bb.top < min) hide = true;
+                        else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
                     }
                     if(hide) thisLabel.select('text').style({ opacity: 0 });
                 } // TODO: hide mathjax?
