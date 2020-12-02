@@ -2658,11 +2658,10 @@ axes.makeLabelFns = function(ax, shift, angle) {
             if(insideTickLabels) {
                 ff += MID_SHIFT;
             } else {
-                if(
-                    (tickangle === -90 && side === 'bottom') ||
-                    (tickangle === 90 && side === 'top')
-                ) {
+                if(tickangle === -90 && side === 'bottom') {
                     ff = CAP_SHIFT;
+                } else if(tickangle === 90 && side === 'top') {
+                    ff = MID_SHIFT;
                 } else {
                     ff = 0.5;
                 }
