@@ -1,16 +1,16 @@
 Autoscale                                              // components/modebar/buttons.js:209
 Box Select                                             // components/modebar/buttons.js:121
 Click to enter Colorscale title                        // plots/plots.js:335
-Click to enter Component A title                       // plots/ternary/ternary.js:380
-Click to enter Component B title                       // plots/ternary/ternary.js:390
-Click to enter Component C title                       // plots/ternary/ternary.js:400
-Click to enter Plot title                              // plot_api/plot_api.js:586
+Click to enter Component A title                       // plots/ternary/ternary.js:381
+Click to enter Component B title                       // plots/ternary/ternary.js:391
+Click to enter Component C title                       // plots/ternary/ternary.js:401
+Click to enter Plot title                              // plot_api/plot_api.js:604
 Click to enter X axis title                            // plots/plots.js:333
 Click to enter Y axis title                            // plots/plots.js:334
-Click to enter radial axis title                       // plots/polar/polar.js:492
+Click to enter radial axis title                       // plots/polar/polar.js:494
 Compare data on hover                                  // components/modebar/buttons.js:237
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:27
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:1119
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1172
 Download plot                                          // components/modebar/buttons.js:53
 Download plot as a png                                 // components/modebar/buttons.js:52
 Draw circle                                            // components/modebar/buttons.js:175
