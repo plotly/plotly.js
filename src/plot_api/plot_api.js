@@ -367,7 +367,18 @@ function plot(gd, data, layout, config) {
     if(hasCartesian) seq.push(positionAndAutorange);
 
     seq.push(subroutines.layoutStyles);
-    if(hasCartesian) seq.push(drawAxes);
+    if(hasCartesian) {
+        seq.push(
+            drawAxes,
+            function insideTickLabelsAutorange(gd) {
+                if(gd._fullLayout._insideTickLabelsAutorange) {
+                    relayout(gd, gd._fullLayout._insideTickLabelsAutorange).then(function() {
+                        gd._fullLayout._insideTickLabelsAutorange = undefined;
+                    });
+                }
+            }
+        );
+    }
 
     seq.push(
         subroutines.drawData,
@@ -381,13 +392,12 @@ function plot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
-        insideTickLabelsAutorange,
         saveRangeInitialForInsideTickLabels,
         Plots.previousPromises
     );
 
     function saveRangeInitialForInsideTickLabels(gd) {
-        if(gd._fullLayout._insideTickLabelsAutorangeDone) {
+        if(gd._fullLayout._insideTickLabelsAutorange) {
             if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
         }
     }
@@ -401,14 +411,6 @@ function plot(gd, data, layout, config) {
         emitAfterPlot(gd);
         return gd;
     });
-}
-
-function insideTickLabelsAutorange(gd) {
-    var obj = gd._fullLayout._insideTickLabelsAutorange;
-    if(!obj) return;
-
-    relayout(gd, obj);
-    gd._fullLayout._insideTickLabelsAutorangeDone = true;
 }
 
 function emitAfterPlot(gd) {
@@ -1976,6 +1978,12 @@ function addAxRangeSequence(seq, rangesAltered) {
             for(var id in rangesAltered) {
                 var ax = Axes.getFromId(gd, id);
                 axIds.push(id);
+
+                if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+                    if(ax._anchorAxis) {
+                        axIds.push(ax._anchorAxis._id);
+                    }
+                }
 
                 if(ax._matchGroup) {
                     for(var id2 in ax._matchGroup) {

@@ -249,10 +249,6 @@ function handleCartesian(gd, ev) {
     var astr = button.getAttribute('data-attr');
     var val = button.getAttribute('data-val') || true;
     var fullLayout = gd._fullLayout;
-    if(val === 'auto') {
-        fullLayout._insideTickLabelsAutorangeDone = false;
-    }
-
     var aobj = {};
     var axList = axisIds.list(gd, null, true);
     var allSpikesEnabled = fullLayout._cartesianSpikesEnabled;

@@ -3187,26 +3187,24 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    function computeFinalTickLabelBoundingBoxes() {
-        tickLabels.each(function(d, i) {
-            var thisLabel = selectTickLabel(this);
-            ax._vals[i].bb = Drawing.bBox(thisLabel.node());
-        });
-    }
-
-    if(!gd._fullLayout._insideTickLabelsAutorangeDone) {
-        var anchorAxisAutorange = (ax._anchorAxis || {}).autorange;
-        if(
-            anchorAxisAutorange &&
-            (ax.ticklabelposition || '').indexOf('inside') !== -1
-        ) {
-            if(!fullLayout._insideTickLabelsAutorange) {
-                fullLayout._insideTickLabelsAutorange = {};
-            }
-            fullLayout._insideTickLabelsAutorange[ax._anchorAxis._name + '.autorange'] = anchorAxisAutorange;
-
-            seq.push(computeFinalTickLabelBoundingBoxes);
+    var anchorAx = ax._anchorAxis;
+    if(
+        anchorAx && anchorAx.autorange &&
+        (ax.ticklabelposition || '').indexOf('inside') !== -1
+    ) {
+        if(!fullLayout._insideTickLabelsAutorange) {
+            fullLayout._insideTickLabelsAutorange = {};
         }
+        fullLayout._insideTickLabelsAutorange[anchorAx._name + '.autorange'] = anchorAx.autorange;
+
+        seq.push(
+            function computeFinalTickLabelBoundingBoxes() {
+                tickLabels.each(function(d, i) {
+                    var thisLabel = selectTickLabel(this);
+                    ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+                });
+            }
+        );
     }
 
     var done = Lib.syncOrAsync(seq);
