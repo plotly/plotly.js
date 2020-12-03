@@ -16,7 +16,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    this feature was anonymously sponsored: thank you to our sponsor!
  - Add "strict" `autotypenumbers` to axes and `layout` [#5240]
  - Add `itemwidth` to legends [#5212],
-   with thanks to @thierryVergult for the contribution!
+   with thanks to @s417-lama for the contribution!
  - Add `root.color` attribute to `sunburst` and `treemap` traces [#5232, #5245],
    with thanks to @thierryVergult for the contribution!
 
