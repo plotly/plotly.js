@@ -170,7 +170,7 @@ describe('Indicator plot', function() {
                 return Plotly.relayout(gd, {width: 200, height: 200});
             })
             .then(function() {
-                checkNumbersScale(0.4794007490636704, 'should scale down');
+                checkNumbersScale(0.2, 'should scale down');
                 return Plotly.relayout(gd, {width: 400, height: 400});
             })
             .then(function() {

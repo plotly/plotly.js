@@ -1867,7 +1867,7 @@ function initMargins(fullLayout) {
 }
 
 var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
-var minFinalHeight = 64; // could possibly be exposed as layout.margin.minfinalheight
+var minFinalHeight = 16; // could possibly be exposed as layout.margin.minfinalheight
 
 /**
  * autoMargin: called by components that may need to expand the margins to

@@ -403,7 +403,7 @@ describe('The legend', function() {
                 expect(countLegendClipPaths(gd)).toBe(1);
 
                 // clippath resized to new height less than new plot height
-                expect(+legendHeight).toBeGreaterThan(getPlotHeight(gd));
+                expect(+legendHeight).toBe(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
 
                 done();
