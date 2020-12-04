@@ -1888,6 +1888,7 @@ plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
+    var margin = fullLayout.margin;
 
     var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
     var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
@@ -1895,14 +1896,13 @@ plots.autoMargin = function(gd, id, o) {
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         if(!o) {
             delete pushMargin[id];
             delete pushMarginIds[id];
         } else {
             var pad = o.pad;
             if(pad === undefined) {
-                var margin = fullLayout.margin;
                 // if no explicit pad is given, use 12px unless there's a
                 // specified margin that's smaller than that
                 pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
@@ -1910,15 +1910,19 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            var rW = (o.l + o.r) / maxSpaceW;
-            if(rW > 1) {
-                o.l /= rW;
-                o.r /= rW;
+            if(maxSpaceW) {
+                var rW = (o.l + o.r) / maxSpaceW;
+                if(rW > 1) {
+                    o.l /= rW;
+                    o.r /= rW;
+                }
             }
-            var rH = (o.t + o.b) / maxSpaceH;
-            if(rH > 1) {
-                o.t /= rH;
-                o.b /= rH;
+            if(maxSpaceH) {
+                var rH = (o.t + o.b) / maxSpaceH;
+                if(rH > 1) {
+                    o.t /= rH;
+                    o.b /= rH;
+                }
             }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
@@ -1945,8 +1949,6 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
-    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
 
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
@@ -2019,16 +2021,23 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    var rW = (ml + mr) / maxSpaceW;
-    if(rW > 1) {
-        ml /= rW;
-        mr /= rW;
+    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
+    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
+
+    if(maxSpaceW) {
+        var rW = (ml + mr) / maxSpaceW;
+        if(rW > 1) {
+            ml /= rW;
+            mr /= rW;
+        }
     }
 
-    var rH = (mb + mt) / maxSpaceH;
-    if(rH > 1) {
-        mb /= rH;
-        mt /= rH;
+    if(maxSpaceH) {
+        var rH = (mb + mt) / maxSpaceH;
+        if(rH > 1) {
+            mb /= rH;
+            mt /= rH;
+        }
     }
 
     gs.l = Math.round(ml);
