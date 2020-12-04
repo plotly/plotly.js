@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.58.1] -- 2020-12-04
+
+### Fixed
+ - Fix `automargin` bug for the case of short remaining height or width for plot [#5315],
+   (regression introduced in 1.58.0)
+
+
 ## [1.58.0] -- 2020-12-02
 
 ### Added
