@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.58.0
+* plotly.js (gl2d) v1.58.1
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -104961,8 +104961,13 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
-var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
-var minFinalHeight = 64; // could possibly be exposed as layout.margin.minfinalheight
+// non-negotiable - this is the smallest height we will allow users to specify via explicit margins
+var MIN_SPECIFIED_WIDTH = 2;
+var MIN_SPECIFIED_HEIGHT = 2;
+
+// could be exposed as an option - the smallest we will allow automargin to shrink a larger plot
+var MIN_REDUCED_WIDTH = 64;
+var MIN_REDUCED_HEIGHT = 64;
 
 /**
  * autoMargin: called by components that may need to expand the margins to
@@ -104983,20 +104988,33 @@ plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
+    var margin = fullLayout.margin;
+
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
     var maxSpaceW = Math.max(0, width - minFinalWidth);
     var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         if(!o) {
             delete pushMargin[id];
             delete pushMarginIds[id];
         } else {
             var pad = o.pad;
             if(pad === undefined) {
-                var margin = fullLayout.margin;
                 // if no explicit pad is given, use 12px unless there's a
                 // specified margin that's smaller than that
                 pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
@@ -105004,15 +105022,19 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            var rW = (o.l + o.r) / maxSpaceW;
-            if(rW > 1) {
-                o.l /= rW;
-                o.r /= rW;
+            if(maxSpaceW) {
+                var rW = (o.l + o.r) / maxSpaceW;
+                if(rW > 1) {
+                    o.l /= rW;
+                    o.r /= rW;
+                }
             }
-            var rH = (o.t + o.b) / maxSpaceH;
-            if(rH > 1) {
-                o.t /= rH;
-                o.b /= rH;
+            if(maxSpaceH) {
+                var rH = (o.t + o.b) / maxSpaceH;
+                if(rH > 1) {
+                    o.t /= rH;
+                    o.b /= rH;
+                }
             }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
@@ -105039,8 +105061,6 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var maxSpaceW = Math.max(0, width - minFinalWidth);
-    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
@@ -105113,16 +105133,35 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    var rW = (ml + mr) / maxSpaceW;
-    if(rW > 1) {
-        ml /= rW;
-        mr /= rW;
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
+
+    if(maxSpaceW) {
+        var rW = (ml + mr) / maxSpaceW;
+        if(rW > 1) {
+            ml /= rW;
+            mr /= rW;
+        }
     }
 
-    var rH = (mb + mt) / maxSpaceH;
-    if(rH > 1) {
-        mb /= rH;
-        mt /= rH;
+    if(maxSpaceH) {
+        var rH = (mb + mt) / maxSpaceH;
+        if(rH > 1) {
+            mb /= rH;
+            mt /= rH;
+        }
     }
 
     gs.l = Math.round(ml);
@@ -122310,7 +122349,7 @@ module.exports = function select(searchInfo, selectionTester) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.58.0';
+exports.version = '1.58.1';
 
 },{}]},{},[5])(5)
 });
