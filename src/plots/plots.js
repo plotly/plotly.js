@@ -1866,8 +1866,13 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
-var MIN_FINAL_WIDTH = 64; // could possibly be exposed as layout.margin.minfinalwidth
-var MIN_FINAL_HEIGHT = 16; // could possibly be exposed as layout.margin.minfinalheight
+// non-negotiable - this is the smallest height we will allow users to specify via explicit margins
+var MIN_SPECIFIED_WIDTH = 2;
+var MIN_SPECIFIED_HEIGHT = 2;
+
+// could be exposed as an option - the smallest we will allow automargin to shrink a larger plot
+var MIN_REDUCED_WIDTH = 64;
+var MIN_REDUCED_HEIGHT = 64;
 
 /**
  * autoMargin: called by components that may need to expand the margins to
@@ -1890,8 +1895,20 @@ plots.autoMargin = function(gd, id, o) {
     var height = fullLayout.height;
     var margin = fullLayout.margin;
 
-    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
-    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
@@ -2021,8 +2038,20 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
-    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     if(maxSpaceW) {
         var rW = (ml + mr) / maxSpaceW;
