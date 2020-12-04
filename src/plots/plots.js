@@ -1866,8 +1866,8 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
-var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
-var minFinalHeight = 16; // could possibly be exposed as layout.margin.minfinalheight
+var MIN_FINAL_WIDTH = 64; // could possibly be exposed as layout.margin.minfinalwidth
+var MIN_FINAL_HEIGHT = 16; // could possibly be exposed as layout.margin.minfinalheight
 
 /**
  * autoMargin: called by components that may need to expand the margins to
@@ -1888,8 +1888,9 @@ plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var maxSpaceW = Math.max(0, width - minFinalWidth);
-    var maxSpaceH = Math.max(0, height - minFinalHeight);
+
+    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
+    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
@@ -1944,8 +1945,8 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var maxSpaceW = Math.max(0, width - minFinalWidth);
-    var maxSpaceH = Math.max(0, height - minFinalHeight);
+    var maxSpaceW = Math.max(0, width - MIN_FINAL_WIDTH);
+    var maxSpaceH = Math.max(0, height - MIN_FINAL_HEIGHT);
 
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
