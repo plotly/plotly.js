@@ -42,6 +42,7 @@ var list = [
     'automargin-large-margins',
     'automargin-large-margins-both-sides',
     'automargin-large-margins-horizontal',
+    'automargin-narrow-indicator',
     'automargin-mirror-all',
     'automargin-mirror-allticks',
     'automargin-multiline-titles',
@@ -1126,6 +1127,7 @@ figs['arrow-markers'] = require('@mocks/arrow-markers');
 figs['automargin-large-margins'] = require('@mocks/automargin-large-margins');
 figs['automargin-large-margins-both-sides'] = require('@mocks/automargin-large-margins-both-sides');
 figs['automargin-large-margins-horizontal'] = require('@mocks/automargin-large-margins-horizontal');
+figs['automargin-narrow-indicator'] = require('@mocks/automargin-narrow-indicator');
 figs['automargin-mirror-all'] = require('@mocks/automargin-mirror-all');
 figs['automargin-mirror-allticks'] = require('@mocks/automargin-mirror-allticks');
 figs['automargin-multiline-titles'] = require('@mocks/automargin-multiline-titles');
