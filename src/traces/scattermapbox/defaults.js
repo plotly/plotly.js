@@ -28,6 +28,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    var clusterEnabled = coerce('cluster.enabled');
+    if(clusterEnabled) {
+        coerce('cluster.maxzoom');
+        coerce('cluster.radius');
+        coerce('cluster.step');
+        coerce('cluster.color', defaultColor);
+        coerce('cluster.size');
+        coerce('cluster.opacity');
+    }
+
     coerce('text');
     coerce('texttemplate');
     coerce('hovertext');
