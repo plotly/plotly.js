@@ -61,7 +61,6 @@ proto.addSource = function(k, opts, cluster) {
         Lib.extendFlat(sourceOpts, {
             cluster: true,
             clusterMaxZoom: cluster.maxzoom,
-            clusterRadius: cluster.radius,
         });
     }
 

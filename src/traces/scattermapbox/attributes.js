@@ -40,12 +40,6 @@ module.exports = overrideAll({
                 'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
             ].join(' ')
         }),
-        radius: {
-            role: 'info',
-            valType: 'number',
-            dflt: 50,
-            description: 'Radius of each cluster when clustering points.',
-        },
         step: {
             role: 'info',
             valType: 'number',

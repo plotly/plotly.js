@@ -90,9 +90,9 @@ module.exports = function convert(gd, calcTrace) {
                 filter: ['has', 'point_count'],
                 layout: {visibility: 'visible'},
                 paint: {
-                    'circle-color': createClusterColors(trace.cluster.color, trace.cluster.step),
-                    'circle-radius': createClusterSizes(trace.cluster.size, trace.cluster.step),
-                    'circle-opacity': createClusterOpacities(trace.cluster.opacity, trace.cluster.step),
+                    'circle-color': arrayifyAttribute(trace.cluster.color, trace.cluster.step),
+                    'circle-radius': arrayifyAttribute(trace.cluster.size, trace.cluster.step),
+                    'circle-opacity': arrayifyAttribute(trace.cluster.opacity, trace.cluster.step),
                 },
             };
             opts.clusterCount = {
@@ -362,47 +362,15 @@ function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
 }
 
-function createClusterColors(colors, step) {
-    var idx, newColors;
-    if(Lib.isArrayOrTypedArray(colors)) {
-        newColors = ['step', ['get', 'point_count'], colors[0]];
-        for(idx = 1; idx < colors.length; idx++) {
-            newColors.push(step[idx - 1], colors[idx]);
+function arrayifyAttribute(attribute, step) {
+    var idx, newattribute;
+    if(Lib.isArrayOrTypedArray(attribute) && Lib.isArrayOrTypedArray(step)) {
+        newattribute = ['step', ['get', 'point_count'], attribute[0]];
+        for(idx = 1; idx < attribute.length; idx++) {
+            newattribute.push(step[idx - 1], attribute[idx]);
         }
     } else {
-        newColors = colors;
+        newattribute = attribute;
     }
-    return newColors;
-}
-
-function createClusterSizes(sizes, step) {
-    var idx, newSizes;
-    if(
-    Lib.isArrayOrTypedArray(sizes) &&
-    Lib.isArrayOrTypedArray(step)
-  ) {
-        newSizes = ['step', ['get', 'point_count'], sizes[0]];
-        for(idx = 1; idx < sizes.length; idx++) {
-            newSizes.push(step[idx - 1], sizes[idx]);
-        }
-    } else {
-        newSizes = sizes;
-    }
-    return newSizes;
-}
-
-function createClusterOpacities(opacities, step) {
-    var idx, newOpacities;
-    if(
-    Lib.isArrayOrTypedArray(opacities) &&
-    Lib.isArrayOrTypedArray(step)
-  ) {
-        newOpacities = ['step', ['get', 'point_count'], opacities[0]];
-        for(idx = 1; idx < opacities.length; idx++) {
-            newOpacities.push(step[idx - 1], opacities[idx]);
-        }
-    } else {
-        newOpacities = opacities;
-    }
-    return newOpacities;
+    return newattribute;
 }
