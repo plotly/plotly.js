@@ -665,12 +665,12 @@ describe('scattermapbox convert', function() {
         }));
 
         // Ensure that cluster and clusterCount options is added to options
-        expect(opts.cluster).toBeInstanceOf(Object)
-        expect(opts.clusterCount).toBeInstanceOf(Object)
+        expect(opts.cluster).toBeInstanceOf(Object);
+        expect(opts.clusterCount).toBeInstanceOf(Object);
 
         // Ensure correct type of layers
-        expect(opts.cluster.type).toEqual('circle')
-        expect(opts.clusterCount.type).toEqual('symbol')
+        expect(opts.cluster.type).toEqual('circle');
+        expect(opts.clusterCount.type).toEqual('symbol');
     });
 
     it('cluster colors, sizes, opacities - array', function() {
@@ -683,10 +683,10 @@ describe('scattermapbox convert', function() {
             }
         }));
 
-        expect(opts.cluster.paint['circle-color']).toEqual('red')
-        expect(opts.cluster.paint['circle-radius']).toEqual(20)
-        expect(opts.cluster.paint['circle-opacity']).toEqual(0.25)
-    })
+        expect(opts.cluster.paint['circle-color']).toEqual('red');
+        expect(opts.cluster.paint['circle-radius']).toEqual(20);
+        expect(opts.cluster.paint['circle-opacity']).toEqual(0.25);
+    });
 
     it('cluster colors, sizes, opacities - array', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
@@ -699,10 +699,10 @@ describe('scattermapbox convert', function() {
             }
         }));
 
-        expect(opts.cluster.paint['circle-color']).toEqual(['step', ['get','point_count'], 'red', 10, 'green'])
-        expect(opts.cluster.paint['circle-radius']).toEqual(['step', ['get','point_count'], 20, 10, 40])
-        expect(opts.cluster.paint['circle-opacity']).toEqual(['step', ['get','point_count'], 0.25, 10, 0.75])
-    })
+        expect(opts.cluster.paint['circle-color']).toEqual(['step', ['get', 'point_count'], 'red', 10, 'green']);
+        expect(opts.cluster.paint['circle-radius']).toEqual(['step', ['get', 'point_count'], 20, 10, 40]);
+        expect(opts.cluster.paint['circle-opacity']).toEqual(['step', ['get', 'point_count'], 0.25, 10, 0.75]);
+    });
 });
 
 describe('@noCI scattermapbox hover', function() {
