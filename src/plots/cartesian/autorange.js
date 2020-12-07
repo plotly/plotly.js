@@ -300,13 +300,10 @@ function padInsideLabelsOnAnchorAxis(ax, max) {
                         var w = t.bb.width;
                         var h = t.bb.height;
 
-                        pad = Math.max(pad, isX ?
+                        pad = Math.max(pad, TEXTPAD + isX ?
                             Math.max(w * cosA, h * sinA) :
                             Math.max(h * cosA, w * sinA)
                         );
-
-                        // add extra pad around label
-                        pad += 3;
                     }
                 });
             }
