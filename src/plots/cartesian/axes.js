@@ -3334,27 +3334,36 @@ function drawTitle(gd, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var fontSize = ax.title.font.size;
-
     var titleStandoff;
 
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
+        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
         } else {
-            var offsetBase = 1.5;
-            titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
+            var offsetBase = 1.5 * fontSize;
+            if(isInside) {
+                offsetBase = 0.5 * fontSize;
+                if(ax.ticks === 'outside') {
+                    offsetBase += ax.ticklen;
+                }
+            }
+            titleStandoff = 10 + offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
         }
 
-        if(axLetter === 'x') {
-            titleStandoff += ax.side === 'top' ?
-                fontSize * (ax.showticklabels ? 1 : 0) :
-                fontSize * (ax.showticklabels ? 1.5 : 0.5);
-        } else {
-            titleStandoff += ax.side === 'right' ?
-                fontSize * (ax.showticklabels ? 1 : 0.5) :
-                fontSize * (ax.showticklabels ? 0.5 : 0);
+        if(!isInside) {
+            if(axLetter === 'x') {
+                titleStandoff += ax.side === 'top' ?
+                    fontSize * (ax.showticklabels ? 1 : 0) :
+                    fontSize * (ax.showticklabels ? 1.5 : 0.5);
+            } else {
+                titleStandoff += ax.side === 'right' ?
+                    fontSize * (ax.showticklabels ? 1 : 0.5) :
+                    fontSize * (ax.showticklabels ? 0.5 : 0);
+            }
         }
     }
 
