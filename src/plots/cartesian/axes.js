@@ -1447,9 +1447,10 @@ function formatDate(ax, out, hover, extraPrecision) {
             else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
         } else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
             var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+            var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
             if(
-                (!isInside && ax.side === 'top') ||
-                (isInside && ax.side === 'bottom')
+                (!isInside && side === 'top') ||
+                (isInside && side === 'bottom')
             ) {
                 dateStr = headStr + '<br>' + dateStr;
             } else {
