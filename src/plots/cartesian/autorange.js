@@ -237,13 +237,13 @@ function makePadFn(ax, max) {
 
 var TEXTPAD = 3;
 
-function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
+function adjustPadForInsideLabelsOnThisAxis(pad, ax, max) {
     var ticklabelposition = ax.ticklabelposition || '';
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
 
-    if(!has('inside')) return extrappad;
+    if(!has('inside')) return pad;
     var isTop = has('top');
     var isLeft = has('left');
     var isRight = has('right');
@@ -254,7 +254,7 @@ function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
         (max && (isLeft || isBottom)) ||
         (!max && (isRight || isTop))
     ) {
-        return extrappad;
+        return pad;
     }
 
     // increase padding to make more room for inside tick labels of the axis
@@ -269,12 +269,12 @@ function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
 
     morePad += TEXTPAD;
 
-    extrappad = Math.max(extrappad, morePad);
+    pad = Math.max(pad, morePad);
 
-    return extrappad;
+    return pad;
 }
 
-function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
+function adjustPadForInsideLabelsOnAnchorAxis(pad, ax, max) {
     var anchorAxis = (ax._anchorAxis || {});
     if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
         // increase padding to make more room for inside tick labels of the counter axis
@@ -318,11 +318,11 @@ function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
                 morePad += anchorAxis.ticklen || 0;
             }
 
-            extrappad = Math.max(extrappad, morePad);
+            pad = Math.max(pad, morePad);
         }
     }
 
-    return extrappad;
+    return pad;
 }
 
 function concatExtremes(gd, ax, noMatch) {
