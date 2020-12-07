@@ -3281,9 +3281,11 @@
       "tracegroupgap": 0
     },
     "title": {
+      "font": {
+        "size": 24
+      },
       "text": "custom tick labels with ticklabelmode=\"period\""
     },
-
     "xaxis": {
       "anchor": "y",
       "domain": [
@@ -3295,7 +3297,11 @@
       "tickformat": "%b\n%Y",
       "ticklabelmode": "period",
       "ticklabelposition": "inside",
+      "ticklen": 5,
       "title": {
+        "font": {
+          "size": 20
+        },
         "text": "date"
       }
     },
@@ -3308,7 +3314,11 @@
       "linewidth": 2,
       "side": "right",
       "ticklabelposition": "inside top",
+      "ticklen": 10,
       "title": {
+        "font": {
+          "size": 20
+        },
         "text": "value"
       }
     }
