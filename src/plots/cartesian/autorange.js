@@ -297,10 +297,10 @@ function padInsideLabelsOnAnchorAxis(ax, max) {
                 // use bounding boxes
                 anchorAxis._vals.forEach(function(t) {
                     if(t.bb) {
-                        var w = t.bb.width;
-                        var h = t.bb.height;
+                        var w = 2 * TEXTPAD + t.bb.width;
+                        var h = 2 * TEXTPAD + t.bb.height;
 
-                        pad = Math.max(pad, TEXTPAD + isX ?
+                        pad = Math.max(pad, isX ?
                             Math.max(w * cosA, h * sinA) :
                             Math.max(h * cosA, w * sinA)
                         );
