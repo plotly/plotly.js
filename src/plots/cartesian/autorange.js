@@ -221,6 +221,10 @@ function makePadFn(ax, max) {
     extrappad = adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max);
     extrappad = adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max);
 
+    var pad0 = 0;
+    pad0 = adjustPadForInsideLabelsOnAnchorAxis(pad0, ax, max);
+    pad0 = adjustPadForInsideLabelsOnThisAxis(pad0, ax, max);
+
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
     if((ax.constrain === 'domain') && ax._inputDomain) {
@@ -228,7 +232,7 @@ function makePadFn(ax, max) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : pad0); };
 }
 
 var TEXTPAD = 3;
