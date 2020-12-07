@@ -1446,7 +1446,16 @@ function formatDate(ax, out, hover, extraPrecision) {
             if(tr === 'd') dateStr += ', ' + headStr;
             else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
         } else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
-            dateStr += '<br>' + headStr;
+            var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+            if(
+                (!isInside && ax.side === 'top') ||
+                (isInside && ax.side === 'bottom')
+            ) {
+                dateStr = headStr + '<br>' + dateStr;
+            } else {
+                dateStr += '<br>' + headStr;
+            }
+
             ax._prevDateHead = headStr;
         }
     }
