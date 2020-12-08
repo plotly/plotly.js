@@ -3205,6 +3205,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
+        !anchorAx.matches && !ax.matches &&
+        !anchorAx.scaleanchor && !ax.scaleanchor &&
         (ax.ticklabelposition || '').indexOf('inside') !== -1
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
