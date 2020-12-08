@@ -14,7 +14,9 @@ var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 var Registry = require('../../registry');
 
-var getFromId = require('./axis_ids').getFromId;
+var axIds = require('./axis_ids');
+var getFromId = axIds.getFromId;
+var isLinked = axIds.isLinked;
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -56,8 +58,9 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPadMin = makePadFn(ax, 0);
-    var getPadMax = makePadFn(ax, 1);
+    var fullLayout = gd._fullLayout;
+    var getPadMin = makePadFn(fullLayout, ax, 0);
+    var getPadMax = makePadFn(fullLayout, ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -202,7 +205,7 @@ function calcBreaksLength(ax, v0, v1) {
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax, max) {
+function makePadFn(fullLayout, ax, max) {
     // 5% padding for points that specify extrapad: true
     var extrappad = 0.05 * ax._length;
 
@@ -222,11 +225,7 @@ function makePadFn(ax, max) {
 
     var A = 0;
     var B = 0;
-
-    if(
-        !anchorAxis.matches && !ax.matches &&
-        !anchorAxis.scaleanchor && !ax.scaleanchor
-    ) {
+    if(!isLinked(fullLayout, ax._id)) {
         A = padInsideLabelsOnAnchorAxis(ax, max);
         B = padInsideLabelsOnThisAxis(ax, max);
     }

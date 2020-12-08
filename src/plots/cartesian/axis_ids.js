@@ -136,3 +136,26 @@ exports.ref2id = function(ar) {
     // return the axis ID. Otherwise it returns false.
     return (/^[xyz]/.test(ar)) ? ar.split(' ')[0] : false;
 };
+
+
+exports.isLinked = function(fullLayout, axId) {
+    var linked = false;
+
+    (fullLayout._axisConstraintGroups || []).forEach(function(e) {
+        if(e[axId]) {
+            linked = true;
+            return;
+        }
+    });
+
+    if(!linked) {
+        (fullLayout._axisMatchGroups || []).forEach(function(e) {
+            if(e[axId]) {
+                linked = true;
+                return;
+            }
+        });
+    }
+
+    return linked;
+};
