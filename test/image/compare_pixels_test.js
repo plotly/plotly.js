@@ -102,6 +102,7 @@ if(allMock || argv.filter) {
 
 var FLAKY_LIST = [
     'treemap_coffee',
+    'treemap_sunburst_marker_colors',
     'treemap_textposition',
     'treemap_with-without_values',
     'gl3d_directions-streamtube1',

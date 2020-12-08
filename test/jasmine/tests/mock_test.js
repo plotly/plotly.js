@@ -989,6 +989,7 @@ var list = [
     'treemap_packings',
     'treemap_pad_mirror',
     'treemap_pad_transpose',
+    'treemap_root-color',
     'treemap_sunburst_basic',
     'treemap_sunburst_marker_colors',
     'treemap_textfit',
@@ -2077,6 +2078,7 @@ figs['treemap_packages_colorscale_novalue'] = require('@mocks/treemap_packages_c
 figs['treemap_packings'] = require('@mocks/treemap_packings');
 figs['treemap_pad_mirror'] = require('@mocks/treemap_pad_mirror');
 figs['treemap_pad_transpose'] = require('@mocks/treemap_pad_transpose');
+figs['treemap_root-color'] = require('@mocks/treemap_root-color');
 figs['treemap_sunburst_basic'] = require('@mocks/treemap_sunburst_basic');
 figs['treemap_sunburst_marker_colors'] = require('@mocks/treemap_sunburst_marker_colors');
 figs['treemap_textfit'] = require('@mocks/treemap_textfit');
