@@ -206,9 +206,11 @@ function makePadFn(ax, max) {
     // 5% padding for points that specify extrapad: true
     var extrappad = 0.05 * ax._length;
 
+    var anchorAxis = ax._anchorAxis || {};
+
     if(
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
-        ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+        (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
         var axReverse = ax.autorange === 'reversed';
         if(!axReverse) {
@@ -218,8 +220,16 @@ function makePadFn(ax, max) {
         if(axReverse) max = !max;
     }
 
-    var A = padInsideLabelsOnAnchorAxis(ax, max);
-    var B = padInsideLabelsOnThisAxis(ax, max);
+    var A = 0;
+    var B = 0;
+
+    if(
+        !anchorAxis.matches && !ax.matches &&
+        !anchorAxis.scaleanchor && !ax.scaleanchor
+    ) {
+        A = padInsideLabelsOnAnchorAxis(ax, max);
+        B = padInsideLabelsOnThisAxis(ax, max);
+    }
 
     var zero = Math.max(A, B);
     extrappad = Math.max(zero, extrappad);
@@ -273,7 +283,7 @@ function padInsideLabelsOnThisAxis(ax, max) {
 
 function padInsideLabelsOnAnchorAxis(ax, max) {
     var pad = 0;
-    var anchorAxis = (ax._anchorAxis || {});
+    var anchorAxis = ax._anchorAxis || {};
     if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
         // increase padding to make more room for inside tick labels of the counter axis
         if((
