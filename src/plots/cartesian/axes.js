@@ -1445,9 +1445,23 @@ function formatDate(ax, out, hover, extraPrecision) {
             // except for year headPart: turn this into "Jan 1, 2000" etc.
             if(tr === 'd') dateStr += ', ' + headStr;
             else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
-        } else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
-            dateStr += '<br>' + headStr;
-            ax._prevDateHead = headStr;
+        } else {
+            if(
+                !ax._inCalcTicks ||
+                ax._prevDateHead !== headStr
+            ) {
+                ax._prevDateHead = headStr;
+                dateStr += '<br>' + headStr;
+            } else {
+                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
+                if(
+                    (!isInside && side === 'top') ||
+                    (isInside && side === 'bottom')
+                ) {
+                    dateStr += '<br> ';
+                }
+            }
         }
     }
 

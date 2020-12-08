@@ -255,6 +255,8 @@ proto.updateLayout = function(fullLayout, polarLayout) {
             counterclockwise: 'top',
             clockwise: 'bottom'
         }[radialLayout.side],
+        // keep track of real side
+        _realSide: radialLayout.side,
         // spans length 1 radius
         domain: [innerRadius / gs.w, radius / gs.w]
     });
