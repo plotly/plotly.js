@@ -1,0 +1,26 @@
+{
+  "data": [
+    {"z": [[1, 2], [3, 4], [5, 6]], "type": "heatmap", "showscale": false},
+    {"z": [[1, 2, 3], [6, 5, 4]], "type": "heatmap", "xaxis": "x2", "yaxis": "y2", "showscale": false},
+    {"z": [[1, 6], [2, 5], [3, 4]], "type": "heatmap", "xaxis": "x3", "yaxis": "y3", "showscale": false},
+    {"z": [[1, 2, 3], [4, 5, 6]], "type": "heatmap", "xaxis": "x4", "yaxis": "y4", "showscale": false}
+  ],
+  "layout": {
+    "xaxis": {"ticklabelposition": "inside", "domain": [0, 0.4], "constrain": "domain"},
+    "yaxis": {"ticklabelposition": "inside", "domain": [0, 0.3], "constrain": "domain", "scaleanchor": "x", "title": {"text": "constrain domain"}},
+    "xaxis2": {"ticklabelposition": "inside", "domain": [0.6, 1], "matches": "x", "anchor": "y2", "title": {"text": "<- each right subplot matches<br>the axes left and below<br>and all are constrained<br>to square bricks."}},
+    "yaxis2": {"ticklabelposition": "inside", "domain": [0.2, 0.5], "matches": "y", "anchor": "x2"},
+    "xaxis3": {"ticklabelposition": "inside", "domain": [0, 0.4], "constrain": "range", "anchor": "y3"},
+    "yaxis3": {"ticklabelposition": "inside", "domain": [0.5, 0.8], "constrain": "range", "scaleanchor": "x3", "anchor": "x3", "title": {"text": "constrain range"}},
+    "xaxis4": {"ticklabelposition": "inside", "domain": [0.6, 1], "matches": "x3", "anchor": "y4"},
+    "yaxis4": {"ticklabelposition": "inside", "domain": [0.7, 1], "matches": "y3", "anchor": "x4"},
+    "shapes": [
+        {"x0": 0, "x1": 0.4, "y0": 0, "y1": 0.3, "xref": "paper", "yref": "paper", "type": "rect", "line": {"color": "#888", "dash": "dot"}},
+        {"x0": 0.6, "x1": 1, "y0": 0.2, "y1": 0.5, "xref": "paper", "yref": "paper", "type": "rect", "line": {"color": "#888", "dash": "dot"}},
+        {"x0": 0, "x1": 0.4, "y0": 0.5, "y1": 0.8, "xref": "paper", "yref": "paper", "type": "rect", "line": {"color": "#888", "dash": "dot"}},
+        {"x0": 0.6, "x1": 1, "y0": 0.7, "y1": 1, "xref": "paper", "yref": "paper", "type": "rect", "line": {"color": "#888", "dash": "dot"}}
+    ],
+    "width": 700,
+    "height": 600
+  }
+}
