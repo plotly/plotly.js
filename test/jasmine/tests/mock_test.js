@@ -261,6 +261,7 @@ var list = [
     'custom_colorscale',
     'custom_size_subplot',
     'date_axes',
+    'date_axes_side_top',
     'date_axes_period',
     'date_axes_period2',
     'date_axes_period_breaks_automargin',
@@ -1348,6 +1349,7 @@ figs['contour-heatmap-coloring-set-contours'] = require('@mocks/contour-heatmap-
 figs['custom_colorscale'] = require('@mocks/custom_colorscale');
 figs['custom_size_subplot'] = require('@mocks/custom_size_subplot');
 figs['date_axes'] = require('@mocks/date_axes');
+figs['date_axes_side_top'] = require('@mocks/date_axes_side_top');
 figs['date_axes_period'] = require('@mocks/date_axes_period');
 figs['date_axes_period2'] = require('@mocks/date_axes_period2');
 figs['date_axes_period_breaks_automargin'] = require('@mocks/date_axes_period_breaks_automargin');
