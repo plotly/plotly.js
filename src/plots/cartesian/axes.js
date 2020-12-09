@@ -59,7 +59,7 @@ var axisIds = require('./axis_ids');
 var idSort = axisIds.idSort;
 var isLinked = axisIds.isLinked;
 
-// tight coupling to chart studio so should generally not be expanded.
+// tight coupling to chart studio
 axes.id2name = axisIds.id2name;
 axes.name2id = axisIds.name2id;
 axes.cleanId = axisIds.cleanId;
