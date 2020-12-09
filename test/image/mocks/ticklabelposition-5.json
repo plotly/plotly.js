@@ -1,0 +1,187 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "type": "bar",
+        "orientation": "h",
+        "x": [
+            67.5,
+            23.3,
+            5.2,
+            1.8,
+            0.8,
+            0.7,
+            0.23,
+            0.1,
+            0.1
+        ],
+        "y": [
+            "Hydro",
+            "Solid biomass",
+            "Wind",
+            "Ethanol",
+            "Renewable municipal waste",
+            "Solar thermal",
+            "Biodiesel",
+            "Solar photovoltaic",
+            "Tidal"
+        ]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "type": "bar",
+        "orientation": "h",
+        "x": [
+            67.5,
+            23.3,
+            5.2,
+            1.8,
+            0.8,
+            0.7,
+            0.23,
+            0.1,
+            0.1
+        ],
+        "y": [
+            "Hydro",
+            "Solid biomass",
+            "Wind",
+            "Ethanol",
+            "Renewable municipal waste",
+            "Solar thermal",
+            "Biodiesel",
+            "Solar photovoltaic",
+            "Tidal"
+        ]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "type": "bar",
+        "orientation": "v",
+        "y": [
+            67.5,
+            23.3,
+            5.2,
+            1.8,
+            0.8,
+            0.7,
+            0.23,
+            0.1,
+            0.1
+        ],
+        "x": [
+            "Hydro",
+            "Solid biomass",
+            "Wind",
+            "Ethanol",
+            "Renewable municipal waste",
+            "Solar thermal",
+            "Biodiesel",
+            "Solar photovoltaic",
+            "Tidal"
+        ]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "type": "bar",
+        "orientation": "v",
+        "y": [
+            67.5,
+            23.3,
+            5.2,
+            1.8,
+            0.8,
+            0.7,
+            0.23,
+            0.1,
+            0.1
+        ],
+        "x": [
+            "Hydro",
+            "Solid biomass",
+            "Wind",
+            "Ethanol",
+            "Renewable municipal waste",
+            "Solar thermal",
+            "Biodiesel",
+            "Solar photovoltaic",
+            "Tidal"
+        ]
+    }],
+    "layout": {
+        "xaxis": {
+            "rangemode": "nonnegative",
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "side": "bottom",
+            "ticklabelposition": "outside",
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "side": "left",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "rangemode": "nonnegative",
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "side": "bottom",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "side": "right",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "side": "top",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "rangemode": "nonnegative",
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "side": "right",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "side": "top",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "autorange": "reversed",
+            "rangemode": "nonnegative",
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "side": "left",
+            "ticklabelposition": "outside",
+            "gridcolor": "white"
+        },
+        "font": {
+            "size": 16
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 800,
+        "height": 800,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}

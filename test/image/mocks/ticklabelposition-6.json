@@ -1,0 +1,90 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "orientation": "h",
+        "x": [0.4, 0.5, 0.6, 0.7, 0.8],
+        "y": ["Oo", "Pp", "Qq", "Rr", "Ss"]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "orientation": "h",
+        "x": [0.4, 0.5, 0.6, 0.7, 0.8],
+        "y": ["Oo", "Pp", "Qq", "Rr", "Ss"]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "orientation": "v",
+        "y": [0.4, 0.5, 0.6, 0.7, 0.8],
+        "x": ["Oo", "Pp", "Qq", "Rr", "Ss"]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "orientation": "v",
+        "y": [0.4, 0.5, 0.6, 0.7, 0.8],
+        "x": ["Oo", "Pp", "Qq", "Rr", "Ss"]
+    }],
+    "layout": {
+        "xaxis": {
+            "rangemode": "nonnegative",
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "rangemode": "tozero",
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "rangemode": "nonnegative",
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "rangemode": "tozero",
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "gridcolor": "white"
+        },
+        "font": {
+            "size": 20
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 800,
+        "height": 800,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}
