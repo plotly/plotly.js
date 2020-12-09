@@ -120,8 +120,8 @@ function getAutoRange(gd, ax) {
                 } else if(dv / axLen > mbest) {
                     // in case of padding longer than the axis
                     // at least include the unpadded data values.
-                    minbest = {val: minpt.val, pad: 0};
-                    maxbest = {val: maxpt.val, pad: 0};
+                    minbest = {val: minpt.val, nopad: 1};
+                    maxbest = {val: maxpt.val, nopad: 1};
                     mbest = dv / axLen;
                 }
             }
@@ -158,17 +158,17 @@ function getAutoRange(gd, ax) {
     } else {
         if(toZero) {
             if(minbest.val >= 0) {
-                minbest = {val: 0, pad: 0};
+                minbest = {val: 0, nopad: 1};
             }
             if(maxbest.val <= 0) {
-                maxbest = {val: 0, pad: 0};
+                maxbest = {val: 0, nopad: 1};
             }
         } else if(nonNegative) {
             if(minbest.val - mbest * getPadMin(minbest) < 0) {
-                minbest = {val: 0, pad: 0};
+                minbest = {val: 0, nopad: 1};
             }
             if(maxbest.val <= 0) {
-                maxbest = {val: 1, pad: 0};
+                maxbest = {val: 1, nopad: 1};
             }
         }
 
@@ -226,10 +226,15 @@ function makePadFn(fullLayout, ax, max) {
     var A = 0;
     var B = 0;
     if(!isLinked(fullLayout, ax._id)) {
-        if(ax.rangemode !== 'nonnegative') {
+        if(
+            ax.rangemode !== 'tozero' &&
+            ax.rangemode !== 'nonnegative'
+        ) {
             A = padInsideLabelsOnAnchorAxis(ax, max);
-
-            if(anchorAxis.rangemode !== 'nonnegative') {
+            if(
+                anchorAxis.rangemode !== 'tozero' &&
+                anchorAxis.rangemode !== 'nonnegative'
+            ) {
                 B = padInsideLabelsOnThisAxis(ax, max);
             }
         }
@@ -245,7 +250,10 @@ function makePadFn(fullLayout, ax, max) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : zero); };
+    return function getPad(pt) {
+        if(pt.nopad) return 0;
+        return pt.pad + (pt.extrapad ? extrappad : zero);
+    };
 }
 
 var TEXTPAD = 3;
