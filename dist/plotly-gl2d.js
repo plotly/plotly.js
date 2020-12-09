@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.58.1
+* plotly.js (gl2d) v1.58.2
 * Copyright 2012-2020, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -88606,7 +88606,9 @@ var Lib = _dereq_('../../lib');
 var FP_SAFE = _dereq_('../../constants/numerical').FP_SAFE;
 var Registry = _dereq_('../../registry');
 
-var getFromId = _dereq_('./axis_ids').getFromId;
+var axIds = _dereq_('./axis_ids');
+var getFromId = axIds.getFromId;
+var isLinked = axIds.isLinked;
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -88648,8 +88650,9 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPadMin = makePadFn(ax, 0);
-    var getPadMax = makePadFn(ax, 1);
+    var fullLayout = gd._fullLayout;
+    var getPadMin = makePadFn(fullLayout, ax, 0);
+    var getPadMax = makePadFn(fullLayout, ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -88794,13 +88797,15 @@ function calcBreaksLength(ax, v0, v1) {
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax, max) {
+function makePadFn(fullLayout, ax, max) {
     // 5% padding for points that specify extrapad: true
     var extrappad = 0.05 * ax._length;
 
+    var anchorAxis = ax._anchorAxis || {};
+
     if(
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
-        ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+        (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
         var axReverse = ax.autorange === 'reversed';
         if(!axReverse) {
@@ -88810,8 +88815,15 @@ function makePadFn(ax, max) {
         if(axReverse) max = !max;
     }
 
-    extrappad = adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max);
-    extrappad = adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max);
+    var A = 0;
+    var B = 0;
+    if(!isLinked(fullLayout, ax._id)) {
+        A = padInsideLabelsOnAnchorAxis(ax, max);
+        B = padInsideLabelsOnThisAxis(ax, max);
+    }
+
+    var zero = Math.max(A, B);
+    extrappad = Math.max(zero, extrappad);
 
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
@@ -88820,18 +88832,18 @@ function makePadFn(ax, max) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : zero); };
 }
 
 var TEXTPAD = 3;
 
-function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
+function padInsideLabelsOnThisAxis(ax, max) {
     var ticklabelposition = ax.ticklabelposition || '';
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
 
-    if(!has('inside')) return extrappad;
+    if(!has('inside')) return 0;
     var isTop = has('top');
     var isLeft = has('left');
     var isRight = has('right');
@@ -88842,28 +88854,27 @@ function adjustPadForInsideLabelsOnThisAxis(extrappad, ax, max) {
         (max && (isLeft || isBottom)) ||
         (!max && (isRight || isTop))
     ) {
-        return extrappad;
+        return 0;
     }
 
     // increase padding to make more room for inside tick labels of the axis
     var fontSize = ax.tickfont ? ax.tickfont.size : 12;
     var isX = ax._id.charAt(0) === 'x';
-    var morePad = (isX ? 1.2 : 0.6) * fontSize;
+    var pad = (isX ? 1.2 : 0.6) * fontSize;
 
     if(isAligned) {
-        morePad *= 2;
-        morePad += (ax.tickwidth || 0) / 2;
+        pad *= 2;
+        pad += (ax.tickwidth || 0) / 2;
     }
 
-    morePad += TEXTPAD;
+    pad += TEXTPAD;
 
-    extrappad = Math.max(extrappad, morePad);
-
-    return extrappad;
+    return pad;
 }
 
-function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
-    var anchorAxis = (ax._anchorAxis || {});
+function padInsideLabelsOnAnchorAxis(ax, max) {
+    var pad = 0;
+    var anchorAxis = ax._anchorAxis || {};
     if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
         // increase padding to make more room for inside tick labels of the counter axis
         if((
@@ -88879,7 +88890,6 @@ function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
         )) {
             var isX = ax._id.charAt(0) === 'x';
 
-            var morePad = 0;
             if(anchorAxis._vals) {
                 var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
                 var cosA = Math.abs(Math.cos(rad));
@@ -88888,29 +88898,24 @@ function adjustPadForInsideLabelsOnAnchorAxis(extrappad, ax, max) {
                 // use bounding boxes
                 anchorAxis._vals.forEach(function(t) {
                     if(t.bb) {
-                        var w = t.bb.width;
-                        var h = t.bb.height;
+                        var w = 2 * TEXTPAD + t.bb.width;
+                        var h = 2 * TEXTPAD + t.bb.height;
 
-                        morePad = Math.max(morePad, isX ?
+                        pad = Math.max(pad, isX ?
                             Math.max(w * cosA, h * sinA) :
                             Math.max(h * cosA, w * sinA)
                         );
-
-                        // add extra pad around label
-                        morePad += 3;
                     }
                 });
             }
 
             if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
-                morePad += anchorAxis.ticklen || 0;
+                pad += anchorAxis.ticklen || 0;
             }
-
-            extrappad = Math.max(extrappad, morePad);
         }
     }
 
-    return extrappad;
+    return pad;
 }
 
 function concatExtremes(gd, ax, noMatch) {
@@ -89288,6 +89293,10 @@ axes.setConvert = _dereq_('./set_convert');
 var autoType = _dereq_('./axis_autotype');
 
 var axisIds = _dereq_('./axis_ids');
+var idSort = axisIds.idSort;
+var isLinked = axisIds.isLinked;
+
+// tight coupling to chart studio
 axes.id2name = axisIds.id2name;
 axes.name2id = axisIds.name2id;
 axes.cleanId = axisIds.cleanId;
@@ -90677,9 +90686,23 @@ function formatDate(ax, out, hover, extraPrecision) {
             // except for year headPart: turn this into "Jan 1, 2000" etc.
             if(tr === 'd') dateStr += ', ' + headStr;
             else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
-        } else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
-            dateStr += '<br>' + headStr;
-            ax._prevDateHead = headStr;
+        } else {
+            if(
+                !ax._inCalcTicks ||
+                ax._prevDateHead !== headStr
+            ) {
+                ax._prevDateHead = headStr;
+                dateStr += '<br>' + headStr;
+            } else {
+                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
+                if(
+                    (!isInside && side === 'top') ||
+                    (isInside && side === 'bottom')
+                ) {
+                    dateStr += '<br> ';
+                }
+            }
         }
     }
 
@@ -92125,7 +92148,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
             // If several zerolines enter at the same time we will sort once per,
             // but generally this should be a minimal overhead.
             opts.layer.selectAll('path').sort(function(da, db) {
-                return axisIds.idSort(da.id, db.id);
+                return idSort(da.id, db.id);
             });
         });
 
@@ -92423,7 +92446,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1
+        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
             fullLayout._insideTickLabelsAutorange = {};
@@ -92566,27 +92590,36 @@ function drawTitle(gd, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var fontSize = ax.title.font.size;
-
     var titleStandoff;
 
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
+        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
         } else {
-            var offsetBase = 1.5;
-            titleStandoff = 10 + fontSize * offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
+            var offsetBase = 1.5 * fontSize;
+            if(isInside) {
+                offsetBase = 0.5 * fontSize;
+                if(ax.ticks === 'outside') {
+                    offsetBase += ax.ticklen;
+                }
+            }
+            titleStandoff = 10 + offsetBase + (ax.linewidth ? ax.linewidth - 1 : 0);
         }
 
-        if(axLetter === 'x') {
-            titleStandoff += ax.side === 'top' ?
-                fontSize * (ax.showticklabels ? 1 : 0) :
-                fontSize * (ax.showticklabels ? 1.5 : 0.5);
-        } else {
-            titleStandoff += ax.side === 'right' ?
-                fontSize * (ax.showticklabels ? 1 : 0.5) :
-                fontSize * (ax.showticklabels ? 0.5 : 0);
+        if(!isInside) {
+            if(axLetter === 'x') {
+                titleStandoff += ax.side === 'top' ?
+                    fontSize * (ax.showticklabels ? 1 : 0) :
+                    fontSize * (ax.showticklabels ? 1.5 : 0.5);
+            } else {
+                titleStandoff += ax.side === 'right' ?
+                    fontSize * (ax.showticklabels ? 1 : 0.5) :
+                    fontSize * (ax.showticklabels ? 0.5 : 0);
+            }
         }
     }
 
@@ -93500,6 +93533,22 @@ exports.ref2id = function(ar) {
     return (/^[xyz]/.test(ar)) ? ar.split(' ')[0] : false;
 };
 
+function isFound(axId, list) {
+    if(list && list.length) {
+        for(var i = 0; i < list.length; i++) {
+            if(list[i][axId]) return true;
+        }
+    }
+    return false;
+}
+
+exports.isLinked = function(fullLayout, axId) {
+    return (
+        isFound(axId, fullLayout._axisMatchGroups) ||
+        isFound(axId, fullLayout._axisConstraintGroups)
+    );
+};
+
 },{"../../registry":591,"./constants":551}],549:[function(_dereq_,module,exports){
 /**
 * Copyright 2012-2020, Plotly, Inc.
@@ -94346,8 +94395,8 @@ exports.enforce = function enforce(gd) {
                         // *are* expanding to the full domain
                         var outerMin = rangeCenter - halfRange * factor * 1.0001;
                         var outerMax = rangeCenter + halfRange * factor * 1.0001;
-                        var getPadMin = autorange.makePadFn(ax, 0);
-                        var getPadMax = autorange.makePadFn(ax, 1);
+                        var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
+                        var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
 
                         updateDomain(ax, factor);
                         var m = Math.abs(ax._m);
@@ -122349,7 +122398,7 @@ module.exports = function select(searchInfo, selectionTester) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.58.1';
+exports.version = '1.58.2';
 
 },{}]},{},[5])(5)
 });
