@@ -56,6 +56,10 @@ axes.setConvert = require('./set_convert');
 var autoType = require('./axis_autotype');
 
 var axisIds = require('./axis_ids');
+var idSort = axisIds.idSort;
+var isLinked = axisIds.isLinked;
+
+// tight coupling to chart studio
 axes.id2name = axisIds.id2name;
 axes.name2id = axisIds.name2id;
 axes.cleanId = axisIds.cleanId;
@@ -2907,7 +2911,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
             // If several zerolines enter at the same time we will sort once per,
             // but generally this should be a minimal overhead.
             opts.layer.selectAll('path').sort(function(da, db) {
-                return axisIds.idSort(da.id, db.id);
+                return idSort(da.id, db.id);
             });
         });
 
@@ -3205,7 +3209,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1
+        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
             fullLayout._insideTickLabelsAutorange = {};

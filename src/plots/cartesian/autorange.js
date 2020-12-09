@@ -14,7 +14,9 @@ var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 var Registry = require('../../registry');
 
-var getFromId = require('./axis_ids').getFromId;
+var axIds = require('./axis_ids');
+var getFromId = axIds.getFromId;
+var isLinked = axIds.isLinked;
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -56,8 +58,9 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPadMin = makePadFn(ax, 0);
-    var getPadMax = makePadFn(ax, 1);
+    var fullLayout = gd._fullLayout;
+    var getPadMin = makePadFn(fullLayout, ax, 0);
+    var getPadMax = makePadFn(fullLayout, ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -202,13 +205,15 @@ function calcBreaksLength(ax, v0, v1) {
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax, max) {
+function makePadFn(fullLayout, ax, max) {
     // 5% padding for points that specify extrapad: true
     var extrappad = 0.05 * ax._length;
 
+    var anchorAxis = ax._anchorAxis || {};
+
     if(
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
-        ((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1
+        (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
         var axReverse = ax.autorange === 'reversed';
         if(!axReverse) {
@@ -218,8 +223,12 @@ function makePadFn(ax, max) {
         if(axReverse) max = !max;
     }
 
-    var A = padInsideLabelsOnAnchorAxis(ax, max);
-    var B = padInsideLabelsOnThisAxis(ax, max);
+    var A = 0;
+    var B = 0;
+    if(!isLinked(fullLayout, ax._id)) {
+        A = padInsideLabelsOnAnchorAxis(ax, max);
+        B = padInsideLabelsOnThisAxis(ax, max);
+    }
 
     var zero = Math.max(A, B);
     extrappad = Math.max(zero, extrappad);
@@ -273,7 +282,7 @@ function padInsideLabelsOnThisAxis(ax, max) {
 
 function padInsideLabelsOnAnchorAxis(ax, max) {
     var pad = 0;
-    var anchorAxis = (ax._anchorAxis || {});
+    var anchorAxis = ax._anchorAxis || {};
     if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
         // increase padding to make more room for inside tick labels of the counter axis
         if((

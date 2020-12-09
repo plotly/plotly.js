@@ -565,8 +565,8 @@ exports.enforce = function enforce(gd) {
                         // *are* expanding to the full domain
                         var outerMin = rangeCenter - halfRange * factor * 1.0001;
                         var outerMax = rangeCenter + halfRange * factor * 1.0001;
-                        var getPadMin = autorange.makePadFn(ax, 0);
-                        var getPadMax = autorange.makePadFn(ax, 1);
+                        var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
+                        var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
 
                         updateDomain(ax, factor);
                         var m = Math.abs(ax._m);
