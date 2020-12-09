@@ -137,25 +137,18 @@ exports.ref2id = function(ar) {
     return (/^[xyz]/.test(ar)) ? ar.split(' ')[0] : false;
 };
 
+function isFound(axId, list) {
+    if(list && list.length) {
+        for(var i = 0; i < list.length; i++) {
+            if(list[i][axId]) return true;
+        }
+    }
+    return false;
+}
 
 exports.isLinked = function(fullLayout, axId) {
-    var linked = false;
-
-    (fullLayout._axisConstraintGroups || []).forEach(function(e) {
-        if(e[axId]) {
-            linked = true;
-            return;
-        }
-    });
-
-    if(!linked) {
-        (fullLayout._axisMatchGroups || []).forEach(function(e) {
-            if(e[axId]) {
-                linked = true;
-                return;
-            }
-        });
-    }
-
-    return linked;
+    return (
+        isFound(axId, fullLayout._axisMatchGroups) ||
+        isFound(axId, fullLayout._axisConstraintGroups)
+    );
 };
