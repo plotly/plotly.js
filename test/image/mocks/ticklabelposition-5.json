@@ -162,6 +162,7 @@
             "gridcolor": "white"
         },
         "yaxis4": {
+            "autorange": "reversed",
             "rangemode": "nonnegative",
             "anchor": "x4",
             "domain": [0.525, 1],
@@ -170,12 +171,12 @@
             "gridcolor": "white"
         },
         "font": {
-            "size": 24
+            "size": 16
         },
         "plot_bgcolor": "lightblue",
         "showlegend": false,
-        "width": 1000,
-        "height": 1000,
+        "width": 800,
+        "height": 800,
         "margin": {
             "t": 40,
             "b": 40,
