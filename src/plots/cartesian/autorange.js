@@ -229,7 +229,9 @@ function makePadFn(fullLayout, ax, max) {
         if(ax.rangemode !== 'nonnegative') {
             A = padInsideLabelsOnAnchorAxis(ax, max);
 
-            B = padInsideLabelsOnThisAxis(ax, max);
+            if(anchorAxis.rangemode !== 'nonnegative') {
+                B = padInsideLabelsOnThisAxis(ax, max);
+            }
         }
     }
 
