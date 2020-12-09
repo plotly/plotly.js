@@ -9,6 +9,20 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.58.2] -- 2020-12-08
+
+### Fixed
+ - Fix `root.color` error for `treemap` and `sunburst` traces
+   (regression introduced in 1.58.0) [#5330]
+ - Avoid infinite redraws to compute autorange for "inside" tick labels
+   on the axes linked with `scaleanchor` and/or `matches` [#5329]
+ - Provide padding for "inside" tick labels of various cartesian traces
+   e.g. `heatmap`, `bar` and `line` plots [#5325]
+ - Adjust position of multi-line dates for tick labels in respect to
+   `side` and `ticklabelposition` on x-axis [#5326]
+ - Move `tape` to dev-dependencies [#5323]
+
+
 ## [1.58.1] -- 2020-12-04
 
 ### Fixed
