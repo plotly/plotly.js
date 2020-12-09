@@ -227,12 +227,7 @@ function makePadFn(fullLayout, ax, max) {
     var B = 0;
     if(!isLinked(fullLayout, ax._id)) {
         A = padInsideLabelsOnAnchorAxis(ax, max);
-        if(
-            anchorAxis.rangemode !== 'tozero' &&
-            anchorAxis.rangemode !== 'nonnegative'
-        ) {
-            B = padInsideLabelsOnThisAxis(ax, max);
-        }
+        B = padInsideLabelsOnThisAxis(ax, max);
     }
 
     var zero = Math.max(A, B);
