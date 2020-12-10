@@ -14,6 +14,7 @@ var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
+var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -21,6 +22,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var xa = pointData.xa;
     var ya = pointData.ya;
     var subplot = pointData.subplot;
+    var clusteredPointsIds = [];
+    var layer = LAYER_PREFIX + trace.uid + '-circle';
+
+    if(trace.cluster.enabled) {
+        var elems = subplot.map.queryRenderedFeatures(null, {layers: [layer]});
+        clusteredPointsIds = elems.map(function(elem) {return elem.id;});
+    }
 
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
@@ -34,6 +42,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     function distFn(d) {
         var lonlat = d.lonlat;
         if(lonlat[0] === BADNUM) return Infinity;
+        if(trace.cluster.enabled && clusteredPointsIds.indexOf(d.i + 1) === -1) return Infinity;
 
         var lon = Lib.modHalf(lonlat[0], 360);
         var lat = lonlat[1];

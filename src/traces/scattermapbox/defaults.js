@@ -54,6 +54,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    var clusterEnabled = coerce('cluster.enabled');
+    if(clusterEnabled) {
+        coerce('cluster.maxzoom');
+        coerce('cluster.step');
+        coerce('cluster.color', traceOut.marker.color || defaultColor);
+        coerce('cluster.size');
+        coerce('cluster.opacity');
+    }
+
     if(subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
     }

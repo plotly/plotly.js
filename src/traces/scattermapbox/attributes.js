@@ -18,6 +18,7 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var mapboxLayoutAtributes = require('../../plots/mapbox/layout_attributes');
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
@@ -25,6 +26,52 @@ var markerAttrs = scatterGeoAttrs.marker;
 module.exports = overrideAll({
     lon: scatterGeoAttrs.lon,
     lat: scatterGeoAttrs.lat,
+
+    cluster: {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            description: 'Determines whether clustering is enabled or disabled.'
+        },
+        maxzoom: extendFlat({}, mapboxLayoutAtributes.layers.maxzoom, {
+            description: [
+                'Sets the maximum zoom level.',
+                'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
+            ].join(' ')
+        }),
+        step: {
+            role: 'info',
+            valType: 'number',
+            arrayOk: true,
+            dflt: -1,
+            min: -1,
+            description: [
+                'Sets the steps for each cluster.'
+            ].join(' ')
+        },
+        size: {
+            role: 'info',
+            valType: 'number',
+            arrayOk: true,
+            dflt: 20,
+            min: 0,
+            description: [
+                'Sets the size for each cluster step.'
+            ].join(' ')
+        },
+        color: {
+            valType: 'color',
+            arrayOk: true,
+            role: 'style',
+            description: [
+                'Sets the color for each cluster step.'
+            ].join(' ')
+        },
+        opacity: extendFlat({}, markerAttrs.opacity, {
+            dflt: 1
+        })
+    },
 
     // locations
     // locationmode
