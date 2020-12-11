@@ -1158,14 +1158,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
             Plotly.restyle(gd, {
                 labels: [labels.concat(labels)],
                 values: [values.concat(values)]
+            })
+            .then(function() {
+                click(pointPos[0], pointPos[1]);
+                expect(futureData.points.length).toEqual(1);
+
+                expect(futureData.points[0].pointNumber).toBeUndefined();
+                expect(futureData.points[0].i).toBeUndefined();
+                expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
             });
-
-            click(pointPos[0], pointPos[1]);
-            expect(futureData.points.length).toEqual(1);
-
-            expect(futureData.points[0].pointNumber).toBeUndefined();
-            expect(futureData.points[0].i).toBeUndefined();
-            expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
         });
     });
 

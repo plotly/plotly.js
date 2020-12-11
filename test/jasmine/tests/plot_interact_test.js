@@ -228,19 +228,22 @@ describe('Test plot structure', function() {
                     var mockCopy = extendMock();
                     var gd = createGraphDiv();
 
-                    Plotly.plot(gd, mockCopy.data, mockCopy.layout);
-
-                    Plotly.restyle(gd, {
-                        type: 'scatter',
-                        x: [[1, 2, 3]],
-                        y: [[2, 1, 2]],
-                        z: null
-                    }, 0);
-
-                    Plotly.restyle(gd, 'type', 'contour', 1);
-
-                    Plotly.restyle(gd, 'type', 'heatmap', 2)
-                        .then(done);
+                    Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                    .then(function() {
+                        return Plotly.restyle(gd, {
+                            type: 'scatter',
+                            x: [[1, 2, 3]],
+                            y: [[2, 1, 2]],
+                            z: null
+                        }, 0);
+                    })
+                    .then(function() {
+                        return Plotly.restyle(gd, 'type', 'contour', 1);
+                    })
+                    .then(function() {
+                        return Plotly.restyle(gd, 'type', 'heatmap', 2);
+                    })
+                    .then(done);
                 });
 
                 it('has four *subplot* nodes', function() {

@@ -3230,7 +3230,7 @@ describe('Test that selections persist:', function() {
             });
 
             // trigger a recalc
-            Plotly.restyle(gd, 'x0', 1);
+            return Plotly.restyle(gd, 'x0', 1);
         })
         .then(function() {
             _assert({
@@ -3272,9 +3272,8 @@ describe('Test that selections persist:', function() {
             });
 
             // trigger a recalc
-            Plotly.restyle(gd, 'histfunc', 'sum');
+            return Plotly.restyle(gd, 'histfunc', 'sum');
         })
-        .then(done)
         .then(function() {
             _assert({
                 selected: [undefined, 1, undefined, undefined, undefined],

@@ -79,7 +79,7 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 13}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
+            return Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
         })
         .then(function() {
             countBars(1, 2);
@@ -88,7 +88,7 @@ describe('errorbar plotting', function() {
                 {ys: 34, yh: 40}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
+            return Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
         })
         .then(function() {
             countBars(2, 1);

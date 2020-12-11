@@ -221,11 +221,11 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
         expect(function() {
-            Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
+            return Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
         }).not.toThrow();
 
         expect(function() {
-            Plotly.restyle(gd, {y: [[1]]}, 0);
+            return Plotly.restyle(gd, {y: [[1]]}, 0);
         }).not.toThrow();
 
         done();

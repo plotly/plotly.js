@@ -797,13 +797,15 @@ describe('Test plot api', function() {
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, {'marker.color': 'red'});
-            expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
-            expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
-            expect(Plots.style).toHaveBeenCalled();
-            expect(plotApi.plot).not.toHaveBeenCalled();
-            // "docalc" deletes gd.calcdata - make sure this didn't happen
-            expect(gd.calcdata).toBeDefined();
+            Plotly.restyle(gd, {'marker.color': 'red'})
+            .then(function() {
+                expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
+                expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
+                expect(Plots.style).toHaveBeenCalled();
+                expect(plotApi.plot).not.toHaveBeenCalled();
+                // "docalc" deletes gd.calcdata - make sure this didn't happen
+                expect(gd.calcdata).toBeDefined();
+            });
         });
 
         it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
@@ -812,12 +814,14 @@ describe('Test plot api', function() {
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, {'marker.color': 'red'});
-            expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
-            expect(Bar.arraysToCalcdata).toHaveBeenCalled();
-            expect(Plots.style).toHaveBeenCalled();
-            expect(plotApi.plot).not.toHaveBeenCalled();
-            expect(gd.calcdata).toBeDefined();
+            Plotly.restyle(gd, {'marker.color': 'red'})
+            .then(function() {
+                expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
+                expect(Bar.arraysToCalcdata).toHaveBeenCalled();
+                expect(Plots.style).toHaveBeenCalled();
+                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(gd.calcdata).toBeDefined();
+            });
         });
 
         it('should do full replot when arrayOk attributes are updated', function() {
@@ -827,27 +831,35 @@ describe('Test plot api', function() {
             };
 
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']]);
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+            Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']])
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'marker.color', 'yellow');
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'marker.color', 'yellow');
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'marker.color', 'blue');
-            expect(gd.calcdata).toBeDefined();
-            expect(plotApi.plot).not.toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'marker.color', 'blue');
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeDefined();
+                expect(plotApi.plot).not.toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
+            });
         });
 
         it('should do full replot when arrayOk base attributes are updated', function() {
@@ -857,27 +869,35 @@ describe('Test plot api', function() {
             };
 
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']]);
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']])
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
-            expect(gd.calcdata).toBeDefined();
-            expect(plotApi.plot).not.toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeDefined();
+                expect(plotApi.plot).not.toHaveBeenCalled();
 
-            mockDefaultsAndCalc(gd);
-            plotApi.plot.calls.reset();
-            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
+                mockDefaultsAndCalc(gd);
+                plotApi.plot.calls.reset();
+                return Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
+            });
         });
 
         it('should do full replot when attribute container are updated', function() {
@@ -894,9 +914,11 @@ describe('Test plot api', function() {
                 marker: {
                     color: ['red', 'blue', 'green']
                 }
+            })
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(plotApi.plot).toHaveBeenCalled();
             });
-            expect(gd.calcdata).toBeUndefined();
-            expect(plotApi.plot).toHaveBeenCalled();
         });
 
         it('calls plot on xgap and ygap styling', function() {
@@ -906,11 +928,15 @@ describe('Test plot api', function() {
             };
 
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, {'xgap': 2});
-            expect(plotApi.plot).toHaveBeenCalled();
+            Plotly.restyle(gd, {'xgap': 2})
+            .then(function() {
+                expect(plotApi.plot).toHaveBeenCalled();
 
-            Plotly.restyle(gd, {'ygap': 2});
-            expect(plotApi.plot.calls.count()).toEqual(2);
+                return Plotly.restyle(gd, {'ygap': 2});
+            })
+            .then(function() {
+                expect(plotApi.plot.calls.count()).toEqual(2);
+            });
         });
 
         it('should clear calcdata when restyling \'zmin\' and \'zmax\' on contour traces', function() {
@@ -934,15 +960,19 @@ describe('Test plot api', function() {
             mocks.forEach(function(gd) {
                 mockDefaultsAndCalc(gd);
                 plotApi.plot.calls.reset();
-                Plotly.restyle(gd, 'zmin', 0);
-                expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                Plotly.restyle(gd, 'zmin', 0)
+                .then(function() {
+                    expect(gd.calcdata).toBeUndefined();
+                    expect(plotApi.plot).toHaveBeenCalled();
 
-                mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
-                Plotly.restyle(gd, 'zmax', 10);
-                expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                    mockDefaultsAndCalc(gd);
+                    plotApi.plot.calls.reset();
+                    return Plotly.restyle(gd, 'zmax', 10);
+                })
+                .then(function() {
+                    expect(gd.calcdata).toBeUndefined();
+                    expect(plotApi.plot).toHaveBeenCalled();
+                });
             });
         });
 
@@ -967,15 +997,19 @@ describe('Test plot api', function() {
             mocks.forEach(function(gd) {
                 mockDefaultsAndCalc(gd);
                 plotApi.plot.calls.reset();
-                Plotly.restyle(gd, 'zmin', 0);
-                expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                Plotly.restyle(gd, 'zmin', 0)
+                .then(function() {
+                    expect(gd.calcdata).toBeDefined();
+                    expect(plotApi.plot).toHaveBeenCalled();
 
-                mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
-                Plotly.restyle(gd, 'zmax', 10);
-                expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                    mockDefaultsAndCalc(gd);
+                    plotApi.plot.calls.reset();
+                    return Plotly.restyle(gd, 'zmax', 10);
+                })
+                .then(function() {
+                    expect(gd.calcdata).toBeDefined();
+                    expect(plotApi.plot).toHaveBeenCalled();
+                });
             });
         });
 
@@ -988,12 +1022,16 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
 
             // Check to see that the color is updated:
-            Plotly.restyle(gd, {'marker.color': 'blue'});
-            expect(gd._fullData[0].marker.color).toBe('blue');
+            Plotly.restyle(gd, {'marker.color': 'blue'})
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe('blue');
 
-            // Check to see that the color is unaffected:
-            Plotly.restyle(gd, {'marker.color': undefined});
-            expect(gd._fullData[0].marker.color).toBe('blue');
+                // Check to see that the color is unaffected:
+                return Plotly.restyle(gd, {'marker.color': undefined});
+            })
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe('blue');
+            });
         });
 
         it('ignores invalid trace indices', function() {
@@ -1018,12 +1056,16 @@ describe('Test plot api', function() {
             var colorDflt = gd._fullData[0].marker.color;
 
             // Check to see that the color is updated:
-            Plotly.restyle(gd, {'marker.color': 'blue'});
-            expect(gd._fullData[0].marker.color).toBe('blue');
+            Plotly.restyle(gd, {'marker.color': 'blue'})
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe('blue');
 
-            // Check to see that the color is restored to the original default:
-            Plotly.restyle(gd, {'marker.color': null});
-            expect(gd._fullData[0].marker.color).toBe(colorDflt);
+                // Check to see that the color is restored to the original default:
+                return Plotly.restyle(gd, {'marker.color': null});
+            })
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe(colorDflt);
+            });
         });
 
         it('can target specific traces by leaving properties undefined', function() {
@@ -1039,14 +1081,18 @@ describe('Test plot api', function() {
             var colorDflt = [gd._fullData[0].marker.color, gd._fullData[1].marker.color];
 
             // Check only second trace's color has been changed:
-            Plotly.restyle(gd, {'marker.color': [undefined, 'green']});
-            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
-            expect(gd._fullData[1].marker.color).toBe('green');
+            Plotly.restyle(gd, {'marker.color': [undefined, 'green']})
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+                expect(gd._fullData[1].marker.color).toBe('green');
 
-            // Check both colors restored to the original default:
-            Plotly.restyle(gd, {'marker.color': [null, null]});
-            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
-            expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
+                // Check both colors restored to the original default:
+                return Plotly.restyle(gd, {'marker.color': [null, null]});
+            })
+            .then(function() {
+                expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+                expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
+            });
         });
     });
 
