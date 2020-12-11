@@ -107,27 +107,25 @@ describe('Layout images', function() {
             expect(subplotLayer.selectAll('image').size()).toBe(subplot);
         }
 
-        it('should draw images on the right layers', function() {
-            Plotly.plot(gd, data, { images: [{
+        it('should draw images on the right layers', function(done) {
+            Plotly.newPlot(gd, data, { images: [{
                 source: jsLogo,
                 layer: 'above'
             }]})
             .then(function() {
                 checkLayers(1, 0, 0);
-
-                destroyGraphDiv();
-                gd = createGraphDiv();
-                return Plotly.plot(gd, data, { images: [{
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     layer: 'below'
                 }]});
             })
             .then(function() {
                 checkLayers(0, 1, 0);
-
-                destroyGraphDiv();
-                gd = createGraphDiv();
-                return Plotly.plot(gd, data, { images: [{
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     layer: 'below',
                     xref: 'x',
@@ -136,10 +134,12 @@ describe('Layout images', function() {
             })
             .then(function() {
                 checkLayers(0, 0, 1);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should fall back on imageLowerLayer for below missing subplots', function() {
+        it('should fall back on imageLowerLayer for below missing subplots', function(done) {
             Plotly.newPlot(gd, [
                 {x: [1, 3], y: [1, 3]},
                 {x: [1, 3], y: [1, 3], xaxis: 'x2', yaxis: 'y2'}
@@ -159,45 +159,87 @@ describe('Layout images', function() {
                     xref: 'x2',
                     yref: 'y'
                 }]
-            });
-
-            checkLayers(0, 2, 0);
+            })
+            .then(function() {
+                checkLayers(0, 2, 0);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         describe('with anchors and sizing', function() {
-            function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
-                Plotly.plot(gd, data, { images: [{
-                    source: jsLogo,
-                    xanchor: xAnchor,
-                    yanchor: yAnchor,
-                    sizing: sizing
-                }]})
-                .then(function() {
-                    var image = Plotly.d3.select('image');
-                    var parValue = image.attr('preserveAspectRatio');
+            function testAspectRatio(expected) {
+                var image = Plotly.d3.select('image');
+                var parValue = image.attr('preserveAspectRatio');
 
-                    expect(parValue).toBe(expected);
-                });
+                expect(parValue).toBe(expected);
             }
 
-            it('should work for center middle', function() {
-                testAspectRatio('center', 'middle', undefined, 'xMidYMid');
+            it('should work for center middle', function(done) {
+                Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    xanchor: 'center',
+                    yanchor: 'middle'
+                }]})
+                .then(function() {
+                    expect(Plotly.d3.select('image').attr('preserveAspectRatio')).toBe('xMidYMid');
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should work for left top', function() {
-                testAspectRatio('left', 'top', undefined, 'xMinYMin');
+            it('should work for left top', function(done) {
+                Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    xanchor: 'left',
+                    yanchor: 'top'
+                }]})
+                .then(function() {
+                    testAspectRatio('xMinYMin');
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should work for right bottom', function() {
-                testAspectRatio('right', 'bottom', undefined, 'xMaxYMax');
+            it('should work for right bottom', function(done) {
+                Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    xanchor: 'right',
+                    yanchor: 'bottom'
+                }]})
+                .then(function() {
+                    testAspectRatio('xMaxYMax');
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should work for stretch sizing', function() {
-                testAspectRatio('middle', 'center', 'stretch', 'none');
+            it('should work for stretch sizing', function(done) {
+                Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    xanchor: 'middle',
+                    yanchor: 'center',
+                    sizing: 'stretch'
+                }]})
+                .then(function() {
+                    testAspectRatio('none');
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should work for fill sizing', function() {
-                testAspectRatio('invalid', 'invalid', 'fill', 'xMinYMin slice');
+            it('should work for fill sizing', function(done) {
+                Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    xanchor: 'invalid',
+                    yanchor: 'invalid',
+                    sizing: 'fill'
+                }]})
+                .then(function() {
+                    testAspectRatio('xMinYMin slice');
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -241,7 +283,9 @@ describe('Layout images', function() {
                 expect(newPos.top).toBe(oldPos.top);
 
                 mouseEvent('mouseup', 300, 250);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should move when referencing axes', function(done) {
@@ -273,7 +317,9 @@ describe('Layout images', function() {
                 expect(newPos.top).toBe(oldPos.top + 50);
 
                 mouseEvent('mouseup', 300, 250);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -333,7 +379,9 @@ describe('Layout images', function() {
                 var newImg = Plotly.d3.select('image');
                 var newUrl = newImg.attr('xlink:href');
                 expect(url).not.toBe(newUrl);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should update the image position if changed', function(done) {
@@ -350,7 +398,9 @@ describe('Layout images', function() {
             .then(function() {
                 var newImg = Plotly.d3.select('image');
                 expect([+newImg.attr('x'), +newImg.attr('y')]).toEqual([80, 100]);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should remove the image tag if an invalid source', function(done) {
@@ -361,7 +411,9 @@ describe('Layout images', function() {
             .then(function() {
                 var newSelection = Plotly.d3.select('image');
                 expect(newSelection.size()).toBe(0);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -438,9 +490,9 @@ describe('Layout images', function() {
             .then(function() {
                 assertImages(0);
                 expect(gd.layout.images).toBeUndefined();
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
