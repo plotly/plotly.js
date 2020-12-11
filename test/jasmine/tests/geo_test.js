@@ -1064,9 +1064,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should toggle choropleth elements', function(done) {
@@ -1081,9 +1081,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1113,9 +1113,9 @@ describe('Test geo interactions', function() {
                     expect(countTraces('choropleth')).toBe(0);
                     expect(countGeos()).toBe(0);
                     expect(countColorBars()).toBe(0);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1307,9 +1307,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(N_LOCATIONS_AT_START - 1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should be able to update line/marker/text nodes and choropleth paths', function(done) {
@@ -1334,9 +1334,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(locationsQueue.length);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });

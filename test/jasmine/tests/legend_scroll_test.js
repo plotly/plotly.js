@@ -389,9 +389,9 @@ describe('The legend', function() {
             .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should resize when relayout\'ed with new height', function(done) {
@@ -408,9 +408,9 @@ describe('The legend', function() {
                 // clippath resized to new height less than new plot height
                 expect(+legendHeight).toBe(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -443,9 +443,9 @@ describe('The legend', function() {
             .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should resize when traces added', function(done) {
@@ -455,9 +455,9 @@ describe('The legend', function() {
                 var legendHeight = getLegendHeight(gd);
 
                 expect(+legendHeight).toBeCloseTo(+origLegendHeight + 19, 0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

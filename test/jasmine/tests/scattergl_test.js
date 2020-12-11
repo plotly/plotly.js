@@ -219,16 +219,19 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should change plot type with incomplete data', function(done) {
-        Plotly.plot(gd, [{}]);
-        expect(function() {
-            return Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
-        }).not.toThrow();
-
-        expect(function() {
-            return Plotly.restyle(gd, {y: [[1]]}, 0);
-        }).not.toThrow();
-
-        done();
+        Plotly.plot(gd, [{}])
+        .then(function() {
+            expect(function() {
+                return Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
+            }).not.toThrow();
+        })
+        .then(function() {
+            expect(function() {
+                return Plotly.restyle(gd, {y: [[1]]}, 0);
+            }).not.toThrow();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should restyle opacity', function(done) {

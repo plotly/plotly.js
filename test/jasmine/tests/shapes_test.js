@@ -881,8 +881,9 @@ describe('A fixed size path shape', function() {
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 30, 20);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
           });
     });
 
@@ -903,8 +904,9 @@ describe('A fixed size path shape', function() {
                     expect(bbox.height).toBe(20);
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
@@ -925,8 +927,9 @@ describe('A fixed size path shape', function() {
                     expect(bbox.width).toBe(30);
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 });
@@ -1054,8 +1057,9 @@ describe('A fixed size shape', function() {
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 25, 25);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
           });
     });
 
@@ -1077,8 +1081,9 @@ describe('A fixed size shape', function() {
                     expect(bbox.height).toBe(25);
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
@@ -1100,8 +1105,9 @@ describe('A fixed size shape', function() {
                     expect(bbox.width).toBe(25);
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
@@ -1142,8 +1148,9 @@ describe('A fixed size shape', function() {
                                 expect(bBoxAfterDrag.height).toBe(bBoxBeforeDrag.height + resizeFactor * Math.abs(dy));
                                 expect(bBoxAfterDrag.width).toBe(bBoxBeforeDrag.width + resizeFactor * Math.abs(dx));
                                 assertShapeFullyVisible(shapeNodeAfterDrag);
-                                done();
-                            });
+                            })
+                            .catch(failTest)
+                            .then(done);
                       });
                 });
             });
@@ -1171,9 +1178,9 @@ describe('A fixed size shape', function() {
                         assertShapeSize(shapeNodeAfterDrag, 25, 25);
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 10);
                         expect(bBoxAfterDrag.top).toBe(bBoxBeforeDrag.top - 10);
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
 
@@ -1194,9 +1201,9 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.right).toBe(bBoxBeforeDrag.right + 25, 'right');
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 25, 'left');
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
 
@@ -1217,9 +1224,9 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.right).toBe(bBoxBeforeDrag.right + 50, 'right');
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom - 10, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left, 'left');
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
     });

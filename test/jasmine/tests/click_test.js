@@ -409,10 +409,12 @@ describe('Test click interactions:', function() {
         });
 
         it('should return null', function(done) {
-            doubleClick(pointPos[0], pointPos[1]).then(function() {
+            doubleClick(pointPos[0], pointPos[1])
+            .then(function() {
                 expect(futureData).toBe(null);
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -712,9 +714,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset+autorange\' (the default) should reset to set range on double click', function(done) {
@@ -733,9 +735,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and reset on 2nd', function(done) {
@@ -814,9 +816,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should work when \'autorange\' is on', function(done) {
@@ -833,9 +835,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should reset to set range on double click', function(done) {
@@ -854,9 +856,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should reset on all double clicks', function(done) {
@@ -870,9 +872,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should work when \'autorange\' is on', function(done) {
@@ -889,9 +891,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should set to autorange on double click', function(done) {
@@ -910,9 +912,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should reset on all double clicks', function(done) {
@@ -926,9 +928,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should not try to autorange fixedrange:true axes when rangeInitial is not set', function(done) {

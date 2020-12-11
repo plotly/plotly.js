@@ -244,9 +244,9 @@ describe('Plotly.Snapshot', function() {
                     expect(textElements[i].style.visibility).toEqual('');
                     expect(textElements[i].style.display).toEqual('');
                 }
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         describe('should handle quoted style properties', function() {

@@ -762,6 +762,7 @@ describe('@noCI scattermapbox hover', function() {
             out = hoverPoints(getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)<br>A');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -801,8 +802,9 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('lon: 10°');
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
@@ -813,8 +815,9 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('lat: 10°');
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
@@ -825,8 +828,9 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('A');
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
@@ -837,8 +841,9 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('Apple');
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should generate hover label (\'marker.color\' array case)', function(done) {
@@ -847,6 +852,7 @@ describe('@noCI scattermapbox hover', function() {
 
             expect(out.color).toEqual('red');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -856,6 +862,7 @@ describe('@noCI scattermapbox hover', function() {
 
             expect(out.color).toEqual('rgb(245, 195, 157)');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -892,8 +899,9 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.hovertemplate).toEqual('tpl');
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl should always display hoverlabel when hovertemplate is defined', function(done) {
@@ -903,8 +911,9 @@ describe('@noCI scattermapbox hover', function() {
         })
         .then(function() {
             checkHoverLabel([190, 215], ['tpl2', '']);
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
@@ -1072,7 +1081,9 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 expect(pt.lat).toEqual(10, 'points[0].lat');
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
@@ -1201,7 +1212,9 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
                 expect(pt.lat).toEqual(10, 'points[0].lat');
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

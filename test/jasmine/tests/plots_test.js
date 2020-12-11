@@ -787,8 +787,9 @@ describe('Test Plots', function() {
                 expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should handle cases when module plot is not set (ternary case)', function(done) {
@@ -806,8 +807,9 @@ describe('Test Plots', function() {
                 expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

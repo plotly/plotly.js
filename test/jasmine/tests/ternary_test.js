@@ -55,9 +55,9 @@ describe('ternary plots', function() {
                 return Plotly.restyle(gd, 'visible', true);
             }).then(function() {
                 expect(countTraces('scatter')).toEqual(1);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to delete and add traces', function(done) {
@@ -97,9 +97,9 @@ describe('ternary plots', function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
                 checkTitles(1);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to restyle', function(done) {
