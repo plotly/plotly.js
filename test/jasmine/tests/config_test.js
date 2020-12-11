@@ -444,10 +444,9 @@ describe('config argument', function() {
         var gd;
         var mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
@@ -461,18 +460,22 @@ describe('config argument', function() {
             });
         }
 
-        it('should have drag rectangles cursors by default', function() {
+        it('should have drag rectangles cursors by default', function(done) {
             Plotly.plot(gd, mockCopy.data, {})
             .then(function() {
                 testDraggers(1);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should not have drag rectangles when disabled', function() {
+        it('should not have drag rectangles when disabled', function(done) {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false })
             .then(function() {
                 testDraggers(0);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
