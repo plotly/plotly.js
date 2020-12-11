@@ -1468,7 +1468,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.range).toEqual([-1, 6]);
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.07, 1.07]);
 
-                Plotly.relayout(gd, 'yaxis.autorange', false);
+                return Plotly.relayout(gd, 'yaxis.autorange', false);
             }).then(function() {
                 expect(gd._fullLayout.yaxis.autorange).toBe(false);
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.07, 1.07]);
