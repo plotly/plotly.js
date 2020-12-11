@@ -695,7 +695,9 @@ describe('Test plot api', function() {
                 'grid.subplots[1][1]': 'xy'
             };
 
-            for(var attr in axLayoutEdits) {
+            var attr;
+            var checkAttr = expectReplot(attr);
+            for(attr in axLayoutEdits) {
                 gd = mock({
                     data: [{y: [1, 2]}, {y: [4, 3], xaxis: 'x2', yaxis: 'y2'}],
                     layout: {
@@ -705,9 +707,7 @@ describe('Test plot api', function() {
                 });
 
                 Plotly.relayout(gd, attr, axLayoutEdits[attr])
-                .then(function() {
-                    expectReplot(attr);
-                });
+                .then(checkAttr);
             }
         });
 
