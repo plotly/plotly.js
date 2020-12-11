@@ -324,30 +324,32 @@ describe('The legend', function() {
             scrollBarX = scrollBar.getAttribute('x'),
             scrollBarY = scrollBar.getAttribute('y');
 
-            Plotly.relayout(gd, 'showlegend', false);
-            Plotly.relayout(gd, 'showlegend', true);
+            Plotly.relayout(gd, 'showlegend', false)
+            .then(function() {
+                Plotly.relayout(gd, 'showlegend', true);
 
-            legend = getLegend();
-            scrollBox = getScrollBox();
-            scrollBar = getScrollBar();
-            toggle = getToggle();
+                legend = getLegend();
+                scrollBox = getScrollBox();
+                scrollBar = getScrollBar();
+                toggle = getToggle();
 
-            legend.dispatchEvent(scrollTo(wheelDeltaY));
-            expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
-            expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
+                legend.dispatchEvent(scrollTo(wheelDeltaY));
+                expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
+                expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
 
-            var dataScroll = getScroll(gd);
-            toggle.dispatchEvent(new MouseEvent('mousedown'));
-            toggle.dispatchEvent(new MouseEvent('mouseup'));
-            setTimeout(function() {
-                expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-                expect(getScroll(gd)).toBe(dataScroll);
-                expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0,' + -dataScroll + ')');
-                expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
-                expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
-                done();
-            }, DBLCLICKDELAY * 2);
+                var dataScroll = getScroll(gd);
+                toggle.dispatchEvent(new MouseEvent('mousedown'));
+                toggle.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+                    expect(getScroll(gd)).toBe(dataScroll);
+                    expect(scrollBox.getAttribute('transform')).toBe(
+                        'translate(0,' + -dataScroll + ')');
+                    expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+                    expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+                    done();
+                }, DBLCLICKDELAY * 2);
+            });
         });
 
         it('should constrain scrolling to the contents', function() {
@@ -384,7 +386,8 @@ describe('The legend', function() {
             expect(countLegendGroups(gd)).toBe(1);
             expect(countLegendClipPaths(gd)).toBe(1);
 
-            Plotly.relayout(gd, 'showlegend', false).then(function() {
+            Plotly.relayout(gd, 'showlegend', false)
+            .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
 
@@ -395,7 +398,8 @@ describe('The legend', function() {
         it('should resize when relayout\'ed with new height', function(done) {
             var origLegendHeight = getLegendHeight(gd);
 
-            Plotly.relayout(gd, 'height', gd._fullLayout.height / 2).then(function() {
+            Plotly.relayout(gd, 'height', gd._fullLayout.height / 2)
+            .then(function() {
                 var legendHeight = getLegendHeight(gd);
 
                 // legend still exists and not duplicated
@@ -436,7 +440,8 @@ describe('The legend', function() {
             expect(countLegendGroups(gd)).toBe(1);
             expect(countLegendClipPaths(gd)).toBe(1);
 
-            Plotly.relayout(gd, 'showlegend', false).then(function() {
+            Plotly.relayout(gd, 'showlegend', false)
+            .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
 

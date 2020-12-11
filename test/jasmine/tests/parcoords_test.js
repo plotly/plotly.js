@@ -1098,7 +1098,8 @@ describe('parcoords basic use', function() {
     it('@gl Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
         expect(gd.layout.width).toEqual(1184);
 
-        Plotly.relayout(gd, 'width', 500).then(function() {
+        Plotly.relayout(gd, 'width', 500)
+        .then(function() {
             expect(gd.data.length).toEqual(1);
 
             expect(gd.layout.width).toEqual(500);
@@ -1116,7 +1117,8 @@ describe('parcoords basic use', function() {
     it('@gl Calling `Plotly.relayout`with object should amend the preexisting parcoords', function(done) {
         expect(gd.layout.width).toEqual(1184);
 
-        Plotly.relayout(gd, {width: 500}).then(function() {
+        Plotly.relayout(gd, {width: 500})
+        .then(function() {
             expect(gd.data.length).toEqual(1);
 
             expect(gd.layout.width).toEqual(500);

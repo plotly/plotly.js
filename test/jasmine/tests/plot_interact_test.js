@@ -124,7 +124,8 @@ describe('Test plot structure', function() {
                 expect(countScatterTraces()).toEqual(mock.data.length);
                 expect(countSubplots()).toEqual(1);
 
-                Plotly.relayout(gd, {xaxis: null, yaxis: null}).then(function() {
+                Plotly.relayout(gd, {xaxis: null, yaxis: null})
+                .then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);

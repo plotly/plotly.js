@@ -874,7 +874,8 @@ describe('Test geo interactions', function() {
                     'geo.projection.rotation': { lon: 82, lat: -19 }
                 };
 
-                Plotly.relayout(gd, update).then(function() {
+                Plotly.relayout(gd, update)
+                .then(function() {
                     setTimeout(function() {
                         mouseEvent('mousemove', 288, 170);
 

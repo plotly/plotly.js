@@ -718,7 +718,8 @@ describe('@noCI, mapbox plots', function() {
 
         assertLayout([-4.710, 19.475], 1.234, [80, 100, 908, 270]);
 
-        Plotly.relayout(gd, 'mapbox.center', { lon: 0, lat: 0 }).then(function() {
+        Plotly.relayout(gd, 'mapbox.center', { lon: 0, lat: 0 })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(1);
 
@@ -765,7 +766,8 @@ describe('@noCI, mapbox plots', function() {
 
         assertLayout('Mapbox Dark');
 
-        Plotly.relayout(gd, 'mapbox.style', 'light').then(function() {
+        Plotly.relayout(gd, 'mapbox.style', 'light')
+        .then(function() {
             assertLayout('Mapbox Light');
 
             return Plotly.relayout(gd, 'mapbox.style', 'dark');
@@ -841,7 +843,8 @@ describe('@noCI, mapbox plots', function() {
 
         expect(countVisibleLayers(gd)).toEqual(0);
 
-        Plotly.relayout(gd, 'mapbox.layers[0]', layer0).then(function() {
+        Plotly.relayout(gd, 'mapbox.layers[0]', layer0)
+        .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
@@ -1138,13 +1141,15 @@ describe('@noCI, mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update the access token', function(done) {
-        Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
+        Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work')
+        .catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
             expect(gd._promises.length).toEqual(1);
 
             return Plotly.relayout(gd, 'mapbox.accesstoken', MAPBOX_ACCESS_TOKEN);
-        }).then(function() {
+        })
+        .then(function() {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
             expect(gd._promises.length).toEqual(0);
         })

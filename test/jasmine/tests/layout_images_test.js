@@ -309,8 +309,9 @@ describe('Layout images', function() {
             Plotly.relayout(gd, 'images[0].source', dataUriImage)
             .then(function() {
                 expect(newCanvasElement).toBeUndefined();
+
+                return Plotly.relayout(gd, 'images[0].source', jsLogo);
             })
-            .then(function() { return Plotly.relayout(gd, 'images[0].source', jsLogo); })
             .then(function() {
                 expect(newCanvasElement).toBeDefined();
                 expect(newCanvasElement.toDataURL).toHaveBeenCalledTimes(1);
@@ -323,7 +324,8 @@ describe('Layout images', function() {
             var img = Plotly.d3.select('image');
             var url = img.attr('xlink:href');
 
-            Plotly.relayout(gd, 'images[0].source', pythonLogo).then(function() {
+            Plotly.relayout(gd, 'images[0].source', pythonLogo)
+            .then(function() {
                 var newImg = Plotly.d3.select('image');
                 var newUrl = newImg.attr('xlink:href');
                 expect(url).not.toBe(newUrl);
@@ -340,7 +342,8 @@ describe('Layout images', function() {
 
             expect([+img.attr('x'), +img.attr('y')]).toEqual([760, -120]);
 
-            Plotly.relayout(gd, update).then(function() {
+            Plotly.relayout(gd, update)
+            .then(function() {
                 var newImg = Plotly.d3.select('image');
                 expect([+newImg.attr('x'), +newImg.attr('y')]).toEqual([80, 100]);
             }).then(done);
@@ -350,7 +353,8 @@ describe('Layout images', function() {
             var selection = Plotly.d3.select('image');
             expect(selection.size()).toBe(1);
 
-            Plotly.relayout(gd, 'images[0].source', 'invalidUrl').then(function() {
+            Plotly.relayout(gd, 'images[0].source', 'invalidUrl')
+            .then(function() {
                 var newSelection = Plotly.d3.select('image');
                 expect(newSelection.size()).toBe(0);
             }).then(done);

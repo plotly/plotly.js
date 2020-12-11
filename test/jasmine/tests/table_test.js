@@ -350,7 +350,8 @@ describe('table', function() {
 
         it('Calling `Plotly.relayout` with string should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
-            Plotly.relayout(gd, 'width', 500).then(function() {
+            Plotly.relayout(gd, 'width', 500)
+            .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
                 done();
@@ -359,7 +360,8 @@ describe('table', function() {
 
         it('Calling `Plotly.relayout` with object should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
-            Plotly.relayout(gd, {width: 500}).then(function() {
+            Plotly.relayout(gd, {width: 500})
+            .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
                 done();

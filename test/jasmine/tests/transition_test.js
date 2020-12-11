@@ -76,7 +76,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2;
 
-            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]}).then(function() {
+            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]})
+            .then(function() {
                 p1 = annotationPosition();
 
                 return Plots.transition(gd, null, {
@@ -107,7 +108,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2, e1, e2;
 
-            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]}).then(function() {
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]})
+            .then(function() {
                 p1 = imagesrc();
                 e1 = imageel();
 

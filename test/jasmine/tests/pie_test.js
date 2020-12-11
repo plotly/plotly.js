@@ -1686,9 +1686,11 @@ describe('Test event data of interactions on a pie plot:', function() {
         });
 
         it('should not emit a hover if hover is disabled', function() {
-            Plotly.relayout(gd, 'hovermode', false);
-            mouseEvent('mouseover', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+            Plotly.relayout(gd, 'hovermode', false)
+            .then(function() {
+                mouseEvent('mouseover', pointPos[0], pointPos[1]);
+                expect(futureData).toBeUndefined();
+            });
         });
     });
 

@@ -547,25 +547,26 @@ describe('Test plot api', function() {
 
         it('passes update data back to plotly_relayout unmodified ' +
           'even if deprecated attributes have been used', function(done) {
-            Plotly.newPlot(gd, [{y: [1, 3, 2]}]);
+            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
+            .then(function() {
+                gd.on('plotly_relayout', function(eventData) {
+                    expect(eventData).toEqual({
+                        'title': 'Plotly chart',
+                        'xaxis.title': 'X',
+                        'xaxis.titlefont': {color: 'green'},
+                        'yaxis.title': 'Y',
+                        'polar.radialaxis.title': 'Radial'
+                    });
+                    done();
+                });
 
-            gd.on('plotly_relayout', function(eventData) {
-                expect(eventData).toEqual({
+                Plotly.relayout(gd, {
                     'title': 'Plotly chart',
                     'xaxis.title': 'X',
                     'xaxis.titlefont': {color: 'green'},
                     'yaxis.title': 'Y',
                     'polar.radialaxis.title': 'Radial'
                 });
-                done();
-            });
-
-            Plotly.relayout(gd, {
-                'title': 'Plotly chart',
-                'xaxis.title': 'X',
-                'xaxis.titlefont': {color: 'green'},
-                'yaxis.title': 'Y',
-                'polar.radialaxis.title': 'Radial'
             });
         });
     });
@@ -631,23 +632,35 @@ describe('Test plot api', function() {
                 }
             });
 
-            Plotly.relayout(gd, 'dragmode', 'pan');
-            expectModeBarOnly('pan');
+            Plotly.relayout(gd, 'dragmode', 'pan')
+            .then(function() {
+                expectModeBarOnly('pan');
 
-            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
-            expectReplot('lasso 1');
+                return Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            })
+            .then(function() {
+                expectReplot('lasso 1');
 
-            Plotly.relayout(mock(gd), 'dragmode', 'select');
-            expectModeBarOnly('select 1');
+                return Plotly.relayout(mock(gd), 'dragmode', 'select');
+            })
+            .then(function() {
+                expectModeBarOnly('select 1');
 
-            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
-            expectModeBarOnly('lasso 2');
+                return Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            })
+            .then(function() {
+                expectModeBarOnly('lasso 2');
 
-            Plotly.relayout(mock(gd), 'dragmode', 'zoom');
-            expectModeBarOnly('zoom');
+                return Plotly.relayout(mock(gd), 'dragmode', 'zoom');
+            })
+            .then(function() {
+                expectModeBarOnly('zoom');
 
-            Plotly.relayout(mock(gd), 'dragmode', 'select');
-            expectReplot('select 2');
+                return Plotly.relayout(mock(gd), 'dragmode', 'select');
+            })
+            .then(function() {
+                expectReplot('select 2');
+            });
         });
 
         it('should trigger replot (but not recalc) when changing attributes that affect axis length/range', function() {
@@ -691,8 +704,10 @@ describe('Test plot api', function() {
                     }
                 });
 
-                Plotly.relayout(gd, attr, axLayoutEdits[attr]);
-                expectReplot(attr);
+                Plotly.relayout(gd, attr, axLayoutEdits[attr])
+                .then(function() {
+                    expectReplot(attr);
+                });
             }
         });
 
@@ -751,8 +766,10 @@ describe('Test plot api', function() {
                 }
             });
 
-            Plotly.relayout(gd, 'xaxis.range[0]', 0);
-            expect(gd.calcdata).toBeUndefined();
+            Plotly.relayout(gd, 'xaxis.range[0]', 0)
+            .then(function() {
+                expect(gd.calcdata).toBeUndefined();
+            });
         });
     });
 

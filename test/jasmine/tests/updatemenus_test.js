@@ -508,7 +508,8 @@ describe('update menus interactions', function() {
         // the command by setting execute = false first:
         expect(gd.data[0].line.color).toEqual('blue');
 
-        Plotly.relayout(gd, 'updatemenus[0].buttons[2].execute', false).then(function() {
+        Plotly.relayout(gd, 'updatemenus[0].buttons[2].execute', false)
+        .then(function() {
             return click(selectHeader(0));
         }).then(function() {
             return click(selectButton(2));
@@ -730,7 +731,8 @@ describe('update menus interactions', function() {
         assertItemColor(selectHeader(0), 'rgb(255, 255, 255)');
         assertItemDims(selectHeader(1), 95, 33);
 
-        Plotly.relayout(gd, 'updatemenus[0].bgcolor', 'red').then(function() {
+        Plotly.relayout(gd, 'updatemenus[0].bgcolor', 'red')
+        .then(function() {
             assertItemColor(selectHeader(0), 'rgb(255, 0, 0)');
 
             return click(selectHeader(0));

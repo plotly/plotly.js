@@ -136,7 +136,8 @@ describe('Test click interactions:', function() {
         });
 
         it('works with fixedrange axes', function(done) {
-            Plotly.relayout(gd, {'xaxis.fixedrange': true, 'yaxis.fixedrange': true}).then(function() {
+            Plotly.relayout(gd, {'xaxis.fixedrange': true, 'yaxis.fixedrange': true})
+            .then(function() {
                 click(pointPos[0], pointPos[1]);
                 expect(futureData.points.length).toEqual(1);
                 expect(clickPassthroughs).toBe(2);

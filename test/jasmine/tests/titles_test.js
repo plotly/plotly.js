@@ -157,14 +157,16 @@ describe('Plot title', function() {
         Plotly.plot(gd, data, extendLayout({
             yref: 'container',
             y: 'auto'
-        }));
+        }))
+        .then(function() {
+            expectBaselineInMiddleOfTopMargin(gd);
 
-        expectBaselineInMiddleOfTopMargin(gd);
-
-        // yref: 'paper'
-        Plotly.relayout(gd, {'title.yref': 'paper'});
-
-        expectBaselineInMiddleOfTopMargin(gd);
+            // yref: 'paper'
+            return Plotly.relayout(gd, {'title.yref': 'paper'});
+        })
+        .then(function() {
+            expectBaselineInMiddleOfTopMargin(gd);
+        });
     });
 
     // xanchor 'auto' test
@@ -273,18 +275,22 @@ describe('Plot title', function() {
                 xanchor: 'auto',
                 x: 1,
                 pad: titlePad
-            }));
+            }))
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('end');
+                expect(titleX() + 10).toBe(rightOf(refSelector));
 
-            expect(titleSel().attr('text-anchor')).toBe('end');
-            expect(titleX() + 10).toBe(rightOf(refSelector));
+                return Plotly.relayout(gd, 'title.x', 0);
+            })
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('start');
+                expect(titleX() - 10).toBe(leftOf(refSelector));
 
-            Plotly.relayout(gd, 'title.x', 0);
-
-            expect(titleSel().attr('text-anchor')).toBe('start');
-            expect(titleX() - 10).toBe(leftOf(refSelector));
-
-            Plotly.relayout(gd, 'title.x', 0.5);
-            expectCenteredWithin(refSelector);
+                return Plotly.relayout(gd, 'title.x', 0.5);
+            })
+            .then(function() {
+                expectCenteredWithin(refSelector);
+            });
         });
     });
 
@@ -369,18 +375,22 @@ describe('Plot title', function() {
                 yanchor: 'auto',
                 y: 1,
                 pad: titlePad
-            }));
+            }))
+            .then(function() {
+                var capLineY = calcTextCapLineY(titleSel());
+                expect(capLineY).toBe(topOf(refSelector) + 10);
 
-            var capLineY = calcTextCapLineY(titleSel());
-            expect(capLineY).toBe(topOf(refSelector) + 10);
+                return Plotly.relayout(gd, 'title.y', 0);
+            })
+            .then(function() {
+                var baselineY = calcTextBaselineY(titleSel());
+                expect(baselineY).toBe(bottomOf(refSelector) - 10);
 
-            Plotly.relayout(gd, 'title.y', 0);
-
-            var baselineY = calcTextBaselineY(titleSel());
-            expect(baselineY).toBe(bottomOf(refSelector) - 10);
-
-            Plotly.relayout(gd, 'title.y', 0.5);
-            expectCenteredVerticallyWithin(refSelector);
+                return Plotly.relayout(gd, 'title.y', 0.5);
+            })
+            .then(function() {
+                expectCenteredVerticallyWithin(refSelector);
+            });
         });
     });
 
@@ -592,15 +602,17 @@ describe('Titles can be updated', function() {
         }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function() {
-            Plotly.relayout(gd, testCase.update);
-
-            expectChangedTitles();
+            Plotly.relayout(gd, testCase.update)
+            .then(function() {
+                expectChangedTitles();
+            });
         });
 
         it('via `Plotly.update` ' + testCase.desc, function() {
-            Plotly.update(gd, {}, testCase.update);
-
-            expectChangedTitles();
+            Plotly.update(gd, {}, testCase.update)
+            .then(function() {
+                expectChangedTitles();
+            });
         });
     });
 
@@ -884,15 +896,17 @@ describe('Title fonts can be updated', function() {
         }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function() {
-            Plotly.relayout(gd, testCase.update);
-
-            expectChangedTitleFonts();
+            Plotly.relayout(gd, testCase.update)
+            .then(function() {
+                expectChangedTitleFonts();
+            });
         });
 
         it('via `Plotly.update` ' + testCase.desc, function() {
-            Plotly.update(gd, {}, testCase.update);
-
-            expectChangedTitleFonts();
+            Plotly.update(gd, {}, testCase.update)
+            .then(function() {
+                expectChangedTitleFonts();
+            });
         });
     });
 
@@ -963,30 +977,32 @@ describe('Titles for multiple axes', function() {
     });
 
     it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function() {
-        Plotly.plot(gd, data, multiAxesLayout);
+        Plotly.plot(gd, data, multiAxesLayout)
+        .then(function() {
+            return Plotly.relayout(gd, {
+                'xaxis2.title': '2nd X-Axis',
+                'xaxis2.titlefont.color': 'pink',
+                'xaxis2.titlefont.family': 'sans-serif',
+                'xaxis2.titlefont.size': '14',
+                'yaxis2.title': '2nd Y-Axis',
+                'yaxis2.titlefont.color': 'yellow',
+                'yaxis2.titlefont.family': 'monospace',
+                'yaxis2.titlefont.size': '5'
+            });
+        })
+        .then(function() {
+            var x2Style = xTitleSel(2).node().style;
+            expect(xTitleSel(2).text()).toBe('2nd X-Axis');
+            expect(x2Style.fill).toBe(rgb('pink'));
+            expect(x2Style.fontFamily).toBe('sans-serif');
+            expect(x2Style.fontSize).toBe('14px');
 
-        Plotly.relayout(gd, {
-            'xaxis2.title': '2nd X-Axis',
-            'xaxis2.titlefont.color': 'pink',
-            'xaxis2.titlefont.family': 'sans-serif',
-            'xaxis2.titlefont.size': '14',
-            'yaxis2.title': '2nd Y-Axis',
-            'yaxis2.titlefont.color': 'yellow',
-            'yaxis2.titlefont.family': 'monospace',
-            'yaxis2.titlefont.size': '5'
+            var y2Style = yTitleSel(2).node().style;
+            expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
+            expect(y2Style.fill).toBe(rgb('yellow'));
+            expect(y2Style.fontFamily).toBe('monospace');
+            expect(y2Style.fontSize).toBe('5px');
         });
-
-        var x2Style = xTitleSel(2).node().style;
-        expect(xTitleSel(2).text()).toBe('2nd X-Axis');
-        expect(x2Style.fill).toBe(rgb('pink'));
-        expect(x2Style.fontFamily).toBe('sans-serif');
-        expect(x2Style.fontSize).toBe('14px');
-
-        var y2Style = yTitleSel(2).node().style;
-        expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
-        expect(y2Style.fill).toBe(rgb('yellow'));
-        expect(y2Style.fontFamily).toBe('monospace');
-        expect(y2Style.fontSize).toBe('5px');
     });
 });
 

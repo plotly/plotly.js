@@ -240,7 +240,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeLowerLayerNodes()).toEqual(1);
                 expect(countShapePathsInLowerLayer())
                     .toEqual(countShapesInLowerLayer(gd));
@@ -261,7 +262,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeUpperLayerNodes()).toEqual(1);
                 expect(countShapePathsInUpperLayer())
                     .toEqual(countShapesInUpperLayer(gd));
@@ -283,7 +285,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeLayerNodesInSubplots())
                     .toEqual(countSubplots(gd));
                 expect(countShapePathsInSubplots())
@@ -323,7 +326,8 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape)
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
@@ -345,7 +349,8 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape)
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
@@ -373,7 +378,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to remove all shapes', function(done) {
-            Plotly.relayout(gd, { shapes: null }).then(function() {
+            Plotly.relayout(gd, { shapes: null })
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(0);
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
@@ -405,7 +411,8 @@ describe('Test shapes:', function() {
             Plotly.relayout(gd, { shapes: [
                 getRandomShape(),
                 getRandomShape()
-            ]}).then(function() {
+            ]})
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(2);
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
@@ -433,20 +440,24 @@ describe('Test shapes:', function() {
                     .toEqual(shapesInUpperLayer + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(function() {
+            })
+            .then(function() {
                 shape.layer = 'below';
-                Plotly.relayout(gd, astr + '.layer', shape.layer);
-            }).then(function() {
+                return Plotly.relayout(gd, astr + '.layer', shape.layer);
+            })
+            .then(function() {
                 expect(countShapePathsInLowerLayer())
                     .toEqual(shapesInLowerLayer + 1);
                 expect(countShapePathsInUpperLayer())
                     .toEqual(shapesInUpperLayer);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(function() {
+            })
+            .then(function() {
                 shape.layer = 'above';
-                Plotly.relayout(gd, astr + '.layer', shape.layer);
-            }).then(function() {
+                return Plotly.relayout(gd, astr + '.layer', shape.layer);
+            })
+            .then(function() {
                 expect(countShapePathsInLowerLayer())
                     .toEqual(shapesInLowerLayer);
                 expect(countShapePathsInUpperLayer())
@@ -857,7 +868,8 @@ describe('A fixed size path shape', function() {
 
         assertShapeSize(getFirstShapeNode(), 30, 20);
 
-        Plotly.relayout(gd, {height: 200, width: 600}).then(function() {
+        Plotly.relayout(gd, {height: 200, width: 600})
+        .then(function() {
             assertShapeSize(getFirstShapeNode(), 30, 20);
         })
         .catch(failTest)
@@ -1028,7 +1040,8 @@ describe('A fixed size shape', function() {
         var shapeNode = getFirstShapeNode();
         assertShapeSize(shapeNode, 25, 25);
 
-        Plotly.relayout(gd, {height: 200, width: 600}).then(function() {
+        Plotly.relayout(gd, {height: 200, width: 600})
+        .then(function() {
             var reRenderedShapeNode = getFirstShapeNode();
             assertShapeSize(reRenderedShapeNode, 25, 25);
         })

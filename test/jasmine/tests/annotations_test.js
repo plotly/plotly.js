@@ -327,7 +327,8 @@ describe('annotations relayout', function() {
 
         assertText(0, 'left top');
 
-        Plotly.relayout(gd, 'annotations[0].text', 'hello').then(function() {
+        Plotly.relayout(gd, 'annotations[0].text', 'hello')
+        .then(function() {
             assertText(0, 'hello');
 
             return Plotly.relayout(gd, 'annotations[0].text', null);
@@ -428,10 +429,12 @@ describe('annotations relayout', function() {
         {'annotations[100]': {text: 'bad index'}}
     ].forEach(function(update) {
         it('warns on ambiguous combinations and invalid values: ' + JSON.stringify(update), function() {
-            Plotly.relayout(gd, update);
-            expect(Loggers.warn).toHaveBeenCalled();
-            // we could test the results here, but they're ambiguous and/or undefined so why bother?
-            // the important thing is the developer is warned that something went wrong.
+            Plotly.relayout(gd, update)
+            .then(function() {
+                expect(Loggers.warn).toHaveBeenCalled();
+                // we could test the results here, but they're ambiguous and/or undefined so why bother?
+                // the important thing is the developer is warned that something went wrong.
+            });
         });
     });
 

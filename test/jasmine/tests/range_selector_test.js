@@ -514,7 +514,8 @@ describe('range selector interactions:', function() {
     });
 
     it('should be able to be removed by `relayout`', function(done) {
-        Plotly.relayout(gd, 'xaxis.rangeselector.visible', false).then(function() {
+        Plotly.relayout(gd, 'xaxis.rangeselector.visible', false)
+        .then(function() {
             assertNodeCount('.rangeselector', 0);
             assertNodeCount('.button', 0);
         })
@@ -527,7 +528,8 @@ describe('range selector interactions:', function() {
 
         assertNodeCount('.button', len);
 
-        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[0]', null).then(function() {
+        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[0]', null)
+        .then(function() {
             assertNodeCount('.button', len - 1);
 
             return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[1]', 'remove');
@@ -543,7 +545,8 @@ describe('range selector interactions:', function() {
 
         checkButtonColor('rgb(238, 238, 238)', 'rgb(212, 212, 212)');
 
-        Plotly.relayout(gd, prefix + 'bgcolor', 'red').then(function() {
+        Plotly.relayout(gd, prefix + 'bgcolor', 'red')
+        .then(function() {
             checkButtonColor('rgb(255, 0, 0)', 'rgb(255, 128, 128)');
 
             return Plotly.relayout(gd, prefix + 'activecolor', 'blue');
@@ -601,12 +604,14 @@ describe('range selector interactions:', function() {
             'xaxis.range[1]': '2015-11-30'
         };
 
-        Plotly.relayout(gd, update).then(function() {
+        Plotly.relayout(gd, update)
+        .then(function() {
             // '1m' should be active after the relayout
             checkActiveButton(0, '1m');
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
-        }).then(function() {
+        })
+        .then(function() {
             // 'all' should be after an autoscale
             checkActiveButton(buttons.size() - 1, 'back to all');
         })
