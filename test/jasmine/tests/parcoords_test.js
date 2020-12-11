@@ -1313,7 +1313,7 @@ describe('parcoords react more attributes', function() {
             m0.dimensions[1].visible = true;
         })
         .then(function() {
-            Plotly.react(gd, mockCopy.data).then(function() {
+            return Plotly.react(gd, mockCopy.data).then(function() {
                 var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
 
                 var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);

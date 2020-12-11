@@ -660,7 +660,7 @@ describe('Titles and labels', function() {
                 }
             }
         }).then(function() {
-            Plotly.react(gd, {
+            return Plotly.react(gd, {
                 data: [
                     {
                         type: 'bar',

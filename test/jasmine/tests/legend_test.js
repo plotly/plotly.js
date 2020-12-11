@@ -841,7 +841,7 @@ describe('legend relayout update', function() {
             expect(d3.selectAll('.legendtitletext')[0].length).toBe(1);
         })
         .then(function() {
-            Plotly.react(gd, {
+            return Plotly.react(gd, {
                 data: data,
                 layout: {
                     showlegend: true

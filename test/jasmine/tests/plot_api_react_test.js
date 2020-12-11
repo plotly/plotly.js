@@ -962,16 +962,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter3d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'red' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
@@ -990,16 +990,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter3d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'red' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter2d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
@@ -1018,16 +1018,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter2d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter3d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'red' }
             });
@@ -1046,16 +1046,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter3d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'red' }
             });
@@ -1074,16 +1074,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter2d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'yellow' }
             });
@@ -1102,16 +1102,16 @@ describe('clear bglayer react', function() {
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'green' }
             });
         }).then(function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
-        }).then(function() {
-            Plotly.react(gd, {
+
+            return Plotly.react(gd, {
                 data: [{ type: 'scatter2d', x: x, y: y, z: z }],
                 layout: { plot_bgcolor: 'yellow' }
             });
