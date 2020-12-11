@@ -1433,6 +1433,56 @@ describe('Test axes', function() {
         });
     });
 
+    describe('autorange relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can relayout autorange', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [0, 1],
+                    y: [0, 1]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    margin: {
+                        t: 40,
+                        b: 40,
+                        l: 40,
+                        r: 40
+                    },
+                    xaxis: {
+                        autorange: false,
+                    },
+                    yaxis: {
+                        autorange: true,
+                    }
+                }
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toEqual([-1, 6]);
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.07, 1.07]);
+
+                Plotly.relayout(gd, 'yaxis.autorange', false);
+            }).then(function() {
+                expect(gd._fullLayout.yaxis.autorange).toBe(false);
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.07, 1.07]);
+
+                Plotly.relayout(gd, 'xaxis.autorange', true);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.autorange).toBe(true);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.07, 1.07]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
     describe('constraints relayout', function() {
         var gd;
 
