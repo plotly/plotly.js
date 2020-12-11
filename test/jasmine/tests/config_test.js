@@ -232,23 +232,25 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         it('should not display the edit link by default', function() {
-            Plotly.plot(gd, [], {});
+            Plotly.plot(gd, [], {})
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-            expect(link).toBeUndefined();
+                expect(link).toBeUndefined();
+            });
         });
 
         it('should display a link when true', function() {
-            Plotly.plot(gd, [], {}, { showLink: true });
+            Plotly.plot(gd, [], {}, { showLink: true })
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
+                expect(link.textContent).toBe('Edit chart »');
 
-            expect(link.textContent).toBe('Edit chart »');
-
-            var bBox = link.getBoundingClientRect();
-            expect(bBox.width).toBeGreaterThan(0);
-            expect(bBox.height).toBeGreaterThan(0);
+                var bBox = link.getBoundingClientRect();
+                expect(bBox.width).toBeGreaterThan(0);
+                expect(bBox.height).toBeGreaterThan(0);
+            });
         });
     });
 
@@ -460,15 +462,17 @@ describe('config argument', function() {
         }
 
         it('should have drag rectangles cursors by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
-
-            testDraggers(1);
+            Plotly.plot(gd, mockCopy.data, {})
+            .then(function() {
+                testDraggers(1);
+            });
         });
 
         it('should not have drag rectangles when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
-
-            testDraggers(0);
+            Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false })
+            .then(function() {
+                testDraggers(0);
+            });
         });
     });
 
@@ -486,32 +490,34 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         it('allows axis range entry by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
+            Plotly.plot(gd, mockCopy.data, {})
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeDefined();
-            expect(editBox.getAttribute('contenteditable')).toBe('true');
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeDefined();
+                expect(editBox.getAttribute('contenteditable')).toBe('true');
+            });
         });
 
         it('disallows axis range entry when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
+            Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false })
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeUndefined();
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeUndefined();
+            });
         });
     });
 

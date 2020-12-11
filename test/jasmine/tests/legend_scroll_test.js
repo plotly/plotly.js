@@ -70,9 +70,8 @@ describe('The legend', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                done();
-            });
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(done);
         });
 
         afterEach(destroyGraph);

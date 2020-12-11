@@ -1741,7 +1741,7 @@ describe('@noCI, mapbox react', function() {
             };
 
             // update
-            return Plotly.react(gd, newFig);
+            Plotly.react(gd, newFig);
         })
         .then(function() {
             assertTile(secondLink);

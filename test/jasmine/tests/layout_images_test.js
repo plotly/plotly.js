@@ -111,29 +111,32 @@ describe('Layout images', function() {
             Plotly.plot(gd, data, { images: [{
                 source: jsLogo,
                 layer: 'above'
-            }]});
+            }]})
+            .then(function() {
+                checkLayers(1, 0, 0);
 
-            checkLayers(1, 0, 0);
+                destroyGraphDiv();
+                gd = createGraphDiv();
+                return Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    layer: 'below'
+                }]});
+            })
+            .then(function() {
+                checkLayers(0, 1, 0);
 
-            destroyGraphDiv();
-            gd = createGraphDiv();
-            Plotly.plot(gd, data, { images: [{
-                source: jsLogo,
-                layer: 'below'
-            }]});
-
-            checkLayers(0, 1, 0);
-
-            destroyGraphDiv();
-            gd = createGraphDiv();
-            Plotly.plot(gd, data, { images: [{
-                source: jsLogo,
-                layer: 'below',
-                xref: 'x',
-                yref: 'y'
-            }]});
-
-            checkLayers(0, 0, 1);
+                destroyGraphDiv();
+                gd = createGraphDiv();
+                return Plotly.plot(gd, data, { images: [{
+                    source: jsLogo,
+                    layer: 'below',
+                    xref: 'x',
+                    yref: 'y'
+                }]});
+            })
+            .then(function() {
+                checkLayers(0, 0, 1);
+            });
         });
 
         it('should fall back on imageLowerLayer for below missing subplots', function() {
@@ -168,12 +171,13 @@ describe('Layout images', function() {
                     xanchor: xAnchor,
                     yanchor: yAnchor,
                     sizing: sizing
-                }]});
+                }]})
+                .then(function() {
+                    var image = Plotly.d3.select('image');
+                    var parValue = image.attr('preserveAspectRatio');
 
-                var image = Plotly.d3.select('image');
-                var parValue = image.attr('preserveAspectRatio');
-
-                expect(parValue).toBe(expected);
+                    expect(parValue).toBe(expected);
+                });
             }
 
             it('should work for center middle', function() {

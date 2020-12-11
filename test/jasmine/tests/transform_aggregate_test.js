@@ -379,9 +379,10 @@ describe('aggregate', function() {
             }]
         }];
 
-        Plotly.newPlot(gd, data);
-
-        var traceOut = gd._fullData[0];
-        expect(traceOut.y[0]).toBe(10);
+        Plotly.newPlot(gd, data)
+        .then(function() {
+            var traceOut = gd._fullData[0];
+            expect(traceOut.y[0]).toBe(10);
+        });
     });
 });

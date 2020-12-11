@@ -187,11 +187,13 @@ describe('annotations relayout', function() {
         expect(typeof MathJax).toBe('undefined');
         mockLayout.annotations[14].text = '$x+y+z$';
 
-        Plotly.plot(gd, mockData, mockLayout).then(done);
+        Plotly.plot(gd, mockData, mockLayout)
+        .then(function() {
+            spyOn(Loggers, 'warn');
 
-        spyOn(Loggers, 'warn');
-
-        Plotly.setPlotConfig({queueLength: 3});
+            return Plotly.setPlotConfig({queueLength: 3});
+        })
+        .then(done);
     });
 
     afterEach(function() {
@@ -508,7 +510,7 @@ describe('annotations log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.plot(gd, mockData, mockLayout).then(done);
+        return Plotly.plot(gd, mockData, mockLayout).then(done);
     });
 
     afterEach(destroyGraphDiv);

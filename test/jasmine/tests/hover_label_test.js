@@ -1392,23 +1392,27 @@ describe('hover info', function() {
         });
 
         it('should display the correct format when ticklabels true', function() {
-            Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 303, 213);
+            Plotly.plot(this.gd, data, layout)
+            .then(function() {
+                mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent({
-                nums: '0.23',
-                axis: '2'
+                assertHoverLabelContent({
+                    nums: '0.23',
+                    axis: '2'
+                });
             });
         });
 
         it('should display the correct format when ticklabels false', function() {
             layout.yaxis.showticklabels = false;
-            Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 303, 213);
+            Plotly.plot(this.gd, data, layout)
+            .then(function() {
+                mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent({
-                nums: '0.23',
-                axis: '2'
+                assertHoverLabelContent({
+                    nums: '0.23',
+                    axis: '2'
+                });
             });
         });
     });
@@ -1923,7 +1927,7 @@ describe('hover info', function() {
                 }
             })
             .then(function() {
-                Plotly.restyle(gd, 'hovertemplate', '%{y:$010,.2f}<extra>trace 0</extra>');
+                return Plotly.restyle(gd, 'hovertemplate', '%{y:$010,.2f}<extra>trace 0</extra>');
             })
             .then(function() {
                 Fx.hover('graph', evt, 'xy');

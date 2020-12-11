@@ -270,47 +270,59 @@ describe('Test histogram2d', function() {
             var y1 = [
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
-            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1}]);
-            _assert(
-                {start: 0.5, end: 4.5, size: 1},
-                {start: 0.5, end: 4.5, size: 1},
-                undefined, undefined);
+            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1}])
+            .then(function() {
+                _assert(
+                    {start: 0.5, end: 4.5, size: 1},
+                    {start: 0.5, end: 4.5, size: 1},
+                    undefined, undefined);
 
-            // same range but fewer samples increases sizes
-            Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
-            _assert(
-                {start: -0.5, end: 5.5, size: 2},
-                {start: -0.5, end: 5.5, size: 2},
-                undefined, undefined);
+                // same range but fewer samples increases sizes
+                return Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
+            })
+            .then(function() {
+                _assert(
+                    {start: -0.5, end: 5.5, size: 2},
+                    {start: -0.5, end: 5.5, size: 2},
+                    undefined, undefined);
 
-            // larger range
-            Plotly.restyle(gd, {x: [[10, 30, 40]], y: [[10, 20, 40]]});
-            _assert(
-                {start: -0.5, end: 59.5, size: 20},
-                {start: -0.5, end: 59.5, size: 20},
-                undefined, undefined);
+                // larger range
+                return Plotly.restyle(gd, {x: [[10, 30, 40]], y: [[10, 20, 40]]});
+            })
+            .then(function() {
+                _assert(
+                    {start: -0.5, end: 59.5, size: 20},
+                    {start: -0.5, end: 59.5, size: 20},
+                    undefined, undefined);
 
-            // explicit changes to bin settings
-            Plotly.restyle(gd, 'xbins.start', 12);
-            _assert(
-                {start: 12, end: 59.5, size: 20},
-                {start: -0.5, end: 59.5, size: 20},
-                {start: 12}, undefined);
+                // explicit changes to bin settings
+                return Plotly.restyle(gd, 'xbins.start', 12);
+            })
+            .then(function() {
+                _assert(
+                    {start: 12, end: 59.5, size: 20},
+                    {start: -0.5, end: 59.5, size: 20},
+                    {start: 12}, undefined);
 
-            Plotly.restyle(gd, {'ybins.end': 12, 'ybins.size': 3});
-            _assert(
-                {start: 12, end: 59.5, size: 20},
-                // with the new autobin algo, start responds to autobin
-                {start: 8.5, end: 12, size: 3},
-                {start: 12},
-                {end: 12, size: 3});
+                return Plotly.restyle(gd, {'ybins.end': 12, 'ybins.size': 3});
+            })
+            .then(function() {
+                _assert(
+                    {start: 12, end: 59.5, size: 20},
+                    // with the new autobin algo, start responds to autobin
+                    {start: 8.5, end: 12, size: 3},
+                    {start: 12},
+                    {end: 12, size: 3});
 
-            // restart autobin
-            Plotly.restyle(gd, {autobinx: true, autobiny: true});
-            _assert(
-                {start: -0.5, end: 59.5, size: 20},
-                {start: -0.5, end: 59.5, size: 20},
-                undefined, undefined);
+                // restart autobin
+                return Plotly.restyle(gd, {autobinx: true, autobiny: true});
+            })
+            .then(function() {
+                _assert(
+                    {start: -0.5, end: 59.5, size: 20},
+                    {start: -0.5, end: 59.5, size: 20},
+                    undefined, undefined);
+            });
         });
 
         it('respects explicit autobin: false as a one-time autobin', function() {
@@ -323,12 +335,16 @@ describe('Test histogram2d', function() {
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
             var binSpec = {start: 0.5, end: 4.5, size: 1};
-            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1, autobinx: false, autobiny: false}]);
-            _assert(binSpec, binSpec, binSpec, binSpec);
+            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1, autobinx: false, autobiny: false}])
+            .then(function() {
+                _assert(binSpec, binSpec, binSpec, binSpec);
 
-            // with autobin false this will no longer update the bins.
-            Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
-            _assert(binSpec, binSpec, binSpec, binSpec);
+                // with autobin false this will no longer update the bins.
+                return Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
+            })
+            .then(function() {
+                _assert(binSpec, binSpec, binSpec, binSpec);
+            });
         });
     });
 });

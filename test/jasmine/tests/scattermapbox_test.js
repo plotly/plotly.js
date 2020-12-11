@@ -936,7 +936,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         var futureData;
 
         beforeEach(function() {
-            futureData = undefined;
+            futureData = null;
+
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -944,7 +945,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
 
         it('@gl should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('@gl should contain the correct fields', function() {
@@ -976,7 +977,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         var futureData;
 
         beforeEach(function() {
-            futureData = undefined;
+            futureData = null;
+
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -984,12 +986,12 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
 
         it('@gl should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('@gl does not register right-clicks', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
 
             // TODO: 'should contain the correct fields'
             // This test passed previously, but only because assets/click
@@ -1019,6 +1021,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         var futureData;
 
         beforeEach(function() {
+            futureData = null;
+
             gd.on('plotly_hover', function(data) {
                 futureData = data;
             });
@@ -1047,6 +1051,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
         var futureData;
 
         beforeEach(function() {
+            futureData = null;
+
             gd.on('plotly_unhover', function(data) {
                 futureData = data;
             });
@@ -1110,7 +1116,8 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
         var futureData;
 
         beforeEach(function() {
-            futureData = undefined;
+            futureData = null;
+
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -1118,7 +1125,7 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
 
         it('@gl should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('@gl should contain the correct fields', function() {
@@ -1143,6 +1150,8 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
         var futureData;
 
         beforeEach(function() {
+            futureData = null;
+
             gd.on('plotly_hover', function(data) {
                 futureData = data;
             });
@@ -1171,6 +1180,8 @@ describe('@noCI Test plotly events on a scattermapbox plot when css transform is
         var futureData;
 
         beforeEach(function() {
+            futureData = null;
+
             gd.on('plotly_unhover', function(data) {
                 futureData = data;
             });
