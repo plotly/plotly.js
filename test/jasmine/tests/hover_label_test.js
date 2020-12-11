@@ -1391,7 +1391,7 @@ describe('hover info', function() {
             this.gd = createGraphDiv();
         });
 
-        it('should display the correct format when ticklabels true', function() {
+        it('should display the correct format when ticklabels true', function(done) {
             Plotly.plot(this.gd, data, layout)
             .then(function() {
                 mouseEvent('mousemove', 303, 213);
@@ -1400,10 +1400,12 @@ describe('hover info', function() {
                     nums: '0.23',
                     axis: '2'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should display the correct format when ticklabels false', function() {
+        it('should display the correct format when ticklabels false', function(done) {
             layout.yaxis.showticklabels = false;
             Plotly.plot(this.gd, data, layout)
             .then(function() {
@@ -1413,7 +1415,9 @@ describe('hover info', function() {
                     nums: '0.23',
                     axis: '2'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
