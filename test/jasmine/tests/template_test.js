@@ -398,7 +398,7 @@ describe('validateTemplate', function() {
             path: 'layout.annotations[4]',
             templateitemname: 'nope',
             msg: 'There are no templates for item layout.annotations[4] with name nope'
-        }]).then(done);
+        }]).catch(failTest).then(done);
     });
 
     it('catches missing template.data', function(done) {
@@ -411,7 +411,7 @@ describe('validateTemplate', function() {
         }],
         // check only the first error - we don't care about the specifics
         // uncovered after we already know there's no template.data
-        1).then(done);
+        1).catch(failTest).then(done);
     });
 
     it('catches missing template.layout', function(done) {
@@ -421,6 +421,6 @@ describe('validateTemplate', function() {
         checkValidate(noLayoutMock, [{
             code: 'layout',
             msg: 'The template has no key layout.'
-        }], 1).then(done);
+        }], 1).catch(failTest).then(done);
     });
 });

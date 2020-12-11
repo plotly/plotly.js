@@ -553,6 +553,7 @@ describe('hover info', function() {
                     nums: 'PV learning ...'
                 });
             })
+            .catch(failTest)
             .then(done);
         });
     });
@@ -2416,6 +2417,7 @@ describe('hover info on overlaid subplots', function() {
                 axis: '1'
             });
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -2481,6 +2483,7 @@ describe('hover after resizing', function() {
         .then(function() {
             return check(pos1, [null, null, null], 'back to initial, not showing blank spot');
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -2513,7 +2516,9 @@ describe('hover on fill', function() {
             assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
             assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
             assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
-        }).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should always show one label in the right place (symmetric fill edge case)', function(done) {

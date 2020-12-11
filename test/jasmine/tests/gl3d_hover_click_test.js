@@ -327,6 +327,7 @@ describe('Test gl3d trace click/hover:', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -446,6 +447,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -471,6 +473,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
+        .catch(failTest)
         .then(done);
     });
 

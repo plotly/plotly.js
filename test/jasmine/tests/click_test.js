@@ -159,7 +159,7 @@ describe('Test click interactions:', function() {
                 expect(evt.clientX).toEqual(pointPos[0]);
                 expect(evt.clientY).toEqual(pointPos[1]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -389,7 +389,9 @@ describe('Test click interactions:', function() {
                 var evt = futureData.event;
                 expect(evt.clientX).toEqual(blankPos[0]);
                 expect(evt.clientY).toEqual(blankPos[1]);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

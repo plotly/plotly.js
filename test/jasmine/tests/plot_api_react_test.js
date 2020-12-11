@@ -1550,7 +1550,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkAllVisible = checkVisible([true, true, true], true);
         var checkSomeHidden = checkVisible([false, true, false], false);
 
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden).catch(failTest).then(done);
     });
 
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
@@ -1601,7 +1601,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalModes = checkState([], attrs(true));
         var checkEditedModes = checkState([], attrs());
 
-        _run(fig, editModes, checkOriginalModes, checkEditedModes).then(done);
+        _run(fig, editModes, checkOriginalModes, checkEditedModes).catch(failTest).then(done);
     });
 
     it('preserves geo viewport changes using geo.uirevision', function(done) {
@@ -1633,7 +1633,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = checkState([], attrs(true));
         var checkEditedView = checkState([], attrs());
 
-        _run(fig, editView, checkOriginalView, checkEditedView).then(done);
+        _run(fig, editView, checkOriginalView, checkEditedView).catch(failTest).then(done);
     });
 
     it('preserves geo viewport changes using geo.uirevision (fitbounds case)', function(done) {
@@ -1666,7 +1666,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = checkState([], attrs(true));
         var checkEditedView = checkState([], attrs());
 
-        _run(fig, editView, checkOriginalView, checkEditedView).then(done);
+        _run(fig, editView, checkOriginalView, checkEditedView).catch(failTest).then(done);
     });
 
     it('@gl preserves 3d camera changes using scene.uirevision', function(done) {
@@ -1706,7 +1706,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalCamera = _checkCamera(true);
         var checkEditedCamera = _checkCamera(false);
 
-        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera).then(done);
+        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera).catch(failTest).then(done);
     });
 
     it('preserves selectedpoints using selectionrevision', function(done) {
@@ -1739,7 +1739,7 @@ describe('Plotly.react and uirevision attributes', function() {
             {selectedpoints: [[2]]}
         ]);
 
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done);
+        _run(fig, editSelection, checkNoSelection, checkSelection).catch(failTest).then(done);
     });
 
     it('preserves selectedpoints using selectedrevision (groupby case)', function(done) {
@@ -1779,7 +1779,7 @@ describe('Plotly.react and uirevision attributes', function() {
         // point 4 is last, in group 3
         var checkSelection = checkState([{selectedpoints: [[5, 7, 8, 4]]}]);
 
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done);
+        _run(fig, editSelection, checkNoSelection, checkSelection).catch(failTest).then(done);
     });
 
     it('preserves polar view changes using polar.uirevision', function(done) {
@@ -1827,6 +1827,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(function() {
             return _run(fig2, editPolar, checkInitial, checkEdited);
         })
+        .catch(failTest)
         .then(done);
     });
 

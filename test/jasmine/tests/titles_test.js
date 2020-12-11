@@ -1287,6 +1287,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0.2, 0.2)
             ]);
         })
+        .catch(fail)
         .then(done);
     });
 
@@ -1303,6 +1304,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0, 1)
             ]);
         })
+        .catch(fail)
         .then(done);
     });
 
@@ -1328,6 +1330,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'TTT', 1, 1)
             ]);
         })
+        .catch(fail)
         .then(done);
     });
 });

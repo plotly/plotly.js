@@ -106,7 +106,7 @@ describe('Test animate API', function() {
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
             return Plotly.addFrames(gd, mockCopy.frames);
-        }).then(done);
+        }).catch(failTest).then(done);
     });
 
     afterEach(function() {

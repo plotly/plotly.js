@@ -115,7 +115,9 @@ describe('ternary plots', function() {
                     'translate(118.53,170.59)',
                     'translate(248.76,117.69)'
                 ]);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should display to hover labels', function(done) {

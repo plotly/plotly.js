@@ -608,7 +608,7 @@ describe('@noCI, mapbox plots', function() {
             // Second relayout on mapbox.center does not result in a setCenter
             // call since map drag is underway
             expect(map.setCenter).toHaveBeenCalledTimes(1);
-        }).then(done);
+        }).catch(failTest).then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not update zoom while scroll wheeling', function(done) {
@@ -628,7 +628,7 @@ describe('@noCI, mapbox plots', function() {
                 // call since a scroll wheel zoom is underway
                 expect(map.setZoom).toHaveBeenCalledTimes(1);
             });
-        }).then(done);
+        }).catch(failTest).then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle', function(done) {
@@ -2052,6 +2052,7 @@ describe('@noCI Test mapbox GeoJSON fetching:', function() {
             expect(Lib.isPlainObject(window.PlotlyGeoAssets[url])).toBe(true, 'is a GeoJSON object');
             expect(Lib.isPlainObject(window.PlotlyGeoAssets[url2])).toBe(true, 'is a GeoJSON object');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -2077,6 +2078,7 @@ describe('@noCI Test mapbox GeoJSON fetching:', function() {
             expect(actual).toEqual(new Error('GeoJSON at URL "invalidUrl" does not exist.'));
             expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
         })
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 });

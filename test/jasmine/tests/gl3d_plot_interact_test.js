@@ -135,6 +135,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraFinal.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[2]');
             expect(cameraFinal.mouseListener.enabled === true);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -176,6 +177,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'orbit').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -203,6 +205,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -225,6 +228,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -252,6 +256,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -279,6 +284,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').not.toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -302,6 +308,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -328,6 +335,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -378,6 +386,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -463,6 +472,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -694,6 +704,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -752,6 +763,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -902,6 +914,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -2094,6 +2107,7 @@ describe('Test removal of gl contexts', function() {
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
             expect(gd._fullLayout.scene._scene.glplot).toBe(null);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -2138,6 +2152,7 @@ describe('Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
+        .catch(failTest)
         .then(done);
     });
 

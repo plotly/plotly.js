@@ -1395,6 +1395,7 @@ describe('ModeBar', function() {
                     _assert(10, 10, 8);
                     button.isActive(false);
                 })
+                .catch(failTest)
                 .then(done);
             });
         });
@@ -1495,6 +1496,7 @@ describe('ModeBar', function() {
                 style = document.querySelector(styleSelector);
                 expect(style).toBeNull();
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -1576,6 +1578,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width > size.height).toBeTruthy();
             })
+            .catch(failTest)
             .then(done);
         });
     });

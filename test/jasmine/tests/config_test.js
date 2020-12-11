@@ -678,6 +678,7 @@ describe('config argument', function() {
                 fillParent(1, 1);
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -686,6 +687,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -694,6 +696,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -721,6 +724,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: false})
                 .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -751,6 +755,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -763,6 +768,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
@@ -776,6 +782,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 

@@ -209,7 +209,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).then(done);
+            }).catch(failTest).then(done);
         });
 
         it('should not return any nested svg tags of annotations', function(done) {
@@ -220,7 +220,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).then(done);
+            }).catch(failTest).then(done);
         });
 
         it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {

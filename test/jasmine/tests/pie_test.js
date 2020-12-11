@@ -1310,6 +1310,7 @@ describe('pie hovering', function() {
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -1331,6 +1332,7 @@ describe('pie hovering', function() {
             .then(function() {
                 assertLabel('D\n0\n4\n14.3%');
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -1772,6 +1774,7 @@ describe('pie relayout', function() {
             var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
+        .catch(failTest)
         .then(done);
     });
 });
