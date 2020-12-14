@@ -9,6 +9,7 @@ var rgb = require('@src/components/color').rgb;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 
 describe('Plot title', function() {
     'use strict';
@@ -47,7 +48,7 @@ describe('Plot title', function() {
         .then(function() {
             expectDefaultCenteredPosition(gd);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -57,7 +58,7 @@ describe('Plot title', function() {
             expectTitle('Plotly line chart');
             expectDefaultCenteredPosition(gd);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -68,7 +69,7 @@ describe('Plot title', function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
           })
           .then(expectTitleFn('Some other title'))
-          .catch(fail)
+          .catch(failTest)
           .then(done);
     });
 
@@ -92,7 +93,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectLeftEdgeAlignedTo(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -105,7 +106,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectRightEdgeAlignedTo(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -118,7 +119,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -143,7 +144,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCapLineAlignsWithTopEdgeOf(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -156,7 +157,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectBaselineAlignsWithBottomEdgeOf(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -169,7 +170,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(testCase.selector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -191,7 +192,7 @@ describe('Plot title', function() {
         .then(function() {
             expectBaselineInMiddleOfTopMargin(gd);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -222,7 +223,7 @@ describe('Plot title', function() {
                 var textAnchor = titleSel().attr('text-anchor');
                 expect(textAnchor).toBe(testCase.expAlignment, testDesc);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     }
@@ -255,7 +256,7 @@ describe('Plot title', function() {
             .then(function() {
                 testCase.expFn(elemSelector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     }
@@ -269,7 +270,7 @@ describe('Plot title', function() {
         .then(function() {
             expectDefaultCenteredPosition(gd);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -286,7 +287,7 @@ describe('Plot title', function() {
                 expect(titleSel().attr('text-anchor')).toBe('start');
                 expect(titleX() - 10).toBe(leftOf(refSelector));
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -303,7 +304,7 @@ describe('Plot title', function() {
                 expect(titleSel().attr('text-anchor')).toBe('end');
                 expect(titleX() + 10).toBe(rightOf(refSelector));
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -332,7 +333,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(refSelector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -353,7 +354,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(paperElemSelector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -370,7 +371,7 @@ describe('Plot title', function() {
         .then(function() {
             expectRightEdgeAlignedTo(paperElemSelector);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -386,7 +387,7 @@ describe('Plot title', function() {
         .then(function() {
             expectLeftEdgeAlignedTo(paperElemSelector);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -403,7 +404,7 @@ describe('Plot title', function() {
                 var capLineY = calcTextCapLineY(titleSel());
                 expect(capLineY).toBe(topOf(refSelector) + 10);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -420,7 +421,7 @@ describe('Plot title', function() {
                 var baselineY = calcTextBaselineY(titleSel());
                 expect(baselineY).toBe(bottomOf(refSelector) - 10);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -449,7 +450,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(refSelector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -470,7 +471,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(paperElemSelector);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -487,7 +488,7 @@ describe('Plot title', function() {
         .then(function() {
             expectBaselineAlignsWithBottomEdgeOf(paperElemSelector);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -503,7 +504,7 @@ describe('Plot title', function() {
         .then(function() {
             expectCapLineAlignsWithTopEdgeOf(paperElemSelector);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -675,7 +676,7 @@ describe('Titles can be updated', function() {
             .then(function() {
                 expectChangedTitles();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -684,7 +685,7 @@ describe('Titles can be updated', function() {
             .then(function() {
                 expectChangedTitles();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -758,7 +759,7 @@ describe('Titles and labels', function() {
             expect(xTitleSel().text()).toBe('x-new');
             expect(d3.select('.xtick').text()).toBe('b');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -813,7 +814,7 @@ describe('Titles support setting custom font properties', function() {
             expectXAxisTitleFont('#333', 'sans-serif', 20);
             expectYAxisTitleFont('#666', 'Arial', 16);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -855,7 +856,7 @@ describe('Titles support setting custom font properties', function() {
             expectXAxisTitleFont('#333', 'sans-serif', 20);
             expectYAxisTitleFont('#666', 'Arial', 16);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -983,7 +984,7 @@ describe('Title fonts can be updated', function() {
             .then(function() {
                 expectChangedTitleFonts();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -992,7 +993,7 @@ describe('Title fonts can be updated', function() {
             .then(function() {
                 expectChangedTitleFonts();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1062,7 +1063,7 @@ describe('Titles for multiple axes', function() {
             expect(yTitleSel(2).text()).toBe('Y-Axis 2');
             expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1093,7 +1094,7 @@ describe('Titles for multiple axes', function() {
             expect(y2Style.fontFamily).toBe('monospace');
             expect(y2Style.fontSize).toBe('5px');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1287,7 +1288,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0.2, 0.2)
             ]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1304,7 +1305,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0, 1)
             ]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1330,7 +1331,7 @@ describe('Editable titles', function() {
                 checkTitle('g', 'TTT', 1, 1)
             ]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

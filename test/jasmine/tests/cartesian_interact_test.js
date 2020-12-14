@@ -2337,7 +2337,7 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -2365,7 +2365,7 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
