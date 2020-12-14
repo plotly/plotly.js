@@ -516,7 +516,7 @@ describe('Test choroplethmapbox convert:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox hover:', function() {
+describe('Test choroplethmapbox hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -653,7 +653,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox interactions:', function() {
+describe('Test choroplethmapbox interactions:', function() {
     var gd;
 
     var geojson = {

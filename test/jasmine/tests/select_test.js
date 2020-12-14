@@ -676,7 +676,7 @@ describe('Click-to-select', function() {
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
-              it('@noCI @gl trace type ' + testCase.label, function(done) {
+              it('@gl trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });
@@ -758,14 +758,13 @@ describe('Click-to-select', function() {
             });
         });
 
-        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
         [
             testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('mapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ].forEach(function(testCase) {
-            it('@noCI @gl for base plot ' + testCase.label, function(done) {
+            it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
             });
         });
@@ -1984,7 +1983,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@noCI @gl should work on scattermapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on scattermapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
             var assertRanges = makeAssertRanges('mapbox');
             var assertLassoPoints = makeAssertLassoPoints('mapbox');

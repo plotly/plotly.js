@@ -658,7 +658,7 @@ describe('scattermapbox convert', function() {
     });
 });
 
-describe('@noCI scattermapbox hover', function() {
+describe('scattermapbox hover', function() {
     var hoverPoints = ScatterMapbox.hoverPoints;
     var gd;
 
@@ -917,7 +917,7 @@ describe('@noCI scattermapbox hover', function() {
     });
 });
 
-describe('@noCI Test plotly events on a scattermapbox plot:', function() {
+describe('Test plotly events on a scattermapbox plot:', function() {
     var mock = require('@mocks/mapbox_0.json');
     var pointPos = [440, 290];
     var nearPos = [460, 290];
@@ -1088,7 +1088,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     });
 });
 
-describe('@noCI Test plotly events on a scattermapbox plot when css transform is present:', function() {
+describe('Test plotly events on a scattermapbox plot when css transform is present:', function() {
     var mock = require('@mocks/mapbox_0.json');
     var pointPos = [440 / 2, 290 / 2];
     var nearPos = [460 / 2, 290 / 2];

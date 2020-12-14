@@ -486,7 +486,7 @@ describe('mapbox credentials', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('@noCI, mapbox plots', function() {
+describe('mapbox plots', function() {
     var mock = require('@mocks/mapbox_0.json');
     var gd;
 
@@ -1674,7 +1674,7 @@ describe('@noCI, mapbox plots', function() {
     }
 });
 
-describe('@noCI, mapbox react', function() {
+describe('mapbox react', function() {
     var gd;
 
     beforeEach(function() {
@@ -1751,7 +1751,7 @@ describe('@noCI, mapbox react', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('@noCI test mapbox trace/layout *below* interactions', function() {
+describe('test mapbox trace/layout *below* interactions', function() {
     var gd;
 
     beforeEach(function() {
@@ -2015,7 +2015,7 @@ describe('@noCI test mapbox trace/layout *below* interactions', function() {
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
-describe('@noCI Test mapbox GeoJSON fetching:', function() {
+describe('Test mapbox GeoJSON fetching:', function() {
     var gd;
 
     beforeEach(function() {
@@ -2083,7 +2083,7 @@ describe('@noCI Test mapbox GeoJSON fetching:', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('@noCI, mapbox toImage', function() {
+describe('mapbox toImage', function() {
     // decreased from 1e5 - perhaps chrome got better at encoding these
     // because I get 99330 and the image still looks correct
     var MINIMUM_LENGTH = 7e4;

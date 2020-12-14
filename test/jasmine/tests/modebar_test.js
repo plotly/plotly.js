@@ -1353,7 +1353,7 @@ describe('ModeBar', function() {
             });
         });
 
-        describe('@noCI mapbox handlers', function() {
+        describe('mapbox handlers', function() {
             it('@gl button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
