@@ -484,10 +484,9 @@ describe('config argument', function() {
 
         var gd, mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
