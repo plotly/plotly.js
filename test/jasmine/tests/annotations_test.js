@@ -430,13 +430,15 @@ describe('annotations relayout', function() {
         {'annotations[0]': 'not an object'},
         {'annotations[100]': {text: 'bad index'}}
     ].forEach(function(update) {
-        it('warns on ambiguous combinations and invalid values: ' + JSON.stringify(update), function() {
+        it('warns on ambiguous combinations and invalid values: ' + JSON.stringify(update), function(done) {
             Plotly.relayout(gd, update)
             .then(function() {
                 expect(Loggers.warn).toHaveBeenCalled();
                 // we could test the results here, but they're ambiguous and/or undefined so why bother?
                 // the important thing is the developer is warned that something went wrong.
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -510,7 +512,7 @@ describe('annotations log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        return Plotly.plot(gd, mockData, mockLayout).then(done);
+        Plotly.plot(gd, mockData, mockLayout).then(done);
     });
 
     afterEach(destroyGraphDiv);
