@@ -6,7 +6,7 @@ set +o pipefail
 
 ROOT=$(dirname $0)/..
 EXIT_STATE=0
-MAX_AUTO_RETRY=5
+MAX_AUTO_RETRY=1
 
 log () {
     echo -e "\n$1"
