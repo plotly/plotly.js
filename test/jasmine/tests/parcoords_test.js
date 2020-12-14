@@ -926,7 +926,6 @@ describe('parcoords basic use', function() {
         if(!hasGD) gd = createGraphDiv();
 
         Plotly.react(gd, mockCopy)
-        .catch(failTest)
         .then(done);
     });
 
@@ -1211,7 +1210,6 @@ describe('parcoords react more attributes', function() {
         if(!hasGD) gd = createGraphDiv();
 
         Plotly.react(gd, mock3)
-        .catch(failTest)
         .then(done);
     });
 
@@ -1380,7 +1378,6 @@ describe('parcoords constraint interactions - without defined axis ranges', func
                 checkDashCount(initialDashArray1, 1);
             }
         })
-        .catch(failTest)
         .then(done);
     });
 
@@ -1646,7 +1643,6 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
         if(!hasGD) gd = createGraphDiv();
 
         Plotly.react(gd, initialFigure())
-        .catch(failTest)
         .then(done);
     });
 
@@ -1729,7 +1725,6 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
         if(!hasGD) gd = createGraphDiv();
 
         Plotly.react(gd, initialFigure())
-        .catch(failTest)
         .then(done);
     });
 

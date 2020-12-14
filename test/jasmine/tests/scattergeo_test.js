@@ -314,7 +314,6 @@ describe('Test scattergeo hover', function() {
             lat: [10, 20, 30],
             text: ['A', 'B', 'C']
         }])
-        .catch(failTest)
         .then(done);
     });
 

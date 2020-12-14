@@ -472,7 +472,6 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
-        .catch(failTest)
         .then(done);
     });
 
@@ -763,7 +762,6 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
-        .catch(failTest)
         .then(done);
     });
 

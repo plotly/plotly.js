@@ -2761,7 +2761,6 @@ describe('Test plot api', function() {
                 layout = gd.layout;
                 calcdata = gd.calcdata;
             })
-            .catch(failTest)
             .then(done);
         });
 

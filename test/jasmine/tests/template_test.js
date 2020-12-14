@@ -216,7 +216,6 @@ describe('template interactions', function() {
         var mock = Lib.extendDeep({}, templateMock);
         gd = createGraphDiv();
         Plotly.newPlot(gd, mock)
-        .catch(failTest)
         .then(done);
     });
     afterEach(destroyGraphDiv);

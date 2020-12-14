@@ -32,7 +32,6 @@ describe('zoom box element', function() {
         mockCopy.layout.dragmode = 'zoom';
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
         .then(done);
     });
 

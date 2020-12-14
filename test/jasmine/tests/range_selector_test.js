@@ -467,7 +467,6 @@ describe('range selector interactions:', function() {
         mockCopy = Lib.extendDeep({}, mock);
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
         .then(done);
     });
 
@@ -636,7 +635,6 @@ describe('range selector automargin', function() {
         }});
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
         .then(done);
     });
 
