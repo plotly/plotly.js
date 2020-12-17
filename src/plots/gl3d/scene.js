@@ -9,6 +9,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var glPlot3d = require('gl-plot3d');
 var createCamera = glPlot3d.createCamera;
 var createPlot = glPlot3d.createScene;
@@ -30,7 +32,48 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var isMobile = require('is-mobile')({ tablet: true, featureDetect: true });
+var isMobileOrTablet = require('is-mobile')({ tablet: true, featureDetect: true });
+var preserveDrawingBuffer = handleSafari14(isMobileOrTablet);
+
+function handleSafari14(hasDrawingBuffer) {
+    if(!hasDrawingBuffer) {
+        var ua = getUserAgent();
+        if(typeof ua !== 'string') return false;
+
+        var allParts = ua.split('/');
+        for(var i = 0; i < allParts.length; i++) {
+            var part = allParts[i];
+            if(part.indexOf('Safari') !== -1) {
+                // find Safari version
+                var v = part.split('.')[0];
+                if(isNumeric(v)) v = +v;
+
+                // to fix https://github.com/plotly/plotly.js/issues/5158
+                if(v >= 14) return true;
+            }
+        }
+    }
+
+    return hasDrawingBuffer;
+}
+
+function getUserAgent() {
+    // similar to https://github.com/juliangruber/is-mobile/blob/91ca39ccdd4cfc5edfb5391e2515b923a730fbea/index.js#L14-L17
+    var ua;
+    if(typeof navigator !== 'undefined') {
+        ua = navigator.userAgent;
+    }
+
+    if(
+        ua &&
+        ua.headers &&
+        typeof ua.headers['user-agent'] === 'string'
+    ) {
+        ua = ua.headers['user-agent'];
+    }
+
+    return ua;
+}
 
 
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -98,7 +141,7 @@ proto.prepareOptions = function() {
         canvas: scene.canvas,
         gl: scene.gl,
         glOptions: {
-            preserveDrawingBuffer: isMobile,
+            preserveDrawingBuffer: preserveDrawingBuffer,
             premultipliedAlpha: true,
             antialias: true
         },
@@ -155,19 +198,19 @@ proto.tryCreatePlot = function() {
                 // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
                 Lib.warn([
                     'webgl setup failed possibly due to',
-                    isMobile ? 'disabling' : 'enabling',
+                    preserveDrawingBuffer ? 'disabling' : 'enabling',
                     'preserveDrawingBuffer config.',
                     'The device may not be supported by is-mobile module!',
                     'Inverting preserveDrawingBuffer option in second attempt to create webgl scene.'
                 ].join(' '));
 
-                // invert is-mobile
-                isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+                // invert preserveDrawingBuffer
+                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
 
                 scene.glplot = createPlot(opts);
             } catch(e) {
-                // revert changes to is-mobile
-                isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+                // revert changes to preserveDrawingBuffer
+                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
 
                 success = false;
             }
