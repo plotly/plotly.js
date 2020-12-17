@@ -266,7 +266,7 @@ describe('Visible rangesliders', function() {
                 rangeslider: {visible: true}
             },
             width: 800,
-            hieght: 500
+            height: 500
         })
         .then(function() {
             var bb = getRangeSlider().getBoundingClientRect();

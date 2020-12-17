@@ -724,8 +724,8 @@ var list = [
     'mapbox_choropleth0-legend',
     'mapbox_connectgaps',
     'mapbox_custom-style',
-    'mapbox_density-mulitple',
-    'mapbox_density-mulitple_legend',
+    'mapbox_density-multiple',
+    'mapbox_density-multiple_legend',
     'mapbox_density0',
     'mapbox_density0-legend',
     'mapbox_earthquake-density',
@@ -1815,8 +1815,8 @@ figs['mapbox_choropleth0'] = require('@mocks/mapbox_choropleth0');
 figs['mapbox_choropleth0-legend'] = require('@mocks/mapbox_choropleth0-legend');
 figs['mapbox_connectgaps'] = require('@mocks/mapbox_connectgaps');
 figs['mapbox_custom-style'] = require('@mocks/mapbox_custom-style');
-figs['mapbox_density-mulitple'] = require('@mocks/mapbox_density-mulitple');
-figs['mapbox_density-mulitple_legend'] = require('@mocks/mapbox_density-mulitple_legend');
+figs['mapbox_density-multiple'] = require('@mocks/mapbox_density-multiple');
+figs['mapbox_density-multiple_legend'] = require('@mocks/mapbox_density-multiple_legend');
 figs['mapbox_density0'] = require('@mocks/mapbox_density0');
 figs['mapbox_density0-legend'] = require('@mocks/mapbox_density0-legend');
 figs['mapbox_earthquake-density'] = require('@mocks/mapbox_earthquake-density');

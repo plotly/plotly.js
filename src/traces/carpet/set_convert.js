@@ -215,7 +215,7 @@ module.exports = function setConvert(trace) {
 
         var i0 = Math.max(0, Math.min(a.length - 2, i));
 
-        // The step (demoninator) is implicitly 1 since that's the grid spacing.
+        // The step (denominator) is implicitly 1 since that's the grid spacing.
         return a[i0 + 1] - a[i0];
     };
 
@@ -223,7 +223,7 @@ module.exports = function setConvert(trace) {
         // See above caveats for dadi which also apply here
         var j0 = Math.max(0, Math.min(b.length - 2, j));
 
-        // The step (demoninator) is implicitly 1 since that's the grid spacing.
+        // The step (denominator) is implicitly 1 since that's the grid spacing.
         return b[j0 + 1] - b[j0];
     };
 

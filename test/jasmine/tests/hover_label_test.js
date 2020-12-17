@@ -4351,7 +4351,7 @@ describe('hover label rotation:', function() {
         });
     });
 
-    describe('when mulitple pts are picked', function() {
+    describe('when multiple pts are picked', function() {
         afterAll(destroyGraphDiv);
 
         beforeAll(function(done) {

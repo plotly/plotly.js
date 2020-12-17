@@ -654,13 +654,13 @@ describe('Test lib.js:', function() {
         //
         //   // => {marker: {range: [null, 2]}}
         //
-        // This case *does* work becuase the array merging does not require a deep extend:
+        // This case *does* work because the array merging does not require a deep extend:
         //
         //   Lib.expandObjectPaths({'range[0]': 5, 'range[1]': 2}
         //
         //   // => {range: [5, 2]}
         //
-        // Finally note that this case works fine becuase there's no merge necessary:
+        // Finally note that this case works fine because there's no merge necessary:
         //
         //   Lib.expandObjectPaths({'marker.range[1]': 2})
         //

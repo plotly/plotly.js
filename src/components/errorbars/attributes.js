@@ -32,7 +32,7 @@ module.exports = {
             'If *percent*, the bar lengths correspond to a percentage of',
             'underlying data. Set this percentage in `value`.',
 
-            'If *sqrt*, the bar lengths correspond to the sqaure of the',
+            'If *sqrt*, the bar lengths correspond to the square of the',
             'underlying data.',
 
             'If *data*, the bar lengths are set with data set `array`.'
