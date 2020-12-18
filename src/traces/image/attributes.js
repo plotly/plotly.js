@@ -52,13 +52,14 @@ module.exports = extendFlat({
         ].join(' ')
     },
     interpolate: {
-        valType: 'boolean',
-        dflt: false,
+        valType: 'enumerated',
+        values: ['nearest', 'linear'],
         role: 'info',
         editType: 'plot',
         description: [
-            'Whether to render the image with bilinear interpolation.',
-            'Default false (nearest neighbor interpolation).'
+            'The type of interpolation for rendering the image.',
+            'Default `nearest` (nearest neighbor interpolation).',
+            'Can also be set to `linear` (bilinear interpolation).'
         ].join(' ')
     },
     zmin: {

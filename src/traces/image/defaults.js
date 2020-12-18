@@ -47,7 +47,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         traceOut.zmax = cm.zmaxDflt;
     }
 
-    coerce('interpolate', false);
+    coerce('interpolate', 'nearest');
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
