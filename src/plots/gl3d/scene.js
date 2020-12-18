@@ -18,6 +18,7 @@ var passiveSupported = require('has-passive-events');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var preserveDrawingBuffer = Lib.preserveDrawingBuffer();
 
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
@@ -29,9 +30,6 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
-
-var isMobile = require('is-mobile')({ tablet: true, featureDetect: true });
-
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -98,7 +96,7 @@ proto.prepareOptions = function() {
         canvas: scene.canvas,
         gl: scene.gl,
         glOptions: {
-            preserveDrawingBuffer: isMobile,
+            preserveDrawingBuffer: preserveDrawingBuffer,
             premultipliedAlpha: true,
             antialias: true
         },
@@ -148,26 +146,26 @@ proto.tryCreatePlot = function() {
     try {
         scene.glplot = createPlot(opts);
     } catch(e) {
-        if(scene.staticMode || !firstInit) {
+        if(scene.staticMode || !firstInit || preserveDrawingBuffer) {
             success = false;
         } else { // try second time
-            try {
-                // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
-                Lib.warn([
-                    'webgl setup failed possibly due to',
-                    isMobile ? 'disabling' : 'enabling',
-                    'preserveDrawingBuffer config.',
-                    'The device may not be supported by is-mobile module!',
-                    'Inverting preserveDrawingBuffer option in second attempt to create webgl scene.'
-                ].join(' '));
+            // enable preserveDrawingBuffer setup
+            // in case is-mobile not detecting the right device
+            Lib.warn([
+                'webgl setup failed possibly due to',
+                'false preserveDrawingBuffer config.',
+                'The mobile/tablet device may not be detected by is-mobile module.',
+                'Enabling preserveDrawingBuffer in second attempt to create webgl scene...'
+            ].join(' '));
 
-                // invert is-mobile
-                isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+            try {
+                // invert preserveDrawingBuffer
+                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = true;
 
                 scene.glplot = createPlot(opts);
             } catch(e) {
-                // revert changes to is-mobile
-                isMobile = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
+                // revert changes to preserveDrawingBuffer
+                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = false;
 
                 success = false;
             }

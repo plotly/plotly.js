@@ -154,6 +154,7 @@ lib.getElementAndAncestors = domModule.getElementAndAncestors;
 lib.equalDomRects = domModule.equalDomRects;
 
 lib.clearResponsive = require('./clear_responsive');
+lib.preserveDrawingBuffer = require('./preserve_drawing_buffer');
 
 lib.makeTraceGroups = require('./make_trace_groups');
 
