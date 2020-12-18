@@ -11,36 +11,42 @@
 var isNumeric = require('fast-isnumeric');
 var isMobileOrTablet = require('is-mobile');
 
-module.exports = function getPreserveDrawingBuffer() {
-    var ua = getUserAgent();
+module.exports = function preserveDrawingBuffer(opts) {
+    var ua;
+
+    if(opts && opts.hasOwnProperty('userAgent')) {
+        ua = opts.userAgent;
+    } else {
+        ua = getUserAgent();
+    }
+
     if(typeof ua !== 'string') return true;
 
-    var hasDrawingBuffer = isMobileOrTablet({
-        ua: ua,
+    var enable = isMobileOrTablet({
+        ua: { headers: {'user-agent': ua }},
         tablet: true,
-        featureDetect: true
+        featureDetect: false
     });
 
-    if(!hasDrawingBuffer) {
+    if(!enable) {
         var allParts = ua.split(' ');
         for(var i = 1; i < allParts.length; i++) {
             var part = allParts[i];
             if(part.indexOf('Safari') !== -1) {
                 // find Safari version
-                var prevPart = allParts[i - 1];
-                if(prevPart.substr(0, 8) === 'Version/') {
-                    var v = prevPart.substr(8).split('.')[0];
-
-                    if(isNumeric(v)) v = +v;
-
-                    // to fix https://github.com/plotly/plotly.js/issues/5158
-                    if(v >= 14) return true;
+                for(var k = i - 1; k > -1; k--) {
+                    var prevPart = allParts[k];
+                    if(prevPart.substr(0, 8) === 'Version/') {
+                        var v = prevPart.substr(8).split('.')[0];
+                        if(isNumeric(v)) v = +v;
+                        if(v >= 13) return true;
+                    }
                 }
             }
         }
     }
 
-    return hasDrawingBuffer;
+    return enable;
 };
 
 function getUserAgent() {
