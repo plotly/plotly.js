@@ -32,14 +32,20 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var isMobileOrTablet = require('is-mobile')({ tablet: true, featureDetect: true });
-var preserveDrawingBuffer = handleSafari14(isMobileOrTablet);
+var isMobileOrTablet = require('is-mobile');
+var preserveDrawingBuffer = getPreserveDrawingBuffer();
 
-function handleSafari14(hasDrawingBuffer) {
+function getPreserveDrawingBuffer() {
+    var ua = getUserAgent();
+    if(typeof ua !== 'string') return false;
+
+    var hasDrawingBuffer = isMobileOrTablet({
+        ua: ua,
+        tablet: true,
+        featureDetect: true
+    });
+
     if(!hasDrawingBuffer) {
-        var ua = getUserAgent();
-        if(typeof ua !== 'string') return false;
-
         var allParts = ua.split('/');
         for(var i = 0; i < allParts.length; i++) {
             var part = allParts[i];
