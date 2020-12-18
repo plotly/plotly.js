@@ -37,7 +37,7 @@ var preserveDrawingBuffer = getPreserveDrawingBuffer();
 
 function getPreserveDrawingBuffer() {
     var ua = getUserAgent();
-    if(typeof ua !== 'string') return false;
+    if(typeof ua !== 'string') return true;
 
     var hasDrawingBuffer = isMobileOrTablet({
         ua: ua,
