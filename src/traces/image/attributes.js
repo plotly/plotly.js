@@ -51,6 +51,16 @@ module.exports = extendFlat({
             'otherwise it defaults to `rgb`.'
         ].join(' ')
     },
+    interpolate: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Whether to render the image with bilinear interpolation.',
+            'Default false (nearest neighbor interpolation).'
+        ].join(' ')
+    },
     zmin: {
         valType: 'info_array',
         items: [

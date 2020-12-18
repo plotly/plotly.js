@@ -139,7 +139,10 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         // Pixelated image rendering
         // http://phrogz.net/tmp/canvas_image_zoom.html
         // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-        var style = 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
+        var style = '';
+        if(!trace.interpolate) {
+            style += 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;';
+        }
         if(fastImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
             var yRange = Lib.simpleMap(ya.range, ya.r2l);
