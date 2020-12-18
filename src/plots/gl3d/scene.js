@@ -46,16 +46,20 @@ function getPreserveDrawingBuffer() {
     });
 
     if(!hasDrawingBuffer) {
-        var allParts = ua.split('/');
-        for(var i = 0; i < allParts.length; i++) {
+        var allParts = ua.split(' ');
+        for(var i = 1; i < allParts.length; i++) {
             var part = allParts[i];
             if(part.indexOf('Safari') !== -1) {
                 // find Safari version
-                var v = part.split('.')[0];
-                if(isNumeric(v)) v = +v;
+                var prevPart = allParts[i - 1];
+                if(prevPart.substr(0, 8) === 'Version/') {
+                    var v = prevPart.substr(8).split('.')[0];
 
-                // to fix https://github.com/plotly/plotly.js/issues/5158
-                if(v >= 14) return true;
+                    if(isNumeric(v)) v = +v;
+
+                    // to fix https://github.com/plotly/plotly.js/issues/5158
+                    if(v >= 14) return true;
+                }
             }
         }
     }
