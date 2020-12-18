@@ -204,25 +204,29 @@ proto.tryCreatePlot = function() {
         if(scene.staticMode || !firstInit) {
             success = false;
         } else { // try second time
-            try {
-                // invert preserveDrawingBuffer setup which could be resulted from is-mobile not detecting the right device
-                Lib.warn([
-                    'webgl setup failed possibly due to',
-                    preserveDrawingBuffer ? 'disabling' : 'enabling',
-                    'preserveDrawingBuffer config.',
-                    'The device may not be supported by is-mobile module!',
-                    'Inverting preserveDrawingBuffer option in second attempt to create webgl scene.'
-                ].join(' '));
-
-                // invert preserveDrawingBuffer
-                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
-
-                scene.glplot = createPlot(opts);
-            } catch(e) {
-                // revert changes to preserveDrawingBuffer
-                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = !opts.glOptions.preserveDrawingBuffer;
-
+            if(preserveDrawingBuffer) {
                 success = false;
+            } else {
+                try {
+                    // enable preserveDrawingBuffer setup
+                    // in case is-mobile not detecting the right device
+                    Lib.warn([
+                        'webgl setup failed possibly due to',
+                        'false preserveDrawingBuffer config.',
+                        'The mobile/tablet device may not be detected by is-mobile module.',
+                        'Enabling preserveDrawingBuffer in second attempt to create webgl scene...'
+                    ].join(' '));
+
+                    // invert preserveDrawingBuffer
+                    preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = true;
+
+                    scene.glplot = createPlot(opts);
+                } catch(e) {
+                    // revert changes to preserveDrawingBuffer
+                    preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = false;
+
+                    success = false;
+                }
             }
         }
     }
