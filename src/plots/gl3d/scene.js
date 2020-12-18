@@ -9,8 +9,6 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var glPlot3d = require('gl-plot3d');
 var createCamera = glPlot3d.createCamera;
 var createPlot = glPlot3d.createScene;
@@ -20,6 +18,7 @@ var passiveSupported = require('has-passive-events');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var preserveDrawingBuffer = Lib.preserveDrawingBuffer();
 
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
@@ -31,60 +30,6 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
-
-var isMobileOrTablet = require('is-mobile');
-var preserveDrawingBuffer = getPreserveDrawingBuffer();
-
-function getPreserveDrawingBuffer() {
-    var ua = getUserAgent();
-    if(typeof ua !== 'string') return true;
-
-    var hasDrawingBuffer = isMobileOrTablet({
-        ua: ua,
-        tablet: true,
-        featureDetect: true
-    });
-
-    if(!hasDrawingBuffer) {
-        var allParts = ua.split(' ');
-        for(var i = 1; i < allParts.length; i++) {
-            var part = allParts[i];
-            if(part.indexOf('Safari') !== -1) {
-                // find Safari version
-                var prevPart = allParts[i - 1];
-                if(prevPart.substr(0, 8) === 'Version/') {
-                    var v = prevPart.substr(8).split('.')[0];
-
-                    if(isNumeric(v)) v = +v;
-
-                    // to fix https://github.com/plotly/plotly.js/issues/5158
-                    if(v >= 14) return true;
-                }
-            }
-        }
-    }
-
-    return hasDrawingBuffer;
-}
-
-function getUserAgent() {
-    // similar to https://github.com/juliangruber/is-mobile/blob/91ca39ccdd4cfc5edfb5391e2515b923a730fbea/index.js#L14-L17
-    var ua;
-    if(typeof navigator !== 'undefined') {
-        ua = navigator.userAgent;
-    }
-
-    if(
-        ua &&
-        ua.headers &&
-        typeof ua.headers['user-agent'] === 'string'
-    ) {
-        ua = ua.headers['user-agent'];
-    }
-
-    return ua;
-}
-
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
