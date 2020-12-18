@@ -54,6 +54,7 @@ module.exports = extendFlat({
     interpolate: {
         valType: 'enumerated',
         values: ['nearest', 'linear'],
+        dflt: 'nearest',
         role: 'info',
         editType: 'plot',
         description: [
