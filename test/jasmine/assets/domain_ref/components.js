@@ -219,7 +219,7 @@ function annaxscale(ac, c0) {
 }
 
 // This tests to see that an annotation was drawn correctly.
-// Determinining the length of the arrow seems complicated due to the
+// Determining the length of the arrow seems complicated due to the
 // rectangle containing the text, so we draw 2 annotations, one K times the
 // length of the other, and solve for the desired arrow length from the
 // length measured on the screen. This works because multiplying the length

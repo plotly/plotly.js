@@ -200,7 +200,7 @@ module.exports = function smoothFill2dArray(data, a, b) {
             overrelaxation = boundaryCnt ? 0 : 0.85;
 
             // If there are four non-null neighbors, then we want a simple average without
-            // overrelaxation. If all the surrouding points are null, then we want the full
+            // overrelaxation. If all the surrounding points are null, then we want the full
             // overrelaxation
             //
             // Based on experiments, this actually seems to slow down convergence just a bit.

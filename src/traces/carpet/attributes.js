@@ -37,7 +37,7 @@ module.exports = {
         editType: 'calc+clearAxisTypes',
         description: [
             'A two dimensional array of x coordinates at each carpet point.',
-            'If ommitted, the plot is a cheater plot and the xaxis is hidden',
+            'If omitted, the plot is a cheater plot and the xaxis is hidden',
             'by default.'
         ].join(' ')
     },
@@ -109,7 +109,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'The shift applied to each successive row of data in creating a cheater plot.',
-            'Only used if `x` is been ommitted.'
+            'Only used if `x` is been omitted.'
         ].join(' ')
     },
     aaxis: axisAttrs,

@@ -574,7 +574,7 @@ describe('subplot creation / deletion:', function() {
             return Plotly.relayout(gd, {'xaxis2.domain': [0.49, 1]});
         })
         .then(function() {
-            // need to draw one backgroud <rect>
+            // need to draw one background <rect>
             checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
 
             // x ranges overlap, but now y ranges are disjoint
@@ -593,14 +593,14 @@ describe('subplot creation / deletion:', function() {
             });
         })
         .then(function() {
-            // need to draw one backgroud <rect>
+            // need to draw one background <rect>
             checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
 
             // change paper color
             return Plotly.relayout(gd, 'paper_bgcolor', 'black');
         })
         .then(function() {
-            // need a backgroud <rect> on main subplot to distinguish plot from
+            // need a background <rect> on main subplot to distinguish plot from
             // paper color
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
 

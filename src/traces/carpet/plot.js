@@ -45,7 +45,7 @@ module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
         drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
         drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
 
-        // NB: These are not ommitted if the lines are not active. The joins must be executed
+        // NB: These are not omitted if the lines are not active. The joins must be executed
         // in order for them to get cleaned up without a full redraw
         drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
         drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
