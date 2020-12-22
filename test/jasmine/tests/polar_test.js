@@ -908,7 +908,7 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    it('@flaky should respond to drag interactions on plot area', function(done) {
+    it('should respond to drag interactions on plot area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels

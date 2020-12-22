@@ -852,7 +852,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('@flaky should not transition layout when axis auto-ranged value do not changed', function(done) {
+    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 
@@ -1191,7 +1191,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('@flaky should update ranges of date and category axes', function(done) {
+    it('should update ranges of date and category axes', function(done) {
         Plotly.plot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}

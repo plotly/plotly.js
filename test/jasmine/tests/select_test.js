@@ -257,7 +257,7 @@ describe('Click-to-select', function() {
             desc: 'is clicked while add/subtract modifier keys are active',
             clickOpts: { shiftKey: true }
         }].forEach(function(testData) {
-            it('@flaky ' + testData.desc, function(done) {
+            it('' + testData.desc, function(done) {
                 plotMock14()
                   .then(function() { return _immediateClickPt(mock14Pts[7]); })
                   .then(function() {
@@ -278,7 +278,7 @@ describe('Click-to-select', function() {
         });
     });
 
-    it('@flaky cleanly clears and starts selections although add/subtract mode on', function(done) {
+    it('cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()
           .then(function() {
               return _immediateClickPt(mock14Pts[7]);
@@ -299,7 +299,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky supports adding to an existing selection', function(done) {
+    it('supports adding to an existing selection', function(done) {
         plotMock14()
           .then(function() { return _immediateClickPt(mock14Pts[7]); })
           .then(function() {
@@ -311,7 +311,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky supports subtracting from an existing selection', function(done) {
+    it('supports subtracting from an existing selection', function(done) {
         plotMock14()
           .then(function() { return _immediateClickPt(mock14Pts[7]); })
           .then(function() {
@@ -327,7 +327,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky can be used interchangeably with lasso/box select', function(done) {
+    it('can be used interchangeably with lasso/box select', function(done) {
         plotMock14()
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -424,7 +424,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky is supported in pan/zoom mode', function(done) {
+    it('is supported in pan/zoom mode', function(done) {
         plotMock14({ dragmode: 'zoom' })
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -459,7 +459,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky retains selected points when switching between pan and zoom mode', function(done) {
+    it('retains selected points when switching between pan and zoom mode', function(done) {
         plotMock14({ dragmode: 'zoom' })
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -513,7 +513,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky deals correctly with histogram\'s binning in the persistent selection case', function(done) {
+    it('deals correctly with histogram\'s binning in the persistent selection case', function(done) {
         var mock = require('@mocks/histogram_colorscale.json');
         var firstBinPts = [0];
         var secondBinPts = [1, 2];
@@ -553,7 +553,7 @@ describe('Click-to-select', function() {
         function shiftClickThirdBin() { return _click(351, 347, { shiftKey: true }); }
     });
 
-    it('@flaky ignores clicks on boxes in a box trace type', function(done) {
+    it('ignores clicks on boxes in a box trace type', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/box_grouped_horz.json'));
 
         mock.layout.clickmode = 'event+select';
@@ -588,7 +588,7 @@ describe('Click-to-select', function() {
     describe('is disabled when clickmode does not include \'select\'', function() {
         ['select', 'lasso']
           .forEach(function(dragmode) {
-              it('@flaky and dragmode is ' + dragmode, function(done) {
+              it('and dragmode is ' + dragmode, function(done) {
                   plotMock14({ clickmode: 'event', dragmode: dragmode })
                     .then(function() {
                         // Still, the plotly_selected event should be thrown,
@@ -607,7 +607,7 @@ describe('Click-to-select', function() {
     describe('is disabled when clickmode does not include \'select\'', function() {
         ['pan', 'zoom']
           .forEach(function(dragmode) {
-              it('@flaky and dragmode is ' + dragmode, function(done) {
+              it('and dragmode is ' + dragmode, function(done) {
                   plotMock14({ clickmode: 'event', dragmode: dragmode })
                     .then(function() {
                         _immediateClickPt(mock14Pts[1]);
@@ -629,7 +629,7 @@ describe('Click-to-select', function() {
         // - Some mocks don't specify a width and height, so this needs
         //   to be set explicitly to ensure click coordinates fit.
 
-        // The non-gl traces: use @flaky CI annotation
+        // The non-gl traces: use CI annotation
         [
             testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
             testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
@@ -653,7 +653,7 @@ describe('Click-to-select', function() {
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
         ]
           .forEach(function(testCase) {
-              it('@flaky trace type ' + testCase.label, function(done) {
+              it('trace type ' + testCase.label, function(done) {
                   _run(testCase, done);
               });
           });
@@ -753,7 +753,7 @@ describe('Click-to-select', function() {
             testCase('polar', require('@mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
         ].forEach(function(testCase) {
-            it('@flaky for base plot ' + testCase.label, function(done) {
+            it('for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
             });
         });
@@ -874,7 +874,7 @@ describe('Test select box and lasso in general:', function() {
                 .then(done);
         });
 
-        it('@flaky should trigger selecting/selected/deselect events', function(done) {
+        it('should trigger selecting/selected/deselect events', function(done) {
             resetEvents(gd);
 
             drag(selectPath);
@@ -913,7 +913,7 @@ describe('Test select box and lasso in general:', function() {
             .then(done);
         });
 
-        it('@flaky should handle add/sub selection', function(done) {
+        it('should handle add/sub selection', function(done) {
             resetEvents(gd);
 
             drag(selectPath);
@@ -1020,7 +1020,7 @@ describe('Test select box and lasso in general:', function() {
                 .then(done);
         });
 
-        it('@flaky should trigger selecting/selected/deselect events', function(done) {
+        it('should trigger selecting/selected/deselect events', function(done) {
             resetEvents(gd);
 
             drag(lassoPath);
@@ -1059,7 +1059,7 @@ describe('Test select box and lasso in general:', function() {
             .then(done);
         });
 
-        it('@flaky should set selected points in graph data', function(done) {
+        it('should set selected points in graph data', function(done) {
             resetEvents(gd);
 
             drag(lassoPath);
@@ -1078,7 +1078,7 @@ describe('Test select box and lasso in general:', function() {
             .then(done);
         });
 
-        it('@flaky should set selected points in full data', function(done) {
+        it('should set selected points in full data', function(done) {
             resetEvents(gd);
 
             drag(lassoPath);
@@ -1097,7 +1097,7 @@ describe('Test select box and lasso in general:', function() {
             .then(done);
         });
 
-        it('@flaky should trigger selecting/selected/deselect events for touches', function(done) {
+        it('should trigger selecting/selected/deselect events for touches', function(done) {
             resetEvents(gd);
 
             drag(lassoPath, {type: 'touch'});
@@ -1132,7 +1132,7 @@ describe('Test select box and lasso in general:', function() {
         });
     });
 
-    it('@flaky should skip over non-visible traces', function(done) {
+    it('should skip over non-visible traces', function(done) {
         // note: this tests a mock with one or several invisible traces
         // the invisible traces in the other tests test for multiple
         // traces, with some visible and some not.
@@ -1211,7 +1211,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('@flaky should skip over BADNUM items', function(done) {
+    it('should skip over BADNUM items', function(done) {
         var data = [{
             mode: 'markers',
             x: [null, undefined, NaN, 0, 'NA'],
@@ -1250,7 +1250,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('@flaky scroll zoom should clear selection regions', function(done) {
+    it('scroll zoom should clear selection regions', function(done) {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
@@ -1302,7 +1302,7 @@ describe('Test select box and lasso in general:', function() {
         }];
 
         specs.forEach(function(s) {
-            it('- @flaky on ' + s.axType + ' axes', function(done) {
+            it('- on ' + s.axType + ' axes', function(done) {
                 var gd = createGraphDiv();
 
                 Plotly.plot(gd, [], {
@@ -1344,7 +1344,7 @@ describe('Test select box and lasso in general:', function() {
         }];
 
         specs.forEach(function(s) {
-            it('- @flaky on ' + s.axType + ' axes', function(done) {
+            it('- on ' + s.axType + ' axes', function(done) {
                 var gd = createGraphDiv();
 
                 Plotly.plot(gd, [], {
@@ -1367,7 +1367,7 @@ describe('Test select box and lasso in general:', function() {
         });
     });
 
-    it('@flaky should have their selection outlines cleared during *axrange* relayout calls', function(done) {
+    it('should have their selection outlines cleared during *axrange* relayout calls', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, mock);
         fig.layout.dragmode = 'select';
@@ -1389,7 +1389,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('@flaky should select the right data with the corresponding select direction', function(done) {
+    it('should select the right data with the corresponding select direction', function(done) {
         var gd = createGraphDiv();
 
         // drag around just the center point, but if we have a selectdirection we may
@@ -1449,7 +1449,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 
@@ -1486,7 +1486,7 @@ describe('Test select box and lasso in general:', function() {
         }
     });
 
-    it('@flaky should clear selected points on double click only on pan/lasso modes', function(done) {
+    it('should clear selected points on double click only on pan/lasso modes', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
         fig.data = [fig.data[0]];
@@ -1595,7 +1595,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done);
     });
 
-    it('@flaky should remember selection polygons from previous select/lasso mode', function(done) {
+    it('should remember selection polygons from previous select/lasso mode', function(done) {
         var gd = createGraphDiv();
         var path1 = [[150, 150], [170, 170]];
         var path2 = [[193, 193], [213, 193]];
@@ -1884,7 +1884,7 @@ describe('Test select box and lasso per trace:', function() {
     }
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on scatterternary traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scatterternary traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['a', 'b', 'c']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -1942,7 +1942,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on scattercarpet traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scattercarpet traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['a', 'b']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -2098,7 +2098,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on scattergeo traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scattergeo traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges('geo');
@@ -2201,7 +2201,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on scatterpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scatterpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -2244,7 +2244,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on barpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on barpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -2305,7 +2305,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on choropleth traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on choropleth traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges('geo', -0.5);
@@ -2372,7 +2372,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for waterfall traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for waterfall traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2434,7 +2434,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for funnel traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for funnel traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2498,7 +2498,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false].forEach(function(hasCssTransform) {
-        it('@flaky should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2590,7 +2590,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for date/category traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for date/category traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -2654,7 +2654,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for histogram traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for histogram traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y', 'pointIndices']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2707,7 +2707,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for box traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for box traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2776,7 +2776,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for box traces (q1/median/q3 case), hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for box traces (q1/median/q3 case), hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
@@ -2829,7 +2829,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work for violin traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work for violin traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2897,7 +2897,7 @@ describe('Test select box and lasso per trace:', function() {
 
     [false].forEach(function(hasCssTransform) {
         ['ohlc', 'candlestick'].forEach(function(type) {
-            it('@flaky should work for ' + type + ' traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            it('should work for ' + type + ' traces, hasCssTransform: ' + hasCssTransform, function(done) {
                 var assertPoints = makeAssertPoints(['curveNumber', 'x', 'open', 'high', 'low', 'close']);
                 var assertSelectedPoints = makeAssertSelectedPoints();
                 var assertRanges = makeAssertRanges();
@@ -2977,7 +2977,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             Plotly.plot(gd, [{
@@ -3024,7 +3024,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@flaky should work on scatter/bar traces with text nodes, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scatter/bar traces with text nodes, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             function assertFillOpacity(exp, msg) {
@@ -3081,7 +3081,7 @@ describe('Test select box and lasso per trace:', function() {
         var waitingTime = sankeyConstants.duration * 2;
 
         [false].forEach(function(hasCssTransform) {
-            it('@flaky select, hasCssTransform: ' + hasCssTransform, function(done) {
+            it('select, hasCssTransform: ' + hasCssTransform, function(done) {
                 var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
                 fig.layout.dragmode = 'select';
                 var dblClickPos = [250, 400];
@@ -3117,7 +3117,7 @@ describe('Test select box and lasso per trace:', function() {
             });
         });
 
-        it('@flaky should not work when dragmode is undefined', function(done) {
+        it('should not work when dragmode is undefined', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
             fig.layout.dragmode = undefined;
 

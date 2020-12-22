@@ -1087,7 +1087,7 @@ describe('A fixed size shape', function() {
             });
       });
 
-    it('@flaky being sized relative to data vertically is getting lower ' +
+    it('being sized relative to data vertically is getting lower ' +
       'when being dragged to expand the y-axis',
       function(done) {
           layout.shapes[0].ysizemode = 'data';
@@ -1128,7 +1128,7 @@ describe('A fixed size shape', function() {
     shapeAndResizeTypes.forEach(function(testCase) {
         describe('of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
             resizeDirections.forEach(function(direction) {
-                it('@flaky over direction ' + direction, function(done) {
+                it('over direction ' + direction, function(done) {
                     layout.shapes[0].type = testCase.type;
 
                     Plotly.plot(gd, data, layout, {editable: true})
@@ -1163,7 +1163,7 @@ describe('A fixed size shape', function() {
             layout.shapes[0].yanchor = 3;
         });
 
-        it('@flaky can be moved by dragging the middle', function(done) {
+        it('can be moved by dragging the middle', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1184,7 +1184,7 @@ describe('A fixed size shape', function() {
               });
         });
 
-        it('@flaky can be resized by dragging the start point', function(done) {
+        it('can be resized by dragging the start point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1207,7 +1207,7 @@ describe('A fixed size shape', function() {
               });
         });
 
-        it('@flaky can be resized by dragging the end point', function(done) {
+        it('can be resized by dragging the end point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1362,7 +1362,7 @@ describe('Test shapes', function() {
     ];
 
     testCases.forEach(function(testCase) {
-        it('@flaky ' + testCase.title + ' should be draggable', function(done) {
+        it('' + testCase.title + ' should be draggable', function(done) {
             setupLayout(testCase, [{type: 'line'}, {type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
             testDragEachShape(done);
         });
@@ -1373,7 +1373,7 @@ describe('Test shapes', function() {
             var testTitle = testCase.title +
                 ' should be resizeable over direction ' +
                 direction;
-            it('@flaky ' + testTitle, function(done) {
+            it('' + testTitle, function(done) {
                 // Exclude line because it has a different resize behavior
                 setupLayout(testCase, [{type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
                 testResizeEachShape(direction, done);
@@ -1385,7 +1385,7 @@ describe('Test shapes', function() {
         ['start', 'end'].forEach(function(linePoint) {
             var testTitle = 'Line shape ' + testCase.title +
               ' should be resizable by dragging the ' + linePoint + ' point';
-            it('@flaky ' + testTitle, function(done) {
+            it('' + testTitle, function(done) {
                 setupLayout(testCase, [{type: 'line'}]);
                 testLineResize(linePoint, done);
             });
