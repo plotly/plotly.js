@@ -231,16 +231,18 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should not display the edit link by default', function() {
+        it('should not display the edit link by default', function(done) {
             Plotly.plot(gd, [], {})
             .then(function() {
                 var link = document.getElementsByClassName('js-plot-link-container')[0];
 
                 expect(link).toBeUndefined();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should display a link when true', function() {
+        it('should display a link when true', function(done) {
             Plotly.plot(gd, [], {}, { showLink: true })
             .then(function() {
                 var link = document.getElementsByClassName('js-plot-link-container')[0];
@@ -250,7 +252,9 @@ describe('config argument', function() {
                 var bBox = link.getBoundingClientRect();
                 expect(bBox.width).toBeGreaterThan(0);
                 expect(bBox.height).toBeGreaterThan(0);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -491,7 +495,7 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('allows axis range entry by default', function() {
+        it('allows axis range entry by default', function(done) {
             Plotly.plot(gd, mockCopy.data, {})
             .then(function() {
                 var corner = document.getElementsByClassName('edrag')[0];
@@ -504,10 +508,12 @@ describe('config argument', function() {
                 var editBox = document.getElementsByClassName('plugin-editable editable')[0];
                 expect(editBox).toBeDefined();
                 expect(editBox.getAttribute('contenteditable')).toBe('true');
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('disallows axis range entry when disabled', function() {
+        it('disallows axis range entry when disabled', function(done) {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false })
             .then(function() {
                 var corner = document.getElementsByClassName('edrag')[0];
@@ -519,7 +525,9 @@ describe('config argument', function() {
 
                 var editBox = document.getElementsByClassName('plugin-editable editable')[0];
                 expect(editBox).toBeUndefined();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
