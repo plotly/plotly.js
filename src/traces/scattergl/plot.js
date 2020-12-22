@@ -183,8 +183,8 @@ module.exports = function plot(gd, subplot, cdata) {
                     pos = [];
                     last = 0;
 
-                    fillOptions.splitNull = true
-                    
+                    fillOptions.splitNull = true;
+
                     for(j = 0; j < srcPos.length; j += 2) {
                         if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
                             pos = pos.concat(srcPos.slice(last, j));
