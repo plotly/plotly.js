@@ -326,7 +326,8 @@ describe('The legend', function() {
             Plotly.relayout(gd, 'showlegend', false)
             .then(function() {
                 Plotly.relayout(gd, 'showlegend', true);
-
+            })
+            .then(function() {
                 legend = getLegend();
                 scrollBox = getScrollBox();
                 scrollBar = getScrollBar();
@@ -346,9 +347,10 @@ describe('The legend', function() {
                         'translate(0,' + -dataScroll + ')');
                     expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
                     expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
-                    done();
                 }, DBLCLICKDELAY * 2);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should constrain scrolling to the contents', function() {
