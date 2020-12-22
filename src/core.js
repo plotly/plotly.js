@@ -11,7 +11,7 @@
 exports.version = require('./version').version;
 
 // inject promise polyfill
-require('es6-promise').polyfill();
+require('native-promise-only');
 
 // inject plot css
 require('../build/plotcss');
