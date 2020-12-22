@@ -263,7 +263,7 @@ describe('Test histogram2d', function() {
             expect(gd.data[0].autobiny).toBeUndefined();
         }
 
-        it('handles autobin correctly on restyles', function() {
+        it('handles autobin correctly on restyles', function(done) {
             var x1 = [
                 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
                 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4];
@@ -322,10 +322,12 @@ describe('Test histogram2d', function() {
                     {start: -0.5, end: 59.5, size: 20},
                     {start: -0.5, end: 59.5, size: 20},
                     undefined, undefined);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('respects explicit autobin: false as a one-time autobin', function() {
+        it('respects explicit autobin: false as a one-time autobin', function(done) {
             // patched in for backward compat, but there aren't really
             // autobinx/autobiny attributes anymore
             var x1 = [
@@ -344,7 +346,9 @@ describe('Test histogram2d', function() {
             })
             .then(function() {
                 _assert(binSpec, binSpec, binSpec, binSpec);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
