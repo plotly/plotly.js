@@ -4060,7 +4060,7 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change', function() {
+        it('responds to hoverdistance change', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
             Plotly.relayout(gd, 'hoverdistance', 30)
@@ -4078,11 +4078,13 @@ describe('hover distance', function() {
                     nums: '(2, 3)',
                     name: 'trace 0'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('correctly responds to setting the hoverdistance to -1 by increasing ' +
-            'the range of search for points to hover to Infinity', function() {
+            'the range of search for points to hover to Infinity', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
             Plotly.relayout(gd, 'hoverdistance', -1)
@@ -4100,7 +4102,9 @@ describe('hover distance', function() {
                     nums: '(2, 3)',
                     name: 'trace 0'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -4139,7 +4143,7 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change from 10 to 30 (part 1)', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 1)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
             Plotly.relayout(gd, 'hoverdistance', 10)
@@ -4147,10 +4151,12 @@ describe('hover distance', function() {
                 Fx.hover('graph', evt, 'xy');
 
                 expect(gd._hoverdata).toEqual(undefined);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('responds to hoverdistance change from 10 to 30 (part 2)', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
             Plotly.relayout(gd, 'hoverdistance', 30)
@@ -4169,7 +4175,9 @@ describe('hover distance', function() {
                     axis: '2',
                     name: 'trace 0'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('responds to hoverdistance change from default to 0 (part 1)', function() {
@@ -4191,7 +4199,7 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change from default to 0 (part 2)', function() {
+        it('responds to hoverdistance change from default to 0 (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 155 };
             Plotly.relayout(gd, 'hoverdistance', 0)
@@ -4199,7 +4207,9 @@ describe('hover distance', function() {
                 Fx.hover('graph', evt, 'xy');
 
                 expect(gd._hoverdata).toEqual(undefined);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('responds to setting the hoverdistance to -1 by increasing ' +
@@ -4212,7 +4222,7 @@ describe('hover distance', function() {
         });
 
         it('responds to setting the hoverdistance to -1 by increasing ' +
-            'the range of search for points to hover to Infinity (part 2)', function() {
+            'the range of search for points to hover to Infinity (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
             Plotly.relayout(gd, 'hoverdistance', -1)
@@ -4230,7 +4240,9 @@ describe('hover distance', function() {
                     nums: '(2, 3)',
                     name: 'trace 0'
                 });
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
