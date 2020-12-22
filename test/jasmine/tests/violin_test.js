@@ -666,7 +666,7 @@ describe('Test violin hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).catch(failTest).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 
