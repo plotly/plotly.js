@@ -1608,7 +1608,7 @@ describe('Test event data of interactions on a pie plot:', function() {
             checkEventData(futureData);
         });
 
-        it('should not contain pointNumber if aggregating', function() {
+        it('should not contain pointNumber if aggregating', function(done) {
             var values = gd.data[0].values;
             var labels = [];
             for(var i = 0; i < values.length; i++) labels.push(i);
@@ -1623,7 +1623,9 @@ describe('Test event data of interactions on a pie plot:', function() {
                 expect(futureData.points[0].pointNumber).toBeUndefined();
                 expect(futureData.points[0].i).toBeUndefined();
                 expect(futureData.points[0].pointNumbers).toEqual([4, 9]);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1699,12 +1701,14 @@ describe('Test event data of interactions on a pie plot:', function() {
             expect(futureData).toBe(null);
         });
 
-        it('should not emit a hover if hover is disabled', function() {
+        it('should not emit a hover if hover is disabled', function(done) {
             Plotly.relayout(gd, 'hovermode', false)
             .then(function() {
                 mouseEvent('mouseover', pointPos[0], pointPos[1]);
                 expect(futureData).toBe(null);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
