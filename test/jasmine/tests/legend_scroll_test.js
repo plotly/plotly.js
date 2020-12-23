@@ -323,34 +323,29 @@ describe('The legend', function() {
             scrollBarX = scrollBar.getAttribute('x'),
             scrollBarY = scrollBar.getAttribute('y');
 
-            Plotly.relayout(gd, 'showlegend', false)
-            .then(function() {
-                Plotly.relayout(gd, 'showlegend', true);
-            })
-            .then(function() {
-                legend = getLegend();
-                scrollBox = getScrollBox();
-                scrollBar = getScrollBar();
-                toggle = getToggle();
+            Plotly.relayout(gd, 'showlegend', false);
+            Plotly.relayout(gd, 'showlegend', true);
+            legend = getLegend();
+            scrollBox = getScrollBox();
+            scrollBar = getScrollBar();
+            toggle = getToggle();
 
-                legend.dispatchEvent(scrollTo(wheelDeltaY));
-                expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
-                expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
+            expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
 
-                var dataScroll = getScroll(gd);
-                toggle.dispatchEvent(new MouseEvent('mousedown'));
-                toggle.dispatchEvent(new MouseEvent('mouseup'));
-                setTimeout(function() {
-                    expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-                    expect(getScroll(gd)).toBe(dataScroll);
-                    expect(scrollBox.getAttribute('transform')).toBe(
-                        'translate(0,' + -dataScroll + ')');
-                    expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
-                    expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
-                }, DBLCLICKDELAY * 2);
-            })
-            .catch(failTest)
-            .then(done);
+            var dataScroll = getScroll(gd);
+            toggle.dispatchEvent(new MouseEvent('mousedown'));
+            toggle.dispatchEvent(new MouseEvent('mouseup'));
+            setTimeout(function() {
+                expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+                expect(getScroll(gd)).toBe(dataScroll);
+                expect(scrollBox.getAttribute('transform')).toBe(
+                    'translate(0,' + -dataScroll + ')');
+                expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+                expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+                done();
+            }, DBLCLICKDELAY * 2);
         });
 
         it('should constrain scrolling to the contents', function() {
