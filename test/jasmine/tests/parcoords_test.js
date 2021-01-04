@@ -525,7 +525,7 @@ describe('parcoords edge cases', function() {
         .then(done);
     });
 
-    it('@noCI @gl Works with 60 dimensions', function(done) {
+    it('@gl Works with 60 dimensions', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
@@ -555,7 +555,7 @@ describe('parcoords edge cases', function() {
         .then(done);
     });
 
-    it('@noCI @gl Truncates 60+ dimensions to 60', function(done) {
+    it('@gl Truncates 60+ dimensions to 60', function(done) {
         var mockCopy = Lib.extendDeep({}, mock1);
         var newDimension, i, j;
 
