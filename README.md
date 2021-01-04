@@ -162,6 +162,6 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 
 ## Copyright and license
 
-Code and documentation copyright 2020 Plotly, Inc.
+Code and documentation copyright 2021 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
