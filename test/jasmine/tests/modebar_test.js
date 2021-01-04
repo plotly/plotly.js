@@ -1353,7 +1353,7 @@ describe('ModeBar', function() {
             });
         });
 
-        describe('@noCI mapbox handlers', function() {
+        describe('mapbox handlers', function() {
             it('@gl button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
@@ -1395,6 +1395,7 @@ describe('ModeBar', function() {
                     _assert(10, 10, 8);
                     button.isActive(false);
                 })
+                .catch(failTest)
                 .then(done);
             });
         });
@@ -1495,6 +1496,7 @@ describe('ModeBar', function() {
                 style = document.querySelector(styleSelector);
                 expect(style).toBeNull();
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -1576,6 +1578,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width > size.height).toBeTruthy();
             })
+            .catch(failTest)
             .then(done);
         });
     });

@@ -158,6 +158,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -174,6 +175,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(false);
             expect(gd._fullLayout.scene === undefined).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -238,6 +240,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertObjects(order0);
         })
+        .catch(failTest)
         .then(done);
     });
 

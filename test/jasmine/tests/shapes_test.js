@@ -240,7 +240,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeLowerLayerNodes()).toEqual(1);
                 expect(countShapePathsInLowerLayer())
                     .toEqual(countShapesInLowerLayer(gd));
@@ -261,7 +262,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeUpperLayerNodes()).toEqual(1);
                 expect(countShapePathsInUpperLayer())
                     .toEqual(countShapesInUpperLayer(gd));
@@ -283,7 +285,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to get relayout', function(done) {
-            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+            Plotly.relayout(gd, {height: 200, width: 400})
+            .then(function() {
                 expect(countShapeLayerNodesInSubplots())
                     .toEqual(countSubplots(gd));
                 expect(countShapePathsInSubplots())
@@ -323,7 +326,8 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape)
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
@@ -345,7 +349,8 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape)
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
@@ -373,7 +378,8 @@ describe('Test shapes:', function() {
         });
 
         it('should be able to remove all shapes', function(done) {
-            Plotly.relayout(gd, { shapes: null }).then(function() {
+            Plotly.relayout(gd, { shapes: null })
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(0);
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
@@ -405,7 +411,8 @@ describe('Test shapes:', function() {
             Plotly.relayout(gd, { shapes: [
                 getRandomShape(),
                 getRandomShape()
-            ]}).then(function() {
+            ]})
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(2);
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
@@ -433,20 +440,24 @@ describe('Test shapes:', function() {
                     .toEqual(shapesInUpperLayer + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(function() {
+            })
+            .then(function() {
                 shape.layer = 'below';
-                Plotly.relayout(gd, astr + '.layer', shape.layer);
-            }).then(function() {
+                return Plotly.relayout(gd, astr + '.layer', shape.layer);
+            })
+            .then(function() {
                 expect(countShapePathsInLowerLayer())
                     .toEqual(shapesInLowerLayer + 1);
                 expect(countShapePathsInUpperLayer())
                     .toEqual(shapesInUpperLayer);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(function() {
+            })
+            .then(function() {
                 shape.layer = 'above';
-                Plotly.relayout(gd, astr + '.layer', shape.layer);
-            }).then(function() {
+                return Plotly.relayout(gd, astr + '.layer', shape.layer);
+            })
+            .then(function() {
                 expect(countShapePathsInLowerLayer())
                     .toEqual(shapesInLowerLayer);
                 expect(countShapePathsInUpperLayer())
@@ -857,7 +868,8 @@ describe('A fixed size path shape', function() {
 
         assertShapeSize(getFirstShapeNode(), 30, 20);
 
-        Plotly.relayout(gd, {height: 200, width: 600}).then(function() {
+        Plotly.relayout(gd, {height: 200, width: 600})
+        .then(function() {
             assertShapeSize(getFirstShapeNode(), 30, 20);
         })
         .catch(failTest)
@@ -869,8 +881,9 @@ describe('A fixed size path shape', function() {
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 30, 20);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
           });
     });
 
@@ -891,8 +904,9 @@ describe('A fixed size path shape', function() {
                     expect(bbox.height).toBe(20);
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
@@ -913,8 +927,9 @@ describe('A fixed size path shape', function() {
                     expect(bbox.width).toBe(30);
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 });
@@ -1028,7 +1043,8 @@ describe('A fixed size shape', function() {
         var shapeNode = getFirstShapeNode();
         assertShapeSize(shapeNode, 25, 25);
 
-        Plotly.relayout(gd, {height: 200, width: 600}).then(function() {
+        Plotly.relayout(gd, {height: 200, width: 600})
+        .then(function() {
             var reRenderedShapeNode = getFirstShapeNode();
             assertShapeSize(reRenderedShapeNode, 25, 25);
         })
@@ -1041,8 +1057,9 @@ describe('A fixed size shape', function() {
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 25, 25);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
           });
     });
 
@@ -1064,12 +1081,13 @@ describe('A fixed size shape', function() {
                     expect(bbox.height).toBe(25);
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
-    it('@flaky being sized relative to data vertically is getting lower ' +
+    it('being sized relative to data vertically is getting lower ' +
       'when being dragged to expand the y-axis',
       function(done) {
           layout.shapes[0].ysizemode = 'data';
@@ -1087,8 +1105,9 @@ describe('A fixed size shape', function() {
                     expect(bbox.width).toBe(25);
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
       });
 
@@ -1109,7 +1128,7 @@ describe('A fixed size shape', function() {
     shapeAndResizeTypes.forEach(function(testCase) {
         describe('of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
             resizeDirections.forEach(function(direction) {
-                it('@flaky over direction ' + direction, function(done) {
+                it('over direction ' + direction, function(done) {
                     layout.shapes[0].type = testCase.type;
 
                     Plotly.plot(gd, data, layout, {editable: true})
@@ -1129,8 +1148,9 @@ describe('A fixed size shape', function() {
                                 expect(bBoxAfterDrag.height).toBe(bBoxBeforeDrag.height + resizeFactor * Math.abs(dy));
                                 expect(bBoxAfterDrag.width).toBe(bBoxBeforeDrag.width + resizeFactor * Math.abs(dx));
                                 assertShapeFullyVisible(shapeNodeAfterDrag);
-                                done();
-                            });
+                            })
+                            .catch(failTest)
+                            .then(done);
                       });
                 });
             });
@@ -1143,7 +1163,7 @@ describe('A fixed size shape', function() {
             layout.shapes[0].yanchor = 3;
         });
 
-        it('@flaky can be moved by dragging the middle', function(done) {
+        it('can be moved by dragging the middle', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1158,13 +1178,13 @@ describe('A fixed size shape', function() {
                         assertShapeSize(shapeNodeAfterDrag, 25, 25);
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 10);
                         expect(bBoxAfterDrag.top).toBe(bBoxBeforeDrag.top - 10);
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
 
-        it('@flaky can be resized by dragging the start point', function(done) {
+        it('can be resized by dragging the start point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1181,13 +1201,13 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.right).toBe(bBoxBeforeDrag.right + 25, 'right');
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 25, 'left');
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
 
-        it('@flaky can be resized by dragging the end point', function(done) {
+        it('can be resized by dragging the end point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1204,9 +1224,9 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.right).toBe(bBoxBeforeDrag.right + 50, 'right');
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom - 10, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left, 'left');
-
-                        done();
-                    });
+                    })
+                    .catch(failTest)
+                    .then(done);
               });
         });
     });
@@ -1342,7 +1362,7 @@ describe('Test shapes', function() {
     ];
 
     testCases.forEach(function(testCase) {
-        it('@flaky ' + testCase.title + ' should be draggable', function(done) {
+        it('' + testCase.title + ' should be draggable', function(done) {
             setupLayout(testCase, [{type: 'line'}, {type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
             testDragEachShape(done);
         });
@@ -1353,7 +1373,7 @@ describe('Test shapes', function() {
             var testTitle = testCase.title +
                 ' should be resizeable over direction ' +
                 direction;
-            it('@flaky ' + testTitle, function(done) {
+            it('' + testTitle, function(done) {
                 // Exclude line because it has a different resize behavior
                 setupLayout(testCase, [{type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
                 testResizeEachShape(direction, done);
@@ -1365,7 +1385,7 @@ describe('Test shapes', function() {
         ['start', 'end'].forEach(function(linePoint) {
             var testTitle = 'Line shape ' + testCase.title +
               ' should be resizable by dragging the ' + linePoint + ' point';
-            it('@flaky ' + testTitle, function(done) {
+            it('' + testTitle, function(done) {
                 setupLayout(testCase, [{type: 'line'}]);
                 testLineResize(linePoint, done);
             });

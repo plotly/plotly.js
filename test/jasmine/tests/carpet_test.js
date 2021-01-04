@@ -724,6 +724,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900'], 'a = 0.2']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -736,6 +737,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900', 'D'], 'a = 0.2']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -747,6 +749,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'y: 2.900'], null]
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -758,6 +761,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['b: 3.500', 'y: 2.900'], null]
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -769,6 +773,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 2.900'], 'scattercarpet #5']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -780,6 +785,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 3.0'], 'pt #3']
         )
+        .catch(failTest)
         .then(done);
     });
 });

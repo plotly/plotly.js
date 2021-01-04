@@ -960,6 +960,7 @@ describe('funnelarea hovering', function() {
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -981,6 +982,7 @@ describe('funnelarea hovering', function() {
             .then(function() {
                 assertLabel('D\n0\n4\n14.3%');
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -1128,16 +1130,20 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('should contain the correct fields', function() {
@@ -1147,21 +1153,24 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
             checkEventData(futureData);
         });
 
-        it('should not contain pointNumber if aggregating', function() {
+        it('should not contain pointNumber if aggregating', function(done) {
             var values = gd.data[0].values;
             var labels = [];
             for(var i = 0; i < values.length; i++) labels.push(i);
             Plotly.restyle(gd, {
                 labels: [labels.concat(labels)],
                 values: [values.concat(values)]
-            });
+            })
+            .then(function() {
+                click(pointPos[0], pointPos[1]);
+                expect(futureData.points.length).toEqual(1);
 
-            click(pointPos[0], pointPos[1]);
-            expect(futureData.points.length).toEqual(1);
-
-            expect(futureData.points[0].pointNumber).toBeUndefined();
-            expect(futureData.points[0].i).toBeUndefined();
-            expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
+                expect(futureData.points[0].pointNumber).toBeUndefined();
+                expect(futureData.points[0].i).toBeUndefined();
+                expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1175,21 +1184,25 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('does not respond to right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
 
             // TODO: 'should contain the correct fields'
             // This test passed previously, but only because assets/click
@@ -1210,12 +1223,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            futureData = undefined;
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1227,13 +1243,17 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         it('should not emit a hover if you\'re dragging', function() {
             gd._dragging = true;
             mouseEvent('mouseover', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+            expect(futureData).toBe(null);
         });
 
-        it('should not emit a hover if hover is disabled', function() {
-            Plotly.relayout(gd, 'hovermode', false);
-            mouseEvent('mouseover', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+        it('should not emit a hover if hover is disabled', function(done) {
+            Plotly.relayout(gd, 'hovermode', false)
+            .then(function() {
+                mouseEvent('mouseover', pointPos[0], pointPos[1]);
+                expect(futureData).toBe(null);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1241,12 +1261,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            futureData = undefined;
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1258,7 +1281,7 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
 
         it('should not emit an unhover if you didn\'t first hover', function() {
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+            expect(futureData).toBe(null);
         });
     });
 });
@@ -1300,6 +1323,7 @@ describe('funnelarea relayout', function() {
             var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
+        .catch(failTest)
         .then(done);
     });
 });

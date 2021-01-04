@@ -250,9 +250,9 @@ describe('contourgl plots', function() {
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
             expect(scene2d.xaxis.range).toEqual([1, -1]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 

@@ -378,8 +378,9 @@ describe('sankey tests', function() {
                 .then(function() {
                     expect(gd.data.length).toEqual(0);
                     expect(d3.selectAll('.sankey').size()).toEqual(0);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('Plotly.deleteTraces removes draggers', function(done) {
@@ -413,8 +414,9 @@ describe('sankey tests', function() {
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(d3.selectAll('.sankey').size()).toEqual(1);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
@@ -434,8 +436,9 @@ describe('sankey tests', function() {
                     expect(d3.selectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
                         return Math.min(prevMin, d3.select(rect).attr('height'));
                     }, Infinity)).toEqual(0.5);
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('switch from normal to circular Sankey on react', function(done) {
@@ -449,8 +452,9 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(true);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
         });
 
         it('switch from circular to normal Sankey on react', function(done) {
@@ -473,8 +477,9 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
         });
 
         it('can create groups, restyle groups and properly update DOM', function(done) {
@@ -533,8 +538,9 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
-                  done();
-              });
+              })
+              .catch(failTest)
+              .then(done);
         });
 
         it('prevents nodes from overlapping in snap arrangement', function(done) {
@@ -1343,7 +1349,7 @@ describe('sankey tests', function() {
                       .then(done);
                 });
 
-                it('@noCI should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;

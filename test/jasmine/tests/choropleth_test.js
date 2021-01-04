@@ -205,6 +205,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['RUS\n10', 'trace 1']
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -220,6 +221,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['tpl 10', 'x']
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -236,6 +238,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['tExT', null]
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -252,6 +255,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['-text-', null]
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -269,6 +273,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['-text-', null]
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -295,6 +300,7 @@ describe('Test choropleth hover:', function() {
                     fontFamily: 'Roboto'
                 }
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -310,6 +316,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['RUS', 'trace 1']
             )
+            .catch(failTest)
             .then(done);
         });
     });
@@ -330,7 +337,9 @@ describe('Test choropleth hover:', function() {
 
         [false, true].forEach(function(hasCssTransform) {
             it('- base case (truncate z decimals), hasCssTransform: ' + hasCssTransform, function(done) {
-                run(hasCssTransform, pos, base(), exp).then(done);
+                run(hasCssTransform, pos, base(), exp)
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -338,7 +347,9 @@ describe('Test choropleth hover:', function() {
             it('- hovertemplate case (same z truncation), hasCssTransform: ' + hasCssTransform, function(done) {
                 var fig = base();
                 fig.hovertemplate = '%{z}<extra>%{location}</extra>';
-                run(hasCssTransform, pos, fig, exp).then(done);
+                run(hasCssTransform, pos, fig, exp)
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -350,7 +361,9 @@ describe('Test choropleth hover:', function() {
             fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
             fig.layout.geo.projection = {scale: 20};
 
-            run(hasCssTransform, [300, 200], fig, ['New York', '-75.1 | 42.6']).then(done);
+            run(hasCssTransform, [300, 200], fig, ['New York', '-75.1 | 42.6'])
+            .catch(failTest)
+            .then(done);
         });
     });
 });

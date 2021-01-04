@@ -841,7 +841,7 @@ describe('legend relayout update', function() {
             expect(d3.selectAll('.legendtitletext')[0].length).toBe(1);
         })
         .then(function() {
-            Plotly.react(gd, {
+            return Plotly.react(gd, {
                 data: data,
                 layout: {
                     showlegend: true
@@ -874,8 +874,9 @@ describe('legend orientation change:', function() {
             return Plotly.relayout(gd, 'legend.bgcolor', initialLegendBGColor);
         }).then(function() {
             expect(gd._fullLayout.legend.bgcolor).toBe(initialLegendBGColor);
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
@@ -925,9 +926,9 @@ describe('legend restyle update', function() {
         }).then(function() {
             expect(countLegendItems()).toEqual(1);
             assertTraceToggleRect();
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 

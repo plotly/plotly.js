@@ -327,6 +327,7 @@ describe('Test gl3d trace click/hover:', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -446,6 +447,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -471,6 +473,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -547,7 +550,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face colors', function(done) {
+    it('@noCI @gl should display correct face colors', function(done) {
         var fig = mesh3dcoloringMock;
 
         Plotly.newPlot(gd, fig)
@@ -600,7 +603,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities (uniform grid)', function(done) {
+    it('@noCI @gl should display correct face intensities (uniform grid)', function(done) {
         var fig = mesh3dcellIntensityMock;
 
         Plotly.newPlot(gd, fig)
@@ -631,7 +634,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+    it('@noCI @gl should display correct face intensities (non-uniform grid)', function(done) {
         var fig = mesh3dbunnyMock;
 
         Plotly.newPlot(gd, fig)
@@ -662,7 +665,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
+    it('@noCI @gl should display correct face intensities *alpha-hull* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -706,7 +709,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities *delaunay* case', function(done) {
+    it('@noCI @gl should display correct face intensities *delaunay* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',

@@ -1915,118 +1915,174 @@ describe('Test axes', function() {
         afterEach(destroyGraphDiv);
 
         describe('setting, or not setting categoryorder if it is not explicitly declared', function() {
-            it('should set categoryorder to default if categoryorder and categoryarray are not supplied', function() {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {xaxis: {type: 'category'}});
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+            it('should set categoryorder to default if categoryorder and categoryarray are not supplied', function(done) {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {xaxis: {type: 'category'}})
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should set categoryorder to default even if type is not set to category explicitly', function() {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}]);
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+            it('should set categoryorder to default even if type is not set to category explicitly', function(done) {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should NOT set categoryorder to default if type is not category', function() {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}]);
-                expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
-                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+            it('should NOT set categoryorder to default if type is not category', function(done) {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
+                .then(function() {
+                    expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
+                    expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should set categoryorder to default if type is overridden to be category', function() {
-                Plotly.plot(gd, [{x: [1, 2, 3, 4, 5], y: [15, 11, 12, 13, 14]}], {yaxis: {type: 'category'}});
-                expect(gd._fullLayout.xaxis.categoryorder).toBe(undefined);
-                expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
-                expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
+            it('should set categoryorder to default if type is overridden to be category', function(done) {
+                Plotly.plot(gd, [{x: [1, 2, 3, 4, 5], y: [15, 11, 12, 13, 14]}], {yaxis: {type: 'category'}})
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe(undefined);
+                    expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
+                    expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
         describe('setting categoryorder to "array"', function() {
-            it('should leave categoryorder on "array" if it is supplied', function() {
+            it('should leave categoryorder on "array" if it is supplied', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
-                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                    expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function() {
+            it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
-                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                    expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function() {
+            it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array'}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
         describe('do not set categoryorder to "array" if list exists but empty', function() {
-            it('should switch categoryorder to default if list is not supplied', function() {
+            it('should switch categoryorder to default if list is not supplied', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: []}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categoryarray).toEqual([]);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categoryarray).toEqual([]);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function() {
+            it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryarray: []}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categoryarray).toEqual(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categoryarray).toEqual(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
         describe('do NOT set categoryorder to "array" if it has some other proper value', function() {
-            it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
+            it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'trace', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
+            it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'category ascending', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('category ascending');
-                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('category ascending');
+                    expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
+            it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'category descending', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
-                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
+                    expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
         describe('setting categoryorder to the default if the value is unexpected', function() {
-            it('should switch categoryorder to "trace" if mode is supplied but invalid', function() {
+            it('should switch categoryorder to "trace" if mode is supplied but invalid', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'invalid value'}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
-                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
-            it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function() {
+            it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function(done) {
                 Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'invalid value', categoryarray: ['b', 'a', 'd', 'e', 'c']}
-                });
-                expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
-                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                    expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -2041,11 +2097,15 @@ describe('Test axes', function() {
         afterEach(destroyGraphDiv);
 
         describe('a category has the same value of one of the auto range computed extreme', function() {
-            it('should compute the right range for X axis', function() {
+            it('should compute the right range for X axis', function(done) {
                 Plotly.plot(gd, [{x: ['0', '-0.5', '3.5', 'Not Known'], y: [ '1.0', '1.0', '2.0', '1.0'], type: 'bar'}], {
                     xaxis: {type: 'category', autorange: true}
-                });
-                expect(gd._fullLayout.xaxis._rl).toEqual([-0.5, 3.5]);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis._rl).toEqual([-0.5, 3.5]);
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -2060,7 +2120,7 @@ describe('Test axes', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should set defaults on bad inputs', function() {
+        it('should set defaults on bad inputs', function(done) {
             var layout = {
                 yaxis: {
                     ticklen: 'invalid',
@@ -2072,19 +2132,22 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout);
-
-            var yaxis = gd._fullLayout.yaxis;
-            expect(yaxis.ticklen).toBe(5);
-            expect(yaxis.tickwidth).toBe(1);
-            expect(yaxis.tickcolor).toBe('#444');
-            expect(yaxis.ticks).toBe('outside');
-            expect(yaxis.showticklabels).toBe(true);
-            expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
-            expect(yaxis.tickangle).toBe('auto');
+            Plotly.plot(gd, data, layout)
+            .then(function() {
+                var yaxis = gd._fullLayout.yaxis;
+                expect(yaxis.ticklen).toBe(5);
+                expect(yaxis.tickwidth).toBe(1);
+                expect(yaxis.tickcolor).toBe('#444');
+                expect(yaxis.ticks).toBe('outside');
+                expect(yaxis.showticklabels).toBe(true);
+                expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
+                expect(yaxis.tickangle).toBe('auto');
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should use valid inputs', function() {
+        it('should use valid inputs', function(done) {
             var layout = {
                 yaxis: {
                     ticklen: 10,
@@ -2096,19 +2159,22 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout);
-
-            var yaxis = gd._fullLayout.yaxis;
-            expect(yaxis.ticklen).toBe(10);
-            expect(yaxis.tickwidth).toBe(5);
-            expect(yaxis.tickcolor).toBe('#F00');
-            expect(yaxis.ticks).toBe('outside');
-            expect(yaxis.showticklabels).toBe(true);
-            expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
-            expect(yaxis.tickangle).toBe(-20);
+            Plotly.plot(gd, data, layout)
+            .then(function() {
+                var yaxis = gd._fullLayout.yaxis;
+                expect(yaxis.ticklen).toBe(10);
+                expect(yaxis.tickwidth).toBe(5);
+                expect(yaxis.tickcolor).toBe('#F00');
+                expect(yaxis.ticks).toBe('outside');
+                expect(yaxis.showticklabels).toBe(true);
+                expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
+                expect(yaxis.tickangle).toBe(-20);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should conditionally coerce based on showticklabels', function() {
+        it('should conditionally coerce based on showticklabels', function(done) {
             var layout = {
                 yaxis: {
                     showticklabels: false,
@@ -2116,10 +2182,13 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout);
-
-            var yaxis = gd._fullLayout.yaxis;
-            expect(yaxis.tickangle).toBeUndefined();
+            Plotly.plot(gd, data, layout)
+            .then(function() {
+                var yaxis = gd._fullLayout.yaxis;
+                expect(yaxis.tickangle).toBeUndefined();
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

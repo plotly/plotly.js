@@ -57,7 +57,7 @@ describe('Plotly.toImage', function() {
 
         expect(isPromise(returnValue)).toBe(true);
 
-        returnValue.then(done);
+        returnValue.catch(failTest).then(done);
     });
 
     it('should throw error with unsupported file type', function(done) {

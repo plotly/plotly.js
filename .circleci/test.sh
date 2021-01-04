@@ -6,7 +6,7 @@ set +o pipefail
 
 ROOT=$(dirname $0)/..
 EXIT_STATE=0
-MAX_AUTO_RETRY=5
+MAX_AUTO_RETRY=0
 
 log () {
     echo -e "\n$1"
@@ -55,6 +55,7 @@ case $1 in
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
+            MAX_AUTO_RETRY=1
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --doNotFailOnEmptyTestSuite
         done
 
@@ -67,6 +68,7 @@ case $1 in
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
 
         for s in ${SHARDS[@]}; do
+            MAX_AUTO_RETRY=5
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI
         done
 
@@ -80,6 +82,7 @@ case $1 in
         ;;
 
     image2)
+        MAX_AUTO_RETRY=5
         retry npm run test-image -- --just-flaky
         npm run test-export     || EXIT_STATE=$?
         exit $EXIT_STATE

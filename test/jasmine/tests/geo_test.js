@@ -874,7 +874,8 @@ describe('Test geo interactions', function() {
                     'geo.projection.rotation': { lon: 82, lat: -19 }
                 };
 
-                Plotly.relayout(gd, update).then(function() {
+                Plotly.relayout(gd, update)
+                .then(function() {
                     setTimeout(function() {
                         mouseEvent('mousemove', 288, 170);
 
@@ -1063,9 +1064,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should toggle choropleth elements', function(done) {
@@ -1080,9 +1081,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1112,9 +1113,9 @@ describe('Test geo interactions', function() {
                     expect(countTraces('choropleth')).toBe(0);
                     expect(countGeos()).toBe(0);
                     expect(countColorBars()).toBe(0);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1306,9 +1307,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(N_LOCATIONS_AT_START - 1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should be able to update line/marker/text nodes and choropleth paths', function(done) {
@@ -1333,9 +1334,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(locationsQueue.length);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -1809,17 +1810,20 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('should contain the correct fields', function() {
@@ -1859,22 +1863,25 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('does not support right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
 
             // TODO: 'should contain the correct fields'
             // This test passed previously, but only because assets/click
@@ -1911,11 +1918,15 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1950,11 +1961,15 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function(done) {

@@ -1569,6 +1569,7 @@ describe('Test treemap interactions edge cases', function() {
         .then(function() {
             assertHoverLabelContent({ nums: 'D\n4\n0' });
         })
+        .catch(failTest)
         .then(done);
     });
 

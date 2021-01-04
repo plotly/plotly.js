@@ -2752,9 +2752,9 @@ describe('Queue', function() {
         }).then(function() {
             expect(gd.undoQueue.index).toEqual(0);
             expect(gd.undoQueue.queue).toEqual([]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should fill in undoQueue up to value found in *queueLength* config', function(done) {

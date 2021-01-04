@@ -553,6 +553,7 @@ describe('hover info', function() {
                     nums: 'PV learning ...'
                 });
             })
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1391,25 +1392,33 @@ describe('hover info', function() {
             this.gd = createGraphDiv();
         });
 
-        it('should display the correct format when ticklabels true', function() {
-            Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 303, 213);
+        it('should display the correct format when ticklabels true', function(done) {
+            Plotly.plot(this.gd, data, layout)
+            .then(function() {
+                mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent({
-                nums: '0.23',
-                axis: '2'
-            });
+                assertHoverLabelContent({
+                    nums: '0.23',
+                    axis: '2'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should display the correct format when ticklabels false', function() {
+        it('should display the correct format when ticklabels false', function(done) {
             layout.yaxis.showticklabels = false;
-            Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 303, 213);
+            Plotly.plot(this.gd, data, layout)
+            .then(function() {
+                mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent({
-                nums: '0.23',
-                axis: '2'
-            });
+                assertHoverLabelContent({
+                    nums: '0.23',
+                    axis: '2'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1923,7 +1932,7 @@ describe('hover info', function() {
                 }
             })
             .then(function() {
-                Plotly.restyle(gd, 'hovertemplate', '%{y:$010,.2f}<extra>trace 0</extra>');
+                return Plotly.restyle(gd, 'hovertemplate', '%{y:$010,.2f}<extra>trace 0</extra>');
             })
             .then(function() {
                 Fx.hover('graph', evt, 'xy');
@@ -2408,6 +2417,7 @@ describe('hover info on overlaid subplots', function() {
                 axis: '1'
             });
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -2473,6 +2483,7 @@ describe('hover after resizing', function() {
         .then(function() {
             return check(pos1, [null, null, null], 'back to initial, not showing blank spot');
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -2505,7 +2516,9 @@ describe('hover on fill', function() {
             assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
             assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
             assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
-        }).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should always show one label in the right place (symmetric fill edge case)', function(done) {
@@ -4047,45 +4060,51 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change', function() {
+        it('responds to hoverdistance change', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
-            Plotly.relayout(gd, 'hoverdistance', 30);
+            Plotly.relayout(gd, 'hoverdistance', 30)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
+                var hoverTrace = gd._hoverdata[0];
 
-            var hoverTrace = gd._hoverdata[0];
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(1);
+                expect(hoverTrace.x).toEqual(2);
+                expect(hoverTrace.y).toEqual(3);
 
-            expect(hoverTrace.curveNumber).toEqual(0);
-            expect(hoverTrace.pointNumber).toEqual(1);
-            expect(hoverTrace.x).toEqual(2);
-            expect(hoverTrace.y).toEqual(3);
-
-            assertHoverLabelContent({
-                nums: '(2, 3)',
-                name: 'trace 0'
-            });
+                assertHoverLabelContent({
+                    nums: '(2, 3)',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('correctly responds to setting the hoverdistance to -1 by increasing ' +
-            'the range of search for points to hover to Infinity', function() {
+            'the range of search for points to hover to Infinity', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
-            Plotly.relayout(gd, 'hoverdistance', -1);
+            Plotly.relayout(gd, 'hoverdistance', -1)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
+                var hoverTrace = gd._hoverdata[0];
 
-            var hoverTrace = gd._hoverdata[0];
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(1);
+                expect(hoverTrace.x).toEqual(2);
+                expect(hoverTrace.y).toEqual(3);
 
-            expect(hoverTrace.curveNumber).toEqual(0);
-            expect(hoverTrace.pointNumber).toEqual(1);
-            expect(hoverTrace.x).toEqual(2);
-            expect(hoverTrace.y).toEqual(3);
-
-            assertHoverLabelContent({
-                nums: '(2, 3)',
-                name: 'trace 0'
-            });
+                assertHoverLabelContent({
+                    nums: '(2, 3)',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -4124,35 +4143,41 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change from 10 to 30 (part 1)', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 1)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            Plotly.relayout(gd, 'hoverdistance', 10);
+            Plotly.relayout(gd, 'hoverdistance', 10)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
-
-            expect(gd._hoverdata).toEqual(undefined);
+                expect(gd._hoverdata).toEqual(undefined);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('responds to hoverdistance change from 10 to 30 (part 2)', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            Plotly.relayout(gd, 'hoverdistance', 30);
+            Plotly.relayout(gd, 'hoverdistance', 30)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
+                var hoverTrace = gd._hoverdata[0];
 
-            var hoverTrace = gd._hoverdata[0];
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(1);
+                expect(hoverTrace.x).toEqual(2);
+                expect(hoverTrace.y).toEqual(3);
 
-            expect(hoverTrace.curveNumber).toEqual(0);
-            expect(hoverTrace.pointNumber).toEqual(1);
-            expect(hoverTrace.x).toEqual(2);
-            expect(hoverTrace.y).toEqual(3);
-
-            assertHoverLabelContent({
-                nums: '3',
-                axis: '2',
-                name: 'trace 0'
-            });
+                assertHoverLabelContent({
+                    nums: '3',
+                    axis: '2',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('responds to hoverdistance change from default to 0 (part 1)', function() {
@@ -4174,14 +4199,17 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change from default to 0 (part 2)', function() {
+        it('responds to hoverdistance change from default to 0 (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 155 };
-            Plotly.relayout(gd, 'hoverdistance', 0);
+            Plotly.relayout(gd, 'hoverdistance', 0)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
-
-            expect(gd._hoverdata).toEqual(undefined);
+                expect(gd._hoverdata).toEqual(undefined);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('responds to setting the hoverdistance to -1 by increasing ' +
@@ -4194,24 +4222,27 @@ describe('hover distance', function() {
         });
 
         it('responds to setting the hoverdistance to -1 by increasing ' +
-            'the range of search for points to hover to Infinity (part 2)', function() {
+            'the range of search for points to hover to Infinity (part 2)', function(done) {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            Plotly.relayout(gd, 'hoverdistance', -1);
+            Plotly.relayout(gd, 'hoverdistance', -1)
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
 
-            Fx.hover('graph', evt, 'xy');
+                var hoverTrace = gd._hoverdata[0];
 
-            var hoverTrace = gd._hoverdata[0];
+                expect(hoverTrace.curveNumber).toEqual(0);
+                expect(hoverTrace.pointNumber).toEqual(1);
+                expect(hoverTrace.x).toEqual(2);
+                expect(hoverTrace.y).toEqual(3);
 
-            expect(hoverTrace.curveNumber).toEqual(0);
-            expect(hoverTrace.pointNumber).toEqual(1);
-            expect(hoverTrace.x).toEqual(2);
-            expect(hoverTrace.y).toEqual(3);
-
-            assertHoverLabelContent({
-                nums: '(2, 3)',
-                name: 'trace 0'
-            });
+                assertHoverLabelContent({
+                    nums: '(2, 3)',
+                    name: 'trace 0'
+                });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -4337,7 +4368,8 @@ describe('hover label rotation:', function() {
         });
 
         it('should not rotate labels under *hovermode:closest*', function(done) {
-            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+            Plotly.relayout(gd, 'hovermode', 'closest')
+            .then(function() {
                 _hover(gd, { xval: 1.9, yval: 1 });
                 assertHoverLabelContent({
                     nums: '(2, 1)',
@@ -4385,7 +4417,8 @@ describe('hover label rotation:', function() {
         });
 
         it('should not rotate labels under *hovermode:closest*', function(done) {
-            Plotly.relayout(gd, 'hovermode', 'closest').then(function() {
+            Plotly.relayout(gd, 'hovermode', 'closest')
+            .then(function() {
                 _hover(gd, { xval: 1.9, yval: 1 });
                 assertHoverLabelContent({
                     nums: '(2, 1)',

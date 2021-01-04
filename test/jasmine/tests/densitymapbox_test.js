@@ -270,7 +270,7 @@ describe('Test densitymapbox convert:', function() {
     });
 });
 
-describe('@noCI Test densitymapbox hover:', function() {
+describe('Test densitymapbox hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -375,7 +375,7 @@ describe('@noCI Test densitymapbox hover:', function() {
     });
 });
 
-describe('@noCI Test densitymapbox interactions:', function() {
+describe('Test densitymapbox interactions:', function() {
     var gd;
 
     beforeEach(function() {

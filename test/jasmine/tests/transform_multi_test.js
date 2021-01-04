@@ -582,9 +582,9 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[1].x.length).toEqual(3);
 
             assertDims([3, 3]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
