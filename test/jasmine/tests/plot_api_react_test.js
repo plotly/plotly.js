@@ -19,7 +19,7 @@ var delay = require('../assets/delay');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
-describe('Plotly.react', function() {
+describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
         'doTraceStyle',
         'doColorBars',
