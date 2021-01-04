@@ -973,7 +973,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             var yr0 = [-0.211, 3.211];
 
             var specs = [{
-                desc: 'zoombox on xy',
+                desc: '@flaky zoombox on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
                     [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
