@@ -2048,12 +2048,12 @@ describe('axis zoom/pan and main plot zoom', function() {
                         trace1.y = [];
                     }
 
-                    return Plotly.react(gd, [trace0, trace1], layout);
+                    Plotly.react(gd, [trace0, trace1], layout);
                 });
 
                 gd.on('plotly_selected', function(d) {
                     selectedTracker.unshift(d);
-                    return Plotly.react(gd, [trace0], layout);
+                    Plotly.react(gd, [trace0], layout);
                 });
             })
             .then(_assert('base', {
