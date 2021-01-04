@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
@@ -1306,7 +1306,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 
 // Make groups of touching points, and within each group
 // move each point so that no labels overlap, but the average
-// label position is the same as it was before moving. Indicentally,
+// label position is the same as it was before moving. Incidentally,
 // this is equivalent to saying all the labels are on equal linear
 // springs about their initial position. Initially, each point is
 // its own group, but as we find overlaps we will clump the points.

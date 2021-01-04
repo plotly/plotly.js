@@ -6,7 +6,7 @@ var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');

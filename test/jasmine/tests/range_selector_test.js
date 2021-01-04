@@ -1,7 +1,7 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Color = require('@src/components/color');

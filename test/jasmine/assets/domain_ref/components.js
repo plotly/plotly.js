@@ -11,7 +11,7 @@
 'use strict';
 
 var Plotly = require('../../../../lib/index');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var pixelCalc = require('../../assets/pixel_calc');
 var getSVGElemScreenBBox = require('../../assets/get_svg_elem_screen_bbox');
 // var SVGTools = require('../../assets/svg_tools');
@@ -219,7 +219,7 @@ function annaxscale(ac, c0) {
 }
 
 // This tests to see that an annotation was drawn correctly.
-// Determinining the length of the arrow seems complicated due to the
+// Determining the length of the arrow seems complicated due to the
 // rectangle containing the text, so we draw 2 annotations, one K times the
 // length of the other, and solve for the desired arrow length from the
 // length measured on the screen. This works because multiplying the length

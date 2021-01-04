@@ -9,6 +9,26 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.58.4] -- 2020-12-21
+
+### Fixed
+ - Fix `preserveDrawingBuffer` WebGL config for displaying transparent gl3d scenes
+   on Apple devices running latest Safari versions (v13 and higher) [#5351]
+ - Fix spelling [#5349, #5356] with thanks to @jbampton for the contribution!
+
+
+## [1.58.3] -- 2020-12-17
+
+### Fixed
+ - Fix `autorange` for inside tick label positions [#5332]
+ - Fix "nonnegative" and "tozero" `rangemode` for inside tick label positions
+   (regression introduced in 1.58.2) [#5331]
+ - Fix missing categories and tick labels on react updates
+   (regression introduced in 1.54.6) [#5345]
+ - Fix to avoid "autoscale" error when axis `autorange` is set to false
+   (regression introduced in 1.42.0) [#5336]
+
+
 ## [1.58.2] -- 2020-12-08
 
 ### Fixed

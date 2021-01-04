@@ -2,7 +2,7 @@
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var delay = require('./delay.js');
 
 var reNumbers = /([\d\.]+)/gm;

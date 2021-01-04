@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,7 @@
 exports.version = require('./version').version;
 
 // inject promise polyfill
-require('es6-promise').polyfill();
+require('native-promise-only');
 
 // inject plot css
 require('../build/plotcss');
@@ -81,4 +81,4 @@ exports.PlotSchema = require('./plot_api/plot_schema');
 exports.Queue = require('./lib/queue');
 
 // export d3 used in the bundle
-exports.d3 = require('d3');
+exports.d3 = require('@plotly/d3');

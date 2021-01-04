@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');

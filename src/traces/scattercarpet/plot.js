@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -30,7 +30,7 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
         trace = data[i][0].trace;
 
         // Note: .select is adequate but seems to mutate the node data,
-        // which is at least a bit suprising and causes problems elsewhere
+        // which is at least a bit surprising and causes problems elsewhere
         node = layer.selectAll('g.trace' + trace.uid + ' .js-line');
 
         // Note: it would be more efficient if this didn't need to be applied

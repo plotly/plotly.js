@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -75,7 +75,7 @@ module.exports = {
         ],
         description: [
             'This value here applies when hovering over dimensions.',
-            'Note tath `*categorycount`, *colorcount* and *bandcolorcount*',
+            'Note that `*categorycount`, *colorcount* and *bandcolorcount*',
             'are only available when `hoveron` contains the *color* flag'
         ].join(' ')
     }),

@@ -20,7 +20,7 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
 

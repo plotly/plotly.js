@@ -5,7 +5,7 @@ var Fx = require('@src/components/fx');
 var constants = require('@src/plots/mapbox/constants');
 var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');

@@ -143,7 +143,7 @@ describe('groupby', function() {
             .then(done);
 
             // The final test for restyle updates using deprecated syntax
-            // is ommitted since old style syntax is *only* sanitized on
+            // is omitted since old style syntax is *only* sanitized on
             // initial plot, *not* on restyle.
         });
 

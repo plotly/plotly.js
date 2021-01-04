@@ -1,5 +1,5 @@
 var Plotly = require('@lib/index');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
 
 var Plots = require('@src/plots/plots');
@@ -6960,6 +6960,64 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('category preservation tests on gd passed to Plotly.react()', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        // needed for successive hover events
+        Lib.clearThrottle();
+    }
+
+    it('should preserve categories and axis ticklabels', function(done) {
+        var fig = {
+            data: [{
+                type: 'bar',
+                y: [3, 5, 3, 2],
+                x: ['a', 'b', 'c', 'd']
+            }],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(function(gd) {
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', 'c', 'd']);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({a: 0, b: 1, c: 2, d: 3});
+        })
+        .then(function() {
+            _hover(gd, { xval: fig.data[0].x.indexOf('a') });
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('a');
+        })
+        .then(function() {
+            _hover(gd, { xval: fig.data[0].x.indexOf('b') });
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('b');
+        })
+        .then(function() {
+            _hover(gd, { xval: fig.data[0].x.indexOf('c') });
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('c');
+        })
+        .then(function() {
+            _hover(gd, { xval: fig.data[0].x.indexOf('d') });
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('d');
+        })
+
         .catch(failTest)
         .then(done);
     });

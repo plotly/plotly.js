@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
@@ -4383,7 +4383,7 @@ describe('hover label rotation:', function() {
         });
     });
 
-    describe('when mulitple pts are picked', function() {
+    describe('when multiple pts are picked', function() {
         afterAll(destroyGraphDiv);
 
         beforeAll(function(done) {
