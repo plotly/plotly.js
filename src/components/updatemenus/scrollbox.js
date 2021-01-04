@@ -10,7 +10,7 @@
 
 module.exports = ScrollBox;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Color = require('../color');
 var Drawing = require('../drawing');

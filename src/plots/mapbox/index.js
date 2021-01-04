@@ -15,7 +15,7 @@ var strTranslate = Lib.strTranslate;
 var strScale = Lib.strScale;
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 

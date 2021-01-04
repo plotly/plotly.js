@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');

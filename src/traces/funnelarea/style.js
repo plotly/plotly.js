@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var styleOne = require('../pie/style_one');
 var resizeText = require('../bar/uniform_text').resizeText;

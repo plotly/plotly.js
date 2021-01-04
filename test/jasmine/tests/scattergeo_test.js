@@ -5,7 +5,7 @@ var loggers = require('@src/lib/loggers');
 
 var ScatterGeo = require('@src/traces/scattergeo');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');

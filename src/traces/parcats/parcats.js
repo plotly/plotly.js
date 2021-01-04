@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');

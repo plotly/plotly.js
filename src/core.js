@@ -81,4 +81,4 @@ exports.PlotSchema = require('./plot_api/plot_schema');
 exports.Queue = require('./lib/queue');
 
 // export d3 used in the bundle
-exports.d3 = require('d3');
+exports.d3 = require('@plotly/d3');

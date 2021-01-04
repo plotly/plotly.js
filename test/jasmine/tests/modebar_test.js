@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');

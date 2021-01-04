@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var negateIf = require('./negate_if');
 
 exports.assertDims = function(dims) {

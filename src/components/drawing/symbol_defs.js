@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 /** Marker symbol definitions
  * users can specify markers either by number or name

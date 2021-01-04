@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');

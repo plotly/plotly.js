@@ -4,7 +4,7 @@ var Plots = require('@src/plots/plots');
 var Axes = require('@src/plots/cartesian/axes');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

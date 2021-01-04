@@ -6,7 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Lib = require('../../../lib');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../../constants/alignment').MID_SHIFT;
