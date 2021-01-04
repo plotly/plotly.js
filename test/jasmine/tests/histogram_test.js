@@ -1109,7 +1109,7 @@ describe('Test histogram', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should update autobins correctly when restyling', function() {
+        it('should update autobins correctly when restyling', function(done) {
             // note: I'm *not* testing what this does to gd.data, as that's
             // really a matter of convenience and will perhaps change later (v2?)
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
@@ -1168,10 +1168,12 @@ describe('Test histogram', function() {
             .then(function() {
                 expect(gd._fullData[0].xbins).toEqual({start: 9, end: 51, size: 2});
                 expect(gd._fullData[0].nbinsx).toBeUndefined();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('respects explicit autobin: false as a one-time autobin', function() {
+        it('respects explicit autobin: false as a one-time autobin', function(done) {
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
             Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }])
             .then(function() {
@@ -1187,10 +1189,12 @@ describe('Test histogram', function() {
             })
             .then(function() {
                 expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('allows changing axis type with new x data', function() {
+        it('allows changing axis type with new x data', function(done) {
             var x1 = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
             var x2 = ['2017-01-01', '2017-01-01', '2017-01-01', '2017-01-02', '2017-01-02', '2017-01-03'];
 
@@ -1204,7 +1208,9 @@ describe('Test histogram', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.type).toBe('date');
                 expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('can resize a plot with several histograms', function(done) {
