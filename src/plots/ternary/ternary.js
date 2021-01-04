@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');

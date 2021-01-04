@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 
 var Image = require('@src/traces/image');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');

@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 module.exports = function style(gd) {
     d3.select(gd).selectAll('.hm image')

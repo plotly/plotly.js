@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var d3Hierarchy = require('d3-hierarchy');
 
 var Drawing = require('../../components/drawing');
