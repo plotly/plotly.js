@@ -232,7 +232,7 @@ describe('relayout', function() {
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }]).then(function() {
             assertMainDrag('crosshair', true);

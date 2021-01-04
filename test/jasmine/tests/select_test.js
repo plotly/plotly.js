@@ -158,7 +158,7 @@ describe('Click-to-select', function() {
           defaultLayoutOpts,
           { layout: layoutOpts });
 
-        return Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+        return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
     }
 
     /**
@@ -381,7 +381,7 @@ describe('Click-to-select', function() {
     });
 
     it('@gl works in a multi-trace plot', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {
                 x: [1, 3, 5, 4, 10, 12, 12, 7],
                 y: [2, 7, 6, 1, 0, 13, 6, 12],
@@ -488,7 +488,7 @@ describe('Click-to-select', function() {
     });
 
     it('@gl is supported by scattergl in pan/zoom mode', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {
                 x: [7, 8, 9, 10],
                 y: [7, 9, 13, 21],
@@ -520,7 +520,7 @@ describe('Click-to-select', function() {
         var thirdBinPts = [3, 4, 5];
 
         mock.layout.clickmode = 'event+select';
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
           .then(function() {
               return clickFirstBinImmediately();
           })
@@ -560,7 +560,7 @@ describe('Click-to-select', function() {
         mock.layout.width = 1100;
         mock.layout.height = 450;
 
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
           .then(function() {
               return clickPtImmediately();
           })
@@ -682,7 +682,7 @@ describe('Click-to-select', function() {
           });
 
         function _run(testCase, doneFn) {
-            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+            Plotly.newPlot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
               .then(function() {
                   return _immediateClickPt(testCase);
               })
@@ -770,7 +770,7 @@ describe('Click-to-select', function() {
         });
 
         function _run(testCase, doneFn) {
-            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+            Plotly.newPlot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
               .then(function() {
                   var clickHandlerCalled = false;
                   var selectedHandlerCalled = false;
@@ -870,7 +870,7 @@ describe('Test select box and lasso in general:', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                 .then(done);
         });
 
@@ -1016,7 +1016,7 @@ describe('Test select box and lasso in general:', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                 .then(done);
         });
 
@@ -1157,7 +1157,7 @@ describe('Test select box and lasso in general:', function() {
             expect((selectedData.points || []).length).toBe(cnt, msg);
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(resetAndSelect)
         .then(function() {
             checkPointCount(2, '(case 0)');
@@ -1224,7 +1224,7 @@ describe('Test select box and lasso in general:', function() {
         };
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             resetEvents(gd);
             drag([[100, 100], [300, 300]]);
             return selectedPromise;
@@ -1267,7 +1267,7 @@ describe('Test select box and lasso in general:', function() {
             mouseEvent('scroll', selectPath[0][0], selectPath[0][1], {deltaX: 0, deltaY: -20});
         }
 
-        Plotly.plot(gd, mockCopy)
+        Plotly.newPlot(gd, mockCopy)
         .then(_drag)
         .then(_scroll)
         .then(function() {
@@ -1305,7 +1305,7 @@ describe('Test select box and lasso in general:', function() {
             it('- on ' + s.axType + ' axes', function(done) {
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, [], {
+                Plotly.newPlot(gd, [], {
                     xaxis: {type: s.axType},
                     dragmode: 'select',
                     width: 400,
@@ -1347,7 +1347,7 @@ describe('Test select box and lasso in general:', function() {
             it('- on ' + s.axType + ' axes', function(done) {
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, [], {
+                Plotly.newPlot(gd, [], {
                     xaxis: {type: s.axType},
                     dragmode: 'lasso',
                     width: 400,
@@ -1378,7 +1378,7 @@ describe('Test select box and lasso in general:', function() {
             return selectedPromise;
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(_drag)
         .then(function() { assertSelectionNodes(0, 2, 'after drag 1'); })
         .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-5, 5]); })
@@ -1454,7 +1454,7 @@ describe('Test select box and lasso in general:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 
         fig.layout.dragmode = 'select';
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
           .then(function() {
               return drag([[350, 100], [400, 400]]);
           })
@@ -1511,7 +1511,7 @@ describe('Test select box and lasso in general:', function() {
             }
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('base', {
                 xrng: [2, 8],
                 yrng: [0, 3],
@@ -1640,7 +1640,7 @@ describe('Test select box and lasso in general:', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() { _assert('base', {outline: false}); })
         .then(_drag(path1))
         .then(function() {
@@ -1893,7 +1893,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -1951,7 +1951,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2000,7 +2000,7 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2061,7 +2061,7 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2135,7 +2135,7 @@ describe('Test select box and lasso per trace:', function() {
             };
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2210,7 +2210,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2255,7 +2255,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2325,7 +2325,7 @@ describe('Test select box and lasso per trace:', function() {
             emptyChoroplethTrace.z = [];
             fig.data.push(emptyChoroplethTrace);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2382,7 +2382,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2444,7 +2444,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2508,7 +2508,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2616,7 +2616,7 @@ describe('Test select box and lasso per trace:', function() {
             var x1 = 250;
             var y1 = 250;
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2666,7 +2666,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 500;
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2723,7 +2723,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2797,7 +2797,7 @@ describe('Test select box and lasso per trace:', function() {
                 }
             };
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2841,7 +2841,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 500;
             addInvisible(fig);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -2980,7 +2980,7 @@ describe('Test select box and lasso per trace:', function() {
         it('should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [1, 2, 3, 4, 5],
                 y: [2, 3, 1, 7, 9],
                 marker: {size: [10, 20, 20, 20, 10]},
@@ -3038,7 +3038,7 @@ describe('Test select box and lasso per trace:', function() {
                 });
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'markers+text',
                 x: [1, 2, 3],
                 y: [1, 2, 1],
@@ -3086,7 +3086,7 @@ describe('Test select box and lasso per trace:', function() {
                 fig.layout.dragmode = 'select';
                 var dblClickPos = [250, 400];
 
-                Plotly.plot(gd, fig)
+                Plotly.newPlot(gd, fig)
                 .then(function() {
                     if(hasCssTransform) transformPlot(gd, cssTransform);
 
@@ -3121,7 +3121,7 @@ describe('Test select box and lasso per trace:', function() {
             var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
             fig.layout.dragmode = undefined;
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 // No groups initially
                 expect(gd._fullData[0].node.groups).toEqual([]);
@@ -3163,7 +3163,7 @@ describe('Test that selections persist:', function() {
             assertPtOpacity('.point', expected);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [1, 2, 1]
         }], {
@@ -3204,7 +3204,7 @@ describe('Test that selections persist:', function() {
             assertPtOpacity('.point', expected);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'box',
             x0: 0,
             y: [5, 4, 4, 1, 2, 2, 2, 2, 2, 3, 3, 3],
@@ -3249,7 +3249,7 @@ describe('Test that selections persist:', function() {
             assertPtOpacity('.point > path', expected);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'histogram',
             x: [1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5],
             boxpoints: 'all'
@@ -3311,7 +3311,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
     it('- svg points case', function(done) {
         var _assert = makeAssertFn('path.point,.point>path');
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             { mode: 'markers', x: [1], y: [1] },
             { type: 'bar', x: [2], y: [2], },
             { type: 'histogram', x: [3, 3, 3] },
@@ -3349,7 +3349,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
     it('- svg finance case', function(done) {
         var _assert = makeAssertFn('path.box,.ohlc>path');
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             { type: 'ohlc', x: [6], open: [6], high: [6], low: [6], close: [6] },
             { type: 'candlestick', x: [7], open: [7], high: [7], low: [7], close: [7] },
         ], {

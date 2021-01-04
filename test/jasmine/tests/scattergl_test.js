@@ -118,7 +118,7 @@ describe('end-to-end scattergl tests', function() {
                     'textposition': 'top center'
                 };
                 mock[attr] = ['1', '2', '3'];
-                Plotly.plot(gd, [mock])
+                Plotly.newPlot(gd, [mock])
                 .then(function() {
                     expect(mock[attr].length).toBe(3);
                 })
@@ -139,7 +139,7 @@ describe('end-to-end scattergl tests', function() {
             draw.calls.reset();
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(30))
         .then(function() {
             spyOn(gd._fullLayout._plots.xy._scene.scatter2d, 'draw');
@@ -219,7 +219,7 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should change plot type with incomplete data', function(done) {
-        Plotly.plot(gd, [{}])
+        Plotly.newPlot(gd, [{}])
         .then(function() {
             expect(function() {
                 return Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
@@ -245,7 +245,7 @@ describe('end-to-end scattergl tests', function() {
             'mode': 'markers'
         }];
 
-        Plotly.plot(gd, dat, {width: 500, height: 500})
+        Plotly.newPlot(gd, dat, {width: 500, height: 500})
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
 
@@ -268,7 +268,7 @@ describe('end-to-end scattergl tests', function() {
             'selectedpoints': [0]
         }];
 
-        Plotly.plot(gd, dat, {
+        Plotly.newPlot(gd, dat, {
             width: 500,
             height: 500,
             dragmode: 'select'
@@ -348,7 +348,7 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should remove fill2d', function(done) {
         var mock = require('@mocks/gl2d_axes_labels2.json');
 
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
         .then(delay(1000))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).not.toBe(0);
@@ -408,7 +408,7 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should work with typed array', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'markers',
             x: new Float32Array([1, 2, 3]),
@@ -441,7 +441,7 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should handle transform traces properly (calcTransform case)', function(done) {
         spyOn(ScatterGl, 'calc').and.callThrough();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             x: [1, 2, 3],
             y: [1, 2, 1],
@@ -473,7 +473,7 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should handle transform traces properly (default transform case)', function(done) {
         spyOn(ScatterGl, 'calc').and.callThrough();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             x: [1, 2, 3],
             y: [1, 2, 1],
@@ -511,7 +511,7 @@ describe('end-to-end scattergl tests', function() {
             expect(pos).toBeCloseTo2DArray(exp, 2, msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'lines',
             x: [1, 2, 3],

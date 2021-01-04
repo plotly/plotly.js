@@ -87,7 +87,7 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             expect(gd._fullLayout._plots.xy._scene.select2d).not.toBe(undefined, 'scatter2d renderer');
@@ -113,7 +113,7 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             return select(gd, lassoPath2);
@@ -137,7 +137,7 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             return select(gd, selectPath2);
@@ -157,7 +157,7 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             return select(gd, lassoPath);
@@ -179,7 +179,7 @@ describe('Test gl2d lasso/select:', function() {
         fig.layout.width = 500;
         gd = createGraphDiv();
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(function() { return select(gd, [[100, 100], [250, 250]]); })
         .then(function(eventData) {
@@ -210,7 +210,7 @@ describe('Test gl2d lasso/select:', function() {
             });
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(function() {
             _assertGlTextOpts('base', {
@@ -293,7 +293,7 @@ describe('Test gl2d lasso/select:', function() {
             });
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(function() {
             _assertGlTextOpts('base', {
@@ -388,7 +388,7 @@ describe('Test displayed selections:', function() {
 
         function readFocus() { return _read('.gl-canvas-focus'); }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'markers',
             y: [2, 1, 2]
@@ -448,7 +448,7 @@ describe('Test displayed selections:', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(select(gd, [[160, 100], [180, 100]]))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
@@ -493,7 +493,7 @@ describe('Test displayed selections:', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(select(gd, [[160, 100], [180, 100]]))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
@@ -855,7 +855,7 @@ describe('Test selections during funky scenarios', function() {
 
         var scene, scene2;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [40, 50, 60],
             type: 'scattergl',

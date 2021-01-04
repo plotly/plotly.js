@@ -645,7 +645,7 @@ describe('A funnel plot', function() {
         }];
         var layout = {};
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var funnelNodes = getAllFunnelNodes(traceNodes[0]);
             var foundTextNodes;
@@ -675,7 +675,7 @@ describe('A funnel plot', function() {
         }];
         var layout = {};
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var funnelNodes = getAllFunnelNodes(traceNodes[0]);
             var foundTextNodes;
@@ -706,7 +706,7 @@ describe('A funnel plot', function() {
         }];
         var layout = {};
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var funnelNodes = getAllFunnelNodes(traceNodes[0]);
             var foundTextNodes;
@@ -750,7 +750,7 @@ describe('A funnel plot', function() {
             }
         };
 
-        Plotly.plot(gd, [trace])
+        Plotly.newPlot(gd, [trace])
           .then(assertTextFontColors([DARK, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -759,7 +759,7 @@ describe('A funnel plot', function() {
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' }, orientation: 'v' });
 
-        Plotly.plot(gd, [data])
+        Plotly.newPlot(gd, [data])
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
           .catch(failTest)
           .then(done);
@@ -812,7 +812,7 @@ describe('A funnel plot', function() {
             }
         };
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
@@ -966,7 +966,7 @@ describe('A funnel plot', function() {
             expect(sel.size()).toBe(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnel',
             x: ['Initial', 'A', 'B', 'C', 'Total'],
             y: [10, 2, 3, 5],
@@ -1009,7 +1009,7 @@ describe('A funnel plot', function() {
             expect(sel.size()).toBe(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnel',
             x: ['Initial', 'A', 'B', 'C', 'Total'],
             y: [10, 2, 3, 5],
@@ -1083,7 +1083,7 @@ describe('A funnel plot', function() {
     });
 
     it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'funnel',
                 x: [1, 2, 3],
@@ -1160,7 +1160,7 @@ describe('A funnel plot', function() {
             }
         };
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var funnelNodes = getAllFunnelNodes(traceNodes[0]);
             var pathNodes = [
@@ -1203,7 +1203,7 @@ describe('A funnel plot', function() {
             expect(sel.size()).toBe(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnel',
             orientation: 'v',
             x: ['Product A', 'Product B', 'Product C'],
@@ -1347,7 +1347,7 @@ describe('funnel hover', function() {
 
             var mock = Lib.extendDeep({}, require('@mocks/funnel_11.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout)
+            Plotly.newPlot(gd, mock.data, mock.layout)
             .catch(failTest)
             .then(done);
         });
@@ -1375,7 +1375,7 @@ describe('funnel hover', function() {
             mock.data.forEach(function(t) { t.type = 'funnel'; t.orientation = 'v'; });
             mock.layout.funnelmode = 'group';
 
-            Plotly.plot(gd, mock).then(function() {
+            Plotly.newPlot(gd, mock).then(function() {
                 var out = _hover(gd, -0.25, 0.25, 'closest');
                 expect(out.text).toEqual('Hover text\nA', 'hover text');
 
@@ -1420,7 +1420,7 @@ describe('funnel hover', function() {
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
                 expect(d3.selectAll('g.hovertext').size()).toBe(0);
@@ -1444,7 +1444,7 @@ describe('funnel hover', function() {
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
@@ -1476,7 +1476,7 @@ describe('funnel hover', function() {
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
@@ -1497,7 +1497,7 @@ describe('funnel hover', function() {
             it('should format numbers and add tick prefix & suffix even if axis is not visible', function(done) {
                 gd = createGraphDiv();
 
-                Plotly.plot(gd, {
+                Plotly.newPlot(gd, {
                     data: [{
                         x: ['A', 'B', 'C', 'D', 'E'],
                         y: [5.5, 4.4, 3.3, 2.2, 1.1],
@@ -1536,7 +1536,7 @@ describe('funnel hover', function() {
         });
 
         it('should return correct hover data (single funnel, trace width)', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'funnel',
                 orientation: 'v',
                 x: [1],
@@ -1729,7 +1729,7 @@ describe('funnel uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12],
             scales: [0.44, 1, 1, 1, 1, 1, 1],

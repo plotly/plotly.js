@@ -169,7 +169,7 @@ var plotDataElliptical = function(maxJitter) {
 
 
 function makePlot(gd, mock, done) {
-    return Plotly.plot(gd, mock.data, mock.layout)
+    return Plotly.newPlot(gd, mock.data, mock.layout)
         .then(null, failTest)
         .then(done);
 }
@@ -224,7 +224,7 @@ describe('contourgl plots', function() {
         var mock = plotDataElliptical(0);
         var scene2d;
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
 
             expect(scene2d.traces[mock.data[0].uid].type).toEqual('contourgl');

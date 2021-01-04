@@ -220,7 +220,7 @@ describe('Test volume', function() {
             data.isomin = -Infinity;
             data.isomax = Infinity;
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
@@ -241,7 +241,7 @@ describe('Test volume', function() {
             data.isomin = Infinity;
             data.isomax = Infinity;
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
@@ -282,7 +282,7 @@ describe('Test volume', function() {
             fig.data[0].isomin = 0;
             fig.data[0].isomax = 3;
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 _assert([undefined, undefined, undefined], [true, 0, 3]);
 
@@ -343,7 +343,7 @@ describe('Test volume', function() {
                 return delay(20)();
             }
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(delay(20))
             .then(_hover1)
             .then(function() {
@@ -504,7 +504,7 @@ describe('Test volume grid', function() {
                     expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
                 }
 
-                Plotly.plot(gd, fig).then(function() {
+                Plotly.newPlot(gd, fig).then(function() {
                     _assert('lengths', {
                         positionsLength: 372,
                         cellsLength: 104
@@ -551,7 +551,7 @@ describe('Test volume grid', function() {
 
         spyOn(Lib, 'warn');
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('arbitrary coordinates', {
                 positionsLength: 0,
                 cellsLength: 0

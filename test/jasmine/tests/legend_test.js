@@ -680,7 +680,7 @@ describe('legend relayout update', function() {
             expect(node.style.strokeWidth).toEqual(borderWidth + 'px');
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             assertLegendStyle('rgb(255, 255, 255)', 'rgb(0, 0, 0)', 1);
 
             return Plotly.relayout(gd, {
@@ -716,7 +716,7 @@ describe('legend relayout update', function() {
             var mockCopy = Lib.extendDeep({}, require('@mocks/legend_valign_top.json'));
 
             var top, middle, bottom;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 top = markerOffsetY();
                 return Plotly.relayout(gd, 'legend.valign', 'middle');
@@ -775,7 +775,7 @@ describe('legend relayout update', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(_assert('base', [5, 4.4], [512, 29]))
         .then(function() { return Plotly.relayout(gd, 'legend.x', 0.8); })
         .then(_assert('after relayout almost to right edge', [188, 4.4], [512, 29]))
@@ -809,7 +809,7 @@ describe('legend relayout update', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(_assert('base', [667.72, 60], [120, 83]))
         .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'left'); })
         .then(_assert('after relayout to *left*', [607.54, 60], [180, 67]))
@@ -866,7 +866,7 @@ describe('legend orientation change:', function() {
         var gd = createGraphDiv();
         var initialLegendBGColor;
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             initialLegendBGColor = gd._fullLayout.legend.bgcolor;
             return Plotly.relayout(gd, 'legend.bgcolor', '#000000');
         }).then(function() {
@@ -914,7 +914,7 @@ describe('legend restyle update', function() {
             });
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             expect(countLegendItems()).toEqual(1);
             assertTraceToggleRect();
 
@@ -944,7 +944,7 @@ describe('legend interaction', function() {
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 legendItems = d3.selectAll('rect.legendtoggle')[0];
                 legendLabels = d3.selectAll('text.legendtext')[0];
                 legendItem = legendItems[testEntry];
@@ -1039,7 +1039,7 @@ describe('legend interaction', function() {
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 legendItems = d3.selectAll('rect.legendtoggle')[0];
                 legendItem = legendItems[testEntry];
                 done();
@@ -1165,7 +1165,7 @@ describe('legend interaction', function() {
             var _mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, _mock).then(function() {
+            Plotly.newPlot(gd, _mock).then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
             .then(_click(0))
@@ -1209,7 +1209,7 @@ describe('legend interaction', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, Lib.extendDeep({}, mock)).then(done);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(done);
         });
 
         afterEach(destroyGraphDiv);
@@ -1388,7 +1388,7 @@ describe('legend interaction', function() {
             var msg = s.orientation + ' - ' + JSON.stringify(s.edits);
 
             it('should find correct bounding box (case ' + msg + ')', function(done) {
-                Plotly.plot(gd,
+                Plotly.newPlot(gd,
                     Lib.extendDeep([], data),
                     {legend: {orientation: s.orientation}, width: 500, height: 500},
                     {edits: s.edits}
@@ -1441,7 +1441,7 @@ describe('legend interaction', function() {
 
         describe('for regular traces', function() {
             beforeEach(function(done) {
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: [1, 2], y: [0, 1], visible: false},
                     {x: [1, 2], y: [1, 2], visible: 'legendonly'},
                     {x: [1, 2], y: [2, 3]}
@@ -1483,7 +1483,7 @@ describe('legend interaction', function() {
 
         describe('legendgroup visibility', function() {
             beforeEach(function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [1, 2],
                     y: [3, 4],
                     visible: false
@@ -1522,7 +1522,7 @@ describe('legend interaction', function() {
 
         describe('legend visibility toggles with groupby', function() {
             beforeEach(function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [1, 2],
                     y: [3, 4],
                     visible: false
@@ -1600,7 +1600,7 @@ describe('legend interaction', function() {
 
         describe('legend visibility with *showlegend:false* traces', function() {
             beforeEach(function(done) {
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {y: [1, 2, 3]},
                     {y: [2, 3, 1]},
                     {type: 'heatmap', z: [[1, 2], [3, 4]], showscale: false}
@@ -1911,7 +1911,7 @@ describe('legend interaction', function() {
             it('- regular trace case', function(done) {
                 _assert = assertVisible;
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     { y: [1, 2, 1] },
                     { y: [2, 1, 2] },
                     { y: [3, 5, 0] }
@@ -1932,7 +1932,7 @@ describe('legend interaction', function() {
                     };
                 };
 
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     type: 'pie',
                     labels: ['A', 'B', 'C'],
                     values: [1, 2, 3]
@@ -2003,7 +2003,7 @@ describe('legend with custom doubleClickDelay', function() {
             };
         }
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 1]},
             {y: [2, 1, 2]}
         ], {}, {

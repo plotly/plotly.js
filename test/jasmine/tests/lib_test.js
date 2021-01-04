@@ -2738,7 +2738,7 @@ describe('Queue', function() {
     });
 
     it('should not fill in undoQueue by default', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }]).then(function() {
             expect(gd.undoQueue).toBeUndefined();
@@ -2760,7 +2760,7 @@ describe('Queue', function() {
     it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
         Plotly.setPlotConfig({ queueLength: 2 });
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }])
         .then(function() {

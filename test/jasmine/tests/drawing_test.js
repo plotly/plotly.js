@@ -368,7 +368,7 @@ describe('Drawing', function() {
             // allow page to scroll
             gd.style.position = 'static';
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 y: [1, 2, 1]
             }], {
                 annotations: [{
@@ -482,7 +482,7 @@ describe('gradients', function() {
     }
 
     it('clears unused gradients after a replot', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [0, 1, 2],
             mode: 'markers',
             marker: {
@@ -549,7 +549,7 @@ describe('gradients', function() {
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'heatmap',
             x: [1, 2],
             y: [2, 3],

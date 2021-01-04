@@ -17,7 +17,7 @@ describe('calculated data and points', function() {
 
     describe('connectGaps', function() {
         it('should exclude null and undefined points when false', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {})
+            Plotly.newPlot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {})
             .then(function() {
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
@@ -27,7 +27,7 @@ describe('calculated data and points', function() {
         });
 
         it('should exclude null and undefined points as categories when false', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }})
+            Plotly.newPlot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }})
             .then(function() {
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
@@ -40,7 +40,7 @@ describe('calculated data and points', function() {
     describe('category ordering', function() {
         describe('default category ordering reified', function() {
             it('should output categories in the given order by default', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category'
                 }})
                 .then(function() {
@@ -55,7 +55,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in the given order if `trace` order is explicitly specified', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'trace'
                     // Also, if axis tick order is made configurable, shouldn't we make trace order configurable?
@@ -77,7 +77,7 @@ describe('calculated data and points', function() {
 
         describe('domain alphanumerical category ordering', function() {
             it('should output categories in ascending domain alphanumerical order', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }})
@@ -93,7 +93,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in descending domain alphanumerical order', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category descending'
                 }})
@@ -109,7 +109,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in ascending domain alphanumerical order even if categories are all numbers', function(done) {
-                Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }})
@@ -125,7 +125,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in categoryorder order even if category array is defined', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending',
                     categoryarray: ['b', 'a', 'd', 'e', 'c'] // These must be ignored. Alternative: error?
@@ -142,7 +142,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in ascending domain alphanumerical order, excluding undefined', function(done) {
-                Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }})
@@ -157,7 +157,7 @@ describe('calculated data and points', function() {
             });
 
             it('should combine duplicate categories', function(done) {
-                Plotly.plot(gd, [{x: [ '1', '1'], y: [10, 20]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: [ '1', '1'], y: [10, 20]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }})
@@ -171,7 +171,7 @@ describe('calculated data and points', function() {
             });
 
             it('should skip over visible-false traces', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [1, 2, 3],
                     y: [7, 6, 5],
                     visible: false
@@ -197,7 +197,7 @@ describe('calculated data and points', function() {
 
         describe('explicit category ordering', function() {
             it('should output categories in explicitly supplied order, independent of trace order', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['b', 'a', 'd', 'e', 'c']
@@ -214,7 +214,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if category values are all numbers', function(done) {
-                Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: [2, 1, 4, 5, 3]
@@ -231,7 +231,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order, independent of trace order, pruned', function(done) {
-                Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, null, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, null, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['b', 'a', 'd', 'e', 'c']
@@ -248,7 +248,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['b', 'x', 'a', 'd', 'z', 'e', 'c']
@@ -265,7 +265,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['y', 'b', 'x', 'a', 'd', 'z', 'e', 'c', 'q', 'k']
@@ -294,7 +294,7 @@ describe('calculated data and points', function() {
                 // BUT keeps it if a data point with null is added; test is almost identical to the one above
                 // except that it explicitly adds an axis tick for y
 
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd', 'y'], y: [15, 11, 12, 13, 14, null]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd', 'y'], y: [15, 11, 12, 13, 14, null]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['y', 'b', 'x', 'a', 'd', 'z', 'e', 'c', 'q', 'k']
@@ -316,7 +316,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present, and should interact with a null value orthogonally', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, null, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, null, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['b', 'x', 'a', 'd', 'z', 'e', 'c']
@@ -333,7 +333,7 @@ describe('calculated data and points', function() {
             });
 
             it('should output categories in explicitly supplied order first, if not all categories are covered', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
                     categoryarray: ['b', 'a', 'x', 'c']
@@ -361,7 +361,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -390,7 +390,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -423,7 +423,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -457,7 +457,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -491,7 +491,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -526,7 +526,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -556,7 +556,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -590,7 +590,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -625,7 +625,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -660,7 +660,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -696,7 +696,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -723,7 +723,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -754,7 +754,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -786,7 +786,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -818,7 +818,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -851,7 +851,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;})},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;})},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;})}
@@ -886,7 +886,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Switch', 'Plug', 'Cord', 'Fuse', 'Bulb'];
                 var x3 = ['Pump', 'Leak', 'Bearing', 'Seals'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;}), type: 'bar'},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;}), type: 'bar'},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;}), type: 'bar'}
@@ -923,7 +923,7 @@ describe('calculated data and points', function() {
                 var x2 = ['Bearing', 'Gear', 'Motor'];
                 var x3 = ['Motor', 'Gear', 'Bearing'];
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {x: x1, y: x1.map(function(d, i) {return i + 10;}), type: 'bar'},
                     {x: x2, y: x2.map(function(d, i) {return i + 20;}), type: 'bar'},
                     {x: x3, y: x3.map(function(d, i) {return i + 30;}), type: 'bar'}
@@ -954,7 +954,7 @@ describe('calculated data and points', function() {
         });
 
         it('should order categories per axis', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {x: ['a', 'c', 'g', 'e']},
                 {x: ['b', 'h', 'f', 'd'], xaxis: 'x2'}
             ], {
@@ -970,7 +970,7 @@ describe('calculated data and points', function() {
         });
 
         it('should consider number categories and their string representation to be the same', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['a', 'b', 1, '1'],
                 y: [1, 2, 3, 4]
             }], {
@@ -1236,7 +1236,7 @@ describe('calculated data and points', function() {
 
     describe('customdata', function() {
         it('should pass customdata to the calcdata points', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 3],
                 y: [4, 5, 7],
                 customdata: ['a', 'b', {foo: 'bar'}]

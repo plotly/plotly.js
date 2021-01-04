@@ -344,7 +344,7 @@ describe('Test violin hover:', function() {
 
         var pos = specs.pos || [200, 200];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs);
 
@@ -694,7 +694,7 @@ describe('Test violin hover:', function() {
         }
 
         it('should show in two-sided base case', function(done) {
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 250, 250);
                 assertViolinHoverLine([299.35, 250, 200.65, 250]);
             })
@@ -705,7 +705,7 @@ describe('Test violin hover:', function() {
         it('should show in one-sided positive case', function(done) {
             fig.data[0].side = 'positive';
 
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 300, 250);
                 assertViolinHoverLine([277.3609, 250, 80, 250]);
             })
@@ -716,7 +716,7 @@ describe('Test violin hover:', function() {
         it('should show in one-sided negative case', function(done) {
             fig.data[0].side = 'negative';
 
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 200, 250);
                 assertViolinHoverLine([222.6391, 250, 420, 250]);
             })
@@ -732,7 +732,7 @@ describe('Test violin hover:', function() {
         fig.layout.width = 700;
         fig.layout.height = 450;
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             mouseEvent('mousemove', 350, 225);
 
@@ -789,7 +789,7 @@ describe('Test violin restyle:', function() {
             _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert('base', {violinCnt: 1});
         })

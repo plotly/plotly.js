@@ -63,7 +63,7 @@ describe('Fx.hover:', function() {
             showlegend: false
         };
 
-        Plotly.plot(gd, data, layout)
+        Plotly.newPlot(gd, data, layout)
         .then(function() {
             Fx.hover(gd, {xpx: 300, ypx: 100}, 'x2y2');
             expect(gd._hoverdata).toBe(undefined, 'did not generate hoverdata');
@@ -86,7 +86,7 @@ describe('hover info', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover', function() {
@@ -113,7 +113,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'x';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover x', function() {
@@ -137,7 +137,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'y';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover y', function() {
@@ -165,7 +165,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover text', function() {
@@ -196,7 +196,7 @@ describe('hover info', function() {
         mockCopy.data[0].mode = 'lines+markers+text';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover text', function() {
@@ -233,7 +233,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'all';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover all', function() {
@@ -270,7 +270,7 @@ describe('hover info', function() {
         });
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('cleans the name', function() {
@@ -305,7 +305,7 @@ describe('hover info', function() {
                 mockCopy.data[0].y[i] *= 1e9;
             }
 
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover y', function() {
@@ -323,7 +323,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'y+text';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover y+text', function() {
@@ -351,7 +351,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'x+text';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover x+text', function() {
@@ -379,7 +379,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = 1;
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover x+text', function() {
@@ -399,7 +399,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = 0;
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover x+text', function() {
@@ -419,7 +419,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = -1;
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover x+text', function() {
@@ -440,7 +440,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('responds to hover text with html', function() {
@@ -466,7 +466,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'skip';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('does not hover if hover info is set to skip', function() {
@@ -484,7 +484,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'none';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('does not render if hover is set to none', function() {
@@ -513,7 +513,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('render hover labels of the above trace', function() {
@@ -580,7 +580,7 @@ describe('hover info', function() {
         });
 
         it('puts the top trace on top', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2, 3], type: 'bar', name: 'a'},
                 {y: [2, 0, 1], type: 'bar', name: 'b'},
                 {y: [1, 0, 1], type: 'bar', name: 'c'},
@@ -619,7 +619,7 @@ describe('hover info', function() {
         });
 
         it('puts the right trace on the right', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {x: [1, 2, 3], type: 'bar', name: 'a', orientation: 'h'},
                 {x: [2, 0, 1], type: 'bar', name: 'b', orientation: 'h'},
                 {x: [1, 0, 1], type: 'bar', name: 'c', orientation: 'h'},
@@ -665,7 +665,7 @@ describe('hover info', function() {
         });
 
         it('should display correct label content', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'heatmap',
                 y: [0, 1],
                 z: [[1, 2, 3], [2, 2, 1]],
@@ -710,7 +710,7 @@ describe('hover info', function() {
         });
 
         it('should display correct label content with specified format - heatmap', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'heatmap',
                 y: [0, 1],
                 z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
@@ -751,7 +751,7 @@ describe('hover info', function() {
                     (exp < 0 ? MINUS_SIGN + -exp : exp) +
                     '</tspan><tspan dy="0.42em">\u200b</tspan>';
             }
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'heatmap',
                 y: [0, 1, 2, 3],
                 z: [
@@ -785,7 +785,7 @@ describe('hover info', function() {
         });
 
         it('should display correct label content with specified format - contour', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'contour',
                 y: [0, 1],
                 z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
@@ -900,7 +900,7 @@ describe('hover info', function() {
         it('should get the right content and color for contour constraints', function(done) {
             var contourConstraints = require('@mocks/contour_constraints.json');
 
-            Plotly.plot(gd, contourConstraints)
+            Plotly.newPlot(gd, contourConstraints)
             .then(function() {
                 _hover(gd, 250, 250);
                 assertHoverLabelContent({
@@ -968,7 +968,7 @@ describe('hover info', function() {
         });
 
         it('should display correct label content with specified format - histogram2dcontour', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'histogram2dcontour',
                 x: [0, 1, 2, 0, 1, 2, 1],
                 y: [0, 0, 0, 1, 1, 1, 1],
@@ -1028,7 +1028,7 @@ describe('hover info', function() {
         });
 
         it('should display correct label - x/y/z heatmap|contour', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'heatmap',
                 x: [1, 1, 2, 2],
                 y: [1, 2, 1, 2],
@@ -1077,7 +1077,7 @@ describe('hover info', function() {
         it('shows negative data even though it is infinitely off-screen', function(done) {
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
                 yaxis: {type: 'log'},
                 width: 500,
                 height: 400,
@@ -1099,7 +1099,7 @@ describe('hover info', function() {
         it('shows the data range when bins have multiple values', function(done) {
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 2, 3, 4, 5, 6, 7],
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
@@ -1161,7 +1161,7 @@ describe('hover info', function() {
         it('shows the exact data when bins have single values', function(done) {
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 // even though the data aren't regularly spaced, each bin only has
                 // one data value in it so we see exactly that value
                 x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
@@ -1194,7 +1194,7 @@ describe('hover info', function() {
         it('will show a category range if you ask nicely', function(done) {
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 // even though the data aren't regularly spaced, each bin only has
                 // one data value in it so we see exactly that value
                 x: [
@@ -1248,7 +1248,7 @@ describe('hover info', function() {
 
             it('has the right basic and event behavior', function(done) {
                 var pts;
-                Plotly.plot(gd, financeMock({
+                Plotly.newPlot(gd, financeMock({
                     customdata: [11, 22, 33]
                 }))
                 .then(function() {
@@ -1292,7 +1292,7 @@ describe('hover info', function() {
 
             it('shows correct labels in split mode', function(done) {
                 var pts;
-                Plotly.plot(gd, financeMock({
+                Plotly.newPlot(gd, financeMock({
                     customdata: [11, 22, 33],
                     hoverlabel: {
                         split: true
@@ -1345,7 +1345,7 @@ describe('hover info', function() {
             });
 
             it('shows text iff text is in hoverinfo', function(done) {
-                Plotly.plot(gd, financeMock({text: ['A', 'B', 'C']}))
+                Plotly.newPlot(gd, financeMock({text: ['A', 'B', 'C']}))
                 .then(function() {
                     _hover(gd, 150, 150);
                     assertHoverLabelContent({
@@ -1393,7 +1393,7 @@ describe('hover info', function() {
         });
 
         it('should display the correct format when ticklabels true', function(done) {
-            Plotly.plot(this.gd, data, layout)
+            Plotly.newPlot(this.gd, data, layout)
             .then(function() {
                 mouseEvent('mousemove', 303, 213);
 
@@ -1408,7 +1408,7 @@ describe('hover info', function() {
 
         it('should display the correct format when ticklabels false', function(done) {
             layout.yaxis.showticklabels = false;
-            Plotly.plot(this.gd, data, layout)
+            Plotly.newPlot(this.gd, data, layout)
             .then(function() {
                 mouseEvent('mousemove', 303, 213);
 
@@ -1436,7 +1436,7 @@ describe('hover info', function() {
         };
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), data, layout).then(done);
+            Plotly.newPlot(createGraphDiv(), data, layout).then(done);
         });
 
         it('should show text labels', function() {
@@ -1471,7 +1471,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(done);
         });
 
         it('should skip the hover event if explicitly instructed', function(done) {
@@ -1532,7 +1532,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(done);
         });
 
         function labelCount() {
@@ -1624,7 +1624,7 @@ describe('hover info', function() {
             var data = [trace1, trace2];
             var layout = {width: 600, height: 300, barmode: 'stack'};
 
-            Plotly.plot(gd, data, layout)
+            Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
             .then(function() {
                 var nodes = ensureCentered(hoverInfoNodes('LA Zoo'));
@@ -1660,7 +1660,7 @@ describe('hover info', function() {
             var data = [trace1, trace2, trace3];
             var layout = {width: 600, height: 300};
 
-            Plotly.plot(gd, data, layout)
+            Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
             .then(function() {
                 var nodesLA = ensureCentered(hoverInfoNodes('LA Zoo'));
@@ -1688,7 +1688,7 @@ describe('hover info', function() {
             var name = 'Multi<br>line<br>trace<br>name';
             var name2 = 'Multi<br>line<br>trace<br>name2';
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 y: [1, 2, 1],
                 name: name,
                 hoverlabel: {namelength: -1},
@@ -1729,7 +1729,7 @@ describe('hover info', function() {
         });
 
         it('should avoid overlaps on *too close* pts are filtered out', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {name: 'A', x: [9, 10], y: [9, 10]},
                 {name: 'B', x: [8, 9], y: [9, 10]},
                 {name: 'C', x: [9, 10], y: [10, 11]}
@@ -1789,7 +1789,7 @@ describe('hover info', function() {
 
             function _hoverRight() { return _hover(gd, 370, 300); }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'bar',
                 x: ['2019-01-01', '2019-06-01', '2020-01-01'],
                 y: [2, 5, 10]
@@ -1849,7 +1849,7 @@ describe('hover info', function() {
 
             function _hoverA() { return _hover(gd, 135, 20); }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'bar',
                 orientation: 'h',
                 y: ['Looong label', 'Loooooger label', 'Waay loooong label', 'a'],
@@ -1884,7 +1884,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterEach(function() {
@@ -2094,7 +2094,7 @@ describe('hover info', function() {
     it('should work with trace.name linked to layout.meta', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 1, 1],
             name: '%{meta[0]}',
             marker: {size: 40}
@@ -2130,7 +2130,7 @@ describe('hover info', function() {
         fig.layout.showlegend = false;
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() { _hoverNatural(gd, 180, 200); })
         .then(function() {
             assertHoverLabelContent({
@@ -2158,7 +2158,7 @@ describe('hover info', function() {
             expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1],
             text: 'LONG TEXT'
         }], {
@@ -2207,7 +2207,7 @@ describe('hover info', function() {
             delete gd._hoverdata;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: ['giraffes'],
             y: [5],
             name: 'LA Zoo',
@@ -2256,7 +2256,7 @@ describe('hover info on stacked subplots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
         });
 
         function _check(xval, ptSpec1, ptSpec2) {
@@ -2318,7 +2318,7 @@ describe('hover info on stacked subplots', function() {
         mock.layout.hoverlabel = {namelength: 10};
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
         });
 
         it('responds to hover', function() {
@@ -2408,7 +2408,7 @@ describe('hover info on overlaid subplots', function() {
     it('should respond to hover', function(done) {
         var mock = require('@mocks/autorange-tozero-rangemode.json');
 
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             mouseEvent('mousemove', 768, 345);
 
             assertHoverLabelContent({
@@ -2455,7 +2455,7 @@ describe('hover after resizing', function() {
         var pos0 = [305, 403];
         var pos1 = [401, 122];
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             // to test https://github.com/plotly/plotly.js/issues/1044
             return _click(pos0);
         })
@@ -2512,7 +2512,7 @@ describe('hover on fill', function() {
         var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
             assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
             assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
@@ -2524,7 +2524,7 @@ describe('hover on fill', function() {
     it('should always show one label in the right place (symmetric fill edge case)', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [6, 7, 8, 7, 6],
             y: [5, 4, 5, 6, 5],
             fill: 'tonext',
@@ -2554,7 +2554,7 @@ describe('hover on fill', function() {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             expect(gd._fullLayout.hovermode).toBe('closest');
 
             // hover over a point when that's closest, even if you're over
@@ -2595,7 +2595,7 @@ describe('hover on fill', function() {
         mock.layout.xaxis = {domain: [0.8, 1], visible: false};
         mock.layout.yaxis = {domain: [0.8, 1], visible: false};
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             expect(gd._fullLayout.hovermode).toBe('x');
 
             // hover over a point when that's closest, even if you're over
@@ -2631,7 +2631,7 @@ describe('Hover on multicategory axes', function() {
     }
 
     it('should work for bar traces', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'bar',
             x: [['2018', '2018', '2019', '2019'], ['a', 'b', 'a', 'b']],
             y: [1, 2, -1, 3]
@@ -2671,7 +2671,7 @@ describe('Hover on multicategory axes', function() {
         fig.layout.width = 500;
         fig.layout.height = 500;
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             gd.on('plotly_hover', function(d) {
                 eventData = d.points[0];
@@ -3165,7 +3165,7 @@ describe('Hover on axes with rangebreaks', function() {
     }
 
     it('should work when rangebreaks are present on x-axis', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             x: [
                 '1970-01-01 00:00:00.000',
@@ -3233,7 +3233,7 @@ describe('Hover on axes with rangebreaks', function() {
     });
 
     it('should work when rangebreaks are present on x-axis (reversed range)', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             x: [
                 '1970-01-01 00:00:00.000',
@@ -3302,7 +3302,7 @@ describe('Hover on axes with rangebreaks', function() {
     });
 
     it('should work when rangebreaks are present on y-axis using hovermode x (case of bar and autorange reversed)', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'bar',
             orientation: 'h',
             y: [
@@ -3381,7 +3381,7 @@ describe('Hover on axes with rangebreaks', function() {
     });
 
     it('should work when rangebreaks are present on y-axis', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             y: [
                 '1970-01-01 00:00:00.000',
@@ -3449,7 +3449,7 @@ describe('Hover on axes with rangebreaks', function() {
     });
 
     it('should work when rangebreaks are present on y-axis (reversed range)', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'lines',  // i.e. no autorange padding
             y: [
                 '1970-01-01 00:00:00.000',
@@ -3561,7 +3561,7 @@ describe('hover updates', function() {
         };
 
         var gd = createGraphDiv();
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             // The label text gets concatenated together when queried. Such is life.
             assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5', 'animation/update 0');
         }).then(function() {
@@ -3604,7 +3604,7 @@ describe('hover updates', function() {
         var hoverCnt = 0;
         var unHoverCnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             x: [1, 2, 3, 4, 5, 6, 7],
             y: [1, 2, 3, 2, 3, 4, 3],
@@ -3730,7 +3730,7 @@ describe('Test hover label custom styling:', function() {
     it('should work for x/y cartesian traces', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [1, 2, 1],
             marker: {
@@ -3912,7 +3912,7 @@ describe('Test hover label custom styling:', function() {
             }
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [1, 2, 1],
         }, {
@@ -3965,7 +3965,7 @@ describe('Test hover label custom styling:', function() {
     it('should work for 2d z cartesian traces', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'heatmap',
             x: [1, 2],
             y: [1, 2],
@@ -4031,7 +4031,7 @@ describe('hover distance', function() {
         mockCopy.layout.hovermode = 'closest';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('does not render if distance to the point is larger than default (>20)', function() {
@@ -4113,7 +4113,7 @@ describe('hover distance', function() {
         mockCopy.layout.hovermode = 'x';
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('does not render if distance to the point is larger than default (>20)', function() {
@@ -4339,7 +4339,7 @@ describe('hover label rotation:', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'bar',
                 orientation: 'h',
                 y: [0, 1, 2],
@@ -4389,7 +4389,7 @@ describe('hover label rotation:', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'bar',
                 orientation: 'h',
                 y: [0, 1, 2],
@@ -4444,7 +4444,7 @@ describe('hovermode defaults to', function() {
     afterEach(destroyGraphDiv);
 
     it('\'closest\' for cartesian plots if clickmode includes \'select\'', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
           .then(function() {
               expect(gd._fullLayout.hovermode).toBe('closest');
           })
@@ -4453,7 +4453,7 @@ describe('hovermode defaults to', function() {
     });
 
     it('\'x\' for horizontal cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
           .then(function() {
               expect(gd._fullLayout.hovermode).toBe('y');
           })
@@ -4462,7 +4462,7 @@ describe('hovermode defaults to', function() {
     });
 
     it('\'y\' for vertical cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
           .then(function() {
               expect(gd._fullLayout.hovermode).toBe('x');
           })
@@ -4474,7 +4474,7 @@ describe('hovermode defaults to', function() {
         var mock = require('@mocks/polar_scatter.json');
         expect(mock.layout.hovermode).toBeUndefined();
 
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
           .then(function() {
               expect(gd._fullLayout.hovermode).toBe('closest');
           })
@@ -4494,7 +4494,7 @@ describe('hover labels z-position', function() {
     var mock = require('@mocks/14.json');
 
     it('is above the modebar', function(done) {
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             var infolayer = document.getElementsByClassName('infolayer');
             var modebar = document.getElementsByClassName('modebar-container');
             var hoverlayer = document.getElementsByClassName('hoverlayer');
@@ -4525,7 +4525,7 @@ describe('touch devices', function() {
 
             beforeEach(function(done) {
                 gd = createGraphDiv();
-                Plotly.plot(gd, data, layout).then(done);
+                Plotly.newPlot(gd, data, layout).then(done);
             });
 
             it('emits click events', function(done) {
@@ -4560,7 +4560,7 @@ describe('dragmode: false', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.plot(gd, data, layout).then(done);
+        Plotly.newPlot(gd, data, layout).then(done);
     });
     afterEach(destroyGraphDiv);
 

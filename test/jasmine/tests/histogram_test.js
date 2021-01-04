@@ -1113,7 +1113,7 @@ describe('Test histogram', function() {
             // note: I'm *not* testing what this does to gd.data, as that's
             // really a matter of convenience and will perhaps change later (v2?)
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
-            Plotly.plot(gd, [{x: data1, type: 'histogram' }])
+            Plotly.newPlot(gd, [{x: data1, type: 'histogram' }])
             .then(function() {
                 expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
                 expect(gd._fullData[0].nbinsx).toBe(0);
@@ -1175,7 +1175,7 @@ describe('Test histogram', function() {
 
         it('respects explicit autobin: false as a one-time autobin', function(done) {
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
-            Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }])
+            Plotly.newPlot(gd, [{x: data1, type: 'histogram', autobinx: false }])
             .then(function() {
                 // we have no bins, so even though autobin is false we have to autobin once
                 // but for backward compat. calc pushes these bins back into gd.data

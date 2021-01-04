@@ -104,7 +104,7 @@ describe('Test animate API', function() {
             return Promise.resolve().then(delay(arguments[5].duration));
         });
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             return Plotly.addFrames(gd, mockCopy.frames);
         }).then(done);
     });
@@ -598,7 +598,7 @@ describe('Animate API details', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -720,7 +720,7 @@ describe('Animating multiple axes', function() {
     });
 
     it('updates ranges of secondary axes', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [1, 2, 3], yaxis: 'y2'}
         ], {
@@ -751,7 +751,7 @@ describe('Animating multiple axes', function() {
     });
 
     it('updates ranges of secondary axes (date + category case)', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
         ], {
@@ -818,7 +818,7 @@ describe('Animating multiple axes', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [0.1, 0.2, 0.3],
             y: [0.4, 0.5, 0.6],
         }, {
@@ -882,7 +882,7 @@ describe('non-animatable fallback', function() {
     });
 
     it('falls back to a simple update for bar graphs', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [4, 5, 6],
             type: 'bar'
@@ -913,7 +913,7 @@ describe('animating scatter traces', function() {
 
     it('animates trace opacity', function(done) {
         var trace;
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [4, 5, 6],
             opacity: 1
@@ -931,7 +931,7 @@ describe('animating scatter traces', function() {
     });
 
     it('computes calcdata correctly when transforms are present', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 x: [1, 2, 3],
                 y: [1, 2, 3],
@@ -971,7 +971,7 @@ describe('animating scatter traces', function() {
                 .map(Number);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }, {
             type: 'bar',

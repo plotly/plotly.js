@@ -58,7 +58,7 @@ describe('Test barpolar hover:', function() {
             margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
         }, specs.layout || {});
 
-        return Plotly.plot(gd, data, layout).then(function() {
+        return Plotly.newPlot(gd, data, layout).then(function() {
             var subplot = gd._fullLayout.polar._subplot;
 
             var results = gd.calcdata.map(function(cd) {

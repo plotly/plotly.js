@@ -1493,7 +1493,7 @@ describe('Test axes', function() {
         afterEach(destroyGraphDiv);
 
         it('updates ranges when adding, removing, or changing a constraint', function(done) {
-            Plotly.plot(gd,
+            Plotly.newPlot(gd,
                 [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
                 // plot area is 200x100 px
                 {width: 400, height: 300, margin: {l: 100, r: 100, t: 100, b: 100}}
@@ -1549,7 +1549,7 @@ describe('Test axes', function() {
         }
 
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
-            Plotly.plot(gd,
+            Plotly.newPlot(gd,
                 // start with a heatmap as it has no padding so calculations are easy
                 [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
                 // plot area is 200x100 px
@@ -1649,7 +1649,7 @@ describe('Test axes', function() {
             var xAutorange = [-xAutoPad, 1 + xAutoPad];
             var yAutoPad = 0.15476190476190477;
             var yAutorange = [-yAutoPad, 1 + yAutoPad];
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [0, 1], mode: 'markers', marker: {size: 4}},
                 {y: [0, 1], mode: 'markers', marker: {size: 4}, xaxis: 'x2', yaxis: 'y2'}
             ], {
@@ -1691,7 +1691,7 @@ describe('Test axes', function() {
         });
 
         it('can constrain date axes', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['2001-01-01', '2002-01-01'],
                 y: ['2001-01-01', '2002-01-01'],
                 mode: 'markers',
@@ -1723,7 +1723,7 @@ describe('Test axes', function() {
         });
 
         it('can constrain category axes', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['a', 'b'],
                 y: ['c', 'd'],
                 mode: 'markers',
@@ -1752,7 +1752,7 @@ describe('Test axes', function() {
         });
 
         it('can constrain log axes', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [1, 10],
                 y: [1, 10],
                 mode: 'markers',
@@ -1820,7 +1820,7 @@ describe('Test axes', function() {
 
             var rng = [-1, 6];
 
-            Plotly.plot(gd, fig1())
+            Plotly.newPlot(gd, fig1())
             .then(function() {
                 var msg = 'fig1';
                 assertRangeDomain('xaxis', rng, [0, 0.230769], [0, 0.230769], msg);
@@ -1869,7 +1869,7 @@ describe('Test axes', function() {
         }
 
         it('should auto-range according to all matching trace data', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 { y: [1, 2, 1] },
                 { y: [2, 1, 2, 3], xaxis: 'x2' },
                 { y: [0, 1], xaxis: 'x3' }
@@ -1916,7 +1916,7 @@ describe('Test axes', function() {
 
         describe('setting, or not setting categoryorder if it is not explicitly declared', function() {
             it('should set categoryorder to default if categoryorder and categoryarray are not supplied', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {xaxis: {type: 'category'}})
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {xaxis: {type: 'category'}})
                 .then(function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
@@ -1926,7 +1926,7 @@ describe('Test axes', function() {
             });
 
             it('should set categoryorder to default even if type is not set to category explicitly', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
                 .then(function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
@@ -1936,7 +1936,7 @@ describe('Test axes', function() {
             });
 
             it('should NOT set categoryorder to default if type is not category', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}])
                 .then(function() {
                     expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
@@ -1946,7 +1946,7 @@ describe('Test axes', function() {
             });
 
             it('should set categoryorder to default if type is overridden to be category', function(done) {
-                Plotly.plot(gd, [{x: [1, 2, 3, 4, 5], y: [15, 11, 12, 13, 14]}], {yaxis: {type: 'category'}})
+                Plotly.newPlot(gd, [{x: [1, 2, 3, 4, 5], y: [15, 11, 12, 13, 14]}], {yaxis: {type: 'category'}})
                 .then(function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe(undefined);
                     expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
@@ -1960,7 +1960,7 @@ describe('Test axes', function() {
 
         describe('setting categoryorder to "array"', function() {
             it('should leave categoryorder on "array" if it is supplied', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -1972,7 +1972,7 @@ describe('Test axes', function() {
             });
 
             it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -1984,7 +1984,7 @@ describe('Test axes', function() {
             });
 
             it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array'}
                 })
                 .then(function() {
@@ -1998,7 +1998,7 @@ describe('Test axes', function() {
 
         describe('do not set categoryorder to "array" if list exists but empty', function() {
             it('should switch categoryorder to default if list is not supplied', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: []}
                 })
                 .then(function() {
@@ -2010,7 +2010,7 @@ describe('Test axes', function() {
             });
 
             it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryarray: []}
                 })
                 .then(function() {
@@ -2024,7 +2024,7 @@ describe('Test axes', function() {
 
         describe('do NOT set categoryorder to "array" if it has some other proper value', function() {
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'trace', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -2036,7 +2036,7 @@ describe('Test axes', function() {
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'category ascending', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -2048,7 +2048,7 @@ describe('Test axes', function() {
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'category descending', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -2062,7 +2062,7 @@ describe('Test axes', function() {
 
         describe('setting categoryorder to the default if the value is unexpected', function() {
             it('should switch categoryorder to "trace" if mode is supplied but invalid', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'invalid value'}
                 })
                 .then(function() {
@@ -2074,7 +2074,7 @@ describe('Test axes', function() {
             });
 
             it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function(done) {
-                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
+                Plotly.newPlot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], {
                     xaxis: {type: 'category', categoryorder: 'invalid value', categoryarray: ['b', 'a', 'd', 'e', 'c']}
                 })
                 .then(function() {
@@ -2098,7 +2098,7 @@ describe('Test axes', function() {
 
         describe('a category has the same value of one of the auto range computed extreme', function() {
             it('should compute the right range for X axis', function(done) {
-                Plotly.plot(gd, [{x: ['0', '-0.5', '3.5', 'Not Known'], y: [ '1.0', '1.0', '2.0', '1.0'], type: 'bar'}], {
+                Plotly.newPlot(gd, [{x: ['0', '-0.5', '3.5', 'Not Known'], y: [ '1.0', '1.0', '2.0', '1.0'], type: 'bar'}], {
                     xaxis: {type: 'category', autorange: true}
                 })
                 .then(function() {
@@ -2132,7 +2132,7 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout)
+            Plotly.newPlot(gd, data, layout)
             .then(function() {
                 var yaxis = gd._fullLayout.yaxis;
                 expect(yaxis.ticklen).toBe(5);
@@ -2159,7 +2159,7 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout)
+            Plotly.newPlot(gd, data, layout)
             .then(function() {
                 var yaxis = gd._fullLayout.yaxis;
                 expect(yaxis.ticklen).toBe(10);
@@ -2182,7 +2182,7 @@ describe('Test axes', function() {
                 }
             };
 
-            Plotly.plot(gd, data, layout)
+            Plotly.newPlot(gd, data, layout)
             .then(function() {
                 var yaxis = gd._fullLayout.yaxis;
                 expect(yaxis.tickangle).toBeUndefined();
@@ -4044,7 +4044,7 @@ describe('Test axes', function() {
                 };
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [
                     'short label 1', 'loooooong label 1',
                     'short label 2', 'loooooong label 2',
@@ -4158,7 +4158,7 @@ describe('Test axes', function() {
                 expect(gs.b + gs.h + gs.t).toBeWithin(exp.totalHeight, 1.5, msg + ' - total height');
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['loooooong label 1', 'loooooong label 2'],
                 y: [1, 2]
             }], {
@@ -4198,7 +4198,7 @@ describe('Test axes', function() {
                 expect(gs.l + gs.w + gs.r).toBeWithin(exp.totalWidth, 1.5, msg + ' - total width');
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 y: ['loooooong label 1', 'loooooong label 2'],
                 x: [1, 2]
             }], {
@@ -4231,7 +4231,7 @@ describe('Test axes', function() {
         });
 
         it('should handle cases with free+mirror axes', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 y: [1, 2, 1]
             }], {
                 xaxis: {
@@ -4442,7 +4442,7 @@ describe('Test axes', function() {
                 });
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['a', 'b', 'c'],
                 y: [1, 2, 1]
             }], {
@@ -4500,7 +4500,7 @@ describe('Test axes', function() {
                 });
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['A very long title', 'short', 'Another very long title'],
                 y: [1, 4, 2]
             }], {
@@ -4917,7 +4917,7 @@ describe('Test axes', function() {
             }
 
             it('should adapt padding about axis rangebreaks length', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     mode: 'markers',
                     x: [
                         '1970-01-01 00:00:00.000',
@@ -5014,7 +5014,7 @@ describe('Test axes', function() {
             }
 
             it('should locate rangebreaks & compute l <-> p parameters - x-axis case', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [
                         '1970-01-01 00:00:00.000',
                         '1970-01-01 00:00:00.010',
@@ -5136,7 +5136,7 @@ describe('Test axes', function() {
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - y-axis case', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     y: [
                         '1970-01-01 00:00:00.000',
                         '1970-01-01 00:00:00.010',
@@ -5198,7 +5198,7 @@ describe('Test axes', function() {
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - date axis case', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [
                         // Thursday
                         '2020-01-02 08:00', '2020-01-02 17:00',
@@ -5388,7 +5388,7 @@ describe('Test axes', function() {
             }
 
             it('should not include requested ticks that fall within rangebreaks', function(done) {
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     x: [
                         '1970-01-01 00:00:00.000',
                         '1970-01-01 00:00:00.010',
@@ -5563,7 +5563,7 @@ describe('Test axes', function() {
 
             spyOn(Lib, 'warn');
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'scattergl',
                 x: [
                     '2020-01-02 08:00', '2020-01-02 17:00',
@@ -6683,7 +6683,7 @@ describe('Test tickformatstops:', function() {
     afterEach(destroyGraphDiv);
 
     it('handles zooming-in until milliseconds zoom level', function(done) {
-        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+        var promise = Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
 
         var testCount = 0;
 
@@ -6710,7 +6710,7 @@ describe('Test tickformatstops:', function() {
     });
 
     it('handles zooming-out until years zoom level', function(done) {
-        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+        var promise = Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
 
         var testCount = 0;
 
@@ -6740,7 +6740,7 @@ describe('Test tickformatstops:', function() {
     it('responds to hover', function(done) {
         var evt = { xpx: 270, ypx: 10 };
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             Fx.hover(gd, evt, 'xy');
 
             var hoverTrace = gd._hoverdata[0];
@@ -6761,7 +6761,7 @@ describe('Test tickformatstops:', function() {
     });
 
     it('doesn\'t fail on bad input', function(done) {
-        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+        var promise = Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
 
         [1, {a: 1, b: 2}, 'boo'].forEach(function(v) {
             promise = promise.then(function() {

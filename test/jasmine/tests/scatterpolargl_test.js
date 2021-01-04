@@ -137,7 +137,7 @@ describe('Test scatterpolargl interactions:', function() {
 
         var scene;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 1],
         }], {
@@ -185,7 +185,7 @@ describe('Test scatterpolargl interactions:', function() {
 
         var sceneXY, scenePolar;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             y: [1, 2, 1]
         }, {
