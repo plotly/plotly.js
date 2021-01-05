@@ -10,7 +10,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
-var failTest = require('../assets/fail_test');
+
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -691,7 +691,7 @@ describe('Test sunburst hover:', function() {
     }]
     .forEach(function(spec) {
         it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
-            run(spec).catch(failTest).then(done);
+            run(spec).then(done, done.fail);
         });
     });
 });
@@ -760,8 +760,7 @@ describe('Test sunburst hover lifecycle:', function() {
                 fail('did not trigger correct # of plotly_unhover events');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -828,8 +827,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should trigger plotly_click event when clicking on root node', function(done) {
@@ -857,8 +855,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
@@ -886,8 +883,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
@@ -946,8 +942,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering - ' + msg);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to override default click behavior using plotly_sunburstclick handler ()', function(done) {
@@ -972,8 +967,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1004,8 +998,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('both visible:false', 0))
         .then(_restyle({'visible': true}))
         .then(_assert('back to visible:true', 2))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
@@ -1035,8 +1028,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('with non-root level', 13))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 96))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *leaf.opacity*', function(done) {
@@ -1079,8 +1071,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('raise leaf.opacity', ['', '1', '', '1']))
         .then(_restyle({'leaf.opacity': null}))
         .then(_assert('back to dflt', ['', '0.7', '', '0.7']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *textinfo* with various *insidetextorientation*', function(done) {
@@ -1158,8 +1149,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('no textinfo', ['', '', '', '']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1252,8 +1242,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [313.45, 275.54]);
             _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
@@ -1287,8 +1276,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [316.85, 272.14]);
             _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
@@ -1321,8 +1309,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [303.01, 285.98]);
             _assert('enter b text to new position', 'transform', 'b', [248.75, 239]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
@@ -1355,8 +1342,7 @@ describe('Test sunburst tweening:', function() {
                 'L383.75,235A33.75,33.750,1,1350,201.25Z'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     /*
@@ -1384,8 +1370,7 @@ describe('Test sunburst tweening:', function() {
             //     ''
             // );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
     */
 
@@ -1410,8 +1395,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
             _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
@@ -1435,8 +1419,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
             _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *tangential* insidetextorientation', function(done) {
@@ -1460,8 +1443,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [393.6173101979463, 123.958130483835]);
             _assert('move Z text to new position', 'transform', 'Z', [359.52567880729003, 116.05583257124167]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *radial* insidetextorientation', function(done) {
@@ -1485,8 +1467,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [398.67767996405655, 121.9940236084775]);
             _assert('move Z text to new position', 'transform', 'Z', [354.00770212095256, 116.19286557341015]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
@@ -1509,8 +1490,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [247.47466543373307, 255.288278237516]);
             _assert('move Z text to new position', 'transform', 'Z', [300.75324430542196, 332.0135787956955]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
@@ -1533,8 +1513,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
             _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
@@ -1557,8 +1536,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [244.44862109889465, 255.71893345117468]);
             _assert('move Z text to new position', 'transform', 'Z', [301.6438278403359, 334.2263222726318]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1624,8 +1602,7 @@ describe('Test sunburst interactions edge cases', function() {
                 hoverLabel: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should show falsy zero text', function(done) {
@@ -1647,8 +1624,7 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             assertHoverLabelContent({ nums: 'D\n4\n0' });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should transition sunburst traces only', function(done) {
@@ -1682,8 +1658,7 @@ describe('Test sunburst interactions edge cases', function() {
                 sunburstTraceCnt: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
@@ -1701,8 +1676,7 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1985,8 +1959,7 @@ describe('sunburst inside text orientation', function() {
         .then(assertTextRotations('back to "auto"', {
             rotations: [-0.6, 0, 48, 0]
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -2111,8 +2084,7 @@ describe('sunburst uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should uniform text scales after transition', function(done) {
@@ -2175,7 +2147,6 @@ describe('sunburst uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

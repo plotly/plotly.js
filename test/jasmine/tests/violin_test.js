@@ -7,7 +7,7 @@ var Violin = require('@src/traces/violin');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -666,7 +666,7 @@ describe('Test violin hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 
@@ -698,8 +698,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 250, 250);
                 assertViolinHoverLine([299.35, 250, 200.65, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show in one-sided positive case', function(done) {
@@ -709,8 +708,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 300, 250);
                 assertViolinHoverLine([277.3609, 250, 80, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show in one-sided negative case', function(done) {
@@ -720,8 +718,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 200, 250);
                 assertViolinHoverLine([222.6391, 250, 420, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -755,8 +752,7 @@ describe('Test violin hover:', function() {
                 }
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -813,7 +809,6 @@ describe('Test violin restyle:', function() {
         .then(function() {
             _assert('with pts', {violinCnt: 1, ptsCnt: 272});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -10,7 +10,7 @@ var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var failTest = require('../assets/fail_test');
+
 
 describe('heatmap supplyDefaults', function() {
     'use strict';
@@ -688,8 +688,7 @@ describe('heatmap plot', function() {
         }).then(function() {
             assertImageCnt(5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('keeps the correct ordering after hide and show', function(done) {
@@ -718,8 +717,7 @@ describe('heatmap plot', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle', function(done) {
@@ -753,8 +751,7 @@ describe('heatmap plot', function() {
 
             expect(imageURLs[1]).toEqual(imageURLs[3]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('draws canvas with correct margins', function(done) {
@@ -799,8 +796,7 @@ describe('heatmap plot', function() {
                 expect(args[3]).toBe(argumentsWithoutPadding[i][3] - yGap, i);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('can change z values with connected gaps', function(done) {
@@ -827,8 +823,7 @@ describe('heatmap plot', function() {
         .then(function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -972,8 +967,7 @@ describe('heatmap hover', function() {
 
             Plotly.restyle(gd, {zsmooth: 'none'}, [0])
             .then(checkData)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 

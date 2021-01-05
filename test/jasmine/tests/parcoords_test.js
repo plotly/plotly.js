@@ -9,7 +9,7 @@ var PC = require('@src/traces/parcoords/constants');
 var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -384,8 +384,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Do something sensible if there is no panel i.e. dimension count is less than 2', function(done) {
@@ -400,8 +399,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
             expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Does not error with zero dimensions', function(done) {
@@ -412,8 +410,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(0);
             expect(document.querySelectorAll('.axis').length).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Does not error with dimensions including only 0', function(done) {
@@ -431,8 +428,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(1);
             expect(document.querySelectorAll('.axis').length).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Works with duplicate dimension labels', function(done) {
@@ -446,8 +442,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(2);
             expect(document.querySelectorAll('.axis').length).toEqual(2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Works with a single line; also, use a longer color array than the number of lines', function(done) {
@@ -473,8 +468,7 @@ describe('parcoords edge cases', function() {
             expect(document.querySelectorAll('.axis').length).toEqual(2);
             expect(gd.data[0].dimensions[0].values.length).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Does not raise an error with zero lines and no specified range', function(done) {
@@ -495,8 +489,7 @@ describe('parcoords edge cases', function() {
             expect(document.querySelectorAll('.axis').length).toEqual(0);
             expect(gd.data[0].dimensions[0].values.length).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Works with non-finite `values` elements', function(done) {
@@ -521,8 +514,7 @@ describe('parcoords edge cases', function() {
             expect(document.querySelectorAll('.axis').length).toEqual(2);
             expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Works with 60 dimensions', function(done) {
@@ -551,8 +543,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Truncates 60+ dimensions to 60', function(done) {
@@ -579,8 +570,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
@@ -608,8 +598,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
@@ -641,8 +630,7 @@ describe('parcoords edge cases', function() {
             expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
             expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -664,8 +652,7 @@ describe('parcoords Lifecycle methods', function() {
                 expect(gd.data.length).toEqual(0);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
@@ -696,8 +683,7 @@ describe('parcoords Lifecycle methods', function() {
                 expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                 expect(gd.data.length).toEqual(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     function _assertVisibleData(visible, msg) {
@@ -732,8 +718,7 @@ describe('parcoords Lifecycle methods', function() {
         .then(_assertVisibleData(true, 'initial'))
         .then(restyleDimension('values', 1, [[]]))
         .then(_assertVisibleData(false, 'no panels'))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl displays focused and context data after relayout', function(done) {
@@ -745,8 +730,7 @@ describe('parcoords Lifecycle methods', function() {
             return Plotly.relayout(gd, 'paper_bgcolor', '#eef');
         })
         .then(_assertVisibleData(true, 'after relayout'))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     describe('Having two datasets', function() {
@@ -772,8 +756,7 @@ describe('parcoords Lifecycle methods', function() {
                     expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(2);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('@gl Plotly.addTraces should add a new parcoords row', function(done) {
@@ -796,8 +779,7 @@ describe('parcoords Lifecycle methods', function() {
                     expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(2);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('@gl Plotly.restyle should update the existing parcoords row', function(done) {
@@ -840,8 +822,7 @@ describe('parcoords Lifecycle methods', function() {
                     expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(1);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
     });
 
@@ -871,8 +852,7 @@ describe('parcoords Lifecycle methods', function() {
             expect(rgb[0]).not.toBe(0, 'all red');
             expect(rgb[2]).toBe(0, 'no blue');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl line.color `Plotly.restyle` should not change context layer', function(done) {
@@ -907,8 +887,7 @@ describe('parcoords Lifecycle methods', function() {
 
             expect(newRGB).toBe(oldRGB, 'no change to context');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -939,8 +918,7 @@ describe('parcoords basic use', function() {
             });
             expect(cnt).toBe(3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl `Plotly.plot` should have proper fields on `gd.data` on initial rendering', function(done) {
@@ -960,8 +938,7 @@ describe('parcoords basic use', function() {
             expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.plot` again should add the new parcoords', function(done) {
@@ -991,8 +968,7 @@ describe('parcoords basic use', function() {
 
             expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.restyle` with a string path to colorscale should amend the preexisting parcoords', function(done) {
@@ -1011,8 +987,7 @@ describe('parcoords basic use', function() {
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.restyle` for a dimension should amend the preexisting dimension', function(done) {
@@ -1036,8 +1011,7 @@ describe('parcoords basic use', function() {
             .then(restyleDimension('constraintrange', [[0, 1]]))
             .then(restyleDimension('values', [[0, 0.1, 0.4, 1, 2, 0, 0.1, 0.4, 1, 2]]))
             .then(restyleDimension('visible', false))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.restyle` with an object should amend the preexisting parcoords', function(done) {
@@ -1060,8 +1034,7 @@ describe('parcoords basic use', function() {
             expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Should emit a \'plotly_restyle\' event', function(done) {
@@ -1086,8 +1059,7 @@ describe('parcoords basic use', function() {
         .then(function() {
             expect(tester.get()).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Should emit a \'plotly_hover\' event', function(done) {
@@ -1117,8 +1089,7 @@ describe('parcoords basic use', function() {
             expect(hoverCalls).toBe(1);
             expect(unhoverCalls).toBe(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
@@ -1139,8 +1110,7 @@ describe('parcoords basic use', function() {
             expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.relayout`with object should amend the preexisting parcoords', function(done) {
@@ -1161,8 +1131,7 @@ describe('parcoords basic use', function() {
             expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
@@ -1200,8 +1169,7 @@ describe('parcoords basic use', function() {
                 values: [1, 4]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
@@ -1236,8 +1204,7 @@ describe('parcoords basic use', function() {
             trigger('pick');
             _assert('pickLayer', 3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1331,8 +1298,7 @@ describe('parcoords react more attributes', function() {
             expect(nHighlight[1]).toBe(2);
             expect(nHighlight[0]).toBe(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should change axis visibility', function(done) {
@@ -1357,8 +1323,7 @@ describe('parcoords react more attributes', function() {
                 expect(allLabels.size()).toBe(3);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1512,8 +1477,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
             checkDashCount(getDashArray(0), 2);
             expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [3.75, 4]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl updates continuous constraints with no snap', function(done) {
@@ -1564,8 +1528,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
             expect(getDashArray(1)).toBeCloseToArray(newDashArray);
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-2.913369429404415, 9]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl will only select one region when multiselect is disabled', function(done) {
@@ -1604,8 +1567,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
             checkDashCount(finalDashArray, 2);
             expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should keep single point dimension selected', function(done) {
@@ -1648,8 +1610,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
             expect(rgb[0]).toBe(0, 'no red');
             expect(rgb[2]).not.toBe(0, 'all blue');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1735,8 +1696,7 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
         .then(function() {
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([3.75, 6.25]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1801,7 +1761,6 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
         .then(function() {
             expect(gd._fullData[0].dimensions[1].constraintrange).toEqual(undefined);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

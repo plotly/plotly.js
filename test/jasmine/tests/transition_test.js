@@ -8,7 +8,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
@@ -39,7 +39,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
         it('emits plotly_transitioning on transition start', function(done) {
@@ -52,7 +52,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
         it('emits plotly_transitioned on transition end', function(done) {
@@ -65,7 +65,7 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
         it('transitions an annotation', function(done) {
@@ -93,7 +93,7 @@ function runTests(transitionDuration) {
                 // Ensure both coordinates have moved, i.e. that the annotation has transitioned:
                 expect(p1[0]).not.toEqual(p2[0]);
                 expect(p1[1]).not.toEqual(p2[1]);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('transitions an image', function(done) {
@@ -128,7 +128,7 @@ function runTests(transitionDuration) {
 
                 // Test that the image element identity has not:
                 expect(e1).toBe(e2);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('transitions a shape', function(done) {
@@ -185,7 +185,7 @@ function runTests(transitionDuration) {
 
                 expect(d3).toEqual(d2);
                 expect(s3).not.toEqual(s2);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
 
@@ -221,7 +221,7 @@ function runTests(transitionDuration) {
                     target: 'x',
                     value: 10
                 })]);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         // This doesn't really test anything that the above tests don't cover, but it combines
@@ -255,7 +255,7 @@ function runTests(transitionDuration) {
                     expect(endCnt).toEqual(3);
                 })
                 .then(checkNoneRunning)
-                .catch(failTest).then(done);
+                .then(done, done.fail);
         });
     });
 }
@@ -452,8 +452,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should go through transition pathway only when there are animatable changes', function(done) {
@@ -514,8 +513,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should no try to transition a trace which is not *animatable:true* yet', function(done) {
@@ -555,8 +553,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 0]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not try to transition when the *config* has changed', function(done) {
@@ -591,8 +588,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should only *redraw* at end of transition when necessary', function(done) {
@@ -637,8 +633,7 @@ describe('Plotly.react transitions:', function() {
                 [Registry, 'call', ['redraw', gd]]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@flaky should only transition the layout when both traces and layout have animatable changes by default', function(done) {
@@ -729,8 +724,7 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should transition data coordinates with and without *datarevision*', function(done) {
@@ -797,8 +791,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@flaky should transition layout when one or more axis auto-ranged value changed', function(done) {
@@ -848,8 +841,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             assertAxAutorange('axes are still autorange:false', false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not transition layout when axis auto-ranged value do not changed', function(done) {
@@ -919,8 +911,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             assertAxAutorange('y-axis is now autorange:false', false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should emit transition events', function(done) {
@@ -946,8 +937,7 @@ describe('Plotly.react transitions:', function() {
                 expect(store[k]).toHaveBeenCalledTimes(1);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should preserve trace object-constancy (out-of-order case)', function(done) {
@@ -1030,8 +1020,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             _assertTraceNodes(msg, traceNodes, [[360, 90], [120, 210]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should preserve trace object-constancy (# of traces mismatch case)', function(done) {
@@ -1118,8 +1107,7 @@ describe('Plotly.react transitions:', function() {
             var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
             _assertTraceNodes(msg, [traceNodes[0], traceNodesNew[1]], [[360, 90], [120, 210]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not leak axis update from subplot to subplot', function(done) {
@@ -1187,8 +1175,7 @@ describe('Plotly.react transitions:', function() {
             xaxis: [-10, 10], xaxis2: [-20, 20], xaxis3: [-30, 30],
             yaxis: [-10, 10], yaxis2: [-20, 20], yaxis3: [-30, 30]
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update ranges of date and category axes', function(done) {
@@ -1231,7 +1218,6 @@ describe('Plotly.react transitions:', function() {
             expect(gd._fullLayout.xaxis.range).toEqual(['2018-06-01', '2019-06-01']);
             expect(gd._fullLayout.xaxis2.range).toEqual([0.5, 1.5]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -2,7 +2,7 @@ var Plotly = require('@lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Plotly w/o WebGL support:', function() {
     var gd;
@@ -34,8 +34,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('gl2d subplots', function(done) {
@@ -47,8 +46,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('scattergl subplots', function(done) {
@@ -77,8 +75,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('scatterpolargl subplots', function(done) {
@@ -90,8 +87,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('splom subplots', function(done) {
@@ -103,8 +99,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('parcoords subplots', function(done) {
@@ -116,7 +111,6 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

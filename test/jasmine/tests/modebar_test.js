@@ -1048,8 +1048,7 @@ describe('ModeBar', function() {
                     expect(Registry.call)
                         .toHaveBeenCalledWith('downloadImage', gd, {format: 'png'});
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should accept overriding defaults', function(done) {
@@ -1065,8 +1064,7 @@ describe('ModeBar', function() {
                     expect(Registry.call)
                         .toHaveBeenCalledWith('downloadImage', gd, {format: 'svg', filename: 'x'});
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should accept overriding defaults with null values', function(done) {
@@ -1078,8 +1076,7 @@ describe('ModeBar', function() {
                     expect(Registry.call)
                         .toHaveBeenCalledWith('downloadImage', gd, {format: 'png', width: null, height: null});
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1395,8 +1392,7 @@ describe('ModeBar', function() {
                     _assert(10, 10, 8);
                     button.isActive(false);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1423,8 +1419,7 @@ describe('ModeBar', function() {
 
                     _run('cartesian bundle');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1445,8 +1440,7 @@ describe('ModeBar', function() {
 
                     selectButton(gd._fullLayout._modeBar, 'resetViews').click();
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -1496,8 +1490,7 @@ describe('ModeBar', function() {
                 style = document.querySelector(styleSelector);
                 expect(style).toBeNull();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('changes icon colors', function(done) {
@@ -1510,8 +1503,7 @@ describe('ModeBar', function() {
             .then(function() {
                 checkButtonColor(button, colors[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('changes active icon colors', function(done) {
@@ -1525,8 +1517,7 @@ describe('ModeBar', function() {
             .then(function() {
                 checkButtonColor(button, colors[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('changes background color (displayModeBar: hover)', function(done) {
@@ -1542,8 +1533,7 @@ describe('ModeBar', function() {
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('changes background color (displayModeBar: true)', function(done) {
@@ -1559,8 +1549,7 @@ describe('ModeBar', function() {
                 expect(style.backgroundColor).toBe(colors[1]);
                 expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('changes orientation', function(done) {
@@ -1578,8 +1567,7 @@ describe('ModeBar', function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width > size.height).toBeTruthy();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 

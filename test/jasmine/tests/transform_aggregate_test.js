@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('aggregate', function() {
     var gd;
@@ -68,8 +68,7 @@ describe('aggregate', function() {
             var inverseMapping = transform._indexToPoints;
             expect(inverseMapping).toEqual({0: [0, 2, 3, 4], 1: [1]});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handles all funcs except sum for date data', function(done) {
@@ -109,8 +108,7 @@ describe('aggregate', function() {
             expect(traceOut.customdata).toEqual(['2001-05', 'b']);
             expect(traceOut.marker.line.width).toEqual([4, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handles all funcs except sum and avg for category data', function(done) {
@@ -148,8 +146,7 @@ describe('aggregate', function() {
             expect(traceOut.hovertext).toEqual(['c', 'b']);
             expect(traceOut.marker.line.width).toEqual([4, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('allows date and category sums, and category avg, with weird output', function(done) {
@@ -185,8 +182,7 @@ describe('aggregate', function() {
             var inverseMapping = transform._indexToPoints;
             expect(inverseMapping).toEqual({0: [0, 1], 1: [2, 3]});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('can aggregate on an existing data array', function(done) {
@@ -214,8 +210,7 @@ describe('aggregate', function() {
             var inverseMapping = transform._indexToPoints;
             expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('can handle case where aggregation array is missing', function(done) {
@@ -239,8 +234,7 @@ describe('aggregate', function() {
             var inverseMapping = transform._indexToPoints;
             expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handles median, mode, rms, stddev, change & range for numeric data', function(done) {
@@ -284,8 +278,7 @@ describe('aggregate', function() {
             expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
             expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handles ragged data - extra groups are ignored', function(done) {
@@ -307,8 +300,7 @@ describe('aggregate', function() {
             expect(traceOut.x).toEqual([2, 1]);
             expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handles ragged data - groups is the shortest, others are ignored', function(done) {
@@ -330,8 +322,7 @@ describe('aggregate', function() {
             expect(traceOut.x).toEqual([2, 1]);
             expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('links fullData aggregations to userData via _index', function(done) {
@@ -369,8 +360,7 @@ describe('aggregate', function() {
             expect(enabledAggregations[2].target).toEqual('marker.color');
             expect(enabledAggregations[2]._index).toEqual(-1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('does not error out on bad *group* value', function(done) {
@@ -387,8 +377,7 @@ describe('aggregate', function() {
             expect(tOut.groups).toBe('x', 'the *groups* default');
             expect(tOut.enabled).toBe(false, 'should not be *enabled*');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('use numeric sort function for median', function(done) {
@@ -414,7 +403,6 @@ describe('aggregate', function() {
             var traceOut = gd._fullData[0];
             expect(traceOut.y[0]).toBe(10);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

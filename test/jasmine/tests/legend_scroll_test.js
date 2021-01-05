@@ -7,7 +7,7 @@ var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickD
 var d3 = require('@plotly/d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var getBBox = require('../assets/get_bbox');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
@@ -250,8 +250,7 @@ describe('The legend', function() {
                 expect(hasScrollBar()).toBe(true);
                 expect(getScroll(gd)).not.toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('updates scrollBar size/existence on deleteTraces', function(done) {
@@ -285,8 +284,7 @@ describe('The legend', function() {
                 expect(hasScrollBar()).toBe(false);
                 expect(getScroll(gd)).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should keep the scrollbar position after a toggle event', function(done) {
@@ -387,8 +385,7 @@ describe('The legend', function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should resize when relayout\'ed with new height', function(done) {
@@ -406,8 +403,7 @@ describe('The legend', function() {
                 expect(+legendHeight).toBe(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -441,8 +437,7 @@ describe('The legend', function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should resize when traces added', function(done) {
@@ -453,8 +448,7 @@ describe('The legend', function() {
 
                 expect(+legendHeight).toBeCloseTo(+origLegendHeight + 19, 0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -172,8 +172,7 @@ describe('Test cone autorange:', function() {
             var rng = [1.229, 10.771];
             _assertAxisRanges('after spacing out the x/y/z coordinates', rng, rng, rng);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -205,8 +204,7 @@ describe('Test cone autorange:', function() {
         }).then(function() {
             expect(gd._fullLayout.scene._scene.glplot.objects[0].vectorScale).toBeCloseTo(0.2857, 4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -248,8 +246,7 @@ describe('Test cone interactions', function() {
 
             expect(scene).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
@@ -283,8 +280,7 @@ describe('Test cone interactions', function() {
             expect(objs[1].coneScale).toBe(0.5, 'absolute case');
             expect(objs[2].coneScale).toBe(0.5, 'absolute + 0-norm case');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display hover labels', function(done) {
@@ -359,8 +355,7 @@ describe('Test cone interactions', function() {
                 nums: 'NORM : 3.00\nat 2,2,2'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display hover labels (multi-trace case)', function(done) {
@@ -401,7 +396,6 @@ describe('Test cone interactions', function() {
                 name: 'blue cone'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

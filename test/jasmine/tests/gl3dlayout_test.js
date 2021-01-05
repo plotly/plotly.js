@@ -6,7 +6,7 @@ var Color = require('@src/components/color');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Test gl3d axes defaults', function() {
     'use strict';
@@ -563,7 +563,6 @@ describe('Gl3d layout edge cases', function() {
             expect(aspect.y).toBeCloseTo(0.6437);
             expect(aspect.z).toBeCloseTo(0.9655);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

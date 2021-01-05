@@ -9,7 +9,7 @@ var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
@@ -533,8 +533,7 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should add/delete trace properly', function(done) {
@@ -564,8 +563,7 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should respond to relayout properly', function(done) {
@@ -578,8 +576,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             return Plotly.relayout(gd, 'yaxis.range', [7, 8]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('scattercarpet should be able to coexist with scatter traces', function(done) {
@@ -604,8 +601,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             _assert(3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('preserves order of carpets on the same subplot after hide/show', function(done) {
@@ -637,8 +633,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -695,8 +690,7 @@ describe('scattercarpet array attributes', function() {
                 expect(pt.mlc).toBe(mlc[i]);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -724,8 +718,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900'], 'a = 0.2']
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label (with hovertext array)', function(done) {
@@ -737,8 +730,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900', 'D'], 'a = 0.2']
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with \'hoverinfo\' set', function(done) {
@@ -749,8 +741,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'y: 2.900'], null]
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
@@ -761,8 +752,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['b: 3.500', 'y: 2.900'], null]
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with *hovertemplate*', function(done) {
@@ -773,8 +763,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 2.900'], 'scattercarpet #5']
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with arrayOk *hovertemplate*', function(done) {
@@ -785,8 +774,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 3.0'], 'pt #3']
         )
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -853,7 +841,6 @@ describe('contourcarpet plotting & editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([1, 2]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

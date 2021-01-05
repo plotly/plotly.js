@@ -9,7 +9,7 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 var color = require('@src/components/color');
 var rgb = color.rgb;
@@ -693,8 +693,7 @@ describe('A waterfall plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should show texts (horizontal case)', function(done) {
@@ -724,8 +723,7 @@ describe('A waterfall plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     var insideTextTestsTrace = {
@@ -752,8 +750,7 @@ describe('A waterfall plot', function() {
 
         Plotly.plot(gd, [trace])
           .then(assertTextFontColors([DARK, LIGHT]))
-          .catch(failTest)
-          .then(done);
+          .then(done, done.fail);
     });
 
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
@@ -761,8 +758,7 @@ describe('A waterfall plot', function() {
 
         Plotly.plot(gd, [data])
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
-          .catch(failTest)
-          .then(done);
+          .then(done, done.fail);
     });
 
     it('should be able to restyle', function(done) {
@@ -942,8 +938,7 @@ describe('A waterfall plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsInsidePath(text30, path30); // inside
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to add/remove connector nodes on restyle', function(done) {
@@ -974,8 +969,7 @@ describe('A waterfall plot', function() {
         .then(function() {
             _assertNumberOfWaterfallConnectorNodes(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handle BADNUM positions', function(done) {
@@ -1022,8 +1016,7 @@ describe('A waterfall plot', function() {
         .then(function() {
             return checkTransition(gd, mockCopy, animateOpts, transitionOpts, connectorTests);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
@@ -1049,8 +1042,7 @@ describe('A waterfall plot', function() {
             expect(gd.calcdata[0][0].y).toEqual(NaN);
             expect(gd.calcdata[0][0].isBlank).toBe(undefined);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should coerce text-related attributes', function(done) {
@@ -1133,8 +1125,7 @@ describe('A waterfall plot', function() {
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to add/remove text node on restyle', function(done) {
@@ -1187,8 +1178,7 @@ describe('A waterfall plot', function() {
         .then(function() {
             _assertNumberOfWaterfallTextNodes(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to react with new text colors', function(done) {
@@ -1220,8 +1210,7 @@ describe('A waterfall plot', function() {
             return Plotly.react(gd, gd.data);
         })
         .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to adjust bars when reacting with new connector.line.width ', function(done) {
@@ -1255,8 +1244,7 @@ describe('A waterfall plot', function() {
             var d = d3.select(path).attr('d');
             expect(d).toBe('M11.33,325V264.33H102V325Z');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     checkTextTemplate([{
@@ -1323,8 +1311,7 @@ describe('waterfall visibility toggling:', function() {
         .then(function() {
             _assert('back to both visible', [0.5, 3.5], [-2.222, 2.222], 1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1382,8 +1369,7 @@ describe('waterfall hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/waterfall_11.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should return the correct hover point data (case x)', function() {
@@ -1444,8 +1430,7 @@ describe('waterfall hover', function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should turn off hoverinfo flags with hoveinfo none or skip', function(done) {
@@ -1471,8 +1456,7 @@ describe('waterfall hover', function() {
             .then(function() {
                 expect(d3.selectAll('g.hovertext').size()).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should turn on hoverinfo flags with hoveinfo all', function(done) {
@@ -1503,8 +1487,7 @@ describe('waterfall hover', function() {
                     axis: '0'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should use hovertemplate if specified', function(done) {
@@ -1534,8 +1517,7 @@ describe('waterfall hover', function() {
                     axis: '0'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should format numbers - round hover precision', function(done) {
@@ -1560,8 +1542,7 @@ describe('waterfall hover', function() {
                     axis: 'E'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('hover measure categories with axis prefix and suffix', function(done) {
@@ -1618,8 +1599,7 @@ describe('waterfall hover', function() {
                 expect(out.extraText).toEqual(undefined);
                 expect(out.style).toEqual([4, '#4499FF', 4, 1004.401]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1667,8 +1647,7 @@ describe('waterfall hover', function() {
                     expect(out).toBe(false, hoverSpec);
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should return correct hover data (two waterfalls, array width)', function(done) {
@@ -1705,8 +1684,7 @@ describe('waterfall hover', function() {
                 expect(out.style).toEqual([1, '#3D9970', 200, 3]);
                 assertPos(out.pos, [222, 280, 16, 16]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('positions labels correctly w.r.t. narrow waterfalls', function(done) {
@@ -1735,8 +1713,7 @@ describe('waterfall hover', function() {
                 out = _hover(gd, 10, 2, 'closest');
                 assertPos(out.pos, [145, 155, 110, 110]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1912,7 +1889,6 @@ describe('waterfall uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12],
             scales: [0.48, 1, 1, 1, 1, 1, 1],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

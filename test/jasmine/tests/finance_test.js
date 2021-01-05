@@ -8,7 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var hover = require('../assets/hover');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
-var failTest = require('../assets/fail_test');
+
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -667,8 +667,7 @@ describe('finance charts auto-range', function() {
             Plotly.plot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('- candlestick case', function(done) {
@@ -677,8 +676,7 @@ describe('finance charts auto-range', function() {
             Plotly.plot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -742,8 +740,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(d3.select('path.box').attr('d')).not.toEqual(path0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to toggle visibility', function(done) {
@@ -792,8 +789,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.relayout should work', function(done) {
@@ -807,8 +803,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countRangeSliders()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -843,8 +838,7 @@ describe('finance charts updates:', function() {
             expect(gd.calcdata[0].length).toEqual(10);
             expect(gd.calcdata[1].length).toEqual(10);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.deleteTraces / addTraces should work', function(done) {
@@ -885,8 +879,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
@@ -930,8 +923,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             assertBoxPosFields([-30240000, 30240000]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
@@ -970,8 +962,7 @@ describe('finance charts updates:', function() {
             expect(countBoxTraces()).toEqual(1);
             expect(countRangeSliders()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to update ohlc tickwidth', function(done) {
@@ -1022,8 +1013,7 @@ describe('finance charts updates:', function() {
                 pathd: 'M0,134.55H0M0,81V193.5M0,85.5H0'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should work with typed array', function(done) {
@@ -1054,8 +1044,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1116,8 +1105,7 @@ describe('finance charts *special* handlers:', function() {
                 editText(1, '1');
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1251,7 +1239,7 @@ describe('finance trace hover:', function() {
         }]
         .forEach(function(specs) {
             it('should generate correct hover labels ' + type + ' - ' + specs.desc, function(done) {
-                run(specs).catch(failTest).then(done);
+                run(specs).then(done, done.fail);
             });
         });
     });
@@ -1313,8 +1301,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: ''
                 }, 'after removing 2nd trace');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should ignore empty ' + type + ' item', function(done) {
@@ -1352,8 +1339,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: 'trace 1'
                 }, 'hover over 3rd items');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

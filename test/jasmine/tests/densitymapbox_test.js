@@ -426,8 +426,7 @@ describe('Test densitymapbox interactions:', function() {
         .then(function() {
             _assert('after adding trace0', { layerCnt: 22 });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to restyle *below*', function(done) {
@@ -494,8 +493,7 @@ describe('Test densitymapbox interactions:', function() {
                 'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle from and to *scattermapbox*', function(done) {
@@ -520,7 +518,6 @@ describe('Test densitymapbox interactions:', function() {
         .then(function() { _assert('after restyle to scattermapbox', 'scattermapbox'); })
         .then(function() { return Plotly.restyle(gd, 'type', 'densitymapbox'); })
         .then(function() { _assert('back to densitymapbox', 'densitymapbox'); })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

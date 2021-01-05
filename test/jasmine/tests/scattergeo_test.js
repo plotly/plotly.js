@@ -14,7 +14,7 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test scattergeo defaults', function() {
@@ -348,16 +348,14 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
             check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should use the hovertemplate', function(done) {
         Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
             check([381, 221], ['tpl 10', 'x']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not hide hover label when hovertemplate', function(done) {
@@ -367,32 +365,28 @@ describe('Test scattergeo hover', function() {
         }).then(function() {
             check([381, 221], ['tpl 10', 'x']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], ['(10°, 10°)\ntext', null]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label info (\'hovertext\' single value case)', function(done) {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
             check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label info (\'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
             check([381, 221], ['(10°, 10°)\nApple', null]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with custom styling', function(done) {
@@ -409,16 +403,14 @@ describe('Test scattergeo hover', function() {
                 fontFamily: 'Arial'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
         Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
             check([381, 221], ['lon: 10°', null]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     describe('should preserve lon/lat formatting hovetemplate equivalence', function() {
@@ -431,8 +423,7 @@ describe('Test scattergeo hover', function() {
                 lat: [[10.00087683]]
             })
             .then(function() { check(pos, exp); })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('- hovertemplate case (same lon/lat truncation)', function(done) {
@@ -442,8 +433,7 @@ describe('Test scattergeo hover', function() {
                 hovertemplate: '(%{lon}°, %{lat}°)<br>%{text}<extra></extra>'
             })
             .then(function() { check(pos, exp); })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -459,8 +449,7 @@ describe('Test scattergeo hover', function() {
         .then(function() {
             check([275, 255], ['New York', 'LOOK']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -484,8 +473,7 @@ describe('scattergeo drawing', function() {
             // only utopia logs - others are silently ignored
             expect(loggers.log).toHaveBeenCalledTimes(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('preserves order after hide/show', function(done) {
@@ -510,8 +498,7 @@ describe('scattergeo drawing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 

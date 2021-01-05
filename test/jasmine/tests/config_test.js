@@ -96,8 +96,7 @@ describe('config argument', function() {
                 return Plotly.react(gd, data, layout2, config);
             })
             .then(afterResize)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         }
 
         it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
@@ -178,8 +177,7 @@ describe('config argument', function() {
             .then(function() {
                 checkLayoutSize(400, 300);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should respect attribute autosizable: false', function(done) {
@@ -216,8 +214,7 @@ describe('config argument', function() {
                         expect(gd._fullLayout.height).not.toBe(dfltHeight);
                     }
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -238,8 +235,7 @@ describe('config argument', function() {
 
                 expect(link).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should display a link when true', function(done) {
@@ -253,8 +249,7 @@ describe('config argument', function() {
                 expect(bBox.width).toBeGreaterThan(0);
                 expect(bBox.height).toBeGreaterThan(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -381,64 +376,55 @@ describe('config argument', function() {
                     titleText: false
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make titles editable', function(done) {
             initPlot('titleText')
             .then(checkIfEditable('gtitle', 'Click to enter Plot title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make y axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-ytitle', 'Click to enter Y axis title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make legend labels editable', function(done) {
             initPlot('legendText')
             .then(checkIfEditable('legendtext', 'trace 0'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation labels editable', function(done) {
             initPlot('annotationText')
             .then(checkIfEditable('annotation-text-g', 'testing'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation labels draggable', function(done) {
             initPlot('annotationTail')
             .then(checkIfDraggable('annotation-text-g'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation arrows draggable', function(done) {
             initPlot('annotationPosition')
             .then(checkIfDraggable('annotation-arrow-g'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make legends draggable', function(done) {
             initPlot('legendPosition')
             .then(checkIfDraggable('legend'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -469,8 +455,7 @@ describe('config argument', function() {
             .then(function() {
                 testDraggers(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not have drag rectangles when disabled', function(done) {
@@ -478,8 +463,7 @@ describe('config argument', function() {
             .then(function() {
                 testDraggers(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -509,8 +493,7 @@ describe('config argument', function() {
                 expect(editBox).toBeDefined();
                 expect(editBox.getAttribute('contenteditable')).toBe('true');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('disallows axis range entry when disabled', function(done) {
@@ -526,8 +509,7 @@ describe('config argument', function() {
                 var editBox = document.getElementsByClassName('plugin-editable editable')[0];
                 expect(editBox).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -554,8 +536,7 @@ describe('config argument', function() {
                 Plotly.Plots.sendDataToCloud(gd);
                 expect(form).toBe(undefined);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should be able to connect to Chart Studio Cloud when set to https://chart-studio.plotly.com', function(done) {
@@ -569,8 +550,7 @@ describe('config argument', function() {
                 expect(form.action).toBe('https://chart-studio.plotly.com/external');
                 expect(form.method).toBe('post');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can be set to other base urls', function(done) {
@@ -582,8 +562,7 @@ describe('config argument', function() {
                 expect(form.action).toContain('/dummy/external');
                 expect(form.method).toBe('post');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('has lesser priotiy then window env', function(done) {
@@ -685,8 +664,7 @@ describe('config argument', function() {
                 fillParent(1, 1);
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should still be responsive if the plot is edited', function(done) {
@@ -694,8 +672,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should still be responsive if the plot is purged and replotted', function(done) {
@@ -703,8 +680,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should only have one resize handler when plotted more than once', function(done) {
@@ -722,8 +698,7 @@ describe('config argument', function() {
                     expect(cntWindowResize).toBe(1);
                     expect(Plotly.Plots.resize.calls.count()).toBe(1);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should become responsive if configured as such via Plotly.react', function(done) {
@@ -731,8 +706,7 @@ describe('config argument', function() {
                 Plotly.plot(gd, data, {}, {responsive: false})
                 .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should stop being responsive if configured as such via Plotly.react', function(done) {
@@ -748,8 +722,7 @@ describe('config argument', function() {
                 .then(delay(RESIZE_DELAY))
                 // Check that final figure's size hasn't changed
                 .then(function() {checkLayoutSize(width, height);})
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             // Testing fancier CSS layouts
@@ -762,8 +735,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should resize vertically in a flexbox when responsive: true', function(done) {
@@ -775,8 +747,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should resize in both direction in a grid when responsive: true', function(done) {
@@ -789,8 +760,7 @@ describe('config argument', function() {
 
                 Plotly.plot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
@@ -815,8 +785,7 @@ describe('config argument', function() {
                     expect(gd.clientWidth).toBe(700);
                     expect(gd.clientHeight).toBe(450);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
@@ -834,8 +803,7 @@ describe('config argument', function() {
                     // The plot should overflow the container!
                     checkLayoutSize(1200, 700);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should not resize if gd is hidden', function(done) {
@@ -851,8 +819,7 @@ describe('config argument', function() {
                 .then(function() {
                     expect(Plotly.Plots.resize.calls.count()).toBe(0);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -874,8 +841,7 @@ describe('config argument', function() {
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should fill in blank scrollZoom value', function(done) {
@@ -884,8 +850,7 @@ describe('config argument', function() {
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom:true', function(done) {
@@ -893,8 +858,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe(true);
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom:false', function(done) {
@@ -902,8 +866,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe(false);
                 expect(gd._context._scrollZoom).toEqual({});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom flaglist', function(done) {
@@ -911,8 +874,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
                 expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -959,8 +921,7 @@ describe('config argument', function() {
                 expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
@@ -995,8 +956,7 @@ describe('config argument', function() {
                 expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

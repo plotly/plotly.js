@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test.js');
+
 
 var doubleClick = require('../assets/double_click');
 var delay = require('../assets/delay');
@@ -104,8 +104,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work under fast mode with *lasso* dragmode', function(done) {
@@ -128,8 +127,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work under fancy mode with *select* dragmode', function(done) {
@@ -148,8 +146,7 @@ describe('Test gl2d lasso/select:', function() {
                 points: [{x: 0.004, y: 12.5}]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work under fancy mode with *lasso* dragmode', function(done) {
@@ -167,8 +164,7 @@ describe('Test gl2d lasso/select:', function() {
                 points: [{ x: 0.099, y: 2.75 }]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work on trace with enabled transforms', function(done) {
@@ -190,8 +186,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work on gl text charts', function(done) {
@@ -273,8 +268,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work on gl text charts with array textfont.color', function(done) {
@@ -353,8 +347,7 @@ describe('Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -424,8 +417,7 @@ describe('Test displayed selections:', function() {
             expect(readContext()).toBe(0, 'update+select context');
             expect(readFocus()).toBeGreaterThan(1e4, 'update+select focus');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display selection of big number of regular points', function(done) {
@@ -455,8 +447,7 @@ describe('Test displayed selections:', function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display selection of big number of miscellaneous points', function(done) {
@@ -500,8 +491,7 @@ describe('Test displayed selections:', function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -678,8 +668,7 @@ describe('Test selections during funky scenarios', function() {
                     ]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl should behave correctly when doubleclick before selecting anything', function(done) {
@@ -714,8 +703,7 @@ describe('Test selections during funky scenarios', function() {
                     ]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl should behave correctly during select -> doubleclick -> dragmode:mode -> dragmode:select', function(done) {
@@ -766,8 +754,7 @@ describe('Test selections during funky scenarios', function() {
                     ]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -846,8 +833,7 @@ describe('Test selections during funky scenarios', function() {
                 ['select2d', [[[], []]]]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work on overlaid subplots', function(done) {
@@ -888,7 +874,6 @@ describe('Test selections during funky scenarios', function() {
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
             expect(scene2.scatter2d.draw).toHaveBeenCalledTimes(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

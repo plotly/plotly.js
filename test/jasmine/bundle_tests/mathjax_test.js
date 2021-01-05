@@ -3,7 +3,7 @@ var d3 = require('@plotly/d3');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Test MathJax:', function() {
     var mathJaxScriptTag;
@@ -95,8 +95,7 @@ describe('Test MathJax:', function() {
             }, {
                 xCategories: longCats
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
@@ -115,8 +114,7 @@ describe('Test MathJax:', function() {
             }, {
                 xCategories: longCats
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should scoot x-axis title below x-axis ticks (with MathJax)', function(done) {
@@ -136,8 +134,7 @@ describe('Test MathJax:', function() {
             }, {
                 xCategories: longTexCats
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should scoot x-axis title (with MathJax) below x-axis ticks (with MathJax)', function(done) {
@@ -157,8 +154,7 @@ describe('Test MathJax:', function() {
             }, {
                 xCategories: longTexCats
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

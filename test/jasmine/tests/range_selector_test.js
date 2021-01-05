@@ -7,7 +7,7 @@ var Lib = require('@src/lib');
 var Color = require('@src/components/color');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
 var setConvert = require('@src/plots/cartesian/set_convert');
@@ -508,8 +508,7 @@ describe('range selector interactions:', function() {
             assertNodeCount('.rangeselector', 1);
             assertNodeCount('.button', allButtons);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to be removed by `relayout`', function(done) {
@@ -518,8 +517,7 @@ describe('range selector interactions:', function() {
             assertNodeCount('.rangeselector', 0);
             assertNodeCount('.button', 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to remove button(s) on `relayout`', function(done) {
@@ -535,8 +533,7 @@ describe('range selector interactions:', function() {
         }).then(function() {
             assertNodeCount('.button', len - 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to change its style on `relayout`', function(done) {
@@ -552,8 +549,7 @@ describe('range selector interactions:', function() {
         }).then(function() {
             checkButtonColor('rgb(255, 0, 0)', 'rgb(0, 0, 255)');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update range and active button when clicked', function() {
@@ -614,8 +610,7 @@ describe('range selector interactions:', function() {
             // 'all' should be after an autoscale
             checkActiveButton(buttons.size() - 1, 'back to all');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -660,7 +655,6 @@ describe('range selector automargin', function() {
         .then(function() {
             assertPlotSize({widthLessThan: 400, heightLessThan: 300}, 'reshow');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
