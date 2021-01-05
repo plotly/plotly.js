@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var subplotMock = require('../../image/mocks/multiple_subplots.json');
 var annotationMock = require('../../image/mocks/annotations.json');
@@ -209,7 +209,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('should not return any nested svg tags of annotations', function(done) {
@@ -220,7 +220,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {
@@ -245,8 +245,7 @@ describe('Plotly.Snapshot', function() {
                     expect(textElements[i].style.display).toEqual('');
                 }
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         describe('should handle quoted style properties', function() {
@@ -302,8 +301,7 @@ describe('Plotly.Snapshot', function() {
                     expect(legendPointElements.length).toEqual(1);
                     checkURL(legendPointElements[0].style.fill);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('- legend with contour items case', function(done) {
@@ -323,8 +321,7 @@ describe('Plotly.Snapshot', function() {
                     var lineItems = svgDOM.getElementsByClassName('legendlines');
                     checkURL(lineItems[1].firstChild.style.stroke, 'stroke gradient');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('- colorbar case', function(done) {
@@ -341,8 +338,7 @@ describe('Plotly.Snapshot', function() {
                         checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
                     }
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('- legend3dandfriends case', function(done) {
@@ -359,8 +355,7 @@ describe('Plotly.Snapshot', function() {
                         checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
                     }
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -380,8 +375,7 @@ describe('Plotly.Snapshot', function() {
                 expect(el.getAttribute('height')).toBe('1000', 'height');
                 expect(el.getAttribute('viewBox')).toBe('0 0 300 400', 'viewbox');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

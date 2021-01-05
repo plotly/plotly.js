@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
 
 
 describe('page rendering', function() {
@@ -82,7 +81,6 @@ describe('page rendering', function() {
                 expect(bBox.height).toBe(0);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

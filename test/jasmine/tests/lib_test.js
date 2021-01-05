@@ -8,7 +8,7 @@ var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Test lib.js:', function() {
     'use strict';
@@ -2753,8 +2753,7 @@ describe('Queue', function() {
             expect(gd.undoQueue.index).toEqual(0);
             expect(gd.undoQueue.queue).toEqual([]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
@@ -2824,7 +2823,6 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'transforms[0]': null });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

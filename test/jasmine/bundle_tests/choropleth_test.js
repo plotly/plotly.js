@@ -5,7 +5,7 @@ var PlotlyChoropleth = require('@lib/choropleth');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -32,7 +32,6 @@ describe('Bundle with choropleth', function() {
 
             expect(nodes.size()).toEqual(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });

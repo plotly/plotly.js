@@ -3,7 +3,6 @@ var Plotly = require('@lib/index');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
 
 
 describe('errorbar plotting', function() {
@@ -61,8 +60,7 @@ describe('errorbar plotting', function() {
         .then(function() {
             check([-0.6667, 2.6667], [-0.2629, 4.9949], 3, 3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('shows half errorbars and removes individual bars that disappear', function(done) {
@@ -97,7 +95,6 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 18}
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

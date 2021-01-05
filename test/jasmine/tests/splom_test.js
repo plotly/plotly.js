@@ -681,8 +681,7 @@ describe('Test splom interactions:', function() {
             expect(gd._fullLayout._splomGrid).toBeUndefined();
             expect(gd._fullLayout._splomScenes).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
@@ -735,8 +734,7 @@ describe('Test splom interactions:', function() {
             // and another for all 'zeroline' lines
             _assert([8968, 1876]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
@@ -846,8 +844,7 @@ describe('Test splom interactions:', function() {
                 bgCnt: 0
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
@@ -888,8 +885,7 @@ describe('Test splom interactions:', function() {
                 y: 79, y2: 230, y3: 382
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work with typed arrays', function(done) {
@@ -903,8 +899,7 @@ describe('Test splom interactions:', function() {
                 values: new Int32Array([2, 5, 6])
             }]
         }])
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should toggle trace correctly', function(done) {
@@ -940,8 +935,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert('all back', [1, 1, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
@@ -1000,8 +994,7 @@ describe('Test splom interactions:', function() {
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update axis arrangement on show(upper|lower)half + diagonal.visible restyles', function(done) {
@@ -1079,8 +1072,7 @@ describe('Test splom interactions:', function() {
                 fullYaxes: ['linear', 'category', 'category', null]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not fail when editing graph with visible:false traces', function(done) {
@@ -1123,8 +1115,7 @@ describe('Test splom interactions:', function() {
                 [1, 0.498, 0.0549, 0.4]
             ], 'marker colors');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1204,8 +1195,7 @@ describe('Test splom update switchboard:', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, 1], 1, 'xrng ' + msg);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should trigger minimal sequence for marker style updates', function(done) {
@@ -1349,8 +1339,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(scene.matrixOptions.marker).not.toBeNull(msg);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1569,8 +1558,7 @@ describe('Test splom drag:', function() {
                 [0.3, 7.6]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1692,8 +1680,7 @@ describe('Test splom select:', function() {
                 selectionOutlineCnt: 2
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should redraw splom traces before scattergl trace (if any)', function(done) {
@@ -1733,8 +1720,7 @@ describe('Test splom select:', function() {
             expect(splomCnt).toBe(1, 'splom redraw before scattergl');
             expect(scatterGlCnt).toBe(2, 'scattergl redraw after splom');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
@@ -1835,8 +1821,7 @@ describe('Test splom select:', function() {
                 unselectBatch: []
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to select and then clear using API', function(done) {
@@ -1876,7 +1861,6 @@ describe('Test splom select:', function() {
             selectBatch: [],
             unselectBatch: []
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

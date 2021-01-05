@@ -7,7 +7,7 @@
 // test, we need a description of the test and the promise doing the test
 // itself. In this case, it needs to tell jasmine if it passed or failed, so we
 // pass in an assert function that the promise can call. Then in jasmine, the
-// promise is followed by .catch(failTest).then(done)
+// promise is followed by .then(done, done.fail)
 'use strict';
 
 var Plotly = require('../../../../lib/index');

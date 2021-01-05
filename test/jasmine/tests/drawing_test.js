@@ -4,7 +4,7 @@ var Drawing = require('@src/components/drawing');
 var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Drawing', function() {
     'use strict';
@@ -416,8 +416,7 @@ describe('Drawing', function() {
                     bottom: 4
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('works with dummy nodes created in Drawing.tester', function() {
@@ -540,8 +539,7 @@ describe('gradients', function() {
             // full replot and no resulting markers at all -> no gradients
             checkGradientIds([], [], [], []);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should append window URL to gradient ref if <base> is present', function(done) {
@@ -567,10 +565,9 @@ describe('gradients', function() {
                 '")'
             ].join(''));
         })
-        .catch(failTest)
         .then(function() {
             base.remove();
             done();
-        });
+        }, done.fail);
     });
 });

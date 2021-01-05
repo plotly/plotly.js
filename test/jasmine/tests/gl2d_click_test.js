@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test.js');
+
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -218,8 +218,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for scattergl in *select* dragmode', function(done) {
@@ -257,8 +256,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for scattergl in *lasso* dragmode', function(done) {
@@ -296,8 +294,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
@@ -316,8 +313,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should show correct label for scattergl when hovertext is set', function(done) {
@@ -343,8 +339,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not error when scattergl trace has missing points', function(done) {
@@ -373,8 +368,7 @@ describe('Test hover and click interactions', function() {
             var interval = setInterval(function() { hover(xp--, yp--); }, 10);
             return delay(100)().then(function() { clearInterval(interval); });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should show last point data for overlapped scattergl points with hovermode set to closest', function(done) {
@@ -414,8 +408,7 @@ describe('Test hover and click interactions', function() {
             }
         })
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for pointcloud', function(done) {
@@ -442,8 +435,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl scatter3d should propagate marker colors to hover labels', function(done) {
@@ -467,8 +459,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for heatmapgl', function(done) {
@@ -500,8 +491,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for heatmapgl (asymmetric case) ', function(done) {
@@ -533,8 +523,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for scattergl after visibility restyle', function(done) {
@@ -575,8 +564,7 @@ describe('Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data for scattergl-fancy', function(done) {
@@ -623,8 +611,7 @@ describe('Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should output correct event data contourgl', function(done) {
@@ -651,8 +638,7 @@ describe('Test hover and click interactions', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(run)
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -689,7 +675,6 @@ describe('hover with (x|y)period positioning', function() {
                 nums: '(Jan 2006, Jun 1, 1970)'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var subplotMock = require('@mocks/multiple_subplots.json');
 var pieAutoMargin = require('@mocks/pie_automargin');
 
@@ -57,7 +57,7 @@ describe('Plotly.toImage', function() {
 
         expect(isPromise(returnValue)).toBe(true);
 
-        returnValue.catch(failTest).then(done);
+        returnValue.then(done, done.fail);
     });
 
     it('should throw error with unsupported file type', function(done) {
@@ -68,8 +68,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {format: 'x'}); })
                 .toThrow(new Error('Export format is not png, jpeg, webp, svg or full-json.'));
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should throw error with height and/or width < 1', function(done) {
@@ -84,8 +83,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {width: 0.5}); })
                 .toThrow(new Error('Height and width should be pixel values.'));
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should create img with proper height and width', function(done) {
@@ -112,8 +110,7 @@ describe('Plotly.toImage', function() {
             expect(img.height).toBe(400);
             expect(img.width).toBe(400);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should use width/height of graph div when width/height are set to *null*', function(done) {
@@ -130,8 +127,7 @@ describe('Plotly.toImage', function() {
         })
         .then(function() { return Plotly.toImage(gd, {width: null, height: null}); })
         .then(function(url) { return assertSize(url, 832, 502); })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should create proper file type', function(done) {
@@ -158,8 +154,7 @@ describe('Plotly.toImage', function() {
         .then(function(url) {
             expect(url.split('webp')[0]).toBe('data:image/');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should strip *data:image* prefix when *imageDataOnly* is turned on', function(done) {
@@ -186,8 +181,7 @@ describe('Plotly.toImage', function() {
             expect(d.indexOf('data:image/')).toBe(-1);
             expect(d.length).toBeWithin(15831, 1e3, 'webp image length');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     FORMATS.forEach(function(f) {
@@ -199,8 +193,7 @@ describe('Plotly.toImage', function() {
             .then(function(url) { return assertSize(url, 1400, 900); })
             .then(function() { return Plotly.toImage(gd, {format: f, scale: 0.5}); })
             .then(function(url) { return assertSize(url, 350, 225); })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -213,8 +206,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should accept graph div id as input', function(done) {
@@ -227,8 +219,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should work on pages with <base>', function(done) {
@@ -258,11 +249,10 @@ describe('Plotly.toImage', function() {
             expect(middle.indexOf('http://')).toBe(-1, 'no <base> URL in subplot clipPath!');
             expect(middle.indexOf('https://')).toBe(-1, 'no <base> URL in subplot clipPath!');
         })
-        .catch(failTest)
         .then(function() {
             base.remove();
             done();
-        });
+        }, done.fail);
     });
 
     describe('with format `full-json`', function() {
@@ -285,8 +275,7 @@ describe('Plotly.toImage', function() {
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
                 expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('export an object with data/layout/config', function(done) {
@@ -299,8 +288,7 @@ describe('Plotly.toImage', function() {
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
                 expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('export computed margins', function(done) {
@@ -315,8 +303,7 @@ describe('Plotly.toImage', function() {
                 expect(computed.margin.r).toBeDefined('no right');
                 expect(computed.margin.b).toBeDefined('no bottom');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('record and export computed margins with "Too many auto-margin redraws"', function(done) {
@@ -347,8 +334,7 @@ describe('Plotly.toImage', function() {
                 expect(computed.margin.b).toBeGreaterThan(80);
                 expect(computed.margin.r).toBeGreaterThan(80);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

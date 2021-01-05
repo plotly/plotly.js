@@ -6,7 +6,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var assertD3Data = require('../assets/custom_assertions').assertD3Data;
 
 describe('restyle', function() {
@@ -62,8 +62,7 @@ describe('restyle', function() {
             }).then(function() {
                 expect(d3.selectAll('g.trace.scatter').size()).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('reuses SVG lines', function(done) {
@@ -102,8 +101,7 @@ describe('restyle', function() {
                 // Second line was persisted:
                 expect(firstLine2).toBe(secondLine2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can change scatter mode', function(done) {
@@ -148,8 +146,7 @@ describe('restyle', function() {
             .then(function() {
                 assertScatterModeSizes(3, 9, 9);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can legend-hide the second and only scatter trace', function(done) {
@@ -174,8 +171,7 @@ describe('restyle', function() {
             .then(function() {
                 expect(d3.select('.scatter').size()).toBe(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl can legend-hide the second and only scattergl trace', function(done) {
@@ -200,8 +196,7 @@ describe('restyle', function() {
             .then(function() {
                 expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -252,8 +247,7 @@ describe('relayout', function() {
                 expect(gd._fullLayout.xaxis._initialCategories).toEqual(list);
                 assertCategories(list);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -304,8 +298,7 @@ describe('relayout', function() {
             .then(function() {
                 assertPointTranslate([-540, 135], [-540, 135]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should autorange correctly with margin pushers', function(done) {
@@ -340,8 +333,7 @@ describe('relayout', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(foundXRange, 5);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(foundYRange, 5);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -372,8 +364,7 @@ describe('relayout', function() {
                 expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
                 expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -417,8 +408,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             assertOrphanSubplot(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should remove unused axes when deleting traces', function(done) {
@@ -440,8 +430,7 @@ describe('subplot creation / deletion:', function() {
             expect(gd._fullLayout._subplots.cartesian).toEqual(['xy']);
             expect(gd._fullLayout._subplots.yaxis).toEqual(['y']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     function checkBGLayers(behindCount, x2y2Count, subplots) {
@@ -500,8 +489,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             checkBGLayers(1, 1, ['xy', 'x2y2']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('puts plot backgrounds behind everything except if they overlap', function(done) {
@@ -546,8 +534,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('puts not have backgrounds nodes when plot and paper color match', function(done) {
@@ -614,8 +601,7 @@ describe('subplot creation / deletion:', function() {
             // still need a <rect.bg> to get correct semi-transparent look
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear overlaid subplot trace layers on restyle', function(done) {
@@ -643,8 +629,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             _assert(0, 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear obsolete content out of axis layers when relayout\'ing *layer*', function(done) {
@@ -718,8 +703,7 @@ describe('subplot creation / deletion:', function() {
                 [false, 0]
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear obsolete content out of axis layers when changing overlaying configuation', function(done) {
@@ -800,8 +784,7 @@ describe('subplot creation / deletion:', function() {
                 trace1Parent: 'x2y2'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
@@ -842,8 +825,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             _assert([5, 4, 1], [6, 6, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clears secondary labels and divider when updating out of axis type multicategory', function(done) {
@@ -900,8 +882,7 @@ describe('subplot creation / deletion:', function() {
                 dividerCnt: 0
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clears secondary labels and divider when updating out of axis type multicategory (y-axis case)', function(done) {
@@ -961,7 +942,6 @@ describe('subplot creation / deletion:', function() {
                 dividerCnt: 0
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

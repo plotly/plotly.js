@@ -6,7 +6,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 
 var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
@@ -135,8 +135,7 @@ describe('Layout images', function() {
             .then(function() {
                 checkLayers(0, 0, 1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should fall back on imageLowerLayer for below missing subplots', function(done) {
@@ -163,8 +162,7 @@ describe('Layout images', function() {
             .then(function() {
                 checkLayers(0, 2, 0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         describe('with anchors and sizing', function() {
@@ -184,8 +182,7 @@ describe('Layout images', function() {
                 .then(function() {
                     expect(Plotly.d3.select('image').attr('preserveAspectRatio')).toBe('xMidYMid');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should work for left top', function(done) {
@@ -197,8 +194,7 @@ describe('Layout images', function() {
                 .then(function() {
                     testAspectRatio('xMinYMin');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should work for right bottom', function(done) {
@@ -210,8 +206,7 @@ describe('Layout images', function() {
                 .then(function() {
                     testAspectRatio('xMaxYMax');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should work for stretch sizing', function(done) {
@@ -224,8 +219,7 @@ describe('Layout images', function() {
                 .then(function() {
                     testAspectRatio('none');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should work for fill sizing', function(done) {
@@ -238,8 +232,7 @@ describe('Layout images', function() {
                 .then(function() {
                     testAspectRatio('xMinYMin slice');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -284,8 +277,7 @@ describe('Layout images', function() {
 
                 mouseEvent('mouseup', 300, 250);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should move when referencing axes', function(done) {
@@ -318,8 +310,7 @@ describe('Layout images', function() {
 
                 mouseEvent('mouseup', 300, 250);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -366,8 +357,7 @@ describe('Layout images', function() {
                 expect(newCanvasElement).toBeDefined();
                 expect(newCanvasElement.toDataURL).toHaveBeenCalledTimes(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should update the image if changed', function(done) {
@@ -380,8 +370,7 @@ describe('Layout images', function() {
                 var newUrl = newImg.attr('xlink:href');
                 expect(url).not.toBe(newUrl);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should update the image position if changed', function(done) {
@@ -399,8 +388,7 @@ describe('Layout images', function() {
                 var newImg = Plotly.d3.select('image');
                 expect([+newImg.attr('x'), +newImg.attr('y')]).toEqual([80, 100]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should remove the image tag if an invalid source', function(done) {
@@ -412,8 +400,7 @@ describe('Layout images', function() {
                 var newSelection = Plotly.d3.select('image');
                 expect(newSelection.size()).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -491,8 +478,7 @@ describe('Layout images', function() {
                 assertImages(0);
                 expect(gd.layout.images).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -586,8 +572,7 @@ describe('images log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.images[0].y).toBe(2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('keeps the same data value if the axis type is changed without position', function(done) {
@@ -626,7 +611,6 @@ describe('images log/linear axis changes', function() {
             expect(gd.layout.images[0].y).toBe(2);
             expect(gd.layout.images[0].sizey).toBe(2.5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

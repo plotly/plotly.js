@@ -3,7 +3,7 @@ var Plotly = require('@lib/core');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Dynamic @lib/ module imports', function() {
     var gd;
@@ -34,7 +34,6 @@ describe('Dynamic @lib/ module imports', function() {
             expect(polarLayer.size()).toBe(1, 'one polar layer');
             expect(polarLayer.selectAll('.trace').size()).toBe(1, 'one scatterpolar trace');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

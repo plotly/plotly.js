@@ -7,7 +7,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
@@ -135,8 +135,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraFinal.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[2]');
             expect(cameraFinal.mouseListener.enabled === true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -177,8 +176,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'orbit').toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should set the camera dragmode to turntable if the camera.up.z vector is set to be upwards', function(done) {
@@ -205,8 +203,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should set the camera dragmode to turntable if the camera.up is not set', function(done) {
@@ -228,8 +225,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should set the camera dragmode to turntable if any of camera.up.[x|y|z] is missing', function(done) {
@@ -256,8 +252,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not set the camera dragmode to turntable if camera.up.z is zero.', function(done) {
@@ -284,8 +279,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').not.toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should set the camera projection type to perspective if the camera.projection.type is not set', function(done) {
@@ -308,8 +302,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should set the camera projection type to orthographic if the camera.projection.type is set to orthographic', function(done) {
@@ -335,8 +328,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should enable orthographic & perspective projections using relayout', function(done) {
@@ -386,8 +378,7 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not set _length to NaN and dtick should be defined.', function(done) {
@@ -416,8 +407,7 @@ describe('Test gl3d plots', function() {
             expect(isNaN(zaxis._length)).toBe(false);
             expect(zaxis.dtick === undefined).toBe(false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -584,8 +574,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -614,8 +603,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -641,8 +629,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
@@ -715,8 +702,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -802,8 +788,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -832,8 +817,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -862,8 +846,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
 
             buttonDefault.click();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
@@ -936,8 +919,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1001,8 +983,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update the scene camera - perspective case', function(done) {
@@ -1115,8 +1096,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             _assertAndReset(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update the scene camera - orthographic case', function(done) {
@@ -1227,8 +1207,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             _assertAndReset(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update the scene aspectmode & aspectratio when zooming with scroll wheel i.e. orthographic case', function(done) {
@@ -1313,8 +1292,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
             expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should fire plotly_relayouting events when dragged - perspective case', function(done) {
@@ -1365,8 +1343,7 @@ describe('Test gl3d drag and wheel interactions', function() {
                 expect(key).not.toBe('scene.aspectmode');
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should fire plotly_relayouting events when dragged - orthographic case', function(done) {
@@ -1416,8 +1393,7 @@ describe('Test gl3d drag and wheel interactions', function() {
                 expect(key).not.toBe('scene.aspectmode');
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
 
@@ -1466,8 +1442,7 @@ describe('Test gl3d drag and wheel interactions', function() {
                 expect(Object.keys(events[0])).toContain(key);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should preserve aspectratio values when orthographic scroll zoom i.e. after restyle', function(done) {
@@ -1561,8 +1536,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             expect(aspectratio.y).toBeCloseTo(0.725, 3, 'aspectratio.y');
             expect(aspectratio.z).toBeCloseTo(1.269, 3, 'aspectratio.z');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1609,8 +1583,7 @@ describe('Test gl3d relayout calls', function() {
         .then(function() {
             assertMargins(0, 0, 0, 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should skip root-level axis objects', function(done) {
@@ -1627,8 +1600,7 @@ describe('Test gl3d relayout calls', function() {
                 zaxis: {}
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from perspective to orthographic', function(done) {
@@ -1667,8 +1639,7 @@ describe('Test gl3d relayout calls', function() {
             selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from orthographic to perspective', function(done) {
@@ -1710,8 +1681,7 @@ describe('Test gl3d relayout calls', function() {
             selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1802,8 +1772,7 @@ describe('Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be removed when beyond the scene axis ranges', function(done) {
@@ -1835,8 +1804,7 @@ describe('Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'back to base after zaxis range relayout');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to add/remove and hide/unhide themselves via relayout', function(done) {
@@ -1885,8 +1853,7 @@ describe('Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationText(['new!'], 'after add new (2)');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work across multiple scenes', function(done) {
@@ -1938,8 +1905,7 @@ describe('Test gl3d annotations', function() {
             assertAnnotationCntPerScene('scene', 1);
             assertAnnotationCntPerScene('scene2', 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should contribute to scene axis autorange', function(done) {
@@ -1972,8 +1938,7 @@ describe('Test gl3d annotations', function() {
         .then(function() {
             assertSceneAxisRanges([0.9375, 3.0625], [0.9375, 3.0625], [0.7187, 10.2813]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should allow text and tail position edits under `editable: true`', function(done) {
@@ -2038,8 +2003,7 @@ describe('Test gl3d annotations', function() {
                 'scene.annotations[0].ay': -80
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display hover labels and trigger *plotly_clickannotation* event', function(done) {
@@ -2088,8 +2052,7 @@ describe('Test gl3d annotations', function() {
                 dispatch('click');
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -2115,8 +2078,7 @@ describe('Test removal of gl contexts', function() {
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
             expect(gd._fullLayout.scene._scene.glplot).toBe(null);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
@@ -2160,8 +2122,7 @@ describe('Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
@@ -2181,8 +2142,7 @@ describe('Test removal of gl contexts', function() {
             expect((eventData || {}).event).toBeDefined();
             expect((eventData || {}).layer).toBe('scene');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -2239,13 +2199,11 @@ describe('Test gl3d drag events', function() {
 
     it('@gl should respond to drag interactions with mock of unset camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('@gl should respond to drag interactions with mock of partially set camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });

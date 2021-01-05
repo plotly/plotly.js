@@ -5,7 +5,7 @@ var ScatterPolarGl = require('@src/traces/scatterpolargl');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
@@ -110,7 +110,7 @@ describe('Test scatterpolargl hover:', function() {
     }]
     .forEach(function(specs) {
         it('@gl should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 });
@@ -176,8 +176,7 @@ describe('Test scatterpolargl interactions:', function() {
             expect(totalPixels()).not.toBe(0);
             expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to toggle from svg to gl (on graph with scattergl subplot)', function(done) {
@@ -257,8 +256,7 @@ describe('Test scatterpolargl interactions:', function() {
             expect(scenePolar.destroy).toHaveBeenCalledTimes(1);
             expect(gd._fullLayout.polar._subplot._scene).toBe(null);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -301,8 +299,7 @@ describe('Test scatterpolargl autorange:', function() {
                     expect(gd._fullLayout.polar.radialaxis.range)
                         .toBeCloseToArray(svgRange, 'gl radial range');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -342,8 +339,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 1.0799], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl - case array marker.size', function(done) {
@@ -358,8 +354,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 1.0465], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl - case mode:lines', function(done) {
@@ -373,8 +368,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 0.9999], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

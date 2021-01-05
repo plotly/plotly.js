@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
 
@@ -97,8 +97,7 @@ describe('Test gl3d trace click/hover:', function() {
                 }
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should honor *hoverlabel.namelength*', function(done) {
@@ -121,8 +120,7 @@ describe('Test gl3d trace click/hover:', function() {
                 }
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
@@ -294,8 +292,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, 'THIS Y -- a');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (surface case with connectgaps enabled)', function(done) {
@@ -327,8 +324,7 @@ describe('Test gl3d trace click/hover:', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (surface case)', function(done) {
@@ -447,8 +443,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should emit correct event data on click (scatter3d case)', function(done) {
@@ -473,8 +468,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display correct hover labels (mesh3d case)', function(done) {
@@ -546,8 +540,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '3-4-5');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should display correct face colors', function(done) {
@@ -599,8 +592,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'face color'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should display correct face intensities (uniform grid)', function(done) {
@@ -630,8 +622,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should display correct face intensities (non-uniform grid)', function(done) {
@@ -661,8 +652,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should display correct face intensities *alpha-hull* case', function(done) {
@@ -705,8 +695,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@noCI @gl should display correct face intensities *delaunay* case', function(done) {
@@ -749,8 +738,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     function scroll(target, amt) {
@@ -834,8 +822,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'vertex color'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should pick correct points after orthographic scroll zoom - scatter3d case', function(done) {
@@ -904,8 +891,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'marker color'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should pick latest & closest points on hover if two points overlap', function(done) {
@@ -929,8 +915,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText('x: 1', 'y: 1', 'z: 1', 'third above', 'trace 1');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     describe('propagate colors to hover labels', function() {
@@ -1106,8 +1091,7 @@ describe('Test gl3d trace click/hover:', function() {
                         fontFamily: 'Arial'
                     }, 'undefined');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('@gl scatter3d ' + t + ' colorscale', function(done) {
@@ -1278,8 +1262,7 @@ describe('Test gl3d trace click/hover:', function() {
                         fontFamily: 'Arial'
                     }, '6th point');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });

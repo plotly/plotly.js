@@ -7,7 +7,7 @@ var cn = require('@src/traces/table/constants').cn;
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -153,8 +153,7 @@ describe('table', function() {
                 expect(gd.data[0].cells.values.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Works with one column', function(done) {
@@ -166,8 +165,7 @@ describe('table', function() {
                 expect(gd.data[0].cells.values.length).toEqual(1);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Does not error with zero columns', function(done) {
@@ -180,8 +178,7 @@ describe('table', function() {
                 expect(gd.data[0].cells.values.length).toEqual(0);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Does not raise an error with zero lines', function(done) {
@@ -198,8 +195,7 @@ describe('table', function() {
                 expect(gd.data[0].cells.values.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should remove scroll glyph and capture zone when *staticPlot:true*', function(done) {
@@ -227,8 +223,7 @@ describe('table', function() {
                     glyph: 0
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -248,8 +243,7 @@ describe('table', function() {
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 2); // both column rows to render
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('`Plotly.newPlot` should render all columns even if no header contents were supplied yet', function(done) {
@@ -265,8 +259,7 @@ describe('table', function() {
                 expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
                 expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('`Plotly.newPlot` should render all the column headers even if not all header values were supplied', function(done) {
@@ -281,8 +274,7 @@ describe('table', function() {
                 expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
                 expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('A');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -317,8 +309,7 @@ describe('table', function() {
                 expect(gd.data.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.restyle` with a string path should amend the preexisting table', function(done) {
@@ -333,8 +324,7 @@ describe('table', function() {
                 expect(gd.data[0].header.line.color).toEqual(['dimgray', 'grey']); // no change relative to original mock value
                 expect(gd.data[0].cells.line.color).toEqual(['grey']); // no change relative to original mock value
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
@@ -353,8 +343,7 @@ describe('table', function() {
             restyleValues('cells', 0, [['new cell content 1', 'new cell content 2']])()
                 .then(restyleValues('cells', 2, [[0, 0.1]]))
                 .then(restyleValues('header', 1, [['Species top', 'Species bottom']]))
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('Calling `Plotly.relayout` with string should amend the preexisting table', function(done) {
@@ -364,8 +353,7 @@ describe('table', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.relayout` with object should amend the preexisting table', function(done) {
@@ -375,8 +363,7 @@ describe('table', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -512,8 +499,7 @@ describe('table', function() {
                 scroll(bigCenter, -40);
                 assertBubbledEvents(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

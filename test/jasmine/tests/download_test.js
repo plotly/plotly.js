@@ -6,7 +6,7 @@ var getImageSize = require('@src/traces/image/helpers').getImageSize;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var textchartMock = require('@mocks/text_chart_arrays.json');
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -43,28 +43,24 @@ describe('Plotly.downloadImage', function() {
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'jpeg')
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'png')
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'full-json')
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
             if(supported) {
                 downloadTest(gd, 'webp')
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             } else {
                 done();
             }
@@ -73,14 +69,12 @@ describe('Plotly.downloadImage', function() {
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'svg')
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing graph div id', function(done) {
         downloadTest('graph', 'svg')
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing a figure object', function(done) {
@@ -93,8 +87,7 @@ describe('Plotly.downloadImage', function() {
             expect(gd._snapshotInProgress)
                 .toBe(undefined, 'should not attach _snapshotInProgress to figure objects');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should produce the right SVG output in IE', function(done) {
@@ -142,8 +135,7 @@ describe('Plotly.downloadImage', function() {
                 reader.readAsText(savedBlob);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should produce right output in Safari', function(done) {
@@ -162,8 +154,7 @@ describe('Plotly.downloadImage', function() {
             expect(args[2][0].slice(0, 8)).toBe(';base64,', 'format:jpeg');
             expect(args[3][0].slice(0, 8)).toBe(';base64,', 'format:webp');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should default width & height for downloadImage to match with the live graph', function(done) {
@@ -189,8 +180,7 @@ describe('Plotly.downloadImage', function() {
             expect(size.width).toBe(500, 'div width');
             expect(size.height).toBe(300, 'div height');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 

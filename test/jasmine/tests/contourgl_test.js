@@ -15,7 +15,7 @@ var attributeList = Object.getOwnPropertyNames(schema.traces.heatmapgl.attribute
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var plotData = {
     'data': [
@@ -170,8 +170,7 @@ var plotDataElliptical = function(maxJitter) {
 
 function makePlot(gd, mock, done) {
     return Plotly.newPlot(gd, mock.data, mock.layout)
-        .then(null, failTest)
-        .then(done);
+        .then(done, done.fail);
 }
 
 describe('contourgl plots', function() {
@@ -251,8 +250,7 @@ describe('contourgl plots', function() {
         }).then(function() {
             expect(scene2d.xaxis.range).toEqual([1, -1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 

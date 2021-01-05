@@ -1,5 +1,5 @@
 'use strict';
-var failTest = require('../assets/fail_test');
+
 var domainRefComponents = require('../assets/domain_ref/components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -30,8 +30,7 @@ function makeTests(component, filter) {
                 tests[i](function(v) {
                     expect(v).toBe(true);
                 }, gd)
-                    .catch(failTest)
-                    .then(done);
+                    .then(done, done.fail);
             });
         });
     };

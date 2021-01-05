@@ -176,11 +176,11 @@ describe('Test animate API', function() {
 
                     // traces are [0, 1]:
                     expect(args[3]).toEqual([0, 1]);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('rejects if a frame is not found', function(done) {
-                Plotly.animate(gd, ['foobar'], animOpts).then(failTest).then(done, done);
+                Plotly.animate(gd, ['foobar'], animOpts).then(done, done);
             });
 
             it('treats objects as frames', function(done) {
@@ -188,7 +188,7 @@ describe('Test animate API', function() {
                 Plotly.animate(gd, frame, animOpts).then(function() {
                     expect(Plots.transition.calls.count()).toEqual(1);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('treats a list of objects as frames', function(done) {
@@ -205,56 +205,56 @@ describe('Test animate API', function() {
 
                     expect(Plots.transition.calls.count()).toEqual(2);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates all frames if list is null', function(done) {
                 Plotly.animate(gd, null, animOpts).then(function() {
                     verifyFrameTransitionOrder(gd, ['base', 'frame0', 'frame1', 'frame2', 'frame3']);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates all frames if list is undefined', function(done) {
                 Plotly.animate(gd, undefined, animOpts).then(function() {
                     verifyFrameTransitionOrder(gd, ['base', 'frame0', 'frame1', 'frame2', 'frame3']);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates to a single frame', function(done) {
                 Plotly.animate(gd, ['frame0'], animOpts).then(function() {
                     expect(Plots.transition.calls.count()).toEqual(1);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates to an empty list', function(done) {
                 Plotly.animate(gd, [], animOpts).then(function() {
                     expect(Plots.transition.calls.count()).toEqual(0);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates to a list of frames', function(done) {
                 Plotly.animate(gd, ['frame0', 'frame1'], animOpts).then(function() {
                     expect(Plots.transition.calls.count()).toEqual(2);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates frames by group', function(done) {
                 Plotly.animate(gd, 'even-frames', animOpts).then(function() {
                     expect(Plots.transition.calls.count()).toEqual(2);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('animates frames in the correct order', function(done) {
                 Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], animOpts).then(function() {
                     verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame1', 'frame3']);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('accepts a single animationOpts', function(done) {
@@ -262,7 +262,7 @@ describe('Test animate API', function() {
                     var calls = Plots.transition.calls;
                     expect(calls.argsFor(0)[5].duration).toEqual(1.12345);
                     expect(calls.argsFor(1)[5].duration).toEqual(1.12345);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('accepts an array of animationOpts', function(done) {
@@ -275,7 +275,7 @@ describe('Test animate API', function() {
                     expect(calls.argsFor(1)[4].duration).toEqual(5.4321);
                     expect(calls.argsFor(0)[5].duration).toEqual(1.123);
                     expect(calls.argsFor(1)[5].duration).toEqual(1.456);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('falls back to animationOpts[0] if not enough supplied in array', function(done) {
@@ -288,7 +288,7 @@ describe('Test animate API', function() {
                     expect(calls.argsFor(1)[4].duration).toEqual(2.345);
                     expect(calls.argsFor(0)[5].duration).toEqual(1.123);
                     expect(calls.argsFor(1)[5].duration).toEqual(1.123);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('chains animations as promises', function(done) {
@@ -297,7 +297,7 @@ describe('Test animate API', function() {
                 }).then(function() {
                     verifyFrameTransitionOrder(gd, ['frame0', 'frame1', 'frame2', 'frame3']);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('emits plotly_animated before the promise is resolved', function(done) {
@@ -308,7 +308,7 @@ describe('Test animate API', function() {
 
                 Plotly.animate(gd, ['frame0'], animOpts).then(function() {
                     expect(animated).toBe(true);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('emits plotly_animated as each animation in a sequence completes', function(done) {
@@ -335,7 +335,7 @@ describe('Test animate API', function() {
                 }).then(function() {
                     expect(test1).toBe(1);
                     expect(test2).toBe(1);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
 
             it('resolves at the end of each animation sequence', function(done) {
@@ -344,7 +344,7 @@ describe('Test animate API', function() {
                 }).then(function() {
                     verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame0', 'frame2', 'frame1', 'frame3']);
                     verifyQueueEmpty(gd);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
             });
         });
     }
@@ -365,7 +365,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], animOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame3', 'frame1', 'frame2', 'frame0']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('animates a group in reverse', function(done) {
@@ -373,7 +373,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, 'even-frames', animOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame2', 'frame0']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
     });
 
@@ -397,7 +397,7 @@ describe('Test animate API', function() {
             }).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame1', 'frame2', 'frame3']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('plays from the start when current frame = last frame', function(done) {
@@ -413,7 +413,7 @@ describe('Test animate API', function() {
                 ]);
 
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('animates in reverse starting at the current frame', function(done) {
@@ -426,7 +426,7 @@ describe('Test animate API', function() {
             }).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame1', 'frame0', 'base']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('plays in reverse from the end when current frame = first frame', function(done) {
@@ -443,7 +443,7 @@ describe('Test animate API', function() {
                 ]);
 
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
     });
 
@@ -470,7 +470,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, ['frame2'], Lib.extendFlat(animOpts, {mode: 'immediate'})).then(function() {
                 expect(interrupted).toBe(true);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('queues successive animations', function(done) {
@@ -489,7 +489,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, 'odd-frames', {transition: {duration: 16}}).then(delay(10)).then(function() {
                 expect(ends).toEqual(1);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('an empty list with immediate dumps previous frames', function(done) {
@@ -497,7 +497,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, [], {mode: 'immediate'}).then(function() {
                 expect(Plots.transition.calls.count()).toEqual(1);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('animates groups in the correct order', function(done) {
@@ -505,7 +505,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, 'odd-frames', animOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('drops queued frames when immediate = true', function(done) {
@@ -513,7 +513,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, 'odd-frames', Lib.extendFlat(animOpts, {mode: 'immediate'})).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('animates frames and groups in sequence', function(done) {
@@ -521,7 +521,7 @@ describe('Test animate API', function() {
             Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], animOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame0', 'frame2', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('rejects when an animation is interrupted', function(done) {
@@ -534,7 +534,7 @@ describe('Test animate API', function() {
                 expect(interrupted).toBe(true);
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2']);
                 verifyQueueEmpty(gd);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
     });
 
@@ -553,7 +553,7 @@ describe('Test animate API', function() {
                 frame: {duration: 1}
             }).then(function() {
                 expect(frames).toEqual(['frame0', 'frame1', null, null]);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
     });
 
@@ -568,7 +568,7 @@ describe('Test animate API', function() {
 
                 // Transition timing:
                 expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         it('limits the transition duration to <= frame duration (matching per-config)', function(done) {
@@ -583,7 +583,7 @@ describe('Test animate API', function() {
                 // Transition timing:
                 expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
                 expect(Plots.transition.calls.argsFor(1)[5].duration).toEqual(40);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
     });
 });
@@ -615,7 +615,7 @@ describe('Animate API details', function() {
             {frame: {redraw: true, duration: dur}, transition: {duration: dur}}
         ).then(function() {
             expect(redraws).toBe(1);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('forces a relayout after layout animations', function(done) {
@@ -633,7 +633,7 @@ describe('Animate API details', function() {
             expect(relayouts).toBe(1);
             expect(restyles).toBe(0);
             expect(redraws).toBe(0);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('triggers plotly_animated after a single layout animation', function(done) {
@@ -679,7 +679,7 @@ describe('Animate API details', function() {
         }).then(function() {
             // Confirm the result:
             expect(gd.data[0].x).toEqual([8, 7, 6]);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('ignores null and undefined frames', function(done) {
@@ -694,7 +694,7 @@ describe('Animate API details', function() {
 
             // Check unused frames did not affect the current frame:
             expect(gd._fullLayout._currentFrame).toEqual('frame0');
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('null frames should not break everything', function(done) {
@@ -703,7 +703,7 @@ describe('Animate API details', function() {
         Plotly.animate(gd, null, {
             frame: {duration: 0},
             transition: {duration: 0}
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 });
 
@@ -746,8 +746,7 @@ describe('Animating multiple axes', function() {
             expect(gd._fullLayout.yaxis.range).toEqual([2, 3]);
             expect(gd._fullLayout.yaxis2.range).toEqual([1, 2]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('updates ranges of secondary axes (date + category case)', function(done) {
@@ -795,8 +794,7 @@ describe('Animating multiple axes', function() {
             expect(gd._fullLayout.xaxis.range).toEqual(['2018-06-01', '2019-06-01']);
             expect(gd._fullLayout.xaxis2.range).toEqual([0.5, 1.5]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not leak axis update from subplot to subplot', function(done) {
@@ -863,8 +861,7 @@ describe('Animating multiple axes', function() {
             xaxis: [-10, 10], xaxis2: [-20, 20], xaxis3: [-30, 30],
             yaxis: [-10, 10], yaxis2: [-20, 20], yaxis3: [-30, 30]
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -894,7 +891,7 @@ describe('non-animatable fallback', function() {
             }], {frame: {duration: 0}});
         }).then(function() {
             expect(gd.data[0].y).toEqual([6, 4, 5]);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 });
 
@@ -927,7 +924,7 @@ describe('animating scatter traces', function() {
             }], {transition: {duration: 0}, frame: {duration: 0, redraw: false}});
         }).then(function() {
             expect(trace.node().style.opacity).toEqual('0.1');
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('computes calcdata correctly when transforms are present', function(done) {
@@ -949,7 +946,7 @@ describe('animating scatter traces', function() {
             return Plotly.animate(gd, ['frame2'], {frame: {duration: 200, redraw: false}});
         }).then(function() {
             expect(gd.calcdata[0][0].y).toEqual(3);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 
     it('should animate axis ranges using the less number of steps', function(done) {
@@ -1023,7 +1020,6 @@ describe('animating scatter traces', function() {
             expect(calls.length).toBe(1, 'just one Registry.call call');
             expect(calls[0].args[0]).toBe('relayout', 'called Registry.call with');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

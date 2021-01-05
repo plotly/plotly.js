@@ -7,7 +7,7 @@ var Scatter3D = require('@src/traces/scatter3d');
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 
 function countCanvases() {
@@ -158,8 +158,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to delete the last trace', function(done) {
@@ -175,8 +174,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(false);
             expect(gd._fullLayout.scene === undefined).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to toggle visibility', function(done) {
@@ -240,8 +238,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertObjects(order0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should avoid passing blank texts to webgl', function(done) {
@@ -259,8 +256,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertIsFilled('not to be empty text');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should avoid passing empty lines to webgl', function(done) {
@@ -287,8 +283,7 @@ describe('Test scatter3d interactions:', function() {
             // see https://github.com/plotly/plotly.js/issues/1976
             expect(obj.vao.draw).toHaveBeenCalledTimes(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should only accept texts for textposition otherwise textposition is set to middle center before passing to webgl', function(done) {
@@ -312,7 +307,6 @@ describe('Test scatter3d interactions:', function() {
                 expect(AllTextpositions[i]).toBe('middle center', 'is not middle center');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

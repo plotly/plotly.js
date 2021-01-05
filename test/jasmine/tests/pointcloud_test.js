@@ -7,7 +7,7 @@ var d3 = require('@plotly/d3');
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
@@ -159,8 +159,7 @@ describe('pointcloud traces', function() {
 
     it('@gl renders without raising an error', function(done) {
         Plotly.newPlot(gd, Lib.extendDeep({}, plotData))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should update properly', function(done) {
@@ -188,8 +187,7 @@ describe('pointcloud traces', function() {
             expect(scene2d.xaxis.range).toBeCloseToArray([-0.548, 9.548], 2);
             expect(scene2d.yaxis.range).toBeCloseToArray([-1.415, 10.415], 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not change other traces colors', function(done) {
@@ -206,8 +204,7 @@ describe('pointcloud traces', function() {
             expect(RGBA[2] === 0).toBe(true, 'no blue');
             expect(RGBA[3] === 255).toBe(true, 'no transparent');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should respond to drag', function(done) {
@@ -253,7 +250,6 @@ describe('pointcloud traces', function() {
         .then(function() {
             _assertRange('after pan drag', [0.2743, 10.3719], [-3.537, 8.292]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -20,7 +20,7 @@ var ONEWEEK = numerical.ONEWEEK;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var negateIf = require('../assets/negate_if');
 var selectButton = require('../assets/modebar_button');
 var supplyDefaults = require('../assets/supply_defaults');
@@ -1478,8 +1478,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.autorange).toBe(true);
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.07, 1.07]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1520,8 +1519,7 @@ describe('Test axes', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         function assertRangeDomain(axName, range, domainIn, domainOut, msg) {
@@ -1640,8 +1638,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [0, 1], [0, 1], [0, 0.25]);
                 assertRangeDomain('yaxis', [-0.5, 1.5], [0, 1], [0, 1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('autoranges consistently with padding', function(done) {
@@ -1686,8 +1683,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis2', xAutorange, [0.5, 1], [0.5, 1]);
                 assertRangeDomain('yaxis2', yAutorange, [0, 1], [0.225, 0.775]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can constrain date axes', function(done) {
@@ -1718,8 +1714,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', ['2000-11-05 12:17:08.5714', '2002-02-26 11:42:51.4286'], [0, 1], [0.225, 0.775]);
                 assertRangeDomain('yaxis', ['2000-11-27 05:42:51.4286', '2002-02-04 18:17:08.5714'], [0, 1], [0, 1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can constrain category axes', function(done) {
@@ -1747,8 +1742,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
                 assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can constrain log axes', function(done) {
@@ -1777,8 +1771,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
                 assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can react from different layout *grid* settings', function(done) {
@@ -1840,8 +1833,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis2', rng, [0.256410, 0.487179], [0.256410, 0.487179], msg);
                 assertRangeDomain('xaxis3', rng, [0.512820, 0.743589], [0.512820, 0.743589], msg);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1900,8 +1892,7 @@ describe('Test axes', function() {
                     [['yaxis'], [-0.211, 3.211], true]
                 ]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1921,8 +1912,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should set categoryorder to default even if type is not set to category explicitly', function(done) {
@@ -1931,8 +1921,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should NOT set categoryorder to default if type is not category', function(done) {
@@ -1941,8 +1930,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should set categoryorder to default if type is overridden to be category', function(done) {
@@ -1953,8 +1941,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1967,8 +1954,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function(done) {
@@ -1979,8 +1965,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function(done) {
@@ -1991,8 +1976,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -2005,8 +1989,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual([]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function(done) {
@@ -2017,8 +2000,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -2031,8 +2013,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
@@ -2043,8 +2024,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('category ascending');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
@@ -2055,8 +2035,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -2069,8 +2048,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function(done) {
@@ -2081,8 +2059,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -2104,8 +2081,7 @@ describe('Test axes', function() {
                 .then(function() {
                     expect(gd._fullLayout.xaxis._rl).toEqual([-0.5, 3.5]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -2143,8 +2119,7 @@ describe('Test axes', function() {
                 expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
                 expect(yaxis.tickangle).toBe('auto');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should use valid inputs', function(done) {
@@ -2170,8 +2145,7 @@ describe('Test axes', function() {
                 expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
                 expect(yaxis.tickangle).toBe(-20);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should conditionally coerce based on showticklabels', function(done) {
@@ -2187,8 +2161,7 @@ describe('Test axes', function() {
                 var yaxis = gd._fullLayout.yaxis;
                 expect(yaxis.tickangle).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -4146,8 +4119,7 @@ describe('Test axes', function() {
                 t: 'initial', l: 'initial',
                 b: 'initial', r: 'initial'
             }))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not lead to negative plot area heights', function(done) {
@@ -4186,8 +4158,7 @@ describe('Test axes', function() {
                     totalHeight: 800
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not lead to negative plot area widths', function(done) {
@@ -4226,8 +4197,7 @@ describe('Test axes', function() {
                     totalWidth: 1000
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should handle cases with free+mirror axes', function(done) {
@@ -4253,8 +4223,7 @@ describe('Test axes', function() {
                 expect(Object.keys(gd._fullLayout._pushmargin))
                     .toEqual(['x.automargin', 'y.automargin', 'base']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -4330,8 +4299,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis._gridVals.length).toBe(0, '# of grid lines');
                 assertZeroLines(['x', 'y']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('works with multiple coupled subplots', function(done) {
@@ -4365,8 +4333,7 @@ describe('Test axes', function() {
                 // allticks works the same as all
                 assertZeroLines(['x', 'y']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('works with multiple overlaid subplots', function(done) {
@@ -4406,8 +4373,7 @@ describe('Test axes', function() {
             .then(function() {
                 assertZeroLines([]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -4482,8 +4448,7 @@ describe('Test axes', function() {
                     tickLabels: [106.421, 197.121, 292.821, 388.521, 484.221, 584.921]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should rotate labels to avoid overlaps', function(done) {
@@ -4531,8 +4496,7 @@ describe('Test axes', function() {
                     angle: [90, 90]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -4980,8 +4944,7 @@ describe('Test axes', function() {
                         lBreaks: 0
                     });
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5131,8 +5094,7 @@ describe('Test axes', function() {
                         B: [-4554.339622641512, -4584.9056603773615]
                     });
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - y-axis case', function(done) {
@@ -5193,8 +5155,7 @@ describe('Test axes', function() {
                         B: [2160, 252.857]
                     });
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - date axis case', function(done) {
@@ -5363,8 +5324,7 @@ describe('Test axes', function() {
                         B: [-1972296, -1972404, -1972620]
                     });
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5429,8 +5389,7 @@ describe('Test axes', function() {
                         tickVals: ['1970-01-01', '1970-01-01 00:00:00.089', '1970-01-01 00:00:00.1', '1970-01-01 00:00:00.189', '1970-01-01 00:00:00.2']
                     });
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             [true, 'reversed'].forEach(function(autorange) {
@@ -5552,8 +5511,7 @@ describe('Test axes', function() {
                             ]
                         }, autorange);
                     })
-                    .catch(failTest)
-                    .then(done);
+                    .then(done, done.fail);
                 });
             });
         });
@@ -5583,11 +5541,10 @@ describe('Test axes', function() {
                 expect(Lib.warn).toHaveBeenCalledTimes(1);
                 expect(Lib.warn).toHaveBeenCalledWith('scattergl traces do not work on axes with rangebreaks. Setting trace 0 to `visible: false`.');
             })
-            .catch(failTest)
             .then(function() {
                 destroyGraphDiv();
                 done();
-            });
+            }, done.fail);
         });
     });
 
@@ -5645,8 +5602,7 @@ describe('Test axes', function() {
                         [' ', '20', '21', '22', '23', '24', '25', ' ']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5678,8 +5634,7 @@ describe('Test axes', function() {
                     '2022-02-16'
                 ], [' ', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', ' ']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should position quarters - case of dtick set to M6', function(done) {
@@ -5707,8 +5662,7 @@ describe('Test axes', function() {
                     '2022-02-15 15:45'
                 ], [' ', '2020-Q1', '2020-Q3', '2021-Q1', '2021-Q3', ' ']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         ['%B', '%b', '%m'].forEach(function(formatter, i) {
@@ -5742,8 +5696,7 @@ describe('Test axes', function() {
                         [' ', 'Q1-01', 'Q1-02', 'Q1-03', 'Q2-04', 'Q2-05', 'Q2-06', ' ']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5775,8 +5728,7 @@ describe('Test axes', function() {
                     '2020-04-01 12:00'
                 ], ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         ['%V', '%W'].forEach(function(formatter, i) {
@@ -5811,8 +5763,7 @@ describe('Test axes', function() {
                         ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5875,8 +5826,7 @@ describe('Test axes', function() {
                         ['Jan-W01', 'Jan-W02', 'Jan-W03', 'Jan-W04']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5917,8 +5867,7 @@ describe('Test axes', function() {
                         [' ', 'Jan-01/01/2020', 'Jan-01/02/2020', 'Jan-01/03/2020', 'Jan-01/04/2020', 'Jan-01/05/2020', 'Jan-01/06/2020', 'Jan-01/07/2020', ' ']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -5955,8 +5904,7 @@ describe('Test axes', function() {
                         [' ', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
                     ][i]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6014,8 +5962,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6061,8 +6008,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6182,8 +6128,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6303,8 +6248,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6408,8 +6352,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -6444,8 +6387,7 @@ describe('Test axes', function() {
                 .then(function() {
                     expect(gd._fullLayout.xaxis.tick0).toBe('2000-01-02');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -6756,8 +6698,7 @@ describe('Test tickformatstops:', function() {
             expect(d3.selectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
             expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('0');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('doesn\'t fail on bad input', function(done) {
@@ -6772,8 +6713,7 @@ describe('Test tickformatstops:', function() {
         });
 
         promise
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -6820,8 +6760,7 @@ describe('Test template:', function() {
             expect(xaxis.tickformatstops).not.toBe(undefined, 'tickformatstops');
             expect(xaxis.tickformatstops.length).toBe(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -6960,8 +6899,7 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -7018,8 +6956,7 @@ describe('category preservation tests on gd passed to Plotly.react()', function(
             expect(d3.selectAll('g.axistext').select('text').html()).toEqual('d');
         })
 
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -7056,7 +6993,6 @@ describe('more matching axes tests', function() {
                 }
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

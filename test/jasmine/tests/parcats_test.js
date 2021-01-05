@@ -182,8 +182,7 @@ describe('Basic parcats trace', function() {
                 expect(trace.type).toEqual('parcats');
                 expect(trace.dimensions.length).toEqual(3);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial model properly', function(done) {
@@ -261,8 +260,7 @@ describe('Basic parcats trace', function() {
                     count: 9,
                     valueInds: [0, 1, 2, 3, 4, 5, 6, 7, 8]});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial data properly', function(done) {
@@ -271,8 +269,7 @@ describe('Basic parcats trace', function() {
                 // Check that trace data matches input
                 expect(gd.data[0]).toEqual(mock.data[0]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial fullData properly', function(done) {
@@ -284,8 +281,7 @@ describe('Basic parcats trace', function() {
                 expect(fullTrace.bundlecolors).toBe(true);
                 expect(fullTrace.dimensions[1].visible).toBe(true);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial model views properly', function(done) {
@@ -294,8 +290,7 @@ describe('Basic parcats trace', function() {
                 checkParcatsModelView(gd);
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial svg properly', function(done) {
@@ -303,8 +298,7 @@ describe('Basic parcats trace', function() {
             .then(function() {
                 checkParcatsSvg(gd);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -389,8 +383,7 @@ describe('Dimension reordered parcats trace', function() {
                     categoryInd: 0,
                     displayInd: 0});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should recover from bad display order specification', function(done) {
@@ -454,8 +447,7 @@ describe('Dimension reordered parcats trace', function() {
                     categoryInd: 0,
                     displayInd: 0});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial model views properly', function(done) {
@@ -464,8 +456,7 @@ describe('Dimension reordered parcats trace', function() {
                 checkParcatsModelView(gd);
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should compute initial svg properly', function(done) {
@@ -473,8 +464,7 @@ describe('Dimension reordered parcats trace', function() {
             .then(function() {
                 checkParcatsSvg(gd);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -622,8 +612,7 @@ describe('Drag to reordered dimensions', function() {
                 [0]]);
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should support dragging dimension label to reorder dimensions in perpendicular arrangement', function(done) {
@@ -697,8 +686,7 @@ describe('Drag to reordered dimensions', function() {
 
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should NOT support dragging dimension label to reorder dimensions in fixed arrangement', function(done) {
@@ -758,8 +746,7 @@ describe('Drag to reordered dimensions', function() {
                 expect(restyleCallback).toHaveBeenCalledTimes(0);
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -978,8 +965,7 @@ describe('Drag to reordered categories', function() {
 
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should support dragging category to reorder categories only in perpendicular arrangement', function(done) {
@@ -1061,8 +1047,7 @@ describe('Drag to reordered categories', function() {
 
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should NOT support dragging category to reorder categories or dimensions in fixed arrangement', function(done) {
@@ -1130,8 +1115,7 @@ describe('Drag to reordered categories', function() {
                 expect(restyleCallback).toHaveBeenCalledTimes(0);
                 restyleCallback.calls.reset();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -1192,8 +1176,7 @@ describe('Click events', function() {
                 var constraints = clickData.constraints;
                 expect(constraints).toEqual({1: 'C'});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should NOT fire on category click if hoverinfo is skip', function(done) {
@@ -1223,8 +1206,7 @@ describe('Click events', function() {
                 // Check that click callback was called
                 expect(clickData).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should fire on path click', function(done) {
@@ -1267,8 +1249,7 @@ describe('Click events', function() {
                 var constraints = clickData.constraints;
                 expect(constraints).toEqual({0: 1, 1: 'C', 2: 11});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('should NOT fire on path click if hoverinfo is skip', function(done) {
@@ -1298,8 +1279,7 @@ describe('Click events', function() {
                 // Check that click callback was called
                 expect(clickData).toBeUndefined();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -1357,8 +1337,7 @@ describe('Click events with hoveron color', function() {
                 var constraints = clickData.constraints;
                 expect(constraints).toEqual({1: 'C', color: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
 
@@ -1401,8 +1380,7 @@ describe('Click events with hoveron color', function() {
                 var constraints = clickData.constraints;
                 expect(constraints).toEqual({0: 1, 1: 'C', 2: 11, color: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -1488,8 +1466,7 @@ describe('Hover events', function() {
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('hover and unhover should fire on path', function(done) {
@@ -1555,8 +1532,7 @@ describe('Hover events', function() {
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 
@@ -1638,8 +1614,7 @@ describe('Hover events with hoveron color', function() {
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('hover and unhover should fire on path hoveron color', function(done) {
@@ -1703,8 +1678,7 @@ describe('Hover events with hoveron color', function() {
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 });
 

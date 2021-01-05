@@ -6,7 +6,7 @@ var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickD
 var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var getRectCenter = require('../assets/get_rect_center');
@@ -159,8 +159,7 @@ describe('Test click interactions:', function() {
                 expect(evt.clientX).toEqual(pointPos[0]);
                 expect(evt.clientY).toEqual(pointPos[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         var modClickOpts = {
@@ -390,8 +389,7 @@ describe('Test click interactions:', function() {
                 expect(evt.clientX).toEqual(blankPos[0]);
                 expect(evt.clientY).toEqual(blankPos[1]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -415,8 +413,7 @@ describe('Test click interactions:', function() {
             .then(function() {
                 expect(futureData).toBe(null);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -452,8 +449,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.10938115]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on ne dragbox should update the axis ranges', function(done) {
@@ -477,8 +473,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.08350047]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.10938115]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on sw dragbox should update the axis ranges', function(done) {
@@ -501,8 +496,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-3.00958227, 2.15613055]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.71100706, 1.38938271]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on se dragbox should update the axis ranges', function(done) {
@@ -526,8 +520,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.08350047]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.71100706, 1.38938271]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on ew dragbox should update the xaxis range', function(done) {
@@ -550,8 +543,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.15613055]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on w dragbox should update the xaxis range', function(done) {
@@ -574,8 +566,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-2.93933740, 2.15613055]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on e dragbox should update the xaxis range', function(done) {
@@ -597,8 +588,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.0835004]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on ns dragbox should update the yaxis range', function(done) {
@@ -622,8 +612,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on s dragbox should update the yaxis range', function(done) {
@@ -647,8 +636,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.7110070646, 1.3893827]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('on n dragbox should update the yaxis range', function(done) {
@@ -672,8 +660,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.991008630, 1.10938115]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -717,8 +704,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset+autorange\' (the default) should reset to set range on double click', function(done) {
@@ -738,8 +724,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and reset on 2nd', function(done) {
@@ -759,8 +744,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and zoom when immediately dragged', function(done) {
@@ -782,8 +766,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-2.6480169249531356, -1.920115790911955]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.4372261777201992, 1.2306899598686027]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset+autorange\' (the default) should follow updated auto ranges', function(done) {
@@ -819,8 +802,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset\' should work when \'autorange\' is on', function(done) {
@@ -838,8 +820,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset\' should reset to set range on double click', function(done) {
@@ -859,8 +840,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'reset\' should reset on all double clicks', function(done) {
@@ -875,8 +855,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'autosize\' should work when \'autorange\' is on', function(done) {
@@ -894,8 +873,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'autosize\' should set to autorange on double click', function(done) {
@@ -915,8 +893,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('when set to \'autosize\' should reset on all double clicks', function(done) {
@@ -931,8 +908,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not try to autorange fixedrange:true axes when rangeInitial is not set', function(done) {
@@ -1022,8 +998,7 @@ describe('Test click interactions:', function() {
                     y2Rng: [-1, 1]
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1045,8 +1020,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-2.56671754, -1.644025966]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.159513853, 1.2174655634]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1097,8 +1071,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-7.37937429, -2.21127624]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([2.182846498, 4.563237844]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
 
@@ -1113,8 +1086,7 @@ describe('Test click interactions:', function() {
                 expect(plot.attr('transform')).toBe('translate(250,280)scale(1,1)');
             })
             .then(fns.end)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1154,8 +1126,7 @@ describe('dragbox', function() {
                 });
             })
             .then(fns.end)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

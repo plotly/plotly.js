@@ -8,7 +8,7 @@ var convert = require('@src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
@@ -762,8 +762,7 @@ describe('scattermapbox hover', function() {
             out = hoverPoints(getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)<br>A');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label info (positive winding case)', function() {
@@ -803,8 +802,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.extraText).toEqual('lon: 10°');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
@@ -816,8 +814,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.extraText).toEqual('lat: 10°');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
@@ -829,8 +826,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.extraText).toEqual('A');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
@@ -842,8 +838,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.extraText).toEqual('Apple');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label (\'marker.color\' array case)', function(done) {
@@ -852,8 +847,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.color).toEqual('red');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
@@ -862,8 +856,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.color).toEqual('rgb(245, 195, 157)');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should generate hover label (\'hoverinfo\' array case)', function(done) {
@@ -887,8 +880,7 @@ describe('scattermapbox hover', function() {
         .then(function() {
             check('(10°, 10°)<br>Apple');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should pass along hovertemplate', function(done) {
@@ -900,8 +892,7 @@ describe('scattermapbox hover', function() {
 
             expect(out.hovertemplate).toEqual('tpl');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should always display hoverlabel when hovertemplate is defined', function(done) {
@@ -912,8 +903,7 @@ describe('scattermapbox hover', function() {
         .then(function() {
             checkHoverLabel([190, 215], ['tpl2', '']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1082,8 +1072,7 @@ describe('Test plotly events on a scattermapbox plot:', function() {
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1213,8 +1202,7 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
