@@ -58,7 +58,8 @@ module.exports = extendFlat({
         role: 'info',
         editType: 'plot',
         description: [ 
-            'Picks a smoothing algorithm use to smooth `z` data.' 
+            'Picks a smoothing algorithm used to smooth `z` data.',
+            'This only applies for image traces that use the `source` attribute.'
         ].join(' ') 
     },
     zmin: {
