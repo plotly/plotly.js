@@ -1675,28 +1675,25 @@ describe('Test lib.js:', function() {
         var stashLogLevel;
         var stashOnGraphLogLevel;
 
-        function consoleFn(name, hasApply, messages) {
+        function consoleFn(name, messages) {
             var out = function() {
-                if(hasApply) expect(this).toBe(window.console);
                 var args = [];
                 for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
                 messages.push([name, args]);
             };
 
-            if(!hasApply) out.apply = undefined;
-
             return out;
         }
 
-        function mockConsole(hasApply, hasTrace, hasError) {
+        function mockConsole() {
             var out = {
                 MESSAGES: []
             };
-            out.log = consoleFn('log', hasApply, out.MESSAGES);
+            out.log = consoleFn('log', out.MESSAGES);
 
-            if(hasError) out.error = consoleFn('error', hasApply, out.MESSAGES);
+            out.error = consoleFn('error', out.MESSAGES);
 
-            if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
+            out.trace = consoleFn('trace', out.MESSAGES);
 
             return out;
         }
@@ -1713,8 +1710,8 @@ describe('Test lib.js:', function() {
             config.notifyOnLogging = stashOnGraphLogLevel;
         });
 
-        it('emits one console message if apply is available', function() {
-            var c = window.console = mockConsole(true, true, true);
+        it('emits one console message', function() {
+            var c = window.console = mockConsole();
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
@@ -1728,50 +1725,8 @@ describe('Test lib.js:', function() {
             ]);
         });
 
-        it('falls back on console.log if no trace', function() {
-            var c = window.console = mockConsole(true, false, true);
-            config.logging = 2;
-
-            Lib.log('Hi');
-            Lib.warn(42);
-
-            expect(c.MESSAGES).toEqual([
-                ['log', ['LOG:', 'Hi']],
-                ['log', ['WARN:', 42]]
-            ]);
-        });
-
-        it('falls back on separate calls if no apply', function() {
-            var c = window.console = mockConsole(false, false, true);
-            config.logging = 2;
-
-            Lib.log('tick', 'tock', 'tick', 'tock', 1);
-            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
-            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
-
-            expect(c.MESSAGES).toEqual([
-                ['log', ['LOG:']],
-                ['log', ['tick']],
-                ['log', ['tock']],
-                ['log', ['tick']],
-                ['log', ['tock']],
-                ['log', [1]],
-                ['log', ['WARN:']],
-                ['log', ['I\'m']],
-                ['log', ['a']],
-                ['log', ['little']],
-                ['log', ['cuckoo']],
-                ['log', ['clock']],
-                ['log', [[1, 2]]],
-                ['error', ['ERROR:']],
-                ['error', ['cuckoo!']],
-                ['error', ['cuckoo!!!']],
-                ['error', [{a: 1, b: 2}]]
-            ]);
-        });
-
         it('omits .log at log level 1', function() {
-            var c = window.console = mockConsole(true, true, true);
+            var c = window.console = mockConsole();
             config.logging = 1;
 
             Lib.log(1);
@@ -1785,7 +1740,7 @@ describe('Test lib.js:', function() {
         });
 
         it('logs nothing at log level 0', function() {
-            var c = window.console = mockConsole(true, true, true);
+            var c = window.console = mockConsole();
             config.logging = 0;
 
             Lib.log(1);
@@ -1793,22 +1748,6 @@ describe('Test lib.js:', function() {
             Lib.error(3);
 
             expect(c.MESSAGES).toEqual([]);
-        });
-
-        it('falls back on simple log if there is no console.error', function() {
-            // TODO
-
-            var c = window.console = mockConsole(true, true, false);
-            config.logging = 2;
-
-            Lib.error('who are you', 'who who... are you', {a: 1, b: 2});
-
-            expect(c.MESSAGES).toEqual([
-                ['log', ['ERROR:']],
-                ['log', ['who are you']],
-                ['log', ['who who... are you']],
-                ['log', [{a: 1, b: 2}]]
-            ]);
         });
 
         describe('should log message in notifier div in accordance notifyOnLogging config option', function() {
