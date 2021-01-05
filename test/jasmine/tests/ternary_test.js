@@ -4,7 +4,7 @@ var rgb = require('@src/components/color').rgb;
 
 var supplyLayoutDefaults = require('@src/plots/ternary/layout_defaults');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -35,7 +35,7 @@ describe('ternary plots', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('should be able to toggle trace visibility', function(done) {
@@ -55,9 +55,9 @@ describe('ternary plots', function() {
                 return Plotly.restyle(gd, 'visible', true);
             }).then(function() {
                 expect(countTraces('scatter')).toEqual(1);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to delete and add traces', function(done) {
@@ -97,9 +97,9 @@ describe('ternary plots', function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
                 checkTitles(1);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to restyle', function(done) {
@@ -115,7 +115,9 @@ describe('ternary plots', function() {
                     'translate(118.53,170.59)',
                     'translate(248.76,117.69)'
                 ]);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should display to hover labels', function(done) {
@@ -258,7 +260,7 @@ describe('ternary plots', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             var config = { staticPlot: true };
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, config).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, config).then(done);
         });
 
         it('should not respond to drag', function(done) {
@@ -298,7 +300,7 @@ describe('ternary plots', function() {
             });
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(dflt);
             return Plotly.relayout(gd, 'ternary.aaxis.layer', 'below traces');
         })
@@ -359,7 +361,7 @@ describe('ternary plots', function() {
             expect(tick.style.fill).toBe(color, 'font color');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 12);
 
             return Plotly.relayout(gd, 'ternary.aaxis.tickfont.size', 5);
@@ -395,7 +397,7 @@ describe('ternary plots', function() {
             expect(titleNode.style.fill).toBe(color, 'font color ' + msg);
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('a', 'Component A', '"Open Sans", verdana, arial, sans-serif', rgb('#ccc'), 14);
             _assert('b', 'chocolate', '"Open Sans", verdana, arial, sans-serif', rgb('#0f0'), 14);
             _assert('c', 'Component C', '"Open Sans", verdana, arial, sans-serif', rgb('#444'), 14);
@@ -454,7 +456,7 @@ describe('ternary plots', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(toggle(
             '.aaxis > .ytick > text', 'ternary.aaxis.showticklabels',
             [true, false], [4, 0]
@@ -486,7 +488,7 @@ describe('ternary plots', function() {
     it('should render a-axis and c-axis with negative offsets', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterternary',
             a: [2, 1, 1],
             b: [1, 2, 1],
@@ -521,7 +523,7 @@ describe('ternary plots', function() {
                 fig.layout.dragmode = dragmode;
 
                 var gd = createGraphDiv();
-                Plotly.plot(gd, fig)
+                Plotly.newPlot(gd, fig)
                 .then(function() {
                     relayoutCallback = jasmine.createSpy('relayoutCallback');
                     gd.on('plotly_relayout', relayoutCallback);
@@ -585,7 +587,7 @@ describe('ternary plots when css transform is present', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() { transformPlot(gd, cssTransform); })
             .then(done);
     });
@@ -814,7 +816,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
     beforeAll(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             pointPos = getClientPosition('path.point');
             destroyGraphDiv();
             done();
@@ -832,18 +834,20 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('should contain the correct fields', function() {
@@ -876,13 +880,15 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         var modClickOpts = {
@@ -905,12 +911,12 @@ describe('Test event property of interactions on a ternary plot:', function() {
         [modClickOpts, rightClickOpts].forEach(function(clickOpts, i) {
             it('should not be triggered when not on data points', function() {
                 click(blankPos[0], blankPos[1], clickOpts);
-                expect(futureData === undefined).toBe(true, i);
+                expect(futureData).toBe(null, i);
             });
 
             it('should not be triggered when not canceling context', function() {
                 click(pointPos[0], pointPos[1], Lib.extendFlat({}, clickOpts, {cancelContext: false}));
-                expect(futureData === undefined).toBe(true, i);
+                expect(futureData).toBe(null, i);
             });
 
             it('should contain the correct fields', function() {
@@ -949,11 +955,15 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -996,11 +1006,15 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {

@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 // var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
@@ -496,7 +496,7 @@ describe('Indicator plot', function() {
             return d3.selectAll('g.value-bullet > rect').attr('width');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'indicator',
             mode: 'number+delta+gauge',
             value: null
@@ -541,7 +541,7 @@ describe('Indicator animations', function() {
 
             spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(function() {
                 gd.data[0].value = 400;
                 return Plotly.react(gd, gd.data, gd.layout);

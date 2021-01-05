@@ -1,9 +1,10 @@
 var Plotly = require('@lib/index');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 describe('Fx defaults', function() {
     'use strict';
@@ -231,7 +232,7 @@ describe('relayout', function() {
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }]).then(function() {
             assertMainDrag('crosshair', true);
@@ -268,6 +269,6 @@ describe('relayout', function() {
             return Plotly.relayout(gd, 'xaxis.fixedrange', false);
         }).then(function() {
             assertMainDrag('ew-resize', true);
-        }).then(done);
+        }).catch(failTest).then(done);
     });
 });

@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -76,9 +76,9 @@ describe('Test gl3d before/after plot', function() {
         _stayThere()
         .then(function() {
             gd = createGraphDiv();
-            return Plotly.plot(gd, _mock);
+            return Plotly.newPlot(gd, _mock);
         })
-        .then(delay(20))
+        .then(delay(100))
         .then(function() {
             var cameraIn = gd._fullLayout.scene.camera;
             expect(cameraIn.up.x).toEqual(0, 'cameraIn.up.x');
@@ -91,7 +91,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraIn.eye.y).toEqual(1.2, 'cameraIn.eye.y');
             expect(cameraIn.eye.z).toEqual(1.2, 'cameraIn.eye.z');
         })
-        .then(delay(20))
+        .then(delay(100))
         .then(function() {
             var cameraBefore = gd._fullLayout.scene._scene.camera;
             expect(cameraBefore.up[0]).toBeCloseTo(0, 2, 'cameraBefore.up[0]');
@@ -106,7 +106,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraBefore.mouseListener.enabled === true);
         })
         .then(_clickThere)
-        .then(delay(20))
+        .then(delay(100))
         .then(function() {
             var cameraAfter = gd._fullLayout.scene._scene.camera;
             expect(cameraAfter.up[0]).toBeCloseTo(0, 2, 'cameraAfter.up[0]');
@@ -121,7 +121,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraAfter.mouseListener.enabled === true);
         })
         .then(_clickOtherplace)
-        .then(delay(20))
+        .then(delay(100))
         .then(function() {
             var cameraFinal = gd._fullLayout.scene._scene.camera;
             expect(cameraFinal.up[0]).toBeCloseTo(0, 2, 'cameraFinal.up[0]');
@@ -135,6 +135,7 @@ describe('Test gl3d before/after plot', function() {
             expect(cameraFinal.eye[2]).not.toBeCloseTo(1.2, 2, 'cameraFinal.eye[2]');
             expect(cameraFinal.mouseListener.enabled === true);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -153,7 +154,7 @@ describe('Test gl3d plots', function() {
     });
 
     it('@gl should set the camera dragmode to orbit if the camera.up.z vector is set to be tilted', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -172,15 +173,16 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'orbit').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should set the camera dragmode to turntable if the camera.up.z vector is set to be upwards', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -199,15 +201,16 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should set the camera dragmode to turntable if the camera.up is not set', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -221,15 +224,16 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should set the camera dragmode to turntable if any of camera.up.[x|y|z] is missing', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -248,15 +252,16 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should not set the camera dragmode to turntable if camera.up.z is zero.', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -275,15 +280,16 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.dragmode === 'turntable').not.toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should set the camera projection type to perspective if the camera.projection.type is not set', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -297,16 +303,17 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should set the camera projection type to orthographic if the camera.projection.type is set to orthographic', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -323,16 +330,17 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'orthographic').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === true).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should enable orthographic & perspective projections using relayout', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'scatter3d',
                 x: [1, 2, 3],
@@ -349,7 +357,7 @@ describe('Test gl3d plots', function() {
                 }
             }
         })
-        .then(delay(20))
+
         .then(function() {
             return Plotly.relayout(gd, 'scene.camera.projection.type', 'orthographic');
         })
@@ -378,11 +386,12 @@ describe('Test gl3d plots', function() {
             expect(gd._fullLayout.scene.camera.projection.type === 'perspective').toBe(true);
             expect(gd._fullLayout.scene._scene.camera._ortho === false).toBe(true);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should not set _length to NaN and dtick should be defined.', function(done) {
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             {
                 data: [{
                     type: 'scatter3d',
@@ -458,8 +467,8 @@ describe('Test gl3d modebar handlers - perspective case', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
-        .then(delay(20))
+        Plotly.newPlot(gd, mock)
+
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
@@ -561,18 +570,22 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
 
-        gd.once('plotly_relayout', function() {
-            assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
-            assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
-            assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
+                assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
+                assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
 
-            expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
-            expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -584,21 +597,25 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
-        gd.once('plotly_relayout', function() {
-            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
-            expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
+                expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
 
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -610,18 +627,22 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
-        gd.once('plotly_relayout', function() {
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
@@ -694,6 +715,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -747,8 +769,8 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
-        .then(delay(20))
+        Plotly.newPlot(gd, mock)
+
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
@@ -766,18 +788,22 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
 
-        gd.once('plotly_relayout', function() {
-            assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
-            assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
-            assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
+                assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
+                assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
 
-            expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
-            expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraDefault3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -789,21 +815,25 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
-        gd.once('plotly_relayout', function() {
-            expect(gd._fullLayout.scene._scene.aspectmode).toEqual(undefined);
-            expect(gd._fullLayout.scene2._scene.aspectmode).toEqual(undefined);
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                expect(gd._fullLayout.scene._scene.aspectmode).toEqual(undefined);
+                expect(gd._fullLayout.scene2._scene.aspectmode).toEqual(undefined);
 
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraLastSave3d should reset to initial aspectmode & aspectratios', function(done) {
@@ -815,21 +845,25 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
         expect(gd._fullLayout.scene._scene.viewInitial.aspectratio).toEqual({ x: 1, y: 1, z: 1 });
         expect(gd._fullLayout.scene2._scene.viewInitial.aspectratio).toEqual({ x: 3, y: 2, z: 1 });
 
-        gd.once('plotly_relayout', function() {
-            expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
-            expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function() {
+                expect(gd._fullLayout.scene._scene.fullSceneLayout.aspectmode).toBe('auto');
+                expect(gd._fullLayout.scene2._scene.fullSceneLayout.aspectmode).toBe('manual');
 
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
-            expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
-            expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().x).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().y).toBeCloseTo(1);
+                expect(gd._fullLayout.scene._scene.glplot.getAspectratio().z).toBeCloseTo(1);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().x).toBeCloseTo(3);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().y).toBeCloseTo(2);
+                expect(gd._fullLayout.scene2._scene.glplot.getAspectratio().z).toBeCloseTo(1);
 
-            done();
-        });
+                resolve();
+            });
 
-        buttonDefault.click();
+            buttonDefault.click();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
@@ -902,6 +936,7 @@ describe('Test gl3d modebar handlers - orthographic case', function() {
             assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -951,7 +986,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         gd.addEventListener('touchmove', function(e) { assertEvent(e, false); });
         gd.addEventListener('wheel', function(e) { assertEvent(e, false); });
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             sceneTarget = gd.querySelector('.svg-container .gl-container #scene');
 
@@ -1216,7 +1251,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         var modeBar;
 
         Plotly.plot(gd, mock)
-        .then(delay(20))
+
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
@@ -1299,7 +1334,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_relayout', function(e) {
                 relayoutCnt++;
@@ -1351,7 +1386,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_relayout', function(e) {
                 relayoutCnt++;
@@ -1403,7 +1438,7 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_relayout', function(e) {
                 relayoutCnt++;
@@ -1481,7 +1516,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         var relayoutEvent;
         var relayoutCnt = 0;
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_relayout', function(e) {
                 relayoutCnt++;
@@ -1597,7 +1632,7 @@ describe('Test gl3d relayout calls', function() {
     });
 
     it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from perspective to orthographic', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'surface',
                 x: [0, 1],
@@ -1620,23 +1655,16 @@ describe('Test gl3d relayout calls', function() {
         })
         .then(function() {
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
-        })
-        .then(function() {
+
             return Plotly.relayout(gd, 'scene.camera.projection.type', 'orthographic');
         })
         .then(function() {
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
-        })
-        .then(function() {
-            return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
-        })
-        .then(function() {
+
+            selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
-        })
-        .then(function() {
-            return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
-        })
-        .then(function() {
+
+            selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
         })
         .catch(failTest)
@@ -1644,7 +1672,7 @@ describe('Test gl3d relayout calls', function() {
     });
 
     it('@gl should maintain projection type when resetCamera buttons clicked after switching projection type from orthographic to perspective', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'surface',
                 x: [0, 1],
@@ -1670,23 +1698,16 @@ describe('Test gl3d relayout calls', function() {
         })
         .then(function() {
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(true, 'orthographic');
-        })
-        .then(function() {
+
             return Plotly.relayout(gd, 'scene.camera.projection.type', 'perspective');
         })
         .then(function() {
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
-        })
-        .then(function() {
-            return selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
-        })
-        .then(function() {
+
+            selectButton(gd._fullLayout._modeBar, 'resetCameraLastSave3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
-        })
-        .then(function() {
-            return selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
-        })
-        .then(function() {
+
+            selectButton(gd._fullLayout._modeBar, 'resetCameraDefault3d').click();
             expect(gd._fullLayout.scene._scene.camera._ortho).toEqual(false, 'perspective');
         })
         .catch(failTest)
@@ -1748,7 +1769,7 @@ describe('Test gl3d annotations', function() {
     }
 
     it('@gl should move with camera', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -1791,7 +1812,7 @@ describe('Test gl3d annotations', function() {
         // replace text with something easier to identify
         mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
 
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'base');
 
             return Plotly.relayout(gd, 'scene.yaxis.range', [0.5, 1.5]);
@@ -1831,7 +1852,7 @@ describe('Test gl3d annotations', function() {
             text: 'new!'
         };
 
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'base');
 
             return Plotly.relayout(gd, 'scene.annotations[1].visible', false);
@@ -1873,7 +1894,7 @@ describe('Test gl3d annotations', function() {
             expect(d3.selectAll('g.annotation-' + id).size()).toEqual(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -1930,7 +1951,7 @@ describe('Test gl3d annotations', function() {
             expect(sceneLayout.zaxis.range).toBeCloseToArray(zRange, 1, 'zaxis range');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -1989,7 +2010,7 @@ describe('Test gl3d annotations', function() {
             });
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -2027,7 +2048,7 @@ describe('Test gl3d annotations', function() {
             target.dispatchEvent(new MouseEvent(eventType));
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -2082,7 +2103,7 @@ describe('Test removal of gl contexts', function() {
     afterEach(destroyGraphDiv);
 
     it('@gl Plots.cleanPlot should remove gl context from the graph div of a gl3d plot', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [2, 1, 3],
@@ -2094,13 +2115,14 @@ describe('Test removal of gl contexts', function() {
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
             expect(gd._fullLayout.scene._scene.glplot).toBe(null);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [2, 1, 3],
@@ -2138,13 +2160,14 @@ describe('Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('@mocks/gl3d_marker-arrays.json'));
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.newPlot(gd, _mock).then(function() {
             return new Promise(function(resolve, reject) {
                 gd.on('plotly_webglcontextlost', resolve);
                 setTimeout(reject, 10);
@@ -2184,7 +2207,7 @@ describe('Test gl3d drag events', function() {
     };
 
     function makePlot(gd, mock) {
-        return Plotly.plot(gd, mock.data, mock.layout);
+        return Plotly.newPlot(gd, mock.data, mock.layout);
     }
 
     function addEventCallback(graphDiv) {

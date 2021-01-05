@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 
 var Image = require('@src/traces/image');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -262,7 +262,7 @@ describe('image plot', function() {
             expect(images.size()).toEqual(cnt);
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             assertImageCnt(1);
 
             return Plotly.relayout(gd, 'xaxis.range', [-100, -50]);
@@ -454,7 +454,7 @@ describe('image hover:', function() {
             var mock = require('@mocks/image_cat.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterAll(destroyGraphDiv);

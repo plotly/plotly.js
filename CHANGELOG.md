@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.58.4] -- 2020-12-21
+
+### Fixed
+ - Fix `preserveDrawingBuffer` WebGL config for displaying transparent gl3d scenes
+   on Apple devices running latest Safari versions (v13 and higher) [#5351]
+ - Fix spelling [#5349, #5356] with thanks to @jbampton for the contribution!
+
+
 ## [1.58.3] -- 2020-12-17
 
 ### Fixed

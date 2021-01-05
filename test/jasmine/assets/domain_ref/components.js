@@ -11,7 +11,7 @@
 'use strict';
 
 var Plotly = require('../../../../lib/index');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var pixelCalc = require('../../assets/pixel_calc');
 var getSVGElemScreenBBox = require('../../assets/get_svg_elem_screen_bbox');
 // var SVGTools = require('../../assets/svg_tools');
@@ -219,7 +219,7 @@ function annaxscale(ac, c0) {
 }
 
 // This tests to see that an annotation was drawn correctly.
-// Determinining the length of the arrow seems complicated due to the
+// Determining the length of the arrow seems complicated due to the
 // rectangle containing the text, so we draw 2 annotations, one K times the
 // length of the other, and solve for the desired arrow length from the
 // length measured on the screen. This works because multiplying the length
@@ -572,14 +572,9 @@ function describeShapeComboTest(combo) {
     var xid = axispair[0];
     var yid = axispair[1];
     return [
-        '#', gdId,
-        'should create a plot with parameters:', '\n',
-        'x-axis type:', xaxisType, '\n',
-        'y-axis type:', yaxisType, '\n',
-        'axis pair:', xid, yid, '\n',
-        'ARO position x:', JSON.stringify(xaroPos), '\n',
-        'ARO position y:', JSON.stringify(yaroPos), '\n',
-        'shape type:', shapeType, '\n',
+        'should plot shape:', shapeType, 'on', gdId,
+        xaxisType, xid, JSON.stringify(xaroPos),
+        yaxisType, yid, JSON.stringify(yaroPos),
     ].join(' ');
 }
 
@@ -619,21 +614,11 @@ function describeImageComboTest(combo) {
     var gdId = combo[7];
     var xid = axispair[0];
     var yid = axispair[1];
-    var xref = makeAxRef(xid, aroposx.ref);
-    var yref = makeAxRef(yid, aroposy.ref);
     // TODO Add image combo test description
     return [
-        '#', gdId,
-        'should create a plot with parameters:', '\n',
-        'x-axis type:', axistypex, '\n',
-        'y-axis type:', axistypey, '\n',
-        'axis pair:', xid, yid, '\n',
-        'ARO position x:', JSON.stringify(aroposx), '\n',
-        'ARO position y:', JSON.stringify(aroposy), '\n',
-        'xanchor:', xanchor, '\n',
-        'yanchor:', yanchor, '\n',
-        'xref:', xref, '\n',
-        'yref:', yref, '\n',
+        'should plot image on', gdId,
+        axistypex, xid, xanchor, JSON.stringify(aroposx),
+        axistypey, yid, yanchor, JSON.stringify(aroposy),
     ].join(' ');
 }
 
@@ -681,19 +666,10 @@ function describeAnnotationComboTest(combo) {
     var gdId = combo[6];
     var xid = axispair[0];
     var yid = axispair[1];
-    var xref = makeAxRef(xid, aroposx.ref);
-    var yref = makeAxRef(yid, aroposy.ref);
     return [
-        '#', gdId,
-        'should create a plot with parameters:', '\n',
-        'x-axis type:', axistypex, '\n',
-        'y-axis type:', axistypey, '\n',
-        'axis pair:', xid, yid, '\n',
-        'ARO position x:', JSON.stringify(aroposx), '\n',
-        'ARO position y:', JSON.stringify(aroposy), '\n',
-        'arrow axis pair:', arrowaxispair, '\n',
-        'xref:', xref, '\n',
-        'yref:', yref, '\n',
+        'should plot annotation', arrowaxispair, 'on', gdId,
+        axistypex, xid, JSON.stringify(aroposx),
+        axistypey, yid, JSON.stringify(aroposy),
     ].join(' ');
 }
 

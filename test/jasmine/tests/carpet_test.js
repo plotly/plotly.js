@@ -6,7 +6,7 @@ var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -510,7 +510,7 @@ describe('Test carpet interactions:', function() {
     it('should restyle visible attribute properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -541,7 +541,7 @@ describe('Test carpet interactions:', function() {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
         var trace1 = Lib.extendDeep({}, mock.data[1]);
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -571,7 +571,7 @@ describe('Test carpet interactions:', function() {
     it('should respond to relayout properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
         })
@@ -670,7 +670,7 @@ describe('scattercarpet array attributes', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             for(var i = 0; i < 4; i++) {
                 var pt = gd.calcdata[5][i];
@@ -708,7 +708,7 @@ describe('scattercarpet hover labels', function() {
     function run(pos, fig, content) {
         gd = createGraphDiv();
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent({
                 nums: content[0].join('\n'),
@@ -724,6 +724,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900'], 'a = 0.2']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -736,6 +737,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900', 'D'], 'a = 0.2']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -747,6 +749,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'y: 2.900'], null]
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -758,6 +761,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['b: 3.500', 'y: 2.900'], null]
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -769,6 +773,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 2.900'], 'scattercarpet #5']
         )
+        .catch(failTest)
         .then(done);
     });
 
@@ -780,6 +785,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 3.0'], 'pt #3']
         )
+        .catch(failTest)
         .then(done);
     });
 });

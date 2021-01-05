@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
@@ -76,7 +76,7 @@ describe('config argument', function() {
                 if(!autosize) compareLayoutAndFullLayout(gd);
             }
 
-            Plotly.plot(gd, data, layout, config).then(function() {
+            Plotly.newPlot(gd, data, layout, config).then(function() {
                 beforeResize();
 
                 return Plotly.relayout(gd, relayout);
@@ -174,7 +174,7 @@ describe('config argument', function() {
         it('should fill the container when autosize: true up its max-width and max-height', function(done) {
             gd.style.maxWidth = '400px';
             gd.style.maxHeight = '300px';
-            Plotly.plot(gd, data, {autosize: true})
+            Plotly.newPlot(gd, data, {autosize: true})
             .then(function() {
                 checkLayoutSize(400, 300);
             })
@@ -206,7 +206,7 @@ describe('config argument', function() {
                 var dfltWidth = Plots.layoutAttributes.width.dflt;
                 var dfltHeight = Plots.layoutAttributes.height.dflt;
 
-                Plotly.plot(gd, data, {autosize: true})
+                Plotly.newPlot(gd, data, {autosize: true})
                 .then(function() {
                     if(spec.dflt) {
                         expect(gd._fullLayout.width).toBe(dfltWidth);
@@ -231,24 +231,30 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should not display the edit link by default', function() {
-            Plotly.plot(gd, [], {});
+        it('should not display the edit link by default', function(done) {
+            Plotly.newPlot(gd, [], {})
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-            expect(link).toBeUndefined();
+                expect(link).toBeUndefined();
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should display a link when true', function() {
-            Plotly.plot(gd, [], {}, { showLink: true });
+        it('should display a link when true', function(done) {
+            Plotly.newPlot(gd, [], {}, { showLink: true })
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
+                expect(link.textContent).toBe('Edit chart »');
 
-            expect(link.textContent).toBe('Edit chart »');
-
-            var bBox = link.getBoundingClientRect();
-            expect(bBox.width).toBeGreaterThan(0);
-            expect(bBox.height).toBeGreaterThan(0);
+                var bBox = link.getBoundingClientRect();
+                expect(bBox.width).toBeGreaterThan(0);
+                expect(bBox.height).toBeGreaterThan(0);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -266,7 +272,7 @@ describe('config argument', function() {
             var edits = {};
             edits[editFlag] = true;
 
-            return Plotly.plot(gd, [
+            return Plotly.newPlot(gd, [
                 { x: [1, 2, 3], y: [1, 2, 3] },
                 { x: [1, 2, 3], y: [3, 2, 1] }
             ], {
@@ -442,10 +448,9 @@ describe('config argument', function() {
         var gd;
         var mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
@@ -459,16 +464,22 @@ describe('config argument', function() {
             });
         }
 
-        it('should have drag rectangles cursors by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
-
-            testDraggers(1);
+        it('should have drag rectangles cursors by default', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {})
+            .then(function() {
+                testDraggers(1);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('should not have drag rectangles when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
-
-            testDraggers(0);
+        it('should not have drag rectangles when disabled', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {}, { showAxisDragHandles: false })
+            .then(function() {
+                testDraggers(0);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -477,41 +488,46 @@ describe('config argument', function() {
 
         var gd, mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
 
-        it('allows axis range entry by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
+        it('allows axis range entry by default', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {})
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeDefined();
-            expect(editBox.getAttribute('contenteditable')).toBe('true');
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeDefined();
+                expect(editBox.getAttribute('contenteditable')).toBe('true');
+            })
+            .catch(failTest)
+            .then(done);
         });
 
-        it('disallows axis range entry when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
+        it('disallows axis range entry when disabled', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false })
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeUndefined();
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeUndefined();
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -529,7 +545,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         it('should not default to an external plotly cloud', function(done) {
-            Plotly.plot(gd, [], {})
+            Plotly.newPlot(gd, [], {})
             .then(function() {
                 expect(gd._context.plotlyServerURL).not.toBe('https://plot.ly');
                 expect(gd._context.plotlyServerURL).not.toBe('https://chart-studio.plotly.com');
@@ -543,7 +559,7 @@ describe('config argument', function() {
         });
 
         it('should be able to connect to Chart Studio Cloud when set to https://chart-studio.plotly.com', function(done) {
-            Plotly.plot(gd, [], {}, {
+            Plotly.newPlot(gd, [], {}, {
                 plotlyServerURL: 'https://chart-studio.plotly.com'
             })
             .then(function() {
@@ -558,7 +574,7 @@ describe('config argument', function() {
         });
 
         it('can be set to other base urls', function(done) {
-            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            Plotly.newPlot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
@@ -573,7 +589,7 @@ describe('config argument', function() {
         it('has lesser priotiy then window env', function(done) {
             window.PLOTLYENV = {BASE_URL: 'yo'};
 
-            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            Plotly.newPlot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
@@ -665,36 +681,39 @@ describe('config argument', function() {
                 gd = parent.childNodes[0];
             }
 
-            it('@flaky should resize when the viewport width/height changes', function(done) {
+            it('should resize when the viewport width/height changes', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should still be responsive if the plot is edited', function(done) {
+            it('should still be responsive if the plot is edited', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
+            it('should still be responsive if the plot is purged and replotted', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should only have one resize handler when plotted more than once', function(done) {
+            it('should only have one resize handler when plotted more than once', function(done) {
                 fillParent(1, 1);
                 var cntWindowResize = 0;
                 window.addEventListener('resize', function() {cntWindowResize++;});
                 spyOn(Plotly.Plots, 'resize').and.callThrough();
 
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(function() {viewport.set(width / 2, width / 2);})
                 .then(delay(RESIZE_DELAY))
@@ -707,17 +726,18 @@ describe('config argument', function() {
                 .then(done);
             });
 
-            it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
+            it('should become responsive if configured as such via Plotly.react', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: false})
+                Plotly.newPlot(gd, data, {}, {responsive: false})
                 .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
+            it('should stop being responsive if configured as such via Plotly.react', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 // Check initial size
                 .then(function() {checkLayoutSize(width, height);})
                 // Turn off responsiveness
@@ -733,31 +753,33 @@ describe('config argument', function() {
             });
 
             // Testing fancier CSS layouts
-            it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
+            it('should resize horizontally in a flexbox when responsive: true', function(done) {
                 parent.style.display = 'flex';
                 parent.style.flexDirection = 'row';
                 fillParent(1, 2, function() {
                     this.style.flexGrow = '1';
                 });
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
+            it('should resize vertically in a flexbox when responsive: true', function(done) {
                 parent.style.display = 'flex';
                 parent.style.flexDirection = 'column';
                 fillParent(2, 1, function() {
                     this.style.flexGrow = '1';
                 });
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
+            it('should resize in both direction in a grid when responsive: true', function(done) {
                 var numCols = 2;
                 var numRows = 2;
                 parent.style.display = 'grid';
@@ -765,18 +787,19 @@ describe('config argument', function() {
                 parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
                 fillParent(numRows, numCols);
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
+                .catch(failTest)
                 .then(done);
             });
 
-            it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+            it('should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
                 fillParent(1, 1, function() {
                     this.style.display = 'inline-block';
                     this.style.width = null;
                     this.style.height = null;
                 });
-                Plotly.plot(gd, data, {autosize: true}, {responsive: true})
+                Plotly.newPlot(gd, data, {autosize: true}, {responsive: true})
                 .then(function() {
                     checkLayoutSize(700, 450);
                     expect(gd.clientWidth).toBe(700);
@@ -798,13 +821,13 @@ describe('config argument', function() {
 
             // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
             // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
-            it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+            it('should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
                 fillParent(1, 1, function() {
                     this.style.width = '1000px';
                     this.style.height = '500px';
                 });
 
-                Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+                Plotly.newPlot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
                 .then(function() {
                     expect(gd.clientWidth).toBe(1000);
                     expect(gd.clientHeight).toBe(500);
@@ -819,7 +842,7 @@ describe('config argument', function() {
                 spyOn(Plotly.Plots, 'resize').and.callThrough();
 
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {
                     gd.style.display = 'none';
                     viewport.set(width / 2, height / 2);
@@ -842,7 +865,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         function plot(config) {
-            return Plotly.plot(gd, [], {}, config);
+            return Plotly.newPlot(gd, [], {}, config);
         }
 
         it('should fill in scrollZoom default', function(done) {

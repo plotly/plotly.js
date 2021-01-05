@@ -7,7 +7,7 @@ var constants = require('@src/plots/geo/constants');
 var geoLocationUtils = require('@src/lib/geo_location_utils');
 var topojsonUtils = require('@src/lib/topojson_utils');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -833,7 +833,7 @@ describe('Test geo interactions', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         describe('scattergeo hover events', function() {
@@ -874,7 +874,8 @@ describe('Test geo interactions', function() {
                     'geo.projection.rotation': { lon: 82, lat: -19 }
                 };
 
-                Plotly.relayout(gd, update).then(function() {
+                Plotly.relayout(gd, update)
+                .then(function() {
                     setTimeout(function() {
                         mouseEvent('mousemove', 288, 170);
 
@@ -1063,9 +1064,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should toggle choropleth elements', function(done) {
@@ -1080,9 +1081,9 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1112,9 +1113,9 @@ describe('Test geo interactions', function() {
                     expect(countTraces('choropleth')).toBe(0);
                     expect(countGeos()).toBe(0);
                     expect(countColorBars()).toBe(0);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -1306,9 +1307,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(N_LOCATIONS_AT_START - 1);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should be able to update line/marker/text nodes and choropleth paths', function(done) {
@@ -1333,9 +1334,9 @@ describe('Test geo interactions', function() {
                     checkScatterGeoOrder();
 
                     expect(countChoroplethPaths()).toBe(locationsQueue.length);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
@@ -1346,7 +1347,7 @@ describe('Test geo interactions', function() {
         fig.layout.width = 700;
         fig.layout.height = 500;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', 350, 250);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
         })
@@ -1367,7 +1368,7 @@ describe('Test geo interactions', function() {
         var py = 290;
         var cnt = 0;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             gd.on('plotly_unhover', function() { cnt++; });
 
             mouseEvent('mousemove', px, py);
@@ -1414,7 +1415,7 @@ describe('Test geo interactions', function() {
             Lib.clearThrottle();
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var px = 255;
 
             check([px, 163], 0);
@@ -1429,7 +1430,7 @@ describe('Test geo interactions', function() {
 
         spyOn(Lib, 'warn');
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergeo',
             lon: [0],
             lat: [0]
@@ -1728,7 +1729,7 @@ describe('Test geo interactions', function() {
         it('- no base layers + lon/lat traces', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(_assert(0))
             .then(function() { return Plotly.relayout(gd, 'geo.showcoastlines', true); })
             .then(_assert(1))
@@ -1737,7 +1738,7 @@ describe('Test geo interactions', function() {
         });
 
         it('- no base layers + choropleth', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'choropleth',
                 locations: ['CAN'],
                 z: [10]
@@ -1750,7 +1751,7 @@ describe('Test geo interactions', function() {
         });
 
         it('- no base layers + location scattergeo', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'scattergeo',
                 locations: ['CAN'],
             }], {
@@ -1762,7 +1763,7 @@ describe('Test geo interactions', function() {
         });
 
         it('- geo.visible:false', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'scattergeo',
                 lon: [0],
                 lat: [0]
@@ -1790,7 +1791,7 @@ describe('Test event property of interactions on a geo plot:', function() {
     beforeAll(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             pointPos = getClientPosition('path.point');
             nearPos = [pointPos[0] - 30, pointPos[1] - 30];
             destroyGraphDiv();
@@ -1809,17 +1810,20 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('should contain the correct fields', function() {
@@ -1859,22 +1863,25 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            futureData = undefined;
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('does not support right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
 
             // TODO: 'should contain the correct fields'
             // This test passed previously, but only because assets/click
@@ -1911,11 +1918,15 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1950,11 +1961,15 @@ describe('Test event property of interactions on a geo plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function(done) {
@@ -2007,7 +2022,7 @@ describe('Test geo base layers', function() {
             });
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'choropleth',
             locations: ['CAN', 'FRA'],
             z: [10, 20]
@@ -2068,7 +2083,7 @@ describe('Test geo base layers', function() {
             expect(first(latParts)).toBeCloseToArray(exp.lat0, 1, msg + ' - first lataxis grid pt');
         }
 
-        Plotly.plot(gd, [{type: 'scattergeo'}], {
+        Plotly.newPlot(gd, [{type: 'scattergeo'}], {
             geo: {
                 lonaxis: {showgrid: true},
                 lataxis: {showgrid: true}
@@ -2116,7 +2131,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     function plot(fig) {
         gd = createGraphDiv();
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             gd.on('plotly_relayout', function(d) { eventData = d; });
             gd.on('plotly_doubleclick', function() { dblClickCnt++; });
         });
@@ -2775,7 +2790,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                     fig.layout.height = 500;
 
                     gd = createGraphDiv();
-                    Plotly.plot(gd, fig)
+                    Plotly.newPlot(gd, fig)
                     .then(function() {
                         gd.on('plotly_relayout', function(e) {
                             relayoutCnt++;

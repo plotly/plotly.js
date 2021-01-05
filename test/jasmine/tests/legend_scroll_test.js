@@ -4,7 +4,7 @@ var Drawing = require('@src/components/drawing');
 var constants = require('@src/components/legend/constants');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -70,9 +70,8 @@ describe('The legend', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                done();
-            });
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(done);
         });
 
         afterEach(destroyGraph);
@@ -326,7 +325,6 @@ describe('The legend', function() {
 
             Plotly.relayout(gd, 'showlegend', false);
             Plotly.relayout(gd, 'showlegend', true);
-
             legend = getLegend();
             scrollBox = getScrollBox();
             scrollBar = getScrollBar();
@@ -384,18 +382,20 @@ describe('The legend', function() {
             expect(countLegendGroups(gd)).toBe(1);
             expect(countLegendClipPaths(gd)).toBe(1);
 
-            Plotly.relayout(gd, 'showlegend', false).then(function() {
+            Plotly.relayout(gd, 'showlegend', false)
+            .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should resize when relayout\'ed with new height', function(done) {
             var origLegendHeight = getLegendHeight(gd);
 
-            Plotly.relayout(gd, 'height', gd._fullLayout.height / 2).then(function() {
+            Plotly.relayout(gd, 'height', gd._fullLayout.height / 2)
+            .then(function() {
                 var legendHeight = getLegendHeight(gd);
 
                 // legend still exists and not duplicated
@@ -405,9 +405,9 @@ describe('The legend', function() {
                 // clippath resized to new height less than new plot height
                 expect(+legendHeight).toBe(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -420,7 +420,7 @@ describe('The legend', function() {
             var data = [{ x: [1, 2, 3], y: [2, 3, 4], name: 'Test' }];
             var layout = { showlegend: true };
 
-            Plotly.plot(gd, data, layout);
+            Plotly.newPlot(gd, data, layout);
         });
 
         afterEach(destroyGraph);
@@ -436,12 +436,13 @@ describe('The legend', function() {
             expect(countLegendGroups(gd)).toBe(1);
             expect(countLegendClipPaths(gd)).toBe(1);
 
-            Plotly.relayout(gd, 'showlegend', false).then(function() {
+            Plotly.relayout(gd, 'showlegend', false)
+            .then(function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should resize when traces added', function(done) {
@@ -451,9 +452,9 @@ describe('The legend', function() {
                 var legendHeight = getLegendHeight(gd);
 
                 expect(+legendHeight).toBeCloseTo(+origLegendHeight + 19, 0);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

@@ -6,7 +6,7 @@ var setConvert = require('@src/plots/cartesian/set_convert');
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 var Heatmap = require('@src/traces/heatmap');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -677,7 +677,7 @@ describe('heatmap plot', function() {
             expect(images.size()).toEqual(cnt);
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             assertImageCnt(5);
 
             return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
@@ -732,7 +732,7 @@ describe('heatmap plot', function() {
 
         var imageURLs = [];
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             imageURLs.push(getImageURL());
 
             return Plotly.restyle(gd, 'colorscale', 'Greens');
@@ -778,9 +778,9 @@ describe('heatmap plot', function() {
 
         var argumentsWithoutPadding = [];
         var argumentsWithPadding = [];
-        Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
+        Plotly.newPlot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
-            return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
+            return Plotly.newPlot(gd, mockWithPadding.data, mockWithPadding.layout);
         }).then(function() {
             var xGap = mockWithPadding.data[0].xgap;
             var yGap = mockWithPadding.data[0].ygap;
@@ -873,7 +873,7 @@ describe('heatmap hover', function() {
             var mock = require('@mocks/heatmap_multi-trace.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterAll(destroyGraphDiv);
@@ -900,7 +900,7 @@ describe('heatmap hover', function() {
             var mock = require('@mocks/heatmap_categoryorder.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
         afterAll(destroyGraphDiv);
 
@@ -915,7 +915,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'heatmap',
                 x: [1, 2, 3],
                 y: [1, 1, 1],
@@ -951,7 +951,7 @@ describe('heatmap hover', function() {
             var mock = require('@mocks/heatmap_contour_irregular_bricks.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterAll(destroyGraphDiv);
@@ -981,7 +981,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     type: 'heatmap',
                     x: [10, 11, 10, 11],

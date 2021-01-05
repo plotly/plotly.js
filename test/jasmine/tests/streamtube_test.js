@@ -83,7 +83,7 @@ describe('Test streamtube autorange', function() {
     it('@gl should add pad around tubes to make sure they fit on the scene', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-first'));
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assertAxisRanges('base',
                 [-5.36, 5.55], [-6.36, 3.90], [-3.58, 3.95]
             );
@@ -155,7 +155,7 @@ describe('Test streamtube starting positions defaults:', function() {
             z: [0, 1, 2, 3]
         };
 
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             _assert({
                 positionsLength: 6288,
                 cellsLength: 2096
@@ -166,7 +166,7 @@ describe('Test streamtube starting positions defaults:', function() {
     });
 
     it('@gl should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
-        Plotly.plot(gd, makeFigure(3, 3, 3)).then(function() {
+        Plotly.newPlot(gd, makeFigure(3, 3, 3)).then(function() {
             _assert({
                 positionsLength: 1536,
                 cellsLength: 512
@@ -177,7 +177,7 @@ describe('Test streamtube starting positions defaults:', function() {
     });
 
     it('@gl should take middle pt if mesh vector has length 2', function(done) {
-        Plotly.plot(gd, makeFigure(3, 3, 2)).then(function() {
+        Plotly.newPlot(gd, makeFigure(3, 3, 2)).then(function() {
             _assert({
                 positionsLength: 1296,
                 cellsLength: 432
@@ -188,7 +188,7 @@ describe('Test streamtube starting positions defaults:', function() {
     });
 
     it('@gl should take pt if mesh vector has length 1', function(done) {
-        Plotly.plot(gd, makeFigure(1, 3, 2)).then(function() {
+        Plotly.newPlot(gd, makeFigure(1, 3, 2)).then(function() {
             _assert({
                 positionsLength: 720,
                 cellsLength: 240
@@ -229,7 +229,7 @@ describe('Test streamtube interactions', function() {
             expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('base', {
                 positionsLength: 0,
                 cellsLength: 0
@@ -327,7 +327,7 @@ describe('Test streamtube interactions', function() {
                     expect(exp.cellsLength).toBe(objs[0].cells.length, 'cells length - ' + msg);
                 }
 
-                Plotly.plot(gd, fig).then(function() {
+                Plotly.newPlot(gd, fig).then(function() {
                     _assert('lengths', {
                         positionsLength: 6336,
                         cellsLength: 2112
@@ -380,7 +380,7 @@ describe('Test streamtube interactions', function() {
 
         spyOn(Lib, 'warn');
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('arbitrary coordinates', {
                 positionsLength: 0,
                 cellsLength: 0
@@ -406,7 +406,7 @@ describe('Test streamtube interactions', function() {
             }
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('base', {glObjCnt: 1});
             return Plotly.addTraces(gd, [trace]);
         })
@@ -437,7 +437,7 @@ describe('Test streamtube interactions', function() {
             expect(objTypes).toEqual(exp.objTypes);
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('base cone', {objTypes: ['cone']});
             return Plotly.restyle(gd, 'type', 'streamtube');
         })
@@ -482,7 +482,7 @@ describe('Test streamtube hover', function() {
             mouseEvent('mouseover', 188, 199);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(_hover)
         .then(delay(20))
@@ -555,7 +555,7 @@ describe('Test streamtube hover', function() {
             mouseEvent('mouseover', 193, 177);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(_hover)
         .then(delay(20))
@@ -596,7 +596,7 @@ describe('Test streamtube hover', function() {
             mouseEvent('mouseover', 188, 199);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(d) { ptData = d.points[0]; });

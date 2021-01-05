@@ -3,7 +3,7 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -330,7 +330,7 @@ describe('Test Plots', function() {
             beforeAll(function(done) {
                 gd = createGraphDiv();
 
-                Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
+                Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
                     .then(function() {
                         gd.style.width = '400px';
                         gd.style.height = '400px';
@@ -410,7 +410,7 @@ describe('Test Plots', function() {
                     }
                 }
 
-                Plotly.plot(gd, [], {})
+                Plotly.newPlot(gd, [], {})
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
                     .then(function() { return Plotly.Plots.resize(gd); })
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
@@ -450,7 +450,7 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
 
             // hacky: simulate getting stuck with these flags due to an error
             // see #2055 and commit 6a44a9a - before fixing that error, we would
@@ -599,7 +599,7 @@ describe('Test Plots', function() {
                 }]
             };
 
-            Plotly.plot(gd, mock).then(function() {
+            Plotly.newPlot(gd, mock).then(function() {
                 var str = Plots.graphJson(gd, false, 'keepdata');
                 var obj = JSON.parse(str);
 
@@ -634,7 +634,7 @@ describe('Test Plots', function() {
                 }
             };
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 var str = Plots.graphJson(gd, false, 'keepdata');
                 var obj = JSON.parse(str);
 
@@ -773,7 +773,7 @@ describe('Test Plots', function() {
         });
 
         it('should handle cases when module plot is not set (geo case)', function(done) {
-            Plotly.plot(createGraphDiv(), [{
+            Plotly.newPlot(createGraphDiv(), [{
                 type: 'scattergeo',
                 visible: false,
                 lon: [10, 20],
@@ -787,12 +787,13 @@ describe('Test Plots', function() {
                 expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should handle cases when module plot is not set (ternary case)', function(done) {
-            Plotly.plot(createGraphDiv(), [{
+            Plotly.newPlot(createGraphDiv(), [{
                 type: 'scatterternary',
                 visible: false,
                 a: [0.1, 0.2],
@@ -806,8 +807,9 @@ describe('Test Plots', function() {
                 expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -823,7 +825,7 @@ describe('Test Plots', function() {
         it('should call reused style modules only once per graph', function(done) {
             var Drawing = require('@src/components/drawing');
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'markers',
                 y: [1, 2, 1]
             }, {
@@ -971,7 +973,7 @@ describe('Test Plots', function() {
         });
 
         it('ignores unused axis and subplot objects', function(done) {
-            Plotly.plot('graph', [{
+            Plotly.newPlot('graph', [{
                 type: 'pie',
                 values: [1]
             }], {

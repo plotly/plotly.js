@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -398,7 +398,7 @@ describe('Funnelarea traces', function() {
             showlegend: true
         };
 
-        Plotly.plot(gd, data, layout)
+        Plotly.newPlot(gd, data, layout)
           .then(function() {
               var expWidths = ['3', '0', '0'];
 
@@ -431,7 +431,7 @@ describe('Funnelarea traces', function() {
                 size: [12, 20, 16]
             };
 
-            Plotly.plot(gd, [data])
+            Plotly.newPlot(gd, [data])
               .then(_checkFontColors(['red', 'green', 'blue']))
               .then(_checkFontFamilies(['Arial', 'Gravitas', 'Roboto']))
               .then(_checkFontSizes([12, 20, 16]))
@@ -449,7 +449,7 @@ describe('Funnelarea traces', function() {
     };
 
     it('should use inside text colors contrasting to explicitly set slice colors by default', function(done) {
-        Plotly.plot(gd, [insideTextTestsTrace])
+        Plotly.newPlot(gd, [insideTextTestsTrace])
           .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -459,7 +459,7 @@ describe('Funnelarea traces', function() {
         var noMarkerTrace = Lib.extendFlat({}, insideTextTestsTrace);
         delete noMarkerTrace.marker;
 
-        Plotly.plot(gd, [noMarkerTrace])
+        Plotly.newPlot(gd, [noMarkerTrace])
           .then(_checkFontColors([LIGHT, DARK, LIGHT, LIGHT, LIGHT, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -467,7 +467,7 @@ describe('Funnelarea traces', function() {
 
     it('should use textfont.color for inside text instead of the contrasting default', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: 'red'}});
-        Plotly.plot(gd, [data])
+        Plotly.newPlot(gd, [data])
           .then(_checkFontColors(Lib.repeat('red', 6)))
           .catch(failTest)
           .then(done);
@@ -475,14 +475,14 @@ describe('Funnelarea traces', function() {
 
     it('should use matching color from textfont.color array for inside text, contrasting otherwise', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: ['red', 'blue']}});
-        Plotly.plot(gd, [data])
+        Plotly.newPlot(gd, [data])
           .then(_checkFontColors(['red', 'blue', LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
     });
 
     it('should not use layout.font.color for inside text, but a contrasting color instead', function(done) {
-        Plotly.plot(gd, [insideTextTestsTrace], {font: {color: 'green'}})
+        Plotly.newPlot(gd, [insideTextTestsTrace], {font: {color: 'green'}})
           .then(_checkFontColors([DARK, DARK, LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -490,7 +490,7 @@ describe('Funnelarea traces', function() {
 
     it('should use matching color from insidetextfont.color array instead of the contrasting default', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTrace, {textfont: {color: ['orange', 'purple']}});
-        Plotly.plot(gd, [data])
+        Plotly.newPlot(gd, [data])
           .then(_checkFontColors(['orange', 'purple', LIGHT, LIGHT, DARK, LIGHT]))
           .catch(failTest)
           .then(done);
@@ -507,7 +507,7 @@ describe('Funnelarea traces', function() {
             });
             data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
 
-            Plotly.plot(gd, [data])
+            Plotly.newPlot(gd, [data])
               .then(_checkFontColors(['blue', 'yellow', 'orange', 'orange', 'orange', 'orange']))
               .then(_checkFontFamilies(['Arial', 'Arial', 'Gravitas', 'Gravitas', 'Gravitas', 'Gravitas']))
               .then(_checkFontSizes([24, 34, 12, 12, 12, 12]))
@@ -528,7 +528,7 @@ describe('Funnelarea traces', function() {
             }
         });
 
-        Plotly.plot(gd, [data], layout)
+        Plotly.newPlot(gd, [data], layout)
           .then(_checkFontColors(['purple', 'blue', LIGHT, LIGHT, DARK, LIGHT]))
           .then(_checkFontFamilies(['Roboto', 'Arial', 'serif', 'serif', 'serif', 'serif']))
           .then(_checkFontSizes([24, 18, 16, 16, 16, 16]))
@@ -547,7 +547,7 @@ describe('Funnelarea traces', function() {
             data.textposition = 'inside';
             data[spec.fontAttr] = {color: ['blue', 'yellow'], family: ['Arial', 'Arial'], size: [24, 34]};
 
-            Plotly.plot(gd, [data], layout)
+            Plotly.newPlot(gd, [data], layout)
               .then(_checkFontColors(['blue', 'yellow', LIGHT, LIGHT, DARK, LIGHT]))
               .then(_checkFontFamilies(['Arial', 'Arial', 'serif', 'serif', 'serif', 'serif']))
               .then(_checkFontSizes([24, 34, 16, 16, 16, 16]))
@@ -563,7 +563,7 @@ describe('Funnelarea traces', function() {
     }
 
     it('show a user-defined title with a custom position and font', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnelarea',
             values: [1, 2, 3],
             title: {
@@ -581,7 +581,7 @@ describe('Funnelarea traces', function() {
     });
 
     it('should be able to restyle title', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnelarea',
             values: [1, 2, 3],
             title: {
@@ -609,7 +609,7 @@ describe('Funnelarea traces', function() {
     });
 
     it('should be able to restyle title despite using the deprecated attributes', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnelarea',
             values: [1, 2, 3],
             title: 'yo',
@@ -635,7 +635,7 @@ describe('Funnelarea traces', function() {
     });
 
     it('should be able to react with new text colors', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'funnelarea',
             values: [1, 2, 3],
             text: ['A', 'B', 'C'],
@@ -672,7 +672,7 @@ describe('Funnelarea traces', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 4))
         .then(function() { return Plotly.restyle(gd, 'visible', false); })
         .then(_assert('both visible:false', 0))
@@ -707,7 +707,7 @@ describe('funnelarea hovering', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                 .then(done);
         });
 
@@ -761,7 +761,7 @@ describe('funnelarea hovering', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                 .then(done);
         });
 
@@ -873,7 +873,7 @@ describe('funnelarea hovering', function() {
         }
 
         it('should show the default selected values', function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
                 assertLabel(
@@ -955,16 +955,17 @@ describe('funnelarea hovering', function() {
             mockCopy.data[0].values[0] = 12345678.912;
             mockCopy.data[0].values[1] = 10000;
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
                 assertLabel('0\n12|345|678@91\n99@9%');
             })
+            .catch(failTest)
             .then(done);
         });
 
         it('should show falsy zero text', function(done) {
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     type: 'funnelarea',
                     labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
@@ -981,12 +982,13 @@ describe('funnelarea hovering', function() {
             .then(function() {
                 assertLabel('D\n0\n4\n14.3%');
             })
+            .catch(failTest)
             .then(done);
         });
 
         it('should use hovertemplate if specified', function(done) {
             mockCopy.data[0].name = '';
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
                 assertLabel(
@@ -1055,7 +1057,7 @@ describe('funnelarea hovering', function() {
             mockCopy.data[0].name = 'loooooooooooooooooooooooong';
             mockCopy.data[0].hoverinfo = 'all';
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({nums: '0\n5\n33.3%', name: 'looooooooooo...'}, 'base');
@@ -1083,7 +1085,7 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
     beforeAll(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             pointPos = getClientPosition('g.slicetext');
             destroyGraphDiv();
             done();
@@ -1128,16 +1130,20 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('should contain the correct fields', function() {
@@ -1147,21 +1153,24 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
             checkEventData(futureData);
         });
 
-        it('should not contain pointNumber if aggregating', function() {
+        it('should not contain pointNumber if aggregating', function(done) {
             var values = gd.data[0].values;
             var labels = [];
             for(var i = 0; i < values.length; i++) labels.push(i);
             Plotly.restyle(gd, {
                 labels: [labels.concat(labels)],
                 values: [values.concat(values)]
-            });
+            })
+            .then(function() {
+                click(pointPos[0], pointPos[1]);
+                expect(futureData.points.length).toEqual(1);
 
-            click(pointPos[0], pointPos[1]);
-            expect(futureData.points.length).toEqual(1);
-
-            expect(futureData.points[0].pointNumber).toBeUndefined();
-            expect(futureData.points[0].i).toBeUndefined();
-            expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
+                expect(futureData.points[0].pointNumber).toBeUndefined();
+                expect(futureData.points[0].i).toBeUndefined();
+                expect(futureData.points[0].pointNumbers).toEqual([0, 5]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1175,21 +1184,25 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not be trigged when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
         });
 
         it('does not respond to right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
 
             // TODO: 'should contain the correct fields'
             // This test passed previously, but only because assets/click
@@ -1210,12 +1223,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            futureData = undefined;
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1227,13 +1243,17 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         it('should not emit a hover if you\'re dragging', function() {
             gd._dragging = true;
             mouseEvent('mouseover', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+            expect(futureData).toBe(null);
         });
 
-        it('should not emit a hover if hover is disabled', function() {
-            Plotly.relayout(gd, 'hovermode', false);
-            mouseEvent('mouseover', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+        it('should not emit a hover if hover is disabled', function(done) {
+            Plotly.relayout(gd, 'hovermode', false)
+            .then(function() {
+                mouseEvent('mouseover', pointPos[0], pointPos[1]);
+                expect(futureData).toBe(null);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -1241,12 +1261,15 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            futureData = undefined;
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields', function() {
@@ -1258,7 +1281,7 @@ describe('Test event data of interactions on a funnelarea plot:', function() {
 
         it('should not emit an unhover if you didn\'t first hover', function() {
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
-            expect(futureData).toBeUndefined();
+            expect(futureData).toBe(null);
         });
     });
 });
@@ -1300,6 +1323,7 @@ describe('funnelarea relayout', function() {
             var slices = d3.selectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1344,7 +1368,7 @@ describe('Test funnelarea interactions edge cases:', function() {
             unhoverCnt = 0;
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 hoverCnt++;
@@ -1454,7 +1478,7 @@ describe('Test funnelarea calculated areas', function() {
                 baseratio: spec.baseratio
             }];
 
-            Plotly.plot(gd, data)
+            Plotly.newPlot(gd, data)
               .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
               .catch(failTest)
               .then(done);
@@ -1554,7 +1578,7 @@ describe('Test funnelarea calculated areas with scalegroup', function() {
                 baseratio: spec.baseratio
             }];
 
-            Plotly.plot(gd, data)
+            Plotly.newPlot(gd, data)
               .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
               .catch(failTest)
               .then(done);
@@ -1747,7 +1771,7 @@ describe('Test funnelarea calculated areas with scalegroup on various domain rat
                 baseratio: spec.baseratio
             }];
 
-            Plotly.plot(gd, data)
+            Plotly.newPlot(gd, data)
               .then(_checkCalculatedAreaRatios([0.4, 0.3, 0.2, 0.1]))
               .catch(failTest)
               .then(done);
@@ -1826,7 +1850,7 @@ describe('funnelarea uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 0.69],

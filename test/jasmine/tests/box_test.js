@@ -4,7 +4,7 @@ var Plots = require('@src/plots/plots');
 
 var Box = require('@src/traces/box');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -731,7 +731,7 @@ describe('Test box hover:', function() {
 
         var pos = specs.pos || [200, 200];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs, specs.desc);
         });
@@ -1094,7 +1094,7 @@ describe('Test box restyle:', function() {
             _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert('base', {boxCnt: 1});
         })
@@ -1125,7 +1125,7 @@ describe('Test box restyle:', function() {
             expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'box',
             y: [0, 1, 1, 1, 1, 2, 2, 3, 5, 6, 10]
         }], {
@@ -1161,7 +1161,7 @@ describe('Test box restyle:', function() {
             expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'box',
             width: 0.4,
             y: [0, 5, 7, 8],

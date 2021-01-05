@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ var strTranslate = Lib.strTranslate;
 var strScale = Lib.strScale;
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 

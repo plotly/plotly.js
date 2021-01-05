@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -630,7 +630,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     type: 'contour',
                     x: [10, 11, 10, 11],
@@ -660,7 +660,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'contour',
                 x: [1, 2, 3],
                 y: [2, 3, 4],

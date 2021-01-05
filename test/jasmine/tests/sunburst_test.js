@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -525,7 +525,7 @@ describe('Test sunburst hover:', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -728,7 +728,7 @@ describe('Test sunburst hover lifecycle:', function() {
     it('should fire the correct events', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(hover(gd, 1))
         .then(function() {
@@ -804,7 +804,7 @@ describe('Test sunburst clicks:', function() {
     it('should trigger animation when clicking on branches', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -835,7 +835,7 @@ describe('Test sunburst clicks:', function() {
     it('should trigger plotly_click event when clicking on root node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 1))
         .then(function() {
@@ -864,7 +864,7 @@ describe('Test sunburst clicks:', function() {
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 8))
         .then(function() {
@@ -893,7 +893,7 @@ describe('Test sunburst clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -953,7 +953,7 @@ describe('Test sunburst clicks:', function() {
     it('should be able to override default click behavior using plotly_sunburstclick handler ()', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
         .then(click(gd, 2))
         .then(function() {
@@ -998,7 +998,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
         .then(_restyle({'visible': false}))
         .then(_assert('both visible:false', 0))
@@ -1024,7 +1024,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 96))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1067,7 +1067,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['', '0.7', '', '0.7']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1122,7 +1122,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1231,7 +1231,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry radially inward', 'd', 'Root',
@@ -1266,7 +1266,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('enter new entry radially outward', 'd', 'Root',
@@ -1301,7 +1301,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry radially inward', 'd', 'Root',
@@ -1336,7 +1336,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('exit b radially outward and to parent sector angle', 'd', 'b',
@@ -1361,7 +1361,7 @@ describe('Test sunburst tweening:', function() {
 
     /*
     it('should tween in sectors from new traces', function(done) {
-        Plotly.plot(gd, [{type: 'sunburst'}])
+        Plotly.newPlot(gd, [{type: 'sunburst'}])
         .then(_reset)
         .then(function() {
             return Plotly.animate(gd, [{
@@ -1390,7 +1390,7 @@ describe('Test sunburst tweening:', function() {
     */
 
     it('should update text position during transition using *auto* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1415,7 +1415,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1440,7 +1440,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *tangential* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1465,7 +1465,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *radial* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1490,7 +1490,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1514,7 +1514,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1538,7 +1538,7 @@ describe('Test sunburst tweening:', function() {
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1587,7 +1587,7 @@ describe('Test sunburst interactions edge cases', function() {
             unhoverCnt = 0;
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 hoverCnt++;
@@ -1629,7 +1629,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 
     it('should show falsy zero text', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
@@ -1647,6 +1647,7 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             assertHoverLabelContent({ nums: 'D\n4\n0' });
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -1664,7 +1665,7 @@ describe('Test sunburst interactions edge cases', function() {
                 .toBe(exp.sunburstTraceCnt, '# of sunburst traces');
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             _assert('base', {
                 cartesianTraceCnt: 2,
@@ -1691,7 +1692,7 @@ describe('Test sunburst interactions edge cases', function() {
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.data[1].level = 'B';
             return Plotly.react(gd, gd.data, gd.layout);
@@ -1952,7 +1953,7 @@ describe('sunburst inside text orientation', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextRotations('using default "auto"', {
             rotations: [-0.6, 0, 48, 0]
         }))
@@ -2057,7 +2058,7 @@ describe('sunburst uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
@@ -2115,7 +2116,7 @@ describe('sunburst uniformtext', function() {
     });
 
     it('should uniform text scales after transition', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 parents: [

@@ -1,7 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -52,18 +52,18 @@ describe('Plotly.toImage', function() {
             return !!x.then && typeof x.then === 'function';
         }
 
-        var returnValue = Plotly.plot(gd, subplotMock.data, subplotMock.layout)
+        var returnValue = Plotly.newPlot(gd, subplotMock.data, subplotMock.layout)
                .then(Plotly.toImage);
 
         expect(isPromise(returnValue)).toBe(true);
 
-        returnValue.then(done);
+        returnValue.catch(failTest).then(done);
     });
 
     it('should throw error with unsupported file type', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 
-        Plotly.plot(gd, fig.data, fig.layout)
+        Plotly.newPlot(gd, fig.data, fig.layout)
         .then(function(gd) {
             expect(function() { Plotly.toImage(gd, {format: 'x'}); })
                 .toThrow(new Error('Export format is not png, jpeg, webp, svg or full-json.'));
@@ -75,7 +75,7 @@ describe('Plotly.toImage', function() {
     it('should throw error with height and/or width < 1', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 
-        Plotly.plot(gd, fig.data, fig.layout)
+        Plotly.newPlot(gd, fig.data, fig.layout)
         .then(function() {
             expect(function() { Plotly.toImage(gd, {height: 0.5}); })
                 .toThrow(new Error('Height and width should be pixel values.'));
@@ -95,7 +95,7 @@ describe('Plotly.toImage', function() {
         fig.layout.height = 600;
         fig.layout.width = 700;
 
-        Plotly.plot(gd, fig.data, fig.layout).then(function(gd) {
+        Plotly.newPlot(gd, fig.data, fig.layout).then(function(gd) {
             expect(gd.layout.height).toBe(600);
             expect(gd.layout.width).toBe(700);
             return Plotly.toImage(gd);
@@ -122,7 +122,7 @@ describe('Plotly.toImage', function() {
         gd.style.width = '832px';
         gd.style.height = '502px';
 
-        Plotly.plot(gd, fig.data, fig.layout).then(function() {
+        Plotly.newPlot(gd, fig.data, fig.layout).then(function() {
             expect(gd.layout.width).toBe(undefined, 'user layout width');
             expect(gd.layout.height).toBe(undefined, 'user layout height');
             expect(gd._fullLayout.width).toBe(832, 'full layout width');
@@ -137,7 +137,7 @@ describe('Plotly.toImage', function() {
     it('should create proper file type', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 
-        Plotly.plot(gd, fig.data, fig.layout)
+        Plotly.newPlot(gd, fig.data, fig.layout)
         .then(function() { return Plotly.toImage(gd, {format: 'png'}); })
         .then(function(url) { return assertSize(url, 700, 450); })
         .then(function(url) {
@@ -165,7 +165,7 @@ describe('Plotly.toImage', function() {
     it('should strip *data:image* prefix when *imageDataOnly* is turned on', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 
-        Plotly.plot(gd, fig.data, fig.layout)
+        Plotly.newPlot(gd, fig.data, fig.layout)
         .then(function() { return Plotly.toImage(gd, {format: 'png', imageDataOnly: true}); })
         .then(function(d) {
             expect(d.indexOf('data:image/')).toBe(-1);
@@ -194,7 +194,7 @@ describe('Plotly.toImage', function() {
         it('should respond to *scale* option ( format ' + f + ')', function(done) {
             var fig = Lib.extendDeep({}, subplotMock);
 
-            Plotly.plot(gd, fig.data, fig.layout)
+            Plotly.newPlot(gd, fig.data, fig.layout)
             .then(function() { return Plotly.toImage(gd, {format: f, scale: 2}); })
             .then(function(url) { return assertSize(url, 1400, 900); })
             .then(function() { return Plotly.toImage(gd, {format: f, scale: 0.5}); })
@@ -220,7 +220,7 @@ describe('Plotly.toImage', function() {
     it('should accept graph div id as input', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() { return Plotly.toImage('graph'); })
         .then(createImage)
         .then(function(img) {
@@ -238,7 +238,7 @@ describe('Plotly.toImage', function() {
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 
-        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
             return Plotly.toImage(gd, {format: 'svg', imageDataOnly: true});
         })
@@ -275,7 +275,7 @@ describe('Plotly.toImage', function() {
         afterEach(destroyGraphDiv);
 
         it('export a graph div', function(done) {
-            Plotly.plot(gd, [{y: [1, 2, 3]}])
+            Plotly.newPlot(gd, [{y: [1, 2, 3]}])
             .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
             .then(function(fig) {
                 fig = JSON.parse(fig);

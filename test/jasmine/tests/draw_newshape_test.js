@@ -1089,7 +1089,7 @@ describe('Activate and edit editable shapes', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky reactangle using ' + device, function(done) {
+        it('reactangle using ' + device, function(done) {
             var i = 0; // shape index
 
             Plotly.newPlot(gd, {
@@ -1224,7 +1224,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky circle using ' + device, function(done) {
+        it('circle using ' + device, function(done) {
             var i = 1; // shape index
 
             Plotly.newPlot(gd, {
@@ -1281,7 +1281,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky closed-path using ' + device, function(done) {
+        it('closed-path using ' + device, function(done) {
             var i = 2; // shape index
 
             Plotly.newPlot(gd, {
@@ -1326,7 +1326,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky bezier curves using ' + device, function(done) {
+        it('bezier curves using ' + device, function(done) {
             var i = 5; // shape index
 
             Plotly.newPlot(gd, {
@@ -1371,7 +1371,7 @@ describe('Activate and edit editable shapes', function() {
             .then(done);
         });
 
-        it('@flaky multi-cell path using ' + device, function(done) {
+        it('multi-cell path using ' + device, function(done) {
             var i = 6; // shape index
 
             Plotly.newPlot(gd, {

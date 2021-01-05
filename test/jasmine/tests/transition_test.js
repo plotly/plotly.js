@@ -23,7 +23,7 @@ function runTests(transitionDuration) {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterEach(function() {
@@ -76,7 +76,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2;
 
-            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]}).then(function() {
+            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]})
+            .then(function() {
                 p1 = annotationPosition();
 
                 return Plots.transition(gd, null, {
@@ -107,7 +108,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2, e1, e2;
 
-            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]}).then(function() {
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]})
+            .then(function() {
                 p1 = imagesrc();
                 e1 = imageel();
 
@@ -850,7 +852,7 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('@flaky should not transition layout when axis auto-ranged value do not changed', function(done) {
+    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 
@@ -1139,7 +1141,7 @@ describe('Plotly.react transitions:', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [0.1, 0.2, 0.3],
             y: [0.4, 0.5, 0.6],
         }, {
@@ -1189,8 +1191,8 @@ describe('Plotly.react transitions:', function() {
         .then(done);
     });
 
-    it('@flaky should update ranges of date and category axes', function(done) {
-        Plotly.plot(gd, [
+    it('should update ranges of date and category axes', function(done) {
+        Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
         ], {

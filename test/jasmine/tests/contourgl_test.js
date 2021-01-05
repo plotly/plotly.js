@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var supplyDefaults = require('@src/traces/heatmapgl').supplyDefaults;
 var Plots = require('@src/plots/plots');
 
@@ -169,7 +169,7 @@ var plotDataElliptical = function(maxJitter) {
 
 
 function makePlot(gd, mock, done) {
-    return Plotly.plot(gd, mock.data, mock.layout)
+    return Plotly.newPlot(gd, mock.data, mock.layout)
         .then(null, failTest)
         .then(done);
 }
@@ -224,7 +224,7 @@ describe('contourgl plots', function() {
         var mock = plotDataElliptical(0);
         var scene2d;
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
 
             expect(scene2d.traces[mock.data[0].uid].type).toEqual('contourgl');
@@ -250,9 +250,9 @@ describe('contourgl plots', function() {
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
             expect(scene2d.xaxis.range).toEqual([1, -1]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 

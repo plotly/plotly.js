@@ -2,7 +2,7 @@ var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var ScatterPolarGl = require('@src/traces/scatterpolargl');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -137,7 +137,7 @@ describe('Test scatterpolargl interactions:', function() {
 
         var scene;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 1],
         }], {
@@ -185,7 +185,7 @@ describe('Test scatterpolargl interactions:', function() {
 
         var sceneXY, scenePolar;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             y: [1, 2, 1]
         }, {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,7 @@
  * Also note that the discontinuity of the derivative is in magnitude only. The direction *is*
  * continuous across cell boundaries.
  *
- * For example, to compute the derivative of the xcoordinate halfway betwen the 7 and 8th i-gridpoints
+ * For example, to compute the derivative of the xcoordinate halfway between the 7 and 8th i-gridpoints
  * and the 10th and 11th j-gridpoints given bicubic smoothing in both dimensions, you'd write:
  *
  *     var deriv = createIDerivativeEvaluator([x], 1, 1);

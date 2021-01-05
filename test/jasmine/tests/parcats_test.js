@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var strTranslate = Lib.strTranslate;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -1721,7 +1721,7 @@ describe('Parcats hover:', function() {
         );
         if(s.patch) fig = s.patch(fig);
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', s.pos[0], s.pos[1]);
             mouseEvent('mouseover', s.pos[0], s.pos[1]);
 

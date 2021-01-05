@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -54,7 +54,7 @@ describe('Test plot structure', function() {
                 var mockData = Lib.extendDeep([], mock.data);
                 var mockLayout = Lib.extendDeep({}, mock.layout);
 
-                Plotly.plot(gd, mockData, mockLayout).then(done);
+                Plotly.newPlot(gd, mockData, mockLayout).then(done);
             });
 
             it('has one *subplot xy* node', function() {
@@ -124,7 +124,8 @@ describe('Test plot structure', function() {
                 expect(countScatterTraces()).toEqual(mock.data.length);
                 expect(countSubplots()).toEqual(1);
 
-                Plotly.relayout(gd, {xaxis: null, yaxis: null}).then(function() {
+                Plotly.relayout(gd, {xaxis: null, yaxis: null})
+                .then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
@@ -198,7 +199,7 @@ describe('Test plot structure', function() {
                     var mockCopy = extendMock();
                     var gd = createGraphDiv();
 
-                    Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                    Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                         .then(done);
                 });
 
@@ -227,19 +228,22 @@ describe('Test plot structure', function() {
                     var mockCopy = extendMock();
                     var gd = createGraphDiv();
 
-                    Plotly.plot(gd, mockCopy.data, mockCopy.layout);
-
-                    Plotly.restyle(gd, {
-                        type: 'scatter',
-                        x: [[1, 2, 3]],
-                        y: [[2, 1, 2]],
-                        z: null
-                    }, 0);
-
-                    Plotly.restyle(gd, 'type', 'contour', 1);
-
-                    Plotly.restyle(gd, 'type', 'heatmap', 2)
-                        .then(done);
+                    Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+                    .then(function() {
+                        return Plotly.restyle(gd, {
+                            type: 'scatter',
+                            x: [[1, 2, 3]],
+                            y: [[2, 1, 2]],
+                            z: null
+                        }, 0);
+                    })
+                    .then(function() {
+                        return Plotly.restyle(gd, 'type', 'contour', 1);
+                    })
+                    .then(function() {
+                        return Plotly.restyle(gd, 'type', 'heatmap', 2);
+                    })
+                    .then(done);
                 });
 
                 it('has four *subplot* nodes', function() {
@@ -270,7 +274,7 @@ describe('Test plot structure', function() {
                     gd = createGraphDiv();
 
                     var mockCopy = extendMock();
-                    Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                    Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
                         .then(done);
                 });
 
@@ -404,7 +408,7 @@ describe('Test plot structure', function() {
                 var mockData = Lib.extendDeep([], mock.data);
                 var mockLayout = Lib.extendDeep({}, mock.layout);
 
-                Plotly.plot(gd, mockData, mockLayout).then(done);
+                Plotly.newPlot(gd, mockData, mockLayout).then(done);
             });
 
             it('has as many *slice* nodes as there are pie items', function() {
@@ -468,7 +472,7 @@ describe('Test plot structure', function() {
         var mock = require('@mocks/geo_first.json');
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
         });
 
         it('has as many *choroplethlocation* nodes as there are choropleth locations', function() {
@@ -516,7 +520,7 @@ describe('Test plot structure', function() {
 describe('plot svg clip paths', function() {
     // plot with all features that rely on clip paths
     function plot() {
-        return Plotly.plot(createGraphDiv(), [{
+        return Plotly.newPlot(createGraphDiv(), [{
             type: 'contour',
             z: [[1, 2, 3], [2, 3, 1]]
         }, {

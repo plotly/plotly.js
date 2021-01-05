@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -57,22 +57,24 @@ describe('Test click interactions:', function() {
         var futureData, clickPassthroughs, contextPassthroughs;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
+                clickPassthroughs = 0;
+                contextPassthroughs = 0;
 
-            futureData = undefined;
-            clickPassthroughs = 0;
-            contextPassthroughs = 0;
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
-
-            gd.addEventListener('click', function() {
-                clickPassthroughs++;
-            });
-            gd.addEventListener('contextmenu', function() {
-                contextPassthroughs++;
-            });
+                gd.addEventListener('click', function() {
+                    clickPassthroughs++;
+                });
+                gd.addEventListener('contextmenu', function() {
+                    contextPassthroughs++;
+                });
+            })
+            .then(done);
         });
 
         // Later we want to emit plotly events for clicking in the graph but not on data
@@ -80,7 +82,7 @@ describe('Test click interactions:', function() {
         // pass through to event handlers attached to gd.
         it('should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
             // this is a weird one - in the real case the original click never
             // happens, it gets canceled by preventDefault in mouseup, but we
             // add our own synthetic click.
@@ -100,7 +102,7 @@ describe('Test click interactions:', function() {
         // Any reason we should handle these?
         it('should not be triggered when in the margin', function() {
             click(marginPos[0], marginPos[1]);
-            expect(futureData).toBe(undefined);
+            expect(futureData).toBe(null);
             expect(clickPassthroughs).toBe(1);
             expect(contextPassthroughs).toBe(0);
         });
@@ -136,7 +138,8 @@ describe('Test click interactions:', function() {
         });
 
         it('works with fixedrange axes', function(done) {
-            Plotly.relayout(gd, {'xaxis.fixedrange': true, 'yaxis.fixedrange': true}).then(function() {
+            Plotly.relayout(gd, {'xaxis.fixedrange': true, 'yaxis.fixedrange': true})
+            .then(function() {
                 click(pointPos[0], pointPos[1]);
                 expect(futureData.points.length).toEqual(1);
                 expect(clickPassthroughs).toBe(2);
@@ -156,7 +159,7 @@ describe('Test click interactions:', function() {
                 expect(evt.clientX).toEqual(pointPos[0]);
                 expect(evt.clientY).toEqual(pointPos[1]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -180,21 +183,21 @@ describe('Test click interactions:', function() {
         [modClickOpts, rightClickOpts].forEach(function(clickOpts, i) {
             it('should not be triggered when not on data points', function() {
                 click(blankPos[0], blankPos[1], clickOpts);
-                expect(futureData === undefined).toBe(true, i);
+                expect(futureData).toBe(null, i);
                 expect(clickPassthroughs).toBe(0, i);
                 expect(contextPassthroughs).toBe(0, i);
             });
 
             it('should not be triggered when in the margin', function() {
                 click(marginPos[0], marginPos[1], clickOpts);
-                expect(futureData === undefined).toBe(true, i);
+                expect(futureData).toBe(null, i);
                 expect(clickPassthroughs).toBe(0, i);
                 expect(contextPassthroughs).toBe(0, i);
             });
 
             it('should not be triggered if you dont cancel contextmenu', function() {
                 click(pointPos[0], pointPos[1], Lib.extendFlat({}, clickOpts, {cancelContext: false}));
-                expect(futureData === undefined).toBe(true, i);
+                expect(futureData).toBe(null, i);
                 expect(clickPassthroughs).toBe(0, i);
                 expect(contextPassthroughs).toBe(1, i);
             });
@@ -237,42 +240,48 @@ describe('Test click interactions:', function() {
     });
 
     describe('click event with hoverinfo set to skip - plotly_click', function() {
-        var futureData = null;
+        var futureData;
 
         beforeEach(function(done) {
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'skip';
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
-                .then(done);
+            Plotly.newPlot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not register the click', function() {
             click(pointPos[0], pointPos[1]);
-            expect(futureData).toEqual(null);
+            expect(futureData).toBe(null);
         });
     });
 
     describe('click events with hoverinfo set to skip - plotly_hover', function() {
-        var futureData = null;
+        var futureData;
 
         beforeEach(function(done) {
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'skip';
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
-                .then(done);
+            Plotly.newPlot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should not register the hover', function() {
             click(pointPos[0], pointPos[1]);
-            expect(futureData).toEqual(null);
+            expect(futureData).toBe(null);
         });
     });
 
@@ -282,12 +291,15 @@ describe('Test click interactions:', function() {
         beforeEach(function(done) {
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
-                .then(done);
+            Plotly.newPlot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_click', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function() {
@@ -312,12 +324,15 @@ describe('Test click interactions:', function() {
         beforeEach(function(done) {
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
-                .then(done);
+            Plotly.newPlot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_hover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function() {
@@ -346,12 +361,15 @@ describe('Test click interactions:', function() {
         beforeEach(function(done) {
             var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
             modifiedMockCopy.data[0].hoverinfo = 'none';
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
-                .then(done);
+            Plotly.newPlot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_unhover', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_unhover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function(done) {
@@ -371,7 +389,9 @@ describe('Test click interactions:', function() {
                 var evt = futureData.event;
                 expect(evt.clientX).toEqual(blankPos[0]);
                 expect(evt.clientY).toEqual(blankPos[1]);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -379,24 +399,30 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
+                futureData = null;
 
-            gd.on('plotly_doubleclick', function(data) {
-                futureData = data;
-            });
+                gd.on('plotly_doubleclick', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(done);
         });
 
         it('should return null', function(done) {
-            doubleClick(pointPos[0], pointPos[1]).then(function() {
+            doubleClick(pointPos[0], pointPos[1])
+            .then(function() {
                 expect(futureData).toBe(null);
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
     describe('drag interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 // Do not let the notifier hide the drag elements
                 var tooltip = document.querySelector('.notifier-note');
                 if(tooltip) tooltip.style.display = 'None';
@@ -676,7 +702,8 @@ describe('Test click interactions:', function() {
         }
 
         it('when set to \'reset+autorange\' (the default) should work when \'autorange\' is on', function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+            .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -689,15 +716,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset+autorange\' (the default) should reset to set range on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -710,15 +737,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and reset on 2nd', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -739,7 +766,7 @@ describe('Test click interactions:', function() {
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and zoom when immediately dragged', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -768,7 +795,7 @@ describe('Test click interactions:', function() {
             var newAutoRangeX = [-4.482371794871794, 3.4823717948717943];
             var newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -791,13 +818,13 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should work when \'autorange\' is on', function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -810,15 +837,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should reset to set range on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -831,15 +858,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'reset\' should reset on all double clicks', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -847,13 +874,13 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should work when \'autorange\' is on', function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -866,15 +893,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should set to autorange on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -887,15 +914,15 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('when set to \'autosize\' should reset on all double clicks', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -903,9 +930,9 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should not try to autorange fixedrange:true axes when rangeInitial is not set', function(done) {
@@ -1002,7 +1029,7 @@ describe('Test click interactions:', function() {
 
     describe('zoom interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('on main dragbox should update the axis ranges', function(done) {
@@ -1025,7 +1052,7 @@ describe('Test click interactions:', function() {
 
     describe('scroll zoom interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
         });
 
         it('zooms in on scroll up', function() {
@@ -1054,7 +1081,7 @@ describe('Test click interactions:', function() {
         beforeEach(function(done) {
             mockCopy.layout.dragmode = 'pan';
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('on main dragbox should update the axis ranges', function(done) {
@@ -1105,7 +1132,7 @@ describe('dragbox', function() {
             expect(scale.y).toBeCloseTo(y, 1);
         }
 
-        Plotly.plot(createGraphDiv(), mock).then(function() {
+        Plotly.newPlot(createGraphDiv(), mock).then(function() {
             var node = d3.select('rect.nedrag').node();
             var pos = getRectCenter(node);
             var fns = drag.makeFns({pos0: pos, dpos: [50, 0]});

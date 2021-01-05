@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -31,8 +31,7 @@ describe('zoom box element', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'zoom';
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -121,7 +120,7 @@ describe('main plot pan', function() {
             _checkAxes(xr0, yr0);
         }
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             modeBar = gd._fullLayout._modeBar;
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -195,7 +194,7 @@ describe('main plot pan', function() {
         var events = [];
         var relayoutCallback;
 
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -569,7 +568,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             expect(gd._fullLayout.yaxis4.range).toBeCloseToArray(y4rng, 2, 'y3 rng');
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert([-0.36, 4.36], [-0.36, 4.36]);
         })
@@ -591,7 +590,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             expect(xGrid.size()).toEqual(xGridCnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 1.5, 0, -1.5, -1, -1.5, 0, 1.5, 1],
             y: [0, 1.5, 1, 1.5, 0, -1.5, -1, -1.5, 0],
             line: {shape: 'spline'}
@@ -636,7 +635,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             .then(drag.end);
         }
 
-        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
             return _run('full-x full-y', [30, 30], {cornerCnt: 4});
         })
@@ -666,7 +665,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     it('should emit plotly_relayouting events when drawing zoom selection', function(done) {
         var nsteps = 10; var events = []; var relayoutCallback;
-        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -685,7 +684,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     it('should emit plotly_relayouting events when zooming via mouse wheel', function(done) {
         var nsteps = 10; var events = []; var relayoutCallback;
-        Plotly.plot(gd, [{ y: [1, 2, 1] }], {}, {scrollZoom: true})
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }], {}, {scrollZoom: true})
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -708,7 +707,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
         }
 
-        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }])
         .then(doDrag('xy', 'nsew', 50, 50))
         .then(function() { _assert('after xy drag', [1, 1.208], [1.287, 1.5]); })
         .then(doDblClick('xy', 'nsew'))
@@ -736,7 +735,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         var yrng1 = [1.3581, 1.5];
         var blank = [undefined, undefined];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }], {
             margin: {l: 0, t: 0, r: 0, b: 0},
@@ -817,7 +816,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 .then(drag.end);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assertLabels('base', {
                 angle: [0, 0, 0, 0, 0, 0, 0],
@@ -946,7 +945,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             spyOn(Axes, 'drawOne').and.callThrough();
             eventData = null;
 
-            return Plotly.plot(gd, fig).then(function() {
+            return Plotly.newPlot(gd, fig).then(function() {
                 Axes.drawOne.calls.reset();
                 gd.on('plotly_relayout', function(d) { eventData = d; });
             });
@@ -974,7 +973,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             var yr0 = [-0.211, 3.211];
 
             var specs = [{
-                desc: 'zoombox on xy',
+                desc: '@flaky zoombox on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
                     [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
@@ -1758,7 +1757,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 };
             }
 
-            Plotly.plot(gd, [{y: [1, 2, 1]}], {dragmode: 'zoom'})
+            Plotly.newPlot(gd, [{y: [1, 2, 1]}], {dragmode: 'zoom'})
             .then(_assert('base', {
                 nodeCnt: 3,
                 xrng: [-0.128, 2.128],
@@ -1904,7 +1903,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 };
             }
 
-            Plotly.plot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
+            Plotly.newPlot(gd, [{ type: 'heatmap', z: z() }], {dragmode: 'pan'})
             .then(function() {
                 // inspired by https://github.com/plotly/plotly.js/issues/2687
                 gd.on('plotly_relayout', function(d) {
@@ -2035,7 +2034,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 margin: {l: 0, r: 0, t: 0, b: 0}
             };
 
-            Plotly.plot(gd, [trace0], layout)
+            Plotly.newPlot(gd, [trace0], layout)
             .then(function() {
                 // inspired by https://github.com/plotly/plotly.js-crossfilter.js
                 gd.on('plotly_selecting', function(d) {
@@ -2142,7 +2141,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             };
         }
 
-        Plotly.plot(gd, [{y: [1, 2, 1]}], {width: 400, height: 400})
+        Plotly.newPlot(gd, [{y: [1, 2, 1]}], {width: 400, height: 400})
         .then(function() {
             gd.on('plotly_relayout', function(d) { eventData = d; });
         })
@@ -2162,7 +2161,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(xrng, 2, 'xrng - ' + msg);
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'lines',
                 x: [
                     '1970-01-01 00:00:00.000',
@@ -2228,7 +2227,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 expect(gd.layout.yaxis.range).toBeCloseToArray(yrng, 2, 'yrng - ' + msg);
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'lines',
                 y: [
                     '1970-01-01 00:00:00.000',
@@ -2316,7 +2315,7 @@ describe('Event data:', function() {
     }
 
     it('should have correct content for *scatter* traces', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1],
             marker: {
                 color: [20, 30, 10],
@@ -2338,12 +2337,12 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
     it('should have correct content for *heatmap* traces', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'heatmap',
             z: [[1, 2, 1], [2, 3, 1]],
             colorbar: {
@@ -2366,7 +2365,7 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

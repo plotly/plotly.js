@@ -516,7 +516,7 @@ describe('Test choroplethmapbox convert:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox hover:', function() {
+describe('Test choroplethmapbox hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -554,7 +554,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
 
         var pos = s.pos || [270, 220];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             if(hasCssTransform) transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
 
             var to = setTimeout(function() {
@@ -653,7 +653,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox interactions:', function() {
+describe('Test choroplethmapbox interactions:', function() {
     var gd;
 
     var geojson = {
@@ -708,7 +708,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             marker: {opacity: 0.3}
         };
 
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             [trace0, trace1],
             {mapbox: {style: 'basic'}},
             {mapboxAccessToken: MAPBOX_ACCESS_TOKEN}
@@ -736,7 +736,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             return layerIds;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'choroplethmapbox',
             locations: ['AL'],
             z: [10],

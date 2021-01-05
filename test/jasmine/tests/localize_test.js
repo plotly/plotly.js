@@ -2,7 +2,7 @@ var Lib = require('@src/lib');
 var _ = Lib._;
 var Registry = require('@src/registry');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
 
 var Plotly = require('@lib');

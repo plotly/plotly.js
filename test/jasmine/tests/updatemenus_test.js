@@ -1,7 +1,7 @@
 var UpdateMenus = require('@src/components/updatemenus');
 var constants = require('@src/components/updatemenus/constants');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Events = require('@src/lib/events');
@@ -279,8 +279,7 @@ describe('update menus buttons', function() {
         buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
         dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -314,7 +313,7 @@ describe('update menus initialization', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             updatemenus: [{
                 buttons: [
                     {method: 'restyle', args: [], label: 'first'},
@@ -322,7 +321,6 @@ describe('update menus initialization', function() {
                 ]
             }]
         })
-        .catch(failTest)
         .then(done);
     });
 
@@ -352,8 +350,7 @@ describe('update menus interactions', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.updatemenus[1].x = 1;
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -508,7 +505,8 @@ describe('update menus interactions', function() {
         // the command by setting execute = false first:
         expect(gd.data[0].line.color).toEqual('blue');
 
-        Plotly.relayout(gd, 'updatemenus[0].buttons[2].execute', false).then(function() {
+        Plotly.relayout(gd, 'updatemenus[0].buttons[2].execute', false)
+        .then(function() {
             return click(selectHeader(0));
         }).then(function() {
             return click(selectButton(2));
@@ -730,7 +728,8 @@ describe('update menus interactions', function() {
         assertItemColor(selectHeader(0), 'rgb(255, 255, 255)');
         assertItemDims(selectHeader(1), 95, 33);
 
-        Plotly.relayout(gd, 'updatemenus[0].bgcolor', 'red').then(function() {
+        Plotly.relayout(gd, 'updatemenus[0].bgcolor', 'red')
+        .then(function() {
             assertItemColor(selectHeader(0), 'rgb(255, 0, 0)');
 
             return click(selectHeader(0));
@@ -931,7 +930,7 @@ describe('update menus interaction with other components:', function() {
     afterEach(destroyGraphDiv);
 
     it('draws buttons above sliders', function(done) {
-        Plotly.plot(createGraphDiv(), [{
+        Plotly.newPlot(createGraphDiv(), [{
             x: [1, 2, 3],
             y: [1, 2, 1]
         }], {
@@ -1080,7 +1079,7 @@ describe('update menus interaction with scrollbox:', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             var menus = document.getElementsByClassName('updatemenu-header');
 
             expect(menus.length).toBe(5);
@@ -1090,7 +1089,6 @@ describe('update menus interaction with scrollbox:', function() {
             menuRight = menus[3];
             menuUp = menus[4];
         })
-        .catch(failTest)
         .then(done);
     });
 

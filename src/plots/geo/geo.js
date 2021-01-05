@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 /* global PlotlyGeoAssets:false */
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2020, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -182,10 +182,14 @@ module.exports = function plot(gd, subplot, cdata) {
                 } else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
                     last = 0;
+
+                    fillOptions.splitNull = true;
+
                     for(j = 0; j < srcPos.length; j += 2) {
                         if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
                             pos = pos.concat(srcPos.slice(last, j));
                             pos.push(srcPos[last], srcPos[last + 1]);
+                            pos.push(null, null); // keep null to mark end of polygon
                             last = j + 2;
                         }
                     }

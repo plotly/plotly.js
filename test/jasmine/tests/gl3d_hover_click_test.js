@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -79,7 +79,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -108,7 +108,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
         .then(_hover)
@@ -133,7 +133,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 655, 221);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -306,7 +306,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -327,6 +327,7 @@ describe('Test gl3d trace click/hover:', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -337,7 +338,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 605, 271);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -446,6 +447,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -458,7 +460,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 605, 271, {buttons: 1});
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_click', function(eventData) {
@@ -471,6 +473,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -547,7 +550,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face colors', function(done) {
+    it('@noCI @gl should display correct face colors', function(done) {
         var fig = mesh3dcoloringMock;
 
         Plotly.newPlot(gd, fig)
@@ -600,7 +603,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities (uniform grid)', function(done) {
+    it('@noCI @gl should display correct face intensities (uniform grid)', function(done) {
         var fig = mesh3dcellIntensityMock;
 
         Plotly.newPlot(gd, fig)
@@ -631,7 +634,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+    it('@noCI @gl should display correct face intensities (non-uniform grid)', function(done) {
         var fig = mesh3dbunnyMock;
 
         Plotly.newPlot(gd, fig)
@@ -662,7 +665,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
+    it('@noCI @gl should display correct face intensities *alpha-hull* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -706,7 +709,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done);
     });
 
-    it('@gl should display correct face intensities *delaunay* case', function(done) {
+    it('@noCI @gl should display correct face intensities *delaunay* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -913,7 +916,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 200, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {

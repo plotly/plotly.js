@@ -1,7 +1,7 @@
 var Sliders = require('@src/components/sliders');
 var constants = require('@src/components/sliders/constants');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -234,7 +234,7 @@ describe('sliders initialization', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -262,7 +262,7 @@ describe('ugly internal manipulation of steps', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -282,7 +282,8 @@ describe('ugly internal manipulation of steps', function() {
         expect(gd._fullLayout.sliders[0].active).toEqual(0);
 
         // Set the active index higher than it can go:
-        Plotly.relayout(gd, {'sliders[0].active': 2}).then(function() {
+        Plotly.relayout(gd, {'sliders[0].active': 2})
+        .then(function() {
             // Confirm nothing changed
             expect(gd._fullLayout.sliders[0].active).toEqual(0);
 
@@ -321,7 +322,7 @@ describe('sliders interactions', function() {
 
         mockCopy = Lib.extendDeep({}, mock, {layout: {sliders: [{x: 0.25}, {}]}});
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -365,7 +366,8 @@ describe('sliders interactions', function() {
         expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         assertPlotSize({heightLessThan: 270}, 'initial');
 
-        Plotly.relayout(gd, 'sliders[0].visible', false).then(function() {
+        Plotly.relayout(gd, 'sliders[0].visible', false)
+        .then(function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
@@ -385,7 +387,8 @@ describe('sliders interactions', function() {
                 'sliders[0].visible': true,
                 'sliders[1].visible': true
             });
-        }).then(function() {
+        })
+        .then(function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();

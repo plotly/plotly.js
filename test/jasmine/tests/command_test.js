@@ -75,7 +75,7 @@ describe('Plots.hasSimpleAPICommandBindings', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: [1, 2, 3], y: [1, 2, 3]},
             {x: [1, 2, 3], y: [4, 5, 6]},
         ]);
@@ -194,7 +194,7 @@ describe('Plots.computeAPICommandBindings', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: [1, 2, 3], y: [1, 2, 3]},
             {x: [1, 2, 3], y: [4, 5, 6]},
         ]);
@@ -518,7 +518,7 @@ describe('component bindings', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         gd = createGraphDiv();
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -536,7 +536,8 @@ describe('component bindings', function() {
         });
 
         // Doesn't trigger the callback:
-        Plotly.relayout(gd, 'width', 400).then(function() {
+        Plotly.relayout(gd, 'width', 400)
+        .then(function() {
             // Triggers the callback:
             return Plotly.restyle(gd, 'marker.color', 'green');
         }).then(function() {
@@ -603,7 +604,7 @@ describe('attaching component bindings', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.plot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
+        Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
     });
 
     afterEach(function() {

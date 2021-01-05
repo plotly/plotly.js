@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -79,7 +79,7 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 13}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
+            return Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
         })
         .then(function() {
             countBars(1, 2);
@@ -88,7 +88,7 @@ describe('errorbar plotting', function() {
                 {ys: 34, yh: 40}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
+            return Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
         })
         .then(function() {
             countBars(2, 1);

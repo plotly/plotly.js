@@ -3,7 +3,7 @@ var setCursor = require('@src/lib/setcursor');
 var overrideCursor = require('@src/lib/override_cursor');
 var config = require('@src/plot_api/plot_config').dfltConfig;
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -654,13 +654,13 @@ describe('Test lib.js:', function() {
         //
         //   // => {marker: {range: [null, 2]}}
         //
-        // This case *does* work becuase the array merging does not require a deep extend:
+        // This case *does* work because the array merging does not require a deep extend:
         //
         //   Lib.expandObjectPaths({'range[0]': 5, 'range[1]': 2}
         //
         //   // => {range: [5, 2]}
         //
-        // Finally note that this case works fine becuase there's no merge necessary:
+        // Finally note that this case works fine because there's no merge necessary:
         //
         //   Lib.expandObjectPaths({'marker.range[1]': 2})
         //
@@ -2738,7 +2738,7 @@ describe('Queue', function() {
     });
 
     it('should not fill in undoQueue by default', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }]).then(function() {
             expect(gd.undoQueue).toBeUndefined();
@@ -2752,15 +2752,15 @@ describe('Queue', function() {
         }).then(function() {
             expect(gd.undoQueue.index).toEqual(0);
             expect(gd.undoQueue.queue).toEqual([]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
         Plotly.setPlotConfig({ queueLength: 2 });
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }])
         .then(function() {

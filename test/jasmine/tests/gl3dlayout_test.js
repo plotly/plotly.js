@@ -544,7 +544,7 @@ describe('Gl3d layout edge cases', function() {
     afterEach(destroyGraphDiv);
 
     it('@gl should handle auto aspect ratio correctly on data changes', function(done) {
-        Plotly.plot(gd, [{x: [1, 2], y: [1, 3], z: [1, 4], type: 'scatter3d'}])
+        Plotly.newPlot(gd, [{x: [1, 2], y: [1, 3], z: [1, 4], type: 'scatter3d'}])
         .then(function() {
             var aspect = gd.layout.scene.aspectratio;
             expect(aspect.x).toBeCloseTo(0.5503);
