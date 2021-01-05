@@ -57,11 +57,9 @@ module.exports = extendFlat({
         dflt: false,
         role: 'info',
         editType: 'plot',
-        description: [
-            'The type of interpolation for rendering the image.',
-            'Default `nearest` (nearest neighbor interpolation).',
-            'Can also be set to `linear` (bilinear interpolation).'
-        ].join(' ')
+        description: [ 
+            'Picks a smoothing algorithm use to smooth `z` data.' 
+        ].join(' ') 
     },
     zmin: {
         valType: 'info_array',
