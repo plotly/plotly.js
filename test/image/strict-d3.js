@@ -2,6 +2,9 @@
  * strict-d3: wrap selection.style to prohibit specific incorrect style values
  * that are known to cause problems in IE (at least IE9)
  */
+
+// Do we need this process now that IE9 and IE10 are not supported?
+
 'use strict';
 
 var d3 = require('@plotly/d3');

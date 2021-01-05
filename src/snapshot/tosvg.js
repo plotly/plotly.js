@@ -164,6 +164,8 @@ module.exports = function toSVG(gd, format, scale) {
     // Fix quotations around font strings and gradient URLs
     s = s.replace(DUMMY_REGEX, '\'');
 
+    // Do we need this process now that IE9 and IE10 are not supported?
+
     // IE is very strict, so we will need to clean
     //  svg with the following regex
     //  yes this is messy, but do not know a better way

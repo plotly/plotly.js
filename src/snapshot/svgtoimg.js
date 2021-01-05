@@ -45,7 +45,7 @@ function svgToImg(opts) {
         var img = new Image();
         var svgBlob, url;
 
-        if(format === 'svg' || Lib.isIE9orBelow() || Lib.isSafari()) {
+        if(format === 'svg' || Lib.isSafari()) {
             url = helpers.encodeSVG(svg);
         } else {
             svgBlob = helpers.createBlob(svg, 'svg');

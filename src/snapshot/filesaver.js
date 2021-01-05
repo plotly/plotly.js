@@ -31,10 +31,6 @@ function fileSaver(url, name, format) {
         var blob;
         var objectUrl;
 
-        if(Lib.isIE9orBelow()) {
-            reject(new Error('IE < 10 unsupported'));
-        }
-
         // Safari doesn't allow downloading of blob urls
         if(Lib.isSafari()) {
             var prefix = format === 'svg' ? ',' : ';base64,';

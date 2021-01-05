@@ -712,11 +712,6 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-var IS_IE9_OR_BELOW_REGEX = /MSIE [1-9]\./;
-lib.isIE9orBelow = function() {
-    return lib.isIE() && IS_IE9_OR_BELOW_REGEX.test(window.navigator.userAgent);
-};
-
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);
@@ -726,6 +721,8 @@ var IS_IOS_REGEX = /iPad|iPhone|iPod/;
 lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
+
+// Do we need this process now that IE9 and IE10 are not supported?
 
 /**
  * Duck typing to recognize a d3 selection, mostly for IE9's benefit
