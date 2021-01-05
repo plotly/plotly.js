@@ -53,7 +53,7 @@ module.exports = extendFlat({
     },
     zsmooth: {
         valType: 'enumerated',
-        values: ['nearest', 'linear'],
+        values: ['fast', false],
         dflt: 'nearest',
         role: 'info',
         editType: 'plot',
