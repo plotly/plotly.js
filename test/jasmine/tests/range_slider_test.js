@@ -50,7 +50,7 @@ describe('Visible rangesliders', function() {
     function plotMock() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        return Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             var bb = getRangeSlider().getBoundingClientRect();
             sliderY = bb.top + bb.height / 2;
             expect(sliderY).toBeCloseTo(387, -1);
@@ -239,7 +239,7 @@ describe('Visible rangesliders', function() {
         var start = 250;
         var end = 300;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'lines',
             x: [
                 '1970-01-01 00:00:00.000',
@@ -454,7 +454,7 @@ describe('Visible rangesliders', function() {
             expect(gd._fullLayout._size.b).toBeWithin(val, 10);
         }
 
-        Plotly.plot(gd, topMock)
+        Plotly.newPlot(gd, topMock)
         .then(function() {
             assertTop(true);
             return Plotly.relayout(gd, 'xaxis.range', [-0.5, 1.5]);
@@ -503,7 +503,7 @@ describe('Rangeslider visibility property', function() {
     }
 
     it('should not add the slider to the DOM by default', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).not.toBeDefined();
@@ -514,7 +514,7 @@ describe('Rangeslider visibility property', function() {
     });
 
     it('should add the slider if rangeslider is set to anything', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
         })
@@ -528,7 +528,7 @@ describe('Rangeslider visibility property', function() {
     });
 
     it('should add the slider if visible changed to `true`', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
         })
@@ -543,7 +543,7 @@ describe('Rangeslider visibility property', function() {
     });
 
     it('should remove the slider if changed to `false` or `undefined`', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3],
             y: [2, 3, 4]
         }], defaultLayout({
@@ -569,7 +569,7 @@ describe('Rangeslider visibility property', function() {
             return d3.select(getRangeSlider()).selectAll(query).size();
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter',
             x: [1, 2, 3],
             y: [2, 1, 2]
@@ -922,7 +922,7 @@ describe('rangesliders in general', function() {
     }
 
     it('should plot when only x data is provided', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
+        Plotly.newPlot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
         .then(function() {
             var rangeSlider = getRangeSlider();
 
@@ -933,7 +933,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should plot when only y data is provided', function(done) {
-        Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
+        Plotly.newPlot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
         .then(function() {
             var rangeSlider = getRangeSlider();
 
@@ -944,7 +944,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should expand its range in accordance with new data arrays', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }], {
             xaxis: { rangeslider: {} }
@@ -977,7 +977,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should not expand its range when range slider range is set', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }], {
             xaxis: { rangeslider: { range: [-1, 11] } }
@@ -1031,7 +1031,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should configure yaxis opts on relayout', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [2, 1, 2]
         }], {
             xaxis: { rangeslider: { yaxis: { range: [-10, 20] } } }
@@ -1058,7 +1058,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should update rangeslider x/y ranges when data changes even if main axes are not autoranged', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             // use a heatmap because it doesn't add any padding
             x0: 0, dx: 1,
             y0: 1, dy: 1,
@@ -1086,7 +1086,7 @@ describe('rangesliders in general', function() {
     });
 
     it('should be able to turn on rangeslider x/y autorange if initially specified', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             // use a heatmap because it doesn't add any padding
             x0: 0, dx: 1,
             y0: 1, dy: 1,
@@ -1121,7 +1121,7 @@ describe('rangesliders in general', function() {
 
     it('should be able to turn on rangeslider x/y autorange implicitly by deleting x range', function(done) {
         // this does not apply to y ranges, because the default there is 'match'
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             // use a heatmap because it doesn't add any padding
             x0: 0, dx: 1,
             y0: 1, dy: 1,
@@ -1158,7 +1158,7 @@ describe('rangesliders in general', function() {
                 .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider input rng ' + msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 1]
         }], {
             xaxis: { rangeslider: {visible: true} }

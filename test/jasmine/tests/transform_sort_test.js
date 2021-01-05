@@ -269,7 +269,7 @@ describe('Test sort transform interactions:', function() {
     }
 
     it('should respond to restyle calls', function(done) {
-        Plotly.plot(createGraphDiv(), [{
+        Plotly.newPlot(createGraphDiv(), [{
             x: [-2, -1, -2, 0, 1, 3, 1],
             y: [1, 2, 3, 1, 2, 3, 1],
             marker: {
@@ -341,7 +341,7 @@ describe('Test sort transform interactions:', function() {
             expect(pt.fullData.ids[pt.pointNumber]).toEqual(id, 'id');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             x: [-2, -1, -2, 0, 1, 3, 1],
             y: [1, 2, 3, 1, 2, 3, 1],
@@ -397,7 +397,7 @@ describe('Test sort transform interactions:', function() {
     it('should honor *categoryarray* when set', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: ['C', 'B', 'A'],
             y: [3, 1, 2],
             marker: {

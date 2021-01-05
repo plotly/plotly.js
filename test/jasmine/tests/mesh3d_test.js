@@ -238,7 +238,7 @@ describe('Test mesh3d', function() {
                 expect(fullTrace.cmax).toBe(full[2], 'full cmax');
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'mesh3d',
                 x: [0, 1, 2, 0],
                 y: [0, 0, 1, 2],
@@ -299,7 +299,7 @@ describe('Test mesh3d', function() {
         }
 
         it('@gl mesh3d should be visible when the indices are not integer', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -322,7 +322,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the indices could be rounded to be in vertex range', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -345,7 +345,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the indices are equal or greater than the number of vertices', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -368,7 +368,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the indices are negative', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -391,7 +391,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the indices have different sizes', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -414,7 +414,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the indices are provided and OK', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -437,7 +437,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when values are passed in string format', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['0', '1', '0.5', '0.5'],
                 y: ['0', '0.5', '1', '0.5'],
                 z: ['0', '0.5', '0.5', '1'],
@@ -459,7 +459,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the index arrays are empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -482,7 +482,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the index arrays are not provided', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -502,7 +502,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be visible when the vertex arrays are empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [],
                 y: [],
                 z: [],
@@ -522,7 +522,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays missing', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'mesh3d'
             }])
             .then(function() {
@@ -533,7 +533,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - number case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: 1,
@@ -550,7 +550,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - boolean case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: true,
@@ -567,7 +567,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - object case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: {},
@@ -584,7 +584,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - string case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: '[0, 0.5, 0.5, 1]',
@@ -601,7 +601,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - string case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -618,7 +618,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - object case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -635,7 +635,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - boolean case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],
@@ -652,7 +652,7 @@ describe('Test mesh3d', function() {
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - number case', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 1, 0.5, 0.5],
                 y: [0, 0.5, 1, 0.5],
                 z: [0, 0.5, 0.5, 1],

@@ -296,7 +296,7 @@ describe('Test densitymapbox hover:', function() {
 
         var pos = s.pos || [353, 143];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();
@@ -410,7 +410,7 @@ describe('Test densitymapbox interactions:', function() {
             z: [1, 20, 5],
         };
 
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             [trace0, trace1],
             {mapbox: {style: 'basic'}},
             {mapboxAccessToken: MAPBOX_ACCESS_TOKEN}
@@ -438,7 +438,7 @@ describe('Test densitymapbox interactions:', function() {
             return layerIds;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'densitymapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
@@ -507,7 +507,7 @@ describe('Test densitymapbox interactions:', function() {
             }
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'densitymapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],

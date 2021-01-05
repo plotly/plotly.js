@@ -670,7 +670,7 @@ describe('Test splom interactions:', function() {
     it('@gl should destroy gl objects on Plots.cleanPlot', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
             expect(gd._fullLayout._splomScenes).toBeDefined();
             expect(Object.keys(gd._fullLayout._splomScenes).length).toBe(1);
@@ -702,7 +702,7 @@ describe('Test splom interactions:', function() {
             cnt++;
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert([1198, 16558, 3358, 118]);
             return Plotly.restyle(gd, 'showupperhalf', false);
         })
@@ -775,7 +775,7 @@ describe('Test splom interactions:', function() {
             cnt++;
         }
 
-        Plotly.plot(gd, figLarge).then(function() {
+        Plotly.newPlot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
                 innerSubplotNodeCnt: 4,
@@ -865,7 +865,7 @@ describe('Test splom interactions:', function() {
             }
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             expect(gd._fullLayout.grid.xside).toBe('bottom', 'sanity check dflt grid.xside');
             expect(gd._fullLayout.grid.yside).toBe('left', 'sanity check dflt grid.yside');
 
@@ -893,7 +893,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should work with typed arrays', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'splom',
             dimensions: [{
                 label: 'A',
@@ -921,7 +921,7 @@ describe('Test splom interactions:', function() {
             }
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var splomScenes = gd._fullLayout._splomScenes;
             for(var k in splomScenes) {
                 spyOn(splomScenes[k], 'draw').and.callThrough();
@@ -977,7 +977,7 @@ describe('Test splom interactions:', function() {
 
         spyOn(Lib, 'log');
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             assertFnCall('base', {
                 cleanPlot: 1,       // called once from inside Plots.supplyDefaults
                 supplyDefaults: 1,
@@ -1045,7 +1045,7 @@ describe('Test splom interactions:', function() {
             }]
         }];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             _assertAxisTypes('no upper half / no diagonal', {
                 xaxes: ['linear', 'category', undefined, null],
                 fullXaxes: ['linear', 'category', 'category', null],
@@ -1084,7 +1084,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should not fail when editing graph with visible:false traces', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'splom',
             dimensions: [{values: []}, {values: []}]
         }, {
@@ -1168,7 +1168,7 @@ describe('Test splom update switchboard:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
         var matrix, regl, splomGrid;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var fullLayout = gd._fullLayout;
             var trace = gd._fullData[0];
             var scene = fullLayout._splomScenes[trace.uid];
@@ -1212,7 +1212,7 @@ describe('Test splom update switchboard:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         var scene, matrix, regl;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var fullLayout = gd._fullLayout;
             var trace = gd._fullData[0];
             scene = fullLayout._splomScenes[trace.uid];
@@ -1375,7 +1375,7 @@ describe('Test splom hover:', function() {
 
         var pos = s.pos || [200, 100];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();
@@ -1530,7 +1530,7 @@ describe('Test splom drag:', function() {
             });
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             var uid = gd._fullData[0].uid;
             var scene = gd._fullLayout._splomScenes[uid];
@@ -1760,7 +1760,7 @@ describe('Test splom select:', function() {
             scene.matrix.draw.calls.reset();
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             uid = gd._fullData[0].uid;
             scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update').and.callThrough();
@@ -1849,7 +1849,7 @@ describe('Test splom select:', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'splom',
             dimensions: [{
                 values: [1, 2, 3]

@@ -111,7 +111,7 @@ describe('Plotly.downloadImage', function() {
         var plotClip = /clip-path='url\("#clip[0-9a-f]{6}xyplot"\)/;
         var legendClip = /clip-path=\'url\("#legend[0-9a-f]{6}"\)/;
 
-        Plotly.plot(gd, textchartMock.data, textchartMock.layout)
+        Plotly.newPlot(gd, textchartMock.data, textchartMock.layout)
         .then(function(gd) {
             savedBlob = undefined;
             return Plotly.downloadImage(gd, {
@@ -150,7 +150,7 @@ describe('Plotly.downloadImage', function() {
         spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
         spyOn(helpers, 'octetStream');
 
-        Plotly.plot(gd, textchartMock.data, textchartMock.layout)
+        Plotly.newPlot(gd, textchartMock.data, textchartMock.layout)
         .then(function() { return Plotly.downloadImage(gd, {format: 'svg'}); })
         .then(function() { return Plotly.downloadImage(gd, {format: 'png'}); })
         .then(function() { return Plotly.downloadImage(gd, {format: 'jpeg'}); })
@@ -177,7 +177,7 @@ describe('Plotly.downloadImage', function() {
         gd.style.width = '500px';
         gd.style.height = '300px';
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() { return Plotly.downloadImage(gd, {format: 'png'}); })
         .then(function() {
             var args = helpers.octetStream.calls.allArgs();
@@ -210,7 +210,7 @@ function downloadTest(gd, format) {
         });
     });
 
-    return Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
+    return Plotly.newPlot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
         // start observing dom
         // configuration of the observer:
         var config = { childList: true };

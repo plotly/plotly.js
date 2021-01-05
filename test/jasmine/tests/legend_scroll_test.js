@@ -70,7 +70,7 @@ describe('The legend', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(done);
         });
 
@@ -420,7 +420,7 @@ describe('The legend', function() {
             var data = [{ x: [1, 2, 3], y: [2, 3, 4], name: 'Test' }];
             var layout = { showlegend: true };
 
-            Plotly.plot(gd, data, layout);
+            Plotly.newPlot(gd, data, layout);
         });
 
         afterEach(destroyGraph);

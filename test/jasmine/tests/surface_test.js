@@ -197,7 +197,7 @@ describe('Test surface', function() {
         }
 
         it('@gl surface should be invisible when the z array is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'z': []
             }])
@@ -209,7 +209,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be invisible when the x array is defined but is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [],
                 'y': [0, 1],
@@ -223,7 +223,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be invisible when the y array is defined but is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [],
@@ -237,7 +237,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be invisible when the x array is defined and has at least one item', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0],
                 'y': [0, 1],
@@ -251,7 +251,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be invisible when the y array is defined and has at least one item', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [0],
@@ -265,7 +265,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be visible when the x and y are not provided; but z array is provided', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'z': [[1, 2], [3, 4]]
             }])
@@ -277,7 +277,7 @@ describe('Test surface', function() {
         });
 
         it('@gl surface should be invisible when the x and y are provided; but z array is not provided', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [0, 1]

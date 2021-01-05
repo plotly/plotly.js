@@ -26,7 +26,7 @@ describe('restyle', function() {
                 return d3.selectAll('g.trace.scatter .fills>g');
             }
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 fills = getFills();
 
                 // Assert there are two fills, first is tozero, second is tonext
@@ -70,7 +70,7 @@ describe('restyle', function() {
             var lines, firstLine1, secondLine1, firstLine2, secondLine2;
             var mock = Lib.extendDeep({}, require('@mocks/basic_line.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 lines = d3.selectAll('g.scatter.trace .js-line');
 
                 firstLine1 = lines[0][0];
@@ -120,7 +120,7 @@ describe('restyle', function() {
                 expect(texts.size()).toEqual(textSize);
             }
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 assertScatterModeSizes(2, 6, 9);
 
                 return Plotly.restyle(gd, 'mode', 'lines');
@@ -153,7 +153,7 @@ describe('restyle', function() {
         });
 
         it('can legend-hide the second and only scatter trace', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2, 3], type: 'bar'},
                 {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scatter'}
             ], {
@@ -179,7 +179,7 @@ describe('restyle', function() {
         });
 
         it('@gl can legend-hide the second and only scattergl trace', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2, 3], type: 'bar'},
                 {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scattergl'}
             ], {
@@ -227,7 +227,7 @@ describe('relayout', function() {
                 });
             }
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 assertCategories(['giraffes', 'orangutans', 'monkeys']);
 
                 return Plotly.relayout(gd, 'xaxis.categoryorder', 'category descending');
@@ -296,7 +296,7 @@ describe('relayout', function() {
                 expect(Math.abs(texts.attr('y') - textT[1])).toBeLessThan(TOLERANCE);
             }
 
-            Plotly.plot(gd, mockData).then(function() {
+            Plotly.newPlot(gd, mockData).then(function() {
                 assertPointTranslate([270, 135], [270, 135]);
 
                 return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
@@ -399,7 +399,7 @@ describe('subplot creation / deletion:', function() {
             expect(d3.select('.x2title').size()).toEqual(0);
         }
 
-        Plotly.plot(gd, [], {
+        Plotly.newPlot(gd, [], {
             xaxis: { title: 'X' },
             yaxis: { title: 'Y' },
             xaxis2: { title: 'X2', anchor: 'y2' },
@@ -505,7 +505,7 @@ describe('subplot creation / deletion:', function() {
     });
 
     it('puts plot backgrounds behind everything except if they overlap', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
             {y: [3, 1, 2], yaxis: 'y3'}
@@ -551,7 +551,7 @@ describe('subplot creation / deletion:', function() {
     });
 
     it('puts not have backgrounds nodes when plot and paper color match', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
             {y: [3, 1, 2], yaxis: 'y3'}
@@ -628,7 +628,7 @@ describe('subplot creation / deletion:', function() {
                 .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(1, 1);
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
@@ -674,7 +674,7 @@ describe('subplot creation / deletion:', function() {
             assertChildrenCnt(g.select('.yaxislayer-above'), yAbove[1], 'yaxislayer above');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(
                 [false, 0],
                 [false, 0],
@@ -818,7 +818,7 @@ describe('subplot creation / deletion:', function() {
             expect(info.selectAll('.g-ytitle').size()).toBe(yaxis[2], 'y title cnt');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }], {
             xaxis: {title: 'X'},

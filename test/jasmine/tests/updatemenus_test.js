@@ -279,7 +279,7 @@ describe('update menus buttons', function() {
         buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
         dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -313,7 +313,7 @@ describe('update menus initialization', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             updatemenus: [{
                 buttons: [
                     {method: 'restyle', args: [], label: 'first'},
@@ -350,7 +350,7 @@ describe('update menus interactions', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.updatemenus[1].x = 1;
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -930,7 +930,7 @@ describe('update menus interaction with other components:', function() {
     afterEach(destroyGraphDiv);
 
     it('draws buttons above sliders', function(done) {
-        Plotly.plot(createGraphDiv(), [{
+        Plotly.newPlot(createGraphDiv(), [{
             x: [1, 2, 3],
             y: [1, 2, 1]
         }], {
@@ -1079,7 +1079,7 @@ describe('update menus interaction with scrollbox:', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             var menus = document.getElementsByClassName('updatemenu-header');
 
             expect(menus.length).toBe(5);

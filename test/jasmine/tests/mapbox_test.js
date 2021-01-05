@@ -288,7 +288,7 @@ describe('mapbox credentials', function() {
         spyOn(Lib, 'error');
 
         expect(function() {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'scattermapbox',
                 lon: [10, 20, 30],
                 lat: [10, 20, 30]
@@ -302,7 +302,7 @@ describe('mapbox credentials', function() {
         spyOn(Lib, 'error');
 
         expect(function() {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'scattermapbox',
                 lon: [10, 20, 30],
                 lat: [10, 20, 30]
@@ -317,7 +317,7 @@ describe('mapbox credentials', function() {
     it('@gl should throw error if token is invalid', function(done) {
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -337,7 +337,7 @@ describe('mapbox credentials', function() {
     it('@gl should use access token in mapbox layout options if present', function(done) {
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -360,7 +360,7 @@ describe('mapbox credentials', function() {
         spyOn(Lib, 'warn');
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -385,7 +385,7 @@ describe('mapbox credentials', function() {
     it('@gl should not throw when using a custom non-mapbox style', function(done) {
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -403,7 +403,7 @@ describe('mapbox credentials', function() {
     it('@gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -425,7 +425,7 @@ describe('mapbox credentials', function() {
         spyOn(Lib, 'log');
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -459,7 +459,7 @@ describe('mapbox credentials', function() {
         //
         // https://www.mapbox.com/atlas/#developing-with-atlas
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [10, 20, 30]
@@ -498,7 +498,7 @@ describe('mapbox plots', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -1785,7 +1785,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
             expect(layersIds.indexOf(layoutLayerId)).toBe(exp.layout, msg + '| layout layer');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
@@ -1893,7 +1893,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
             expect(layersIds.indexOf(choroplethPrefix + '-line')).toBe(exp.choropleth[1], msg + '| choropleth line');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
@@ -1968,7 +1968,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
             });
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35]
@@ -2033,7 +2033,7 @@ describe('Test mapbox GeoJSON fetching:', function() {
         var url2 = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-blue-data.json';
         var cnt = 0;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'choroplethmapbox',
             locations: ['a'],
             z: [1],
@@ -2059,7 +2059,7 @@ describe('Test mapbox GeoJSON fetching:', function() {
     it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
         var actual = '';
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'choroplethmapbox',
             locations: ['a'],
             z: [1],

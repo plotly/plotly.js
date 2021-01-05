@@ -466,7 +466,7 @@ describe('range selector interactions:', function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -634,7 +634,7 @@ describe('range selector automargin', function() {
             margin: {l: 50, r: 50, t: 100, b: 100}
         }});
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 

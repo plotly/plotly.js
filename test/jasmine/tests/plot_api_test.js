@@ -30,7 +30,7 @@ describe('Test plot api', function() {
         });
     });
 
-    describe('Plotly.plot', function() {
+    describe('Plotly.newPlot', function() {
         var gd;
 
         beforeEach(function() {
@@ -40,7 +40,7 @@ describe('Test plot api', function() {
         afterEach(destroyGraphDiv);
 
         it('accepts gd, data, layout, and config as args', function(done) {
-            Plotly.plot(gd,
+            Plotly.newPlot(gd,
                 [{x: [1, 2, 3], y: [1, 2, 3]}],
                 {width: 500, height: 500},
                 {editable: true}
@@ -55,7 +55,7 @@ describe('Test plot api', function() {
         });
 
         it('accepts gd and an object as args', function(done) {
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {width: 500, height: 500},
                 config: {editable: true},
@@ -72,7 +72,7 @@ describe('Test plot api', function() {
         });
 
         it('allows adding more frames to the initial set', function(done) {
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {width: 500, height: 500},
                 config: {editable: true},
@@ -101,7 +101,7 @@ describe('Test plot api', function() {
         it('should emit afterplot event after plotting is done', function(done) {
             var afterPlot = false;
 
-            var promise = Plotly.plot(gd, [{ y: [2, 1, 2]}]);
+            var promise = Plotly.newPlot(gd, [{ y: [2, 1, 2]}]);
 
             gd.on('plotly_afterplot', function() {
                 afterPlot = true;
@@ -134,7 +134,7 @@ describe('Test plot api', function() {
         });
 
         it('should update the plot clipPath if the plot is resized', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { width: 500, height: 500 })
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { width: 500, height: 500 })
             .then(function() {
                 return Plotly.relayout(gd, { width: 400, height: 400 });
             })
@@ -155,7 +155,7 @@ describe('Test plot api', function() {
 
         it('sets null values to their default', function(done) {
             var defaultWidth;
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
             .then(function() {
                 defaultWidth = gd._fullLayout.width;
                 return Plotly.relayout(gd, { width: defaultWidth - 25});
@@ -173,7 +173,7 @@ describe('Test plot api', function() {
 
         it('ignores undefined values', function(done) {
             var defaultWidth;
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
             .then(function() {
                 defaultWidth = gd._fullLayout.width;
                 return Plotly.relayout(gd, { width: defaultWidth - 25});
@@ -190,7 +190,7 @@ describe('Test plot api', function() {
         });
 
         it('can set items in array objects', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
             .then(function() {
                 return Plotly.relayout(gd, {rando: [1, 2, 3]});
             })
@@ -210,7 +210,7 @@ describe('Test plot api', function() {
             var edit2 = {'rando[1]': {c: 3}};
             var edit3 = {'rando[1].d': 4};
 
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
             .then(function() {
                 return Plotly.relayout(gd, edit1);
             })
@@ -250,7 +250,7 @@ describe('Test plot api', function() {
             }];
             var scatter = null;
             var oldHeight = 0;
-            Plotly.plot(gd, data)
+            Plotly.newPlot(gd, data)
             .then(function() {
                 scatter = document.getElementsByClassName('scatter')[0];
                 oldHeight = scatter.getBoundingClientRect().height;
@@ -265,7 +265,7 @@ describe('Test plot api', function() {
         });
 
         it('should skip empty axis objects', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [1, 2, 3],
                 y: [1, 2, 1]
             }], {
@@ -299,7 +299,7 @@ describe('Test plot api', function() {
                 return getPos(d3.select('.layer-above').select('.imagelayer').select('image'));
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: ['a', 'b', 'c'],
                 y: [1, 2, 1]
             }], {
@@ -356,7 +356,7 @@ describe('Test plot api', function() {
             var initialXRange;
             var initialYRange;
 
-            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2]}])
             .then(function() {
                 expect(gd.layout.xaxis.autorange).toBe(true);
                 expect(gd.layout.yaxis.autorange).toBe(true);
@@ -392,7 +392,7 @@ describe('Test plot api', function() {
         });
 
         it('sets aspectmode to manual when you provide any aspectratio', function(done) {
-            Plotly.plot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
             .then(function() {
                 expect(gd.layout.scene.aspectmode).toBe('auto');
 
@@ -411,7 +411,7 @@ describe('Test plot api', function() {
         });
 
         it('sets tickmode to linear when you edit tick0 or dtick', function(done) {
-            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2]}])
             .then(function() {
                 expect(gd.layout.xaxis.tickmode).toBeUndefined();
                 expect(gd.layout.yaxis.tickmode).toBeUndefined();
@@ -436,7 +436,7 @@ describe('Test plot api', function() {
         });
 
         it('updates non-auto ranges for linear/log changes', function(done) {
-            Plotly.plot(gd, [{x: [3, 5], y: [3, 5]}], {
+            Plotly.newPlot(gd, [{x: [3, 5], y: [3, 5]}], {
                 xaxis: {range: [1, 10]},
                 yaxis: {type: 'log', range: [0, 1]}
             })
@@ -458,7 +458,7 @@ describe('Test plot api', function() {
         });
 
         it('respects reversed autorange when switching linear to log', function(done) {
-            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2]}])
             .then(function() {
                 // Ideally we should change this to xaxis.autorange: 'reversed'
                 // but that's a weird disappearing setting used just to force
@@ -484,7 +484,7 @@ describe('Test plot api', function() {
         });
 
         it('autoranges automatically when switching to/from any other axis type than linear <-> log', function(done) {
-            Plotly.plot(gd, [{x: ['1.5', '0.8'], y: [1, 2]}], {xaxis: {range: [0.6, 1.7]}})
+            Plotly.newPlot(gd, [{x: ['1.5', '0.8'], y: [1, 2]}], {xaxis: {range: [0.6, 1.7]}})
             .then(function() {
                 expect(gd.layout.xaxis.autorange).toBeUndefined();
                 expect(gd._fullLayout.xaxis.type).toBe('linear');
@@ -1143,7 +1143,7 @@ describe('Test plot api', function() {
         });
 
         it('should redo auto z/contour when editing z array', function(done) {
-            Plotly.plot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
+            Plotly.newPlot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
                 expect(gd._fullData[0].zauto).toBe(true);
                 expect(gd._fullData[0].zmin).toBe(1);
                 expect(gd._fullData[0].zmax).toBe(4);
@@ -1166,7 +1166,7 @@ describe('Test plot api', function() {
             var edit2 = {'rando[1]': {c: 3}};
             var edit3 = {'rando[1].d': 4};
 
-            Plotly.plot(gd, [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}])
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}])
             .then(function() {
                 return Plotly.restyle(gd, edit1);
             })
@@ -1208,7 +1208,7 @@ describe('Test plot api', function() {
                 expect(gd._fullData[1].zauto).toBe(auto, msg);
             }
 
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {z: [[1, 2], [3, 4]], type: 'heatmap'},
                 {x: [2, 3], z: [[5, 6], [7, 8]], type: 'contour'}
             ])
@@ -1255,7 +1255,7 @@ describe('Test plot api', function() {
                 expect(gd._fullData[1].marker.line.colorscale).toEqual(auto ? autocscale : scales[mlcscl1]);
             }
 
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2], mode: 'markers', marker: {color: [1, 10]}},
                 {y: [2, 1], mode: 'markers', marker: {line: {width: 2, color: [3, 4]}}}
             ])
@@ -1301,7 +1301,7 @@ describe('Test plot api', function() {
                 return function() { return Plotly.restyle(gd, arg); };
             }
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'markers',
                 y: [1, 2, 1],
                 marker: { color: [1, -1, 4] }
@@ -1384,7 +1384,7 @@ describe('Test plot api', function() {
                 }
             }
 
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4], type: 'histogram'},
                 {x: [1, 1, 2, 2, 3, 3, 4, 4], y: [1, 1, 2, 2, 3, 3, 4, 4], type: 'histogram2d'}
             ])
@@ -1419,7 +1419,7 @@ describe('Test plot api', function() {
                 negateIf(auto, expect(gd.data[1].contours.size)).toBe(size1, msg);
             }
 
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {z: [[1, 2], [3, 4]], type: 'contour'},
                 {x: [1, 2, 3, 4], y: [3, 4, 5, 6], type: 'histogram2dcontour'}
             ])
@@ -1453,7 +1453,7 @@ describe('Test plot api', function() {
         }
 
         it('sets heatmap xtype/ytype when you edit x/y data or scaling params', function(done) {
-            Plotly.plot(gd, [{type: 'heatmap', z: [[0, 1], [2, 3]]}])
+            Plotly.newPlot(gd, [{type: 'heatmap', z: [[0, 1], [2, 3]]}])
             .then(function() {
                 // TODO would probably be better to actively default to 'array' here...
                 checkScaling(undefined, undefined, 0, 0);
@@ -1471,7 +1471,7 @@ describe('Test plot api', function() {
         });
 
         it('sets heatmap xtype/ytype even when data/fullData indices mismatch', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {
                     // importantly, this is NOT a heatmap trace, so _fullData[1]
                     // will not have the same attributes as data[1]
@@ -1509,7 +1509,7 @@ describe('Test plot api', function() {
                 expect(gd._fullData[1].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
             }
 
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {z: [[1, 2], [3, 4]], type: 'heatmap'},
                 {x: [2, 3], z: [[1, 2], [3, 4]], type: 'heatmap'}
             ])
@@ -2323,7 +2323,7 @@ describe('Test plot api', function() {
             var intialHTML = gd.innerHTML;
             var mockData = [{ x: [1, 2, 3], y: [2, 3, 4] }];
 
-            Plotly.plot(gd, mockData).then(function() {
+            Plotly.newPlot(gd, mockData).then(function() {
                 Plotly.purge(gd);
 
                 expect(Object.keys(gd)).toEqual(initialKeys);
@@ -2388,7 +2388,7 @@ describe('Test plot api', function() {
                 scl: 'Blues'
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].colorscale).toBe('Blues');
             expect(gd.data[0].scl).toBe(undefined);
         });
@@ -2400,7 +2400,7 @@ describe('Test plot api', function() {
                 scl: 'Reds'
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].colorscale).toBe('Greens');
             expect(gd.data[0].scl).not.toBe(undefined);
         });
@@ -2411,7 +2411,7 @@ describe('Test plot api', function() {
                 reversescl: true
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].reversescale).toBe(true);
             expect(gd.data[0].reversescl).toBe(undefined);
         });
@@ -2423,7 +2423,7 @@ describe('Test plot api', function() {
                 reversescl: false
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].reversescale).toBe(true);
             expect(gd.data[0].reversescl).not.toBe(undefined);
         });
@@ -2434,7 +2434,7 @@ describe('Test plot api', function() {
                 colorscale: 'YIGnBu'
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].colorscale).toBe('YlGnBu');
         });
 
@@ -2444,7 +2444,7 @@ describe('Test plot api', function() {
                 marker: { colorscale: 'YIGnBu' }
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].marker.colorscale).toBe('YlGnBu');
         });
 
@@ -2454,7 +2454,7 @@ describe('Test plot api', function() {
                 colorscale: 'YIOrRd'
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].colorscale).toBe('YlOrRd');
         });
 
@@ -2464,7 +2464,7 @@ describe('Test plot api', function() {
                 marker: { colorscale: 'YIOrRd' }
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
             expect(gd.data[0].marker.colorscale).toBe('YlOrRd');
         });
 
@@ -2491,7 +2491,7 @@ describe('Test plot api', function() {
 
             spyOn(Plots.subplotsRegistry.gl3d, 'plot');
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
 
             expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
 
@@ -2520,7 +2520,7 @@ describe('Test plot api', function() {
 
             spyOn(Plots.subplotsRegistry.gl3d, 'plot');
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
 
             expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
 
@@ -2550,7 +2550,7 @@ describe('Test plot api', function() {
                 }]
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
 
             var trace0 = gd.data[0];
             var trace1 = gd.data[1];
@@ -2580,7 +2580,7 @@ describe('Test plot api', function() {
                 }]
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
 
             var trace0 = gd.data[0];
             var trace1 = gd.data[1];
@@ -2609,7 +2609,7 @@ describe('Test plot api', function() {
                 ]
             };
 
-            Plotly.plot(gd, data, layout);
+            Plotly.newPlot(gd, data, layout);
 
             expect(gd.layout.annotations[0]).toEqual({ xref: 'paper', yref: 'paper' });
             expect(gd.layout.annotations[1]).toEqual(null);
@@ -2674,7 +2674,7 @@ describe('Test plot api', function() {
                 name: 'Emmenthaler'
             }];
 
-            Plotly.plot(gd, data);
+            Plotly.newPlot(gd, data);
 
             // Even if both showlegends are false, leave trace.showlegend out
             // My rationale for this is that legends are sufficiently different
@@ -2724,7 +2724,7 @@ describe('Test plot api', function() {
             }];
             var height = 50;
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 return Plotly.newPlot(gd, data, { height: height });
             })
             .then(function() {
@@ -2750,7 +2750,7 @@ describe('Test plot api', function() {
                 };
             }
 
-            Plotly.plot(gd, data)
+            Plotly.newPlot(gd, data)
             .then(_assert('base'))
             .then(function() { return Plotly.newPlot(gd, data); })
             .then(_assert('after newPlot()'))
@@ -2784,7 +2784,7 @@ describe('Test plot api', function() {
             });
 
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
+            Plotly.newPlot(gd, [{ y: [2, 1, 2] }]).then(function() {
                 data = gd.data;
                 layout = gd.layout;
                 calcdata = gd.calcdata;
