@@ -561,6 +561,9 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ## [1.49.5] -- 2019-09-18
 
+### Changed
+-  Drop support for IE10 and IE9 as part of browserify upgrade [#4168]
+
 ### Fixed
 - Clear rejected promises from queue when calling `Plotly.react` [#4197]
 - Do not attempt to remove non-existing mapbox layout source and layers [#4197]
