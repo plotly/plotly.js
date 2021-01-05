@@ -187,7 +187,7 @@ describe('annotations relayout', function() {
         expect(typeof MathJax).toBe('undefined');
         mockLayout.annotations[14].text = '$x+y+z$';
 
-        Plotly.plot(gd, mockData, mockLayout)
+        Plotly.newPlot(gd, mockData, mockLayout)
         .then(function() {
             spyOn(Loggers, 'warn');
 
@@ -506,7 +506,7 @@ describe('annotations log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.plot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -659,7 +659,7 @@ describe('annotations autorange', function() {
     }
 
     it('should adapt to relayout calls', function(done) {
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             assertRanges(
                 [0.91, 2.09], [0.91, 2.09],
                 ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
@@ -747,7 +747,7 @@ describe('annotations autorange', function() {
     });
 
     it('catches bad xref/yref', function(done) {
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             return Plotly.relayout(gd, {'annotations[1]': {
                 text: 'LT',
                 x: -1,
@@ -777,7 +777,7 @@ describe('annotations autorange', function() {
             expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 1, msg + ' yrng');
         }
 
-        Plotly.plot(gd, [{y: [1, 2]}], {
+        Plotly.newPlot(gd, [{y: [1, 2]}], {
             xaxis: {range: [0, 2]},
             yaxis: {range: [0, 2]},
             annotations: [{
@@ -807,7 +807,7 @@ describe('annotations autorange', function() {
     });
 
     it('should not error out on subplots w/o visible traces', function(done) {
-        Plotly.plot(gd, [{}], {
+        Plotly.newPlot(gd, [{}], {
             annotations: [{
                 x: 0.1,
                 y: 0.1,
@@ -919,7 +919,7 @@ describe('annotation clicktoshow', function() {
 
     it('should select only clicktoshow annotations matching x, y, and axes of any point', function(done) {
         // first try to select without adding clicktoshow, both visible and invisible
-        Plotly.plot(gd, data, layout())
+        Plotly.newPlot(gd, data, layout())
         // clicktoshow is off initially, so it doesn't *expect* clicking will
         // do anything, and it doesn't *actually* do anything.
         .then(clickAndCheck({newPts: [[1, 2]], newCTS: false, on: allIndices, step: 1}))
@@ -955,7 +955,7 @@ describe('annotation clicktoshow', function() {
     });
 
     it('works on date and log axes', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: ['2016-01-01', '2016-01-02', '2016-01-03'],
             y: [1, 1, 3]
         }], {
@@ -978,7 +978,7 @@ describe('annotation clicktoshow', function() {
     });
 
     it('works on category axes', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: ['a', 'b', 'c'],
             y: [1, 2, 3]
         }], {
@@ -1024,7 +1024,7 @@ describe('annotation effects', function() {
         // we've already tested autorange with relayout, so fix the geometry
         // completely so we know exactly what we're dealing with
         // plot area is 300x300, and covers data range 100x100
-        return Plotly.plot(gd,
+        return Plotly.newPlot(gd,
             [{x: [0, 100], y: [0, 100], mode: 'markers'}],
             {
                 xaxis: {range: [0, 100]},
@@ -1608,7 +1608,7 @@ describe('annotation effects', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
             y: [0, 4, 5, 1, 2, 2, 3, 4, 2],
         }], {
@@ -1691,7 +1691,7 @@ describe('animating annotations', function() {
             });
         }
 
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             [{y: [1, 2, 3]}],
             {
                 annotations: [{text: 'hello'}],

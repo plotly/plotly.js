@@ -365,7 +365,7 @@ describe('Test histogram2d hover:', function() {
     }
 
     it('should display correct label content with specified format', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'histogram2d',
             x: [0, 1, 2, 0, 1, 2, 1],
             y: [0, 0, 0, 1, 1, 1, 1],
@@ -435,7 +435,7 @@ describe('Test histogram2d hover:', function() {
 
     describe('hover info', function() {
         it('shows the data range when bins have multiple values', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 2, 3, 4, 5, 6, 7],
                 y: [1, 3, 4, 5, 6, 7, 8],
                 xbins: {start: -0.5, end: 8.5, size: 3},
@@ -456,7 +456,7 @@ describe('Test histogram2d hover:', function() {
         });
 
         it('shows the data range when bins have multiple values (case 2)', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'histogram2d',
                 x: ['a', 'b', 'c', 'a'],
                 y: [7, 2, 3, 7],
@@ -473,7 +473,7 @@ describe('Test histogram2d hover:', function() {
         });
 
         it('shows the exact data when bins have single values', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
                 y: [2, 2, 4.2, 4.2, 4.2, 8.8, 8.8],
                 xbins: {start: -0.5, end: 8.5, size: 3},

@@ -224,7 +224,7 @@ describe('Test shapes:', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.plot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -471,7 +471,7 @@ describe('shapes axis reference changes', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [1, 2, 3], yaxis: 'y2'}
         ], {
@@ -598,7 +598,7 @@ describe('shapes autosize', function() {
             }
         };
 
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             assertRanges('base', [0, 2], [0, 2]);
             return Plotly.relayout(gd, { 'shapes[1].visible': false });
         })
@@ -621,7 +621,7 @@ describe('shapes autosize', function() {
     it('should propagate axis autorange changes when axis ranges are set', function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{y: [1, 2]}], {
+        Plotly.newPlot(gd, [{y: [1, 2]}], {
             xaxis: {range: [0, 2]},
             yaxis: {range: [0, 2]},
             shapes: [{
@@ -715,7 +715,7 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an exception', function(done) {
-        Plotly.plot(gd, data, layout)
+        Plotly.newPlot(gd, data, layout)
         .then(done, done.fail);
     });
 });
@@ -773,7 +773,7 @@ describe('A path shape sized relative to data', function() {
     afterEach(destroyGraphDiv);
 
     it('is expanding an auto-ranging axes', function() {
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         assertShapeFullyVisible(getFirstShapeNode());
     });
@@ -817,7 +817,7 @@ describe('A fixed size path shape', function() {
     afterEach(destroyGraphDiv);
 
     it('is defined in pixel', function() {
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         assertShapeSize(getFirstShapeNode(), 30, 20);
     });
@@ -826,7 +826,7 @@ describe('A fixed size path shape', function() {
         layout.shapes[0].xanchor = 10;
         layout.shapes[0].yanchor = 10;
 
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         assertShapeFullyVisible(getFirstShapeNode());
     });
@@ -843,7 +843,7 @@ describe('A fixed size path shape', function() {
         layout.shapes[0].xanchor = '2018-07-01 00:00:00';
         layout.shapes[0].yanchor = 10;
 
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         assertShapeFullyVisible(shapeNode);
@@ -851,7 +851,7 @@ describe('A fixed size path shape', function() {
     });
 
     it('keeps its dimensions when plot is being resized', function(done) {
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         assertShapeSize(getFirstShapeNode(), 30, 20);
 
@@ -863,7 +863,7 @@ describe('A fixed size path shape', function() {
     });
 
     it('is draggable', function(done) {
-        Plotly.plot(gd, data, layout, {editable: true})
+        Plotly.newPlot(gd, data, layout, {editable: true})
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 30, 20);
@@ -878,7 +878,7 @@ describe('A fixed size path shape', function() {
           layout.shapes[0].xsizemode = 'data';
           layout.shapes[0].path = 'M0,0 L2,0 L1,20 Z';
 
-          Plotly.plot(gd, data, layout, {editable: true})
+          Plotly.newPlot(gd, data, layout, {editable: true})
             .then(function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var widthBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().width;
@@ -900,7 +900,7 @@ describe('A fixed size path shape', function() {
           layout.shapes[0].ysizemode = 'data';
           layout.shapes[0].path = 'M0,0 L30,0 L15,2 Z';
 
-          Plotly.plot(gd, data, layout, {editable: true})
+          Plotly.newPlot(gd, data, layout, {editable: true})
             .then(function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var heightBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().height;
@@ -952,7 +952,7 @@ describe('A fixed size shape', function() {
     afterEach(destroyGraphDiv);
 
     it('can be positioned relative to data', function() {
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         assertShapeSize(shapeNode, 25, 25);
@@ -969,7 +969,7 @@ describe('A fixed size shape', function() {
         layout.shapes[0].yref = 'paper';
         layout.shapes[0].xanchor = '1';
         layout.shapes[0].yanchor = '1';
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         assertShapeSize(shapeNode, 25, 25);
@@ -980,7 +980,7 @@ describe('A fixed size shape', function() {
         layout.shapes[0].ysizemode = 'data';
         layout.shapes[0].y0 = 1;
         layout.shapes[0].y1 = 5;
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         var bBox = shapeNode.getBoundingClientRect();
@@ -992,7 +992,7 @@ describe('A fixed size shape', function() {
         layout.shapes[0].xsizemode = 'data';
         layout.shapes[0].x0 = 1;
         layout.shapes[0].x1 = 5;
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         var bBox = shapeNode.getBoundingClientRect();
@@ -1012,7 +1012,7 @@ describe('A fixed size shape', function() {
         layout.shapes[0].xanchor = '2018-07-01 00:00:00';
         layout.shapes[0].yanchor = 10;
 
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         assertShapeFullyVisible(shapeNode);
@@ -1021,7 +1021,7 @@ describe('A fixed size shape', function() {
 
     it('keeps its dimensions when plot is being resized', function(done) {
         layout.shapes[0].yanchor = 3; // Ensure visible for debugging
-        Plotly.plot(gd, data, layout);
+        Plotly.newPlot(gd, data, layout);
 
         var shapeNode = getFirstShapeNode();
         assertShapeSize(shapeNode, 25, 25);
@@ -1035,7 +1035,7 @@ describe('A fixed size shape', function() {
     });
 
     it('is draggable', function(done) {
-        Plotly.plot(gd, data, layout, {editable: true})
+        Plotly.newPlot(gd, data, layout, {editable: true})
           .then(function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 25, 25);
@@ -1051,7 +1051,7 @@ describe('A fixed size shape', function() {
           layout.shapes[0].x0 = 1;
           layout.shapes[0].x1 = 2;
 
-          Plotly.plot(gd, data, layout, {editable: true})
+          Plotly.newPlot(gd, data, layout, {editable: true})
             .then(function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var widthBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().width;
@@ -1074,7 +1074,7 @@ describe('A fixed size shape', function() {
           layout.shapes[0].y0 = 1;
           layout.shapes[0].y1 = 2;
 
-          Plotly.plot(gd, data, layout, {editable: true})
+          Plotly.newPlot(gd, data, layout, {editable: true})
             .then(function() {
                 var shapeNodeBeforeDrag = getFirstShapeNode();
                 var heightBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect().height;
@@ -1110,7 +1110,7 @@ describe('A fixed size shape', function() {
                 it('over direction ' + direction, function(done) {
                     layout.shapes[0].type = testCase.type;
 
-                    Plotly.plot(gd, data, layout, {editable: true})
+                    Plotly.newPlot(gd, data, layout, {editable: true})
                       .then(function() {
                           var shapeNodeBeforeDrag = getFirstShapeNode();
                           var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
@@ -1142,7 +1142,7 @@ describe('A fixed size shape', function() {
         });
 
         it('can be moved by dragging the middle', function(done) {
-            Plotly.plot(gd, data, layout, {editable: true})
+            Plotly.newPlot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
@@ -1162,7 +1162,7 @@ describe('A fixed size shape', function() {
         });
 
         it('can be resized by dragging the start point', function(done) {
-            Plotly.plot(gd, data, layout, {editable: true})
+            Plotly.newPlot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
@@ -1184,7 +1184,7 @@ describe('A fixed size shape', function() {
         });
 
         it('can be resized by dragging the end point', function(done) {
-            Plotly.plot(gd, data, layout, {editable: true})
+            Plotly.newPlot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
                   var bBoxBeforeDrag = shapeNodeBeforeDrag.getBoundingClientRect();
@@ -1224,7 +1224,7 @@ describe('A fixed size shape', function() {
                       layout.shapes[0].xanchor = -1;
                       layout.shapes[0].x0 = testCase.x0;
                       layout.shapes[0].x1 = testCase.x1;
-                      Plotly.plot(gd, data, layout);
+                      Plotly.newPlot(gd, data, layout);
 
                       expect(gd.layout.xaxis.range[0]).toBeLessThanOrEqual(-1);
                       assertShapeFullyVisible(getFirstShapeNode());
@@ -1241,7 +1241,7 @@ describe('A fixed size shape', function() {
                       layout.shapes[0].xanchor = 10;
                       layout.shapes[0].x0 = testCase.x0;
                       layout.shapes[0].x1 = testCase.x1;
-                      Plotly.plot(gd, data, layout);
+                      Plotly.newPlot(gd, data, layout);
 
                       expect(gd.layout.xaxis.range[1]).toBeGreaterThanOrEqual(10);
                       assertShapeFullyVisible(getFirstShapeNode());
@@ -1268,7 +1268,7 @@ describe('A fixed size shape', function() {
                       layout.shapes[0].yanchor = -1;
                       layout.shapes[0].y0 = testCase.y0;
                       layout.shapes[0].y1 = testCase.y1;
-                      Plotly.plot(gd, data, layout);
+                      Plotly.newPlot(gd, data, layout);
 
                       expect(gd.layout.yaxis.range[0]).toBeLessThanOrEqual(-1);
                       assertShapeFullyVisible(getFirstShapeNode());
@@ -1285,7 +1285,7 @@ describe('A fixed size shape', function() {
                       layout.shapes[0].yanchor = 10;
                       layout.shapes[0].y0 = testCase.y0;
                       layout.shapes[0].y1 = testCase.y1;
-                      Plotly.plot(gd, data, layout);
+                      Plotly.newPlot(gd, data, layout);
 
                       expect(gd.layout.yaxis.range[1]).toBeGreaterThanOrEqual(10);
                       assertShapeFullyVisible(getFirstShapeNode());
@@ -1421,7 +1421,7 @@ describe('Test shapes', function() {
     }
 
     function testDragEachShape(done) {
-        var promise = Plotly.plot(gd, data, layout, config);
+        var promise = Plotly.newPlot(gd, data, layout, config);
 
         var layoutShapes = gd.layout.shapes;
 
@@ -1446,7 +1446,7 @@ describe('Test shapes', function() {
     }
 
     function testResizeEachShape(direction, done) {
-        var promise = Plotly.plot(gd, data, layout, config);
+        var promise = Plotly.newPlot(gd, data, layout, config);
 
         var layoutShapes = gd.layout.shapes;
 
@@ -1585,7 +1585,7 @@ describe('Test shapes', function() {
     }
 
     function testLineResize(pointToMove, done) {
-        var promise = Plotly.plot(gd, data, layout, config);
+        var promise = Plotly.newPlot(gd, data, layout, config);
         var layoutShape = gd.layout.shapes[0];
 
         var xa = Axes.getFromId(gd, layoutShape.xref);

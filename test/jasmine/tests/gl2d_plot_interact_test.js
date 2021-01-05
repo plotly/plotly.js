@@ -31,7 +31,7 @@ describe('Test removal of gl contexts', function() {
     });
 
     it('@gl Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             x: [1, 2, 3],
             y: [2, 1, 3]
@@ -48,7 +48,7 @@ describe('Test removal of gl contexts', function() {
     it('@gl Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             x: [1, 2, 3],
             y: [2, 1, 3]
@@ -117,7 +117,7 @@ describe('Test gl plot side effects', function() {
             xaxis: { rangeslider: { visible: true } }
         };
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var rangeSlider = document.getElementsByClassName('range-slider')[0];
             expect(rangeSlider).not.toBeDefined();
         })
@@ -136,11 +136,11 @@ describe('Test gl plot side effects', function() {
             y: [2, 1, 2]
         }];
 
-        Plotly.plot(gd, [])
+        Plotly.newPlot(gd, [])
         .then(function() {
             countCanvases(0);
 
-            return Plotly.plot(gd, data);
+            return Plotly.newPlot(gd, data);
         })
         .then(function() {
             countCanvases(3);
@@ -150,7 +150,7 @@ describe('Test gl plot side effects', function() {
         .then(function() {
             countCanvases(0);
 
-            return Plotly.plot(gd, data);
+            return Plotly.newPlot(gd, data);
         })
         .then(function() {
             countCanvases(3);
@@ -166,7 +166,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should be able to switch trace type', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'parcoords',
             x: [1, 2, 3],
             y: [2, 1, 2],
@@ -195,7 +195,7 @@ describe('Test gl plot side effects', function() {
 
         _mock.layout.width = 600;
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
 
@@ -216,7 +216,7 @@ describe('Test gl plot side effects', function() {
             canvas.dispatchEvent(ev);
         }
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.newPlot(gd, _mock).then(function() {
             return new Promise(function(resolve, reject) {
                 gd.once('plotly_webglcontextlost', resolve);
                 setTimeout(reject, 10);
@@ -304,7 +304,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should be able to toggle from svg to gl', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1],
         }])
         .then(function() {
@@ -329,7 +329,7 @@ describe('Test gl plot side effects', function() {
     it('@gl should create two WebGL contexts per graph', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_stacked_subplots.json'));
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var cnt = 0;
             d3.select(gd).selectAll('canvas').each(function(d) {
                 if(d.regl) cnt++;
@@ -340,7 +340,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should clear canvases on *replot* edits', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             y: [1, 2, 1]
         }, {
@@ -698,7 +698,7 @@ describe('Test gl2d plot interactions:', function() {
         gd.addEventListener('touchstart', assertEvent);
         gd.addEventListener('wheel', assertEvent);
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             sceneTarget = gd.querySelector('.nsewdrag');
 

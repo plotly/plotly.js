@@ -23,7 +23,7 @@ function runTests(transitionDuration) {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterEach(function() {
@@ -1129,7 +1129,7 @@ describe('Plotly.react transitions:', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [0.1, 0.2, 0.3],
             y: [0.4, 0.5, 0.6],
         }, {
@@ -1179,7 +1179,7 @@ describe('Plotly.react transitions:', function() {
     });
 
     it('should update ranges of date and category axes', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
         ], {

@@ -1042,7 +1042,7 @@ describe('ModeBar', function() {
             });
 
             it('should use defaults', function(done) {
-                Plotly.plot(gd, {data: [], layout: {}})
+                Plotly.newPlot(gd, {data: [], layout: {}})
                 .then(function() {
                     selectButton(gd._fullLayout._modeBar, 'toImage').click();
                     expect(Registry.call)
@@ -1052,7 +1052,7 @@ describe('ModeBar', function() {
             });
 
             it('should accept overriding defaults', function(done) {
-                Plotly.plot(gd, {data: [], layout: {}, config: {
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
                     toImageButtonOptions: {
                         format: 'svg',
                         filename: 'x',
@@ -1068,7 +1068,7 @@ describe('ModeBar', function() {
             });
 
             it('should accept overriding defaults with null values', function(done) {
-                Plotly.plot(gd, {data: [], layout: {}, config: {
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
                     toImageButtonOptions: {width: null, height: null}
                 }})
                 .then(function() {
@@ -1119,7 +1119,7 @@ describe('ModeBar', function() {
                 };
 
                 gd = createGraphDiv();
-                Plotly.plot(gd, mockData, mockLayout).then(function() {
+                Plotly.newPlot(gd, mockData, mockLayout).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     buttonToggle = selectButton(modeBar, 'toggleSpikelines');
                     buttonCompare = selectButton(modeBar, 'hoverCompareCartesian');
@@ -1293,7 +1293,7 @@ describe('ModeBar', function() {
                 }];
 
                 gd = createGraphDiv();
-                Plotly.plot(gd, mockData).then(function() {
+                Plotly.newPlot(gd, mockData).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
                 });
@@ -1326,7 +1326,7 @@ describe('ModeBar', function() {
                 }];
 
                 gd = createGraphDiv();
-                Plotly.plot(gd, mockData).then(function() {
+                Plotly.newPlot(gd, mockData).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
                 });
@@ -1362,7 +1362,7 @@ describe('ModeBar', function() {
                     expect(mapboxLayout.zoom).toBe(zoom, 'zoom');
                 }
 
-                Plotly.plot(gd, [{
+                Plotly.newPlot(gd, [{
                     type: 'scattermapbox',
                     lon: [10, 20, 30],
                     lat: [10, 20, 30]
@@ -1408,7 +1408,7 @@ describe('ModeBar', function() {
                     expect(gd._fullLayout.hovermode).toBe('closest', msg + '| after 2nd click');
                 }
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {type: 'scatterternary', a: [1], b: [2], c: [3]}
                 ])
                 .then(function() {
@@ -1427,7 +1427,7 @@ describe('ModeBar', function() {
             it('ternary + geo case ', function(done) {
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, [
+                Plotly.newPlot(gd, [
                     {type: 'scatterternary', a: [1], b: [2], c: [3]},
                     {type: 'scattergeo', lon: [10], lat: [20]}
                 ])
@@ -1478,7 +1478,7 @@ describe('ModeBar', function() {
 
         it('create an associated style element and destroy it on purge', function(done) {
             var styleSelector, style;
-            Plotly.plot(gd, [], {})
+            Plotly.newPlot(gd, [], {})
             .then(function() {
                 styleSelector = 'style[id*="modebar-' + gd._fullLayout._uid + '"]';
 
@@ -1494,7 +1494,7 @@ describe('ModeBar', function() {
         });
 
         it('changes icon colors', function(done) {
-            Plotly.plot(gd, [], {modebar: { color: colors[0]}})
+            Plotly.newPlot(gd, [], {modebar: { color: colors[0]}})
             .then(function() {
                 button = selectButton(gd._fullLayout._modeBar, targetBtn);
                 checkButtonColor(button, colors[0]);
@@ -1507,7 +1507,7 @@ describe('ModeBar', function() {
         });
 
         it('changes active icon colors', function(done) {
-            Plotly.plot(gd, [], {modebar: { activecolor: colors[0]}})
+            Plotly.newPlot(gd, [], {modebar: { activecolor: colors[0]}})
             .then(function() {
                 button = selectButton(gd._fullLayout._modeBar, targetBtn);
                 button.click();
@@ -1521,7 +1521,7 @@ describe('ModeBar', function() {
         });
 
         it('changes background color (displayModeBar: hover)', function(done) {
-            Plotly.plot(gd, [], {modebar: { bgcolor: colors[0]}})
+            Plotly.newPlot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
@@ -1537,7 +1537,7 @@ describe('ModeBar', function() {
         });
 
         it('changes background color (displayModeBar: true)', function(done) {
-            Plotly.plot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
+            Plotly.newPlot(gd, [], {modebar: {bgcolor: colors[0]}}, {displayModeBar: true})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe(colors[0]);
@@ -1555,7 +1555,7 @@ describe('ModeBar', function() {
         it('changes orientation', function(done) {
             var modeBarEl, size;
 
-            Plotly.plot(gd, [], {modebar: { orientation: 'v' }})
+            Plotly.newPlot(gd, [], {modebar: { orientation: 'v' }})
             .then(function() {
                 modeBarEl = gd._fullLayout._modeBar.element;
                 size = modeBarEl.getBoundingClientRect();
@@ -1596,7 +1596,7 @@ describe('ModeBar', function() {
         traces.forEach(function(fromTrace) {
             traces.forEach(function(toTrace) {
                 it('is still present when switching from ' + fromTrace.type + ' to ' + toTrace.type, function(done) {
-                    Plotly.plot(gd, [fromTrace], {})
+                    Plotly.newPlot(gd, [fromTrace], {})
                     .then(function() {
                         expect(getModebarDiv()).toBeTruthy();
                         expect(getModebarDiv().innerHTML).toBeTruthy();

@@ -158,14 +158,14 @@ describe('pointcloud traces', function() {
     });
 
     it('@gl renders without raising an error', function(done) {
-        Plotly.plot(gd, Lib.extendDeep({}, plotData))
+        Plotly.newPlot(gd, Lib.extendDeep({}, plotData))
         .then(done, done.fail);
     });
 
     it('@gl should update properly', function(done) {
         var scene2d;
 
-        Plotly.plot(gd, Lib.extendDeep({}, plotData))
+        Plotly.newPlot(gd, Lib.extendDeep({}, plotData))
         .then(function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
             expect(scene2d.traces[gd._fullData[0].uid].type).toBe('pointcloud');
@@ -192,7 +192,7 @@ describe('pointcloud traces', function() {
 
     it('@gl should not change other traces colors', function(done) {
         var _mock = Lib.extendDeep({}, multipleScatter2dMock);
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             var canvas = d3.select('.gl-canvas-context').node();
@@ -221,7 +221,7 @@ describe('pointcloud traces', function() {
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg);
         }
 
-        Plotly.plot(gd, Lib.extendDeep({}, plotData))
+        Plotly.newPlot(gd, Lib.extendDeep({}, plotData))
         .then(delay(20))
         .then(function() {
             _assertRange('base', [-0.548, 9.548], [-1.415, 10.415]);

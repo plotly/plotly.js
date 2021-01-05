@@ -216,7 +216,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -254,7 +254,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -292,7 +292,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -311,7 +311,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl with hoverinfo'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -337,7 +337,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl with hovertext'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -356,7 +356,7 @@ describe('Test hover and click interactions', function() {
             }
         };
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 fail('should not trigger plotly_hover event');
@@ -392,7 +392,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl with hovertext'
         });
 
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 text: ['', 'FALSE', '', 'TRUE'],
                 x: [1, 2, 3, 2],
@@ -433,7 +433,7 @@ describe('Test hover and click interactions', function() {
             msg: 'pointcloud'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -489,7 +489,7 @@ describe('Test hover and click interactions', function() {
             msg: 'heatmapgl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -521,7 +521,7 @@ describe('Test hover and click interactions', function() {
             msg: 'heatmapgl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });
@@ -558,7 +558,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl after visibility restyle'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
@@ -605,7 +605,7 @@ describe('Test hover and click interactions', function() {
             msg: 'scattergl fancy after visibility restyle'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
@@ -636,7 +636,7 @@ describe('Test hover and click interactions', function() {
             msg: 'contourgl'
         });
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(run)
         .then(done, done.fail);
     });

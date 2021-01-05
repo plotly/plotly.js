@@ -51,7 +51,7 @@ describe('Test legacy polar plots logs:', function() {
 
     specs.forEach(function(s) {
         it('should log deprecation warning on ' + s.name, function(done) {
-            Plotly.plot(gd, s.data)
+            Plotly.newPlot(gd, s.data)
             .then(function() {
                 expect(Lib.log).toHaveBeenCalledTimes(1);
                 expect(Lib.log).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
@@ -283,7 +283,7 @@ describe('Test relayout on polar subplots:', function() {
             });
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(dflt);
             return Plotly.relayout(gd, 'polar.radialaxis.layer', 'below traces');
         })
@@ -326,7 +326,7 @@ describe('Test relayout on polar subplots:', function() {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
                 .toBeCloseToArray([0, 11.225]);
             expect(gd._fullLayout.polar.radialaxis.range)
@@ -357,7 +357,7 @@ describe('Test relayout on polar subplots:', function() {
         var pos0 = [];
         var pos1 = [];
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             d3.selectAll('.angularaxistick > text').each(function() {
                 var tx = d3.select(this);
                 pos0.push([tx.attr('x'), tx.attr('y')]);
@@ -389,7 +389,7 @@ describe('Test relayout on polar subplots:', function() {
             });
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             check(8, 'M1.5,0h5');
             return Plotly.relayout(gd, 'polar.angularaxis.ticks', 'inside');
         })
@@ -446,7 +446,7 @@ describe('Test relayout on polar subplots:', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(toggle(
             'polar.radialaxis.showline',
             [true, false], [null, 'none'],
@@ -510,7 +510,7 @@ describe('Test relayout on polar subplots:', function() {
             lastBBox = newBBox;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 3],
             theta: [10, 20, 30]
@@ -562,7 +562,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(clipCnt).toBe(exp.clip, '# clip paths');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});
 
             return Plotly.deleteTraces(gd, inds);
@@ -599,7 +599,7 @@ describe('Test relayout on polar subplots:', function() {
                 .toBeCloseToArray(exp.sampleXY, -1, 'sample (x,y) px coords in calcdata - ' + msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [39, 28, 8, 7, 28, 39, 40, 30, 30, 30, 30],
             theta: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'A']
@@ -655,7 +655,7 @@ describe('Test relayout on polar subplots:', function() {
             assertLetterCount('.angular-line > path');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 3, 2, 3, 1],
             theta: ['a', 'b', 'c', 'd', 'e', 'a']
@@ -690,7 +690,7 @@ describe('Test relayout on polar subplots:', function() {
             });
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: ['a', 'b', 'c']
         }])
@@ -1305,7 +1305,7 @@ describe('Test polar interactions:', function() {
             }
 
             var gd = createGraphDiv();
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 gd.on('plotly_relayout', function(e) {
                     relayoutEvents.push(e);
@@ -1338,7 +1338,7 @@ describe('Test polar interactions:', function() {
             }
 
             var gd = createGraphDiv();
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 gd.on('plotly_relayout', function(e) {
                     relayoutEvents.push(e);
@@ -1371,7 +1371,7 @@ describe('Test polar interactions:', function() {
             var dragPos0 = [360, 180];
 
             var gd = createGraphDiv();
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 gd.on('plotly_relayout', function(e) {
                     relayoutEvents.push(e);
@@ -1421,7 +1421,7 @@ describe('Test polar *gridshape linear* interactions', function() {
                 .toBeCloseTo(angle, 1, msg + ' - angle');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             // octogons have nice angles
             r: [1, 2, 3, 2, 3, 1, 2, 1, 2],
@@ -1485,7 +1485,7 @@ describe('Test polar *gridshape linear* interactions', function() {
             .then(dragFns.end);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 3, 2, 3],
             theta: ['a', 'b', 'c', 'd', 'e']
@@ -1560,7 +1560,7 @@ describe('Test polar *gridshape linear* interactions', function() {
             .then(dragFns.end);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 3, 2, 3],
             theta: ['a', 'b', 'c', 'd', 'e']

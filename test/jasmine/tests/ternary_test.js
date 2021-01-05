@@ -35,7 +35,7 @@ describe('ternary plots', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('should be able to toggle trace visibility', function(done) {
@@ -255,7 +255,7 @@ describe('ternary plots', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             var config = { staticPlot: true };
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout, config).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, config).then(done);
         });
 
         it('should not respond to drag', function(done) {
@@ -294,7 +294,7 @@ describe('ternary plots', function() {
             });
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(dflt);
             return Plotly.relayout(gd, 'ternary.aaxis.layer', 'below traces');
         })
@@ -354,7 +354,7 @@ describe('ternary plots', function() {
             expect(tick.style.fill).toBe(color, 'font color');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 12);
 
             return Plotly.relayout(gd, 'ternary.aaxis.tickfont.size', 5);
@@ -389,7 +389,7 @@ describe('ternary plots', function() {
             expect(titleNode.style.fill).toBe(color, 'font color ' + msg);
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert('a', 'Component A', '"Open Sans", verdana, arial, sans-serif', rgb('#ccc'), 14);
             _assert('b', 'chocolate', '"Open Sans", verdana, arial, sans-serif', rgb('#0f0'), 14);
             _assert('c', 'Component C', '"Open Sans", verdana, arial, sans-serif', rgb('#444'), 14);
@@ -447,7 +447,7 @@ describe('ternary plots', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(toggle(
             '.aaxis > .ytick > text', 'ternary.aaxis.showticklabels',
             [true, false], [4, 0]
@@ -478,7 +478,7 @@ describe('ternary plots', function() {
     it('should render a-axis and c-axis with negative offsets', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterternary',
             a: [2, 1, 1],
             b: [1, 2, 1],
@@ -512,7 +512,7 @@ describe('ternary plots', function() {
                 fig.layout.dragmode = dragmode;
 
                 var gd = createGraphDiv();
-                Plotly.plot(gd, fig)
+                Plotly.newPlot(gd, fig)
                 .then(function() {
                     relayoutCallback = jasmine.createSpy('relayoutCallback');
                     gd.on('plotly_relayout', relayoutCallback);
@@ -575,7 +575,7 @@ describe('ternary plots when css transform is present', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() { transformPlot(gd, cssTransform); })
             .then(done);
     });
@@ -802,7 +802,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
     beforeAll(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             pointPos = getClientPosition('path.point');
             destroyGraphDiv();
             done();
@@ -820,7 +820,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 futureData = null;
 
@@ -866,7 +866,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 futureData = null;
 
@@ -941,7 +941,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 futureData = null;
 
@@ -992,7 +992,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 futureData = null;
 

@@ -664,7 +664,7 @@ describe('finance charts auto-range', function() {
         it('- ohlc case', function(done) {
             var trace = Lib.extendDeep({}, base, {type: 'ohlc'});
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
             .then(done, done.fail);
@@ -673,7 +673,7 @@ describe('finance charts auto-range', function() {
         it('- candlestick case', function(done) {
             var trace = Lib.extendDeep({}, base, {type: 'candlestick'});
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
             .then(done, done.fail);
@@ -712,7 +712,7 @@ describe('finance charts updates:', function() {
 
         var path0;
 
-        Plotly.plot(gd, [trace0]).then(function() {
+        Plotly.newPlot(gd, [trace0]).then(function() {
             expect(gd.calcdata[0][0].t.tickLen).toBeCloseTo(0.3, 5);
             expect(gd.calcdata[0][0].o).toEqual(33.01);
 
@@ -749,7 +749,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
 
@@ -795,7 +795,7 @@ describe('finance charts updates:', function() {
     it('Plotly.relayout should work', function(done) {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
-        Plotly.plot(gd, [trace0]).then(function() {
+        Plotly.newPlot(gd, [trace0]).then(function() {
             expect(countRangeSliders()).toEqual(1);
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
@@ -812,7 +812,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.calcdata[0].length).toEqual(8);
             expect(gd.calcdata[1].length).toEqual(8);
 
@@ -847,7 +847,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
 
@@ -900,7 +900,7 @@ describe('finance charts updates:', function() {
             close: [2, 3]
         };
 
-        Plotly.plot(gd, [trace0], {boxmode: 'group'})
+        Plotly.newPlot(gd, [trace0], {boxmode: 'group'})
         .then(function() {
             assertBoxPosFields([0]);
 
@@ -926,14 +926,14 @@ describe('finance charts updates:', function() {
         .then(done, done.fail);
     });
 
-    it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
+    it('Plotly.newPlot with data-less trace and adding with Plotly.restyle', function(done) {
         var data = [
             { type: 'candlestick' },
             { type: 'ohlc' },
             { type: 'bar', y: [2, 1, 2] }
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
             expect(countRangeSliders()).toEqual(0);
@@ -977,7 +977,7 @@ describe('finance charts updates:', function() {
                 .toBe(exp.pathd, 'path d attr - ' + msg);
         }
 
-        Plotly.plot(gd, [trace0], {
+        Plotly.newPlot(gd, [trace0], {
             xaxis: { rangeslider: {visible: false} }
         })
         .then(function() {
@@ -1034,7 +1034,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, {type: 'candlestick'}),
         ];
 
-        Plotly.plot(gd, dataTA)
+        Plotly.newPlot(gd, dataTA)
         .then(function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
@@ -1077,7 +1077,7 @@ describe('finance charts *special* handlers:', function() {
             setTimeout(function() { return resolve(gd); }, 0);
         }
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             Lib.extendDeep({}, mock0, { type: 'ohlc' }),
             Lib.extendDeep({}, mock0, { type: 'candlestick' })
         ], {}, {
@@ -1138,7 +1138,7 @@ describe('finance trace hover:', function() {
         var yval = 'yval' in specs ? specs.yval : 1;
         var hovermode = layout.hovermode || 'x';
 
-        return Plotly.plot(gd, data, layout).then(function() {
+        return Plotly.newPlot(gd, data, layout).then(function() {
             var results = gd.calcdata.map(function(cd) {
                 var trace = cd[0].trace;
                 var pointData = {

@@ -69,12 +69,12 @@ describe('groupby', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -112,7 +112,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -152,7 +152,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -201,7 +201,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -262,7 +262,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data[0].x.length).toEqual(7);
                 expect(gd._fullData[0].x.length).toEqual(4);
                 expect(gd._fullData[1].x.length).toEqual(3);
@@ -289,7 +289,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertDims([4, 3, 4, 3]);
 
                 return Plotly.deleteTraces(gd, [1]);
@@ -308,7 +308,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertDims([4, 3, 4, 3]);
 
                 return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
@@ -326,12 +326,12 @@ describe('groupby', function() {
             .then(done, done.fail);
         });
 
-        it('Plotly.plot should group points properly using typed array', function(done) {
+        it('Plotly.newPlot should group points properly using typed array', function(done) {
             var data = Lib.extendDeep([], mockDataWithTypedArrayGroups);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd._fullData.length).toEqual(2);
                 expect(gd._fullData[0].x).toEqual([20, 12, 0, 1]);
                 expect(gd._fullData[0].y).toEqual([1, 3, 2, 5]);
@@ -432,12 +432,12 @@ describe('groupby', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -453,12 +453,12 @@ describe('groupby', function() {
             .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -469,12 +469,12 @@ describe('groupby', function() {
             .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData1);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -488,12 +488,12 @@ describe('groupby', function() {
             .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData2);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -508,12 +508,12 @@ describe('groupby', function() {
             .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData3);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -540,7 +540,7 @@ describe('groupby', function() {
 
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, data).then(function() {
+                Plotly.newPlot(gd, data).then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
                     expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -690,7 +690,7 @@ describe('groupby', function() {
         it('passes extended tests with group styles partially overriding top level aesthetics', function(done) {
             var data = Lib.extendDeep([], mockData3);
             var gd = createGraphDiv();
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
             })
@@ -713,7 +713,7 @@ describe('groupby', function() {
 
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, data).then(function() {
+                Plotly.newPlot(gd, data).then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
                     expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);

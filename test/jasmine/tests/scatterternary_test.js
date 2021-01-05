@@ -310,7 +310,7 @@ describe('scatterternary plot and hover', function() {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     it('should put scatterternary trace in \'frontplot\' node', function() {
@@ -355,7 +355,7 @@ describe('scatterternary hover', function() {
             c: [0.1, 0.4, 0.5],
             text: ['A', 'B', 'C']
         }];
-        Plotly.plot(gd, data).then(done);
+        Plotly.newPlot(gd, data).then(done);
     });
 
     afterAll(destroyGraphDiv);
@@ -480,7 +480,7 @@ describe('Test scatterternary *cliponaxis*', function() {
             );
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert(
                 [false, false],

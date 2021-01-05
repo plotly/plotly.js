@@ -658,7 +658,7 @@ describe('end-to-end scatter tests', function() {
     afterEach(destroyGraphDiv);
 
     it('should add a plotly-customdata class to points with custom data', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5, 6, 7],
             y: [2, 3, 4, 5, 6, 7, 8],
             customdata: [null, undefined, 0, false, {foo: 'bar'}, 'a']
@@ -687,7 +687,7 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('adds "textpoint" class to scatter text points', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'text',
             x: [1, 2, 3],
             y: [2, 3, 4],
@@ -710,7 +710,7 @@ describe('end-to-end scatter tests', function() {
             });
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [150, 350, 650],
             y: [100, 300, 600],
             text: ['A', 'B', 'C'],
@@ -777,7 +777,7 @@ describe('end-to-end scatter tests', function() {
         // from any case to any other case.
         var indices = transitions(cases.length);
 
-        var p = Plotly.plot(gd, [
+        var p = Plotly.newPlot(gd, [
             {y: [1, 2], text: 'a'},
             {y: [2, 3], text: 'b'},
             {y: [3, 4], text: 'c'}
@@ -855,7 +855,7 @@ describe('end-to-end scatter tests', function() {
     }
 
     it('should reorder point and text nodes even when linked to ids (shuffle case)', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [150, 350, 650],
             y: [100, 300, 600],
             text: ['apple', 'banana', 'clementine'],
@@ -896,7 +896,7 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('should reorder point and text nodes even when linked to ids (add/remove case)', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [150, 350, null, 600],
             y: [100, 300, null, 700],
             text: ['apple', 'banana', null, 'clementine'],
@@ -939,7 +939,7 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('should smoothly add/remove nodes tags with *ids* during animations', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 mode: 'markers+text',
                 y: [1, 2, 1],
@@ -978,7 +978,7 @@ describe('end-to-end scatter tests', function() {
             return d3.selectAll('.js-fill').node().style.fill;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5, 6, 7],
             y: [2, 3, 4, 5, 6, 7, 8],
             fill: 'tozeroy',
@@ -1135,7 +1135,7 @@ describe('end-to-end scatter tests', function() {
         expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
             .toBe('axrange', 'ax autorange editType');
 
-        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        Plotly.newPlot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
             assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
             return Plotly.relayout(gd, {
@@ -1165,7 +1165,7 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('should update axis range according to visible edits', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: [1, 2, 3], y: [1, 2, 1]},
             {x: [4, 5, 6], y: [-1, -2, -1]}
         ])
@@ -1197,7 +1197,7 @@ describe('end-to-end scatter tests', function() {
             expect(layer.selectAll('.point').size()).toBe(cnt, msg + '- scatter pts cnt');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             visible: false,
             y: [1, 2, 1]
         }])
@@ -1216,7 +1216,7 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('should not error out when segment-less marker-less fill traces', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4],
             y: [null, null, null, null],
             fill: 'tonexty'
@@ -1437,7 +1437,7 @@ describe('scatter hoverPoints', function() {
         var gd = createGraphDiv();
         var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
 
-        Plotly.plot(gd, mock).then(function() {
+        Plotly.newPlot(gd, mock).then(function() {
             var pts = _hover(gd, 0, 1, 'x');
 
             // as in 'hovertext' arrays
@@ -1531,7 +1531,7 @@ describe('Test Scatter.style', function() {
     it('should style selected point marker opacity correctly', function(done) {
         var check = makeCheckFn('marker.opacity', getOpacity);
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 1],
             marker: {opacity: 0.6}
@@ -1610,7 +1610,7 @@ describe('Test Scatter.style', function() {
         var check = makeCheckFn('marker.color', getColor);
         var checkOpacity = makeCheckFn('marker.opacity', getOpacity);
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 1],
             marker: {color: b}
@@ -1695,7 +1695,7 @@ describe('Test Scatter.style', function() {
     it('should style selected point marker size correctly', function(done) {
         var check = makeCheckFn('marker.size', getMarkerSize);
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 1],
             marker: {size: 20}
@@ -1740,7 +1740,7 @@ describe('Test Scatter.style', function() {
         var checkFontOpacity = makeCheckFn('textfont.color (alpha channel)', getFillOpacity);
         var checkPtOpacity = makeCheckFn('marker.opacity', getOpacity);
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers+text',
             y: [1, 2, 1],
             text: 'TEXT',
@@ -1878,7 +1878,7 @@ describe('Test scatter *clipnaxis*:', function() {
             );
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert(
                 [false, true, false],

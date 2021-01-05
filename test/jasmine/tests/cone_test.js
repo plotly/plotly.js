@@ -87,7 +87,7 @@ describe('Test cone autorange:', function() {
             return function(v) { return v * s; };
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assertAxisRanges('base', rng0, rng0, rng0);
 
             // the resulting image should be independent of what I multiply by here
@@ -189,7 +189,7 @@ describe('Test cone autorange:', function() {
     });
 
     it('@gl should skip identical positions in calculating cone vectorScale', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [
                 {
                     type: 'cone',
@@ -225,7 +225,7 @@ describe('Test cone interactions', function() {
         // put traces on same subplot
         delete fig.data[1].scene;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
@@ -297,7 +297,7 @@ describe('Test cone interactions', function() {
             mouseEvent('mouseover', 200, 200);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(_hover)
         .then(delay(20))
@@ -363,7 +363,7 @@ describe('Test cone interactions', function() {
             mouseEvent('mouseover', 282, 240);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'cone',
             name: 'blue cone',
             x: [1], y: [1], z: [1],

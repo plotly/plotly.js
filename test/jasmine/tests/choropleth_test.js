@@ -176,7 +176,7 @@ describe('Test choropleth hover:', function() {
             fontFamily: 'Arial'
         };
 
-        return Plotly.plot(gd, fig)
+        return Plotly.newPlot(gd, fig)
         .then(function() {
             if(hasCssTransform) {
                 scale = 0.5;

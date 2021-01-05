@@ -572,7 +572,7 @@ describe('Test treemap plot:', function() {
     afterEach(destroyGraphDiv);
 
     it('should return early from the plot when there is no entry', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             labels: ['a', 'b'],
             parents: ['A', 'B'],
             type: 'treemap'
@@ -614,7 +614,7 @@ describe('Test treemap hover:', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -820,7 +820,7 @@ describe('Test treemap hover with and without levels', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -959,7 +959,7 @@ describe('Test treemap hover lifecycle:', function() {
     it('should fire the correct events', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(hover(gd, 1))
         .then(function() {
@@ -1034,7 +1034,7 @@ describe('Test treemap clicks:', function() {
     it('should trigger animation when clicking on branches', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -1064,7 +1064,7 @@ describe('Test treemap clicks:', function() {
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 8))
         .then(function() {
@@ -1086,7 +1086,7 @@ describe('Test treemap clicks:', function() {
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -1146,7 +1146,7 @@ describe('Test treemap clicks:', function() {
     it('should be able to override default click behavior using plotly_treemapclick handler ()', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
         .then(click(gd, 2))
         .then(function() {
@@ -1190,7 +1190,7 @@ describe('Test treemap restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
         .then(_restyle({'visible': false}))
         .then(_assert('both visible:false', 0))
@@ -1215,7 +1215,7 @@ describe('Test treemap restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 97))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1269,7 +1269,7 @@ describe('Test treemap restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1357,7 +1357,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry', 'd', 'Root',
@@ -1388,7 +1388,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('enter new entry', 'd', 'Root',
@@ -1419,7 +1419,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry', 'd', 'Root',
@@ -1451,7 +1451,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('exit b', 'd', 'b',
@@ -1496,7 +1496,7 @@ describe('Test treemap interactions edge cases', function() {
             unhoverCnt = 0;
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 hoverCnt++;
@@ -1537,7 +1537,7 @@ describe('Test treemap interactions edge cases', function() {
     });
 
     it('should show falsy zero text', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'treemap',
                 parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
@@ -1574,7 +1574,7 @@ describe('Test treemap interactions edge cases', function() {
                 .toBe(exp.treemapTraceCnt, '# of treemap traces');
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             _assert('base', {
                 cartesianTraceCnt: 2,
@@ -1603,7 +1603,7 @@ describe('Test treemap interactions edge cases', function() {
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.data[1].level = 'B';
             return Plotly.react(gd, gd.data, gd.layout);
@@ -1759,7 +1759,7 @@ describe('treemap uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
@@ -1808,7 +1808,7 @@ describe('treemap uniformtext', function() {
     });
 
     it('should uniform text scales after transition', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'treemap',
                 tiling: { packing: 'dice'},
@@ -1904,7 +1904,7 @@ describe('treemap pathbar react', function() {
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(_assert('default pathbar.visible: true', 4))
         .then(function() {
             fig.data[0].pathbar = {visible: false};

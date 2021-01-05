@@ -234,7 +234,7 @@ describe('sliders initialization', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -262,7 +262,7 @@ describe('ugly internal manipulation of steps', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -322,7 +322,7 @@ describe('sliders interactions', function() {
 
         mockCopy = Lib.extendDeep({}, mock, {layout: {sliders: [{x: 0.25}, {}]}});
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {

@@ -79,7 +79,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -107,7 +107,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() { return Plotly.restyle(gd, 'hoverlabel.namelength', 3); })
         .then(_hover)
@@ -131,7 +131,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 655, 221);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -303,7 +303,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 300, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -334,7 +334,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 605, 271);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
@@ -455,7 +455,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 605, 271, {buttons: 1});
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_click', function(eventData) {
@@ -902,7 +902,7 @@ describe('Test gl3d trace click/hover:', function() {
             mouseEvent('mouseover', 200, 200);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {

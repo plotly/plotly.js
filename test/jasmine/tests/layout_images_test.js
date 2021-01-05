@@ -174,7 +174,7 @@ describe('Layout images', function() {
             }
 
             it('should work for center middle', function(done) {
-                Plotly.plot(gd, data, { images: [{
+                Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: 'center',
                     yanchor: 'middle'
@@ -186,7 +186,7 @@ describe('Layout images', function() {
             });
 
             it('should work for left top', function(done) {
-                Plotly.plot(gd, data, { images: [{
+                Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: 'left',
                     yanchor: 'top'
@@ -198,7 +198,7 @@ describe('Layout images', function() {
             });
 
             it('should work for right bottom', function(done) {
-                Plotly.plot(gd, data, { images: [{
+                Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: 'right',
                     yanchor: 'bottom'
@@ -210,7 +210,7 @@ describe('Layout images', function() {
             });
 
             it('should work for stretch sizing', function(done) {
-                Plotly.plot(gd, data, { images: [{
+                Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: 'middle',
                     yanchor: 'center',
@@ -223,7 +223,7 @@ describe('Layout images', function() {
             });
 
             it('should work for fill sizing', function(done) {
-                Plotly.plot(gd, data, { images: [{
+                Plotly.newPlot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: 'invalid',
                     yanchor: 'invalid',
@@ -258,7 +258,7 @@ describe('Layout images', function() {
                 sizey: 0.1
             };
 
-            Plotly.plot(gd, data, {
+            Plotly.newPlot(gd, data, {
                 images: [image],
                 dragmode: 'pan',
                 width: 600,
@@ -291,7 +291,7 @@ describe('Layout images', function() {
                 sizey: 1
             };
 
-            Plotly.plot(gd, data, {
+            Plotly.newPlot(gd, data, {
                 images: [image],
                 dragmode: 'pan',
                 width: 600,
@@ -320,7 +320,7 @@ describe('Layout images', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, data, {
+            Plotly.newPlot(gd, data, {
                 images: [{
                     source: jsLogo,
                     x: 2,
@@ -426,7 +426,7 @@ describe('Layout images', function() {
                 expect(d3.selectAll('image').size()).toEqual(cnt);
             }
 
-            Plotly.plot(gd, data, layout).then(function() {
+            Plotly.newPlot(gd, data, layout).then(function() {
                 assertImages(0);
                 expect(gd.layout.images).toBeUndefined();
 
@@ -513,7 +513,7 @@ describe('images log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.plot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(done);
     });
 
     afterEach(destroyGraphDiv);

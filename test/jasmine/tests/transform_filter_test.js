@@ -1096,10 +1096,10 @@ describe('filter transforms interactions', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('Plotly.plot should plot the transform trace', function(done) {
+    it('Plotly.newPlot should plot the transform trace', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        Plotly.plot(createGraphDiv(), data).then(function(gd) {
+        Plotly.newPlot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
 
             var uid = gd._fullData[0]._fullInput.uid;
@@ -1121,7 +1121,7 @@ describe('filter transforms interactions', function() {
                 .toBe(uid + '0', 'should preserve uid on restyle');
         }
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             uid = gd._fullData[0]._fullInput.uid;
 
             expect(gd._fullData[0].marker.color).toEqual('red');
@@ -1159,7 +1159,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.data[0].x.length).toEqual(7);
             expect(gd._fullData[0].x.length).toEqual(3);
 
@@ -1183,7 +1183,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             assertDims([3, 4]);
 
             return Plotly.deleteTraces(gd, [1]);
@@ -1202,7 +1202,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             assertDims([3, 4]);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
@@ -1227,7 +1227,7 @@ describe('filter transforms interactions', function() {
 
         function getTx(p) { return p.tx; }
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
 
@@ -1261,7 +1261,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
 

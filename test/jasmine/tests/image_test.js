@@ -262,7 +262,7 @@ describe('image plot', function() {
             expect(images.size()).toEqual(cnt);
         }
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             assertImageCnt(1);
 
             return Plotly.relayout(gd, 'xaxis.range', [-100, -50]);
@@ -447,7 +447,7 @@ describe('image hover:', function() {
             var mock = require('@mocks/image_cat.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         afterAll(destroyGraphDiv);

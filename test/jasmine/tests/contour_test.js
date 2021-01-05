@@ -625,7 +625,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     type: 'contour',
                     x: [10, 11, 10, 11],
@@ -655,7 +655,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'contour',
                 x: [1, 2, 3],
                 y: [2, 3, 4],

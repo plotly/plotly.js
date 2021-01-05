@@ -308,7 +308,7 @@ describe('Test scattergeo hover', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergeo',
             lon: [10, 20, 30],
             lat: [10, 20, 30],

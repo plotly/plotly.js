@@ -510,7 +510,7 @@ describe('Test carpet interactions:', function() {
     it('should restyle visible attribute properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -540,7 +540,7 @@ describe('Test carpet interactions:', function() {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
         var trace1 = Lib.extendDeep({}, mock.data[1]);
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -569,7 +569,7 @@ describe('Test carpet interactions:', function() {
     it('should respond to relayout properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
         })
@@ -665,7 +665,7 @@ describe('scattercarpet array attributes', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             for(var i = 0; i < 4; i++) {
                 var pt = gd.calcdata[5][i];
@@ -702,7 +702,7 @@ describe('scattercarpet hover labels', function() {
     function run(pos, fig, content) {
         gd = createGraphDiv();
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent({
                 nums: content[0].join('\n'),

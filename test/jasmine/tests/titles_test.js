@@ -44,7 +44,7 @@ describe('Plot title', function() {
     };
 
     it('is centered horizontally and vertically above the plot by default', function(done) {
-        Plotly.plot(gd, data, {title: {text: 'Plotly line chart'}})
+        Plotly.newPlot(gd, data, {title: {text: 'Plotly line chart'}})
         .then(function() {
             expectDefaultCenteredPosition(gd);
         })
@@ -52,7 +52,7 @@ describe('Plot title', function() {
     });
 
     it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
-        Plotly.plot(gd, data, {title: 'Plotly line chart'})
+        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
         .then(function() {
             expectTitle('Plotly line chart');
             expectDefaultCenteredPosition(gd);
@@ -61,7 +61,7 @@ describe('Plot title', function() {
     });
 
     it('can be updated via `relayout`', function(done) {
-        Plotly.plot(gd, data, {title: 'Plotly line chart'})
+        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
           .then(expectTitleFn('Plotly line chart'))
           .then(function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
@@ -82,7 +82,7 @@ describe('Plot title', function() {
         }
     ].forEach(function(testCase) {
         it('can be placed at the left edge of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 0,
                 xanchor: 'left'
@@ -94,7 +94,7 @@ describe('Plot title', function() {
         });
 
         it('can be placed at the right edge of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 1,
                 xanchor: 'right'
@@ -106,7 +106,7 @@ describe('Plot title', function() {
         });
 
         it('can be placed at the center of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 0.5,
                 xanchor: 'center'
@@ -130,7 +130,7 @@ describe('Plot title', function() {
         }
     ].forEach(function(testCase) {
         it('can be placed at the top edge of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 1,
                 yanchor: 'top'
@@ -142,7 +142,7 @@ describe('Plot title', function() {
         });
 
         it('can be placed at the bottom edge of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 0,
                 yanchor: 'bottom'
@@ -154,7 +154,7 @@ describe('Plot title', function() {
         });
 
         it('can be placed in the vertical center of the ' + testCase.selector.desc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 0.5,
                 yanchor: 'middle'
@@ -170,7 +170,7 @@ describe('Plot title', function() {
     it('provides a y \'auto\' value putting title baseline in middle ' +
       'of top margin irrespective of `yref`', function(done) {
         // yref: 'container'
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'container',
             y: 'auto'
         }))
@@ -204,7 +204,7 @@ describe('Plot title', function() {
         var testDesc = 'with {xanchor: \'auto\', x: ' + testCase.x + ', xref: \'' + xref +
           '\'} expected to be aligned ' + testCase.expAlignment;
         it(testDesc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: xref,
                 x: testCase.x,
                 xanchor: 'auto'
@@ -237,7 +237,7 @@ describe('Plot title', function() {
         var testDesc = 'with {yanchor: \'auto\', y: ' + testCase.y + ', yref: \'' + yref +
           '\'} expected to be aligned ' + testCase.expAlignment;
         it(testDesc, function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: yref,
                 y: testCase.y,
                 yanchor: 'auto'
@@ -251,7 +251,7 @@ describe('Plot title', function() {
 
     it('{y: \'auto\'} overrules {yanchor: \'auto\'} to support behavior ' +
       'before chart title alignment was introduced', function(done) {
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             y: 'auto',
             yanchor: 'auto'
         }))
@@ -264,7 +264,7 @@ describe('Plot title', function() {
     // Horizontal padding
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('can be placed x pixels away from left ' + refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'left',
                 x: 0,
@@ -280,7 +280,7 @@ describe('Plot title', function() {
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('can be placed x pixels away from right ' + refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'right',
                 x: 1,
@@ -297,7 +297,7 @@ describe('Plot title', function() {
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('figures out for itself which horizontal padding applies when {xanchor: \'auto\'}' +
           refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'auto',
                 x: 1,
@@ -329,7 +329,7 @@ describe('Plot title', function() {
         {pad: {r: 20}, dir: 'right'}
     ].forEach(function(testCase) {
         it('mutes ' + testCase.dir + ' padding for {xanchor: \'center\'}', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: 'paper',
                 xanchor: 'middle',
                 x: 0.5,
@@ -343,7 +343,7 @@ describe('Plot title', function() {
     });
 
     it('mutes left padding when xanchor is right', function(done) {
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             xref: 'paper',
             x: 1,
             xanchor: 'right',
@@ -358,7 +358,7 @@ describe('Plot title', function() {
     });
 
     it('mutes right padding when xanchor is left', function(done) {
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             xref: 'paper',
             x: 0,
             xanchor: 'left',
@@ -375,7 +375,7 @@ describe('Plot title', function() {
     // Vertical padding
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('can be placed x pixels below top ' + refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'top',
                 y: 1,
@@ -391,7 +391,7 @@ describe('Plot title', function() {
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('can be placed x pixels above bottom ' + refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'bottom',
                 y: 0,
@@ -408,7 +408,7 @@ describe('Plot title', function() {
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('figures out for itself which vertical padding applies when {yanchor: \'auto\'}' +
           refSelector.desc + ' edge', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'auto',
                 y: 1,
@@ -440,7 +440,7 @@ describe('Plot title', function() {
         {pad: {b: 20}, dir: 'bottom'}
     ].forEach(function(testCase) {
         it('mutes ' + testCase.dir + ' padding for {yanchor: \'middle\'}', function(done) {
-            Plotly.plot(gd, data, extendLayout({
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: 'paper',
                 yanchor: 'middle',
                 y: 0.5,
@@ -454,7 +454,7 @@ describe('Plot title', function() {
     });
 
     it('mutes top padding when yanchor is bottom', function(done) {
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'paper',
             y: 0,
             yanchor: 'bottom',
@@ -469,7 +469,7 @@ describe('Plot title', function() {
     });
 
     it('mutes bottom padding when yanchor is top', function(done) {
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'paper',
             y: 1,
             yanchor: 'top',
@@ -604,7 +604,7 @@ describe('Titles can be updated', function() {
             yaxis: {title: {text: 'Weight'}}
         };
         gd = createGraphDiv();
-        Plotly.plot(gd, data, Lib.extendDeep({}, layout));
+        Plotly.newPlot(gd, data, Lib.extendDeep({}, layout));
 
         expectTitles('Plotly line chart', 'Age', 'Weight');
     });
@@ -780,7 +780,7 @@ describe('Titles support setting custom font properties', function() {
             }
         };
 
-        Plotly.plot(gd, data, layout)
+        Plotly.newPlot(gd, data, layout)
         .then(function() {
             expectTitleFont('blue', 'serif', 24);
             expectXAxisTitleFont('#333', 'sans-serif', 20);
@@ -821,7 +821,7 @@ describe('Titles support setting custom font properties', function() {
             }
         };
 
-        Plotly.plot(gd, data, layout)
+        Plotly.newPlot(gd, data, layout)
         .then(function() {
             expectTitleFont('blue', 'serif', 24);
             expectXAxisTitleFont('#333', 'sans-serif', 20);
@@ -863,7 +863,7 @@ describe('Title fonts can be updated', function() {
             }
         };
         gd = createGraphDiv();
-        Plotly.plot(gd, data, Lib.extendDeep({}, layout))
+        Plotly.newPlot(gd, data, Lib.extendDeep({}, layout))
         .then(function() {
             expectTitleFont('black', 'sans-serif', 24);
             expectXAxisTitleFont('red', 'serif', 20);
@@ -1017,7 +1017,7 @@ describe('Titles for multiple axes', function() {
     afterEach(destroyGraphDiv);
 
     it('still support deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
-        Plotly.plot(gd, data, multiAxesLayout)
+        Plotly.newPlot(gd, data, multiAxesLayout)
         .then(function() {
             expect(xTitleSel(1).text()).toBe('X-Axis 1');
             expect(xTitleSel(1).node().style.fontSize).toBe('30px');
@@ -1035,7 +1035,7 @@ describe('Titles for multiple axes', function() {
     });
 
     it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
-        Plotly.plot(gd, data, multiAxesLayout)
+        Plotly.newPlot(gd, data, multiAxesLayout)
         .then(function() {
             return Plotly.relayout(gd, {
                 'xaxis2.title': '2nd X-Axis',
@@ -1242,7 +1242,7 @@ describe('Editable titles', function() {
     }
 
     it('shows default titles semi-opaque with no hover effects', function(done) {
-        Plotly.plot(gd, data, {}, {editable: true})
+        Plotly.newPlot(gd, data, {}, {editable: true})
         .then(function() {
             return Promise.all([
                 // Check all three titles in parallel. This only works because
@@ -1258,7 +1258,7 @@ describe('Editable titles', function() {
     });
 
     it('has hover effects for blank titles', function(done) {
-        Plotly.plot(gd, data, {
+        Plotly.newPlot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
             title: {text: ''}
@@ -1274,7 +1274,7 @@ describe('Editable titles', function() {
     });
 
     it('has no hover effects for titles that used to be blank', function(done) {
-        Plotly.plot(gd, data, {
+        Plotly.newPlot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
             title: {text: ''}

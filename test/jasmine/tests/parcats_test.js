@@ -1695,7 +1695,7 @@ describe('Parcats hover:', function() {
         );
         if(s.patch) fig = s.patch(fig);
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', s.pos[0], s.pos[1]);
             mouseEvent('mouseover', s.pos[0], s.pos[1]);
 

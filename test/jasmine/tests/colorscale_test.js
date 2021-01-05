@@ -783,7 +783,7 @@ describe('Test colorscale restyle calls:', function() {
         var reds = ['rgb(220, 220, 220)', 'rgb(234, 135, 92)', 'rgb(178, 10, 28)'];
         var grns = ['rgb(0, 68, 27)', 'rgb(116, 196, 118)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'contour',
             z: [
                 [1, 20, 30],
@@ -890,7 +890,7 @@ describe('Test colorscale restyle calls:', function() {
         var rdbu = ['rgb(5, 10, 172)', 'rgb(77, 101, 226)', 'rgb(178, 10, 28)'];
         var grns = ['rgb(0, 68, 27)', 'rgb(35, 139, 69)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {color: [-1, 0, 3]}
@@ -968,7 +968,7 @@ describe('Test colorscale restyle calls:', function() {
         var blues = ['rgb(220, 220, 220)', 'rgb(70, 100, 245)', 'rgb(5, 10, 172)'];
         var grns = ['rgb(247, 252, 245)', 'rgb(116, 196, 118)', 'rgb(0, 68, 27)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {
@@ -1049,7 +1049,7 @@ describe('Test colorscale restyle calls:', function() {
         var grns = ['rgb(0, 68, 27)', 'rgb(12, 119, 52)', 'rgb(174, 222, 167)',
             'rgb(12, 119, 52)', 'rgb(12, 119, 52)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {color: [-1, 0, 3], coloraxis: 'coloraxis'}
@@ -1150,7 +1150,7 @@ describe('Test colorscale restyle calls:', function() {
             }
         };
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 3],
             marker: {color: [1, 2, 3]}
         }])
@@ -1171,7 +1171,7 @@ describe('Test colorscale restyle calls:', function() {
     });
 
     it('@gl should work with scatter3d', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],

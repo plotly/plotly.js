@@ -147,7 +147,7 @@ describe('table', function() {
         it('Works with more than one column', function(done) {
             var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
@@ -159,7 +159,7 @@ describe('table', function() {
         it('Works with one column', function(done) {
             var mockCopy = Lib.extendDeep({}, mock1);
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(1);
@@ -172,7 +172,7 @@ describe('table', function() {
             var mockCopy = Lib.extendDeep({}, mock0);
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(0);
                 expect(gd.data[0].cells.values.length).toEqual(0);
@@ -189,7 +189,7 @@ describe('table', function() {
             mockCopy.data[0].cells.values = [[], []];
 
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
@@ -209,14 +209,14 @@ describe('table', function() {
 
             // more info in: https://github.com/plotly/streambed/issues/11618
 
-            Plotly.plot(gd, mockCopy).then(function() {
+            Plotly.newPlot(gd, mockCopy).then(function() {
                 _assert('staticPlot:false (base)', {
                     captureZone: 1,
                     glyph: 1
                 });
             })
             .then(function() { return Plotly.purge(gd); })
-            .then(function() { return Plotly.plot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
+            .then(function() { return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
             .then(function() {
                 _assert('staticPlot:true', {
                     captureZone: 0,
@@ -233,11 +233,11 @@ describe('table', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('`Plotly.plot` should render all the columns even if no cell contents were supplied yet', function(done) {
+        it('`Plotly.newPlot` should render all the columns even if no cell contents were supplied yet', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].cells;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
@@ -246,11 +246,11 @@ describe('table', function() {
             .then(done, done.fail);
         });
 
-        it('`Plotly.plot` should render all columns even if no header contents were supplied yet', function(done) {
+        it('`Plotly.newPlot` should render all columns even if no header contents were supplied yet', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].header;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
@@ -262,11 +262,11 @@ describe('table', function() {
             .then(done, done.fail);
         });
 
-        it('`Plotly.plot` should render all the column headers even if not all header values were supplied', function(done) {
+        it('`Plotly.newPlot` should render all the column headers even if not all header values were supplied', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             mockCopy.data[0].header.values = ['A', 'S', 'D']; // doesn't cover all 7 columns
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
@@ -289,10 +289,10 @@ describe('table', function() {
                 y: [0.05, 0.85]
             };
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
+        it('`Plotly.newPlot` should have proper fields on `gd.data` on initial rendering', function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].header.values.length).toEqual(7);
             expect(gd.data[0].cells.values.length).toEqual(7);
@@ -373,7 +373,7 @@ describe('table', function() {
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock2);
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
@@ -413,7 +413,7 @@ describe('table', function() {
             mockCopy = Lib.extendDeep({}, mockMulti);
             gd = createGraphDiv();
             gdWheelEventCount = 0;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 gd.addEventListener('wheel', function(evt) {
                     gdWheelEventCount++;
