@@ -51,7 +51,7 @@ module.exports = extendFlat({
             'otherwise it defaults to `rgb`.'
         ].join(' ')
     },
-    interpolate: {
+    zsmooth: {
         valType: 'enumerated',
         values: ['nearest', 'linear'],
         dflt: 'nearest',
