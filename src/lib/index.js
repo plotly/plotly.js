@@ -722,14 +722,8 @@ lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
 
-// Do we need this process now that IE9 and IE10 are not supported?
-
-/**
- * Duck typing to recognize a d3 selection, mostly for IE9's benefit
- * because it doesn't handle instanceof like modern browsers
- */
 lib.isD3Selection = function(obj) {
-    return obj && (typeof obj.classed === 'function');
+    return obj instanceof d3.selection;
 };
 
 /**

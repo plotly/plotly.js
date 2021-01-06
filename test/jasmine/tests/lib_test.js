@@ -1643,10 +1643,7 @@ describe('Test lib.js:', function() {
                 // this is what got us into trouble actually - d3 selections can
                 // contain non-nodes - say for example d3 selections! then they
                 // don't work correctly. But it makes a convenient test!
-                d3.select(1),
-                // just showing what we actually do in this function: duck type
-                // using the `classed` method.
-                {classed: function(v) { return !!v; }}
+                d3.select(1)
             ];
 
             yesSelections.forEach(function(v) {
