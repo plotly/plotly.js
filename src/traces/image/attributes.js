@@ -57,10 +57,10 @@ module.exports = extendFlat({
         dflt: false,
         role: 'info',
         editType: 'plot',
-        description: [ 
+        description: [
             'Picks a smoothing algorithm used to smooth `z` data.',
             'This only applies for image traces that use the `source` attribute.'
-        ].join(' ') 
+        ].join(' ')
     },
     zmin: {
         valType: 'info_array',

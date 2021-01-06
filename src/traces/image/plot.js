@@ -137,7 +137,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         image3.exit().remove();
 
         var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
-        
+
         if(fastImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
             var yRange = Lib.simpleMap(ya.range, ya.r2l);
