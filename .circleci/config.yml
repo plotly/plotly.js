@@ -145,7 +145,7 @@ jobs:
           at: ~/
       - run:
           name: Build dist/
-          command: npm run build
+          command: npm run build && npm run no-new-func
       - store_artifacts:
           path: dist
           destination: dist

@@ -31,6 +31,7 @@
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
+    "no-new-func": "eslint --no-ignore --no-eslintrc --rule '{no-new-func: error}' dist/plotly-finance.js dist/plotly-basic.js dist/plotly-cartesian.js dist/plotly-geo.js dist/plotly-mapbox.js",
     "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
