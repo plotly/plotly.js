@@ -30,7 +30,7 @@ loggers.log = function() {
         for(i = 0; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
-        apply(console.trace || console.log, messages);
+        console.trace.apply(console, messages);
     }
 
     if(dfltConfig.notifyOnLogging > 1) {
@@ -50,7 +50,7 @@ loggers.warn = function() {
         for(i = 0; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
-        apply(console.trace || console.log, messages);
+        console.trace.apply(console, messages);
     }
 
     if(dfltConfig.notifyOnLogging > 0) {
@@ -70,7 +70,7 @@ loggers.error = function() {
         for(i = 0; i < arguments.length; i++) {
             messages.push(arguments[i]);
         }
-        apply(console.error, messages);
+        console.error.apply(console, messages);
     }
 
     if(dfltConfig.notifyOnLogging > 0) {
@@ -81,11 +81,3 @@ loggers.error = function() {
         notifier(lines.join('<br>'), 'stick');
     }
 };
-
-function apply(f, args) {
-    if(f && f.apply) {
-        // `this` should always be console, since here we're always
-        // applying a method of the console object.
-        f.apply(console, args);
-    }
-}
