@@ -88,7 +88,18 @@ exports.findModuleList = function(pathToIndex) {
             node.parent.parent.type === 'ArrayExpression'
         ) {
             var moduleName = node.value.replace('./', '');
-            moduleList.push(moduleName);
+            if([
+                // transforms
+                'aggregate',
+                'filter',
+                'groupby',
+                'sort',
+
+                // components
+                'calendars'
+            ].indexOf(moduleName) === -1) {
+                moduleList.push(moduleName);
+            }
         }
     });
 
