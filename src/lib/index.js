@@ -712,11 +712,6 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-var IS_IE9_OR_BELOW_REGEX = /MSIE [1-9]\./;
-lib.isIE9orBelow = function() {
-    return lib.isIE() && IS_IE9_OR_BELOW_REGEX.test(window.navigator.userAgent);
-};
-
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);
@@ -727,12 +722,8 @@ lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
 
-/**
- * Duck typing to recognize a d3 selection, mostly for IE9's benefit
- * because it doesn't handle instanceof like modern browsers
- */
 lib.isD3Selection = function(obj) {
-    return obj && (typeof obj.classed === 'function');
+    return obj instanceof d3.selection;
 };
 
 /**
