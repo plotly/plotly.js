@@ -14,15 +14,6 @@ or the un-minified version as:
 <script src="plotly.js" charset="utf-8"></script>
 ```
 
-### To support IE9
-
-*Before* the plotly.js script tag, add:
-
-```html
-<script>if(typeof window.Int16Array !== 'function')document.write("<scri"+"pt src='extras/typedarray.min.js'></scr"+"ipt>");</script>
-<script>document.write("<scri"+"pt src='extras/request_animation_frame.js'></scr"+"ipt>");</script>
-```
-
 ### To support MathJax
 
 *Before* the plotly.js script tag, add:
