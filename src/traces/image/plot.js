@@ -20,13 +20,13 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !(unsupportedBrowsers || gd._context._exportedPlot);
+    var supportsPixelatedImage = !unsupportedBrowsers;
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
+        var fastImage = supportsPixelatedImage && !(gd._context._exportedPlot && trace.zsmooth !== 'fast') && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
         trace._fastImage = fastImage;
 
         var z = cd0.z;
