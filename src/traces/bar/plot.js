@@ -298,7 +298,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     var isHorizontal = (trace.orientation === 'h');
 
     var text = getText(fullLayout, cd, i, xa, ya);
-    textPosition = getTextPosition(trace, i, fullLayout.displaytotal);
+    textPosition = fullLayout.barshowtotal ? 'inside' : getTextPosition(trace, i);
 
     // compute text position
     var inStackOrRelativeMode =
@@ -673,8 +673,7 @@ function getText(fullLayout, cd, index, xa, ya) {
     return helpers.coerceString(attributeText, value);
 }
 
-function getTextPosition(trace, index, forceInside) {
-    if(forceInside) return 'inside';
+function getTextPosition(trace, index) {
     var value = helpers.getValue(trace.textposition, index);
     return helpers.coerceEnumerated(attributeTextPosition, value);
 }

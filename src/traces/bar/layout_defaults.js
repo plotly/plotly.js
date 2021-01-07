@@ -55,6 +55,6 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
     coerce('bargroupgap');
-    coerce('displaytotal');
-    coerce('totaltemplate');
+    var showTotal = coerce('barshowtotal');
+    if(showTotal) coerce('totaltemplate');
 };

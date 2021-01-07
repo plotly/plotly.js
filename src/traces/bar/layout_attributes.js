@@ -64,16 +64,18 @@ module.exports = {
             'the same location coordinate.'
         ].join(' ')
     },
-    displaytotal: {
+    barshowtotal: {
         valType: 'boolean',
         dflt: false,
         role: 'style',
+        editType: 'plot',
         description: 'Display the total value of each bar.'
     },
     totaltemplate: {
         valType: 'string',
         dflt: '%{total}',
         role: 'style',
+        editType: 'plot',
         description: 'Template to display the total value of each bar.'
     },
 };
