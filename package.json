@@ -31,7 +31,7 @@
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
-    "no-new-func": "eslint --debug --no-ignore --no-eslintrc --rule '{no-new-func: error}' $(ls dist/plotly*.js | grep -v plotly-locale* | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js)",
+    "no-new-func": "eslint --no-ignore --no-eslintrc --rule '{no-new-func: error}' $(find dist -type f -iname '*.js' | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js)",
     "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
