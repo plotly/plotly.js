@@ -1,5 +1,5 @@
 var fs = require('fs');
-var sizeOf = require('image-size');
+var probeSync = require('probe-image-size/sync');
 
 var getMockList = require('./assets/get_mock_list');
 var getRequestOpts = require('./assets/get_image_request_options');
@@ -121,7 +121,7 @@ function testExport(mockName, format, cb) {
         var didExport;
 
         if(format === 'svg') {
-            var dims = sizeOf(imagePaths.test);
+            var dims = probeSync(fs.readFileSync(imagePaths.test));
             didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
         } else {
             var stats = fs.statSync(imagePaths.test);
