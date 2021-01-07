@@ -145,7 +145,7 @@ jobs:
           at: ~/
       - run:
           name: Build dist/
-          command: npm run build && npm run no-new-func
+          command: npm run build
       - store_artifacts:
           path: dist
           destination: dist
@@ -166,6 +166,9 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
+      - run:
+          name: Test bundles
+          command: npm run no-new-func
 
 workflows:
   version: 2
