@@ -410,7 +410,7 @@ describe('image plot', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         Plotly.newPlot(gd, mockCopy)
         .then(function(gd) {
-            expect(gd.calcdata[0][0].trace._fastImage).toBeTruthy();
+            expect(gd.calcdata[0][0].trace._realImage).toBeTruthy();
         })
         .then(done, done.fail);
     });
@@ -424,11 +424,11 @@ describe('image plot', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
-                expect(gd.calcdata[0][0].trace._fastImage).toBe(true);
+                expect(gd.calcdata[0][0].trace._realImage).toBe(true);
                 return Plotly.relayout(gd, attr[0], attr[1]);
             })
             .then(function(gd) {
-                expect(gd.calcdata[0][0].trace._fastImage).toBe(false, 'when ' + attr[0] + ' is ' + attr[1]);
+                expect(gd.calcdata[0][0].trace._realImage).toBe(false, 'when ' + attr[0] + ' is ' + attr[1]);
             })
             .then(done, done.fail);
         });

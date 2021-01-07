@@ -26,8 +26,8 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
-        trace._fastImage = fastImage;
+        var realImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
+        trace._realImage = realImage;
 
         var z = cd0.z;
         var x0 = cd0.x0;
@@ -73,7 +73,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         }
 
         // Reduce image size when zoomed in to save memory
-        if(!fastImage) {
+        if(!realImage) {
             var extra = 0.5; // half the axis size
             left = Math.max(-extra * xa._length, left);
             right = Math.min((1 + extra) * xa._length, right);
@@ -138,7 +138,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
 
         var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
 
-        if(fastImage) {
+        if(realImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
             var yRange = Lib.simpleMap(ya.range, ya.r2l);
 
@@ -194,7 +194,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
-                if(fastImage) {
+                if(realImage) {
                     href = trace.source;
                 } else {
                     var context = trace._canvas.el.getContext('2d');
