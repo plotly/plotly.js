@@ -51,6 +51,17 @@ module.exports = extendFlat({
             'otherwise it defaults to `rgb`.'
         ].join(' ')
     },
+    zsmooth: {
+        valType: 'enumerated',
+        values: ['fast', false],
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Picks a smoothing algorithm used to smooth `z` data.',
+            'This only applies for image traces that use the `source` attribute.'
+        ].join(' ')
+    },
     zmin: {
         valType: 'info_array',
         items: [

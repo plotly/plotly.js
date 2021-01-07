@@ -55,5 +55,18 @@ module.exports = {
             },
             suffix: ['°', '%', '%', '']
         }
-    }
+    },
+    // For pixelated image rendering
+    // http://phrogz.net/tmp/canvas_image_zoom.html
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
+    pixelatedStyle: [
+        'image-rendering: optimizeSpeed',
+        'image-rendering: -moz-crisp-edges',
+        'image-rendering: -o-crisp-edges',
+        'image-rendering: -webkit-optimize-contrast',
+        'image-rendering: optimize-contrast',
+        'image-rendering: crisp-edges',
+        'image-rendering: pixelated',
+        ''
+    ].join('; ')
 };
