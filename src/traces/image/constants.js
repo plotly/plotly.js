@@ -66,6 +66,7 @@ module.exports = {
         'image-rendering: -webkit-optimize-contrast',
         'image-rendering: optimize-contrast',
         'image-rendering: crisp-edges',
-        'image-rendering: pixelated'
+        'image-rendering: pixelated',
+        ''
     ].join('; ')
 };
