@@ -10,15 +10,8 @@
 
 var isArray = Array.isArray;
 
-// IE9 fallbacks
-
-var ab = (typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView) ?
-    {isView: function() { return false; }} :
-    ArrayBuffer;
-
-var dv = (typeof DataView === 'undefined') ?
-    function() {} :
-    DataView;
+var ab = ArrayBuffer;
+var dv = DataView;
 
 function isTypedArray(a) {
     return ab.isView(a) && !(a instanceof dv);
