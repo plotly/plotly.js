@@ -22,6 +22,7 @@ var handleLineDefaults = require('./line_defaults');
 var handleLineShapeDefaults = require('./line_shape_defaults');
 var handleTextDefaults = require('./text_defaults');
 var handleFillColorDefaults = require('./fillcolor_defaults');
+var handleImageDefaults= require('./image_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -58,6 +59,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('texttemplate');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
+
+    handleImageDefaults(traceIn, traceOut, layout, coerce);
 
     var dfltHoverOn = [];
 

@@ -10,6 +10,7 @@
 
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var imageAttrs = require('../../components/fx/image_attributes').imageAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
@@ -133,6 +134,8 @@ module.exports = {
     yperiod0: axisPeriod0('y0'),
     xperiodalignment: axisPeriodAlignment('x'),
     yperiodalignment: axisPeriodAlignment('y'),
+
+    image: imageAttrs,
 
     stackgroup: {
         valType: 'string',
