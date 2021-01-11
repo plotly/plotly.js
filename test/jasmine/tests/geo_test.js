@@ -1216,7 +1216,7 @@ describe('Test geo interactions', function() {
                     }
 
                     gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    Plotly.newPlot(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1247,7 +1247,7 @@ describe('Test geo interactions', function() {
                     }
 
                     gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    Plotly.newPlot(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1278,7 +1278,7 @@ describe('Test geo interactions', function() {
                     }
 
                     gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    Plotly.newPlot(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1293,7 +1293,8 @@ describe('Test geo interactions', function() {
                 trace1.locations.shift();
 
                 gd.calcdata = undefined;
-                Plotly.plot(gd).then(function() {
+                Plotly.newPlot(gd, gd.data, gd.layout)
+                .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
 
@@ -1319,7 +1320,8 @@ describe('Test geo interactions', function() {
                 trace1.z = zQueue;
 
                 gd.calcdata = undefined;
-                Plotly.plot(gd).then(function() {
+                Plotly.newPlot(gd, gd.data, gd.layout)
+                .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
 
@@ -2108,16 +2110,16 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     var eventData;
     var dblClickCnt = 0;
 
+    beforeEach(function() { gd = createGraphDiv(); });
+
     afterEach(destroyGraphDiv);
 
-    function plot(fig) {
-        gd = createGraphDiv();
-
+    var newPlot = function(fig) {
         return Plotly.newPlot(gd, fig).then(function() {
             gd.on('plotly_relayout', function(d) { eventData = d; });
             gd.on('plotly_doubleclick', function() { dblClickCnt++; });
         });
-    }
+    };
 
     function assertEventData(msg, eventKeys) {
         if(eventKeys === 'dblclick') {
@@ -2196,7 +2198,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [-90, 0], [-90, 0], 1
                 ], [
@@ -2261,7 +2263,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, 0], [undefined, undefined], undefined
                 ], [
@@ -2345,7 +2347,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [-75, 45], 1
                 ], [
@@ -2408,7 +2410,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, undefined], undefined
                 ], [
@@ -2496,7 +2498,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [15, 57.5], 1,
                 ], [
@@ -2549,7 +2551,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, undefined], undefined,
                 ], [
@@ -2631,7 +2633,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             assertEventData(msg, eventKeys);
         }
 
-        plot(fig).then(function() {
+        newPlot(fig).then(function() {
             _assert('base', [
                 [-96.6, 38.7], 1,
             ], [
@@ -2689,7 +2691,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         fig.layout.width = 700;
         fig.layout.height = 500;
 
-        plot(fig)
+        newPlot(fig)
         .then(function() { return scroll([131, 159], [-200, 200]); })
         .then(function() {
             // scrolling outside subplot frame should log errors,
@@ -2719,7 +2721,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             assertEventData(msg, eventKeys);
         }
 
-        plot(fig)
+        newPlot(fig)
         .then(function() {
             _assert('base', [1], [101.9], undefined);
         })
@@ -2730,12 +2732,24 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
             );
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(function() {
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: false}
+            });
+        })
         .then(function() { return scroll([200, 250], [-200, -200]); })
         .then(function() {
             _assert('with scrollZoom:false', [1.3], [134.4], undefined);
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: 'geo'}); })
+        .then(function() {
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: 'geo'}
+            });
+        })
         .then(function() { return scroll([200, 250], [-200, -200]); })
         .then(function() {
             _assert('with scrollZoom:geo',
@@ -2745,44 +2759,59 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(done, done.fail);
     });
+});
 
-    describe('plotly_relayouting', function() {
-        var mocks = {
-            'non-clipped': require('@mocks/geo_winkel-tripel'),
-            'clipped': require('@mocks/geo_orthographic'),
-            'scoped': require('@mocks/geo_europe-bubbles')
-        };
-        ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
-            ['pan'].forEach(function(dragmode) {
-                it('should emit events on ' + dragmode + ' for ' + zoomHandler, function(done) {
-                    var events = []; var path = [[300, 300], [350, 300], [350, 400]];
-                    var relayoutCnt = 0; var relayoutEvent;
-                    var fig = Lib.extendDeep({}, mocks[zoomHandler]);
-                    fig.layout.dragmode = dragmode;
-                    fig.layout.width = 700;
-                    fig.layout.height = 500;
+describe('plotly_relayouting', function() {
+    var gd;
+    var events;
+    var relayoutCnt;
+    var relayoutEvent;
 
-                    gd = createGraphDiv();
-                    Plotly.newPlot(gd, fig)
-                    .then(function() {
-                        gd.on('plotly_relayout', function(e) {
-                            relayoutCnt++;
-                            relayoutEvent = e;
-                        });
-                        gd.on('plotly_relayouting', function(e) {
-                            events.push(e);
-                        });
-                        return drag({path: path, noCover: true});
-                    })
-                    .then(function() {
-                        expect(events.length).toEqual(path.length - 1);
-                        expect(relayoutCnt).toEqual(1);
-                        Object.keys(relayoutEvent).sort().forEach(function(key) {
-                            expect(Object.keys(events[0])).toContain(key);
-                        });
-                    })
-                    .then(done, done.fail);
-                });
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    var newPlot = function(fig) {
+        events = [];
+        relayoutCnt = 0;
+
+        return Plotly.newPlot(gd, fig).then(function() {
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
+        });
+    };
+
+    var mocks = {
+        'non-clipped': require('@mocks/geo_winkel-tripel'),
+        'clipped': require('@mocks/geo_orthographic'),
+        'scoped': require('@mocks/geo_europe-bubbles')
+    };
+    ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
+        ['pan'].forEach(function(dragmode) {
+            it('should emit events on ' + dragmode + ' for ' + zoomHandler, function(done) {
+                var path = [[300, 300], [350, 300], [350, 400]];
+                var fig = Lib.extendDeep({}, mocks[zoomHandler]);
+                fig.layout.dragmode = dragmode;
+                fig.layout.width = 700;
+                fig.layout.height = 500;
+
+                newPlot(fig)
+                .then(function() {
+                    return drag({path: path, noCover: true});
+                })
+                .then(function() {
+                    expect(events.length).toEqual(path.length - 1);
+                    expect(relayoutCnt).toEqual(1);
+                    Object.keys(relayoutEvent).sort().forEach(function(key) {
+                        expect(Object.keys(events[0])).toContain(key);
+                    });
+                })
+                .then(done, done.fail);
             });
         });
     });

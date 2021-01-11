@@ -1413,7 +1413,9 @@ describe('mapbox plots', function() {
         mockCopy2.config = {scrollZoom: false};
 
         var relayoutCnt = 0;
-        gd.on('plotly_relayout', function() { relayoutCnt++; });
+        var addOnGd = function() {
+            gd.on('plotly_relayout', function() { relayoutCnt++; });
+        };
 
         function _scroll() {
             relayoutCnt = 0;
@@ -1428,6 +1430,8 @@ describe('mapbox plots', function() {
         expect(zoom).toBeCloseTo(1.234);
         var zoom0 = zoom;
 
+        addOnGd();
+
         _scroll().then(function() {
             expect(relayoutCnt).toBe(1, 'scroll relayout cnt');
 
@@ -1435,7 +1439,8 @@ describe('mapbox plots', function() {
             expect(zoomNew).toBeGreaterThan(zoom);
             zoom = zoomNew;
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(function() { return Plotly.newPlot(gd, gd.data, gd.layout, {scrollZoom: false}); })
+        .then(addOnGd)
         .then(_scroll)
         .then(function() {
             expect(relayoutCnt).toBe(0, 'no additional relayout call');
@@ -1444,7 +1449,8 @@ describe('mapbox plots', function() {
             expect(zoomNew).toBe(zoom);
             zoom = zoomNew;
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: true}); })
+        .then(function() { return Plotly.newPlot(gd, gd.data, gd.layout, {scrollZoom: true}); })
+        .then(addOnGd)
         .then(_scroll)
         .then(function() {
             expect(relayoutCnt).toBe(1, 'scroll relayout cnt');
@@ -1453,6 +1459,7 @@ describe('mapbox plots', function() {
             expect(zoomNew).toBeGreaterThan(zoom);
         })
         .then(function() { return Plotly.newPlot(gd, mockCopy2); })
+        .then(addOnGd)
         .then(_scroll)
         .then(function() {
             // see https://github.com/plotly/plotly.js/issues/3738

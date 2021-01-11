@@ -538,7 +538,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy).then(function() {
+        Plotly.newPlot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -565,7 +565,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy).then(function() {
+        Plotly.newPlot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);

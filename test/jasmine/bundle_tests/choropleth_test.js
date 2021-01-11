@@ -26,7 +26,7 @@ describe('Bundle with choropleth', function() {
     afterEach(destroyGraphDiv);
 
     it('should graph choropleth traces', function(done) {
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
         .then(function() {
             var nodes = d3.selectAll('g.trace.choropleth');
 

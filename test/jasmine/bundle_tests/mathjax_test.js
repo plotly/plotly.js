@@ -56,7 +56,7 @@ describe('Test MathJax:', function() {
         function testTitleScoot(fig, opts) {
             var xCategories = opts.xCategories;
 
-            return Plotly.plot(gd, fig)
+            return Plotly.newPlot(gd, fig)
                 .then(function() { assertNoIntersect('base'); })
                 .then(function() { return Plotly.relayout(gd, 'xaxis.titlefont.size', 40); })
                 .then(function() { assertNoIntersect('large title font size'); })

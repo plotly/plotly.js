@@ -16,7 +16,7 @@ describe('Bundle with histogram2dcontour and histogram', function() {
     var mock = require('@mocks/2dhistogram_contour_subplots.json');
 
     beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);
