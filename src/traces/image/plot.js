@@ -26,8 +26,9 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var realImage = trace.zsmooth === 'fast' || (
-            supportsPixelatedImage && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear'
+        var realImage = (
+            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelatedImage)) &&
+            !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear'
         );
         trace._realImage = realImage;
 
