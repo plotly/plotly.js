@@ -935,7 +935,7 @@ describe('Test gl3d drag and wheel interactions', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     });
 
     afterEach(function() {

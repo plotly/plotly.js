@@ -365,6 +365,8 @@ describe('parcoords initialization tests', function() {
 describe('parcoords edge cases', function() {
     var gd;
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
         gd = createGraphDiv();
     });
 
