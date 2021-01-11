@@ -761,10 +761,6 @@ describe('@noCIdep Plotly.react', function() {
     for(itemType in Registry.modules) { typesTested[itemType] = 0; }
     for(itemType in Registry.transformsRegistry) { typesTested[itemType] = 0; }
 
-    // Not really being supported... This isn't part of the main bundle, and it's pretty broken,
-    // but it gets registered and used by a couple of the gl2d tests.
-    delete typesTested.contourgl;
-
     function _runReactMock(mockSpec, done) {
         var mock = mockSpec[1];
         var initialJson;

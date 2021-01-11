@@ -544,17 +544,6 @@ function handleGeo(gd, ev) {
     }
 }
 
-modeBarButtons.hoverClosestGl2d = {
-    name: 'hoverClosestGl2d',
-    title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
-    attr: 'hovermode',
-    val: null,
-    toggle: true,
-    icon: Icons.tooltip_basic,
-    gravity: 'ne',
-    click: toggleHover
-};
-
 modeBarButtons.hoverClosestPie = {
     name: 'hoverClosestPie',
     title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },

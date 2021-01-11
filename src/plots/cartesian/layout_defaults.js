@@ -55,7 +55,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
+        if(!traceIs(trace, 'cartesian')) continue;
 
         var xaName;
         if(trace.xaxis) {

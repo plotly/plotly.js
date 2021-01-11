@@ -89,7 +89,6 @@ function getButtonGroups(gd) {
     var hasGeo = fullLayout._has('geo');
     var hasPie = fullLayout._has('pie');
     var hasFunnelarea = fullLayout._has('funnelarea');
-    var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
@@ -124,7 +123,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -140,8 +139,6 @@ function getButtonGroups(gd) {
         zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
-    } else if(hasGL2D) {
-        hoverGroup = ['hoverClosestGl2d'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
@@ -161,14 +158,14 @@ function getButtonGroups(gd) {
         hoverGroup = [];
     }
 
-    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+    if((hasCartesian) && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
         if(resetGroup[0] !== 'resetViews') resetGroup = ['resetScale2d'];
     }
 
     if(hasGL3D) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
-    } else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    } else if(((hasCartesian) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     } else if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];

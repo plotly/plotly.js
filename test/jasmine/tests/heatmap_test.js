@@ -528,7 +528,7 @@ describe('heatmap calc', function() {
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 
-    ['heatmap', 'heatmapgl'].forEach(function(traceType) {
+    ['heatmap'].forEach(function(traceType) {
         it('should sort z data based on axis categoryorder for ' + traceType, function() {
             var mock = require('@mocks/heatmap_categoryorder');
             var mockCopy = Lib.extendDeep({}, mock);

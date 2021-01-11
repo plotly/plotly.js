@@ -37,18 +37,6 @@ describe('Plotly w/o WebGL support:', function() {
         .then(done, done.fail);
     });
 
-    it('gl2d subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl2d_pointcloud-basic.json'))
-        .then(function() {
-            checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
-        })
-        .then(function() {
-            checkNoWebGLMsg(false);
-        })
-        .then(done, done.fail);
-    });
-
     it('scattergl subplots', function(done) {
         Plotly.react(gd, require('@mocks/gl2d_12.json'))
         .then(function() {

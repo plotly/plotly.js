@@ -387,8 +387,6 @@ var list = [
     'gl2d_fill_trace_tozero_order',
     'gl2d_fill-ordering',
     'gl2d_fonts',
-    'gl2d_heatmapgl',
-    'gl2d_heatmapgl_discrete',
     'gl2d_horiz-lines',
     'gl2d_layout_image',
     'gl2d_line_aligned',
@@ -426,7 +424,6 @@ var list = [
     'gl2d_parcoords_tick_format',
     'gl2d_period_positioning',
     'gl2d_point-selection',
-    'gl2d_pointcloud-basic',
     'gl2d_rgb_dont_accept_alpha_scattergl',
     'gl2d_scatter_fill_self_next',
     'gl2d_scatter_fill_self_next_vs_nogl',
@@ -1475,8 +1472,6 @@ figs['gl2d_error_bars_log'] = require('@mocks/gl2d_error_bars_log');
 // figs['gl2d_fill_trace_tozero_order'] = require('@mocks/gl2d_fill_trace_tozero_order');
 figs['gl2d_fill-ordering'] = require('@mocks/gl2d_fill-ordering');
 // figs['gl2d_fonts'] = require('@mocks/gl2d_fonts');
-figs['gl2d_heatmapgl'] = require('@mocks/gl2d_heatmapgl');
-figs['gl2d_heatmapgl_discrete'] = require('@mocks/gl2d_heatmapgl_discrete');
 figs['gl2d_horiz-lines'] = require('@mocks/gl2d_horiz-lines');
 // figs['gl2d_layout_image'] = require('@mocks/gl2d_layout_image');
 figs['gl2d_line_aligned'] = require('@mocks/gl2d_line_aligned');
@@ -1514,7 +1509,6 @@ figs['gl2d_parcoords_style_labels'] = require('@mocks/gl2d_parcoords_style_label
 figs['gl2d_parcoords_tick_format'] = require('@mocks/gl2d_parcoords_tick_format');
 figs['gl2d_period_positioning'] = require('@mocks/gl2d_period_positioning');
 figs['gl2d_point-selection'] = require('@mocks/gl2d_point-selection');
-// figs['gl2d_pointcloud-basic'] = require('@mocks/gl2d_pointcloud-basic');
 // figs['gl2d_rgb_dont_accept_alpha_scattergl'] = require('@mocks/gl2d_rgb_dont_accept_alpha_scattergl');
 figs['gl2d_scatter_fill_self_next'] = require('@mocks/gl2d_scatter_fill_self_next');
 figs['gl2d_scatter_fill_self_next_vs_nogl'] = require('@mocks/gl2d_scatter_fill_self_next_vs_nogl');

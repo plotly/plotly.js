@@ -466,7 +466,6 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._hasCartesian = newFullLayout._has('cartesian');
     newFullLayout._hasGeo = newFullLayout._has('geo');
     newFullLayout._hasGL3D = newFullLayout._has('gl3d');
-    newFullLayout._hasGL2D = newFullLayout._has('gl2d');
     newFullLayout._hasTernary = newFullLayout._has('ternary');
     newFullLayout._hasPie = newFullLayout._has('pie');
 
@@ -476,12 +475,10 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadGL2D;
-    var hasBgLayer = hasCartesian || hasGL2D;
+    var hadBgLayer = hadCartesian;
+    var hasBgLayer = hasCartesian;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -859,7 +856,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
+    var ids = newSubplotList.cartesian;
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
@@ -1287,28 +1284,20 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             var subplots = layout._subplots;
             var subplotId = '';
 
-            if(
-                visible ||
-                basePlotModule.name !== 'gl2d' // for now just drop empty gl2d subplots
-                // TODO - currently if we draw an empty gl2d subplot, it draws
-                // nothing then gets stuck and you can't get it back without newPlot
-                // sort this out in the regl refactor?
-            ) {
-                if(Array.isArray(subplotAttr)) {
-                    for(i = 0; i < subplotAttr.length; i++) {
-                        var attri = subplotAttr[i];
-                        var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
+            if(Array.isArray(subplotAttr)) {
+                for(i = 0; i < subplotAttr.length; i++) {
+                    var attri = subplotAttr[i];
+                    var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
 
-                        if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
-                        subplotId += vali;
-                    }
-                } else {
-                    subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+                    if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
+                    subplotId += vali;
                 }
+            } else {
+                subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+            }
 
-                if(subplots[basePlotModule.name]) {
-                    Lib.pushUnique(subplots[basePlotModule.name], subplotId);
-                }
+            if(subplots[basePlotModule.name]) {
+                Lib.pushUnique(subplots[basePlotModule.name], subplotId);
             }
         }
     }

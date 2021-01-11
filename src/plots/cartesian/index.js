@@ -52,7 +52,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var xList = subplots.xaxis;
     var yList = subplots.yaxis;
     var spSVG = subplots.cartesian;
-    var spAll = spSVG.concat(subplots.gl2d || []);
+    var spAll = spSVG;
     var allX = {};
     var allY = {};
     var i, xi, yi;

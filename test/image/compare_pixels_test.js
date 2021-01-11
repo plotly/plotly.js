@@ -121,35 +121,6 @@ if(argv['skip-flaky']) {
     });
 }
 
-/* gl2d pointcloud and other non-regl gl2d mock(s)
- * must be tested first on in order to work;
- * sort them here.
- *
- * gl-shader appears to conflict with regl.
- * We suspect that the lone gl context on CircleCI is
- * having issues with dealing with the two different
- * program binding algorithm.
- *
- * The problem will be solved by switching all our
- * WebGL-based trace types to regl.
- *
- * More info here:
- * https://github.com/plotly/plotly.js/pull/1037
- */
-function sortGl2dMockList(mockList) {
-    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
-    var pos = 0;
-
-    mockNames.forEach(function(m) {
-        var ind = mockList.indexOf(m);
-        if(ind === -1) return;
-        var tmp = mockList[pos];
-        mockList[pos] = m;
-        mockList[ind] = tmp;
-        pos++;
-    });
-}
-
 function runInBatch(mockList) {
     var running = 0;
 
@@ -283,7 +254,6 @@ function comparePixels(mockName, cb) {
         .on('close', checkImage);
 }
 
-sortGl2dMockList(allMockList);
 console.log('');
 
 // main
