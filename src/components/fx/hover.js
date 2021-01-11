@@ -1104,11 +1104,10 @@ function createHoverText(hoverData, opts, gd) {
             g.append('rect')
                 .call(Color.fill, Color.addOpacity(bgColor, 0.8));
             g.append('text').classed('name', true);
-            // trace data label (path and text.nums)
+            // trace data label (path and g.nums)
             g.append('path')
                 .style('stroke-width', '1px');
-            g.append('text').classed('nums', true)
-                .call(Drawing.font, fontFamily, fontSize);
+            g.append('g').classed('numbox', true);
         });
     hoverLabels.exit().remove();
 
@@ -1142,8 +1141,17 @@ function createHoverText(hoverData, opts, gd) {
         var name = texts[1];
 
         // main label
-        var tx = g.select('text.nums')
-            .call(Drawing.font,
+        var tj = g.select('g.numbox')
+            .selectAll('text.nums')
+            .data([0])
+
+        tj.enter().append('text').classed('nums', true);
+        tj.exit().remove();
+
+        // Reselect nested text.nums element(s)
+        var tx = g.select('g.numbox').selectAll('text.nums');
+
+        tx.call(Drawing.font,
                 d.fontFamily || fontFamily,
                 d.fontSize || fontSize,
                 d.fontColor || contrastColor)
