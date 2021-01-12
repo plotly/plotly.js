@@ -655,6 +655,7 @@ var list = [
     'image_non_numeric',
     'image_opacity',
     'image_source_axis_reverse',
+    'image_source_axis_reverse_zsmooth',
     'image_with_gaps',
     'image_with_heatmap',
     'image_zmin_zmax',
@@ -1746,6 +1747,7 @@ figs['image_colormodel'] = require('@mocks/image_colormodel');
 figs['image_non_numeric'] = require('@mocks/image_non_numeric');
 figs['image_opacity'] = require('@mocks/image_opacity');
 figs['image_source_axis_reverse'] = require('@mocks/image_source_axis_reverse');
+figs['image_source_axis_reverse_zsmooth'] = require('@mocks/image_source_axis_reverse_zsmooth');
 figs['image_with_gaps'] = require('@mocks/image_with_gaps');
 figs['image_with_heatmap'] = require('@mocks/image_with_heatmap');
 figs['image_zmin_zmax'] = require('@mocks/image_zmin_zmax');
