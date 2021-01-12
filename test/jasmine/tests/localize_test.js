@@ -387,7 +387,7 @@ describe('localization', function() {
             expect(getZoomTip()).toBe('Bigger');
 
             // this is discouraged usage, but it works
-            return Plotly.plot(gd, [], {}, {locale: 'en'});
+            return Plotly.newPlot(gd, gd.data, gd.layout, {locale: 'en'});
         })
         .then(function() {
             expect(firstXLabel()).toBe('Jan 2001');

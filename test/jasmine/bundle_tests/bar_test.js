@@ -15,7 +15,7 @@ describe('Bundle with bar', function() {
     var mock = require('@mocks/bar_line.json');
 
     beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);

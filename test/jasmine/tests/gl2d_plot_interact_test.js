@@ -254,9 +254,6 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should not clear context when dimensions are not integers', function(done) {
-        spyOn(Plots, 'cleanPlot').and.callThrough();
-        spyOn(Lib, 'log').and.callThrough();
-
         var w = 500.5;
         var h = 400.5;
         var w0 = Math.floor(w);
@@ -276,13 +273,19 @@ describe('Test gl plot side effects', function() {
             expect(gl.drawingBufferHeight).toBe(h0, msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'lines',
             y: [1, 2, 1]
-        }], {
-            width: w,
-            height: h
+        }])
+        .then(function() {
+            spyOn(Plots, 'cleanPlot').and.callThrough();
+            spyOn(Lib, 'log').and.callThrough();
+
+            return Plotly.relayout(gd, {
+                width: w,
+                height: h
+            });
         })
         .then(function() {
             assertDims('base state');

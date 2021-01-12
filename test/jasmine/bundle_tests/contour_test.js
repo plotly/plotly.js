@@ -15,7 +15,7 @@ describe('Bundle with contour', function() {
     var mock = require('@mocks/contour_scatter.json');
 
     beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);

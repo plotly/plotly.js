@@ -639,12 +639,12 @@ describe('contour hover', function() {
         afterAll(destroyGraphDiv);
 
         it('should not display hover on missing data and hoverongaps is disabled', function() {
-            var pt = _hover(gd, 10, 100)[0];
-
             var hoverData;
             gd.on('plotly_hover', function(data) {
                 hoverData = data;
             });
+
+            var pt = _hover(gd, 10, 100)[0];
 
             expect(hoverData).toEqual(undefined);
             expect(pt).toEqual(undefined);

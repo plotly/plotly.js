@@ -38,7 +38,7 @@ module.exports = function checkComponent(Plotly) {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
         });
 
         afterEach(destroyGraphDiv);
@@ -74,7 +74,7 @@ module.exports = function checkComponent(Plotly) {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
         });
 
         afterEach(destroyGraphDiv);

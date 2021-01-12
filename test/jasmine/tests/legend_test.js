@@ -1975,6 +1975,12 @@ describe('legend with custom doubleClickDelay', function() {
 
         var clickCnt = 0;
         var dblClickCnt = 0;
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                gd.on('plotly_legendclick', function() { clickCnt++; });
+                gd.on('plotly_legenddoubleclick', function() { dblClickCnt++; });
+            });
+        };
 
         function _assert(msg, _clickCnt, _dblClickCnt) {
             return function() {
@@ -1985,15 +1991,15 @@ describe('legend with custom doubleClickDelay', function() {
             };
         }
 
-        Plotly.newPlot(gd, [
-            {y: [1, 2, 1]},
-            {y: [2, 1, 2]}
-        ], {}, {
-            doubleClickDelay: tLong
-        })
-        .then(function() {
-            gd.on('plotly_legendclick', function() { clickCnt++; });
-            gd.on('plotly_legenddoubleclick', function() { dblClickCnt++; });
+        newPlot({
+            data: [
+                {y: [1, 2, 1]},
+                {y: [2, 1, 2]}
+            ],
+            layout: {},
+            config: {
+                doubleClickDelay: tLong
+            }
         })
         .then(click(0)).then(delay(tLong / 2))
         .then(_assert('[long] after click + (t/2) delay', 1, 0))
@@ -2005,7 +2011,11 @@ describe('legend with custom doubleClickDelay', function() {
         .then(_assert('[long] after click + (1.1*t) delay + click', 2, 0))
         .then(delay(tLong + 10))
         .then(function() {
-            return Plotly.plot(gd, [], {}, {doubleClickDelay: tShort});
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {doubleClickDelay: tShort}
+            });
         })
         .then(click(0)).then(delay(tShort / 2))
         .then(_assert('[short] after click + (t/2) delay', 1, 0))

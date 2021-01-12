@@ -935,7 +935,7 @@ describe('Test gl3d drag and wheel interactions', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     });
 
     afterEach(function() {
@@ -1000,21 +1000,25 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+                gd.on('plotly_relayout', relayoutCallback);
+
+                sceneLayout = gd._fullLayout.scene;
+                sceneLayout2 = gd._fullLayout.scene2;
+                sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
+                sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
+            });
+        };
+
         function _assertAndReset(cnt) {
             expect(relayoutCallback).toHaveBeenCalledTimes(cnt);
             relayoutCallback.calls.reset();
         }
 
-        Plotly.plot(gd, mock)
+        newPlot(mock)
         .then(function() {
-            relayoutCallback = jasmine.createSpy('relayoutCallback');
-            gd.on('plotly_relayout', relayoutCallback);
-
-            sceneLayout = gd._fullLayout.scene;
-            sceneLayout2 = gd._fullLayout.scene2;
-            sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
-            sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
-
             expect(sceneLayout.camera.eye)
                 .toEqual({x: 0.1, y: 0.1, z: 1});
             expect(sceneLayout2.camera.eye)
@@ -1067,7 +1071,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             _assertAndReset(1);
 
-            return Plotly.plot(gd, [], {}, {scrollZoom: false});
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: false}
+            });
         })
         .then(function() {
             _assertAndReset(0);
@@ -1081,7 +1089,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(0);
-            return Plotly.plot(gd, [], {}, {scrollZoom: 'gl3d'});
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: 'gl3d'}
+            });
         })
         .then(function() {
             _assertAndReset(0);
@@ -1113,21 +1125,25 @@ describe('Test gl3d drag and wheel interactions', function() {
             }
         };
 
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+                gd.on('plotly_relayout', relayoutCallback);
+
+                sceneLayout = gd._fullLayout.scene;
+                sceneLayout2 = gd._fullLayout.scene2;
+                sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
+                sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
+            });
+        };
+
         function _assertAndReset(cnt) {
             expect(relayoutCallback).toHaveBeenCalledTimes(cnt);
             relayoutCallback.calls.reset();
         }
 
-        Plotly.plot(gd, mock)
+        newPlot(mock)
         .then(function() {
-            relayoutCallback = jasmine.createSpy('relayoutCallback');
-            gd.on('plotly_relayout', relayoutCallback);
-
-            sceneLayout = gd._fullLayout.scene;
-            sceneLayout2 = gd._fullLayout.scene2;
-            sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');
-            sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
-
             expect(sceneLayout.camera.eye)
                 .toEqual({x: 0.1, y: 0.1, z: 1});
             expect(sceneLayout2.camera.eye)
@@ -1180,7 +1196,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         .then(function() {
             _assertAndReset(1);
 
-            return Plotly.plot(gd, [], {}, {scrollZoom: false});
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: false}
+            });
         })
         .then(function() {
             _assertAndReset(0);
@@ -1194,7 +1214,11 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(function() {
             _assertAndReset(0);
-            return Plotly.plot(gd, [], {}, {scrollZoom: 'gl3d'});
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: 'gl3d'}
+            });
         })
         .then(function() {
             return scroll(sceneTarget);
@@ -1229,17 +1253,20 @@ describe('Test gl3d drag and wheel interactions', function() {
         var relayoutCnt = 0;
         var modeBar;
 
-        Plotly.plot(gd, mock)
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                gd.on('plotly_relayout', function(e) {
+                    relayoutCnt++;
+                    relayoutEvent = e;
+                });
+            });
+        };
 
+        newPlot(mock)
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
         .then(function() {
-            gd.on('plotly_relayout', function(e) {
-                relayoutCnt++;
-                relayoutEvent = e;
-            });
-
             sceneLayout = gd._fullLayout.scene;
             sceneLayout2 = gd._fullLayout.scene2;
             sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas');

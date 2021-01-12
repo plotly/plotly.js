@@ -14,7 +14,7 @@ describe('Bundle with core only', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.plot(gd, mock.data, mock.layout).then(done);
+        Plotly.newPlot(gd, mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);
