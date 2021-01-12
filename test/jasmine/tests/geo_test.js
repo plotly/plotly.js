@@ -1215,8 +1215,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.newPlot(gd, gd.data, gd.layout);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1246,8 +1246,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.newPlot(gd, gd.data, gd.layout);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1277,8 +1277,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.newPlot(gd, gd.data, gd.layout);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1292,8 +1292,8 @@ describe('Test geo interactions', function() {
                 var trace1 = gd.data[1];
                 trace1.locations.shift();
 
-                gd.calcdata = undefined;
-                Plotly.newPlot(gd, gd.data, gd.layout)
+                gd.layout.datarevision = '0';
+                Plotly.react(gd, gd.data, gd.layout)
                 .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
@@ -1319,8 +1319,8 @@ describe('Test geo interactions', function() {
                 trace1.locations = locationsQueue;
                 trace1.z = zQueue;
 
-                gd.calcdata = undefined;
-                Plotly.newPlot(gd, gd.data, gd.layout)
+                gd.layout.datarevision = '0';
+                Plotly.react(gd, gd.data, gd.layout)
                 .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
