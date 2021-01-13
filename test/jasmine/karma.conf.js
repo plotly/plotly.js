@@ -117,7 +117,6 @@ if(isFullSuite) {
 }
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
-var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
@@ -253,7 +252,7 @@ func.defaultConfig = {
     },
 
     browserify: {
-        transform: [pathToStrictD3, pathToShortcutPath],
+        transform: [pathToShortcutPath],
         extensions: ['.js'],
         watch: !argv.nowatch,
         debug: true

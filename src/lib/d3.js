@@ -1,3 +1,11 @@
+/**
+* Copyright 2012-2021, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 /*
  * strict-d3: wrap selection.style to prohibit specific incorrect style values
  * that are known to cause problems in IE (at least IE9)

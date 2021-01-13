@@ -9,13 +9,12 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var Color = require('../color');
 
 var ARROWPATHS = require('./arrow_paths');
 
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var strScale = Lib.strScale;
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;

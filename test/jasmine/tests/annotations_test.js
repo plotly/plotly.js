@@ -9,7 +9,7 @@ var Axes = require('@src/plots/cartesian/axes');
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -1663,16 +1663,16 @@ describe('animating annotations', function() {
 
     it('updates annotations when no axis update present', function(done) {
         function assertAnnotations(expected) {
-            var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
+            var texts = d3.select(gd).selectAll('.annotation .annotation-text');
             expect(expected.length).toEqual(texts.size());
 
             texts.each(function(d, i) {
-                expect(Plotly.d3.select(this).text()).toEqual(expected[i]);
+                expect(d3.select(this).text()).toEqual(expected[i]);
             });
         }
 
         function assertShapes(expected) {
-            var paths = Plotly.d3.select(gd).selectAll('.shapelayer path');
+            var paths = d3.select(gd).selectAll('.shapelayer path');
 
             expect(expected.length).toEqual(paths.size());
 
@@ -1682,12 +1682,12 @@ describe('animating annotations', function() {
         }
 
         function assertImages(expected) {
-            var imgs = Plotly.d3.select(gd).selectAll('.imagelayer image');
+            var imgs = d3.select(gd).selectAll('.imagelayer image');
 
             expect(expected.length).toEqual(imgs.size());
 
             imgs.each(function(d, i) {
-                expect(Plotly.d3.select(this).attr('href')).toEqual(expected[i]);
+                expect(d3.select(this).attr('href')).toEqual(expected[i]);
             });
         }
 

@@ -9,7 +9,7 @@
 'use strict';
 
 var c = require('./constants');
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var svgUtil = require('../../lib/svg_text_utils');

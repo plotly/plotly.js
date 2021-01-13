@@ -8,9 +8,9 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var helpers = require('../sunburst/helpers');
 var resizeText = require('../bar/uniform_text').resizeText;
 

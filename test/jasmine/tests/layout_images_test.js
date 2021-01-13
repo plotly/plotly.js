@@ -3,7 +3,7 @@ var Plots = require('@src/plots/plots');
 var Images = require('@src/components/images');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -167,7 +167,7 @@ describe('Layout images', function() {
 
         describe('with anchors and sizing', function() {
             function testAspectRatio(expected) {
-                var image = Plotly.d3.select('image');
+                var image = d3.select('image');
                 var parValue = image.attr('preserveAspectRatio');
 
                 expect(parValue).toBe(expected);
@@ -180,7 +180,7 @@ describe('Layout images', function() {
                     yanchor: 'middle'
                 }]})
                 .then(function() {
-                    expect(Plotly.d3.select('image').attr('preserveAspectRatio')).toBe('xMidYMid');
+                    expect(d3.select('image').attr('preserveAspectRatio')).toBe('xMidYMid');
                 })
                 .then(done, done.fail);
             });
@@ -264,7 +264,7 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('image').node();
+                var img = d3.select('image').node();
                 var oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
@@ -297,7 +297,7 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('image').node();
+                var img = d3.select('image').node();
                 var oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
@@ -361,12 +361,12 @@ describe('Layout images', function() {
         });
 
         it('should update the image if changed', function(done) {
-            var img = Plotly.d3.select('image');
+            var img = d3.select('image');
             var url = img.attr('xlink:href');
 
             Plotly.relayout(gd, 'images[0].source', pythonLogo)
             .then(function() {
-                var newImg = Plotly.d3.select('image');
+                var newImg = d3.select('image');
                 var newUrl = newImg.attr('xlink:href');
                 expect(url).not.toBe(newUrl);
             })
@@ -379,25 +379,25 @@ describe('Layout images', function() {
                 'images[0].y': 1
             };
 
-            var img = Plotly.d3.select('image');
+            var img = d3.select('image');
 
             expect([+img.attr('x'), +img.attr('y')]).toEqual([760, -120]);
 
             Plotly.relayout(gd, update)
             .then(function() {
-                var newImg = Plotly.d3.select('image');
+                var newImg = d3.select('image');
                 expect([+newImg.attr('x'), +newImg.attr('y')]).toEqual([80, 100]);
             })
             .then(done, done.fail);
         });
 
         it('should remove the image tag if an invalid source', function(done) {
-            var selection = Plotly.d3.select('image');
+            var selection = d3.select('image');
             expect(selection.size()).toBe(1);
 
             Plotly.relayout(gd, 'images[0].source', 'invalidUrl')
             .then(function() {
-                var newSelection = Plotly.d3.select('image');
+                var newSelection = d3.select('image');
                 expect(newSelection.size()).toBe(0);
             })
             .then(done, done.fail);

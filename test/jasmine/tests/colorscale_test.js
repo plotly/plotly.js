@@ -7,7 +7,7 @@ var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

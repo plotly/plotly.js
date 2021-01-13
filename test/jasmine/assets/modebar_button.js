@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var modeBarButtons = require('@src/components/modebar/buttons');
 
 module.exports = function selectButton(modeBar, name) {

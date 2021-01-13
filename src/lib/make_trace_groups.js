@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('./d3');
 
 /**
  * General helper to manage trace groups based on calcdata

@@ -7,7 +7,7 @@ var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');

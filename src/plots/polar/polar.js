@@ -8,11 +8,11 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');

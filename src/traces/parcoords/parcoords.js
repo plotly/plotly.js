@@ -8,11 +8,11 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');

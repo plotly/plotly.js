@@ -8,11 +8,11 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Registry = require('../../registry');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var Events = require('../../lib/events');
 
 var helpers = require('./helpers');

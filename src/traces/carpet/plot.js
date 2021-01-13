@@ -9,13 +9,13 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
 var alignmentConstants = require('../../constants/alignment');

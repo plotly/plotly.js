@@ -1,7 +1,7 @@
 var UpdateMenus = require('@src/components/updatemenus');
 var constants = require('@src/components/updatemenus/constants');
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Events = require('@src/lib/events');

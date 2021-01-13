@@ -7,7 +7,7 @@ var RangeSlider = require('@src/components/rangeslider');
 var constants = require('@src/components/rangeslider/constants');
 var mock = require('../../image/mocks/range_slider.json');
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');

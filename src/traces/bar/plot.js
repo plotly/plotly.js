@@ -8,10 +8,10 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Color = require('../../components/color');

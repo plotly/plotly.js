@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');
@@ -693,7 +693,7 @@ describe('end-to-end scatter tests', function() {
             y: [2, 3, 4],
             text: ['a', 'b', 'c']
         }]).then(function() {
-            expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
+            expect(d3.selectAll('.textpoint').size()).toBe(3);
         }).then(done, done.fail);
     });
 

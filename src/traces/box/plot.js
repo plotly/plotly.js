@@ -8,9 +8,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var Drawing = require('../../components/drawing');
 
 // constants for dynamic jitter (ie less jitter for sparser points)

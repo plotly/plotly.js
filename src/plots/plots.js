@@ -8,7 +8,6 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
 
@@ -16,6 +15,7 @@ var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
 var Template = require('../plot_api/plot_template');
 var Lib = require('../lib');
+var d3 = Lib.d3;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 

@@ -4,7 +4,7 @@ var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

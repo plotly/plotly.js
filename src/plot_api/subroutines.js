@@ -8,11 +8,11 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 
 var Lib = require('../lib');
+var d3 = Lib.d3;
 var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var Color = require('../components/color');

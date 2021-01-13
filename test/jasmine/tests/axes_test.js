@@ -1,5 +1,5 @@
 var Plotly = require('@lib/index');
-var d3 = require('@plotly/d3');
+var d3 = require('@src/lib/d3');
 var utcFormat = require('d3-time-format').utcFormat;
 
 var Plots = require('@src/plots/plots');

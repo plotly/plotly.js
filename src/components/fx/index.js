@@ -8,8 +8,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var dragElement = require('../dragelement');
 var helpers = require('./helpers');
 var layoutAttributes = require('./layout_attributes');

@@ -10,8 +10,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Lib = require('../../../lib');
+var d3 = Lib.d3;
 var Color = require('../../../components/color');
 
 var micropolar = require('./micropolar');

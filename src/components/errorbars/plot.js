@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Drawing = require('../drawing');

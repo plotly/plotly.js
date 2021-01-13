@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');

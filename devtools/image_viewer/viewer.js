@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../src/lib/d3');
 
 var $plotlist = document.getElementById('plot-list');
 var $toggles = document.getElementById('plot-toggles');

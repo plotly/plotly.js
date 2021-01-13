@@ -9,8 +9,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var Registry = require('../../registry');
 
 var radians = Math.PI / 180;

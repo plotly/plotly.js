@@ -8,9 +8,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var geoUtils = require('../../lib/geo_location_utils');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var findExtremes = require('../../plots/cartesian/autorange').findExtremes;

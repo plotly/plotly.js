@@ -9,7 +9,6 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
@@ -17,6 +16,7 @@ var Registry = require('../../registry');
 var Color = require('../color');
 var Colorscale = require('../colorscale');
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 

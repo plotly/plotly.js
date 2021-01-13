@@ -9,9 +9,8 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var Lib = require('../../lib');
+var d3 = Lib.d3;
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
 var svgTextUtils = require('../../lib/svg_text_utils');
