@@ -6,7 +6,6 @@ var list = [
     '4',
     '5',
     '6',
-    '7',
     '8',
     '10',
     '11',
@@ -807,7 +806,6 @@ var list = [
     'plot_types',
     'point-selection',
     'point-selection2',
-    'polar_area_chart',
     'polar_bar-overlay',
     'polar_bar-stacked',
     'polar_bar-width-base-offset',
@@ -1098,7 +1096,6 @@ figs['0'] = require('@mocks/0');
 figs['4'] = require('@mocks/4');
 figs['5'] = require('@mocks/5');
 // figs['6'] = require('@mocks/6');
-// figs['7'] = require('@mocks/7');
 // figs['8'] = require('@mocks/8');
 figs['10'] = require('@mocks/10');
 // figs['11'] = require('@mocks/11');
@@ -1899,7 +1896,6 @@ figs['pie_title_variations'] = require('@mocks/pie_title_variations');
 // figs['plot_types'] = require('@mocks/plot_types');
 figs['point-selection'] = require('@mocks/point-selection');
 figs['point-selection2'] = require('@mocks/point-selection2');
-// figs['polar_area_chart'] = require('@mocks/polar_area_chart');
 figs['polar_bar-overlay'] = require('@mocks/polar_bar-overlay');
 figs['polar_bar-stacked'] = require('@mocks/polar_bar-stacked');
 figs['polar_bar-width-base-offset'] = require('@mocks/polar_bar-width-base-offset');
