@@ -17,50 +17,6 @@ var delay = require('../assets/delay');
 var customAssertions = require('../assets/custom_assertions');
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
-describe('Test legacy polar plots logs:', function() {
-    var gd;
-
-    beforeEach(function() {
-        spyOn(Lib, 'log');
-        gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    var specs = [{
-        name: 'legacy polar scatter traces',
-        data: [{
-            r: [1, 2, 3],
-            t: [1, 2, 3]
-        }]
-    }, {
-        name: 'legacy polar bar traces',
-        data: [{
-            type: 'bar',
-            r: [1, 2, 3],
-            t: [1, 2, 3]
-        }]
-    }, {
-        name: 'legacy area traces',
-        data: [{
-            type: 'area',
-            r: [1, 2, 3],
-            t: [1, 2, 3]
-        }]
-    }];
-
-    specs.forEach(function(s) {
-        it('should log deprecation warning on ' + s.name, function(done) {
-            Plotly.newPlot(gd, s.data)
-            .then(function() {
-                expect(Lib.log).toHaveBeenCalledTimes(1);
-                expect(Lib.log).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
-            })
-            .then(done, done.fail);
-        });
-    });
-});
-
 describe('Test polar plots defaults:', function() {
     var layoutOut;
 

@@ -611,25 +611,4 @@ module.exports = {
         arrayOk: true,
         description: 'Sets the text font.'
     }),
-
-    r: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: [
-            'r coordinates in scatter traces are deprecated!',
-            'Please switch to the *scatterpolar* trace type.',
-            'Sets the radial coordinates',
-            'for legacy polar chart only.'
-        ].join('')
-    },
-    t: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: [
-            't coordinates in scatter traces are deprecated!',
-            'Please switch to the *scatterpolar* trace type.',
-            'Sets the angular coordinates',
-            'for legacy polar chart only.'
-        ].join('')
-    }
 };

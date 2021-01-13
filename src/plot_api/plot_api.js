@@ -21,14 +21,12 @@ var Queue = require('../lib/queue');
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
-var Polar = require('../plots/polar/legacy');
 
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var svgTextUtils = require('../lib/svg_text_utils');
 var clearSelect = require('../plots/cartesian/select').clearSelect;
 
 var dfltConfig = require('./plot_config').dfltConfig;
@@ -140,12 +138,6 @@ function plot(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
     var hasCartesian = fullLayout._has('cartesian');
-
-    // Legacy polar plots
-    if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
-        Lib.log('Legacy polar charts are deprecated!');
-        return plotLegacyPolar(gd, data, layout);
-    }
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -547,99 +539,6 @@ function setPlotContext(gd, config) {
     }
 }
 
-function plotLegacyPolar(gd, data, layout) {
-    // build or reuse the container skeleton
-    var plotContainer = d3.select(gd).selectAll('.plot-container')
-        .data([0]);
-    plotContainer.enter()
-        .insert('div', ':first-child')
-        .classed('plot-container plotly', true);
-    var paperDiv = plotContainer.selectAll('.svg-container')
-        .data([0]);
-    paperDiv.enter().append('div')
-        .classed('svg-container', true)
-        .style('position', 'relative');
-
-    // empty it everytime for now
-    paperDiv.html('');
-
-    // fulfill gd requirements
-    if(data) gd.data = data;
-    if(layout) gd.layout = layout;
-    Polar.manager.fillLayout(gd);
-
-    // resize canvas
-    paperDiv.style({
-        width: gd._fullLayout.width + 'px',
-        height: gd._fullLayout.height + 'px'
-    });
-
-    // instantiate framework
-    gd.framework = Polar.manager.framework(gd);
-
-    // plot
-    gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
-
-    // set undo point
-    gd.framework.setUndoPoint();
-
-    // get the resulting svg for extending it
-    var polarPlotSVG = gd.framework.svg();
-
-    // editable title
-    var opacity = 1;
-    var txt = gd._fullLayout.title ? gd._fullLayout.title.text : '';
-    if(txt === '' || !txt) opacity = 0;
-
-    var titleLayout = function() {
-        this.call(svgTextUtils.convertToTspans, gd);
-        // TODO: html/mathjax
-        // TODO: center title
-    };
-
-    var title = polarPlotSVG.select('.title-group text')
-        .call(titleLayout);
-
-    if(gd._context.edits.titleText) {
-        var placeholderText = Lib._(gd, 'Click to enter Plot title');
-        if(!txt || txt === placeholderText) {
-            opacity = 0.2;
-            // placeholder is not going through convertToTspans
-            // so needs explicit data-unformatted
-            title.attr({'data-unformatted': placeholderText})
-                .text(placeholderText)
-                .style({opacity: opacity})
-                .on('mouseover.opacity', function() {
-                    d3.select(this).transition().duration(100)
-                        .style('opacity', 1);
-                })
-                .on('mouseout.opacity', function() {
-                    d3.select(this).transition().duration(1000)
-                        .style('opacity', 0);
-                });
-        }
-
-        var setContenteditable = function() {
-            this.call(svgTextUtils.makeEditable, {gd: gd})
-                .on('edit', function(text) {
-                    gd.framework({layout: {title: {text: text}}});
-                    this.text(text)
-                        .call(titleLayout);
-                    this.call(setContenteditable);
-                })
-                .on('cancel', function() {
-                    var txt = this.attr('data-unformatted');
-                    this.text(txt).call(titleLayout);
-                });
-        };
-        title.call(setContenteditable);
-    }
-
-    gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
-    Plots.addLinks(gd);
-
-    return Promise.resolve();
-}
 
 // convenience function to force a full redraw, mostly for use by plotly.js
 function redraw(gd) {

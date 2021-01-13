@@ -11,7 +11,6 @@ var surface = require('@src/traces/surface');
 var baseLayoutAttrs = require('@src/plots/layout_attributes');
 var cartesianAttrs = require('@src/plots/cartesian').layoutAttributes;
 var gl3dAttrs = require('@src/plots/gl3d').layoutAttributes;
-var polarLayoutAttrs = require('@src/plots/polar/legacy/axis_attributes');
 var annotationAttrs = require('@src/components/annotations').layoutAttributes;
 var updatemenuAttrs = require('@src/components/updatemenus').layoutAttributes;
 var cartesianIdRegex = require('@src/plots/cartesian/constants').idRegex;
@@ -466,13 +465,6 @@ describe('getTraceValObject', function() {
         expect(getTraceValObject({}, ['transforms', 0, 'operation'])).toBe(false);
     });
 
-    it('supports polar area attributes', function() {
-        var areaAttrs = require('@src/plots/polar/legacy/area_attributes');
-        expect(getTraceValObject({type: 'area'}, ['r'])).toBe(areaAttrs.r);
-        expect(getTraceValObject({type: 'area'}, ['t', 23])).toBe(areaAttrs.t);
-        expect(getTraceValObject({type: 'area'}, ['q'])).toBe(false);
-    });
-
     it('does not return attribute properties', function() {
         // it still returns the attribute itself - but maybe we should only do this
         // for valType: any? (or data_array/arrayOk with just an index)
@@ -582,17 +574,6 @@ describe('getLayoutValObject', function() {
         expect(getLayoutValObject(layout3D, ['scene0', 'bgcolor'])).toBe(false);
         expect(getLayoutValObject(layout3D, ['scene1', 'bgcolor'])).toBe(false);
         expect(getLayoutValObject(layout3D, ['scene2k', 'bgcolor'])).toBe(false);
-    });
-
-    it('finds polar attributes', function() {
-        expect(getLayoutValObject(blankLayout, ['direction']))
-            .toBe(polarLayoutAttrs.layout.direction);
-
-        expect(getLayoutValObject(blankLayout, ['radialaxis', 'range', 0]))
-            .toBe(polarLayoutAttrs.radialaxis.range.items[0]);
-
-        expect(getLayoutValObject(blankLayout, ['angularaxis', 'domain']))
-            .toBe(polarLayoutAttrs.angularaxis.domain);
     });
 
     it('lets gl2d override cartesian & global attrs', function() {
