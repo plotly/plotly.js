@@ -22,13 +22,7 @@ exports.getDelay = function(fullLayout) {
 
 exports.getRedrawFunc = function(gd) {
     return function() {
-        var fullLayout = gd._fullLayout || {};
-        var hasPolar = fullLayout._has && fullLayout._has('polar');
-        var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
-
-        if(!hasLegacyPolar) {
-            Registry.getComponentMethod('colorbar', 'draw')(gd);
-        }
+        Registry.getComponentMethod('colorbar', 'draw')(gd);
     };
 };
 

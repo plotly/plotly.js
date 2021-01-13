@@ -17,13 +17,8 @@ var frameAttributes = require('../plots/frame_attributes');
 var animationAttributes = require('../plots/animation_attributes');
 var configAttributes = require('./plot_config').configAttributes;
 
-// polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/legacy/area_attributes');
-var polarAxisAttrs = require('../plots/polar/legacy/axis_attributes');
-
 var editTypes = require('./edit_types');
 
-var extendFlat = Lib.extendFlat;
 var extendDeepAll = Lib.extendDeepAll;
 var isPlainObject = Lib.isPlainObject;
 var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
@@ -55,7 +50,7 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
 exports.get = function() {
     var traces = {};
 
-    Registry.allTypes.concat('area').forEach(function(type) {
+    Registry.allTypes.forEach(function(type) {
         traces[type] = getTraceAttributes(type);
     });
 
@@ -282,8 +277,6 @@ exports.getTraceValObject = function(trace, parts) {
         moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
-    } else if(trace.type === 'area') {
-        valObject = polarAreaAttrs[head];
     } else {
         // first look in the module for this trace
         // components have already merged their trace attributes in here
@@ -384,12 +377,7 @@ function layoutHeadAttr(fullLayout, head) {
 
     if(head in baseLayoutAttributes) return baseLayoutAttributes[head];
 
-    // Polar doesn't populate _modules or _basePlotModules
-    // just fall back on these when the others fail
-    if(head === 'radialaxis' || head === 'angularaxis') {
-        return polarAxisAttrs[head];
-    }
-    return polarAxisAttrs.layout[head] || false;
+    return false;
 }
 
 function recurseIntoValObject(valObject, parts, i) {
@@ -447,13 +435,8 @@ function isIndex(val) {
 function getTraceAttributes(type) {
     var _module, basePlotModule;
 
-    if(type === 'area') {
-        _module = { attributes: polarAreaAttrs };
-        basePlotModule = {};
-    } else {
-        _module = Registry.modules[type]._module,
-        basePlotModule = _module.basePlotModule;
-    }
+    _module = Registry.modules[type]._module,
+    basePlotModule = _module.basePlotModule;
 
     var attributes = {};
 
@@ -550,9 +533,6 @@ function getLayoutAttributes() {
             handleBasePlotModule(layoutAttributes, _module, astr);
         }
     }
-
-    // polar layout attributes
-    layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add registered components layout attributes
     for(key in Registry.componentsRegistry) {
@@ -701,16 +681,6 @@ function stringify(attrs) {
     walk(attrs);
 }
 
-function assignPolarLayoutAttrs(layoutAttributes) {
-    extendFlat(layoutAttributes, {
-        radialaxis: polarAxisAttrs.radialaxis,
-        angularaxis: polarAxisAttrs.angularaxis
-    });
-
-    extendFlat(layoutAttributes, polarAxisAttrs.layout);
-
-    return layoutAttributes;
-}
 
 function handleBasePlotModule(layoutAttributes, _module, astr) {
     var np = nestedProperty(layoutAttributes, astr);

@@ -144,7 +144,7 @@ exports.traceIs = function(traceType, category) {
     var _module = exports.modules[traceType];
 
     if(!_module) {
-        if(traceType && traceType !== 'area') {
+        if(traceType) {
             Loggers.log('Unrecognized trace type ' + traceType + '.');
         }
 
