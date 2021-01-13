@@ -5,8 +5,6 @@ var list = [
     '1',
     '4',
     '5',
-    '6',
-    '8',
     '10',
     '11',
     '12',
@@ -1095,8 +1093,6 @@ figs['0'] = require('@mocks/0');
 // figs['1'] = require('@mocks/1');
 figs['4'] = require('@mocks/4');
 figs['5'] = require('@mocks/5');
-// figs['6'] = require('@mocks/6');
-// figs['8'] = require('@mocks/8');
 figs['10'] = require('@mocks/10');
 // figs['11'] = require('@mocks/11');
 // figs['12'] = require('@mocks/12');
