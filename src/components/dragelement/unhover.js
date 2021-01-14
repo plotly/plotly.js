@@ -44,7 +44,7 @@ unhover.raw = function raw(gd, evt) {
     fullLayout._hoverlayer.selectAll('circle').remove();
     gd._hoverdata = undefined;
 
-    if(evt.target && oldhoverdata) {
+    if((evt.target || gd._dragged) && oldhoverdata) {
         gd.emit('plotly_unhover', {
             event: evt,
             points: oldhoverdata
