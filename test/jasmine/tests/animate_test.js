@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 var Plots = Plotly.Plots;
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -915,7 +915,7 @@ describe('animating scatter traces', function() {
             y: [4, 5, 6],
             opacity: 1
         }]).then(function() {
-            trace = d3.selectAll('g.scatter.trace');
+            trace = Plotly.d3.selectAll('g.scatter.trace');
             // d3 style getter is disallowed by strict-d3
             expect(trace.node().style.opacity).toEqual('1');
 

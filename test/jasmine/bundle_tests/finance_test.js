@@ -2,7 +2,7 @@ var Plotly = require('@lib/core');
 var ohlc = require('@lib/ohlc');
 var candlestick = require('@lib/candlestick');
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

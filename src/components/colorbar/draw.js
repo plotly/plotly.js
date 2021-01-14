@@ -8,6 +8,7 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var tinycolor = require('tinycolor2');
 
 var Plots = require('../../plots/plots');
@@ -15,7 +16,6 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var dragElement = require('../dragelement');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var strTranslate = Lib.strTranslate;
 var extendFlat = require('../../lib/extend').extendFlat;
 var setCursor = require('../../lib/setcursor');

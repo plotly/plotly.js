@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 var Polar = require('@src/plots/polar');
 var constants = require('@src/plots/polar/constants');
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

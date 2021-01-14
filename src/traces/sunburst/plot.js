@@ -8,11 +8,11 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var d3Hierarchy = require('d3-hierarchy');
 
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;

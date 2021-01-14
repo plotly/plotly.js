@@ -2,7 +2,6 @@ var parseSvgPath = require('parse-svg-path');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = Lib.d3;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -1494,25 +1493,25 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = d3.selectAll('.shapelayer path')[0][0];
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no pixel
 
-            el = d3.selectAll('.shapelayer path')[0][1];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no pixel
 
-            el = d3.selectAll('.shapelayer path')[0][2];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
 
-            el = d3.selectAll('.shapelayer path')[0][3];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
@@ -1584,25 +1583,25 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = d3.selectAll('.shapelayer path')[0][0];
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
 
-            el = d3.selectAll('.shapelayer path')[0][1];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
 
-            el = d3.selectAll('.shapelayer path')[0][2];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
             expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
 
-            el = d3.selectAll('.shapelayer path')[0][3];
+            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
@@ -1641,7 +1640,7 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = d3.selectAll('.shapelayer path')[0][0];
+            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible

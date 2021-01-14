@@ -9,12 +9,12 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var strTranslate = Lib.strTranslate;
 var Drawing = require('../drawing');
 var Color = require('../color');

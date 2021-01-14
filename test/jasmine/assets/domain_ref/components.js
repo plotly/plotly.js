@@ -11,7 +11,7 @@
 'use strict';
 
 var Plotly = require('../../../../lib/index');
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var pixelCalc = require('../../assets/pixel_calc');
 var getSVGElemScreenBBox = require('../../assets/get_svg_elem_screen_bbox');
 // var SVGTools = require('../../assets/svg_tools');

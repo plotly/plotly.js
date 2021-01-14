@@ -1,4 +1,4 @@
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 
 var util = require('@src/lib/svg_text_utils');
 

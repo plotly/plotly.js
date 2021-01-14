@@ -8,11 +8,11 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;

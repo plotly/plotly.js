@@ -9,11 +9,12 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var svgTextUtils = require('../../lib/svg_text_utils');
 var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 

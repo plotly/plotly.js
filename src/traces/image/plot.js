@@ -8,8 +8,8 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');

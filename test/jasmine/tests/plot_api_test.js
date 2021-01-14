@@ -13,7 +13,7 @@ var manageArrays = require('@src/plot_api/manage_arrays');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

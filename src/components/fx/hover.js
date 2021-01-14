@@ -8,11 +8,11 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = require('../../lib/events');

@@ -8,8 +8,9 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 
 module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
     var ya = plotinfo.yaxis;

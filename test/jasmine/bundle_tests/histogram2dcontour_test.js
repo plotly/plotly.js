@@ -1,4 +1,4 @@
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 
 var Plotly = require('@lib/core');
 var PlotlyHistogram2dContour = require('@lib/histogram2dcontour');

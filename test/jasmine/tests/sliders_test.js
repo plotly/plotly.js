@@ -1,7 +1,7 @@
 var Sliders = require('@src/components/sliders');
 var constants = require('@src/components/sliders/constants');
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');

@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

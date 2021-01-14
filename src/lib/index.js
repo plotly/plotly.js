@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('./d3');
+var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
 var isNumeric = require('fast-isnumeric');
 
@@ -17,8 +17,6 @@ var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
-
-lib.d3 = d3;
 
 lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');

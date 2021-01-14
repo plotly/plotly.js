@@ -7,6 +7,7 @@ var derequire = require('derequire');
 var through = require('through2');
 
 var constants = require('./constants');
+var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
  *
@@ -41,6 +42,9 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     browserifyOpts.transform = [];
+    if(opts.debug) {
+        browserifyOpts.transform.push(strictD3);
+    }
 
     var b = browserify(pathToIndex, browserifyOpts);
     var pending = pathToMinBundle ? 2 : 1;

@@ -8,10 +8,11 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var helpers = require('../sunburst/helpers');
 
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var TEXTPAD = require('../bar/constants').TEXTPAD;
 var barPlot = require('../bar/plot');
 var toMoveInsideBar = barPlot.toMoveInsideBar;

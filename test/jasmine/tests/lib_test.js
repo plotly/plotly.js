@@ -3,7 +3,7 @@ var setCursor = require('@src/lib/setcursor');
 var overrideCursor = require('@src/lib/override_cursor');
 var config = require('@src/plot_api/plot_config').dfltConfig;
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');

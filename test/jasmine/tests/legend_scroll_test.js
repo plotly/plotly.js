@@ -4,7 +4,7 @@ var Drawing = require('@src/components/drawing');
 var constants = require('@src/components/legend/constants');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('@src/lib/d3');
+var d3 = require('@plotly/d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
 

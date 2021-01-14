@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('../../lib/d3');
+var d3 = require('@plotly/d3');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var parcoordsPlot = require('./plot');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');

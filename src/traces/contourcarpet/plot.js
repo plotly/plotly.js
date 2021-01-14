@@ -8,11 +8,11 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
 var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');

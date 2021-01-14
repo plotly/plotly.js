@@ -9,7 +9,7 @@
 
 'use strict';
 
-var d3 = require('../../lib/d3');
+var d3 = require('@plotly/d3');
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;

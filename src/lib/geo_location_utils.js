@@ -8,7 +8,7 @@
 
 'use strict';
 
-var d3 = require('./d3');
+var d3 = require('@plotly/d3');
 var countryRegex = require('country-regex');
 var turfArea = require('@turf/area');
 var turfCentroid = require('@turf/centroid');

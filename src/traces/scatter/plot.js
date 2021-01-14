@@ -9,9 +9,10 @@
 
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var d3 = Lib.d3;
 var ensureSingle = Lib.ensureSingle;
 var identity = Lib.identity;
 var Drawing = require('../../components/drawing');
