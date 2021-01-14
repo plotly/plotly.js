@@ -521,6 +521,25 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
+        it('creates mode bar (heatmapgl version)', function() {
+            var buttons = getButtons([
+                ['toImage'],
+                ['zoom2d', 'pan2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
+                ['hoverClosestGl2d']
+            ]);
+
+            var gd = getMockGraphInfo(['x'], ['y']);
+            gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{type: 'scattergl'}];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
         it('creates mode bar (pie version)', function() {
             var buttons = getButtons([
                 ['toImage'],

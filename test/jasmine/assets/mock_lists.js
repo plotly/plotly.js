@@ -55,6 +55,7 @@ var svgMockList = [
 ];
 
 var glMockList = [
+    ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
     ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
     ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
     ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],

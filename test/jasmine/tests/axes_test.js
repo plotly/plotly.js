@@ -2544,7 +2544,8 @@ describe('Test axes', function() {
         var gd = {
             _fullLayout: {
                 _subplots: {
-                    cartesian: ['xy', 'x2y2'],
+                    cartesian: ['x2y2'],
+                    gl2d: ['xy']
                 }
             }
         };

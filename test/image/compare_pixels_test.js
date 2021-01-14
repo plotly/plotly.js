@@ -121,6 +121,35 @@ if(argv['skip-flaky']) {
     });
 }
 
+/* non-regl mock(s) i.e. heatmapgl
+ * must be tested first on in order to work;
+ * sort them here.
+ *
+ * gl-shader appears to conflict with regl.
+ * We suspect that the lone gl context on CircleCI is
+ * having issues with dealing with the two different
+ * program binding algorithm.
+ *
+ * The problem will be solved by switching all our
+ * WebGL-based trace types to regl.
+ *
+ * More info here:
+ * https://github.com/plotly/plotly.js/pull/1037
+ */
+function sortHeatmapglMockList(mockList) {
+    var mockNames = ['gl2d_heatmapgl'];
+    var pos = 0;
+
+    mockNames.forEach(function(m) {
+        var ind = mockList.indexOf(m);
+        if(ind === -1) return;
+        var tmp = mockList[pos];
+        mockList[pos] = m;
+        mockList[ind] = tmp;
+        pos++;
+    });
+}
+
 function runInBatch(mockList) {
     var running = 0;
 
@@ -254,6 +283,7 @@ function comparePixels(mockName, cb) {
         .on('close', checkImage);
 }
 
+sortHeatmapglMockList(allMockList);
 console.log('');
 
 // main

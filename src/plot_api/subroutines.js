@@ -68,6 +68,9 @@ function lsInner(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
+    // _has('cartesian') means SVG specifically, not heatmapgl - but heatmapgl
+    // can still get here because it makes some of the SVG structure
+    // for shared features like selections.
     if(!fullLayout._has('cartesian')) {
         return Plots.previousPromises(gd);
     }

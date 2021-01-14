@@ -332,7 +332,7 @@ function layoutHeadAttr(fullLayout, head) {
             _module = basePlotModules[i];
             if(_module.attrRegex && _module.attrRegex.test(head)) {
                 // if a module defines overrides, these take precedence
-                // initially this was to allow gl2d different editTypes from svg cartesian
+                // initially this was to allow heatmapgl different editTypes from svg cartesian
                 if(_module.layoutAttrOverrides) return _module.layoutAttrOverrides;
 
                 // otherwise take the first attributes we find
@@ -340,6 +340,7 @@ function layoutHeadAttr(fullLayout, head) {
             }
 
             // a module can also override the behavior of base (and component) module layout attrs
+            // again see heatmapgl for initial use case
             var baseOverrides = _module.baseLayoutAttrOverrides;
             if(baseOverrides && head in baseOverrides) return baseOverrides[head];
         }

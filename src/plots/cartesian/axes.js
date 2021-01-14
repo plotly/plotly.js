@@ -102,6 +102,8 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     if(!extraOption) extraOption = dflt;
     axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
 
+    // data-ref annotations are not supported in heatmapgl yet
+
     attrDef[refAttr] = {
         valType: 'enumerated',
         values: axlist.concat(extraOption ?
@@ -1838,7 +1840,7 @@ axes.getTickFormat = function(ax) {
 // ideally we get rid of it there (or just copy this there) and remove it here
 axes.getSubplots = function(gd, ax) {
     var subplotObj = gd._fullLayout._subplots;
-    var allSubplots = subplotObj.cartesian;
+    var allSubplots = subplotObj.cartesian.concat(subplotObj.gl2d || []);
 
     var out = ax ? axes.findSubplotsWithAxis(allSubplots, ax) : allSubplots;
 
@@ -1854,7 +1856,8 @@ axes.getSubplots = function(gd, ax) {
 };
 
 // find all subplots with axis 'ax'
-// NOTE: this is only used in axes.getSubplots (only used outside plotly.js)
+// NOTE: this is only used in axes.getSubplots (only used outside plotly.js) and
+// gl2d/convert (where it restricts axis subplots to only those with gl2d)
 axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
         (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')

@@ -37,6 +37,18 @@ describe('Plotly w/o WebGL support:', function() {
         .then(done, done.fail);
     });
 
+    it('heatmapgl subplots', function(done) {
+        Plotly.react(gd, require('@mocks/gl2d_heatmapgl.json'))
+        .then(function() {
+            checkNoWebGLMsg(true);
+            return Plotly.react(gd, require('@mocks/10.json'));
+        })
+        .then(function() {
+            checkNoWebGLMsg(false);
+        })
+        .then(done, done.fail);
+    });
+
     it('scattergl subplots', function(done) {
         Plotly.react(gd, require('@mocks/gl2d_12.json'))
         .then(function() {

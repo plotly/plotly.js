@@ -25,16 +25,18 @@ exports.makeData = function(fullLayout) {
     var margin = fullLayout.margin;
     var rangeSliderData = [];
 
-    for(var i = 0; i < axes.length; i++) {
-        var ax = axes[i];
+    if(!fullLayout._has('gl2d')) {
+        for(var i = 0; i < axes.length; i++) {
+            var ax = axes[i];
 
-        if(isVisible(ax)) {
-            rangeSliderData.push(ax);
+            if(isVisible(ax)) {
+                rangeSliderData.push(ax);
 
-            var opts = ax[name];
-            opts._id = name + ax._id;
-            opts._height = (fullLayout.height - margin.b - margin.t) * opts.thickness;
-            opts._offsetShift = Math.floor(opts.borderwidth / 2);
+                var opts = ax[name];
+                opts._id = name + ax._id;
+                opts._height = (fullLayout.height - margin.b - margin.t) * opts.thickness;
+                opts._offsetShift = Math.floor(opts.borderwidth / 2);
+            }
         }
     }
 
