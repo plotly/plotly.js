@@ -6,7 +6,7 @@ var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
-var d3 = require('../../test/strict_d3');
+var d3 = require('../../test/strict-d3');
 var d3Json = d3.json;
 
 require('./perf');

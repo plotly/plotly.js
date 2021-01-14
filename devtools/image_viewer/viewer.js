@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var d3Json = require('../../test/strict_d3').json;
+var d3Json = require('../../test/strict-d3').json;
 
 var $plotlist = document.getElementById('plot-list');
 var $toggles = document.getElementById('plot-toggles');
