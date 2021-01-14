@@ -4,7 +4,8 @@ var Lib = require('@src/lib');
 
 var Image = require('@src/traces/image');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -257,7 +258,7 @@ describe('image plot', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
-            var images = d3.selectAll(sel);
+            var images = d3SelectAll(sel);
 
             expect(images.size()).toEqual(cnt);
         }
@@ -277,7 +278,7 @@ describe('image plot', function() {
     });
 
     function getImageURL() {
-        return d3.select(sel).attr('href');
+        return d3Select(sel).attr('href');
     }
 
     [
@@ -332,20 +333,20 @@ describe('image plot', function() {
 
         var x = []; var y = [];
         Plotly.newPlot(gd, mockCopy).then(function() {
-            x.push(d3.select(sel).attr('x'));
-            y.push(d3.select(sel).attr('y'));
+            x.push(d3Select(sel).attr('x'));
+            y.push(d3Select(sel).attr('y'));
 
             return Plotly.restyle(gd, {x0: 50, y0: 50});
         }).then(function() {
-            x.push(d3.select(sel).attr('x'));
-            y.push(d3.select(sel).attr('y'));
+            x.push(d3Select(sel).attr('x'));
+            y.push(d3Select(sel).attr('y'));
             expect(x[1]).not.toEqual(x[0], 'image element should have a different x position');
             expect(y[1]).not.toEqual(y[0], 'image element should have a different y position');
 
             return Plotly.restyle(gd, {x0: 0, y0: 0});
         }).then(function() {
-            x.push(d3.select(sel).attr('x'));
-            y.push(d3.select(sel).attr('y'));
+            x.push(d3Select(sel).attr('x'));
+            y.push(d3Select(sel).attr('y'));
             expect(x[2]).not.toEqual(x[1], 'image element should have a different x position (step 2)');
             expect(y[2]).not.toEqual(y[1], 'image element should have a different y position (step 2)');
 
@@ -363,13 +364,13 @@ describe('image plot', function() {
         Plotly.newPlot(gd, mockCopy).then(function() {
             return Plotly.restyle(gd, {x0: 50, y0: 50});
         }).then(function() {
-            x.push(d3.select(sel).attr('x'));
-            y.push(d3.select(sel).attr('y'));
+            x.push(d3Select(sel).attr('x'));
+            y.push(d3Select(sel).attr('y'));
 
             return Plotly.restyle(gd, {x0: 'A', y0: 'F'});
         }).then(function() {
-            x.push(d3.select(sel).attr('x'));
-            y.push(d3.select(sel).attr('y'));
+            x.push(d3Select(sel).attr('x'));
+            y.push(d3Select(sel).attr('y'));
             expect(x[1]).toEqual(x[0], 'image element should have same x position');
             expect(y[1]).toEqual(y[0], 'image element should have same y position');
         })
@@ -379,7 +380,7 @@ describe('image plot', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.im image').each(function(d) { if(d[0].trace) out.push(d[0].trace.index); });
+            d3SelectAll('.im image').each(function(d) { if(d[0].trace) out.push(d[0].trace.index); });
             return out;
         }
 

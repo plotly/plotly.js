@@ -9,7 +9,8 @@ var Axes = require('@src/plots/cartesian/axes');
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -206,12 +207,12 @@ describe('annotations relayout', function() {
         (gd.layout.annotations || []).forEach(function(ann, i) {
             expect(JSON.stringify(ann)).not.toBe(JSON.stringify({}), i);
         });
-        return d3.selectAll('g.annotation').size();
+        return d3SelectAll('g.annotation').size();
     }
 
     function assertText(index, expected) {
         var query = '.annotation[data-index="' + index + '"]';
-        var actual = d3.select(query).select('text').text();
+        var actual = d3Select(query).select('text').text();
 
         expect(actual).toEqual(expected);
     }
@@ -649,7 +650,7 @@ describe('annotations autorange', function() {
         // results either way, showing that the annotation is or isn't drawn.
         for(var i = 0; i < gd.layout.annotations.length; i++) {
             var selectorBase = '.annotation[data-index="' + i + '"]';
-            var annotationGraphicalItems = d3.selectAll(
+            var annotationGraphicalItems = d3SelectAll(
                 selectorBase + ' text,' +
                 selectorBase + ' rect,' +
                 selectorBase + ' path');
@@ -1299,27 +1300,27 @@ describe('annotation effects', function() {
             {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
             {x: 80, y: 80, text: 'why?', ax: 0, ay: -20}
         ]).then(function() {
-            expect(d3.select(gd).selectAll('.annclip').size()).toBe(2);
+            expect(d3Select(gd).selectAll('.annclip').size()).toBe(2);
 
             return Plotly.relayout(gd, {'annotations[0].visible': false});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.annclip').size()).toBe(1);
+            expect(d3Select(gd).selectAll('.annclip').size()).toBe(1);
 
             return Plotly.relayout(gd, {'annotations[2].width': 20});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.annclip').size()).toBe(2);
+            expect(d3Select(gd).selectAll('.annclip').size()).toBe(2);
 
             return Plotly.relayout(gd, {'annotations[1].height': null});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.annclip').size()).toBe(1);
+            expect(d3Select(gd).selectAll('.annclip').size()).toBe(1);
 
             return Plotly.relayout(gd, {'annotations[2]': null});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.annclip').size()).toBe(0);
+            expect(d3Select(gd).selectAll('.annclip').size()).toBe(0);
         })
         .then(done, done.fail);
     });
@@ -1365,7 +1366,7 @@ describe('annotation effects', function() {
                 mouseEvent('mouseover', pos[0], pos[1]);
 
                 setTimeout(function() {
-                    var hoverText = d3.selectAll('g.hovertext');
+                    var hoverText = d3SelectAll('g.hovertext');
                     expect(hoverText.size()).toEqual(text ? 1 : 0, msg);
 
                     if(text && hoverText.size()) {
@@ -1528,7 +1529,7 @@ describe('annotation effects', function() {
                 click(pos[0], pos[1]);
 
                 setTimeout(function() {
-                    var input = d3.select('.plugin-editable.editable');
+                    var input = d3Select('.plugin-editable.editable');
                     if(input.node()) {
                         input.node().dispatchEvent(new KeyboardEvent('blur'));
                     }
@@ -1574,10 +1575,10 @@ describe('annotation effects', function() {
         ])
         .then(function() {
             function checkBoxLink(index, isLink) {
-                var boxLink = d3.selectAll('.annotation[data-index="' + index + '"] g>a');
+                var boxLink = d3SelectAll('.annotation[data-index="' + index + '"] g>a');
                 expect(boxLink.size()).toBe(isLink ? 1 : 0);
 
-                var textLink = d3.selectAll('.annotation[data-index="' + index + '"] text a');
+                var textLink = d3SelectAll('.annotation[data-index="' + index + '"] text a');
                 expect(textLink.size()).toBe(1);
                 checkLink(textLink);
 
@@ -1663,16 +1664,16 @@ describe('animating annotations', function() {
 
     it('updates annotations when no axis update present', function(done) {
         function assertAnnotations(expected) {
-            var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
+            var texts = d3Select(gd).selectAll('.annotation .annotation-text');
             expect(expected.length).toEqual(texts.size());
 
             texts.each(function(d, i) {
-                expect(Plotly.d3.select(this).text()).toEqual(expected[i]);
+                expect(d3Select(this).text()).toEqual(expected[i]);
             });
         }
 
         function assertShapes(expected) {
-            var paths = Plotly.d3.select(gd).selectAll('.shapelayer path');
+            var paths = d3Select(gd).selectAll('.shapelayer path');
 
             expect(expected.length).toEqual(paths.size());
 
@@ -1682,12 +1683,12 @@ describe('animating annotations', function() {
         }
 
         function assertImages(expected) {
-            var imgs = Plotly.d3.select(gd).selectAll('.imagelayer image');
+            var imgs = d3Select(gd).selectAll('.imagelayer image');
 
             expect(expected.length).toEqual(imgs.size());
 
             imgs.each(function(d, i) {
-                expect(Plotly.d3.select(this).attr('href')).toEqual(expected[i]);
+                expect(d3Select(this).attr('href')).toEqual(expected[i]);
             });
         }
 

@@ -20,7 +20,8 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
 
@@ -652,7 +653,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -943,7 +944,7 @@ describe('A waterfall plot', function() {
 
     it('should be able to add/remove connector nodes on restyle', function(done) {
         function _assertNumberOfWaterfallConnectorNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('.line');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('.line');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1130,7 +1131,7 @@ describe('A waterfall plot', function() {
 
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfWaterfallTextNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('text');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1228,7 +1229,7 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,321V268.33H102V321Z');
         })
         .then(function() {
@@ -1241,7 +1242,7 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,325V264.33H102V325Z');
         })
         .then(done, done.fail);
@@ -1454,7 +1455,7 @@ describe('waterfall hover', function() {
             Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
-                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+                expect(d3SelectAll('g.hovertext').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1780,7 +1781,7 @@ describe('waterfall uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

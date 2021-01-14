@@ -2,7 +2,8 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -696,15 +697,15 @@ describe('finance charts updates:', function() {
     });
 
     function countOHLCTraces() {
-        return d3.select('g.cartesianlayer').selectAll('g.trace.ohlc').size();
+        return d3Select('g.cartesianlayer').selectAll('g.trace.ohlc').size();
     }
 
     function countBoxTraces() {
-        return d3.select('g.cartesianlayer').selectAll('g.trace.boxes').size();
+        return d3Select('g.cartesianlayer').selectAll('g.trace.boxes').size();
     }
 
     function countRangeSliders() {
-        return d3.select('g.rangeslider-rangeplot').size();
+        return d3Select('g.rangeslider-rangeplot').size();
     }
 
     it('Plotly.restyle should work', function(done) {
@@ -732,13 +733,13 @@ describe('finance charts updates:', function() {
             });
         })
         .then(function() {
-            path0 = d3.select('path.box').attr('d');
+            path0 = d3Select('path.box').attr('d');
             expect(path0).toBeDefined();
 
             return Plotly.restyle(gd, 'whiskerwidth', 0.2);
         })
         .then(function() {
-            expect(d3.select('path.box').attr('d')).not.toEqual(path0);
+            expect(d3Select('path.box').attr('d')).not.toEqual(path0);
         })
         .then(done, done.fail);
     });
@@ -972,7 +973,7 @@ describe('finance charts updates:', function() {
             var tickLen = gd.calcdata[0][0].t.tickLen;
             expect(tickLen)
                 .toBe(exp.tickLen, 'tickLen val in calcdata - ' + msg);
-            var pathd = d3.select(gd).select('.ohlc > path').attr('d');
+            var pathd = d3Select(gd).select('.ohlc > path').attr('d');
             expect(pathd)
                 .toBe(exp.pathd, 'path d attr - ' + msg);
         }
@@ -1057,11 +1058,11 @@ describe('finance charts *special* handlers:', function() {
         var gd = createGraphDiv();
 
         function editText(itemNumber, newText) {
-            var textNode = d3.selectAll('text.legendtext')
+            var textNode = d3SelectAll('text.legendtext')
                 .filter(function(_, i) { return i === itemNumber; }).node();
             textNode.dispatchEvent(new window.MouseEvent('click'));
 
-            var editNode = d3.select('.plugin-editable.editable').node();
+            var editNode = d3Select('.plugin-editable.editable').node();
             editNode.dispatchEvent(new window.FocusEvent('focus'));
 
             editNode.textContent = newText;

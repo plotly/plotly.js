@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -176,11 +177,11 @@ describe('Funnelarea traces', function() {
                 expect(this.style.stroke.replace(/\s/g, '')).toBe('rgb(100,100,100)');
                 expect(this.style.strokeOpacity).toBe('0.7');
             }
-            var slices = d3.selectAll(SLICES_SELECTOR);
+            var slices = d3SelectAll(SLICES_SELECTOR);
             slices.each(checkPath);
             expect(slices.size()).toBe(5);
 
-            var legendEntries = d3.selectAll(LEGEND_ENTRIES_SELECTOR);
+            var legendEntries = d3SelectAll(LEGEND_ENTRIES_SELECTOR);
             legendEntries.each(checkPath);
             expect(legendEntries.size()).toBe(5);
         })
@@ -215,7 +216,7 @@ describe('Funnelarea traces', function() {
 
     function _checkSliceColors(colors) {
         return function() {
-            d3.select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
+            d3Select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
                 expect(this.style.fill.replace(/(\s|rgb\(|\))/g, '')).toBe(colors[i], i);
             });
         };
@@ -223,7 +224,7 @@ describe('Funnelarea traces', function() {
 
     function _checkFontColors(expFontColors) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fill).toBe(rgb(expFontColors[i]), 'fill color of ' + i);
             });
         };
@@ -231,7 +232,7 @@ describe('Funnelarea traces', function() {
 
     function _checkFontFamilies(expFontFamilies) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fontFamily).toBe(expFontFamilies[i], 'fontFamily of ' + i);
             });
         };
@@ -239,7 +240,7 @@ describe('Funnelarea traces', function() {
 
     function _checkFontSizes(expFontSizes) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fontSize).toBe(expFontSizes[i] + 'px', 'fontSize of ' + i);
             });
         };
@@ -281,10 +282,10 @@ describe('Funnelarea traces', function() {
 
     function _verifyTitle(checkLeft, checkRight, checkTop, checkBottom, checkMiddleX) {
         return function() {
-            var title = d3.selectAll('.titletext text');
+            var title = d3SelectAll('.titletext text');
             expect(title.size()).toBe(1);
-            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
-            var funnelareaBox = d3.select('g.trace').node().getBoundingClientRect();
+            var titleBox = d3Select('g.titletext').node().getBoundingClientRect();
+            var funnelareaBox = d3Select('g.trace').node().getBoundingClientRect();
             // check that margins agree. we leave an error margin of 2.
             if(checkLeft) expect(Math.abs(titleBox.left - funnelareaBox.left)).toBeLessThan(2);
             if(checkRight) expect(Math.abs(titleBox.right - funnelareaBox.right)).toBeLessThan(2);
@@ -393,10 +394,10 @@ describe('Funnelarea traces', function() {
           .then(function() {
               var expWidths = ['3', '0', '0'];
 
-              d3.selectAll(SLICES_SELECTOR).each(function(d, i) {
+              d3SelectAll(SLICES_SELECTOR).each(function(d, i) {
                   expect(this.style.strokeWidth).toBe(expWidths[d.pointNumber], 'sector #' + i);
               });
-              d3.selectAll(LEGEND_ENTRIES_SELECTOR).each(function(d, i) {
+              d3SelectAll(LEGEND_ENTRIES_SELECTOR).each(function(d, i) {
                   expect(this.style.strokeWidth).toBe(expWidths[d[0].i], 'item #' + i);
               });
           })
@@ -537,7 +538,7 @@ describe('Funnelarea traces', function() {
     });
 
     function _assertTitle(msg, expText, expColor) {
-        var title = d3.select('.titletext > text');
+        var title = d3Select('.titletext > text');
         expect(title.text()).toBe(expText, msg + ' text');
         expect(title.node().style.fill).toBe(expColor, msg + ' color');
     }
@@ -643,7 +644,7 @@ describe('Funnelarea traces', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.funnelarealayer');
+                var layer = d3Select(gd).select('.funnelarealayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
@@ -837,7 +838,7 @@ describe('funnelarea hovering', function() {
             assertHoverLabelContent({nums: content}, msg);
 
             if(style) {
-                assertHoverLabelStyle(d3.select('.hovertext'), {
+                assertHoverLabelStyle(d3Select('.hovertext'), {
                     bgcolor: style[0],
                     bordercolor: style[1],
                     fontSize: style[2],
@@ -1288,7 +1289,7 @@ describe('funnelarea relayout', function() {
             return Plotly.relayout(gd, 'colorway', relayoutColors);
         })
         .then(function() {
-            var slices = d3.selectAll(SLICES_SELECTOR);
+            var slices = d3SelectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
         .then(done, done.fail);
@@ -1304,7 +1305,7 @@ describe('Test funnelarea interactions edge cases:', function() {
 
     function _mouseEvent(type, v) {
         return function() {
-            var el = d3.select(gd).select('.slice:nth-child(' + v + ')').node();
+            var el = d3Select(gd).select('.slice:nth-child(' + v + ')').node();
             mouseEvent(type, 0, 0, {element: el});
         };
     }
@@ -1328,7 +1329,7 @@ describe('Test funnelarea interactions edge cases:', function() {
             expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
             expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
 
-            var label = d3.select(gd).select('g.hovertext');
+            var label = d3Select(gd).select('g.hovertext');
             expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
 
             hoverCnt = 0;
@@ -1755,7 +1756,7 @@ describe('funnelarea uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

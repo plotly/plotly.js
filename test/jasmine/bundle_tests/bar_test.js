@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/core');
 var PlotlyBar = require('@lib/bar');
@@ -21,13 +21,13 @@ describe('Bundle with bar', function() {
     afterEach(destroyGraphDiv);
 
     it('should graph scatter traces', function() {
-        var nodes = d3.selectAll('g.trace.scatter');
+        var nodes = d3SelectAll('g.trace.scatter');
 
         expect(nodes.size()).toEqual(1);
     });
 
     it('should graph bar traces', function() {
-        var nodes = d3.selectAll('g.trace.bars');
+        var nodes = d3SelectAll('g.trace.bars');
 
         expect(nodes.size()).toEqual(1);
     });

@@ -3,7 +3,8 @@ var Lib = require('@src/lib');
 var Polar = require('@src/plots/polar');
 var constants = require('@src/plots/polar/constants');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -226,12 +227,12 @@ describe('Test relayout on polar subplots:', function() {
         var dflt = constants.layerNames;
 
         function _assert(expected) {
-            var actual = d3.selectAll('g.polar > .polarsublayer');
+            var actual = d3SelectAll('g.polar > .polarsublayer');
 
             expect(actual.size()).toBe(expected.length, '# of layer');
 
             actual.each(function(d, i) {
-                var className = d3.select(this)
+                var className = d3Select(this)
                     .attr('class')
                     .split('polarsublayer ')[1];
 
@@ -314,15 +315,15 @@ describe('Test relayout on polar subplots:', function() {
         var pos1 = [];
 
         Plotly.newPlot(gd, fig).then(function() {
-            d3.selectAll('.angularaxistick > text').each(function() {
-                var tx = d3.select(this);
+            d3SelectAll('.angularaxistick > text').each(function() {
+                var tx = d3Select(this);
                 pos0.push([tx.attr('x'), tx.attr('y')]);
             });
             return Plotly.relayout(gd, 'polar.angularaxis.rotation', 90);
         })
         .then(function() {
-            d3.selectAll('.angularaxistick > text').each(function() {
-                var tx = d3.select(this);
+            d3SelectAll('.angularaxistick > text').each(function() {
+                var tx = d3Select(this);
                 pos1.push([tx.attr('x'), tx.attr('y')]);
             });
 
@@ -337,11 +338,11 @@ describe('Test relayout on polar subplots:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         function check(cnt, expected) {
-            var ticks = d3.selectAll('path.angularaxistick');
+            var ticks = d3SelectAll('path.angularaxistick');
 
             expect(ticks.size()).toBe(cnt, '# of ticks');
             ticks.each(function() {
-                expect(d3.select(this).attr('d')).toBe(expected);
+                expect(d3Select(this).attr('d')).toBe(expected);
             });
         }
 
@@ -372,17 +373,17 @@ describe('Test relayout on polar subplots:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         function assertCnt(selector, expected, msg) {
-            var sel = d3.select(gd).selectAll(selector);
+            var sel = d3Select(gd).selectAll(selector);
             expect(sel.size()).toBe(expected, msg);
         }
 
         function assertDisplay(selector, expected, msg) {
-            var sel = d3.select(gd).selectAll(selector);
+            var sel = d3Select(gd).selectAll(selector);
 
             if(!sel.size()) fail(selector + ' not found');
 
             sel.each(function() {
-                expect(d3.select(this).attr('display')).toBe(expected, msg);
+                expect(d3Select(this).attr('display')).toBe(expected, msg);
             });
         }
 
@@ -451,7 +452,7 @@ describe('Test relayout on polar subplots:', function() {
         var lastBBox;
 
         function assertTitle(content, didBBoxChanged) {
-            var radialAxisTitle = d3.select('g.g-polartitle');
+            var radialAxisTitle = d3Select('g.g-polartitle');
             var txt = radialAxisTitle.select('text');
             var bb = radialAxisTitle.node().getBBox();
             var newBBox = [bb.x, bb.y, bb.width, bb.height];
@@ -508,11 +509,11 @@ describe('Test relayout on polar subplots:', function() {
         var inds = traces.map(function(_, i) { return i; });
 
         function _assert(exp) {
-            expect(d3.selectAll('g.polar').size()).toBe(exp.subplot, '# subplot layer');
-            expect(d3.selectAll('g.g-polartitle').size()).toBe(exp.rtitle, '# radial title');
+            expect(d3SelectAll('g.polar').size()).toBe(exp.subplot, '# subplot layer');
+            expect(d3SelectAll('g.g-polartitle').size()).toBe(exp.rtitle, '# radial title');
 
             var clipCnt = 0;
-            d3.selectAll('clipPath').each(function() {
+            d3SelectAll('clipPath').each(function() {
                 if(/polar-for-traces/.test(this.id)) clipCnt++;
             });
             expect(clipCnt).toBe(exp.clip, '# clip paths');
@@ -548,7 +549,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(gd._fullLayout.polar._subplot.angularAxis.range)
                 .toBeCloseToArray([0, exp.period], 2, 'range in mocked angular axis - ' + msg);
 
-            expect(d3.selectAll('path.angularaxistick').size())
+            expect(d3SelectAll('path.angularaxistick').size())
                 .toBe(exp.nTicks, '# of visible angular ticks - ' + msg);
 
             expect([gd.calcdata[0][5].x, gd.calcdata[0][5].y])
@@ -597,7 +598,7 @@ describe('Test relayout on polar subplots:', function() {
 
         // check number of arcs ('A') or lines ('L') in svg paths
         function _assert(msg, exp) {
-            var sp = d3.select(gd).select('g.polar');
+            var sp = d3Select(gd).select('g.polar');
 
             function assertLetterCount(query) {
                 var d = sp.select(query).attr('d');
@@ -640,7 +641,7 @@ describe('Test relayout on polar subplots:', function() {
 
         function _assert(msg, showing) {
             var exp = showing ? null : 'none';
-            var sp3 = d3.select(gd).select('.polarlayer > .polar');
+            var sp3 = d3Select(gd).select('.polarlayer > .polar');
             queries.forEach(function(q) {
                 assertNodeDisplay(sp3.selectAll(q), [exp], msg + ' ' + q);
             });
@@ -869,7 +870,7 @@ describe('Test polar interactions:', function() {
         var resetNumber = 0;
 
         function _drag(p0, dp) {
-            var node = d3.select('.polar > .draglayer > .maindrag').node();
+            var node = d3Select('.polar > .draglayer > .maindrag').node();
             return drag({node: node, dpos: dp, pos0: p0});
         }
 
@@ -978,7 +979,7 @@ describe('Test polar interactions:', function() {
         // use 'special' drag method - as we need two mousemove events
         // to activate the radial drag mode
         function _drag(p0, dp) {
-            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            var node = d3Select('.polar > .draglayer > .radialdrag').node();
             return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
@@ -1059,7 +1060,7 @@ describe('Test polar interactions:', function() {
         // use 'special' drag method - as we need two mousemove events
         // to activate the radial drag mode
         function _drag(p0, dp) {
-            var node = d3.select('.polar > .draglayer > .radialdrag-inner').node();
+            var node = d3Select('.polar > .draglayer > .radialdrag-inner').node();
             return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
@@ -1097,7 +1098,7 @@ describe('Test polar interactions:', function() {
         var resetNumber = 0;
 
         function _drag(p0, dp) {
-            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            var node = d3Select('.polar > .draglayer > .angulardrag').node();
             return drag({node: node, dpos: dp, pos0: p0});
         }
 
@@ -1150,14 +1151,14 @@ describe('Test polar interactions:', function() {
         var scene, gl, nTraces;
 
         function _dragRadial() {
-            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            var node = d3Select('.polar > .draglayer > .radialdrag').node();
             var p0 = [375, 200];
             var dp = [-50, 0];
             return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
         function _dragAngular() {
-            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            var node = d3Select('.polar > .draglayer > .angulardrag').node();
             var p0 = [350, 150];
             var dp = [-20, 20];
             return drag({node: node, dpos: dp, pos0: p0});
@@ -1256,7 +1257,7 @@ describe('Test polar interactions:', function() {
             fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
 
             function _drag(p0, dp, nsteps) {
-                var node = d3.select('.polar > .draglayer > .radialdrag').node();
+                var node = d3Select('.polar > .draglayer > .radialdrag').node();
                 return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
@@ -1289,7 +1290,7 @@ describe('Test polar interactions:', function() {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
-                var node = d3.select('.polar > .draglayer > .maindrag').node();
+                var node = d3Select('.polar > .draglayer > .maindrag').node();
                 return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
@@ -1320,7 +1321,7 @@ describe('Test polar interactions:', function() {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
-                var node = d3.select('.polar > .draglayer > .angulardrag').node();
+                var node = d3Select('.polar > .draglayer > .angulardrag').node();
                 return drag({node: node, dpos: dp, pos0: p0, nsteps: nsteps});
             }
 
@@ -1368,7 +1369,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         // use 'special' drag method - as we need two mousemove events
         // to activate the radial drag mode
         function _drag(p0, dp) {
-            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            var node = d3Select('.polar > .draglayer > .radialdrag').node();
             return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
         }
 
@@ -1416,7 +1417,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         var layersRotateFromRadialAxis = ['.radial-axis', '.radial-line > line'];
 
         function _assertTransformRotate(msg, query, rot) {
-            var sp = d3.select(gd).select('g.polar');
+            var sp = d3Select(gd).select('g.polar');
             var t = sp.select(query).attr('transform');
             var rotate = (t.split('rotate(')[1] || '').split(')')[0];
             if(rot === null) {
@@ -1427,7 +1428,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         }
 
         function _run(msg, p0, dp, exp) {
-            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            var node = d3Select('.polar > .draglayer > .angulardrag').node();
             var dragFns = drag.makeFns({node: node, dpos: dp, pos0: p0});
 
             return dragFns.start().then(function() {
@@ -1502,11 +1503,11 @@ describe('Test polar *gridshape linear* interactions', function() {
         }
 
         function _run(msg, p0, dp, exp) {
-            var node = d3.select('.polar > .draglayer > .maindrag').node();
+            var node = d3Select('.polar > .draglayer > .maindrag').node();
             var dragFns = drag.makeFns({node: node, dpos: dp, pos0: p0});
 
             return dragFns.start().then(function() {
-                var zl = d3.select(gd).select('g.zoomlayer');
+                var zl = d3Select(gd).select('g.zoomlayer');
 
                 expect(path2coords(zl.select('.zoombox')))
                     .toBeCloseTo2DArray(exp.zoombox, 2, msg + ' - zoombox');
@@ -1607,7 +1608,7 @@ describe('Polar plots with css transforms', function() {
     }
 
     function _drag(start, dp) {
-        var node = d3.select('.polar > .draglayer > .maindrag').node();
+        var node = d3Select('.polar > .draglayer > .maindrag').node();
         var localStart = _getLocalPos(gd, start);
         return drag({node: node, dpos: dp, pos0: localStart});
     }

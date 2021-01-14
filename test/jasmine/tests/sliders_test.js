@@ -1,7 +1,8 @@
 var Sliders = require('@src/components/sliders');
 var constants = require('@src/components/sliders/constants');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -332,7 +333,7 @@ describe('sliders interactions', function() {
 
     it('positions sliders repeatably when they push margins', function(done) {
         function checkPositions(msg) {
-            d3.select(gd).selectAll('.slider-group').each(function(d, i) {
+            d3Select(gd).selectAll('.slider-group').each(function(d, i) {
                 var sliderBB = this.getBoundingClientRect();
                 var gdBB = gd.getBoundingClientRect();
 
@@ -570,6 +571,6 @@ describe('sliders interactions', function() {
     });
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3SelectAll(query).size()).toEqual(cnt);
     }
 });

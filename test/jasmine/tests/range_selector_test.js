@@ -1,7 +1,8 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Color = require('@src/components/color');
@@ -473,18 +474,18 @@ describe('range selector interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3SelectAll(query).size()).toEqual(cnt);
     }
 
     function checkActiveButton(activeIndex, msg) {
-        d3.selectAll('.button').each(function(d, i) {
+        d3SelectAll('.button').each(function(d, i) {
             expect(d._isActive).toBe(activeIndex === i, msg + ': button #' + i);
         });
     }
 
     function checkButtonColor(bgColor, activeColor) {
-        d3.selectAll('.button').each(function(d) {
-            var rect = d3.select(this).select('rect');
+        d3SelectAll('.button').each(function(d) {
+            var rect = d3Select(this).select('rect');
 
             expect(rect.node().style.fill).toEqual(
                 d._isActive ? activeColor : bgColor
@@ -554,7 +555,7 @@ describe('range selector interactions:', function() {
 
     it('should update range and active button when clicked', function() {
         var range0 = gd.layout.xaxis.range[0];
-        var buttons = d3.selectAll('.button').select('rect');
+        var buttons = d3SelectAll('.button').select('rect');
 
         checkActiveButton(buttons.size() - 1);
 
@@ -573,7 +574,7 @@ describe('range selector interactions:', function() {
     });
 
     it('should change color on mouse over', function() {
-        var button = d3.select('.button').select('rect');
+        var button = d3Select('.button').select('rect');
         var pos = getRectCenter(button.node());
 
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
@@ -589,7 +590,7 @@ describe('range selector interactions:', function() {
     });
 
     it('should update is active relayout calls', function(done) {
-        var buttons = d3.selectAll('.button').select('rect');
+        var buttons = d3SelectAll('.button').select('rect');
 
         // 'all' should be active at first
         checkActiveButton(buttons.size() - 1, 'initial');

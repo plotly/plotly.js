@@ -5,7 +5,8 @@ var Fx = require('@src/components/fx');
 var constants = require('@src/plots/mapbox/constants');
 var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -1185,7 +1186,7 @@ describe('mapbox plots', function() {
     it('@gl should display to hover labels on mouse over', function(done) {
         function assertMouseMove(pos, len) {
             return _mouseEvent('mousemove', pos, function() {
-                var hoverLabels = d3.select('.hoverlayer').selectAll('g');
+                var hoverLabels = d3Select('.hoverlayer').selectAll('g');
 
                 expect(hoverLabels.size()).toEqual(len);
             });
@@ -1204,7 +1205,7 @@ describe('mapbox plots', function() {
             return assertMouseMove(pointPos, 1);
         })
         .then(function() {
-            assertHoverLabelStyle(d3.select('g.hovertext'), {
+            assertHoverLabelStyle(d3Select('g.hovertext'), {
                 bgcolor: 'rgb(255, 255, 0)',
                 bordercolor: 'rgb(68, 68, 68)',
                 fontSize: 20,
@@ -1270,7 +1271,7 @@ describe('mapbox plots', function() {
         spyOn(Fx, 'hover').and.callThrough();
 
         function countHoverLabels() {
-            return d3.select('.hoverlayer').selectAll('g').size();
+            return d3Select('.hoverlayer').selectAll('g').size();
         }
 
         Promise.resolve()
@@ -1473,7 +1474,7 @@ describe('mapbox plots', function() {
         it('@gl should be displayed for style "open-street-map"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'open-street-map'}})
             .then(function() {
-                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© OpenStreetMap');
             })
@@ -1483,7 +1484,7 @@ describe('mapbox plots', function() {
         it('@gl should be displayed for style from Mapbox', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'basic'}})
             .then(function() {
-                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
             })
@@ -1523,7 +1524,7 @@ describe('mapbox plots', function() {
         it('@gl should not be displayed for custom style without attribution', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], mockLayoutCustomStyle())
             .then(function() {
-                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('');
             })
@@ -1536,7 +1537,7 @@ describe('mapbox plots', function() {
             layout.mapbox.style.sources['simple-tiles'].attribution = attr;
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], layout)
             .then(function() {
-                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual(attr);
             })
@@ -1554,7 +1555,7 @@ describe('mapbox plots', function() {
 
             Plotly.newPlot(gd, customMock)
             .then(function() {
-                var s = Plotly.d3.selectAll('.mapboxgl-ctrl-attrib');
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual([XSS + attr, '© Mapbox © OpenStreetMap Improve this map'].join(' | '));
                 expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);

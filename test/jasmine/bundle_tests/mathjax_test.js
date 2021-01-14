@@ -1,5 +1,5 @@
 var Plotly = require('@lib/index');
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -38,7 +38,7 @@ describe('Test MathJax:', function() {
         afterEach(destroyGraphDiv);
 
         function assertNoIntersect(msg) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var xTitle = gd3.select('.g-xtitle');
             var xTicks = gd3.selectAll('.xtick > text');
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 
 var ATTRS = ['x', 'y', 'width', 'height'];
 
@@ -9,7 +9,7 @@ var ATTRS = ['x', 'y', 'width', 'height'];
 module.exports = function getBBox(element) {
     var elementBBox = element.getBBox();
 
-    var s = d3.select(element);
+    var s = d3Select(element);
     var clipPathAttr = s.attr('clip-path');
 
     if(!clipPathAttr) return elementBBox;
@@ -22,7 +22,7 @@ module.exports = function getBBox(element) {
 };
 
 function getClipBBox(clipPathId) {
-    var clipPath = d3.select('#' + clipPathId);
+    var clipPath = d3Select('#' + clipPathId);
     var clipBBox;
 
     try {
@@ -30,7 +30,7 @@ function getClipBBox(clipPathId) {
         clipBBox = clipPath.node().getBBox();
     } catch(e) {
         // use DOM attributes as fallback
-        var path = d3.select(clipPath.node().firstChild);
+        var path = d3Select(clipPath.node().firstChild);
 
         clipBBox = {};
 

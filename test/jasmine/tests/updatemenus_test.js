@@ -1,7 +1,8 @@
 var UpdateMenus = require('@src/components/updatemenus');
 var constants = require('@src/components/updatemenus/constants');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Events = require('@src/lib/events');
@@ -302,7 +303,7 @@ describe('update menus buttons', function() {
     });
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3SelectAll(query).size()).toEqual(cnt);
     }
 });
 
@@ -754,7 +755,7 @@ describe('update menus interactions', function() {
             assertMenus([0, 0]);
 
             // dropdown buttons container should still be on top of headers (and non-dropdown buttons)
-            var gButton = d3.select('.updatemenu-dropdown-button-group');
+            var gButton = d3Select('.updatemenu-dropdown-button-group');
             expect(gButton.node().nextSibling).toBe(null);
 
             return Plotly.relayout(gd, {
@@ -770,7 +771,7 @@ describe('update menus interactions', function() {
 
     it('applies padding on all sides', function(done) {
         var xy1, xy2;
-        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var firstMenu = d3Select('.' + constants.headerGroupClassName);
         var xpad = 80;
         var ypad = 60;
 
@@ -802,7 +803,7 @@ describe('update menus interactions', function() {
 
     it('applies y padding on relayout', function(done) {
         var x1, x2;
-        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var firstMenu = d3Select('.' + constants.headerGroupClassName);
         var padShift = 40;
 
         // Position the menu in the center of the plot horizontal so that
@@ -825,7 +826,7 @@ describe('update menus interactions', function() {
     });
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt, query);
+        expect(d3SelectAll(query).size()).toEqual(cnt, query);
     }
 
     // call assertMenus([0, 3]); to check that the 2nd update menu is dropped
@@ -834,7 +835,7 @@ describe('update menus interactions', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
         assertNodeCount('.' + constants.headerClassName, expectedMenus.length);
 
-        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName);
+        var gButton = d3Select('.' + constants.dropdownButtonGroupClassName);
         var actualActiveIndex = +gButton.attr(constants.menuIndexAttrName);
         var hasActive = false;
 
@@ -895,16 +896,16 @@ describe('update menus interactions', function() {
     }
 
     function selectHeader(menuIndex) {
-        var headers = d3.selectAll('.' + constants.headerClassName);
-        var header = d3.select(headers[0][menuIndex]);
+        var headers = d3SelectAll('.' + constants.headerClassName);
+        var header = d3Select(headers[0][menuIndex]);
         return header;
     }
 
     function selectButton(buttonIndex, opts) {
         opts = opts || {};
         var k = opts.type === 'buttons' ? 'buttonClassName' : 'dropdownButtonClassName';
-        var buttons = d3.selectAll('.' + constants[k]);
-        var button = d3.select(buttons[0][buttonIndex]);
+        var buttons = d3SelectAll('.' + constants[k]);
+        var button = d3Select(buttons[0][buttonIndex]);
         return button;
     }
 });
@@ -956,8 +957,8 @@ describe('update menus interaction with other components:', function() {
             }]
         })
         .then(function() {
-            var infoLayer = d3.select('g.infolayer');
-            var menuLayer = d3.select('g.menulayer');
+            var infoLayer = d3Select('g.infolayer');
+            var menuLayer = d3Select('g.menulayer');
             expect(infoLayer.selectAll('.slider-container').size()).toBe(1);
             expect(menuLayer.selectAll('.updatemenu-container').size()).toBe(1);
             expect(infoLayer.node().nextSibling).toBe(menuLayer.node());

@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var attributes = require('@src/traces/sankey/attributes');
 var Lib = require('@src/lib');
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var d3sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 var mock = require('@mocks/sankey_energy.json');
@@ -362,22 +363,22 @@ describe('sankey tests', function() {
             Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.addTraces(gd, mockCopy2.data[0]);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(2);
-                    expect(d3.selectAll('.sankey').size()).toEqual(2);
+                    expect(d3SelectAll('.sankey').size()).toEqual(2);
                     return Plotly.deleteTraces(gd, [0]);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.deleteTraces(gd, 0);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(0);
-                    expect(d3.selectAll('.sankey').size()).toEqual(0);
+                    expect(d3SelectAll('.sankey').size()).toEqual(0);
                 })
                 .then(done, done.fail);
         });
@@ -401,17 +402,17 @@ describe('sankey tests', function() {
             Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.restyle(gd, 'visible', false);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(0);
+                    expect(d3SelectAll('.sankey').size()).toEqual(0);
                     return Plotly.restyle(gd, 'visible', true);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                 })
                 .then(done, done.fail);
         });
@@ -430,8 +431,8 @@ describe('sankey tests', function() {
             }];
             Plotly.newPlot(gd, minimock)
                 .then(function() {
-                    expect(d3.selectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
-                        return Math.min(prevMin, d3.select(rect).attr('height'));
+                    expect(d3SelectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
+                        return Math.min(prevMin, d3Select(rect).attr('height'));
                     }, Infinity)).toEqual(0.5);
                 })
                 .then(done, done.fail);
@@ -491,7 +492,7 @@ describe('sankey tests', function() {
                   expect(gd._fullData[0].node.groups).toEqual(newGroup);
 
                   // Check that all links have updated their links
-                  d3.selectAll('.sankey .sankey-link').each(function(d, i) {
+                  d3SelectAll('.sankey .sankey-link').each(function(d, i) {
                       var path = this.getAttribute('d');
                       expect(path).toBe(d.linkPath()(d), 'link ' + i + ' has wrong `d` attribute');
                   });
@@ -499,7 +500,7 @@ describe('sankey tests', function() {
                   // Check that ghost nodes used for animations:
                   // 1) are drawn first so they apear behind
                   var seeRealNode = false;
-                  var sankeyNodes = d3.selectAll('.sankey .sankey-node');
+                  var sankeyNodes = d3SelectAll('.sankey .sankey-node');
                   sankeyNodes.each(function(d, i) {
                       if(d.partOfGroup) {
                           if(seeRealNode) fail('node ' + i + ' is a ghost node and should be behind');
@@ -783,7 +784,7 @@ describe('sankey tests', function() {
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
 
-                var g = d3.select('.hovertext');
+                var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
@@ -797,7 +798,7 @@ describe('sankey tests', function() {
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
 
-                var g = d3.select('.hovertext');
+                var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
@@ -935,7 +936,7 @@ describe('sankey tests', function() {
                     ['rgb(144, 238, 144)', 'rgb(68, 68, 68)', 13, 'Arial', 'rgb(68, 68, 68)']
                 );
 
-                var g = d3.selectAll('.hovertext');
+                var g = d3SelectAll('.hovertext');
                 expect(g.size()).toBe(1);
                 return Plotly.relayout(gd, 'hovermode', 'x');
             })
@@ -957,7 +958,7 @@ describe('sankey tests', function() {
                     ]
                 );
 
-                var g = d3.select('.hovertext:nth-child(3)');
+                var g = d3Select('.hovertext:nth-child(3)');
                 var domRect = g.node().getBoundingClientRect();
                 expect((domRect.bottom + domRect.top) / 2).toBeCloseTo(203, 0, 'it should center the hoverlabel associated with hovered link');
             })
@@ -1467,10 +1468,10 @@ function assertLabel(content, style) {
 }
 
 function assertMultipleLabels(contentArray, styleArray) {
-    var g = d3.selectAll('.hovertext');
+    var g = d3SelectAll('.hovertext');
     expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
     g.each(function(el, i) {
-        _assertLabelGroup(d3.select(this), contentArray[i], styleArray[i]);
+        _assertLabelGroup(d3Select(this), contentArray[i], styleArray[i]);
     });
 }
 
@@ -1486,7 +1487,7 @@ function _assertLabelGroup(g, content, style) {
     expect(lines.size()).toBe(content.length - 1);
 
     lines.each(function(_, i) {
-        expect(d3.select(this).text()).toBe(content[i]);
+        expect(d3Select(this).text()).toBe(content[i]);
     });
 
     expect(name.text()).toBe(content[content.length - 1]);
@@ -1501,7 +1502,7 @@ function _assertLabelGroup(g, content, style) {
 }
 
 function assertNoLabel() {
-    var g = d3.selectAll('.hovertext');
+    var g = d3SelectAll('.hovertext');
     expect(g.size()).toBe(0);
 }
 

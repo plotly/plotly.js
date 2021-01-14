@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plots = require('@src/plots/plots');
 var Parcoords = require('@src/traces/parcoords');
 var attributes = require('@src/traces/parcoords/attributes');
@@ -53,7 +54,7 @@ function mostOfDrag(x1, y1, x2, y2) {
 }
 
 function purgeGraphDiv(done) {
-    var gd = d3.select('.js-plotly-plot').node();
+    var gd = d3Select('.js-plotly-plot').node();
     if(gd) Plotly.purge(gd);
     destroyGraphDiv();
 
@@ -61,7 +62,7 @@ function purgeGraphDiv(done) {
 }
 
 function getAvgPixelByChannel(id) {
-    var canvas = d3.select(id).node();
+    var canvas = d3Select(id).node();
 
     var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
     var n = imgData.length * 0.25;
@@ -650,7 +651,7 @@ describe('parcoords Lifecycle methods', function() {
             expect(gd.data.length).toEqual(1);
 
             return Plotly.deleteTraces(gd, 0).then(function() {
-                expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
+                expect(d3SelectAll('.gl-canvas').node(0)).toEqual(null);
                 expect(gd.data.length).toEqual(0);
             });
         })
@@ -690,7 +691,7 @@ describe('parcoords Lifecycle methods', function() {
 
     function _assertVisibleData(visible, msg) {
         return function() {
-            var canvases = d3.selectAll('.gl-canvas');
+            var canvases = d3SelectAll('.gl-canvas');
             expect(canvases.size()).toBe(3, msg);
             canvases.each(function() {
                 var imageArray = readPixel(this, 0, 0, this.width, this.height);
@@ -915,7 +916,7 @@ describe('parcoords basic use', function() {
         Plotly.react(gd, mockCopy)
         .then(function() {
             var cnt = 0;
-            d3.select(gd).selectAll('canvas').each(function(d) {
+            d3Select(gd).selectAll('canvas').each(function(d) {
                 if(d.regl) cnt++;
             });
             expect(cnt).toBe(3);
@@ -1244,7 +1245,7 @@ describe('parcoords react more attributes', function() {
             return Plotly.react(gd, mockCopy.data);
         })
         .then(function() {
-            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+            var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
             var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
             expect(allLabels.size()).toBe(3);
@@ -1291,7 +1292,7 @@ describe('parcoords react more attributes', function() {
             expect(allHighlights.size()).toBe(3);
             var nHighlight = [];
             allHighlights.each(function() {
-                var highlight = d3.select(this)[0][0];
+                var highlight = d3Select(this)[0][0];
                 nHighlight.push(
                     highlight.getAttribute('stroke-dasharray').split(',').length
                 );
@@ -1310,7 +1311,7 @@ describe('parcoords react more attributes', function() {
         m0.dimensions[1].visible = false;
 
         Plotly.react(gd, mockCopy.data).then(function() {
-            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+            var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
             var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
             expect(allLabels.size()).toBe(2);
@@ -1319,7 +1320,7 @@ describe('parcoords react more attributes', function() {
         })
         .then(function() {
             return Plotly.react(gd, mockCopy.data).then(function() {
-                var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+                var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
                 var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
                 expect(allLabels.size()).toBe(3);

@@ -1,16 +1,17 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var negateIf = require('./negate_if');
 
 exports.assertDims = function(dims) {
-    var traces = d3.selectAll('.trace');
+    var traces = d3SelectAll('.trace');
 
     expect(traces.size())
         .toEqual(dims.length, 'to have correct number of traces');
 
     traces.each(function(_, i) {
-        var trace = d3.select(this);
+        var trace = d3Select(this);
         var points = trace.selectAll('.point');
 
         expect(points.size())
@@ -23,15 +24,15 @@ exports.assertStyle = function(dims, color, opacity) {
         return a + b;
     });
 
-    var traces = d3.selectAll('.trace');
+    var traces = d3SelectAll('.trace');
     expect(traces.size())
         .toEqual(dims.length, 'to have correct number of traces');
 
-    expect(d3.selectAll('.point').size())
+    expect(d3SelectAll('.point').size())
         .toEqual(N, 'to have correct total number of points');
 
     traces.each(function(_, i) {
-        var trace = d3.select(this);
+        var trace = d3Select(this);
         var points = trace.selectAll('.point');
 
         expect(points.size())
@@ -72,7 +73,7 @@ function getLabelContent(label) {
     }
 
     if(lines.size()) {
-        lines.each(function() { fill(d3.select(this)); });
+        lines.each(function() { fill(d3Select(this)); });
     } else {
         fill(label);
     }
@@ -88,7 +89,7 @@ function assertLabelContent(label, expectation, msg) {
 }
 
 function count(selector) {
-    return d3.selectAll(selector).size();
+    return d3SelectAll(selector).size();
 }
 
 /**
@@ -115,7 +116,7 @@ exports.assertHoverLabelContent = function(expectation, msg) {
     var reRotate = /(\brotate\(.*?\);?)/;
 
     if(ptCnt === 1) {
-        var g = d3.select(ptSelector);
+        var g = d3Select(ptSelector);
         var numsSel = g.select('text.nums');
         var nameSel = g.select('text.name');
 
@@ -142,8 +143,8 @@ exports.assertHoverLabelContent = function(expectation, msg) {
                 order: (expectation.hOrder || expectation.vOrder || []).indexOf(i)
             };
         });
-        d3.selectAll(ptSelector).each(function(_, i) {
-            var g = d3.select(this);
+        d3SelectAll(ptSelector).each(function(_, i) {
+            var g = d3Select(this);
             var numsSel = g.select('text.nums');
             var nameSel = g.select('text.name');
 
@@ -201,7 +202,7 @@ exports.assertHoverLabelContent = function(expectation, msg) {
 
     if(axCnt) {
         assertLabelContent(
-            d3.select(axSelector + '> text'),
+            d3Select(axSelector + '> text'),
             expectation.axis,
             axMsg
         );
@@ -222,7 +223,7 @@ exports.assertClip = function(sel, isClipped, size, msg) {
     expect(sel.size()).toBe(size, msg + ' clip path (selection size)');
 
     sel.each(function(d, i) {
-        var clipPath = d3.select(this).attr('clip-path');
+        var clipPath = d3Select(this).attr('clip-path');
 
         if(isClipped) {
             expect(String(clipPath).substr(0, 5))
@@ -239,16 +240,16 @@ exports.assertNodeDisplay = function(sel, expectation, msg) {
         .toBe(expectation.length, msg + ' display (selection size)');
 
     sel.each(function(d, i) {
-        expect(d3.select(this).attr('display'))
+        expect(d3Select(this).attr('display'))
             .toBe(expectation[i], msg + ' display ' + '(item ' + i + ')');
     });
 };
 
 exports.checkTicks = function(axLetter, vals, msg) {
-    var selection = d3.selectAll('.' + axLetter + 'tick text');
+    var selection = d3SelectAll('.' + axLetter + 'tick text');
     expect(selection.size()).toBe(vals.length);
     selection.each(function(d, i) {
-        expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
+        expect(d3Select(this).text()).toBe(vals[i], msg + ': ' + i);
     });
 };
 
@@ -294,7 +295,7 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var plotBB = d3.select('.plotclip > rect').node().getBoundingClientRect();
+    var plotBB = d3Select('.plotclip > rect').node().getBoundingClientRect();
     var actualWidth = plotBB.width;
     var actualHeight = plotBB.height;
 

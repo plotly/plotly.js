@@ -4,14 +4,14 @@ var Color = require('@src/components/color');
 
 var Scatter3D = require('@src/traces/scatter3d');
 
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var delay = require('../assets/delay');
 
 function countCanvases() {
-    return d3.selectAll('canvas').size();
+    return d3SelectAll('canvas').size();
 }
 
 describe('Scatter3D defaults', function() {

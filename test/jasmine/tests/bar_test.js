@@ -29,7 +29,8 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var BAR_TEXT_SELECTOR = '.bars .bartext';
 
@@ -1119,7 +1120,7 @@ describe('A bar plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3SelectAll(BAR_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -1136,7 +1137,7 @@ describe('A bar plot', function() {
 
     function assertTextFontFamilies(expFontFamilies) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3SelectAll(BAR_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontFamilies.length);
             selection.each(function(d, i) {
                 expect(this.style.fontFamily).toBe(expFontFamilies[i]);
@@ -1146,7 +1147,7 @@ describe('A bar plot', function() {
 
     function assertTextFontSizes(expFontSizes) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3SelectAll(BAR_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontSizes.length);
             selection.each(function(d, i) {
                 expect(this.style.fontSize).toBe(expFontSizes[i] + 'px');
@@ -1794,7 +1795,7 @@ describe('A bar plot', function() {
 
     it('can change orientation and correctly sets axis types', function(done) {
         function checkBarsMatch(dims, msg) {
-            var bars = d3.selectAll('.bars .point');
+            var bars = d3SelectAll('.bars .point');
             var bbox1 = bars.node().getBoundingClientRect();
             bars.each(function(d, i) {
                 if(!i) return;
@@ -1859,7 +1860,7 @@ describe('A bar plot', function() {
 
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfBarTextNodes(cnt) {
-            var sel = d3.select(gd).select('.barlayer').selectAll('text');
+            var sel = d3Select(gd).select('.barlayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1964,7 +1965,7 @@ describe('A bar plot', function() {
         }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3.select('.plot');
+            var subplotLayer = d3Select('.plot');
             var barLayer = subplotLayer.select('.barlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
@@ -2235,7 +2236,7 @@ describe('bar visibility toggling:', function() {
         function _assert(traceorder, yRange, legendCount) {
             expect(gd._fullLayout.legend.traceorder).toBe(traceorder);
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray(yRange, 2);
-            expect(d3.select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
+            expect(d3Select(gd).selectAll('.legend .traces').size()).toBe(legendCount);
         }
         Plotly.newPlot(gd, [
             {type: 'bar', y: [1, 2, 3]},
@@ -3099,7 +3100,7 @@ describe('bar uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(BAR_TEXT_SELECTOR);
+            var selection = d3SelectAll(BAR_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

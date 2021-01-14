@@ -4,7 +4,9 @@ var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var d3Transition = require('../../strict-d3').transition;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -26,7 +28,7 @@ function _mouseEvent(type, gd, v) {
             mouseEvent(type, v[0], v[1]);
         } else {
             // position from slice number
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var el = gd3.select('.slice:nth-child(' + v + ')').node();
             mouseEvent(type, 0, 0, {element: el});
         }
@@ -538,7 +540,7 @@ describe('Test sunburst hover:', function() {
                 }
 
                 if(exp.style) {
-                    var gd3 = d3.select(gd);
+                    var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
@@ -987,7 +989,7 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
@@ -1006,7 +1008,7 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
 
                 expect(layer.selectAll('.slice').size()).toBe(exp, msg);
 
@@ -1042,7 +1044,7 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
 
                 var opacities = [];
                 layer.selectAll('path.surface').each(function() {
@@ -1087,11 +1089,11 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
                 var tx = [];
 
                 layer.selectAll('text.slicetext').each(function() {
-                    var lines = d3.select(this).selectAll('tspan');
+                    var lines = d3Select(this).selectAll('tspan');
 
                     if(lines.size()) {
                         var t = [];
@@ -1162,7 +1164,7 @@ describe('Test sunburst tweening:', function() {
         gd = createGraphDiv();
 
         // hacky way to track tween functions
-        spyOn(d3.transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
+        spyOn(d3Transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
             var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
             var pt = this[0][0].__data__;
             var id = pt.data.data.id;
@@ -1558,7 +1560,7 @@ describe('Test sunburst interactions edge cases', function() {
             expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
             expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
 
-            var label = d3.select(gd).select('g.hovertext');
+            var label = d3Select(gd).select('g.hovertext');
             expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
 
             hoverCnt = 0;
@@ -1632,7 +1634,7 @@ describe('Test sunburst interactions edge cases', function() {
         mock.data[0].visible = false;
 
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
                 .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
             expect(gd3.select('.pielayer').selectAll('.trace').size())
@@ -1880,7 +1882,7 @@ describe('sunburst inside text orientation', function() {
 
     function assertTextRotations(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['rotations'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -1976,7 +1978,7 @@ describe('sunburst uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

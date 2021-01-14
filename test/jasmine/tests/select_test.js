@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -49,9 +50,9 @@ function drag(path, options) {
 function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
     var msg = _msg ? ' - ' + _msg : '';
 
-    expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+    expect(d3SelectAll('.zoomlayer > .zoombox-corners').size())
         .toBe(cornerCnt, 'selection corner count' + msg);
-    expect(d3.selectAll('.zoomlayer > .select-outline').size())
+    expect(d3SelectAll('.zoomlayer > .select-outline').size())
         .toBe(outlineCnt, 'selection outline count' + msg);
 }
 
@@ -718,9 +719,9 @@ describe('Click-to-select', function() {
             assertSelectionCleared();
         })
         .then(function() {
-            d3.select(gd).select('g.plot').each(function() {
-                d3.select(this).selectAll('g.errorbar').selectAll('path').each(function() {
-                    expect(d3.select(this).attr('style'))
+            d3Select(gd).select('g.plot').each(function() {
+                d3Select(this).selectAll('g.errorbar').selectAll('path').each(function() {
+                    expect(d3Select(this).attr('style'))
                         .toBe('vector-effect: non-scaling-stroke; stroke-width: 2px; stroke: rgb(68, 68, 68); stroke-opacity: 1; opacity: 1; fill: rgb(255, 255, 0); fill-opacity: 1;', 'to be visible'
                     );
                 });
@@ -1591,7 +1592,7 @@ describe('Test select box and lasso in general:', function() {
         }
 
         function _assert(msg, exp) {
-            var outline = d3.select(gd).select('.zoomlayer').select('.select-outline-1');
+            var outline = d3Select(gd).select('.zoomlayer').select('.select-outline-1');
 
             if(exp.outline) {
                 expect(outline2coords(outline)).toBeCloseTo2DArray(exp.outline, 2, msg);
@@ -2068,11 +2069,11 @@ describe('Test select box and lasso per trace:', function() {
             var assertLassoPoints = makeAssertLassoPoints('geo');
 
             function assertNodeOpacity(exp) {
-                var traces = d3.select(gd).selectAll('.scatterlayer > .trace');
+                var traces = d3Select(gd).selectAll('.scatterlayer > .trace');
                 expect(traces.size()).toBe(Object.keys(exp).length, 'correct # of trace <g>');
 
                 traces.each(function(_, i) {
-                    d3.select(this).selectAll('path.point').each(function(_, j) {
+                    d3Select(this).selectAll('path.point').each(function(_, j) {
                         expect(Number(this.style.opacity))
                             .toBe(exp[i][j], 'node opacity - trace ' + i + ' pt ' + j);
                     });
@@ -2868,7 +2869,7 @@ describe('Test select box and lasso per trace:', function() {
 
                 function countUnSelectedPaths(selector) {
                     var unselected = 0;
-                    d3.select(gd).selectAll(selector).each(function() {
+                    d3Select(gd).selectAll(selector).each(function() {
                         var opacity = this.style.opacity;
                         if(opacity < 1) unselected++;
                     });
@@ -2977,7 +2978,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             function assertFillOpacity(exp, msg) {
-                var txtPts = d3.select(gd).select('g.plot').selectAll('text');
+                var txtPts = d3Select(gd).select('g.plot').selectAll('text');
 
                 expect(txtPts.size()).toBe(exp.length, '# of text nodes: ' + msg);
 
@@ -3096,7 +3097,7 @@ describe('Test that selections persist:', function() {
     afterEach(destroyGraphDiv);
 
     function assertPtOpacity(selector, expected) {
-        d3.selectAll(selector).each(function(_, i) {
+        d3SelectAll(selector).each(function(_, i) {
             var style = Number(this.style.opacity);
             expect(style).toBe(expected.style[i], 'style for pt ' + i);
         });
@@ -3238,7 +3239,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
 
     function makeAssertFn(query) {
         return function(msg, expected) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var mainPlot3 = gd3.select('.cartesianlayer');
             var rangePlot3 = gd3.select('.rangeslider-rangeplot');
 

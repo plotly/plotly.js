@@ -13,7 +13,8 @@ var manageArrays = require('@src/plot_api/manage_arrays');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -277,15 +278,15 @@ describe('Test plot api', function() {
             }
 
             function getAnnotationPos() {
-                return getPos(d3.select('.annotation'));
+                return getPos(d3Select('.annotation'));
             }
 
             function getShapePos() {
-                return getPos(d3.select('.layer-above').select('.shapelayer').select('path'));
+                return getPos(d3Select('.layer-above').select('.shapelayer').select('path'));
             }
 
             function getImagePos() {
-                return getPos(d3.select('.layer-above').select('.imagelayer').select('image'));
+                return getPos(d3Select('.layer-above').select('.imagelayer').select('image'));
             }
 
             Plotly.newPlot(gd, [{
@@ -1496,17 +1497,17 @@ describe('Test plot api', function() {
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'marker.colorbar.tickfont.color': 'rgb(255, 0, 0)'});
             })
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'marker.showscale': false});
             })
             .then(function() {
-                expect(d3.select('.cbaxis').size()).toBe(0);
+                expect(d3Select('.cbaxis').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1514,17 +1515,17 @@ describe('Test plot api', function() {
         it('updates colorbars when editing gl3d plots', function(done) {
             Plotly.newPlot(gd, [{z: [[1, 2], [3, 6]], type: 'surface'}])
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'colorbar.tickfont.color': 'rgb(255, 0, 0)'});
             })
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'showscale': false});
             })
             .then(function() {
-                expect(d3.select('.cbaxis').size()).toBe(0);
+                expect(d3Select('.cbaxis').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -2316,7 +2317,7 @@ describe('Test plot api', function() {
                 return Plotly.redraw(gd);
             })
             .then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(3);
+                expect(d3SelectAll('g.trace.scatter').size()).toEqual(3);
             })
             .then(done, done.fail);
         });

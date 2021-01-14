@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('@plotly/d3');
+var d3Range = require('../../strict-d3').range;
 var supplyDefaults = require('@src/traces/heatmapgl').supplyDefaults;
 var Plots = require('@src/plots/plots');
 
@@ -108,8 +108,8 @@ function rotate(rad, point) {
 }
 
 function generate(maxJitter) {
-    var x = d3.range(-1, 1.5, 0.5); // left closed, right open interval
-    var y = d3.range(-1, 1.5, 0.5); // left closed, right open interval
+    var x = d3Range(-1, 1.5, 0.5); // left closed, right open interval
+    var y = d3Range(-1, 1.5, 0.5); // left closed, right open interval
     var z = new Array(x.length);
     var i, j, p;
 

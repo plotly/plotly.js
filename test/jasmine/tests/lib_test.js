@@ -3,7 +3,8 @@ var setCursor = require('@src/lib/setcursor');
 var overrideCursor = require('@src/lib/override_cursor');
 var config = require('@src/plot_api/plot_config').dfltConfig;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -1364,7 +1365,7 @@ describe('Test lib.js:', function() {
 
     describe('setCursor', function() {
         beforeEach(function() {
-            this.el3 = d3.select(createGraphDiv());
+            this.el3 = d3Select(createGraphDiv());
         });
 
         afterEach(destroyGraphDiv);
@@ -1412,7 +1413,7 @@ describe('Test lib.js:', function() {
 
     describe('overrideCursor', function() {
         beforeEach(function() {
-            this.el3 = d3.select(createGraphDiv());
+            this.el3 = d3Select(createGraphDiv());
         });
 
         afterEach(destroyGraphDiv);
@@ -1639,11 +1640,11 @@ describe('Test lib.js:', function() {
 
         it('recognizes real and duck typed selections', function() {
             var yesSelections = [
-                d3.select(gd),
+                d3Select(gd),
                 // this is what got us into trouble actually - d3 selections can
                 // contain non-nodes - say for example d3 selections! then they
                 // don't work correctly. But it makes a convenient test!
-                d3.select(1)
+                d3Select(1)
             ];
 
             yesSelections.forEach(function(v) {
@@ -1751,8 +1752,8 @@ describe('Test lib.js:', function() {
             var query = '.notifier-note';
 
             beforeEach(function(done) {
-                d3.selectAll(query).each(function() {
-                    d3.select(this).select('button').node().click();
+                d3SelectAll(query).each(function() {
+                    d3Select(this).select('button').node().click();
                 });
                 setTimeout(done, 1000);
             });
@@ -1764,13 +1765,13 @@ describe('Test lib.js:', function() {
                 Lib.warn('warn');
                 Lib.error('error!');
 
-                var notes = d3.selectAll(query);
+                var notes = d3SelectAll(query);
 
                 expect(notes.size()).toBe(exp.length, '# of notifier notes');
 
                 var actual = [];
                 notes.each(function() {
-                    actual.push(d3.select(this).select('p').text());
+                    actual.push(d3Select(this).select('p').text());
                 });
                 expect(actual).toEqual(exp);
             }

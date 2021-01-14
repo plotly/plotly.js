@@ -1,7 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -225,7 +225,7 @@ describe('Plotly.toImage', function() {
     it('should work on pages with <base>', function(done) {
         var parser = new DOMParser();
 
-        var base = d3.select('body')
+        var base = d3Select('body')
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 

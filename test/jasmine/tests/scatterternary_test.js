@@ -2,7 +2,8 @@ var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var ScatterTernary = require('@src/traces/scatterternary');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -314,19 +315,19 @@ describe('scatterternary plot and hover', function() {
     });
 
     it('should put scatterternary trace in \'frontplot\' node', function() {
-        var nodes = d3.select('.frontplot').selectAll('.scatter');
+        var nodes = d3Select('.frontplot').selectAll('.scatter');
 
         expect(nodes.size()).toEqual(1);
     });
 
     it('should generate one line path per trace', function() {
-        var nodes = d3.selectAll('path.js-line');
+        var nodes = d3SelectAll('path.js-line');
 
         expect(nodes.size()).toEqual(mock.data.length);
     });
 
     it('should generate as many points as there are data points', function() {
-        var nodes = d3.selectAll('path.point');
+        var nodes = d3SelectAll('path.point');
 
         expect(nodes.size()).toEqual(mock.data[0].a.length);
     });
@@ -456,8 +457,8 @@ describe('Test scatterternary *cliponaxis*', function() {
         var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
 
         function _assert(layerClips, nodeDisplays, lineClips) {
-            var frontLayer = d3.select('.frontplot');
-            var scatterLayer = d3.select('.scatterlayer');
+            var frontLayer = d3Select('.frontplot');
+            var scatterLayer = d3Select('.scatterlayer');
 
             assertClip(frontLayer, layerClips[0], 1, 'front layer');
             assertClip(scatterLayer, layerClips[1], 1, 'scatter layer');

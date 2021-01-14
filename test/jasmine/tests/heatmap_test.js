@@ -6,7 +6,8 @@ var setConvert = require('@src/plots/cartesian/set_convert');
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 var Heatmap = require('@src/traces/heatmap');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -672,7 +673,7 @@ describe('heatmap plot', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
-            var images = d3.selectAll('.hm image');
+            var images = d3SelectAll('.hm image');
 
             expect(images.size()).toEqual(cnt);
         }
@@ -694,7 +695,7 @@ describe('heatmap plot', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.hm image').each(function(d) { out.push(d.trace.index); });
+            d3SelectAll('.hm image').each(function(d) { out.push(d.trace.index); });
             return out;
         }
 
@@ -725,7 +726,7 @@ describe('heatmap plot', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         function getImageURL() {
-            return d3.select('.hm > image').attr('href');
+            return d3Select('.hm > image').attr('href');
         }
 
         var imageURLs = [];
