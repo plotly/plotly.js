@@ -2,7 +2,7 @@ var Lib = require('@src/lib');
 var _ = Lib._;
 var Registry = require('@src/registry');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var utcFormat = require('d3-time-format').utcFormat;
 
 var Plotly = require('@lib');
@@ -39,11 +39,11 @@ describe('localization', function() {
     }
 
     function firstXLabel() {
-        return d3.select(gd).select('.xtick').text();
+        return d3Select(gd).select('.xtick').text();
     }
 
     function firstYLabel() {
-        return d3.select(gd).select('.ytick').text();
+        return d3Select(gd).select('.ytick').text();
     }
 
     var monthNums = ['!1', '!2', '!3', '!4', '!5', '!6', '!7', '!8', '!9', '!10', '!11', '!12'];
@@ -64,8 +64,8 @@ describe('localization', function() {
 
     function getLabels(axLetter) {
         var out = [];
-        var s = d3.select(gd).selectAll('.' + axLetter + 'tick');
-        s.each(function() { out.push(d3.select(this).text()); });
+        var s = d3Select(gd).selectAll('.' + axLetter + 'tick');
+        s.each(function() { out.push(d3Select(this).text()); });
         return out;
     }
 

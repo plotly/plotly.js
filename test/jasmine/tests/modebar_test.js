@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 
 var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
@@ -37,8 +37,8 @@ describe('ModeBar', function() {
             _fullLayout: {
                 _uid: '6ea6a7',
                 dragmode: 'zoom',
-                _paperdiv: d3.select(getMockContainerTree()),
-                _modebardiv: d3.select(getMockModeBarTree()),
+                _paperdiv: d3Select(getMockContainerTree()),
+                _modebardiv: d3Select(getMockModeBarTree()),
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
@@ -63,20 +63,20 @@ describe('ModeBar', function() {
     }
 
     function countGroups(modeBar) {
-        return d3.select(modeBar.element).selectAll('div.modebar-group').size();
+        return d3Select(modeBar.element).selectAll('div.modebar-group').size();
     }
 
     function countButtons(modeBar) {
-        return d3.select(modeBar.element).selectAll('a.modebar-btn').size();
+        return d3Select(modeBar.element).selectAll('a.modebar-btn').size();
     }
 
     function countLogo(modeBar) {
-        return d3.select(modeBar.element).selectAll('a.plotlyjsicon').size();
+        return d3Select(modeBar.element).selectAll('a.plotlyjsicon').size();
     }
 
     function checkBtnAttr(modeBar, index, attr) {
-        var buttons = d3.select(modeBar.element).selectAll('a.modebar-btn');
-        return d3.select(buttons[0][index]).attr(attr);
+        var buttons = d3Select(modeBar.element).selectAll('a.modebar-btn');
+        return d3Select(buttons[0][index]).attr(attr);
     }
 
     var buttons = [[{
@@ -159,7 +159,7 @@ describe('ModeBar', function() {
                     return undefined;
                 }
                 var button = modeBar.buttonElements[0];
-                return d3.select(button).select('svg');
+                return d3Select(button).select('svg');
             }
 
             it('with a Plotly icon', function() {

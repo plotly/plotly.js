@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -198,11 +199,11 @@ describe('Pie traces', function() {
                 expect(this.style.stroke.replace(/\s/g, '')).toBe('rgb(100,100,100)');
                 expect(this.style.strokeOpacity).toBe('0.7');
             }
-            var slices = d3.selectAll(SLICES_SELECTOR);
+            var slices = d3SelectAll(SLICES_SELECTOR);
             slices.each(checkPath);
             expect(slices.size()).toBe(5);
 
-            var legendEntries = d3.selectAll(LEGEND_ENTRIES_SELECTOR);
+            var legendEntries = d3SelectAll(LEGEND_ENTRIES_SELECTOR);
             legendEntries.each(checkPath);
             expect(legendEntries.size()).toBe(5);
         })
@@ -237,7 +238,7 @@ describe('Pie traces', function() {
 
     function _checkSliceColors(colors) {
         return function() {
-            d3.select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
+            d3Select(gd).selectAll(SLICES_SELECTOR).each(function(d, i) {
                 expect(this.style.fill.replace(/(\s|rgb\(|\))/g, '')).toBe(colors[i], i);
             });
         };
@@ -245,7 +246,7 @@ describe('Pie traces', function() {
 
     function _checkFontColors(expFontColors) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fill).toBe(rgb(expFontColors[i]), 'fill color of ' + i);
             });
         };
@@ -253,7 +254,7 @@ describe('Pie traces', function() {
 
     function _checkFontFamilies(expFontFamilies) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fontFamily).toBe(expFontFamilies[i], 'fontFamily of ' + i);
             });
         };
@@ -261,7 +262,7 @@ describe('Pie traces', function() {
 
     function _checkFontSizes(expFontSizes) {
         return function() {
-            d3.selectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function(d, i) {
                 expect(this.style.fontSize).toBe(expFontSizes[i] + 'px', 'fontSize of ' + i);
             });
         };
@@ -310,7 +311,7 @@ describe('Pie traces', function() {
             textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
-            var title = d3.selectAll('.titletext text');
+            var title = d3SelectAll('.titletext text');
             expect(title.size()).toBe(1);
             var titlePos = getClientPosition('g.titletext');
             var pieCenterPos = getClientPosition('g.trace');
@@ -338,10 +339,10 @@ describe('Pie traces', function() {
             textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
-            var title = d3.selectAll('.titletext text');
+            var title = d3SelectAll('.titletext text');
             expect(title.size()).toBe(1);
-            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
-            var pieBox = d3.select('g.trace').node().getBoundingClientRect();
+            var titleBox = d3Select('g.titletext').node().getBoundingClientRect();
+            var pieBox = d3Select('g.trace').node().getBoundingClientRect();
             var radius = 0.1 * Math.min(pieBox.width / 2, pieBox.height / 2);
             var pieCenterPos = getClientPosition('g.trace');
             // unfortunately boundingClientRect is inaccurate and so we allow an error of 3
@@ -359,10 +360,10 @@ describe('Pie traces', function() {
 
     function _verifyTitle(checkLeft, checkRight, checkTop, checkBottom, checkMiddleX) {
         return function() {
-            var title = d3.selectAll('.titletext text');
+            var title = d3SelectAll('.titletext text');
             expect(title.size()).toBe(1);
-            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
-            var pieBox = d3.select('g.trace').node().getBoundingClientRect();
+            var titleBox = d3Select('g.titletext').node().getBoundingClientRect();
+            var pieBox = d3Select('g.trace').node().getBoundingClientRect();
             // check that margins agree. we leave an error margin of 2.
             if(checkLeft) expect(Math.abs(titleBox.left - pieBox.left)).toBeLessThan(2);
             if(checkRight) expect(Math.abs(titleBox.right - pieBox.right)).toBeLessThan(2);
@@ -531,12 +532,12 @@ describe('Pie traces', function() {
             textinfo: 'none'
         }], {height: 300, width: 300})
         .then(function() {
-            var title = d3.selectAll('.titletext text');
+            var title = d3SelectAll('.titletext text');
             expect(title.size()).toBe(1);
-            var titleBox = d3.select('g.titletext').node().getBoundingClientRect();
+            var titleBox = d3Select('g.titletext').node().getBoundingClientRect();
             var minSliceTop = Infinity;
-            d3.selectAll('g.slice').each(function() {
-                var sliceTop = d3.select(this).node().getBoundingClientRect().top;
+            d3SelectAll('g.slice').each(function() {
+                var sliceTop = d3Select(this).node().getBoundingClientRect().top;
                 minSliceTop = Math.min(minSliceTop, sliceTop);
             });
             expect(titleBox.bottom).toBeLessThan(minSliceTop);
@@ -582,10 +583,10 @@ describe('Pie traces', function() {
           .then(function() {
               var expWidths = ['3', '0', '0'];
 
-              d3.selectAll(SLICES_SELECTOR).each(function(d, i) {
+              d3SelectAll(SLICES_SELECTOR).each(function(d, i) {
                   expect(this.style.strokeWidth).toBe(expWidths[d.pointNumber], 'sector #' + i);
               });
-              d3.selectAll(LEGEND_ENTRIES_SELECTOR).each(function(d, i) {
+              d3SelectAll(LEGEND_ENTRIES_SELECTOR).each(function(d, i) {
                   expect(this.style.strokeWidth).toBe(expWidths[d[0].i], 'item #' + i);
               });
           })
@@ -768,7 +769,7 @@ describe('Pie traces', function() {
     });
 
     function _assertTitle(msg, expText, expColor) {
-        var title = d3.select('.titletext > text');
+        var title = d3Select('.titletext > text');
         expect(title.text()).toBe(expText, msg + ' text');
         expect(title.node().style.fill).toBe(expColor, msg + ' color');
     }
@@ -894,7 +895,7 @@ describe('Pie traces', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.pielayer');
+                var layer = d3Select(gd).select('.pielayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
@@ -1175,7 +1176,7 @@ describe('pie hovering', function() {
             assertHoverLabelContent({nums: content}, msg);
 
             if(style) {
-                assertHoverLabelStyle(d3.select('.hovertext'), {
+                assertHoverLabelStyle(d3Select('.hovertext'), {
                     bgcolor: style[0],
                     bordercolor: style[1],
                     fontSize: style[2],
@@ -1381,7 +1382,7 @@ describe('pie hovering', function() {
 
         it('should honor *hoverlabel.align*', function(done) {
             function _assert(msg, exp) {
-                var tx = d3.select('g.hovertext').select('text');
+                var tx = d3Select('g.hovertext').select('text');
                 expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
                 expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
             }
@@ -1461,7 +1462,7 @@ describe('pie hovering', function() {
                     nums: 'label 3 - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16\n$2,865.21\n9.58%'
                 }, 'long label to the left');
 
-                var label = d3.select('g.hovertext');
+                var label = d3Select('g.hovertext');
                 var bbox = label.node().getBoundingClientRect();
 
                 expect(bbox.left).toBeWithin(1, 10, 'bbox left bound');
@@ -1473,7 +1474,7 @@ describe('pie hovering', function() {
                     nums: 'label 1 - another long text label\n$22,238.58\n74.3%'
                 }, 'long label to the right');
 
-                var label = d3.select('g.hovertext');
+                var label = d3Select('g.hovertext');
                 var bbox = label.node().getBoundingClientRect();
 
                 expect(bbox.left).toBeWithin(30, 10, 'bbox left bound');
@@ -1729,7 +1730,7 @@ describe('pie relayout', function() {
             return Plotly.relayout(gd, 'colorway', relayoutColors);
         })
         .then(function() {
-            var slices = d3.selectAll(SLICES_SELECTOR);
+            var slices = d3SelectAll(SLICES_SELECTOR);
             slices.each(checkRelayoutColor);
         })
         .then(done, done.fail);
@@ -1745,7 +1746,7 @@ describe('Test pie interactions edge cases:', function() {
 
     function _mouseEvent(type, v) {
         return function() {
-            var el = d3.select(gd).select('.slice:nth-child(' + v + ')').node();
+            var el = d3Select(gd).select('.slice:nth-child(' + v + ')').node();
             mouseEvent(type, 0, 0, {element: el});
         };
     }
@@ -1769,7 +1770,7 @@ describe('Test pie interactions edge cases:', function() {
             expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
             expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
 
-            var label = d3.select(gd).select('g.hovertext');
+            var label = d3Select(gd).select('g.hovertext');
             expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
 
             hoverCnt = 0;
@@ -1830,7 +1831,7 @@ describe('pie inside text orientation', function() {
 
     function assertTextRotations(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['rotations'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -1925,7 +1926,7 @@ describe('pie uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -2101,7 +2102,7 @@ describe('pie value format', function() {
                 '1.23456789e-8'
             ];
 
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             for(var i = 0; i < selection[0].length; i++) {
                 var text = selection[0][i].getAttribute('data-unformatted');
                 expect(text).toBe(exp[i]);
@@ -2141,7 +2142,7 @@ describe('pie value format', function() {
                 '9e-8%'
             ];
 
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             for(var i = 0; i < selection[0].length; i++) {
                 var text = selection[0][i].innerHTML;
                 expect(text).toBe(exp[i]);

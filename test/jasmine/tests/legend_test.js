@@ -7,7 +7,8 @@ var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
@@ -646,23 +647,23 @@ describe('legend relayout update', function() {
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(function() {
-            expect(d3.selectAll('g.legend').size()).toBe(1);
+            expect(d3SelectAll('g.legend').size()).toBe(1);
             // check that the margins changed
             assertPlotSize({widthLessThan: 400});
             return Plotly.relayout(gd, {showlegend: false});
         })
         .then(function() {
-            expect(d3.selectAll('g.legend').size()).toBe(0);
+            expect(d3SelectAll('g.legend').size()).toBe(0);
             assertPlotSize({width: 400});
             return Plotly.relayout(gd, {showlegend: true});
         })
         .then(function() {
-            expect(d3.selectAll('g.legend').size()).toBe(1);
+            expect(d3SelectAll('g.legend').size()).toBe(1);
             assertPlotSize({widthLessThan: 400});
             return Plotly.relayout(gd, {'legend.x': 0.7});
         })
         .then(function() {
-            expect(d3.selectAll('g.legend').size()).toBe(1);
+            expect(d3SelectAll('g.legend').size()).toBe(1);
             assertPlotSize({width: 400});
         })
         .then(done, done.fail);
@@ -672,7 +673,7 @@ describe('legend relayout update', function() {
         var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'));
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
-            var node = d3.select('g.legend').select('rect').node();
+            var node = d3Select('g.legend').select('rect').node();
 
             expect(node.style.fill).toEqual(bgColor);
             expect(node.style.stroke).toEqual(borderColor);
@@ -706,7 +707,7 @@ describe('legend relayout update', function() {
 
     describe('should update legend valign', function() {
         function markerOffsetY() {
-            var translate = Drawing.getTranslate(d3.select('.legend .traces .layers'));
+            var translate = Drawing.getTranslate(d3Select('.legend .traces .layers'));
             return translate.y;
         }
 
@@ -757,7 +758,7 @@ describe('legend relayout update', function() {
         function _assert(msg, xy, wh) {
             return function() {
                 var fullLayout = gd._fullLayout;
-                var legend3 = d3.select('g.legend');
+                var legend3 = d3Select('g.legend');
                 var bg3 = legend3.select('rect.bg');
                 var translate = Drawing.getTranslate(legend3);
                 var x = translate.x;
@@ -789,7 +790,7 @@ describe('legend relayout update', function() {
         function _assert(msg, xy, wh) {
             return function() {
                 var fullLayout = gd._fullLayout;
-                var legend3 = d3.select('g.legend');
+                var legend3 = d3Select('g.legend');
                 var bg3 = legend3.select('rect.bg');
                 var translate = Drawing.getTranslate(legend3);
                 var x = translate.x;
@@ -832,7 +833,7 @@ describe('legend relayout update', function() {
             }
         })
         .then(function() {
-            expect(d3.selectAll('.legendtitletext')[0].length).toBe(1);
+            expect(d3SelectAll('.legendtitletext')[0].length).toBe(1);
         })
         .then(function() {
             return Plotly.react(gd, {
@@ -843,7 +844,7 @@ describe('legend relayout update', function() {
             });
         })
         .then(function() {
-            expect(d3.selectAll('.legendtitletext')[0].length).toBe(0);
+            expect(d3SelectAll('.legendtitletext')[0].length).toBe(0);
         })
         .then(done, done.fail);
     });
@@ -888,14 +889,14 @@ describe('legend restyle update', function() {
         mockCopy.data[1].showlegend = false;
 
         function countLegendItems() {
-            return d3.select(gd).selectAll('rect.legendtoggle').size();
+            return d3Select(gd).selectAll('rect.legendtoggle').size();
         }
 
         function assertTraceToggleRect() {
-            var nodes = d3.selectAll('rect.legendtoggle');
+            var nodes = d3SelectAll('rect.legendtoggle');
 
             nodes.each(function() {
-                var node = d3.select(this);
+                var node = d3Select(this);
 
                 expect(node.attr('x')).toEqual('0');
                 expect(node.attr('y')).toEqual('-9.5');
@@ -936,8 +937,8 @@ describe('legend interaction', function() {
             gd = createGraphDiv();
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                legendItems = d3.selectAll('rect.legendtoggle')[0];
-                legendLabels = d3.selectAll('text.legendtext')[0];
+                legendItems = d3SelectAll('rect.legendtoggle')[0];
+                legendLabels = d3SelectAll('text.legendtext')[0];
                 legendItem = legendItems[testEntry];
                 legendLabel = legendLabels[testEntry].innerHTML;
                 done();
@@ -1031,7 +1032,7 @@ describe('legend interaction', function() {
             gd = createGraphDiv();
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                legendItems = d3.selectAll('rect.legendtoggle')[0];
+                legendItems = d3SelectAll('rect.legendtoggle')[0];
                 legendItem = legendItems[testEntry];
                 done();
             });
@@ -1125,7 +1126,7 @@ describe('legend interaction', function() {
 
         function _click(index) {
             return function() {
-                var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                var item = d3SelectAll('rect.legendtoggle')[0][index || 0];
                 return new Promise(function(resolve) {
                     item.dispatchEvent(new MouseEvent('mousedown'));
                     item.dispatchEvent(new MouseEvent('mouseup'));
@@ -1136,7 +1137,7 @@ describe('legend interaction', function() {
 
         function _dblclick(index) {
             return function() {
-                var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                var item = d3SelectAll('rect.legendtoggle')[0][index || 0];
                 return new Promise(function(resolve) {
                     item.dispatchEvent(new MouseEvent('mousedown'));
                     item.dispatchEvent(new MouseEvent('mouseup'));
@@ -1205,10 +1206,10 @@ describe('legend interaction', function() {
         afterEach(destroyGraphDiv);
 
         function _setValue(index, str) {
-            var item = d3.selectAll('text.legendtext')[0][index || 0];
+            var item = d3SelectAll('text.legendtext')[0][index || 0];
             item.dispatchEvent(new MouseEvent('click'));
             return delay(20)().then(function() {
-                var input = d3.select('.plugin-editable.editable');
+                var input = d3Select('.plugin-editable.editable');
                 input.text(str);
                 input.node().dispatchEvent(new KeyboardEvent('blur'));
             }).then(delay(20));
@@ -1216,7 +1217,7 @@ describe('legend interaction', function() {
 
         function assertLabels(expected) {
             var labels = [];
-            d3.selectAll('text.legendtext').each(function() {
+            d3SelectAll('text.legendtext').each(function() {
                 labels.push(this.textContent);
             });
             expect(labels).toEqual(expected);
@@ -1290,7 +1291,7 @@ describe('legend interaction', function() {
         afterEach(destroyGraphDiv);
 
         function toggleTrace() {
-            var toggle = d3.select('.legendtoggle').node();
+            var toggle = d3Select('.legendtoggle').node();
             expect(toggle).not.toEqual(null);
 
             toggle.dispatchEvent(new MouseEvent('mousedown'));
@@ -1302,7 +1303,7 @@ describe('legend interaction', function() {
 
         function assertToggled(toggled) {
             return function() {
-                var container = d3.select('g.traces').node();
+                var container = d3Select('g.traces').node();
                 expect(container).not.toEqual(null);
                 expect(container.style.opacity).toBe(toggled ? '0.5' : '1');
             };
@@ -1339,7 +1340,7 @@ describe('legend interaction', function() {
         function clickAt(p) {
             return function() {
                 return new Promise(function(resolve) {
-                    var el = d3.select('g.legend').node();
+                    var el = d3Select('g.legend').node();
                     var opts = {element: el};
                     mouseEvent('mousedown', p[0], p[1], opts);
                     mouseEvent('mouseup', p[0], p[1], opts);
@@ -1406,7 +1407,7 @@ describe('legend interaction', function() {
         function click(index, clicks) {
             return function() {
                 return new Promise(function(resolve) {
-                    var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                    var item = d3SelectAll('rect.legendtoggle')[0][index || 0];
                     for(var i = 0; i < (clicks || 1); i++) {
                         item.dispatchEvent(new MouseEvent('mousedown'));
                         item.dispatchEvent(new MouseEvent('mouseup'));
@@ -1963,7 +1964,7 @@ describe('legend with custom doubleClickDelay', function() {
 
     function click(index) {
         return function() {
-            var item = d3.selectAll('rect.legendtoggle')[0][index];
+            var item = d3SelectAll('rect.legendtoggle')[0][index];
             item.dispatchEvent(new MouseEvent('mousedown'));
             item.dispatchEvent(new MouseEvent('mouseup'));
         };

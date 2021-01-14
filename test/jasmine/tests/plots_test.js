@@ -3,7 +3,8 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -779,7 +780,7 @@ describe('Test Plots', function() {
                 lat: [20, 10]
             }])
             .then(function() {
-                expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
+                expect(d3SelectAll('g.trace.scattergeo').size()).toEqual(1);
 
                 destroyGraphDiv();
             })
@@ -798,7 +799,7 @@ describe('Test Plots', function() {
                 b: [0.2, 0.1]
             }])
             .then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
+                expect(d3SelectAll('g.trace.scatter').size()).toEqual(1);
 
                 destroyGraphDiv();
             })
@@ -863,11 +864,11 @@ describe('Test Plots', function() {
 
         function assertCartesian(subplotsSVG, subplotsGL2D, msg) {
             var subplotsAll = subplotsSVG.concat(subplotsGL2D);
-            var subplots3 = d3.select(gd).selectAll('.cartesianlayer .subplot');
+            var subplots3 = d3Select(gd).selectAll('.cartesianlayer .subplot');
             expect(subplots3.size()).toBe(subplotsAll.length, msg);
 
             subplotsAll.forEach(function(subplot) {
-                expect(d3.select(gd).selectAll('.cartesianlayer .subplot.' + subplot).size())
+                expect(d3Select(gd).selectAll('.cartesianlayer .subplot.' + subplot).size())
                     .toBe(1, msg + ' - ' + subplot);
             });
 
@@ -893,7 +894,7 @@ describe('Test Plots', function() {
         };
 
         function assertSubplot(type, n, msg) {
-            expect(d3.select(gd).selectAll(subplotSelectors[type]).size())
+            expect(d3Select(gd).selectAll(subplotSelectors[type]).size())
                 .toBe(n, msg + ' - ' + type);
         }
 

@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');
@@ -28,7 +29,7 @@ var getColor = function(node) { return node.style.fill; };
 var getMarkerSize = function(node) {
     // find path arc multiply by 2 to get the corresponding marker.size value
     // (works for circles only)
-    return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
+    return d3Select(node).attr('d').split('A')[1].split(',')[0] * 2;
 };
 
 describe('Test scatter', function() {
@@ -663,7 +664,7 @@ describe('end-to-end scatter tests', function() {
             y: [2, 3, 4, 5, 6, 7, 8],
             customdata: [null, undefined, 0, false, {foo: 'bar'}, 'a']
         }]).then(function() {
-            var points = d3.selectAll('g.scatterlayer').selectAll('.point');
+            var points = d3SelectAll('g.scatterlayer').selectAll('.point');
 
             // Rather than just duplicating the logic, let's be explicit about
             // what's expected. Specifially, only null and undefined (the default)
@@ -671,17 +672,17 @@ describe('end-to-end scatter tests', function() {
             var expected = [false, false, true, true, true, true, false];
 
             points.each(function(cd, i) {
-                expect(d3.select(this).classed('plotly-customdata')).toBe(expected[i]);
+                expect(d3Select(this).classed('plotly-customdata')).toBe(expected[i]);
             });
 
             return Plotly.animate(gd, [{
                 data: [{customdata: []}]
             }], {frame: {redraw: false, duration: 0}});
         }).then(function() {
-            var points = d3.selectAll('g.scatterlayer').selectAll('.point');
+            var points = d3SelectAll('g.scatterlayer').selectAll('.point');
 
             points.each(function() {
-                expect(d3.select(this).classed('plotly-customdata')).toBe(false);
+                expect(d3Select(this).classed('plotly-customdata')).toBe(false);
             });
         }).then(done, done.fail);
     });
@@ -693,19 +694,19 @@ describe('end-to-end scatter tests', function() {
             y: [2, 3, 4],
             text: ['a', 'b', 'c']
         }]).then(function() {
-            expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
+            expect(d3SelectAll('.textpoint').size()).toBe(3);
         }).then(done, done.fail);
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
         function assertNodeCnt(ptCnt, txCnt) {
-            expect(d3.selectAll('.point').size()).toEqual(ptCnt);
-            expect(d3.selectAll('.textpoint').size()).toEqual(txCnt);
+            expect(d3SelectAll('.point').size()).toEqual(ptCnt);
+            expect(d3SelectAll('.textpoint').size()).toEqual(txCnt);
         }
 
         function assertText(content) {
-            d3.selectAll('.textpoint').each(function(_, i) {
-                var tx = d3.select(this).select('text');
+            d3SelectAll('.textpoint').each(function(_, i) {
+                var tx = d3Select(this).select('text');
                 expect(tx.text()).toEqual(content[i]);
             });
         }
@@ -839,8 +840,8 @@ describe('end-to-end scatter tests', function() {
     });
 
     function _assertNodes(ptStyle, txContent) {
-        var pts = d3.selectAll('.point');
-        var txs = d3.selectAll('.textpoint');
+        var pts = d3SelectAll('.point');
+        var txs = d3SelectAll('.textpoint');
 
         expect(pts.size()).toEqual(ptStyle.length);
         expect(txs.size()).toEqual(txContent.length);
@@ -850,7 +851,7 @@ describe('end-to-end scatter tests', function() {
         });
 
         txs.each(function(_, i) {
-            expect(d3.select(this).select('text').text()).toEqual(txContent[i], 'tx ' + i);
+            expect(d3Select(this).select('text').text()).toEqual(txContent[i], 'tx ' + i);
         });
     }
 
@@ -975,7 +976,7 @@ describe('end-to-end scatter tests', function() {
 
     it('animates fillcolor', function(done) {
         function fill() {
-            return d3.selectAll('.js-fill').node().style.fill;
+            return d3SelectAll('.js-fill').node().style.fill;
         }
 
         Plotly.newPlot(gd, [{
@@ -1000,7 +1001,7 @@ describe('end-to-end scatter tests', function() {
         var trace2 = {y: [3, 4, 5, 6], fill: 'tonexty', mode: 'none'};
 
         function checkFill(visible, msg) {
-            var fillSelection = d3.select(gd).selectAll('.scatterlayer .js-fill');
+            var fillSelection = d3Select(gd).selectAll('.scatterlayer .js-fill');
             expect(fillSelection.size()).toBe(1, msg);
             negateIf(visible, expect(fillSelection.attr('d'))).toBe('M0,0Z', msg);
         }
@@ -1063,7 +1064,7 @@ describe('end-to-end scatter tests', function() {
 
     it('should work with typed arrays', function(done) {
         function _assert(colors, sizes) {
-            var pts = d3.selectAll('.point');
+            var pts = d3SelectAll('.point');
             expect(pts.size()).toBe(3, '# of pts');
 
             pts.each(function(_, i) {
@@ -1112,7 +1113,7 @@ describe('end-to-end scatter tests', function() {
                 [40, 30, 20]
             );
 
-            var legendPts = d3.select('.legend').selectAll('.scatterpts');
+            var legendPts = d3Select('.legend').selectAll('.scatterpts');
             expect(legendPts.size()).toBe(1, '# legend items');
             expect(getColor(legendPts.node())).toBe('rgb(0, 255, 0)', 'legend pt color');
             expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
@@ -1193,7 +1194,7 @@ describe('end-to-end scatter tests', function() {
 
     it('should be able to start from visible:false', function(done) {
         function _assert(msg, cnt) {
-            var layer = d3.select(gd).select('g.scatterlayer');
+            var layer = d3Select(gd).select('g.scatterlayer');
             expect(layer.selectAll('.point').size()).toBe(cnt, msg + '- scatter pts cnt');
         }
 
@@ -1222,8 +1223,8 @@ describe('end-to-end scatter tests', function() {
             fill: 'tonexty'
         }])
         .then(function() {
-            expect(d3.selectAll('.js-fill').size()).toBe(1, 'js-fill is there');
-            expect(d3.select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
+            expect(d3SelectAll('.js-fill').size()).toBe(1, 'js-fill is there');
+            expect(d3Select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
         })
         .then(done, done.fail);
     });
@@ -1491,8 +1492,8 @@ describe('Test Scatter.style', function() {
     function assertPts(attr, getterFn, expectation, msg2) {
         var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
 
-        d3.select(gd).selectAll('.trace').each(function(_, i) {
-            var pts = d3.select(this).selectAll(selector);
+        d3Select(gd).selectAll('.trace').each(function(_, i) {
+            var pts = d3Select(this).selectAll(selector);
             var expi = expectation[i];
 
             expect(pts.size())
@@ -1848,7 +1849,7 @@ describe('Test scatter *clipnaxis*:', function() {
         }
 
         function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
-            var subplotLayer = d3.select('.plot');
+            var subplotLayer = d3Select('.plot');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');

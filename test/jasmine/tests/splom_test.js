@@ -4,7 +4,8 @@ var Plots = require('@src/plots/plots');
 var Axes = require('@src/plots/cartesian/axes');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -745,7 +746,7 @@ describe('Test splom interactions:', function() {
 
         function _assert(exp) {
             var msg = ' - call #' + cnt;
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var subplots = gd3.selectAll('g.cartesianlayer > g.subplot');
             var bgs = gd3.selectAll('.bglayer > rect.bg');
 
@@ -814,7 +815,7 @@ describe('Test splom interactions:', function() {
             // make sure 'new' subplot layers are in order
             var gridIndex = -1;
             var xaxisIndex = -1;
-            var subplot0 = d3.select('g.cartesianlayer > g.subplot').node();
+            var subplot0 = d3Select('g.cartesianlayer > g.subplot').node();
             for(var i in subplot0.children) {
                 var cl = subplot0.children[i].classList;
                 if(cl) {
@@ -851,7 +852,7 @@ describe('Test splom interactions:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
 
         function _assert(exp) {
-            var g = d3.select(gd).select('g.cartesianlayer');
+            var g = d3Select(gd).select('g.cartesianlayer');
             for(var k in exp) {
                 // all ticks are set to same position,
                 // only check first one
@@ -1495,7 +1496,7 @@ describe('Test splom drag:', function() {
     });
 
     function _drag(p0, p1) {
-        var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
+        var node = d3Select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
         return drag({node: node, dpos: [dx, dy], pos0: p0});
@@ -1622,7 +1623,7 @@ describe('Test splom select:', function() {
 
             expect(subplot).toBe(otherExp.subplot, 'subplot of selection' + msg);
 
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+            expect(d3SelectAll('.zoomlayer > .select-outline').size())
                 .toBe(otherExp.selectionOutlineCnt, 'selection outline cnt' + msg);
         }
 

@@ -8,6 +8,8 @@ var geoLocationUtils = require('@src/lib/geo_location_utils');
 var topojsonUtils = require('@src/lib/topojson_utils');
 
 var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -817,15 +819,15 @@ describe('Test geo interactions', function() {
         }
 
         function countTraces(type) {
-            return d3.selectAll('g.trace.' + type).size();
+            return d3SelectAll('g.trace.' + type).size();
         }
 
         function countGeos() {
-            return d3.select('g.geolayer').selectAll('.geo').size();
+            return d3Select('g.geolayer').selectAll('.geo').size();
         }
 
         function countColorBars() {
-            return d3.select('g.infolayer').selectAll('.cbbg').size();
+            return d3Select('g.infolayer').selectAll('.cbbg').size();
         }
 
         beforeEach(function(done) {
@@ -1143,25 +1145,25 @@ describe('Test geo interactions', function() {
             });
 
             function countScatterGeoLines() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('path.js-line')
                     .size();
             }
 
             function countScatterGeoMarkers() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('path.point')
                     .size();
             }
 
             function countScatterGeoTextGroups() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('g')
                     .size();
             }
 
             function countScatterGeoTextNodes() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('g')
                     .select('text')
                     .size();
@@ -1169,13 +1171,13 @@ describe('Test geo interactions', function() {
 
             function checkScatterGeoOrder() {
                 var order = ['js-path', 'point', null];
-                var nodes = d3.selectAll('g.trace.scattergeo');
+                var nodes = d3SelectAll('g.trace.scattergeo');
 
                 nodes.each(function() {
                     var list = [];
 
-                    d3.select(this).selectAll('*').each(function() {
-                        var className = d3.select(this).attr('class');
+                    d3Select(this).selectAll('*').each(function() {
+                        var className = d3Select(this).attr('class');
                         list.push(className);
                     });
 
@@ -1188,7 +1190,7 @@ describe('Test geo interactions', function() {
             }
 
             function countChoroplethPaths() {
-                return d3.selectAll('g.trace.choropleth')
+                return d3SelectAll('g.trace.choropleth')
                     .selectAll('path.choroplethlocation')
                     .size();
             }
@@ -1346,7 +1348,7 @@ describe('Test geo interactions', function() {
 
         Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', 350, 250);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+            expect(d3SelectAll('g.hovertext').size()).toEqual(1);
         })
         .then(done, done.fail);
     });
@@ -1356,7 +1358,7 @@ describe('Test geo interactions', function() {
         var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
 
         function _assert(msg, hoverLabelCnt) {
-            expect(d3.selectAll('g.hovertext').size())
+            expect(d3SelectAll('g.hovertext').size())
                 .toBe(hoverLabelCnt, msg);
         }
 
@@ -1404,7 +1406,7 @@ describe('Test geo interactions', function() {
             var invert = gd._fullLayout.geo._subplot.projection.invert;
             var lonlat = invert(p);
 
-            expect(d3.selectAll('g.hovertext').size())
+            expect(d3SelectAll('g.hovertext').size())
                 .toBe(hoverLabelCnt, 'for ' + lonlat);
 
             Lib.clearThrottle();
@@ -1487,7 +1489,7 @@ describe('Test geo interactions', function() {
             var px = projection(lonlat);
 
             mouseEvent('mousemove', px[0], px[1]);
-            expect(d3.selectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
+            expect(d3SelectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
 
             Lib.clearThrottle();
         }
@@ -2003,7 +2005,7 @@ describe('Test geo base layers', function() {
 
             expect(Object.keys(subplot.layers).length).toEqual(layers.length, '# of layers');
 
-            d3.select(gd).selectAll('.geo > .layer').each(function(d, i) {
+            d3Select(gd).selectAll('.geo > .layer').each(function(d, i) {
                 expect(d).toBe(layers[i], 'layer ' + d + ' at position ' + i);
             });
         }
@@ -2050,7 +2052,7 @@ describe('Test geo base layers', function() {
 
     it('should be able to relayout axis grid *tick0* / *dtick*', function(done) {
         function findGridPath(axisName) {
-            return d3.select(gd).select(axisName + ' > path').attr('d');
+            return d3Select(gd).select(axisName + ' > path').attr('d');
         }
 
         function first(parts) {

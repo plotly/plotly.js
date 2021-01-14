@@ -1,13 +1,13 @@
 'use strict';
 
-var domainRefComponents = require('../assets/domain_ref/components');
+var domainRefComponents = require('../assets/domain_ref_components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var getSVGElemScreenBBox = require(
     '../assets/get_svg_elem_screen_bbox');
-var testMock = require('../assets/domain_ref/domain_refs_editable.json');
+var testMock = require('../assets/domain_refs_editable.json');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 // we have to use drag to move annotations for some reason

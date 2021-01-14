@@ -7,7 +7,8 @@ var annotations = require('@src/components/annotations');
 var images = require('@src/components/images');
 var Registry = require('@src/registry');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -102,17 +103,17 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data1, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
 
             return Plotly.react(gd, data2, layout);
         })
         .then(function() {
-            expect(d3.selectAll('.point').size()).toBe(6);
+            expect(d3SelectAll('.point').size()).toBe(6);
 
             return Plotly.react(gd, data1, layout);
         })
         .then(function() {
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
         })
         .then(done, done.fail);
     });
@@ -124,14 +125,14 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
 
             data[0].y.push(4);
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
             // didn't pick it up, as we modified in place!!!
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
             countCalls({plot: 0});
 
             data[0].y = [1, 2, 3, 4, 5];
@@ -139,7 +140,7 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             // new object, we picked it up!
-            expect(d3.selectAll('.point').size()).toBe(5);
+            expect(d3SelectAll('.point').size()).toBe(5);
             countCalls({plot: 1});
         })
         .then(done, done.fail);
@@ -152,14 +153,14 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
 
             data[0].y.push(4);
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
             // didn't pick it up, as we didn't modify datarevision
-            expect(d3.selectAll('.point').size()).toBe(3);
+            expect(d3SelectAll('.point').size()).toBe(3);
             countCalls({plot: 0});
 
             data[0].y.push(5);
@@ -168,7 +169,7 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             // new revision, we picked it up!
-            expect(d3.selectAll('.point').size()).toBe(5);
+            expect(d3SelectAll('.point').size()).toBe(5);
 
             countCalls({plot: 1});
         })
@@ -189,8 +190,8 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             countCalls({layoutStyles: 1, doTraceStyle: 1, doModeBar: 1});
-            expect(d3.select('.gtitle').text()).toBe('XXXXX');
-            var points = d3.selectAll('.point');
+            expect(d3Select('.gtitle').text()).toBe('XXXXX');
+            var points = d3SelectAll('.point');
             expect(points.size()).toBe(3);
             points.each(function() {
                 expect(window.getComputedStyle(this).fill).toBe('rgb(0, 100, 200)');
@@ -245,7 +246,7 @@ describe('@noCIdep Plotly.react', function() {
         var layout = {};
 
         function countLines() {
-            var path = d3.select(gd).select('.lataxis > path');
+            var path = d3Select(gd).select('.lataxis > path');
             return path.attr('d').split('M').length;
         }
 
@@ -314,14 +315,14 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             // autoranged - so we get a full replot
             countCalls({plot: 1});
-            expect(d3.selectAll('.annotation').size()).toBe(2);
+            expect(d3SelectAll('.annotation').size()).toBe(2);
 
             layout.annotations[1].bgcolor = 'rgb(200, 100, 0)';
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
             countCalls({annotationDrawOne: 1});
-            expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+            expect(window.getComputedStyle(d3Select('.annotation[data-index="1"] .bg').node()).fill)
                 .toBe('rgb(200, 100, 0)');
             expect(layout.yaxis.range[1]).not.toBeCloseTo(ymax, 0);
 
@@ -331,9 +332,9 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             countCalls({annotationDrawOne: 2});
-            expect(window.getComputedStyle(d3.select('.annotation[data-index="0"] text').node()).fill)
+            expect(window.getComputedStyle(d3Select('.annotation[data-index="0"] text').node()).fill)
                 .toBe('rgb(0, 255, 0)');
-            expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+            expect(window.getComputedStyle(d3Select('.annotation[data-index="1"] .bg').node()).fill)
                 .toBe('rgb(0, 0, 255)');
 
             Lib.extendFlat(layout.annotations[0], {yref: 'paper', y: 0.8});
@@ -378,9 +379,9 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             countCalls({imageDraw: 1});
-            expect(d3.selectAll('image').size()).toBe(2);
+            expect(d3SelectAll('image').size()).toBe(2);
 
-            var n = d3.selectAll('image').node();
+            var n = d3SelectAll('image').node();
             x = n.attributes.x.value;
             y = n.attributes.y.value;
             height = n.attributes.height.value;
@@ -392,7 +393,7 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             countCalls({imageDraw: 1});
-            var n = d3.selectAll('image').node();
+            var n = d3SelectAll('image').node();
             expect(n.attributes.x.value).toBe(x);
             expect(n.attributes.width.value).toBe(width);
             expect(n.attributes.y.value).not.toBe(y);
@@ -408,28 +409,28 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3.selectAll('.drag').size()).toBe(11);
-            expect(d3.selectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.drag').size()).toBe(11);
+            expect(d3SelectAll('.gtitle').size()).toBe(0);
 
             return Plotly.react(gd, data, layout, {editable: true});
         })
         .then(function() {
-            expect(d3.selectAll('.drag').size()).toBe(11);
-            expect(d3.selectAll('.gtitle').text()).toBe('Click to enter Plot title');
+            expect(d3SelectAll('.drag').size()).toBe(11);
+            expect(d3SelectAll('.gtitle').text()).toBe('Click to enter Plot title');
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {staticPlot: true});
         })
         .then(function() {
-            expect(d3.selectAll('.drag').size()).toBe(0);
-            expect(d3.selectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.drag').size()).toBe(0);
+            expect(d3SelectAll('.gtitle').size()).toBe(0);
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {});
         })
         .then(function() {
-            expect(d3.selectAll('.drag').size()).toBe(11);
-            expect(d3.selectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.drag').size()).toBe(11);
+            expect(d3SelectAll('.gtitle').size()).toBe(0);
             countCalls({plot: 1});
         })
         .then(done, done.fail);
@@ -445,17 +446,17 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
 
             return Plotly.react(gd, data, layout, {staticPlot: true});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.drag').size()).toBe(0);
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(0);
 
             return Plotly.react(gd, data, layout, {});
         })
         .then(function() {
-            expect(d3.select(gd).selectAll('.drag').size()).toBe(4);
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
         })
         .then(done, done.fail);
     });
@@ -932,7 +933,7 @@ describe('clear bglayer react', function() {
     afterEach(destroyGraphDiv);
 
     function hasBgRect() {
-        var bgLayer = d3.selectAll('.bglayer .bg');
+        var bgLayer = d3SelectAll('.bglayer .bg');
         return bgLayer[0][0] !== undefined; // i.e. background rect
     }
 
@@ -2066,7 +2067,7 @@ describe('Plotly.react and uirevision attributes', function() {
             assertLevel('no set level at start', undefined);
         })
         .then(function() {
-            var nodeSeth = d3.select('.slice:nth-child(2)').node();
+            var nodeSeth = d3Select('.slice:nth-child(2)').node();
             mouseEvent('click', 0, 0, {element: nodeSeth});
         })
         .then(function() {
@@ -2101,7 +2102,7 @@ describe('Plotly.react and uirevision attributes', function() {
             assertLevel('no set level at start', undefined);
         })
         .then(function() {
-            var nodeSeth = d3.select('.slice:nth-child(2)').node();
+            var nodeSeth = d3Select('.slice:nth-child(2)').node();
             mouseEvent('click', 0, 0, {element: nodeSeth});
         })
         .then(function() {

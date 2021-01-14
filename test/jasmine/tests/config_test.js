@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
@@ -884,7 +884,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         function _scroll() {
-            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            var mainDrag = d3Select('.nsewdrag[data-subplot="xy"]').node();
             mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
         }
 

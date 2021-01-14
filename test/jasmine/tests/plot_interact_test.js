@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -25,23 +26,23 @@ describe('Test plot structure', function() {
 
     describe('cartesian plots', function() {
         function countSubplots() {
-            return d3.selectAll('g.subplot').size();
+            return d3SelectAll('g.subplot').size();
         }
 
         function countScatterTraces() {
-            return d3.selectAll('g.trace.scatter').size();
+            return d3SelectAll('g.trace.scatter').size();
         }
 
         function countColorBars() {
-            return d3.selectAll('rect.cbbg').size();
+            return d3SelectAll('rect.cbbg').size();
         }
 
         function countClipPaths() {
-            return d3.selectAll('defs').selectAll('.axesclip,.plotclip').size();
+            return d3SelectAll('defs').selectAll('.axesclip,.plotclip').size();
         }
 
         function countDraggers() {
-            return d3.selectAll('g.draglayer').selectAll('g').size();
+            return d3SelectAll('g.draglayer').selectAll('g').size();
         }
 
         describe('scatter traces', function() {
@@ -70,7 +71,7 @@ describe('Test plot structure', function() {
             });
 
             it('has one *scatterlayer* node', function() {
-                var nodes = d3.selectAll('g.scatterlayer');
+                var nodes = d3SelectAll('g.scatterlayer');
                 expect(nodes.size()).toEqual(1);
             });
 
@@ -79,7 +80,7 @@ describe('Test plot structure', function() {
             });
 
             it('has as many *point* nodes as there are traces', function() {
-                var nodes = d3.selectAll('path.point');
+                var nodes = d3SelectAll('path.point');
 
                 var Npts = 0;
                 mock.data.forEach(function(trace) {
@@ -90,7 +91,7 @@ describe('Test plot structure', function() {
             });
 
             it('has the correct name spaces', function() {
-                var mainSVGs = d3.selectAll('.main-svg');
+                var mainSVGs = d3SelectAll('.main-svg');
 
                 mainSVGs.each(function() {
                     var node = this;
@@ -180,15 +181,15 @@ describe('Test plot structure', function() {
             }
 
             function assertHeatmapNodes(expectedCnt) {
-                var hmNodes = d3.selectAll('g.hm');
+                var hmNodes = d3SelectAll('g.hm');
                 expect(hmNodes.size()).toEqual(expectedCnt);
 
-                var imageNodes = d3.selectAll('image');
+                var imageNodes = d3SelectAll('image');
                 expect(imageNodes.size()).toEqual(expectedCnt);
             }
 
             function assertContourNodes(expectedCnt) {
-                var nodes = d3.selectAll('g.contour');
+                var nodes = d3SelectAll('g.contour');
                 expect(nodes.size()).toEqual(expectedCnt);
             }
 
@@ -392,11 +393,11 @@ describe('Test plot structure', function() {
             var gd;
 
             function countPieTraces() {
-                return d3.select('g.pielayer').selectAll('g.trace').size();
+                return d3Select('g.pielayer').selectAll('g.trace').size();
             }
 
             function countBarTraces() {
-                return d3.selectAll('g.trace.bars').size();
+                return d3SelectAll('g.trace.bars').size();
             }
 
             beforeEach(function(done) {
@@ -409,7 +410,7 @@ describe('Test plot structure', function() {
             });
 
             it('has as many *slice* nodes as there are pie items', function() {
-                var nodes = d3.selectAll('g.slice');
+                var nodes = d3SelectAll('g.slice');
 
                 var Npts = 0;
                 mock.data.forEach(function(trace) {
@@ -420,14 +421,14 @@ describe('Test plot structure', function() {
             });
 
             it('has the correct name spaces', function() {
-                var mainSVGs = d3.selectAll('.main-svg');
+                var mainSVGs = d3SelectAll('.main-svg');
 
                 mainSVGs.each(function() {
                     var node = this;
                     assertNamespaces(node);
                 });
 
-                var testerSVG = d3.selectAll('#js-plotly-tester');
+                var testerSVG = d3SelectAll('#js-plotly-tester');
                 assertNamespaces(testerSVG.node());
             });
 
@@ -471,7 +472,7 @@ describe('Test plot structure', function() {
         });
 
         it('has as many *choroplethlocation* nodes as there are choropleth locations', function() {
-            var nodes = d3.selectAll('path.choroplethlocation');
+            var nodes = d3SelectAll('path.choroplethlocation');
 
             var Npts = 0;
             mock.data.forEach(function(trace) {
@@ -483,7 +484,7 @@ describe('Test plot structure', function() {
         });
 
         it('has as many *point* nodes as there are marker points', function() {
-            var nodes = d3.selectAll('path.point');
+            var nodes = d3SelectAll('path.point');
 
             var Npts = 0;
             mock.data.forEach(function(trace) {
@@ -495,14 +496,14 @@ describe('Test plot structure', function() {
         });
 
         it('has the correct name spaces', function() {
-            var mainSVGs = d3.selectAll('.main-svg');
+            var mainSVGs = d3SelectAll('.main-svg');
 
             mainSVGs.each(function() {
                 var node = this;
                 assertNamespaces(node);
             });
 
-            var geoSVGs = d3.select('#geo').selectAll('svg');
+            var geoSVGs = d3Select('#geo').selectAll('svg');
 
             geoSVGs.each(function() {
                 var node = this;
@@ -541,8 +542,8 @@ describe('plot svg clip paths', function() {
 
     it('should set clip path url to ids (base case)', function(done) {
         plot().then(function() {
-            d3.selectAll('[clip-path]').each(function() {
-                var cp = d3.select(this).attr('clip-path');
+            d3SelectAll('[clip-path]').each(function() {
+                var cp = d3Select(this).attr('clip-path');
 
                 expect(cp.substring(0, 6)).toEqual('url(\'#');
                 expect(cp.substring(cp.length - 2)).toEqual('\')');
@@ -556,7 +557,7 @@ describe('plot svg clip paths', function() {
         // https://github.com/angular/angular.js/issues/8934
 
         // append <base> with href
-        var base = d3.select('body')
+        var base = d3Select('body')
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 
@@ -564,8 +565,8 @@ describe('plot svg clip paths', function() {
         var href = window.location.href.split('#')[0];
 
         plot().then(function() {
-            d3.selectAll('[clip-path]').each(function() {
-                var cp = d3.select(this).attr('clip-path');
+            d3SelectAll('[clip-path]').each(function() {
+                var cp = d3Select(this).attr('clip-path');
 
                 expect(cp.substring(0, 6 + href.length)).toEqual('url(\'' + href + '#');
                 expect(cp.substring(cp.length - 2)).toEqual('\')');

@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var utcFormat = require('d3-time-format').utcFormat;
 
 var Plots = require('@src/plots/plots');
@@ -4237,8 +4238,8 @@ describe('Test axes', function() {
         function assertZeroLines(expectedIDs) {
             var sortedIDs = expectedIDs.slice().sort();
             var zlIDs = [];
-            d3.select(gd).selectAll('.zl').each(function() {
-                var cls = d3.select(this).attr('class');
+            d3Select(gd).selectAll('.zl').each(function() {
+                var cls = d3Select(this).attr('class');
                 var clsMatch = cls.match(/[xy]\d*(?=zl)/g)[0];
                 zlIDs.push(clsMatch);
             });
@@ -4389,7 +4390,7 @@ describe('Test axes', function() {
         it('should respond to relayout', function(done) {
             function getPositions(query) {
                 var pos = [];
-                d3.selectAll(query).each(function() {
+                d3SelectAll(query).each(function() {
                     pos.push(this.getBoundingClientRect().x);
                 });
                 return pos;
@@ -4453,12 +4454,12 @@ describe('Test axes', function() {
 
         it('should rotate labels to avoid overlaps', function(done) {
             function _assert(msg, exp) {
-                var tickLabels = d3.selectAll('.xtick > text');
+                var tickLabels = d3SelectAll('.xtick > text');
 
                 expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
 
                 tickLabels.each(function(_, i) {
-                    var t = d3.select(this).attr('transform');
+                    var t = d3Select(this).attr('transform');
                     var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                     var angle = rotate.split(',')[0];
                     expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
@@ -6693,10 +6694,10 @@ describe('Test tickformatstops:', function() {
             expect(hoverTrace.x).toEqual('2005-04-01');
             expect(hoverTrace.y).toEqual(0);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('0');
+            expect(d3SelectAll('g.axistext').size()).toEqual(1);
+            expect(d3SelectAll('g.hovertext').size()).toEqual(1);
+            expect(d3SelectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
+            expect(d3SelectAll('g.hovertext').select('text').html()).toEqual('0');
         })
         .then(done, done.fail);
     });
@@ -6941,19 +6942,19 @@ describe('category preservation tests on gd passed to Plotly.react()', function(
         })
         .then(function() {
             _hover(gd, { xval: fig.data[0].x.indexOf('a') });
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('a');
+            expect(d3SelectAll('g.axistext').select('text').html()).toEqual('a');
         })
         .then(function() {
             _hover(gd, { xval: fig.data[0].x.indexOf('b') });
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('b');
+            expect(d3SelectAll('g.axistext').select('text').html()).toEqual('b');
         })
         .then(function() {
             _hover(gd, { xval: fig.data[0].x.indexOf('c') });
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('c');
+            expect(d3SelectAll('g.axistext').select('text').html()).toEqual('c');
         })
         .then(function() {
             _hover(gd, { xval: fig.data[0].x.indexOf('d') });
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('d');
+            expect(d3SelectAll('g.axistext').select('text').html()).toEqual('d');
         })
 
         .then(done, done.fail);

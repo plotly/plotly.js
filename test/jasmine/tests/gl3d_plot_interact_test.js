@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -1725,24 +1726,24 @@ describe('Test gl3d annotations', function() {
     });
 
     function assertAnnotationText(expectations, msg) {
-        var anns = d3.selectAll('g.annotation-text-g');
+        var anns = d3SelectAll('g.annotation-text-g');
 
         expect(anns.size()).toBe(expectations.length, msg);
 
         anns.each(function(_, i) {
-            var tx = d3.select(this).select('text').text();
+            var tx = d3Select(this).select('text').text();
             expect(tx).toEqual(expectations[i], msg + ' - ann ' + i);
         });
     }
 
     function assertAnnotationsXY(expectations, msg) {
         var TOL = 2.5;
-        var anns = d3.selectAll('g.annotation-text-g');
+        var anns = d3SelectAll('g.annotation-text-g');
 
         expect(anns.size()).toBe(expectations.length, msg);
 
         anns.each(function(_, i) {
-            var ann = d3.select(this).select('g');
+            var ann = d3Select(this).select('g');
             var translate = Drawing.getTranslate(ann);
 
             expect(translate.x).toBeWithin(expectations[i][0], TOL, msg + ' - ann ' + i + ' x');
@@ -1885,7 +1886,7 @@ describe('Test gl3d annotations', function() {
 
     it('@gl should work across multiple scenes', function(done) {
         function assertAnnotationCntPerScene(id, cnt) {
-            expect(d3.selectAll('g.annotation-' + id).size()).toEqual(cnt);
+            expect(d3SelectAll('g.annotation-' + id).size()).toEqual(cnt);
         }
 
         Plotly.newPlot(gd, [{
@@ -1976,10 +1977,10 @@ describe('Test gl3d annotations', function() {
                     setTimeout(resolve, 0);
                 });
 
-                var clickNode = d3.select('g.annotation-text-g').select('g').node();
+                var clickNode = d3Select('g.annotation-text-g').select('g').node();
                 clickNode.dispatchEvent(new window.MouseEvent('click'));
 
-                var editNode = d3.select('.plugin-editable.editable').node();
+                var editNode = d3Select('.plugin-editable.editable').node();
                 editNode.dispatchEvent(new window.FocusEvent('focus'));
 
                 editNode.textContent = newText;
@@ -2035,7 +2036,7 @@ describe('Test gl3d annotations', function() {
 
     it('@gl should display hover labels and trigger *plotly_clickannotation* event', function(done) {
         function dispatch(eventType) {
-            var target = d3.select('g.annotation-text-g').select('g').node();
+            var target = d3Select('g.annotation-text-g').select('g').node();
             target.dispatchEvent(new MouseEvent(eventType));
         }
 
@@ -2062,7 +2063,7 @@ describe('Test gl3d annotations', function() {
         })
         .then(function() {
             dispatch('mouseover');
-            expect(d3.select('.hovertext').size()).toEqual(1);
+            expect(d3Select('.hovertext').size()).toEqual(1);
         })
         .then(function() {
             return new Promise(function(resolve, reject) {

@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -23,7 +24,7 @@ describe('restyle', function() {
             var fills, firstToZero, secondToZero, firstToNext, secondToNext;
             var mock = Lib.extendDeep({}, require('@mocks/basic_area.json'));
             function getFills() {
-                return d3.selectAll('g.trace.scatter .fills>g');
+                return d3SelectAll('g.trace.scatter .fills>g');
             }
 
             Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
@@ -60,7 +61,7 @@ describe('restyle', function() {
 
                 return Plotly.restyle(gd, 'visible', false);
             }).then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toBe(0);
+                expect(d3SelectAll('g.trace.scatter').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -70,7 +71,7 @@ describe('restyle', function() {
             var mock = Lib.extendDeep({}, require('@mocks/basic_line.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+                lines = d3SelectAll('g.scatter.trace .js-line');
 
                 firstLine1 = lines[0][0];
                 firstLine2 = lines[0][1];
@@ -80,7 +81,7 @@ describe('restyle', function() {
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [false]}, [0]);
             }).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+                lines = d3SelectAll('g.scatter.trace .js-line');
 
                 // Only one line now and it's equal to the second trace's line from above:
                 expect(lines.size()).toEqual(1);
@@ -88,7 +89,7 @@ describe('restyle', function() {
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [true]}, [0]);
             }).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+                lines = d3SelectAll('g.scatter.trace .js-line');
                 secondLine1 = lines[0][0];
                 secondLine2 = lines[0][1];
 
@@ -108,7 +109,7 @@ describe('restyle', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
 
             function assertScatterModeSizes(lineSize, pointSize, textSize) {
-                var gd3 = d3.select(gd);
+                var gd3 = d3Select(gd);
                 var lines = gd3.selectAll('g.scatter.trace .js-line');
                 var points = gd3.selectAll('g.scatter.trace path.point');
                 var texts = gd3.selectAll('g.scatter.trace text');
@@ -161,15 +162,15 @@ describe('restyle', function() {
                 height: 400
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(1);
+                expect(d3Select('.scatter').size()).toBe(1);
                 return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(0);
+                expect(d3Select('.scatter').size()).toBe(0);
                 return Plotly.restyle(gd, {visible: true}, 1);
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(1);
+                expect(d3Select('.scatter').size()).toBe(1);
             })
             .then(done, done.fail);
         });
@@ -216,8 +217,8 @@ describe('relayout', function() {
 
         it('should response to \'categoryarray\' and \'categoryorder\' updates', function(done) {
             function assertCategories(list) {
-                d3.selectAll('g.xtick').each(function(_, i) {
-                    var tick = d3.select(this).select('text');
+                d3SelectAll('g.xtick').each(function(_, i) {
+                    var tick = d3Select(this).select('text');
                     expect(tick.html()).toEqual(list[i]);
                 });
             }
@@ -271,7 +272,7 @@ describe('relayout', function() {
             function assertPointTranslate(pointT, textT) {
                 var TOLERANCE = 10;
 
-                var gd3 = d3.select(gd);
+                var gd3 = d3Select(gd);
                 var points = gd3.selectAll('g.scatter.trace path.point');
                 var texts = gd3.selectAll('g.scatter.trace text');
 
@@ -380,14 +381,14 @@ describe('subplot creation / deletion:', function() {
 
     it('should clear orphan subplot when adding traces to blank graph', function(done) {
         function assertOrphanSubplot(len) {
-            expect(d3.select('.subplot.xy').size()).toEqual(len);
-            expect(d3.select('.ytitle').size()).toEqual(len);
-            expect(d3.select('.ytitle').size()).toEqual(len);
+            expect(d3Select('.subplot.xy').size()).toEqual(len);
+            expect(d3Select('.ytitle').size()).toEqual(len);
+            expect(d3Select('.ytitle').size()).toEqual(len);
 
             // we only make one orphan subplot now
-            expect(d3.select('.subplot.x2y2').size()).toEqual(0);
-            expect(d3.select('.x2title').size()).toEqual(0);
-            expect(d3.select('.x2title').size()).toEqual(0);
+            expect(d3Select('.subplot.x2y2').size()).toEqual(0);
+            expect(d3Select('.x2title').size()).toEqual(0);
+            expect(d3Select('.x2title').size()).toEqual(0);
         }
 
         Plotly.newPlot(gd, [], {
@@ -608,9 +609,9 @@ describe('subplot creation / deletion:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
 
         function _assert(xyCnt, x2y2Cnt) {
-            expect(d3.select('.subplot.xy').select('.plot').selectAll('.trace').size())
+            expect(d3Select('.subplot.xy').select('.plot').selectAll('.trace').size())
                 .toBe(xyCnt, 'has correct xy subplot trace count');
-            expect(d3.select('.overplot').select('.x2y2').selectAll('.trace').size())
+            expect(d3Select('.overplot').select('.x2y2').selectAll('.trace').size())
                 .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
         }
 
@@ -644,7 +645,7 @@ describe('subplot creation / deletion:', function() {
         }
 
         function _assert(xBelow, yBelow, xAbove, yAbove) {
-            var g = d3.select('.subplot.xy');
+            var g = d3Select('.subplot.xy');
 
             assertPathDatum(g.select('.xlines-below'), xBelow[0], 'xlines below');
             assertChildrenCnt(g.select('.xaxislayer-below'), xBelow[1], 'xaxislayer below');
@@ -789,8 +790,8 @@ describe('subplot creation / deletion:', function() {
 
     it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
         function _assert(xaxis, yaxis) {
-            var g = d3.select('.subplot.xy');
-            var info = d3.select('.infolayer');
+            var g = d3Select('.subplot.xy');
+            var info = d3Select('.infolayer');
 
             expect(g.selectAll('.xtick').size()).toBe(xaxis[0], 'x tick cnt');
             expect(g.selectAll('.gridlayer .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
@@ -830,7 +831,7 @@ describe('subplot creation / deletion:', function() {
 
     it('clears secondary labels and divider when updating out of axis type multicategory', function(done) {
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.selectAll('.xtick > text').size())
                 .toBe(exp.tickCnt, msg + ' # labels');
             expect(gd3.selectAll('.xtick2 > text').size())
@@ -887,7 +888,7 @@ describe('subplot creation / deletion:', function() {
 
     it('clears secondary labels and divider when updating out of axis type multicategory (y-axis case)', function(done) {
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.selectAll('.ytick > text').size())
                 .toBe(exp.tickCnt, msg + ' # labels');
             expect(gd3.selectAll('.ytick2 > text').size())

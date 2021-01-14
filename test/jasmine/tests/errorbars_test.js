@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -15,8 +15,8 @@ describe('errorbar plotting', function() {
     afterEach(destroyGraphDiv);
 
     function countBars(xCount, yCount) {
-        expect(d3.select(gd).selectAll('.xerror').size()).toBe(xCount);
-        expect(d3.select(gd).selectAll('.yerror').size()).toBe(yCount);
+        expect(d3Select(gd).selectAll('.xerror').size()).toBe(xCount);
+        expect(d3Select(gd).selectAll('.yerror').size()).toBe(yCount);
     }
 
     function checkCalcdata(cdTrace, errorBarData) {

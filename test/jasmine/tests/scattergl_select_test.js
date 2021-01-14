@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -13,7 +13,7 @@ var readPixel = require('../assets/read_pixel');
 
 function drag(gd, path) {
     var len = path.length;
-    var el = d3.select(gd).select('rect.nsewdrag').node();
+    var el = d3Select(gd).select('rect.nsewdrag').node();
     var opts = {element: el};
 
     Lib.clearThrottle();

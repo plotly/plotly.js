@@ -10,18 +10,19 @@
 // promise is followed by .then(done, done.fail)
 'use strict';
 
-var Plotly = require('../../../../lib/index');
-var d3 = require('@plotly/d3');
-var pixelCalc = require('../../assets/pixel_calc');
-var getSVGElemScreenBBox = require('../../assets/get_svg_elem_screen_bbox');
-// var SVGTools = require('../../assets/svg_tools');
-var Lib = require('../../../../src/lib');
-var Axes = require('../../../../src/plots/cartesian/axes');
-var axisIds = require('../../../../src/plots/cartesian/axis_ids');
+var Plotly = require('@lib/index');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var pixelCalc = require('../assets/pixel_calc');
+var getSVGElemScreenBBox = require('../assets/get_svg_elem_screen_bbox');
+// var SVGTools = require('../assets/svg_tools');
+var Lib = require('@src/lib');
+var Axes = require('@src/plots/cartesian/axes');
+var axisIds = require('@src/plots/cartesian/axis_ids');
 var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var iterable = require('extra-iterable');
 
-var testMock = require('./domain_ref_base.json');
+var testMock = require('../assets/domain_ref_base.json');
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
@@ -116,7 +117,7 @@ var xAnchors = ['left', 'center', 'right'];
 var yAnchors = ['top', 'middle', 'bottom'];
 // this color chosen so it can easily be found with d3
 // NOTE: for images color cannot be set but it will be the only image in the
-// plot so you can use d3.select('g image').node()
+// plot so you can use d3Select('g image').node()
 var aroColor = 'rgb(50, 100, 150)';
 
 // acts on an Object representing a aro which could be a line or a rect
@@ -461,7 +462,7 @@ function findAROByColor(color, id, type, colorAttribute) {
     type = (type === undefined) ? 'path' : type;
     colorAttribute = (colorAttribute === undefined) ? 'stroke' : colorAttribute;
     var selector = id + type;
-    var ret = d3.selectAll(selector).filter(function() {
+    var ret = d3SelectAll(selector).filter(function() {
         return this.style[colorAttribute] === color;
     }).node();
     return ret;
@@ -470,7 +471,7 @@ function findAROByColor(color, id, type, colorAttribute) {
 function findImage(id) {
     id = (id === undefined) ? '' : id + ' ';
     var selector = id + 'g image';
-    var ret = d3.select(selector).node();
+    var ret = d3Select(selector).node();
     return ret;
 }
 

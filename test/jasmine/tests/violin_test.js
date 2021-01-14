@@ -4,7 +4,8 @@ var Plots = require('@src/plots/plots');
 
 var Violin = require('@src/traces/violin');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -349,7 +350,7 @@ describe('Test violin hover:', function() {
             assertHoverLabelContent(specs);
 
             if(specs.hoverLabelPos) {
-                d3.selectAll('g.hovertext').each(function(_, i) {
+                d3SelectAll('g.hovertext').each(function(_, i) {
                     var bbox = this.getBoundingClientRect();
                     expect([bbox.bottom, bbox.top])
                         .toBeWithinArray(specs.hoverLabelPos[i], 10, 'bottom--top hover label ' + i);
@@ -683,7 +684,7 @@ describe('Test violin hover:', function() {
         });
 
         function assertViolinHoverLine(pos) {
-            var line = d3.select('.hoverlayer').selectAll('line');
+            var line = d3Select('.hoverlayer').selectAll('line');
 
             expect(line.size()).toBe(1, 'only one violin line at a time');
             expect(line.attr('class').indexOf('violinline')).toBe(0, 'correct class name');
@@ -734,9 +735,9 @@ describe('Test violin hover:', function() {
             mouseEvent('mousemove', 350, 225);
 
             var actual = [];
-            d3.selectAll('g.hovertext').each(function() {
+            d3SelectAll('g.hovertext').each(function() {
                 var bbox = this.getBoundingClientRect();
-                var tx = d3.select(this).text();
+                var tx = d3Select(this).text();
                 actual.push([tx, bbox]);
             });
 
@@ -777,7 +778,7 @@ describe('Test violin restyle:', function() {
         }
 
         function _assert(msg, exp) {
-            var trace3 = d3.select(gd).select('.violinlayer > .trace');
+            var trace3 = d3Select(gd).select('.violinlayer > .trace');
             _assertOne(msg, exp, trace3, 'violinCnt', 'path.violin');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineInBoxCnt', 'path.mean');

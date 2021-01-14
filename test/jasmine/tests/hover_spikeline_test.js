@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
@@ -47,14 +48,14 @@ describe('spikeline hover', function() {
 
     function _assert(lineExpect, circleExpect) {
         var TOL = 5;
-        var lines = d3.selectAll('line.spikeline');
-        var circles = d3.selectAll('circle.spikeline');
+        var lines = d3SelectAll('line.spikeline');
+        var circles = d3SelectAll('circle.spikeline');
 
         expect(lines.size()).toBe(lineExpect.length * 2, '# of line nodes');
         expect(circles.size()).toBe(circleExpect.length, '# of circle nodes');
 
         lines.each(function(_, i) {
-            var sel = d3.select(this);
+            var sel = d3Select(this);
             ['x1', 'y1', 'x2', 'y2'].forEach(function(d, j) {
                 expect(sel.attr(d))
                     // we always have 2 lines with identical coords
@@ -63,7 +64,7 @@ describe('spikeline hover', function() {
         });
 
         circles.each(function(_, i) {
-            var sel = d3.select(this);
+            var sel = d3Select(this);
             ['cx', 'cy'].forEach(function(d, j) {
                 expect(sel.attr(d))
                     .toBeWithin(circleExpect[i][j], TOL, 'circle ' + i + ' attr ' + d);
@@ -428,12 +429,12 @@ describe('spikeline hover', function() {
         Plotly.newPlot(gd, mockCopy)
         .then(function() {
             _hover({xpx: 600, ypx: 400});
-            var lines = d3.selectAll('line.spikeline');
+            var lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
 
             _hover({xpx: 600, ypx: 200});
-            lines = d3.selectAll('line.spikeline');
+            lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
         })
@@ -638,7 +639,7 @@ describe('spikeline hover', function() {
         .then(function() {
             _hover({xpx: 150, ypx: 250});
 
-            var lines = d3.selectAll('line.spikeline');
+            var lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('red');
             expect(lines[0][3].getAttribute('stroke')).toBe('red');
@@ -748,7 +749,7 @@ describe('spikeline hover', function() {
                     .then(function() {
                         _hover({xpx: 200, ypx: 100});
 
-                        var lines = d3.selectAll('line.spikeline');
+                        var lines = d3SelectAll('line.spikeline');
                         expect(lines.size()).toBe(4);
                     })
                     .then(done, done.fail);

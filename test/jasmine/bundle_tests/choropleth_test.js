@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/core');
 var PlotlyChoropleth = require('@lib/choropleth');
@@ -28,7 +28,7 @@ describe('Bundle with choropleth', function() {
     it('should graph choropleth traces', function(done) {
         Plotly.newPlot(gd, mock.data, mock.layout)
         .then(function() {
-            var nodes = d3.selectAll('g.trace.choropleth');
+            var nodes = d3SelectAll('g.trace.choropleth');
 
             expect(nodes.size()).toEqual(4);
         })

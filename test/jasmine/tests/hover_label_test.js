@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
@@ -210,12 +211,12 @@ describe('hover info', function() {
             expect(hoverTrace.y).toBe(1);
             expect(hoverTrace.text).toBe(0);
 
-            var txs = d3.select(gd).selectAll('.textpoint text');
+            var txs = d3Select(gd).selectAll('.textpoint text');
 
             expect(txs.size()).toBe(1);
 
             txs.each(function() {
-                expect(d3.select(this).text()).toBe('0');
+                expect(d3Select(this).text()).toBe('0');
             });
 
             assertHoverLabelContent({
@@ -951,8 +952,8 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(68, 68, 68)'
                 }];
-                d3.selectAll('g.hovertext').each(function(_, i) {
-                    assertHoverLabelStyle(d3.select(this), styles[i]);
+                d3SelectAll('g.hovertext').each(function(_, i) {
+                    assertHoverLabelStyle(d3Select(this), styles[i]);
                 });
             })
             .then(done, done.fail);
@@ -1514,7 +1515,7 @@ describe('hover info', function() {
         });
 
         function labelCount() {
-            return d3.select(gd).selectAll('g.hovertext').size();
+            return d3Select(gd).selectAll('g.hovertext').size();
         }
 
         it('shows as many labels as will fit on the div, not on the subplot', function(done) {
@@ -1539,8 +1540,8 @@ describe('hover info', function() {
         beforeEach(function() { gd = createGraphDiv(); });
 
         function hoverInfoNodes(traceName) {
-            var g = d3.selectAll('g.hoverlayer g.hovertext').filter(function() {
-                return !d3.select(this).select('[data-unformatted="' + traceName + '"]').empty();
+            var g = d3SelectAll('g.hoverlayer g.hovertext').filter(function() {
+                return !d3Select(this).select('[data-unformatted="' + traceName + '"]').empty();
             });
 
             return {
@@ -1744,7 +1745,7 @@ describe('hover info', function() {
         it('hovermode:x common label should fit in the graph div width', function(done) {
             function _assert(msg, exp) {
                 return function() {
-                    var label = d3.select('g.axistext');
+                    var label = d3Select('g.axistext');
                     if(label.node()) {
                         expect(label.text()).toBe(exp.txt, 'common label text| ' + msg);
                         expect(Drawing.getTranslate(label).x)
@@ -1787,7 +1788,7 @@ describe('hover info', function() {
         it('hovermode:y common label should shift and clip text start into graph div', function(done) {
             function _assert(msg, exp) {
                 return function() {
-                    var label = d3.select('g.axistext');
+                    var label = d3Select('g.axistext');
                     if(label.node()) {
                         var ltext = label.select('text');
                         expect(ltext.text()).toBe(exp.txt, 'common label text| ' + msg);
@@ -1797,14 +1798,14 @@ describe('hover info', function() {
 
                         var fullLayout = gd._fullLayout;
                         var clipId = 'clip' + fullLayout._uid + 'commonlabely';
-                        var clipPath = d3.select('#' + clipId);
+                        var clipPath = d3Select('#' + clipId);
                         negateIf(exp.clip, expect(clipPath.node())).toBe(null, 'text clip path|' + msg);
 
                         if(exp.tspanX) {
                             var tspans = label.selectAll('tspan');
                             if(tspans.size()) {
                                 tspans.each(function(d, i) {
-                                    var s = d3.select(this);
+                                    var s = d3Select(this);
                                     expect(s.attr('x')).toBeWithin(exp.tspanX[i], 5, i + '- tspan shift| ' + msg);
                                 });
                             } else {
@@ -2114,7 +2115,7 @@ describe('hover info', function() {
         var gd = createGraphDiv();
 
         function _assert(msg, exp) {
-            var tx = d3.select('g.hovertext').select('text');
+            var tx = d3Select('g.hovertext').select('text');
             expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
             expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
         }
@@ -2161,7 +2162,7 @@ describe('hover info', function() {
         var gd = createGraphDiv();
 
         function _assert(msg, exp) {
-            var tx = d3.select('g.hovertext').select('text.nums');
+            var tx = d3Select('g.hovertext').select('text.nums');
             expect(tx.attr('text-anchor')).toBe(exp.textAnchor, 'text anchor|' + msg);
             expect(Number(tx.attr('x'))).toBeWithin(exp.posX, 3, 'x position|' + msg);
             delete gd._hoverdata;
@@ -2252,7 +2253,7 @@ describe('hover info on stacked subplots', function() {
             // ensure the hover label bounding boxes don't overlap, except a little margin of 5 px
             // testing #2370
             var bBoxes = [];
-            d3.selectAll('g.hovertext').each(function() {
+            d3SelectAll('g.hovertext').each(function() {
                 bBoxes.push(this.getBoundingClientRect());
             });
             expect(bBoxes.length).toBe(2);
@@ -2351,8 +2352,8 @@ describe('hover on many lines+bars', function() {
             mouseEvent('mousemove', 200, 100);
             Lib.clearThrottle();
 
-            expect(d3.select(gd).selectAll('g.hovertext').size()).toBe(2);
-            expect(d3.select(gd).selectAll('g.axistext').size()).toBe(1);
+            expect(d3Select(gd).selectAll('g.hovertext').size()).toBe(2);
+            expect(d3Select(gd).selectAll('g.axistext').size()).toBe(1);
         })
         .then(done, done.fail);
     });
@@ -2453,7 +2454,7 @@ describe('hover on fill', function() {
         Lib.clearThrottle();
         mouseEvent('mousemove', mousePos[0], mousePos[1]);
 
-        var hoverText = d3.selectAll('g.hovertext');
+        var hoverText = d3SelectAll('g.hovertext');
         expect(hoverText.size()).toEqual(1);
         expect(hoverText.text()).toEqual(labelText);
 
@@ -3472,7 +3473,7 @@ describe('hover updates', function() {
             mouseEvent('mousemove', mousePos[0], mousePos[1]);
         }
 
-        var hoverText = d3.selectAll('g.hovertext');
+        var hoverText = d3SelectAll('g.hovertext');
         if(labelPos) {
             expect(hoverText.size()).toBe(1, msg);
             expect(hoverText.text()).toBe(labelText, msg);
@@ -3637,7 +3638,7 @@ describe('Test hover label custom styling:', function() {
     afterEach(destroyGraphDiv);
 
     function assertLabel(className, expectation) {
-        var g = d3.select('g.' + className);
+        var g = d3Select('g.' + className);
 
         if(expectation === null) {
             expect(g.size()).toBe(0);
@@ -3839,7 +3840,7 @@ describe('Test hover label custom styling:', function() {
         var gd = createGraphDiv();
 
         function assertNameLabel(expectation) {
-            var g = d3.selectAll('g.hovertext > text.name');
+            var g = d3SelectAll('g.hovertext > text.name');
 
             if(expectation === null) {
                 expect(g.size()).toBe(0);
@@ -4517,12 +4518,12 @@ describe('hovermode: (x|y)unified', function() {
     }
 
     function getHoverLabel() {
-        var hoverLayer = d3.select('g.hoverlayer');
+        var hoverLayer = d3Select('g.hoverlayer');
         return hoverLayer.select('g.legend');
     }
 
     function assertElementCount(selector, size) {
-        var g = d3.selectAll(selector);
+        var g = d3SelectAll(selector);
         expect(g.size()).toBe(size);
     }
 
@@ -4537,7 +4538,7 @@ describe('hovermode: (x|y)unified', function() {
 
         expect(traces.size()).toBe(expectation.items.length, 'has the incorrect number of items');
         traces.each(function(_, i) {
-            var e = d3.select(this);
+            var e = d3Select(this);
             expect(e.select('text').text()).toBe(expectation.items[i]);
         });
     }
@@ -4555,9 +4556,9 @@ describe('hovermode: (x|y)unified', function() {
         expect(traces.size()).toBe(exp.length);
 
         traces.each(function(d, i) {
-            var pts = d3.select(this).selectAll('g.legendpoints path');
+            var pts = d3Select(this).selectAll('g.legendpoints path');
             pts.each(function() {
-                var node = d3.select(this).node();
+                var node = d3Select(this).node();
                 expect(node.style.fill).toBe(exp[i][0], 'wrong fill for point ' + i);
                 expect(node.style.strokeWidth).toBe(exp[i][1], 'wrong stroke-width for point ' + i);
                 expect(node.style.stroke).toBe(exp[i][2], 'wrong stroke for point ' + i);

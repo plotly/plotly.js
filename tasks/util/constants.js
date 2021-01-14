@@ -5,6 +5,7 @@ var pathToRoot = path.join(__dirname, '../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
+var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
@@ -76,6 +77,8 @@ module.exports = {
     pathToTestImages: path.join(pathToBuild, 'test_images/'),
     pathToTestImagesDiff: path.join(pathToBuild, 'test_images_diff/'),
     pathToTestImagesDiffList: path.join(pathToBuild, 'list_of_incorrect_images.txt'),
+
+    pathToStrictD3Module: pathToStrictD3Module,
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),

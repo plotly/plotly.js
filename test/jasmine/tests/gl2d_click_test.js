@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -151,7 +151,7 @@ describe('Test hover and click interactions', function() {
                 .then(function(eventData) {
                     assertEventData(eventData, expected, opts.msg);
 
-                    var g = d3.select('g.hovertext');
+                    var g = d3Select('g.hovertext');
                     if(g.node() === null) {
                         expect(expected.noHoverLabel).toBe(true);
                     } else {

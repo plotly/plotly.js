@@ -3,7 +3,8 @@ var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -1105,23 +1106,23 @@ describe('dragbox', function() {
         }
 
         Plotly.newPlot(createGraphDiv(), mock).then(function() {
-            var node = d3.select('rect.nedrag').node();
+            var node = d3Select('rect.nedrag').node();
             var pos = getRectCenter(node);
             var fns = drag.makeFns({pos0: pos, dpos: [50, 0]});
 
-            assertScale(d3.select('.plot').node(), 1, 1);
+            assertScale(d3Select('.plot').node(), 1, 1);
 
-            d3.selectAll('.point').each(function() {
+            d3SelectAll('.point').each(function() {
                 assertScale(this, 1, 1);
             });
 
             fns.start().then(function() {
-                assertScale(d3.select('.plot').node(), 1.14, 1);
+                assertScale(d3Select('.plot').node(), 1.14, 1);
 
-                d3.select('.scatterlayer').selectAll('.point').each(function() {
+                d3Select('.scatterlayer').selectAll('.point').each(function() {
                     assertScale(this, 0.87, 1);
                 });
-                d3.select('.barlayer').selectAll('.point').each(function() {
+                d3Select('.barlayer').selectAll('.point').each(function() {
                     assertScale(this, 1, 1);
                 });
             })

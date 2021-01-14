@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var d3 = require('@plotly/d3');
+var d3Json = require('../../test/strict_d3').json;
 
 var $plotlist = document.getElementById('plot-list');
 var $toggles = document.getElementById('plot-toggles');
@@ -55,7 +55,7 @@ function createButton(imageName) {
     button.style.cursor = 'pointer';
 
     button.addEventListener('click', function() {
-        d3.json(dirMocks + imageName + '.json', function(err, mock) {
+        d3Json(dirMocks + imageName + '.json', function(err, mock) {
             $toggles.style.display = 'block';
 
             $images.style.display = 'block';

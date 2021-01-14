@@ -4,7 +4,7 @@ var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -203,8 +203,8 @@ describe('table', function() {
             var gd = createGraphDiv();
 
             function _assert(msg, exp) {
-                expect(d3.selectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
-                expect(d3.selectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
+                expect(d3SelectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
+                expect(d3SelectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
             }
 
             // more info in: https://github.com/plotly/streambed/issues/11618

@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -44,22 +45,22 @@ describe('zoom box element', function() {
         var y1 = 200;
 
         mouseEvent('mousemove', x0, y0);
-        expect(d3.selectAll('.zoomlayer > .zoombox').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox').size())
             .toEqual(0);
-        expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox-corners').size())
             .toEqual(0);
 
         mouseEvent('mousedown', x0, y0);
         mouseEvent('mousemove', x1, y1);
-        expect(d3.selectAll('.zoomlayer > .zoombox').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox').size())
             .toEqual(1);
-        expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox-corners').size())
             .toEqual(1);
 
         mouseEvent('mouseup', x1, y1);
-        expect(d3.selectAll('.zoomlayer > .zoombox').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox').size())
             .toEqual(0);
-        expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+        expect(d3SelectAll('.zoomlayer > .zoombox-corners').size())
             .toEqual(0);
     });
 });
@@ -216,7 +217,7 @@ describe('main plot pan', function() {
 
     it('should show/hide `cliponaxis: false` pts according to range', function(done) {
         function _assert(markerDisplay, textDisplay, barTextDisplay) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
 
             assertNodeDisplay(
                 gd3.select('.scatterlayer').selectAll('.point'),
@@ -579,7 +580,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     it('updates axis layout when the constraints require it', function(done) {
         function _assert(xGridCnt) {
-            var xGrid = d3.select(gd).selectAll('.gridlayer > .x > path.xgrid');
+            var xGrid = d3Select(gd).selectAll('.gridlayer > .x > path.xgrid');
             expect(xGrid.size()).toEqual(xGridCnt);
         }
 
@@ -614,7 +615,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             var drag = makeDragFns('xy', 'nsew', dp[0], dp[1], 170, 170);
 
             return drag.start().then(function() {
-                var zl = d3.select(gd).select('g.zoomlayer');
+                var zl = d3Select(gd).select('g.zoomlayer');
                 var d = zl.select('.zoombox-corners').attr('d');
 
                 if(exp.cornerCnt) {
@@ -777,21 +778,21 @@ describe('axis zoom/pan and main plot zoom', function() {
         var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
 
         function _assertLabels(msg, exp) {
-            var tickLabels = d3.select(gd).selectAll('.xtick > text');
+            var tickLabels = d3Select(gd).selectAll('.xtick > text');
             expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
 
             tickLabels.each(function(_, i) {
-                var t = d3.select(this).attr('transform');
+                var t = d3Select(this).attr('transform');
                 var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                 var angle = rotate.split(',')[0];
                 expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
             });
 
-            var tickLabels2 = d3.select(gd).selectAll('.xtick2 > text');
+            var tickLabels2 = d3Select(gd).selectAll('.xtick2 > text');
             expect(tickLabels2.size()).toBe(exp.y.length, msg + ' - # of secondary labels');
 
             tickLabels2.each(function(_, i) {
-                var y = d3.select(this).attr('y');
+                var y = d3Select(this).attr('y');
                 expect(Number(y)).toBeWithin(exp.y[i], 5.5, msg + ' - node ' + i);
             });
         }
@@ -888,7 +889,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         }
 
         function assertSubplotTranslateAndScale(msg, spIds, trans, scale) {
-            var gClips = d3.select(gd).select('g.clips');
+            var gClips = d3Select(gd).select('g.clips');
             var uid = gd._fullLayout._uid;
             var transActual = [];
             var scaleActual = [];
@@ -1425,7 +1426,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                             var drag = makeDragFns(s.drag[0], s.drag[1], s.drag[2], s.drag[3]);
                             return drag.start().then(function() {
                                 if(s.drag[1] === 'nsew') {
-                                    var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                                    var zb = d3Select(gd).select('g.zoomlayer > path.zoombox');
                                     var d = zb.attr('d');
                                     var v = Number(d.split('v')[1].split('h')[0]);
                                     var h = Number(d.split('h')[1].split('v')[0]);
@@ -1591,7 +1592,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     [['yaxis'], [-0.318, 3.318]],
                     [['xaxis2', 'yaxis2'], [-0.588, 8.824]]
                 ]);
-                x2y2 = d3.select('.subplot.x2y2 .plot');
+                x2y2 = d3Select('.subplot.x2y2 .plot');
                 expect(x2y2.attr('transform')).toBe('translate(50,50)');
                 mx = gd._fullLayout.xaxis._m;
                 my = gd._fullLayout.yaxis._m;
@@ -1695,7 +1696,7 @@ describe('axis zoom/pan and main plot zoom', function() {
 
     describe('redrag behavior', function() {
         function _assertZoombox(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var zb = gd3.select('g.zoomlayer').select('.zoombox-corners');
 
             if(zb.size()) {
@@ -1706,7 +1707,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         }
 
         function _assertClipRect(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var uid = gd._fullLayout._uid;
             var clipRect = gd3.select('#clip' + uid + 'xyplot > rect');
             var xy = Drawing.getTranslate(clipRect);
@@ -1726,7 +1727,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     expect(fullLayout.xaxis.range).toBeCloseToArray(exp.xrng === 'previous' ?
                         xrngPrev :
                         exp.xrng, 2, msg + '|xaxis range');
-                    expect(d3.select(gd).selectAll('.point').size()).toBe(exp.nodeCnt, msg + '|pt cnt');
+                    expect(d3Select(gd).selectAll('.point').size()).toBe(exp.nodeCnt, msg + '|pt cnt');
                     expect(Boolean(gd._dragdata)).toBe(exp.hasDragData, msg + '|has gd._dragdata?');
                     _assertZoombox(msg, exp);
                     _assertClipRect(msg, exp);
@@ -1985,14 +1986,14 @@ describe('axis zoom/pan and main plot zoom', function() {
 
             function _assert(msg, exp) {
                 return function() {
-                    var gd3 = d3.select(gd);
+                    var gd3 = d3Select(gd);
 
                     expect(gd3.selectAll('.point').size()).toBe(exp.nodeCnt, msg + '|pt cnt');
                     expect(Boolean(gd._dragdata)).toBe(exp.hasDragData, msg + '|has gd._dragdata?');
                     expect(selectingTracker.length).toBe(exp.selectingCnt, msg + '| selecting cnt');
                     expect(selectedTracker.length).toBe(exp.selectedCnt, msg + '| selected cnt');
 
-                    var outline = d3.select('.zoomlayer > .select-outline');
+                    var outline = d3Select('.zoomlayer > .select-outline');
                     if(outline.size()) {
                         expect(outline.attr('d')).toBe(exp.selectOutline, msg + '| selection outline path');
                     } else {
@@ -2082,7 +2083,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 var fns = drag.makeFns({node: node, pos0: [200, 200], dpos: dpos});
 
                 return fns.start().then(function() {
-                    var zl = d3.select(gd).select('g.zoomlayer');
+                    var zl = d3Select(gd).select('g.zoomlayer');
                     var d = zl.select('.zoombox-corners').attr('d');
                     if(exp === 'nozoom') {
                         expect(d).toBe('M0,0Z', 'blank path | ' + msg);
@@ -2479,7 +2480,7 @@ describe('Cartesian plots with css transforms', function() {
                 startPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(startPos[0], startPos[1]);
                 endPos = Lib.apply3DTransform(gd._fullLayout._invTransform)(endPos[0], endPos[1]);
                 var size = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
-                var zb = d3.select(gd).select('g.zoomlayer > path.zoombox');
+                var zb = d3Select(gd).select('g.zoomlayer > path.zoombox');
                 var zoomboxRect = _getZoomlayerPathRect(zb.attr('d'));
                 expect(zoomboxRect.left).toBeCloseTo(startPos[0], -1);
                 expect(zoomboxRect.top).toBeCloseTo(startPos[1]);

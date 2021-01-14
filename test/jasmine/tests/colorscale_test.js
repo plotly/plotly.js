@@ -7,7 +7,8 @@ var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -746,14 +747,14 @@ describe('Test colorscale restyle calls:', function() {
     });
 
     function getFill(q) {
-        return d3.select(q).node().style.fill;
+        return d3Select(q).node().style.fill;
     }
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (contour case)', function(done) {
         function _assert(msg, exp) {
             var cc = [];
             cc.push(getFill('.contourbg > path'));
-            d3.selectAll('.contourfill > path').each(function() {
+            d3SelectAll('.contourfill > path').each(function() {
                 cc.push(getFill(this));
             });
             expect(cc).toEqual(exp.contourColors);
@@ -861,7 +862,7 @@ describe('Test colorscale restyle calls:', function() {
     it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker case)', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() {
+            d3SelectAll('path.point').each(function() {
                 mcc.push(getFill(this));
             });
             expect(mcc).toEqual(exp.mcc);
@@ -939,8 +940,8 @@ describe('Test colorscale restyle calls:', function() {
 
         function _assert(msg, exp) {
             var mlcc = [];
-            d3.selectAll('path.point').each(function() {
-                mlcc.push(d3.select(this).node().style.stroke);
+            d3SelectAll('path.point').each(function() {
+                mlcc.push(d3Select(this).node().style.stroke);
             });
             expect(mlcc).toEqual(exp.mlcc);
 
@@ -1021,7 +1022,7 @@ describe('Test colorscale restyle calls:', function() {
     it('should be able to toggle between autocolorscale true/false and set colorscales (coloraxis case)', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() { mcc.push(getFill(this)); });
+            d3SelectAll('path.point').each(function() { mcc.push(getFill(this)); });
             expect(mcc).toEqual(exp.mcc);
 
             expect(gd._fullLayout.coloraxis.colorscale).toEqual(exp.colorscale);
@@ -1135,7 +1136,7 @@ describe('Test colorscale restyle calls:', function() {
     it('should work with templates', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() {
+            d3SelectAll('path.point').each(function() {
                 mcc.push(getFill(this));
             });
 

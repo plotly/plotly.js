@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var alignmentConstants = require('@src/constants/alignment');
@@ -27,7 +28,7 @@ describe('Plot title', function() {
     var containerElemSelector = {
         desc: 'container',
         select: function() {
-            return d3.selectAll('.svg-container').node();
+            return d3SelectAll('.svg-container').node();
         },
         ref: 'container'
     };
@@ -35,7 +36,7 @@ describe('Plot title', function() {
     var paperElemSelector = {
         desc: 'plot area',
         select: function() {
-            var bgLayer = d3.selectAll('.bglayer .bg');
+            var bgLayer = d3SelectAll('.bglayer .bg');
             expect(bgLayer.empty()).toBe(false,
               'No background layer found representing the size of the plot area');
             return bgLayer.node();
@@ -730,7 +731,7 @@ describe('Titles and labels', function() {
         }).then(function() {
             expectTitle('NEW');
             expect(xTitleSel().text()).toBe('x-new');
-            expect(d3.select('.xtick').text()).toBe('b');
+            expect(d3Select('.xtick').text()).toBe('b');
         })
         .then(done, done.fail);
     });
@@ -1166,21 +1167,21 @@ function parseFontSizeAttr(fontSizeAttr) {
 }
 
 function titleSel() {
-    var titleSel = d3.select('.infolayer .g-gtitle .gtitle');
+    var titleSel = d3Select('.infolayer .g-gtitle .gtitle');
     expect(titleSel.empty()).toBe(false, 'Plot title element missing');
     return titleSel;
 }
 
 function xTitleSel(num) {
     var axIdx = num === 1 ? '' : (num || '');
-    var xTitleSel = d3.select('.x' + axIdx + 'title');
+    var xTitleSel = d3Select('.x' + axIdx + 'title');
     expect(xTitleSel.empty()).toBe(false, 'X-axis ' + axIdx + ' title element missing');
     return xTitleSel;
 }
 
 function yTitleSel(num) {
     var axIdx = num === 1 ? '' : (num || '');
-    var yTitleSel = d3.select('.y' + axIdx + 'title');
+    var yTitleSel = d3Select('.y' + axIdx + 'title');
     expect(yTitleSel.empty()).toBe(false, 'Y-axis ' + axIdx + ' title element missing');
     return yTitleSel;
 }
@@ -1199,7 +1200,7 @@ describe('Editable titles', function() {
     });
 
     function checkTitle(letter, text, opacityOut, opacityIn) {
-        var titleEl = d3.select('.' + letter + 'title');
+        var titleEl = d3Select('.' + letter + 'title');
         expect(titleEl.text()).toBe(text);
         expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
 

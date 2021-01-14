@@ -6,7 +6,8 @@ var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
-var d3 = Plotly.d3;
+var d3 = require('../../test/strict_d3');
+var d3Json = d3.json;
 
 require('./perf');
 
@@ -59,7 +60,7 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        d3.json(mockURL, function(err, fig) {
+        d3Json(mockURL, function(err, fig) {
             Plotly.newPlot(Tabs.fresh(id), fig);
 
             console.warn('Plotting:', mockURL);
@@ -69,7 +70,7 @@ var Tabs = {
     getMock: function(mockName, callback) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        d3.json(mockURL, function(err, fig) {
+        d3Json(mockURL, function(err, fig) {
             if(typeof callback !== 'function') {
                 window.mock = fig;
             } else {
