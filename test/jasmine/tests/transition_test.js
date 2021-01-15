@@ -1196,25 +1196,21 @@ describe('Plotly.react transitions:', function() {
 
             gd.layout.xaxis.range = ['2018-06-01', '2019-06-01'];
             gd.layout.xaxis2.range = [0.5, 1.5];
-            var promise = Plotly.react(gd, gd.data, gd.layout);
 
-            setTimeout(function() {
-                var fullLayout = gd._fullLayout;
+            return Plotly.react(gd, gd.data, gd.layout);
+        }).then(function() {
+            var fullLayout = gd._fullLayout;
 
-                var xa = fullLayout.xaxis;
-                var xr = xa.range.slice();
-                expect(xa.r2l(xr[0])).toBeGreaterThan(xa.r2l('2018-01-01'));
-                expect(xa.r2l(xr[1])).toBeLessThan(xa.r2l('2020-01-01'));
+            var xa = fullLayout.xaxis;
+            var xr = xa.range.slice();
+            expect(xa.r2l(xr[0])).toBeGreaterThan(xa.r2l('2018-01-01'));
+            expect(xa.r2l(xr[1])).toBeLessThan(xa.r2l('2020-01-01'));
 
-                var xa2 = fullLayout.xaxis2;
-                var xr2 = xa2.range.slice();
-                expect(xr2[0]).toBeGreaterThan(0);
-                expect(xr2[1]).toBeLessThan(2);
-            }, 15);
+            var xa2 = fullLayout.xaxis2;
+            var xr2 = xa2.range.slice();
+            expect(xr2[0]).toBeGreaterThan(0);
+            expect(xr2[1]).toBeLessThan(2);
 
-            return promise;
-        })
-        .then(function() {
             expect(gd._fullLayout.xaxis.range).toEqual(['2018-06-01', '2019-06-01']);
             expect(gd._fullLayout.xaxis2.range).toEqual([0.5, 1.5]);
         })
