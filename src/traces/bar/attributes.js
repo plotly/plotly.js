@@ -250,9 +250,6 @@ module.exports = {
         editType: 'style'
     },
 
-    r: scatterAttrs.r,
-    t: scatterAttrs.t,
-
     _deprecated: {
         bardir: {
             valType: 'enumerated',
