@@ -1740,7 +1740,6 @@ plots.purge = function(gd) {
     delete gd._fullData;
     delete gd._fullLayout;
     delete gd.calcdata;
-    delete gd.framework;
     delete gd.empty;
 
     delete gd.fid;
@@ -2234,8 +2233,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             };
         }
     }
-
-    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
 

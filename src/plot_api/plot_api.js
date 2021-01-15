@@ -152,12 +152,6 @@ function plot(gd, data, layout, config) {
         }
     }
 
-    // polar need a different framework
-    if(gd.framework !== makePlotFramework) {
-        gd.framework = makePlotFramework;
-        makePlotFramework(gd);
-    }
-
     // clear gradient defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
 
@@ -1770,10 +1764,6 @@ function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
-
     var aobj = {};
     if(typeof astr === 'string') {
         aobj[astr] = val;
@@ -2282,10 +2272,6 @@ function updateAutosize(gd) {
 function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
-
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
 
     if(!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
     if(!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
