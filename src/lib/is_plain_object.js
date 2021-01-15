@@ -21,6 +21,6 @@ module.exports = function isPlainObject(obj) {
 
     return (
         Object.prototype.toString.call(obj) === '[object Object]' &&
-        Object.getPrototypeOf(obj) === Object.prototype
+        Object.getPrototypeOf(obj).hasOwnProperty('hasOwnProperty')
     );
 };
