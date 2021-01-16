@@ -379,33 +379,6 @@ describe('Plotly.___ methods', function() {
 
     describe('Plotly.relayout promise', function() {
         var promise;
-        var promiseGd;
-
-        beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
-            var layout = {hovermode: 'closest'};
-            var initialDiv = createGraphDiv();
-
-            Plotly.newPlot(initialDiv, data, layout);
-
-            initialDiv.framework = { isPolar: true };
-            promise = Plotly.relayout(initialDiv, 'hovermode', false);
-
-            promise.then(function(gd) {
-                promiseGd = gd;
-                done();
-            });
-        });
-
-        it('should be returned with the graph div unchanged when the framework is polar', function() {
-            expect(promiseGd).toBeDefined();
-            expect(typeof promiseGd).toBe('object');
-            expect(promiseGd.changed).toBeFalsy();
-        });
-    });
-
-    describe('Plotly.relayout promise', function() {
-        var promise;
         var promiseRejected = false;
 
         beforeEach(function(done) {
