@@ -760,7 +760,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
-            spyOn(plotApi, 'plot');
+            spyOn(plotApi, '_doPlot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -787,7 +787,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 // "docalc" deletes gd.calcdata - make sure this didn't happen
                 expect(gd.calcdata).toBeDefined();
             })
@@ -805,7 +805,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 expect(gd.calcdata).toBeDefined();
             })
             .then(done, done.fail);
@@ -821,31 +821,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -860,31 +860,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -906,7 +906,7 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -920,12 +920,12 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'xgap': 2})
             .then(function() {
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 return Plotly.restyle(gd, {'ygap': 2});
             })
             .then(function() {
-                expect(plotApi.plot.calls.count()).toEqual(2);
+                expect(plotApi._doPlot.calls.count()).toEqual(2);
             })
             .then(done, done.fail);
         });
@@ -947,19 +947,19 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
                 })
                 .then(done, done.fail);
             });
@@ -982,22 +982,22 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should not clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmin', 0);
                 })
                 .then(done, done.fail);

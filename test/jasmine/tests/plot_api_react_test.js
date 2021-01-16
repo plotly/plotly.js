@@ -37,7 +37,7 @@ describe('@noCIdep Plotly.react', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        spyOn(plotApi, 'plot').and.callThrough();
+        spyOn(plotApi, '_doPlot').and.callThrough();
         spyOn(Registry, 'call').and.callThrough();
 
         mockedMethods.forEach(function(m) {
@@ -54,7 +54,7 @@ describe('@noCIdep Plotly.react', function() {
     afterEach(destroyGraphDiv);
 
     function countPlots() {
-        plotApi.plot.calls.reset();
+        plotApi._doPlot.calls.reset();
         subroutines.layoutStyles.calls.reset();
         annotations.draw.calls.reset();
         annotations.drawOne.calls.reset();
@@ -73,13 +73,13 @@ describe('@noCIdep Plotly.react', function() {
             subroutines[m].calls.reset();
         });
 
-        // calls to Plotly.newPlot via plot_api.js or Registry.call('plot')
-        var plotCalls = plotApi.plot.calls.count() +
+        // calls to Plotly.newPlot via plot_api.js or Registry.call('_doPlot')
+        var plotCalls = plotApi._doPlot.calls.count() +
             Registry.call.calls.all()
-                .filter(function(d) { return d.args[0] === 'plot'; })
+                .filter(function(d) { return d.args[0] === '_doPlot'; })
                 .length;
         expect(plotCalls).toBe(counts.plot || 0, 'Plotly.newPlot calls');
-        plotApi.plot.calls.reset();
+        plotApi._doPlot.calls.reset();
         Registry.call.calls.reset();
 
         // only consider annotation and image draw calls if we *don't* do a full plot.

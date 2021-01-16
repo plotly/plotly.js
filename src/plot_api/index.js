@@ -10,7 +10,7 @@
 
 var main = require('./plot_api');
 
-exports.plot = main.plot;
+exports._doPlot = main._doPlot;
 exports.newPlot = main.newPlot;
 exports.restyle = main.restyle;
 exports.relayout = main.relayout;
