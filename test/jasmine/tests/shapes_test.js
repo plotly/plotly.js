@@ -114,7 +114,7 @@ describe('Test shapes defaults:', function() {
         expect(shape1Out.x0).toBe(5);
         expect(shape1Out.x1).toBe(15);
 
-        // shapes use data values for log axes (like everyone will in V2.0)
+        // shapes use data values for log axes (like everyone will in V3.0)
         expect(shape1Out.y0).toBeWithin(100, 0.001);
         expect(shape1Out.y1).toBeWithin(10000, 0.001);
 

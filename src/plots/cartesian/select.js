@@ -355,9 +355,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
 
                 if(clickmode === 'event') {
-                    // TODO: remove in v2 - this was probably never intended to work as it does,
+                    // TODO: remove in v3 - this was probably never intended to work as it does,
                     // but in case anyone depends on it we don't want to break it now.
-                    // Note that click-to-select introduced pre v2 also emitts proper
+                    // Note that click-to-select introduced pre v3 also emitts proper
                     // event data when clickmode is having 'select' in its flag list.
                     gd.emit('plotly_selected', undefined);
                 }

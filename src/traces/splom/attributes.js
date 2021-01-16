@@ -101,7 +101,7 @@ module.exports = {
                 ].join(' ')
             },
 
-            // TODO make 'true' the default in v2?
+            // TODO make 'true' the default in v3?
             matches: {
                 valType: 'boolean',
                 dflt: false,

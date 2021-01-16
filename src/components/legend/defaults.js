@@ -99,7 +99,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         } else {
             // maybe use y=1.1 / yanchor=bottom as above
             //   to avoid https://github.com/plotly/plotly.js/issues/1199
-            //   in v2
+            //   in v3
             defaultY = -0.1;
             defaultYAnchor = 'top';
         }

@@ -121,7 +121,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 
@@ -447,7 +447,7 @@ describe('Test plot api', function() {
             .then(function() {
                 // Ideally we should change this to xaxis.autorange: 'reversed'
                 // but that's a weird disappearing setting used just to force
-                // an initial reversed autorange. Proposed v2 change at:
+                // an initial reversed autorange. Proposed v3 change at:
                 // https://github.com/plotly/plotly.js/issues/420#issuecomment-323435082
                 return Plotly.relayout(gd, 'xaxis.reverse', true);
             })
@@ -1100,7 +1100,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 

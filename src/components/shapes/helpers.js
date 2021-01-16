@@ -18,7 +18,7 @@ var Lib = require('../../lib');
 // so these have to be specified in terms of the category serial numbers,
 // but can take fractional values. Other axis types we specify position based on
 // the actual data values.
-// TODO: in V2.0 (when log axis ranges are in data units) range and shape position
+// TODO: in V3.0 (when log axis ranges are in data units) range and shape position
 // will be identical, so rangeToShapePosition and shapePositionToRange can be
 // removed entirely.
 

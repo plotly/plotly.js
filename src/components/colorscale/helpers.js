@@ -50,7 +50,7 @@ var letterAttrs = ['min', 'max', 'mid', 'auto'];
 /**
  * Extract 'c' / 'z', trace / color axis colorscale options
  *
- * Note that it would be nice to replace all z* with c* equivalents in v2
+ * Note that it would be nice to replace all z* with c* equivalents in v3
  *
  * @param {object} cont : attribute container
  * @return {object}:
