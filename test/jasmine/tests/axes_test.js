@@ -3857,7 +3857,7 @@ describe('Test axes', function() {
                 var dates = [[2000, 0, 1], [2001, 0, 1], [2002, 0, 1]]
                     .map(function(d) { return new Date(d[0], d[1], d[2]).getTime(); });
 
-                // We could make this work down the road (in v2),
+                // We could make this work down the road (in v3),
                 // when address our timezone problems.
                 var out = _makeCalcdata({
                     x: new Float64Array(dates)

@@ -126,7 +126,7 @@ var configAttributes = {
         dflt: false,
         description: [
             'Determines whether to change the layout size when window is resized.',
-            'In v2, this option will be removed and will always be true.'
+            'In v3, this option will be removed and will always be true.'
         ].join(' ')
     },
     fillFrame: {

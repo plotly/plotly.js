@@ -16,7 +16,7 @@ var toLogRange = require('../../lib/to_log_range');
  * convertCoords: when converting an axis between log and linear
  * you need to alter any images on that axis to keep them
  * pointing at the same data point.
- * In v2.0 this will become obsolete (or perhaps size will still need conversion?)
+ * In v3.0 this will become obsolete (or perhaps size will still need conversion?)
  * we convert size by declaring that the maximum extent *in data units* should be
  * the same, assuming the image is anchored by its center (could remove that restriction
  * if we think it's important) even though the actual left and right values will not be

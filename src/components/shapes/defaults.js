@@ -81,7 +81,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
-            // hack until V2.0 when log has regular range behavior - make it look like other
+            // hack until V3.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
             // this is all to give reasonable default position behavior on log axes, which is
             // a pretty unimportant edge case so we could just ignore this.

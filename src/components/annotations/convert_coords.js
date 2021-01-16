@@ -16,7 +16,7 @@ var toLogRange = require('../../lib/to_log_range');
  * convertCoords: when converting an axis between log and linear
  * you need to alter any annotations on that axis to keep them
  * pointing at the same data point.
- * In v2.0 this will become obsolete
+ * In v3.0 this will become obsolete
  *
  * gd: the plot div
  * ax: the axis being changed

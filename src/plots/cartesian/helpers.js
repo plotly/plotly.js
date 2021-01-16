@@ -11,7 +11,7 @@
 
 var strTranslate = require('../../lib').strTranslate;
 
-// in v2 (once log ranges are fixed),
+// in v3 (once log ranges are fixed),
 // we'll be able to p2r here for all axis types
 function p2r(ax, v) {
     switch(ax.type) {

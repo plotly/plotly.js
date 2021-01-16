@@ -695,7 +695,7 @@ function getFormatObj(gd, formatKeys) {
 /**
  * getFormatter: combine the final separators with the locale formatting object
  * we pulled earlier to generate number and time formatters
- * TODO: remove separators in v2, only use locale, so we don't need this step?
+ * TODO: remove separators in v3, only use locale, so we don't need this step?
  *
  * @param {object} formatObj: d3.locale format object
  * @param {string} separators: length-2 string to override decimal and thousands
@@ -1496,7 +1496,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     // layouts with no set width and height were set temporary set to 'initial'
     // to pass through the autosize routine
     //
-    // This behavior is subject to change in v2.
+    // This behavior is subject to change in v3.
     coerce('autosize', !(layoutIn.width && layoutIn.height));
 
     coerce('width');

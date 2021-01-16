@@ -58,7 +58,7 @@ function isValidCategory(v) {
  *     - category: calcdata format (c), and will stay that way because
  *       the data format has no continuous mapping
  *     - log: linearized (l) format
- *       TODO: in v2.0 we plan to change it to data format. At that point
+ *       TODO: in v3.0 we plan to change it to data format. At that point
  *       shapes will work the same way as ranges, tick0, and annotations
  *       so they can use this conversion too.
  *
@@ -95,7 +95,7 @@ module.exports = function setConvert(ax, fullLayout) {
         if((opts || {}).msUTC && isNumeric(v)) {
             // For now it is only used
             // to fix bar length in milliseconds & gl3d ticks
-            // It could be applied in other places in v2
+            // It could be applied in other places in v3
             return +v;
         }
 
