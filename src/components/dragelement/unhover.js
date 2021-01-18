@@ -34,7 +34,7 @@ unhover.raw = function raw(gd, evt) {
     var oldhoverdata = gd._hoverdata;
 
     if(!evt) evt = {};
-    if(evt.target &&
+    if(evt.target && !gd._dragged &&
        Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return;
     }
@@ -44,7 +44,7 @@ unhover.raw = function raw(gd, evt) {
     fullLayout._hoverlayer.selectAll('circle').remove();
     gd._hoverdata = undefined;
 
-    if((evt.target || gd._dragged) && oldhoverdata) {
+    if(evt.target && oldhoverdata) {
         gd.emit('plotly_unhover', {
             event: evt,
             points: oldhoverdata
