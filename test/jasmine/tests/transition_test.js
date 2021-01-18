@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var plotApiHelpers = require('@src/plot_api/helpers');
 var Axes = require('@src/plots/cartesian/axes');
 var Registry = require('@src/registry');

@@ -336,7 +336,7 @@ describe('Test Plots', function() {
                         gd.style.width = '400px';
                         gd.style.height = '400px';
 
-                        return Plotly.Plots.resize(gd);
+                        return Plots.resize(gd);
                     })
                     .then(done);
             });
@@ -390,7 +390,7 @@ describe('Test Plots', function() {
                 expect(typeof gd.id).toBe('string');
                 expect(gd.id).toBeTruthy();
 
-                Plotly.Plots.resize(gd.id)
+                Plots.resize(gd.id)
                 .then(done, done.fail);
             });
         });
@@ -412,7 +412,7 @@ describe('Test Plots', function() {
 
                 Plotly.newPlot(gd, [], {})
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
-                    .then(function() { return Plotly.Plots.resize(gd); })
+                    .then(function() { return Plots.resize(gd); })
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
                     .then(done, done.fail);
             });
@@ -428,9 +428,9 @@ describe('Test Plots', function() {
                     .then(function() {
                         gd.style.width = '500px';
                         gd.style.height = '500px';
-                        p.push(Plotly.Plots.resize(gd));
-                        p.push(Plotly.Plots.resize(gd));
-                        p.push(Plotly.Plots.resize(gd));
+                        p.push(Plots.resize(gd));
+                        p.push(Plots.resize(gd));
+                        p.push(Plots.resize(gd));
                         return Promise.all(p);
                     })
                     .then(function(v) {
