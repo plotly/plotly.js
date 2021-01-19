@@ -533,7 +533,7 @@ describe('config argument', function() {
                 expect(gd._context.plotlyServerURL).not.toBe('https://chart-studio.plotly.com');
                 expect(gd._context.plotlyServerURL).toBe('');
 
-                Plots.sendDataToCloud(gd);
+                Plotly.Plots.sendDataToCloud(gd);
                 expect(form).toBe(undefined);
             })
             .then(done, done.fail);
@@ -546,7 +546,7 @@ describe('config argument', function() {
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('https://chart-studio.plotly.com');
 
-                Plots.sendDataToCloud(gd);
+                Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toBe('https://chart-studio.plotly.com/external');
                 expect(form.method).toBe('post');
             })
@@ -558,7 +558,7 @@ describe('config argument', function() {
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
-                Plots.sendDataToCloud(gd);
+                Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toContain('/dummy/external');
                 expect(form.method).toBe('post');
             })
@@ -572,7 +572,7 @@ describe('config argument', function() {
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
-                Plots.sendDataToCloud(gd);
+                Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toContain('/yo/external');
                 expect(form.method).toBe('post');
             })

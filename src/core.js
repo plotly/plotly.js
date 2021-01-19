@@ -79,7 +79,8 @@ var Plots = require('./plots/plots');
 
 exports.Plots = {
     resize: Plots.resize,
-    graphJson: Plots.graphJson
+    graphJson: Plots.graphJson,
+    sendDataToCloud: Plots.sendDataToCloud
 };
 exports.Fx = {
     hover: Fx.hover,
