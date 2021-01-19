@@ -306,6 +306,6 @@ function _publishToNPM(d, pkgPath) {
             cb();
             return;
         }
-        exec('npm publish', {cwd: pkgPath}, cb).stdout.pipe(process.stdout);
+        exec('npm publish --access public', {cwd: pkgPath}, cb).stdout.pipe(process.stdout);
     };
 }
