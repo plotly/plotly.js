@@ -19,7 +19,6 @@ var counter = counterRegex(GEO);
 var attributes = {};
 attributes[GEO] = {
     valType: 'subplotid',
-    role: 'info',
     dflt: GEO,
     editType: 'calc',
     description: [

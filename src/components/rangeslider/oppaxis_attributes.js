@@ -18,7 +18,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['auto', 'fixed', 'match'],
         dflt: 'match',
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether or not the range of this axis in',
@@ -31,7 +30,6 @@ module.exports = {
     },
     range: {
         valType: 'info_array',
-        role: 'style',
         items: [
             {valType: 'any', editType: 'plot'},
             {valType: 'any', editType: 'plot'}

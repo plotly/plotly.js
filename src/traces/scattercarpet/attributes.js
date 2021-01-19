@@ -23,7 +23,6 @@ var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 module.exports = {
     carpet: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',

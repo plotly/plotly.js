@@ -17,35 +17,30 @@ module.exports = overrideAll(templatedArray('annotation', {
     visible: annAttrs.visible,
     x: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s x position.'
         ].join(' ')
     },
     y: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s y position.'
         ].join(' ')
     },
     z: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s z position.'
         ].join(' ')
     },
     ax: {
         valType: 'number',
-        role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')
     },
     ay: {
         valType: 'number',
-        role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')

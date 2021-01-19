@@ -45,7 +45,6 @@ module.exports = {
         valType: 'flaglist',
         flags: ['label', 'text', 'percent initial', 'percent previous', 'percent total', 'value'],
         extras: ['none'],
-        role: 'info',
         editType: 'plot',
         arrayOk: false,
         description: [
@@ -89,7 +88,6 @@ module.exports = {
     connector: {
         fillcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'style',
             description: [
                 'Sets the fill color.'
@@ -107,7 +105,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines if connector regions and lines are drawn.'

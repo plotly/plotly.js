@@ -11,7 +11,6 @@
 module.exports = {
     treemapcolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default treemap slice colors. Defaults to the main',
@@ -23,7 +22,6 @@ module.exports = {
     extendtreemapcolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the treemap slice colors (whether given by `treemapcolorway` or',

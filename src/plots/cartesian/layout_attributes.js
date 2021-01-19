@@ -24,7 +24,6 @@ var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 module.exports = {
     visible: {
         valType: 'boolean',
-        role: 'info',
         editType: 'plot',
         description: [
             'A single toggle to hide the axis while preserving interaction like dragging.',
@@ -35,7 +34,6 @@ module.exports = {
     color: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Sets default for all colors associated with this axis',
@@ -47,7 +45,6 @@ module.exports = {
     title: {
         text: {
             valType: 'string',
-            role: 'info',
             editType: 'ticks',
             description: [
                 'Sets the title of this axis.',
@@ -66,7 +63,6 @@ module.exports = {
         }),
         standoff: {
             valType: 'number',
-            role: 'info',
             min: 0,
             editType: 'ticks',
             description: [
@@ -88,7 +84,6 @@ module.exports = {
         // to gd.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category', 'multicategory'],
         dflt: '-',
-        role: 'info',
         editType: 'calc',
         // we forget when an axis has been autotyped, just writing the auto
         // value back to the input - so it doesn't make sense to template this.
@@ -106,7 +101,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['convert types', 'strict'],
         dflt: 'convert types',
-        role: 'info',
         editType: 'calc',
         description: [
             'Using *strict* a numeric string in trace data is not converted to a number.',
@@ -119,7 +113,6 @@ module.exports = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
-        role: 'info',
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
@@ -133,7 +126,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
-        role: 'info',
         editType: 'plot',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
@@ -147,7 +139,6 @@ module.exports = {
     },
     range: {
         valType: 'info_array',
-        role: 'info',
         items: [
             {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true},
             {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
@@ -171,7 +162,6 @@ module.exports = {
     fixedrange: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not this axis is zoom-able.',
@@ -186,7 +176,6 @@ module.exports = {
             constants.idRegex.x.toString(),
             constants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'plot',
         description: [
             'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
@@ -210,7 +199,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'info',
         editType: 'plot',
         description: [
             'If this axis is linked to another by `scaleanchor`, this determines the pixel',
@@ -223,7 +211,6 @@ module.exports = {
     constrain: {
         valType: 'enumerated',
         values: ['range', 'domain'],
-        role: 'info',
         editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
@@ -236,7 +223,6 @@ module.exports = {
     constraintoward: {
         valType: 'enumerated',
         values: ['left', 'center', 'right', 'top', 'middle', 'bottom'],
-        role: 'info',
         editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
@@ -251,7 +237,6 @@ module.exports = {
             constants.idRegex.x.toString(),
             constants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
@@ -267,7 +252,6 @@ module.exports = {
     rangebreaks: templatedArray('rangebreak', {
         enabled: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             editType: 'calc',
             description: [
@@ -278,7 +262,6 @@ module.exports = {
 
         bounds: {
             valType: 'info_array',
-            role: 'info',
             items: [
                 {valType: 'any', editType: 'calc'},
                 {valType: 'any', editType: 'calc'}
@@ -293,7 +276,6 @@ module.exports = {
         pattern: {
             valType: 'enumerated',
             values: [DAY_OF_WEEK, HOUR, ''],
-            role: 'info',
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
@@ -314,7 +296,6 @@ module.exports = {
         values: {
             valType: 'info_array',
             freeLength: true,
-            role: 'info',
             editType: 'calc',
             items: {
                 valType: 'any',
@@ -329,7 +310,6 @@ module.exports = {
         dvalue: {
             // TODO could become 'any' to add support for 'months', 'years'
             valType: 'number',
-            role: 'info',
             editType: 'calc',
             min: 0,
             dflt: ONEDAY,
@@ -345,7 +325,6 @@ module.exports = {
             min: 0,
             dflt: 0, // for *date* axes, maybe something else for *linear*
             editType: 'calc',
-            role: 'info',
             description: [
                 'Sets the gap distance between the start and the end of this rangebreak.',
                 'Use with `gapmode` to set the unit of measurement.'
@@ -356,7 +335,6 @@ module.exports = {
             values: ['pixels', 'fraction'],
             dflt: 'pixels',
             editType: 'calc',
-            role: 'info',
             description: [
                 'Determines if the `gap` value corresponds to a pixel length',
                 'or a fraction of the plot area.'
@@ -377,7 +355,6 @@ module.exports = {
     tickmode: {
         valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
-        role: 'info',
         editType: 'ticks',
         impliedEdits: {tick0: undefined, dtick: undefined},
         description: [
@@ -395,7 +372,6 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Specifies the maximum number of ticks for the particular axis.',
@@ -406,7 +382,6 @@ module.exports = {
     },
     tick0: {
         valType: 'any',
-        role: 'style',
         editType: 'ticks',
         impliedEdits: {tickmode: 'linear'},
         description: [
@@ -422,7 +397,6 @@ module.exports = {
     },
     dtick: {
         valType: 'any',
-        role: 'style',
         editType: 'ticks',
         impliedEdits: {tickmode: 'linear'},
         description: [
@@ -468,7 +442,6 @@ module.exports = {
     ticks: {
         valType: 'enumerated',
         values: ['outside', 'inside', ''],
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines whether ticks are drawn or not.',
@@ -480,7 +453,6 @@ module.exports = {
     tickson: {
         valType: 'enumerated',
         values: ['labels', 'boundaries'],
-        role: 'info',
         dflt: 'labels',
         editType: 'ticks',
         description: [
@@ -495,7 +467,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['instant', 'period'],
         dflt: 'instant',
-        role: 'info',
         editType: 'ticks',
         description: [
             'Determines where tick labels are drawn with respect to their',
@@ -517,7 +488,6 @@ module.exports = {
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines where tick labels are drawn with respect to the axis',
@@ -535,7 +505,6 @@ module.exports = {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
         dflt: false,
-        role: 'style',
         editType: 'ticks+layoutstyle',
         description: [
             'Determines if the axis lines or/and ticks are mirrored to',
@@ -552,7 +521,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 5,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the tick length (in px).'
     },
@@ -560,28 +528,24 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the tick width (in px).'
     },
     tickcolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the tick color.'
     },
     showticklabels: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
     automargin: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines whether long tick labels automatically grow the figure',
@@ -591,7 +555,6 @@ module.exports = {
     showspikes: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'modebar',
         description: [
             'Determines whether or not spikes (aka droplines) are drawn for this axis.',
@@ -601,14 +564,12 @@ module.exports = {
     spikecolor: {
         valType: 'color',
         dflt: null,
-        role: 'style',
         editType: 'none',
         description: 'Sets the spike color. If undefined, will use the series color'
     },
     spikethickness: {
         valType: 'number',
         dflt: 3,
-        role: 'style',
         editType: 'none',
         description: 'Sets the width (in px) of the zero line.'
     },
@@ -616,7 +577,6 @@ module.exports = {
     spikemode: {
         valType: 'flaglist',
         flags: ['toaxis', 'across', 'marker'],
-        role: 'style',
         dflt: 'toaxis',
         editType: 'none',
         description: [
@@ -635,7 +595,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['data', 'cursor', 'hovered data'],
         dflt: 'data',
-        role: 'style',
         editType: 'none',
         description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
     },
@@ -646,7 +605,6 @@ module.exports = {
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
-        role: 'style',
         editType: 'ticks',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
@@ -657,7 +615,6 @@ module.exports = {
     tickprefix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'ticks',
         description: 'Sets a tick label prefix.'
     },
@@ -665,7 +622,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'ticks',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
@@ -677,7 +633,6 @@ module.exports = {
     ticksuffix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'ticks',
         description: 'Sets a tick label suffix.'
     },
@@ -685,7 +640,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'ticks',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
@@ -693,7 +647,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'ticks',
         description: [
             'If *all*, all exponents are shown besides their significands.',
@@ -706,7 +659,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines a formatting rule for the tick exponents.',
@@ -723,7 +675,6 @@ module.exports = {
         valType: 'number',
         dflt: 3,
         min: 0,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Hide SI prefix for 10^n if |n| is below this number.',
@@ -733,7 +684,6 @@ module.exports = {
     separatethousands: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'ticks',
         description: [
             'If "true", even 4-digit integers are separated'
@@ -742,7 +692,6 @@ module.exports = {
     tickformat: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'ticks',
         description: [
             'Sets the tick label formatting rule using d3 formatting mini-languages',
@@ -758,7 +707,6 @@ module.exports = {
     tickformatstops: templatedArray('tickformatstop', {
         enabled: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             editType: 'ticks',
             description: [
@@ -768,7 +716,6 @@ module.exports = {
         },
         dtickrange: {
             valType: 'info_array',
-            role: 'info',
             items: [
                 {valType: 'any', editType: 'ticks'},
                 {valType: 'any', editType: 'ticks'}
@@ -783,7 +730,6 @@ module.exports = {
         value: {
             valType: 'string',
             dflt: '',
-            role: 'style',
             editType: 'ticks',
             description: [
                 'string - dtickformat for described zoom level, the same as *tickformat*'
@@ -794,7 +740,6 @@ module.exports = {
     hoverformat: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'none',
         description: [
             'Sets the hover text formatting rule using d3 formatting mini-languages',
@@ -811,7 +756,6 @@ module.exports = {
     showline: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'ticks+layoutstyle',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
@@ -820,7 +764,6 @@ module.exports = {
     linecolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'layoutstyle',
         description: 'Sets the axis line color.'
     },
@@ -828,13 +771,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'ticks+layoutstyle',
         description: 'Sets the width (in px) of the axis line.'
     },
     showgrid: {
         valType: 'boolean',
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines whether or not grid lines are drawn.',
@@ -844,7 +785,6 @@ module.exports = {
     gridcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the color of the grid lines.'
     },
@@ -852,13 +792,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the width (in px) of the grid lines.'
     },
     zeroline: {
         valType: 'boolean',
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines whether or not a line is drawn at along the 0 value',
@@ -869,14 +807,12 @@ module.exports = {
     zerolinecolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the line color of the zero line.'
     },
     zerolinewidth: {
         valType: 'number',
         dflt: 1,
-        role: 'style',
         editType: 'ticks',
         description: 'Sets the width (in px) of the zero line.'
     },
@@ -884,7 +820,6 @@ module.exports = {
     showdividers: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Determines whether or not a dividers are drawn',
@@ -895,7 +830,6 @@ module.exports = {
     dividercolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Sets the color of the dividers',
@@ -905,7 +839,6 @@ module.exports = {
     dividerwidth: {
         valType: 'number',
         dflt: 1,
-        role: 'style',
         editType: 'ticks',
         description: [
             'Sets the width (in px) of the dividers',
@@ -924,7 +857,6 @@ module.exports = {
             constants.idRegex.x.toString(),
             constants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'plot',
         description: [
             'If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to',
@@ -937,7 +869,6 @@ module.exports = {
     side: {
         valType: 'enumerated',
         values: ['top', 'bottom', 'left', 'right'],
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines whether a x (y) axis is positioned',
@@ -955,7 +886,6 @@ module.exports = {
             constants.idRegex.x.toString(),
             constants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'plot',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
@@ -970,7 +900,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['above traces', 'below traces'],
         dflt: 'above traces',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the layer on which this axis is displayed.',
@@ -983,7 +912,6 @@ module.exports = {
     },
     domain: {
         valType: 'info_array',
-        role: 'info',
         items: [
             {valType: 'number', min: 0, max: 1, editType: 'plot'},
             {valType: 'number', min: 0, max: 1, editType: 'plot'}
@@ -999,7 +927,6 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0,
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets the position of this axis in the plotting space',
@@ -1019,7 +946,6 @@ module.exports = {
             'median ascending', 'median descending'
         ],
         dflt: 'trace',
-        role: 'info',
         editType: 'calc',
         description: [
             'Specifies the ordering logic for the case of categorical variables.',
@@ -1036,7 +962,6 @@ module.exports = {
     },
     categoryarray: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the order in which categories on this axis appear.',
@@ -1046,7 +971,6 @@ module.exports = {
     },
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in axis `range`,',
@@ -1059,7 +983,6 @@ module.exports = {
     _deprecated: {
         autotick: {
             valType: 'boolean',
-            role: 'info',
             editType: 'ticks',
             description: [
                 'Obsolete.',
@@ -1069,7 +992,6 @@ module.exports = {
         },
         title: {
             valType: 'string',
-            role: 'info',
             editType: 'ticks',
             description: [
                 'Value of `title` is no longer a simple *string* but a set of sub-attributes.',

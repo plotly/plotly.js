@@ -32,7 +32,6 @@ module.exports = {
     title: {
         text: {
             valType: 'string',
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Sets the plot\'s title.',
@@ -53,7 +52,6 @@ module.exports = {
             valType: 'enumerated',
             dflt: 'container',
             values: ['container', 'paper'],
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Sets the container `x` refers to.',
@@ -65,7 +63,6 @@ module.exports = {
             valType: 'enumerated',
             dflt: 'container',
             values: ['container', 'paper'],
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Sets the container `y` refers to.',
@@ -78,7 +75,6 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 0.5,
-            role: 'style',
             editType: 'layoutstyle',
             description: [
                 'Sets the x position with respect to `xref` in normalized',
@@ -90,7 +86,6 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 'auto',
-            role: 'style',
             editType: 'layoutstyle',
             description: [
                 'Sets the y position with respect to `yref` in normalized',
@@ -103,7 +98,6 @@ module.exports = {
             valType: 'enumerated',
             dflt: 'auto',
             values: ['auto', 'left', 'center', 'right'],
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Sets the title\'s horizontal alignment with respect to its x position.',
@@ -118,7 +112,6 @@ module.exports = {
             valType: 'enumerated',
             dflt: 'auto',
             values: ['auto', 'top', 'middle', 'bottom'],
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Sets the title\'s vertical alignment with respect to its y position.',
@@ -146,7 +139,6 @@ module.exports = {
             valType: 'enumerated',
             values: [false, 'hide', 'show'],
             dflt: false,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines how the font size for various text',
@@ -163,7 +155,6 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 0,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the minimum text size between traces of the same type.'
@@ -173,7 +164,6 @@ module.exports = {
     },
     autosize: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         // autosize, width, and height get special editType treatment in _relayout
         // so we can handle noop resizes more efficiently
@@ -190,7 +180,6 @@ module.exports = {
     },
     width: {
         valType: 'number',
-        role: 'info',
         min: 10,
         dflt: 700,
         editType: 'plot',
@@ -200,7 +189,6 @@ module.exports = {
     },
     height: {
         valType: 'number',
-        role: 'info',
         min: 10,
         dflt: 450,
         editType: 'plot',
@@ -211,7 +199,6 @@ module.exports = {
     margin: {
         l: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 80,
             editType: 'plot',
@@ -219,7 +206,6 @@ module.exports = {
         },
         r: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 80,
             editType: 'plot',
@@ -227,7 +213,6 @@ module.exports = {
         },
         t: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 100,
             editType: 'plot',
@@ -235,7 +220,6 @@ module.exports = {
         },
         b: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 80,
             editType: 'plot',
@@ -243,7 +227,6 @@ module.exports = {
         },
         pad: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 0,
             editType: 'plot',
@@ -254,7 +237,6 @@ module.exports = {
         },
         autoexpand: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             editType: 'plot',
             description: [
@@ -267,7 +249,6 @@ module.exports = {
     },
     computed: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Placeholder for exporting automargin-impacting values namely',
@@ -276,7 +257,6 @@ module.exports = {
     },
     paper_bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.background,
         editType: 'plot',
         description: 'Sets the background color of the paper where the graph is drawn.'
@@ -285,7 +265,6 @@ module.exports = {
         // defined here, but set in cartesian.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.background,
         editType: 'layoutstyle',
         description: [
@@ -296,7 +275,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['convert types', 'strict'],
         dflt: 'convert types',
-        role: 'info',
         editType: 'calc',
         description: [
             'Using *strict* a numeric string in trace data is not converted to a number.',
@@ -307,7 +285,6 @@ module.exports = {
     },
     separators: {
         valType: 'string',
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets the decimal and thousand separators.',
@@ -318,7 +295,6 @@ module.exports = {
     },
     hidesources: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         editType: 'plot',
         description: [
@@ -332,7 +308,6 @@ module.exports = {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
         valType: 'boolean',
-        role: 'info',
         editType: 'legend',
         description: [
             'Determines whether or not a legend is drawn.',
@@ -345,13 +320,11 @@ module.exports = {
     colorway: {
         valType: 'colorlist',
         dflt: colorAttrs.defaults,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
     datarevision: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'If provided, a changed value tells `Plotly.react` that',
@@ -365,7 +338,6 @@ module.exports = {
     },
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Used to allow user interactions with the plot to persist after',
@@ -387,7 +359,6 @@ module.exports = {
     },
     editrevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in `editable: true`',
@@ -397,7 +368,6 @@ module.exports = {
     },
     selectionrevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in selected points',
@@ -406,7 +376,6 @@ module.exports = {
     },
     template: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Default attributes to be applied to the plot. Templates can be',
@@ -432,31 +401,26 @@ module.exports = {
             valType: 'enumerated',
             values: ['v', 'h'],
             dflt: 'h',
-            role: 'info',
             editType: 'modebar',
             description: 'Sets the orientation of the modebar.'
         },
         bgcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'modebar',
             description: 'Sets the background color of the modebar.'
         },
         color: {
             valType: 'color',
-            role: 'style',
             editType: 'modebar',
             description: 'Sets the color of the icons in the modebar.'
         },
         activecolor: {
             valType: 'color',
-            role: 'style',
             editType: 'modebar',
             description: 'Sets the color of the active or hovered on icons in the modebar.'
         },
         uirevision: {
             valType: 'any',
-            role: 'info',
             editType: 'none',
             description: [
                 'Controls persistence of user-driven changes related to the modebar,',
@@ -473,7 +437,6 @@ module.exports = {
     meta: {
         valType: 'any',
         arrayOk: true,
-        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information that can be used in various `text` attributes.',
@@ -496,7 +459,6 @@ module.exports = {
     _deprecated: {
         title: {
             valType: 'string',
-            role: 'info',
             editType: 'layoutstyle',
             description: [
                 'Value of `title` is no longer a simple *string* but a set of sub-attributes.',

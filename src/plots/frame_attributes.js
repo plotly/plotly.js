@@ -13,7 +13,6 @@ module.exports = {
 
     group: {
         valType: 'string',
-        role: 'info',
         description: [
             'An identifier that specifies the group to which the frame belongs,',
             'used by animate to select a subset of frames.'
@@ -21,12 +20,10 @@ module.exports = {
     },
     name: {
         valType: 'string',
-        role: 'info',
         description: 'A label by which to identify the frame'
     },
     traces: {
         valType: 'any',
-        role: 'info',
         description: [
             'A list of trace indices that identify the respective traces in the',
             'data attribute'
@@ -34,7 +31,6 @@ module.exports = {
     },
     baseframe: {
         valType: 'string',
-        role: 'info',
         description: [
             'The name of the frame into which this frame\'s properties are merged',
             'before applying. This is used to unify properties and avoid needing',
@@ -43,7 +39,6 @@ module.exports = {
     },
     data: {
         valType: 'any',
-        role: 'object',
         description: [
             'A list of traces this frame modifies. The format is identical to the',
             'normal trace definition.'
@@ -51,7 +46,6 @@ module.exports = {
     },
     layout: {
         valType: 'any',
-        role: 'object',
         description: [
             'Layout properties which this frame modifies. The format is identical',
             'to the normal layout definition.'

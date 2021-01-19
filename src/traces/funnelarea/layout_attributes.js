@@ -15,7 +15,6 @@ module.exports = {
 
     funnelareacolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default funnelarea slice colors. Defaults to the main',
@@ -27,7 +26,6 @@ module.exports = {
     extendfunnelareacolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the funnelarea slice colors (whether given by `funnelareacolorway` or',

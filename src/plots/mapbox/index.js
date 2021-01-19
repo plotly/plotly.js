@@ -36,7 +36,6 @@ exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 exports.attributes = {
     subplot: {
         valType: 'subplotid',
-        role: 'info',
         dflt: 'mapbox',
         editType: 'calc',
         description: [

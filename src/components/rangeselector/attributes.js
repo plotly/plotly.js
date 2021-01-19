@@ -15,14 +15,12 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var buttonAttrs = templatedArray('button', {
     visible: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         editType: 'plot',
         description: 'Determines whether or not this button is visible.'
     },
     step: {
         valType: 'enumerated',
-        role: 'info',
         values: ['month', 'year', 'day', 'hour', 'minute', 'second', 'all'],
         dflt: 'month',
         editType: 'plot',
@@ -32,7 +30,6 @@ var buttonAttrs = templatedArray('button', {
     },
     stepmode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['backward', 'todate'],
         dflt: 'backward',
         editType: 'plot',
@@ -52,7 +49,6 @@ var buttonAttrs = templatedArray('button', {
     },
     count: {
         valType: 'number',
-        role: 'info',
         min: 0,
         dflt: 1,
         editType: 'plot',
@@ -63,7 +59,6 @@ var buttonAttrs = templatedArray('button', {
     },
     label: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         description: 'Sets the text label to appear on the button.'
     },
@@ -77,7 +72,6 @@ var buttonAttrs = templatedArray('button', {
 module.exports = {
     visible: {
         valType: 'boolean',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines whether or not this range selector is visible.',
@@ -92,7 +86,6 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the x position (in normalized coordinates) of the range selector.'
     },
@@ -100,7 +93,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'left',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the range selector\'s horizontal position anchor.',
@@ -112,7 +104,6 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the y position (in normalized coordinates) of the range selector.'
     },
@@ -120,7 +111,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'bottom',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the range selector\'s vertical position anchor',
@@ -137,20 +127,17 @@ module.exports = {
     bgcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the background color of the range selector buttons.'
     },
     activecolor: {
         valType: 'color',
-        role: 'style',
         editType: 'plot',
         description: 'Sets the background color of the active range selector button.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the color of the border enclosing the range selector.'
     },
@@ -158,7 +145,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the width (in px) of the border enclosing the range selector.'
     },

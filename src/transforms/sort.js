@@ -22,7 +22,6 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether this sort transform is enabled or disabled.'
@@ -34,7 +33,6 @@ exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the target by which the sort transform is applied.',
@@ -53,7 +51,6 @@ exports.attributes = {
         valType: 'enumerated',
         values: ['ascending', 'descending'],
         dflt: 'ascending',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the sort transform order.'

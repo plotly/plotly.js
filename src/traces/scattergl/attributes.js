@@ -45,7 +45,6 @@ var attrs = module.exports = overrideAll({
         valType: 'flaglist',
         flags: ['lines', 'markers', 'text'],
         extras: ['none'],
-        role: 'info',
         description: [
             'Determines the drawing mode for this scatter trace.'
         ].join(' ')
@@ -57,7 +56,6 @@ var attrs = module.exports = overrideAll({
             valType: 'enumerated',
             values: ['linear', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
-            role: 'style',
             editType: 'plot',
             description: [
                 'Determines the line shape.',
@@ -68,7 +66,6 @@ var attrs = module.exports = overrideAll({
             valType: 'enumerated',
             values: Object.keys(DASHES),
             dflt: 'solid',
-            role: 'style',
             description: 'Sets the style of the lines.'
         }
     },

@@ -17,7 +17,6 @@ exports.dash = {
     // dash lengths in px, and it will be honored
     values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
     dflt: 'solid',
-    role: 'style',
     editType: 'style',
     description: [
         'Sets the dash style of lines. Set to a dash type string',

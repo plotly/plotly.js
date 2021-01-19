@@ -12,7 +12,6 @@ module.exports = function makeBinAttrs(axLetter, match) {
     return {
         start: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the starting value for the', axLetter,
@@ -36,7 +35,6 @@ module.exports = function makeBinAttrs(axLetter, match) {
         },
         end: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the end value for the', axLetter,
@@ -49,7 +47,6 @@ module.exports = function makeBinAttrs(axLetter, match) {
         },
         size: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the size of each', axLetter, 'axis bin.',

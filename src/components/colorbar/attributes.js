@@ -29,7 +29,6 @@ module.exports = overrideAll({
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        role: 'style',
         dflt: 'pixels',
         description: [
             'Determines whether this color bar\'s thickness',
@@ -40,7 +39,6 @@ module.exports = overrideAll({
     },
     thickness: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 30,
         description: [
@@ -51,7 +49,6 @@ module.exports = overrideAll({
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        role: 'info',
         dflt: 'fraction',
         description: [
             'Determines whether this color bar\'s length',
@@ -64,7 +61,6 @@ module.exports = overrideAll({
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         description: [
             'Sets the length of the color bar',
             'This measure excludes the padding of both ends.',
@@ -77,7 +73,6 @@ module.exports = overrideAll({
         dflt: 1.02,
         min: -2,
         max: 3,
-        role: 'style',
         description: [
             'Sets the x position of the color bar (in plot fraction).'
         ].join(' ')
@@ -86,7 +81,6 @@ module.exports = overrideAll({
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'left',
-        role: 'style',
         description: [
             'Sets this color bar\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -95,14 +89,12 @@ module.exports = overrideAll({
     },
     xpad: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
         valType: 'number',
-        role: 'style',
         dflt: 0.5,
         min: -2,
         max: 3,
@@ -113,7 +105,6 @@ module.exports = overrideAll({
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        role: 'style',
         dflt: 'middle',
         description: [
             'Sets this color bar\'s vertical position anchor',
@@ -123,7 +114,6 @@ module.exports = overrideAll({
     },
     ypad: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the y direction.'
@@ -136,7 +126,6 @@ module.exports = overrideAll({
     bordercolor: axesAttrs.linecolor,
     borderwidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 0,
         description: [
@@ -145,7 +134,6 @@ module.exports = overrideAll({
     },
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: 'rgba(0,0,0,0)',
         description: 'Sets the color of padded area.'
     },
@@ -165,7 +153,6 @@ module.exports = overrideAll({
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
-        role: 'info',
         description: [
             'Determines where tick labels are drawn.'
         ].join(' ')
@@ -191,7 +178,6 @@ module.exports = overrideAll({
     title: {
         text: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Sets the title of the color bar.',
                 'Note that before the existence of `title.text`, the title\'s',
@@ -209,7 +195,6 @@ module.exports = overrideAll({
         side: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            role: 'style',
             dflt: 'top',
             description: [
                 'Determines the location of color bar\'s title',
@@ -223,7 +208,6 @@ module.exports = overrideAll({
     _deprecated: {
         title: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Deprecated in favor of color bar\'s `title.text`.',
                 'Note that value of color bar\'s `title` is no longer a simple',
@@ -236,7 +220,6 @@ module.exports = overrideAll({
         titleside: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            role: 'style',
             dflt: 'top',
             description: 'Deprecated in favor of color bar\'s `title.side`.'
         }

@@ -13,7 +13,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['stack', 'group', 'overlay'],
         dflt: 'stack',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines how bars at the same location coordinate',
@@ -29,7 +28,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         max: 1,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',
@@ -41,7 +39,6 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',

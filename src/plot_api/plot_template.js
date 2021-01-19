@@ -17,7 +17,6 @@ var TEMPLATEITEMNAME = 'templateitemname';
 var templateAttrs = {
     name: {
         valType: 'string',
-        role: 'style',
         editType: 'none',
         description: [
             'When used in a template, named items are created in the output figure',
@@ -32,7 +31,6 @@ var templateAttrs = {
 };
 templateAttrs[TEMPLATEITEMNAME] = {
     valType: 'string',
-    role: 'info',
     editType: 'calc',
     description: [
         'Used to refer to a named item in this array in the template. Named',

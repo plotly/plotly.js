@@ -26,7 +26,6 @@ exports.idRegex = exports.attrRegex = counterRegex(TERNARY);
 var attributes = exports.attributes = {};
 attributes[attr] = {
     valType: 'subplotid',
-    role: 'info',
     dflt: 'ternary',
     editType: 'calc',
     description: [

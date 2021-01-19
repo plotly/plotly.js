@@ -13,7 +13,6 @@ var fxAttrs = require('../components/fx/attributes');
 module.exports = {
     type: {
         valType: 'enumerated',
-        role: 'info',
         values: [],     // listed dynamically
         dflt: 'scatter',
         editType: 'calc+clearAxisTypes',
@@ -22,7 +21,6 @@ module.exports = {
     visible: {
         valType: 'enumerated',
         values: [true, false, 'legendonly'],
-        role: 'info',
         dflt: true,
         editType: 'calc',
         description: [
@@ -34,7 +32,6 @@ module.exports = {
     },
     showlegend: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         editType: 'style',
         description: [
@@ -44,7 +41,6 @@ module.exports = {
     },
     legendgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'style',
         description: [
@@ -55,7 +51,6 @@ module.exports = {
     },
     opacity: {
         valType: 'number',
-        role: 'style',
         min: 0,
         max: 1,
         dflt: 1,
@@ -64,7 +59,6 @@ module.exports = {
     },
     name: {
         valType: 'string',
-        role: 'info',
         editType: 'style',
         description: [
             'Sets the trace name.',
@@ -73,7 +67,6 @@ module.exports = {
     },
     uid: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         anim: true,
         description: [
@@ -105,7 +98,6 @@ module.exports = {
     meta: {
         valType: 'any',
         arrayOk: true,
-        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information associated with this trace',
@@ -129,7 +121,6 @@ module.exports = {
     // https://github.com/plotly/plotly.js/issues/1894
     selectedpoints: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Array containing integer indices of selected points.',
@@ -142,7 +133,6 @@ module.exports = {
 
     hoverinfo: {
         valType: 'flaglist',
-        role: 'info',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none', 'skip'],
         arrayOk: true,
@@ -160,7 +150,6 @@ module.exports = {
             valType: 'string',
             noBlank: true,
             strict: true,
-            role: 'info',
             editType: 'calc',
             description: [
                 'The stream id number links a data trace on a plot with a stream.',
@@ -172,7 +161,6 @@ module.exports = {
             min: 0,
             max: 10000,
             dflt: 500,
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the maximum number of points to keep on the plots from an',
@@ -193,7 +181,6 @@ module.exports = {
     },
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of some user-driven changes to the trace:',

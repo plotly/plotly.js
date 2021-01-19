@@ -48,7 +48,6 @@ module.exports = {
     measure: {
         valType: 'data_array',
         dflt: [],
-        role: 'info',
         editType: 'calc',
         description: [
             'An array containing types of values.',
@@ -63,7 +62,6 @@ module.exports = {
         valType: 'number',
         dflt: null,
         arrayOk: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets where the bar base is drawn (in position axis units).'
@@ -97,7 +95,6 @@ module.exports = {
         valType: 'flaglist',
         flags: ['label', 'text', 'initial', 'delta', 'final'],
         extras: ['none'],
-        role: 'info',
         editType: 'plot',
         arrayOk: false,
         description: [
@@ -142,7 +139,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['spanning', 'between'],
             dflt: 'between',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the shape of connector lines.'
@@ -151,7 +147,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines if connector lines are drawn. '

@@ -66,7 +66,6 @@ module.exports = extendFlat({
             min: 0,
             max: 1,
             dflt: 1,
-            role: 'style',
             editType: 'style',
             description: 'Sets the opacity of the locations.'
         },

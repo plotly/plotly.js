@@ -21,7 +21,6 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether this group-by transform is enabled or disabled.'
@@ -30,7 +29,6 @@ exports.attributes = {
     groups: {
         valType: 'data_array',
         dflt: [],
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the groups in which the trace data will be split.',
@@ -42,7 +40,6 @@ exports.attributes = {
     },
     nameformat: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'Pattern by which grouped traces are named. If only one trace is present,',
@@ -57,7 +54,6 @@ exports.attributes = {
         _isLinkedToArray: 'style',
         target: {
             valType: 'string',
-            role: 'info',
             editType: 'calc',
             description: [
                 'The group value which receives these styles.'
@@ -65,7 +61,6 @@ exports.attributes = {
         },
         value: {
             valType: 'any',
-            role: 'info',
             dflt: {},
             editType: 'calc',
             description: [
