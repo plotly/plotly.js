@@ -1898,14 +1898,6 @@ describe('Test plot api', function() {
                 ]
             };
 
-            if(!Queue) {
-                Queue = {
-                    add: function() {},
-                    startSequence: function() {},
-                    endSequence: function() {}
-                };
-            }
-
             spyOn(plotApi, 'redraw');
             spyOn(Queue, 'add');
         });
