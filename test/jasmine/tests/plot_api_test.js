@@ -1898,16 +1898,8 @@ describe('Test plot api', function() {
                 ]
             };
 
-            if(!Plotly.Queue) {
-                Plotly.Queue = {
-                    add: function() {},
-                    startSequence: function() {},
-                    endSequence: function() {}
-                };
-            }
-
             spyOn(plotApi, 'redraw');
-            spyOn(Plotly.Queue, 'add');
+            spyOn(Queue, 'add');
         });
 
         it('should throw an error when gd.data isn\'t an array.', function() {
@@ -2054,9 +2046,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2071,9 +2063,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.extendTraces.apply(null, undoArgs);
 
@@ -2089,9 +2081,9 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2148,12 +2140,12 @@ describe('Test plot api', function() {
                 }, [0, 1], args.maxp);
 
                 expect(plotApi.redraw).toHaveBeenCalled();
-                expect(Plotly.Queue.add).toHaveBeenCalled();
+                expect(Queue.add).toHaveBeenCalled();
 
                 expect(gd.data[0].x).toEqual(expectations.newArray);
                 expect(gd.data[1].x).toEqual(new Float32Array(expectations.newArray));
 
-                var cont = Plotly.Queue.add.calls.first().args[2][1].x;
+                var cont = Queue.add.calls.first().args[2][1].x;
                 expect(cont[0]).toEqual(expectations.remainder);
                 expect(cont[1]).toEqual(new Float32Array(expectations.remainder));
             }
