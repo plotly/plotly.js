@@ -74,8 +74,20 @@ if(window.PlotlyLocales && Array.isArray(window.PlotlyLocales)) {
 exports.Icons = require('./fonts/ploticon');
 
 // unofficial 'beta' plot methods, use at your own risk
-exports.Plots = require('./plots/plots');
-exports.Fx = require('./components/fx');
+var Fx = require('./components/fx');
+var Plots = require('./plots/plots');
+
+exports.Plots = {
+    resize: Plots.resize,
+    graphJson: Plots.graphJson,
+    sendDataToCloud: Plots.sendDataToCloud
+};
+exports.Fx = {
+    hover: Fx.hover,
+    unhover: Fx.unhover,
+    loneHover: Fx.loneHover,
+    loneUnhover: Fx.loneUnhover
+};
 exports.Snapshot = require('./snapshot');
 exports.PlotSchema = require('./plot_api/plot_schema');
 exports.Queue = require('./lib/queue');
