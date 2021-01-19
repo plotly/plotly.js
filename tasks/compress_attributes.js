@@ -27,8 +27,7 @@ var regexStr = [
     makeJoinedArrayRegex('description'),
     makeArrayRegex('requiredOpts'),
     makeArrayRegex('otherOpts'),
-    makeStringRegex('hrName'),
-    makeStringRegex('role')
+    makeStringRegex('hrName')
 ].join('|');
 
 var regex = new RegExp(regexStr, 'g');
