@@ -167,8 +167,11 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
       - run:
-          name: Test bundles
+          name: Test certain bundles against function constructors
           command: npm run no-new-func
+      - run:
+          name: Test plotly bundles againt unexpected characters
+          command: npm run no-bad-char
 
 workflows:
   version: 2

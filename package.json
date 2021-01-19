@@ -32,6 +32,7 @@
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
     "no-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: error}' $(find dist -type f -iname '*.js' | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js | grep -v MathJax.js)",
+    "no-bad-char": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-misleading-character-class: error}' $(find dist -type f -iname '*.js' | grep plotly)",
     "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
@@ -45,7 +46,7 @@
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 12 --npm 6.14 && npm-link-check && npm ls --prod",
-    "version": "npm run build && git add -A dist src build",
+    "version": "npm run build && npm run no-bad-char && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
     "postshrinkwrap": "chttps ."
