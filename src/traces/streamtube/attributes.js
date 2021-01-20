@@ -95,7 +95,6 @@ var attrs = {
     //     valType: 'enumerated',
     //     values: ['scaled', 'absolute', 'fixed'],
     //     dflt: 'scaled',
-    //     role: 'info',
     //     editType: 'calc',
     //     description: [
     //         'Sets the mode by which the streamtubes are sized.'
