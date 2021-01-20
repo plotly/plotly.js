@@ -29,7 +29,6 @@ var lineAttrs = extendFlat({
         valType: 'enumerated',
         values: Object.keys(DASHES),
         dflt: 'solid',
-        role: 'style',
         description: 'Sets the dash style of the lines.'
     }
 }, colorAttributes('line'));
@@ -38,7 +37,6 @@ function makeProjectionAttr(axLetter) {
     return {
         show: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: [
                 'Sets whether or not projections are shown along the',
@@ -47,7 +45,6 @@ function makeProjectionAttr(axLetter) {
         },
         opacity: {
             valType: 'number',
-            role: 'style',
             min: 0,
             max: 1,
             dflt: 1,
@@ -55,7 +52,6 @@ function makeProjectionAttr(axLetter) {
         },
         scale: {
             valType: 'number',
-            role: 'style',
             min: 0,
             max: 10,
             dflt: 2 / 3,
@@ -105,7 +101,6 @@ var attrs = module.exports = overrideAll({
         {dflt: 'lines+markers'}),
     surfaceaxis: {
         valType: 'enumerated',
-        role: 'info',
         values: [-1, 0, 1, 2],
         dflt: -1,
         description: [
@@ -116,7 +111,6 @@ var attrs = module.exports = overrideAll({
     },
     surfacecolor: {
         valType: 'color',
-        role: 'style',
         description: 'Sets the surface fill color.'
     },
     projection: {
@@ -132,7 +126,6 @@ var attrs = module.exports = overrideAll({
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
-            role: 'style',
             dflt: 'circle',
             arrayOk: true,
             description: 'Sets the marker symbol type.'

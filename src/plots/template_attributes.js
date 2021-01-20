@@ -47,7 +47,6 @@ exports.hovertemplateAttrs = function(opts, extra) {
 
     var hovertemplate = {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: opts.editType || 'none',
         description: [
@@ -77,7 +76,6 @@ exports.texttemplateAttrs = function(opts, extra) {
 
     var texttemplate = {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: opts.editType || 'calc',
         description: [

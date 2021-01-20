@@ -33,7 +33,6 @@ module.exports = {
     r0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `r`.',
@@ -45,7 +44,6 @@ module.exports = {
     dr: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'Sets the r coordinate step.'
     },
@@ -53,7 +51,6 @@ module.exports = {
     theta0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `theta`.',
@@ -64,7 +61,6 @@ module.exports = {
     },
     dtheta: {
         valType: 'number',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the theta coordinate step.',
@@ -77,7 +73,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['radians', 'degrees', 'gradians'],
         dflt: 'degrees',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the unit of input *theta* values.',

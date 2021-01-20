@@ -12,7 +12,6 @@
 module.exports = {
     scene: {
         valType: 'subplotid',
-        role: 'info',
         dflt: 'scene',
         editType: 'calc+clearAxisTypes',
         description: [

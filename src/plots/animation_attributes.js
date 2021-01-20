@@ -12,7 +12,6 @@ module.exports = {
     mode: {
         valType: 'enumerated',
         dflt: 'afterall',
-        role: 'info',
         values: ['immediate', 'next', 'afterall'],
         description: [
             'Describes how a new animate call interacts with currently-running',
@@ -25,7 +24,6 @@ module.exports = {
     },
     direction: {
         valType: 'enumerated',
-        role: 'info',
         values: ['forward', 'reverse'],
         dflt: 'forward',
         description: [
@@ -35,7 +33,6 @@ module.exports = {
     fromcurrent: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         description: [
             'Play frames starting at the current frame instead of the beginning.'
         ].join(' ')
@@ -43,7 +40,6 @@ module.exports = {
     frame: {
         duration: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 500,
             description: [
@@ -53,7 +49,6 @@ module.exports = {
         },
         redraw: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             description: [
                 'Redraw the plot at completion of the transition. This is desirable',
@@ -66,7 +61,6 @@ module.exports = {
     transition: {
         duration: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 500,
             editType: 'none',
@@ -116,7 +110,6 @@ module.exports = {
                 'back-in-out',
                 'bounce-in-out'
             ],
-            role: 'info',
             editType: 'none',
             description: 'The easing function used for the transition'
         },
@@ -124,7 +117,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['layout first', 'traces first'],
             dflt: 'layout first',
-            role: 'info',
             editType: 'none',
             description: [
                 'Determines whether the figure\'s layout or traces smoothly transitions',

@@ -45,7 +45,6 @@ var marker = extendFlat({
         dflt: 1,
         min: 0,
         max: 1,
-        role: 'style',
         editType: 'style',
         description: 'Sets the opacity of the bars.'
     }
@@ -77,7 +76,6 @@ module.exports = {
 
     textposition: {
         valType: 'enumerated',
-        role: 'info',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'none',
         arrayOk: true,
@@ -99,7 +97,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['end', 'middle', 'start'],
         dflt: 'end',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
@@ -109,7 +106,6 @@ module.exports = {
     textangle: {
         valType: 'angle',
         dflt: 'auto',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the angle of the tick labels with respect to the bar.',
@@ -134,7 +130,6 @@ module.exports = {
     constraintext: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'both', 'none'],
-        role: 'info',
         dflt: 'both',
         editType: 'calc',
         description: [
@@ -154,7 +149,6 @@ module.exports = {
 
     orientation: {
         valType: 'enumerated',
-        role: 'info',
         values: ['v', 'h'],
         editType: 'calc+clearAxisTypes',
         description: [
@@ -168,7 +162,6 @@ module.exports = {
         valType: 'any',
         dflt: null,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets where the bar base is drawn (in position axis units).',
@@ -182,7 +175,6 @@ module.exports = {
         valType: 'number',
         dflt: null,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Shifts the position where the bar is drawn',
@@ -198,7 +190,6 @@ module.exports = {
         dflt: null,
         min: 0,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the bar width (in position axis units).'
@@ -209,7 +200,6 @@ module.exports = {
 
     offsetgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -220,7 +210,6 @@ module.exports = {
     },
     alignmentgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -250,13 +239,9 @@ module.exports = {
         editType: 'style'
     },
 
-    r: scatterAttrs.r,
-    t: scatterAttrs.t,
-
     _deprecated: {
         bardir: {
             valType: 'enumerated',
-            role: 'info',
             editType: 'calc',
             values: ['v', 'h'],
             description: 'Renamed to `orientation`.'

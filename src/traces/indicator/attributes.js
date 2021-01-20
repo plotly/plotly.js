@@ -28,7 +28,6 @@ var gaugeBarAttrs = {
     color: {
         valType: 'color',
         editType: 'plot',
-        role: 'info',
         description: [
             'Sets the background color of the arc.'
         ].join(' ')
@@ -36,7 +35,6 @@ var gaugeBarAttrs = {
     line: {
         color: {
             valType: 'color',
-            role: 'info',
             dflt: colorAttrs.defaultLine,
             editType: 'plot',
             description: [
@@ -45,7 +43,6 @@ var gaugeBarAttrs = {
         },
         width: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 0,
             editType: 'plot',
@@ -57,7 +54,6 @@ var gaugeBarAttrs = {
     },
     thickness: {
         valType: 'number',
-        role: 'info',
         min: 0,
         max: 1,
         dflt: 1,
@@ -71,7 +67,6 @@ var gaugeBarAttrs = {
 
 var rangeAttr = {
     valType: 'info_array',
-    role: 'info',
     items: [
             {valType: 'number', editType: 'plot'},
             {valType: 'number', editType: 'plot'}
@@ -100,7 +95,6 @@ module.exports = {
     mode: {
         valType: 'flaglist',
         editType: 'calc',
-        role: 'info',
         flags: ['number', 'delta', 'gauge'],
         dflt: 'number',
         description: [
@@ -113,7 +107,6 @@ module.exports = {
     value: {
         valType: 'number',
         editType: 'calc',
-        role: 'info',
         anim: true,
         description: [
             'Sets the number to be displayed.'
@@ -122,7 +115,6 @@ module.exports = {
     align: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the horizontal alignment of the `text` within the box.',
@@ -136,7 +128,6 @@ module.exports = {
     title: {
         text: {
             valType: 'string',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the title of this indicator.'
@@ -145,7 +136,6 @@ module.exports = {
         align: {
             valType: 'enumerated',
             values: ['left', 'center', 'right'],
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the horizontal alignment of the title.',
@@ -164,7 +154,6 @@ module.exports = {
         valueformat: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the value formatting rule using d3 formatting mini-language',
@@ -180,7 +169,6 @@ module.exports = {
         prefix: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets a prefix appearing before the number.'
@@ -189,7 +177,6 @@ module.exports = {
         suffix: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets a suffix appearing next to the number.'
@@ -200,7 +187,6 @@ module.exports = {
     delta: {
         reference: {
             valType: 'number',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the reference value to compute the delta.',
@@ -210,7 +196,6 @@ module.exports = {
         position: {
             valType: 'enumerated',
             values: ['top', 'bottom', 'left', 'right'],
-            role: 'info',
             dflt: 'bottom',
             editType: 'plot',
             description: [
@@ -220,7 +205,6 @@ module.exports = {
         relative: {
             valType: 'boolean',
             editType: 'plot',
-            role: 'info',
             dflt: false,
             description: [
                 'Show relative change'
@@ -228,7 +212,6 @@ module.exports = {
         },
         valueformat: {
             valType: 'string',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the value formatting rule using d3 formatting mini-language',
@@ -239,7 +222,6 @@ module.exports = {
         increasing: {
             symbol: {
                 valType: 'string',
-                role: 'info',
                 dflt: delta.INCREASING.SYMBOL,
                 editType: 'plot',
                 description: [
@@ -248,7 +230,6 @@ module.exports = {
             },
             color: {
                 valType: 'color',
-                role: 'info',
                 dflt: delta.INCREASING.COLOR,
                 editType: 'plot',
                 description: [
@@ -261,7 +242,6 @@ module.exports = {
         decreasing: {
             symbol: {
                 valType: 'string',
-                role: 'info',
                 dflt: delta.DECREASING.SYMBOL,
                 editType: 'plot',
                 description: [
@@ -270,7 +250,6 @@ module.exports = {
             },
             color: {
                 valType: 'color',
-                role: 'info',
                 dflt: delta.DECREASING.COLOR,
                 editType: 'plot',
                 description: [
@@ -291,7 +270,6 @@ module.exports = {
         shape: {
             valType: 'enumerated',
             editType: 'plot',
-            role: 'info',
             dflt: 'angular',
             values: ['angular', 'bullet'],
             description: [
@@ -307,14 +285,12 @@ module.exports = {
         // Background of the gauge
         bgcolor: {
             valType: 'color',
-            role: 'info',
             editType: 'plot',
             description: 'Sets the gauge background color.'
         },
         bordercolor: {
             valType: 'color',
             dflt: colorAttrs.defaultLine,
-            role: 'info',
             editType: 'plot',
             description: 'Sets the color of the border enclosing the gauge.'
         },
@@ -322,7 +298,6 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 1,
-            role: 'info',
             editType: 'plot',
             description: 'Sets the width (in px) of the border enclosing the gauge.'
         },
@@ -386,7 +361,6 @@ module.exports = {
                 valType: 'number',
                 editType: 'calc',
                 dflt: false,
-                role: 'info',
                 description: [
                     'Sets a treshold value drawn as a line.'
                 ].join(' ')

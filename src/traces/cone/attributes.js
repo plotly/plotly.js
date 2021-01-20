@@ -18,7 +18,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var attrs = {
     x: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x coordinates of the vector field',
@@ -27,7 +26,6 @@ var attrs = {
     },
     y: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y coordinates of the vector field',
@@ -36,7 +34,6 @@ var attrs = {
     },
     z: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the z coordinates of the vector field',
@@ -107,7 +104,6 @@ var attrs = {
     sizemode: {
         valType: 'enumerated',
         values: ['scaled', 'absolute'],
-        role: 'info',
         editType: 'calc',
         dflt: 'scaled',
         description: [
@@ -118,7 +114,6 @@ var attrs = {
     },
     sizeref: {
         valType: 'number',
-        role: 'info',
         editType: 'calc',
         min: 0,
         description: [
@@ -135,7 +130,6 @@ var attrs = {
 
     anchor: {
         valType: 'enumerated',
-        role: 'info',
         editType: 'calc',
         values: ['tip', 'tail', 'cm', 'center'],
         dflt: 'cm',
@@ -148,7 +142,6 @@ var attrs = {
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -160,7 +153,6 @@ var attrs = {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',

@@ -124,7 +124,7 @@ plots.previousPromises = function(gd) {
 
 /**
  * Adds the 'Edit chart' link.
- * Note that now Plotly.plot() calls this so it can regenerate whenever it replots
+ * Note that now _doPlot calls this so it can regenerate whenever it replots
  *
  * Add source links to your graph inside the 'showSources' config argument.
  */
@@ -461,27 +461,18 @@ plots.supplyDefaults = function(gd, opts) {
         newFullLayout.images.length === 0
     );
 
-    // TODO remove in v2.0.0
-    // add has-plot-type refs to fullLayout for backward compatibility
-    newFullLayout._hasCartesian = newFullLayout._has('cartesian');
-    newFullLayout._hasGeo = newFullLayout._has('geo');
-    newFullLayout._hasGL3D = newFullLayout._has('gl3d');
-    newFullLayout._hasGL2D = newFullLayout._has('gl2d');
-    newFullLayout._hasTernary = newFullLayout._has('ternary');
-    newFullLayout._hasPie = newFullLayout._has('pie');
-
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
+    var hadHeatmapgl = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
+    var hasHeatmapgl = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadGL2D;
-    var hasBgLayer = hasCartesian || hasGL2D;
+    var hadBgLayer = hadCartesian || hadHeatmapgl;
+    var hasBgLayer = hasCartesian || hasHeatmapgl;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -704,7 +695,7 @@ function getFormatObj(gd, formatKeys) {
 /**
  * getFormatter: combine the final separators with the locale formatting object
  * we pulled earlier to generate number and time formatters
- * TODO: remove separators in v2, only use locale, so we don't need this step?
+ * TODO: remove separators in v3, only use locale, so we don't need this step?
  *
  * @param {object} formatObj: d3.locale format object
  * @param {string} separators: length-2 string to override decimal and thousands
@@ -1505,7 +1496,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     // layouts with no set width and height were set temporary set to 'initial'
     // to pass through the autosize routine
     //
-    // This behavior is subject to change in v2.
+    // This behavior is subject to change in v3.
     coerce('autosize', !(layoutIn.width && layoutIn.height));
 
     coerce('width');
@@ -1749,7 +1740,6 @@ plots.purge = function(gd) {
     delete gd._fullData;
     delete gd._fullLayout;
     delete gd.calcdata;
-    delete gd.framework;
     delete gd.empty;
 
     delete gd.fid;
@@ -1759,7 +1749,7 @@ plots.purge = function(gd) {
     delete gd.autoplay; // are we doing an action that doesn't go in undo queue?
     delete gd.changed;
 
-    // these get recreated on Plotly.plot anyway, but just to be safe
+    // these get recreated on _doPlot anyway, but just to be safe
     // (and to have a record of them...)
     delete gd._promises;
     delete gd._redrawTimer;
@@ -2086,7 +2076,7 @@ plots.doAutoMargin = function(gd) {
         var maxNumberOfRedraws = 3 * (1 + Object.keys(pushMarginIds).length);
 
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
-            return Registry.call('plot', gd);
+            return Registry.call('_doPlot', gd);
         } else {
             fullLayout._size = oldMargins;
             Lib.warn('Too many auto-margin redraws.');
@@ -2243,8 +2233,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             };
         }
     }
-
-    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
 

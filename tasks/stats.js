@@ -136,6 +136,10 @@ function getMainBundleInfo() {
         'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependencies.',
         '',
         'Starting in `v1.50.0`, the minified version of each partial bundle is also published to npm in a separate "dist min" package.',
+        '',
+        'Starting in `v2.0.0`, the strict partial bundle includes everything except the traces that require function constructors.',
+        'Over time we hope to include more of the remaining trace types here, after which we intend to work on other strict CSP issues ',
+        'such as inline CSS that we may not be able to include in the main bundle.',
         ''
     ];
 }

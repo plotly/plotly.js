@@ -126,10 +126,6 @@ queue.stopSequence = function(gd) {
 queue.undo = function undo(gd) {
     var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar) {
-        gd.framework.undo();
-        return;
-    }
     if(gd.undoQueue === undefined ||
             isNaN(gd.undoQueue.index) ||
             gd.undoQueue.index <= 0) {
@@ -159,10 +155,6 @@ queue.undo = function undo(gd) {
 queue.redo = function redo(gd) {
     var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar) {
-        gd.framework.redo();
-        return;
-    }
     if(gd.undoQueue === undefined ||
             isNaN(gd.undoQueue.index) ||
             gd.undoQueue.index >= gd.undoQueue.queue.length) {

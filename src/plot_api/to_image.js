@@ -229,7 +229,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        plotApi.plot(clonedGd, data, layoutImage, configImage)
+        plotApi.newPlot(clonedGd, data, layoutImage, configImage)
             .then(redrawFunc)
             .then(wait)
             .then(convert)

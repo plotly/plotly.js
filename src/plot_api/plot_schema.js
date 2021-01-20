@@ -63,7 +63,7 @@ exports.get = function() {
     return {
         defs: {
             valObjects: valObjectMeta,
-            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role', 'editType', 'impliedEdits']),
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'editType', 'impliedEdits']),
             editType: {
                 traces: editTypes.traces,
                 layout: editTypes.layout
@@ -332,7 +332,7 @@ function layoutHeadAttr(fullLayout, head) {
             _module = basePlotModules[i];
             if(_module.attrRegex && _module.attrRegex.test(head)) {
                 // if a module defines overrides, these take precedence
-                // initially this is to allow gl2d different editTypes from svg cartesian
+                // initially this was to allow heatmapgl different editTypes from svg cartesian
                 if(_module.layoutAttrOverrides) return _module.layoutAttrOverrides;
 
                 // otherwise take the first attributes we find
@@ -340,7 +340,7 @@ function layoutHeadAttr(fullLayout, head) {
             }
 
             // a module can also override the behavior of base (and component) module layout attrs
-            // again see gl2d for initial use case
+            // again see heatmapgl for initial use case
             var baseOverrides = _module.baseLayoutAttrOverrides;
             if(baseOverrides && head in baseOverrides) return baseOverrides[head];
         }
@@ -600,18 +600,17 @@ function getFramesAttributes() {
 }
 
 function formatAttributes(attrs) {
-    mergeValTypeAndRole(attrs);
+    mergeValType(attrs);
     formatArrayContainers(attrs);
     stringify(attrs);
 
     return attrs;
 }
 
-function mergeValTypeAndRole(attrs) {
+function mergeValType(attrs) {
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
-            role: 'info',
             description: [
                 'Sets the source reference on Chart Studio Cloud for ',
                 attrName, '.'
@@ -623,17 +622,12 @@ function mergeValTypeAndRole(attrs) {
     function callback(attr, attrName, attrs) {
         if(exports.isValObject(attr)) {
             if(attr.valType === 'data_array') {
-                // all 'data_array' attrs have role 'data'
-                attr.role = 'data';
                 // all 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             } else if(attr.arrayOk === true) {
                 // all 'arrayOk' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
-        } else if(isPlainObject(attr)) {
-            // all attrs container objects get role 'object'
-            attr.role = 'object';
         }
     }
 
@@ -652,7 +646,6 @@ function formatArrayContainers(attrs) {
 
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
-        attrs[attrName].role = 'object';
     }
 
     exports.crawl(attrs, callback);

@@ -19,7 +19,6 @@ var constants = require('./constants');
 var stepsAttrs = templatedArray('step', {
     visible: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not this step is included in the slider.'
@@ -29,7 +28,6 @@ var stepsAttrs = templatedArray('step', {
         valType: 'enumerated',
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
         dflt: 'restyle',
-        role: 'info',
         description: [
             'Sets the Plotly method to be called when the slider value is changed.',
             'If the `skip` method is used, the API slider will function as normal',
@@ -40,7 +38,6 @@ var stepsAttrs = templatedArray('step', {
     },
     args: {
         valType: 'info_array',
-        role: 'info',
         freeLength: true,
         items: [
             { valType: 'any' },
@@ -54,12 +51,10 @@ var stepsAttrs = templatedArray('step', {
     },
     label: {
         valType: 'string',
-        role: 'info',
         description: 'Sets the text label to appear on the slider'
     },
     value: {
         valType: 'string',
-        role: 'info',
         description: [
             'Sets the value of the slider step, used to refer to the step programatically.',
             'Defaults to the slider label if not provided.'
@@ -67,7 +62,6 @@ var stepsAttrs = templatedArray('step', {
     },
     execute: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'When true, the API method is executed. When false, all other behaviors are the same',
@@ -82,7 +76,6 @@ var stepsAttrs = templatedArray('step', {
 module.exports = overrideAll(templatedArray('slider', {
     visible: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not the slider is visible.'
@@ -91,7 +84,6 @@ module.exports = overrideAll(templatedArray('slider', {
 
     active: {
         valType: 'number',
-        role: 'info',
         min: 0,
         dflt: 0,
         description: [
@@ -105,7 +97,6 @@ module.exports = overrideAll(templatedArray('slider', {
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        role: 'info',
         dflt: 'fraction',
         description: [
             'Determines whether this slider length',
@@ -117,7 +108,6 @@ module.exports = overrideAll(templatedArray('slider', {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         description: [
             'Sets the length of the slider',
             'This measure excludes the padding of both ends.',
@@ -130,7 +120,6 @@ module.exports = overrideAll(templatedArray('slider', {
         min: -2,
         max: 3,
         dflt: 0,
-        role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
     pad: extendDeepAll(padAttrs({editType: 'arraydraw'}), {
@@ -140,7 +129,6 @@ module.exports = overrideAll(templatedArray('slider', {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'left',
-        role: 'info',
         description: [
             'Sets the slider\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -152,14 +140,12 @@ module.exports = overrideAll(templatedArray('slider', {
         min: -2,
         max: 3,
         dflt: 0,
-        role: 'style',
         description: 'Sets the y position (in normalized coordinates) of the slider.'
     },
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'top',
-        role: 'info',
         description: [
             'Sets the slider\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
@@ -170,7 +156,6 @@ module.exports = overrideAll(templatedArray('slider', {
     transition: {
         duration: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 150,
             description: 'Sets the duration of the slider transition'
@@ -178,7 +163,6 @@ module.exports = overrideAll(templatedArray('slider', {
         easing: {
             valType: 'enumerated',
             values: animationAttrs.transition.easing.values,
-            role: 'info',
             dflt: 'cubic-in-out',
             description: 'Sets the easing function of the slider transition'
         }
@@ -187,7 +171,6 @@ module.exports = overrideAll(templatedArray('slider', {
     currentvalue: {
         visible: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             description: [
                 'Shows the currently-selected value above the slider.'
@@ -198,7 +181,6 @@ module.exports = overrideAll(templatedArray('slider', {
             valType: 'enumerated',
             values: ['left', 'center', 'right'],
             dflt: 'left',
-            role: 'info',
             description: [
                 'The alignment of the value readout relative to the length of the slider.'
             ].join(' ')
@@ -207,7 +189,6 @@ module.exports = overrideAll(templatedArray('slider', {
         offset: {
             valType: 'number',
             dflt: 10,
-            role: 'info',
             description: [
                 'The amount of space, in pixels, between the current value label',
                 'and the slider.'
@@ -216,13 +197,11 @@ module.exports = overrideAll(templatedArray('slider', {
 
         prefix: {
             valType: 'string',
-            role: 'info',
             description: 'When currentvalue.visible is true, this sets the prefix of the label.'
         },
 
         suffix: {
             valType: 'string',
-            role: 'info',
             description: 'When currentvalue.visible is true, this sets the suffix of the label.'
         },
 
@@ -237,7 +216,6 @@ module.exports = overrideAll(templatedArray('slider', {
 
     activebgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.gripBgActiveColor,
         description: [
             'Sets the background color of the slider grip',
@@ -246,48 +224,41 @@ module.exports = overrideAll(templatedArray('slider', {
     },
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.railBgColor,
         description: 'Sets the background color of the slider.'
     },
     bordercolor: {
         valType: 'color',
         dflt: constants.railBorderColor,
-        role: 'style',
         description: 'Sets the color of the border enclosing the slider.'
     },
     borderwidth: {
         valType: 'number',
         min: 0,
         dflt: constants.railBorderWidth,
-        role: 'style',
         description: 'Sets the width (in px) of the border enclosing the slider.'
     },
     ticklen: {
         valType: 'number',
         min: 0,
         dflt: constants.tickLength,
-        role: 'style',
         description: 'Sets the length in pixels of step tick marks'
     },
     tickcolor: {
         valType: 'color',
         dflt: constants.tickColor,
-        role: 'style',
         description: 'Sets the color of the border enclosing the slider.'
     },
     tickwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         description: 'Sets the tick width (in px).'
     },
     minorticklen: {
         valType: 'number',
         min: 0,
         dflt: constants.minorTickLength,
-        role: 'style',
         description: 'Sets the length in pixels of minor step tick marks'
     }
 }), 'arraydraw', 'from-root');

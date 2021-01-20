@@ -58,11 +58,6 @@ function keyIsAxis(keyName) {
 
 
 module.exports = function clonePlot(graphObj, options) {
-    // Polar plot compatibility
-    if(graphObj.framework && graphObj.framework.isPolar) {
-        graphObj = graphObj.framework.getConfig();
-    }
-
     var i;
     var oldData = graphObj.data;
     var oldLayout = graphObj.layout;

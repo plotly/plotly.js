@@ -19,7 +19,6 @@ var contourContourAttrs = contourAttrs.contours;
 module.exports = extendFlat({
     carpet: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'The `carpet` of the carpet axes on which this contour trace lies'
@@ -53,7 +52,6 @@ module.exports = extendFlat({
             valType: 'enumerated',
             values: ['fill', 'lines', 'none'],
             dflt: 'fill',
-            role: 'style',
             editType: 'calc',
             description: [
                 'Determines the coloring method showing the contour values.',

@@ -68,7 +68,7 @@ function lsInner(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
-    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
+    // _has('cartesian') means SVG specifically, not heatmapgl - but heatmapgl
     // can still get here because it makes some of the SVG structure
     // for shared features like selections.
     if(!fullLayout._has('cartesian')) {
@@ -536,7 +536,7 @@ exports.doColorBars = function(gd) {
 exports.layoutReplot = function(gd) {
     var layout = gd.layout;
     gd.layout = undefined;
-    return Registry.call('plot', gd, '', layout);
+    return Registry.call('_doPlot', gd, '', layout);
 };
 
 exports.doLegend = function(gd) {

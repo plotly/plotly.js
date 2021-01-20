@@ -1,22 +1,26 @@
 var Plotly = require('@lib/index');
 var Events = require('@src/lib/events');
+var Registry = require('@src/registry');
+function _doPlot(gd, data, layout) {
+    return Registry.call('_doPlot', gd, data, layout);
+}
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
 
 describe('Plotly.___ methods', function() {
     'use strict';
 
     afterEach(destroyGraphDiv);
 
-    describe('Plotly.plot promise', function() {
+    describe('_doPlot promise', function() {
         var promise;
         var promiseGd;
 
         beforeEach(function(done) {
             var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
-            promise = Plotly.plot(createGraphDiv(), data, {});
+            promise = _doPlot(createGraphDiv(), data, {});
 
             promise.then(function(gd) {
                 promiseGd = gd;
@@ -32,7 +36,7 @@ describe('Plotly.___ methods', function() {
         });
     });
 
-    describe('Plotly.plot promise', function() {
+    describe('_doPlot promise', function() {
         var gd;
         var promise;
         var promiseRejected = false;
@@ -48,7 +52,7 @@ describe('Plotly.___ methods', function() {
                 return false;
             });
 
-            promise = Plotly.plot(gd, data, {});
+            promise = _doPlot(gd, data, {});
 
             promise.then(null, function() {
                 promiseRejected = true;
@@ -370,33 +374,6 @@ describe('Plotly.___ methods', function() {
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
             expect(promiseGd.layout).toBeDefined();
-        });
-    });
-
-    describe('Plotly.relayout promise', function() {
-        var promise;
-        var promiseGd;
-
-        beforeEach(function(done) {
-            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
-            var layout = {hovermode: 'closest'};
-            var initialDiv = createGraphDiv();
-
-            Plotly.newPlot(initialDiv, data, layout);
-
-            initialDiv.framework = { isPolar: true };
-            promise = Plotly.relayout(initialDiv, 'hovermode', false);
-
-            promise.then(function(gd) {
-                promiseGd = gd;
-                done();
-            });
-        });
-
-        it('should be returned with the graph div unchanged when the framework is polar', function() {
-            expect(promiseGd).toBeDefined();
-            expect(typeof promiseGd).toBe('object');
-            expect(promiseGd.changed).toBeFalsy();
         });
     });
 

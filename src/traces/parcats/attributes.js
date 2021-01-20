@@ -23,7 +23,6 @@ var line = extendFlat(
             valType: 'enumerated',
             values: ['linear', 'hspline'],
             dflt: 'linear',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the shape of the paths.',
@@ -56,7 +55,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['category', 'color', 'dimension'],
         dflt: 'category',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the hover interaction mode for the parcats diagram.',
@@ -84,7 +82,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['perpendicular', 'freeform', 'fixed'],
         dflt: 'perpendicular',
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets the drag interaction mode for categories and dimensions.',
@@ -96,7 +93,6 @@ module.exports = {
     bundlecolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'plot',
         description: 'Sort paths so that like colors are bundled together within each category.'
     },
@@ -104,7 +100,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['forward', 'backward'],
         dflt: 'forward',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the path sorting algorithm.',
@@ -126,7 +121,6 @@ module.exports = {
         _isLinkedToArray: 'dimension',
         label: {
             valType: 'string',
-            role: 'info',
             editType: 'calc',
             description: 'The shown name of the dimension.'
         },
@@ -136,7 +130,6 @@ module.exports = {
                 'trace', 'category ascending', 'category descending', 'array'
             ],
             dflt: 'trace',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Specifies the ordering logic for the categories in the dimension.',
@@ -150,7 +143,6 @@ module.exports = {
         },
         categoryarray: {
             valType: 'data_array',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the order in which categories in this dimension appear.',
@@ -160,7 +152,6 @@ module.exports = {
         },
         ticktext: {
             valType: 'data_array',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets alternative tick labels for the categories in this dimension.',
@@ -171,7 +162,6 @@ module.exports = {
         },
         values: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             editType: 'calc',
             description: [
@@ -182,7 +172,6 @@ module.exports = {
         },
         displayindex: {
             valType: 'integer',
-            role: 'info',
             editType: 'calc',
             description: [
                 'The display index of dimension, from left to right, zero indexed, defaults to dimension',
@@ -194,7 +183,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'calc',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         }
@@ -206,7 +194,6 @@ module.exports = {
         min: 0,
         dflt: 1,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'The number of observations represented by each state. Defaults to 1 so that each state represents',

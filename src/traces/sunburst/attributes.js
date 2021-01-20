@@ -52,7 +52,6 @@ module.exports = {
         values: ['remainder', 'total'],
         dflt: 'remainder',
         editType: 'calc',
-        role: 'info',
         description: [
             'Determines how the items in `values` are summed.',
             'When set to *total*, items in `values` are taken to be value of all its descendants.',
@@ -68,7 +67,6 @@ module.exports = {
         ],
         dflt: 'leaves',
         editType: 'calc',
-        role: 'info',
         description: [
             'Determines default for `values` when it is not provided,',
             'by inferring a 1 for each of the *leaves* and/or *branches*, otherwise 0.'
@@ -79,7 +77,6 @@ module.exports = {
         valType: 'any',
         editType: 'plot',
         anim: true,
-        role: 'info',
         description: [
             'Sets the level from which this trace hierarchy is rendered.',
             'Set `level` to `\'\'` to start from the root node in the hierarchy.',
@@ -90,7 +87,6 @@ module.exports = {
     maxdepth: {
         valType: 'integer',
         editType: 'plot',
-        role: 'info',
         dflt: -1,
         description: [
             'Sets the number of rendered sectors from any given `level`.',
@@ -137,7 +133,6 @@ module.exports = {
         opacity: {
             valType: 'number',
             editType: 'style',
-            role: 'style',
             min: 0,
             max: 1,
             description: [
@@ -151,7 +146,6 @@ module.exports = {
     text: pieAttrs.text,
     textinfo: {
         valType: 'flaglist',
-        role: 'info',
         flags: [
             'label',
             'text',
@@ -205,7 +199,6 @@ module.exports = {
     }),
     rotation: {
         valType: 'angle',
-        role: 'style',
         dflt: 0,
         editType: 'plot',
         description: [
@@ -219,7 +212,6 @@ module.exports = {
         color: {
             valType: 'color',
             editType: 'calc',
-            role: 'style',
             dflt: 'rgba(0,0,0,0)',
             description: [
                 'sets the color of the root node for a sunburst or a treemap trace.',

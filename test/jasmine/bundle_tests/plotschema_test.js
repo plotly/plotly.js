@@ -25,7 +25,6 @@ describe('plot schema', function() {
     var isPlainObject = Lib.isPlainObject;
 
     var VALTYPES = Object.keys(valObjects);
-    var ROLES = ['info', 'style', 'data'];
     var editType = plotSchema.defs.editType;
 
     function assertTraceSchema(callback) {
@@ -73,26 +72,6 @@ describe('plot schema', function() {
         );
     });
 
-    it('all attributes should only have valid `role`', function() {
-        assertPlotSchema(
-            function(attr) {
-                if(isValObject(attr)) {
-                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true, attr);
-                }
-            }
-        );
-    });
-
-    it('all nested objects should have the *object* `role`', function() {
-        assertPlotSchema(
-            function(attr, attrName) {
-                if(!isValObject(attr) && isPlainObject(attr) && attrName !== 'items') {
-                    expect(attr.role === 'object').toBe(true);
-                }
-            }
-        );
-    });
-
     it('all attributes should have the required options', function() {
         assertPlotSchema(
             function(attr) {
@@ -115,7 +94,7 @@ describe('plot schema', function() {
                     var opts = valObject.requiredOpts
                         .concat(valObject.otherOpts)
                         .concat([
-                            'valType', 'description', 'role',
+                            'valType', 'description',
                             'editType', 'impliedEdits', 'anim',
                             '_compareAsJSON', '_noTemplating'
                         ]);
@@ -185,13 +164,8 @@ describe('plot schema', function() {
 
             // N.B. the specs below must be satisfied for plotly.py
             expect(isPlainObject(itemsObj)).toBe(true);
-            expect(itemsObj.role).toBeUndefined();
             expect(Object.keys(itemsObj).length).toEqual(1);
             expect(isPlainObject(itemObj)).toBe(true);
-            expect(itemObj.role).toBe('object');
-
-            var role = np.get().role;
-            expect(role).toEqual('object');
         });
     });
 
@@ -223,7 +197,7 @@ describe('plot schema', function() {
         );
     });
 
-    it('deprecated attributes should have a `valType` and `role`', function() {
+    it('deprecated attributes should have a `valType`', function() {
         var DEPRECATED = '_deprecated';
 
         assertPlotSchema(
@@ -233,8 +207,6 @@ describe('plot schema', function() {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
                         expect(VALTYPES.indexOf(dAttr.valType) !== -1)
-                            .toBe(true, attrString + ': ' + dAttrName);
-                        expect(ROLES.indexOf(dAttr.role) !== -1)
                             .toBe(true, attrString + ': ' + dAttrName);
                     });
                 }
@@ -317,15 +289,13 @@ describe('plot schema', function() {
         expect(plotSchema.defs.metaKeys)
             .toEqual([
                 '_isSubplotObj', '_isLinkedToArray', '_arrayAttrRegexps',
-                '_deprecated', 'description', 'role', 'editType', 'impliedEdits'
+                '_deprecated', 'description', 'editType', 'impliedEdits'
             ]);
     });
 
     it('should list the correct frame attributes', function() {
         expect(plotSchema.frames).toBeDefined();
-        expect(plotSchema.frames.role).toEqual('object');
         expect(plotSchema.frames.items.frames_entry).toBeDefined();
-        expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
     });
 
     it('should list config attributes', function() {
@@ -469,7 +439,7 @@ describe('getTraceValObject', function() {
         // it still returns the attribute itself - but maybe we should only do this
         // for valType: any? (or data_array/arrayOk with just an index)
         [
-            'valType', 'dflt', 'role', 'description', 'arrayOk',
+            'valType', 'dflt', 'description', 'arrayOk',
             'editType', 'min', 'max', 'values'
         ].forEach(function(prop) {
             expect(getTraceValObject({}, ['x', prop]))

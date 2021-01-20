@@ -17,7 +17,6 @@ module.exports = {
             color: {
                 valType: 'color',
                 editType: 'none',
-                role: 'info',
                 description: [
                     'Sets the line color.',
                     'By default uses either dark grey or white',
@@ -28,7 +27,6 @@ module.exports = {
                 valType: 'number',
                 min: 0,
                 dflt: 4,
-                role: 'info',
                 editType: 'none',
                 description: 'Sets the line width (in px).'
             },
@@ -36,13 +34,11 @@ module.exports = {
                 dflt: 'solid',
                 editType: 'none'
             }),
-            role: 'info',
             editType: 'none'
         },
         fillcolor: {
             valType: 'color',
             dflt: 'rgba(0,0,0,0)',
-            role: 'info',
             editType: 'none',
             description: [
                 'Sets the color filling new shapes\' interior.',
@@ -55,7 +51,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['evenodd', 'nonzero'],
             dflt: 'evenodd',
-            role: 'info',
             editType: 'none',
             description: [
                 'Determines the path\'s interior.',
@@ -67,7 +62,6 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 1,
-            role: 'info',
             editType: 'none',
             description: 'Sets the opacity of new shapes.'
         },
@@ -75,13 +69,11 @@ module.exports = {
             valType: 'enumerated',
             values: ['below', 'above'],
             dflt: 'above',
-            role: 'info',
             editType: 'none',
             description: 'Specifies whether new shapes are drawn below or above traces.'
         },
         drawdirection: {
             valType: 'enumerated',
-            role: 'info',
             values: ['ortho', 'horizontal', 'vertical', 'diagonal'],
             dflt: 'diagonal',
             editType: 'none',
@@ -102,7 +94,6 @@ module.exports = {
         fillcolor: {
             valType: 'color',
             dflt: 'rgb(255,0,255)',
-            role: 'style',
             editType: 'none',
             description: 'Sets the color filling the active shape\' interior.'
         },
@@ -111,7 +102,6 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 0.5,
-            role: 'info',
             editType: 'none',
             description: 'Sets the opacity of the active shape.'
         },

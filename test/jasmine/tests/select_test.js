@@ -115,7 +115,7 @@ function assertEventCounts(selecting, selected, deselect, msg) {
     expect(deselectCnt).toBe(deselect, 'plotly_deselect call count: ' + msg);
 }
 
-// TODO: in v2, when we get rid of the `plotly_selected->undefined` event, these will
+// TODO: in v3, when we get rid of the `plotly_selected->undefined` event, these will
 // change to BOXEVENTS = [1, 1, 1], LASSOEVENTS = [4, 1, 1]. See also _run down below
 //
 // events for box or lasso select mouse moves then a doubleclick
@@ -1837,7 +1837,7 @@ describe('Test select box and lasso per trace:', function() {
         return (eventCounts[0] ? selectedPromise : Promise.resolve())
             .then(afterDragFn)
             .then(function() {
-                // TODO: in v2 when we remove the `plotly_selecting->undefined` the Math.max(...)
+                // TODO: in v3 when we remove the `plotly_selecting->undefined` the Math.max(...)
                 // in the middle here will turn into just eventCounts[1].
                 // It's just here because one of the selected events is generated during
                 // doubleclick so hasn't happened yet when we're testing this.

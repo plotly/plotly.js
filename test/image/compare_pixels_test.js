@@ -121,7 +121,7 @@ if(argv['skip-flaky']) {
     });
 }
 
-/* gl2d pointcloud and other non-regl gl2d mock(s)
+/* non-regl mock(s) i.e. heatmapgl
  * must be tested first on in order to work;
  * sort them here.
  *
@@ -136,8 +136,8 @@ if(argv['skip-flaky']) {
  * More info here:
  * https://github.com/plotly/plotly.js/pull/1037
  */
-function sortGl2dMockList(mockList) {
-    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
+function sortHeatmapglMockList(mockList) {
+    var mockNames = ['gl2d_heatmapgl'];
     var pos = 0;
 
     mockNames.forEach(function(m) {
@@ -283,7 +283,7 @@ function comparePixels(mockName, cb) {
         .on('close', checkImage);
 }
 
-sortGl2dMockList(allMockList);
+sortHeatmapglMockList(allMockList);
 console.log('');
 
 // main

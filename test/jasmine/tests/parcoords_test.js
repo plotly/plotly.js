@@ -1,5 +1,10 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
+function _doPlot(gd, fig) {
+    return Registry.call('_doPlot', gd, fig.data, fig.layout);
+}
+
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plots = require('@src/plots/plots');
@@ -668,7 +673,7 @@ describe('parcoords Lifecycle methods', function() {
             .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(document.querySelectorAll('.y-axis').length).toEqual(10);
-                return Plotly.plot(gd, mockCopy2);
+                return _doPlot(gd, mockCopy2);
             })
             .then(function() {
                 expect(gd.data.length).toEqual(2);
@@ -737,7 +742,7 @@ describe('parcoords Lifecycle methods', function() {
     });
 
     describe('Having two datasets', function() {
-        it('@gl Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
+        it('@gl Two subsequent calls to _doPlot should create two parcoords rows', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
             mockCopy.data[0].domain = {x: [0, 0.45]};
@@ -752,7 +757,7 @@ describe('parcoords Lifecycle methods', function() {
                     expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(1);
 
-                    return Plotly.plot(gd, mockCopy2);
+                    return _doPlot(gd, mockCopy2);
                 })
                 .then(function() {
                     expect(1).toEqual(1);
@@ -944,7 +949,7 @@ describe('parcoords basic use', function() {
         .then(done, done.fail);
     });
 
-    it('@gl Calling `Plotly.plot` again should add the new parcoords', function(done) {
+    it('@gl Calling _doPlot again should add the new parcoords', function(done) {
         var reversedMockCopy = Lib.extendDeep({}, mockCopy);
         reversedMockCopy.data[0].dimensions = reversedMockCopy.data[0].dimensions.slice().reverse();
         reversedMockCopy.data[0].dimensions.forEach(function(d) {d.id = 'R_' + d.id;});
@@ -952,7 +957,7 @@ describe('parcoords basic use', function() {
 
         Plotly.react(gd, mockCopy)
         .then(function() {
-            return Plotly.plot(gd, reversedMockCopy);
+            return _doPlot(gd, reversedMockCopy);
         })
         .then(function() {
             expect(gd.data.length).toEqual(2);

@@ -97,7 +97,6 @@ module.exports = {
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -111,7 +110,6 @@ module.exports = {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -123,7 +121,6 @@ module.exports = {
         min: 0,
         max: 0.5,
         dflt: 0.3,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the width of the open/close tick marks',
@@ -134,7 +131,6 @@ module.exports = {
     hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
         split: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             editType: 'style',
             description: [

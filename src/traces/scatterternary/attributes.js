@@ -57,7 +57,6 @@ module.exports = {
     },
     sum: {
         valType: 'number',
-        role: 'info',
         dflt: 0,
         min: 0,
         editType: 'calc',

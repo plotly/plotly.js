@@ -11,7 +11,6 @@
 module.exports = {
     sunburstcolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default sunburst slice colors. Defaults to the main',
@@ -23,7 +22,6 @@ module.exports = {
     extendsunburstcolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the sunburst slice colors (whether given by `sunburstcolorway` or',

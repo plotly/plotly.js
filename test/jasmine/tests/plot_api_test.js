@@ -121,7 +121,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 
@@ -447,7 +447,7 @@ describe('Test plot api', function() {
             .then(function() {
                 // Ideally we should change this to xaxis.autorange: 'reversed'
                 // but that's a weird disappearing setting used just to force
-                // an initial reversed autorange. Proposed v2 change at:
+                // an initial reversed autorange. Proposed v3 change at:
                 // https://github.com/plotly/plotly.js/issues/420#issuecomment-323435082
                 return Plotly.relayout(gd, 'xaxis.reverse', true);
             })
@@ -760,7 +760,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
-            spyOn(plotApi, 'plot');
+            spyOn(plotApi, '_doPlot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -787,7 +787,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 // "docalc" deletes gd.calcdata - make sure this didn't happen
                 expect(gd.calcdata).toBeDefined();
             })
@@ -805,7 +805,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 expect(gd.calcdata).toBeDefined();
             })
             .then(done, done.fail);
@@ -821,31 +821,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -860,31 +860,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -906,7 +906,7 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -920,12 +920,12 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'xgap': 2})
             .then(function() {
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 return Plotly.restyle(gd, {'ygap': 2});
             })
             .then(function() {
-                expect(plotApi.plot.calls.count()).toEqual(2);
+                expect(plotApi._doPlot.calls.count()).toEqual(2);
             })
             .then(done, done.fail);
         });
@@ -947,19 +947,19 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
                 })
                 .then(done, done.fail);
             });
@@ -982,22 +982,22 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should not clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmin', 0);
                 })
                 .then(done, done.fail);
@@ -1100,7 +1100,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 
@@ -1898,16 +1898,8 @@ describe('Test plot api', function() {
                 ]
             };
 
-            if(!Plotly.Queue) {
-                Plotly.Queue = {
-                    add: function() {},
-                    startSequence: function() {},
-                    endSequence: function() {}
-                };
-            }
-
             spyOn(plotApi, 'redraw');
-            spyOn(Plotly.Queue, 'add');
+            spyOn(Queue, 'add');
         });
 
         it('should throw an error when gd.data isn\'t an array.', function() {
@@ -2054,9 +2046,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2071,9 +2063,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.extendTraces.apply(null, undoArgs);
 
@@ -2089,9 +2081,9 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2148,12 +2140,12 @@ describe('Test plot api', function() {
                 }, [0, 1], args.maxp);
 
                 expect(plotApi.redraw).toHaveBeenCalled();
-                expect(Plotly.Queue.add).toHaveBeenCalled();
+                expect(Queue.add).toHaveBeenCalled();
 
                 expect(gd.data[0].x).toEqual(expectations.newArray);
                 expect(gd.data[1].x).toEqual(new Float32Array(expectations.newArray));
 
-                var cont = Plotly.Queue.add.calls.first().args[2][1].x;
+                var cont = Queue.add.calls.first().args[2][1].x;
                 expect(cont[0]).toEqual(expectations.remainder);
                 expect(cont[1]).toEqual(new Float32Array(expectations.remainder));
             }
@@ -2885,8 +2877,7 @@ describe('plot_api edit_types', function() {
 
         editTypes.update(flags, {
             valType: 'boolean',
-            dflt: true,
-            role: 'style'
+            dflt: true
         });
 
         expect(flags).toEqual({calc: false, style: true});
@@ -2906,8 +2897,7 @@ describe('plot_api edit_types', function() {
         editTypes.update(flags, {
             editType: 'calc+style',
             valType: 'number',
-            dflt: 1,
-            role: 'style'
+            dflt: 1
         });
 
         expect(flags).toEqual({calc: true, legend: true, style: true});

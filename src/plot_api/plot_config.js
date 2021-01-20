@@ -10,7 +10,7 @@
 
 /**
  * This will be transferred over to gd and overridden by
- * config args to Plotly.plot.
+ * config args to Plotly.newPlot.
  *
  * The defaults are the appropriate settings for plotly.js,
  * so we get the right experience without any config argument.
@@ -126,7 +126,7 @@ var configAttributes = {
         dflt: false,
         description: [
             'Determines whether to change the layout size when window is resized.',
-            'In v2, this option will be removed and will always be true.'
+            'In v3, this option will be removed and will always be true.'
         ].join(' ')
     },
     fillFrame: {

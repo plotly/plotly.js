@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Registry = require('@src/registry');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;

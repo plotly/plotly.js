@@ -30,7 +30,6 @@ module.exports = function(opts) {
     var attrs = {
         family: {
             valType: 'string',
-            role: 'style',
             noBlank: true,
             strict: true,
             editType: editType,
@@ -49,13 +48,11 @@ module.exports = function(opts) {
         },
         size: {
             valType: 'number',
-            role: 'style',
             min: 1,
             editType: editType
         },
         color: {
             valType: 'color',
-            role: 'style',
             editType: colorEditType
         },
         editType: editType,

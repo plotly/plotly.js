@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
@@ -50,7 +51,7 @@ describe('Test click interactions:', function() {
 
     function doubleClick(x, y) {
         return doubleClickRaw(x, y).then(function() {
-            return Plotly.Plots.previousPromises(gd);
+            return Plots.previousPromises(gd);
         });
     }
 

@@ -41,7 +41,7 @@ var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
 
 /**
- * Main plot-creation function
+ * Internal plot-creation function
  *
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
@@ -61,7 +61,7 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-function plot(gd, data, layout, config) {
+function _doPlot(gd, data, layout, config) {
     var frames;
 
     gd = Lib.getGraphDiv(gd);
@@ -83,7 +83,7 @@ function plot(gd, data, layout, config) {
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        Lib.warn('Calling Plotly.plot as if redrawing ' +
+        Lib.warn('Calling _doPlot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
@@ -139,7 +139,7 @@ function plot(gd, data, layout, config) {
     var fullLayout = gd._fullLayout;
     var hasCartesian = fullLayout._has('cartesian');
 
-    // so we don't try to re-call Plotly.plot from inside
+    // so we don't try to re-call _doPlot from inside
     // legend and colorbar, if margins changed
     fullLayout._replotting = true;
 
@@ -152,12 +152,6 @@ function plot(gd, data, layout, config) {
         }
     }
 
-    // polar need a different framework
-    if(gd.framework !== makePlotFramework) {
-        gd.framework = makePlotFramework;
-        makePlotFramework(gd);
-    }
-
     // clear gradient defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
 
@@ -167,7 +161,7 @@ function plot(gd, data, layout, config) {
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
-    // to force redoing calcdata, just delete it before calling Plotly.plot
+    // to force redoing calcdata, just delete it before calling _doPlot
     var recalc = !gd.calcdata || gd.calcdata.length !== (gd._fullData || []).length;
     if(recalc) Plots.doCalcdata(gd);
 
@@ -552,7 +546,7 @@ function redraw(gd) {
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return exports.plot(gd).then(function() {
+    return exports._doPlot(gd).then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -573,7 +567,7 @@ function newPlot(gd, data, layout, config) {
     Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {});
 
     Plots.purge(gd);
-    return exports.plot(gd, data, layout, config);
+    return exports._doPlot(gd, data, layout, config);
 }
 
 /**
@@ -1284,7 +1278,7 @@ function restyle(gd, astr, val, _traces) {
     var seq = [];
 
     if(flags.fullReplot) {
-        seq.push(exports.plot);
+        seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
 
@@ -1769,10 +1763,6 @@ function cleanDeprecatedAttributeKeys(aobj) {
 function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
-
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
 
     var aobj = {};
     if(typeof astr === 'string') {
@@ -2283,10 +2273,6 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
-
     if(!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
     if(!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
 
@@ -2313,7 +2299,7 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         // relayoutFlags.layoutReplot and restyleFlags.fullReplot are true
         seq.push(subroutines.layoutReplot);
     } else if(restyleFlags.fullReplot) {
-        seq.push(exports.plot);
+        seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
@@ -2705,7 +2691,7 @@ function react(gd, data, layout, config) {
             });
         } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
-            seq.push(exports.plot);
+            seq.push(exports._doPlot);
         } else {
             for(var componentType in relayoutFlags.arrays) {
                 var indices = relayoutFlags.arrays[componentType];
@@ -3604,7 +3590,7 @@ function deleteFrames(gd, frameList) {
 }
 
 /**
- * Purge a graph container div back to its initial pre-Plotly.plot state
+ * Purge a graph container div back to its initial pre-_doPlot state
  *
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
@@ -3627,7 +3613,7 @@ function purge(gd) {
     // remove plot container
     if(fullLayout._container) fullLayout._container.remove();
 
-    // in contrast to Plotly.Plots.purge which does NOT clear _context!
+    // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
 
     return gd;
@@ -3808,7 +3794,7 @@ exports.moveTraces = moveTraces;
 exports.prependTraces = prependTraces;
 
 exports.newPlot = newPlot;
-exports.plot = plot;
+exports._doPlot = _doPlot;
 exports.purge = purge;
 
 exports.react = react;

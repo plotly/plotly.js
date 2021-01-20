@@ -11,7 +11,6 @@
 module.exports = {
     hiddenlabels: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc',
         description: [
             'hiddenlabels is the funnelarea & pie chart analog of',
@@ -22,7 +21,6 @@ module.exports = {
     },
     piecolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default pie slice colors. Defaults to the main',
@@ -34,7 +32,6 @@ module.exports = {
     extendpiecolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the pie slice colors (whether given by `piecolorway` or',

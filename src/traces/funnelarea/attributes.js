@@ -88,7 +88,6 @@ module.exports = {
 
     aspectratio: {
         valType: 'number',
-        role: 'info',
         min: 0,
         dflt: 1,
         editType: 'plot',
@@ -99,7 +98,6 @@ module.exports = {
 
     baseratio: {
         valType: 'number',
-        role: 'info',
         min: 0,
         max: 1,
         dflt: 0.333,

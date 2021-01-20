@@ -89,7 +89,7 @@ function getButtonGroups(gd) {
     var hasGeo = fullLayout._has('geo');
     var hasPie = fullLayout._has('pie');
     var hasFunnelarea = fullLayout._has('funnelarea');
-    var hasGL2D = fullLayout._has('gl2d');
+    var hasHeatmapgl = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
@@ -124,7 +124,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasHeatmapgl || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -140,7 +140,7 @@ function getButtonGroups(gd) {
         zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
-    } else if(hasGL2D) {
+    } else if(hasHeatmapgl) {
         hoverGroup = ['hoverClosestGl2d'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
@@ -161,14 +161,14 @@ function getButtonGroups(gd) {
         hoverGroup = [];
     }
 
-    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+    if((hasCartesian || hasHeatmapgl) && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
         if(resetGroup[0] !== 'resetViews') resetGroup = ['resetScale2d'];
     }
 
     if(hasGL3D) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
-    } else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    } else if(((hasCartesian || hasHeatmapgl) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     } else if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];

@@ -25,7 +25,6 @@ for(var i = 0; i < cm.length; i++) {
 module.exports = extendFlat({
     source: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'Specifies the data URI of the image to be visualized.',
@@ -34,7 +33,6 @@ module.exports = extendFlat({
     },
     z: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc',
         description: [
             'A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color.',
@@ -43,7 +41,6 @@ module.exports = extendFlat({
     colormodel: {
         valType: 'enumerated',
         values: cm,
-        role: 'info',
         editType: 'calc',
         description: [
             'Color model used to map the numerical color components described in `z` into colors.',
@@ -55,7 +52,6 @@ module.exports = extendFlat({
         valType: 'enumerated',
         values: ['fast', false],
         dflt: false,
-        role: 'info',
         editType: 'plot',
         description: [
             'Picks a smoothing algorithm used to smooth `z` data.',
@@ -70,7 +66,6 @@ module.exports = extendFlat({
             {valType: 'number', editType: 'calc'},
             {valType: 'number', editType: 'calc'}
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Array defining the lower bound for each color component.',
@@ -86,7 +81,6 @@ module.exports = extendFlat({
             {valType: 'number', editType: 'calc'},
             {valType: 'number', editType: 'calc'}
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Array defining the higher bound for each color component.',
@@ -97,28 +91,24 @@ module.exports = extendFlat({
     x0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: 'Set the image\'s x position.'
     },
     y0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: 'Set the image\'s y position.'
     },
     dx: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'Set the pixel\'s horizontal size.'
     },
     dy: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'Set the pixel\'s vertical size'
     },

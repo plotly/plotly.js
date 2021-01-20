@@ -41,7 +41,6 @@ module.exports = extendFlat({
 
     geojson: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the GeoJSON data associated with this trace.',
@@ -68,7 +67,6 @@ module.exports = extendFlat({
     // see https://codepen.io/etpinard/pen/ydVMwM for full list
     below: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if the choropleth polygons will be inserted',

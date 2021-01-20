@@ -39,7 +39,6 @@ module.exports = {
     bandwidth: {
         valType: 'number',
         min: 0,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the bandwidth used to compute the kernel density estimate.',
@@ -49,7 +48,6 @@ module.exports = {
 
     scalegroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -64,7 +62,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['width', 'count'],
         dflt: 'width',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the metric by which the width of each violin is determined.',
@@ -78,7 +75,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['soft', 'hard', 'manual'],
         dflt: 'soft',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the method by which the span in data space where the density function will be computed.',
@@ -94,7 +90,6 @@ module.exports = {
             {valType: 'any', editType: 'calc'},
             {valType: 'any', editType: 'calc'}
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the span in data space for which the density function will be computed.',
@@ -105,13 +100,11 @@ module.exports = {
     line: {
         color: {
             valType: 'color',
-            role: 'style',
             editType: 'style',
             description: 'Sets the color of line bounding the violin(s).'
         },
         width: {
             valType: 'number',
-            role: 'style',
             min: 0,
             dflt: 2,
             editType: 'style',
@@ -169,7 +162,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: false,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines if an miniature box plot is drawn inside the violins. '
@@ -180,7 +172,6 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 0.25,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the width of the inner box plots relative to',
@@ -190,21 +181,18 @@ module.exports = {
         },
         fillcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'style',
             description: 'Sets the inner box plot fill color.'
         },
         line: {
             color: {
                 valType: 'color',
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the inner box plot bounding line color.'
             },
             width: {
                 valType: 'number',
                 min: 0,
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the inner box plot bounding line width.'
             },
@@ -217,7 +205,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: false,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines if a line corresponding to the sample\'s mean is shown',
@@ -228,14 +215,12 @@ module.exports = {
         },
         color: {
             valType: 'color',
-            role: 'style',
             editType: 'style',
             description: 'Sets the mean line color.'
         },
         width: {
             valType: 'number',
             min: 0,
-            role: 'style',
             editType: 'style',
             description: 'Sets the mean line width.'
         },
@@ -246,7 +231,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['both', 'positive', 'negative'],
         dflt: 'both',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines on which side of the position value the density function making up',
@@ -267,7 +251,6 @@ module.exports = {
         flags: ['violins', 'points', 'kde'],
         dflt: 'violins+points+kde',
         extras: ['all'],
-        role: 'info',
         editType: 'style',
         description: [
             'Do the hover effects highlight individual violins',
