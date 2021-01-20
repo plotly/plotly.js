@@ -18,19 +18,16 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var attrs = {
     x: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the x coordinates of the vector field.'
     },
     y: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the y coordinates of the vector field.'
     },
     z: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the z coordinates of the vector field.'
     },
@@ -80,7 +77,6 @@ var attrs = {
         valType: 'integer',
         min: 0,
         dflt: 1000,
-        role: 'info',
         editType: 'calc',
         description: [
             'The maximum number of displayed segments in a streamtube.'
@@ -99,7 +95,6 @@ var attrs = {
     //     valType: 'enumerated',
     //     values: ['scaled', 'absolute', 'fixed'],
     //     dflt: 'scaled',
-    //     role: 'info',
     //     editType: 'calc',
     //     description: [
     //         'Sets the mode by which the streamtubes are sized.'
@@ -108,7 +103,6 @@ var attrs = {
 
     sizeref: {
         valType: 'number',
-        role: 'info',
         editType: 'calc',
         min: 0,
         dflt: 1,
@@ -121,7 +115,6 @@ var attrs = {
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -133,7 +126,6 @@ var attrs = {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: 'Same as `text`.'

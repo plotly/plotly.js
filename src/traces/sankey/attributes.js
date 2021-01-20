@@ -41,14 +41,12 @@ var attrs = module.exports = overrideAll({
         valType: 'enumerated',
         values: ['v', 'h'],
         dflt: 'h',
-        role: 'style',
         description: 'Sets the orientation of the Sankey diagram.'
     },
 
     valueformat: {
         valType: 'string',
         dflt: '.3s',
-        role: 'style',
         description: [
             'Sets the value formatting rule using d3 formatting mini-language',
             'which is similar to those of Python. See',
@@ -59,7 +57,6 @@ var attrs = module.exports = overrideAll({
     valuesuffix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         description: [
             'Adds a unit to follow the value in the hover tooltip. Add a space if a separation',
             'is necessary from the value.'
@@ -70,7 +67,6 @@ var attrs = module.exports = overrideAll({
         valType: 'enumerated',
         values: ['snap', 'perpendicular', 'freeform', 'fixed'],
         dflt: 'snap',
-        role: 'style',
         description: [
             'If value is `snap` (the default), the node arrangement is assisted by automatic snapping of elements to',
             'preserve space between nodes specified via `nodepad`.',
@@ -91,7 +87,6 @@ var attrs = module.exports = overrideAll({
         label: {
             valType: 'data_array',
             dflt: [],
-            role: 'info',
             description: 'The shown name of the node.'
         },
         groups: {
@@ -101,7 +96,6 @@ var attrs = module.exports = overrideAll({
             freeLength: true,
             dflt: [],
             items: {valType: 'number', editType: 'calc'},
-            role: 'info',
             description: [
                 'Groups of nodes.',
                 'Each group is defined by an array with the indices of the nodes it contains.',
@@ -111,18 +105,15 @@ var attrs = module.exports = overrideAll({
         x: {
             valType: 'data_array',
             dflt: [],
-            role: 'info',
             description: 'The normalized horizontal position of the node.'
         },
         y: {
             valType: 'data_array',
             dflt: [],
-            role: 'info',
             description: 'The normalized vertical position of the node.'
         },
         color: {
             valType: 'color',
-            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the `node` color. It can be a single value, or an array for specifying color for each `node`.',
@@ -141,7 +132,6 @@ var attrs = module.exports = overrideAll({
         line: {
             color: {
                 valType: 'color',
-                role: 'style',
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 description: [
@@ -150,7 +140,6 @@ var attrs = module.exports = overrideAll({
             },
             width: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 dflt: 0.5,
                 arrayOk: true,
@@ -164,7 +153,6 @@ var attrs = module.exports = overrideAll({
             arrayOk: false,
             min: 0,
             dflt: 20,
-            role: 'style',
             description: 'Sets the padding (in px) between the `nodes`.'
         },
         thickness: {
@@ -172,14 +160,12 @@ var attrs = module.exports = overrideAll({
             arrayOk: false,
             min: 1,
             dflt: 20,
-            role: 'style',
             description: 'Sets the thickness (in px) of the `nodes`.'
         },
         hoverinfo: {
             valType: 'enumerated',
             values: ['all', 'none', 'skip'],
             dflt: 'all',
-            role: 'info',
             description: [
                 'Determines which trace information appear when hovering nodes.',
                 'If `none` or `skip` are set, no information is displayed upon hovering.',
@@ -198,12 +184,10 @@ var attrs = module.exports = overrideAll({
         label: {
             valType: 'data_array',
             dflt: [],
-            role: 'info',
             description: 'The shown name of the link.'
         },
         color: {
             valType: 'color',
-            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the `link` color. It can be a single value, or an array for specifying color for each `link`.',
@@ -220,7 +204,6 @@ var attrs = module.exports = overrideAll({
         line: {
             color: {
                 valType: 'color',
-                role: 'style',
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 description: [
@@ -229,7 +212,6 @@ var attrs = module.exports = overrideAll({
             },
             width: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
@@ -240,27 +222,23 @@ var attrs = module.exports = overrideAll({
         },
         source: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: 'An integer number `[0..nodes.length - 1]` that represents the source node.'
         },
         target: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: 'An integer number `[0..nodes.length - 1]` that represents the target node.'
         },
         value: {
             valType: 'data_array',
             dflt: [],
-            role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
         hoverinfo: {
             valType: 'enumerated',
             values: ['all', 'none', 'skip'],
             dflt: 'all',
-            role: 'info',
             description: [
                 'Determines which trace information appear when hovering links.',
                 'If `none` or `skip` are set, no information is displayed upon hovering.',
@@ -276,14 +254,12 @@ var attrs = module.exports = overrideAll({
             editType: 'calc',
             label: {
                 valType: 'string',
-                role: 'info',
                 editType: 'calc',
                 description: 'The label of the links to color based on their concentration within a flow.',
                 dflt: ''
             },
             cmax: {
                 valType: 'number',
-                role: 'info',
                 editType: 'calc',
                 dflt: 1,
                 description: [
@@ -292,7 +268,6 @@ var attrs = module.exports = overrideAll({
             },
             cmin: {
                 valType: 'number',
-                role: 'info',
                 editType: 'calc',
                 dflt: 0,
                 description: [
@@ -302,7 +277,6 @@ var attrs = module.exports = overrideAll({
             colorscale: extendFlat(colorAttributes().colorscale, {dflt: [[0, 'white'], [1, 'black']]})
         }),
         description: 'The links of the Sankey plot.',
-        role: 'info'
     }
 }, 'calc', 'nested');
 attrs.transforms = undefined;

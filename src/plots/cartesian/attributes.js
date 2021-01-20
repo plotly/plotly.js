@@ -12,7 +12,6 @@
 module.exports = {
     xaxis: {
         valType: 'subplotid',
-        role: 'info',
         dflt: 'x',
         editType: 'calc+clearAxisTypes',
         description: [
@@ -25,7 +24,6 @@ module.exports = {
     },
     yaxis: {
         valType: 'subplotid',
-        role: 'info',
         dflt: 'y',
         editType: 'calc+clearAxisTypes',
         description: [

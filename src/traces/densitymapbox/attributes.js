@@ -53,7 +53,6 @@ module.exports = extendFlat({
 
     radius: {
         valType: 'number',
-        role: 'info',
         editType: 'plot',
         arrayOk: true,
         min: 1,
@@ -66,7 +65,6 @@ module.exports = extendFlat({
 
     below: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if the densitymapbox trace will be inserted',

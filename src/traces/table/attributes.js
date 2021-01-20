@@ -23,7 +23,6 @@ var attrs = module.exports = overrideAll({
         valType: 'number',
         arrayOk: true,
         dflt: null,
-        role: 'style',
         description: [
             'The width of columns expressed as a ratio. Columns fill the available width',
             'in proportion of their specified column widths.'
@@ -32,7 +31,6 @@ var attrs = module.exports = overrideAll({
 
     columnorder: {
         valType: 'data_array',
-        role: 'info',
         description: [
             'Specifies the rendered order of the data columns; for example, a value `2` at position `0`',
             'means that column index `0` in the data will be rendered as the',
@@ -44,7 +42,6 @@ var attrs = module.exports = overrideAll({
 
         values: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Header cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
@@ -55,7 +52,6 @@ var attrs = module.exports = overrideAll({
 
         format: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
@@ -68,7 +64,6 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Prefix for cell values.'
         },
 
@@ -76,14 +71,12 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Suffix for cell values.'
         },
 
         height: {
             valType: 'number',
             dflt: 28,
-            role: 'style',
             description: 'The height of cells.'
         },
 
@@ -94,13 +87,11 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 arrayOk: true,
                 dflt: 1,
-                role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'grey',
-                role: 'style'
             }
         },
 
@@ -109,7 +100,6 @@ var attrs = module.exports = overrideAll({
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'white',
-                role: 'style',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
                     ' or an array of colors or a 2D array of colors.'
@@ -124,7 +114,6 @@ var attrs = module.exports = overrideAll({
 
         values: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
@@ -135,7 +124,6 @@ var attrs = module.exports = overrideAll({
 
         format: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Sets the cell value formatting rule using d3 formatting mini-language',
@@ -148,7 +136,6 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Prefix for cell values.'
         },
 
@@ -156,14 +143,12 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Suffix for cell values.'
         },
 
         height: {
             valType: 'number',
             dflt: 20,
-            role: 'style',
             description: 'The height of cells.'
         },
 
@@ -174,13 +159,11 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 arrayOk: true,
                 dflt: 1,
-                role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'grey',
-                role: 'style'
             }
         },
 
@@ -188,7 +171,6 @@ var attrs = module.exports = overrideAll({
             color: {
                 valType: 'color',
                 arrayOk: true,
-                role: 'style',
                 dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',

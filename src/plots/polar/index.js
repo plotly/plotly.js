@@ -21,7 +21,6 @@ var counter = counterRegex(name);
 var attributes = {};
 attributes[attr] = {
     valType: 'subplotid',
-    role: 'info',
     dflt: name,
     editType: 'calc',
     description: [

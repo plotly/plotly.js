@@ -27,7 +27,6 @@ var attrs = module.exports = overrideAll(extendFlat({
     spaceframe: {
         show: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: [
                 'Displays/hides tetrahedron shapes between minimum and',
@@ -37,7 +36,6 @@ var attrs = module.exports = overrideAll(extendFlat({
         },
         fill: {
             valType: 'number',
-            role: 'style',
             min: 0,
             max: 1,
             dflt: 1,

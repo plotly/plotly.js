@@ -33,7 +33,6 @@ attrs.zsmooth = {
     valType: 'enumerated',
     values: ['fast', false],
     dflt: 'fast',
-    role: 'style',
     editType: 'calc',
     description: 'Picks a smoothing algorithm use to smooth `z` data.'
 };

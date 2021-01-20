@@ -18,7 +18,6 @@ var gridAttrs = {
     rows: {
         valType: 'integer',
         min: 1,
-        role: 'info',
         editType: 'plot',
         description: [
             'The number of rows in the grid. If you provide a 2D `subplots`',
@@ -31,7 +30,6 @@ var gridAttrs = {
         valType: 'enumerated',
         values: ['top to bottom', 'bottom to top'],
         dflt: 'top to bottom',
-        role: 'info',
         editType: 'plot',
         description: [
             'Is the first row the top or the bottom? Note that columns',
@@ -41,7 +39,6 @@ var gridAttrs = {
     columns: {
         valType: 'integer',
         min: 1,
-        role: 'info',
         editType: 'plot',
         description: [
             'The number of columns in the grid. If you provide a 2D `subplots`',
@@ -56,7 +53,6 @@ var gridAttrs = {
         freeLength: true,
         dimensions: 2,
         items: {valType: 'enumerated', values: [counterRegex('xy').toString(), ''], editType: 'plot'},
-        role: 'info',
         editType: 'plot',
         description: [
             'Used for freeform grids, where some axes may be shared across subplots',
@@ -71,7 +67,6 @@ var gridAttrs = {
         valType: 'info_array',
         freeLength: true,
         items: {valType: 'enumerated', values: [cartesianIdRegex.x.toString(), ''], editType: 'plot'},
-        role: 'info',
         editType: 'plot',
         description: [
             'Used with `yaxes` when the x and y axes are shared across columns and rows.',
@@ -85,7 +80,6 @@ var gridAttrs = {
         valType: 'info_array',
         freeLength: true,
         items: {valType: 'enumerated', values: [cartesianIdRegex.y.toString(), ''], editType: 'plot'},
-        role: 'info',
         editType: 'plot',
         description: [
             'Used with `yaxes` when the x and y axes are shared across columns and rows.',
@@ -99,7 +93,6 @@ var gridAttrs = {
         valType: 'enumerated',
         values: ['independent', 'coupled'],
         dflt: 'coupled',
-        role: 'info',
         editType: 'plot',
         description: [
             'If no `subplots`, `xaxes`, or `yaxes` are given but we do have `rows` and `columns`,',
@@ -113,7 +106,6 @@ var gridAttrs = {
         valType: 'number',
         min: 0,
         max: 1,
-        role: 'info',
         editType: 'plot',
         description: [
             'Horizontal space between grid cells, expressed as a fraction',
@@ -125,7 +117,6 @@ var gridAttrs = {
         valType: 'number',
         min: 0,
         max: 1,
-        role: 'info',
         editType: 'plot',
         description: [
             'Vertical space between grid cells, expressed as a fraction',
@@ -143,7 +134,6 @@ var gridAttrs = {
         valType: 'enumerated',
         values: ['bottom', 'bottom plot', 'top plot', 'top'],
         dflt: 'bottom plot',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets where the x axis labels and titles go. *bottom* means',
@@ -155,7 +145,6 @@ var gridAttrs = {
         valType: 'enumerated',
         values: ['left', 'left plot', 'right plot', 'right'],
         dflt: 'left plot',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets where the y axis labels and titles go. *left* means',

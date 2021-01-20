@@ -14,7 +14,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['group', 'overlay'],
         dflt: 'overlay',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines how boxes at the same location coordinate',
@@ -31,7 +30,6 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0.3,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
@@ -44,7 +42,6 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0.3,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between boxes of',

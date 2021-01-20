@@ -46,7 +46,6 @@ module.exports = {
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
-        role: 'style',
         dflt: 'count',
         editType: 'calc',
         description: [
@@ -65,7 +64,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
-        role: 'style',
         editType: 'calc',
         description: [
             'Specifies the type of normalization used for this histogram trace.',
@@ -93,7 +91,6 @@ module.exports = {
         enabled: {
             valType: 'boolean',
             dflt: false,
-            role: 'info',
             editType: 'calc',
             description: [
                 'If true, display the cumulative distribution by summing the',
@@ -111,7 +108,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['increasing', 'decreasing'],
             dflt: 'increasing',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
@@ -125,7 +121,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['include', 'exclude', 'half'],
             dflt: 'include',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
@@ -143,7 +138,6 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
@@ -158,7 +152,6 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
@@ -171,7 +164,6 @@ module.exports = {
     autobinx: {
         valType: 'boolean',
         dflt: null,
-        role: 'style',
         editType: 'calc',
         description: [
             'Obsolete: since v1.42 each bin attribute is auto-determined',
@@ -183,7 +175,6 @@ module.exports = {
     autobiny: {
         valType: 'boolean',
         dflt: null,
-        role: 'style',
         editType: 'calc',
         description: [
             'Obsolete: since v1.42 each bin attribute is auto-determined',
@@ -195,7 +186,6 @@ module.exports = {
 
     bingroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [

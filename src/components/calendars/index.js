@@ -19,7 +19,6 @@ var ONEDAY = constants.ONEDAY;
 var attributes = {
     valType: 'enumerated',
     values: Object.keys(calendars.calendars),
-    role: 'info',
     editType: 'calc',
     dflt: 'gregorian'
 };

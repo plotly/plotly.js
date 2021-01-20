@@ -23,7 +23,6 @@ function axisPeriod(axis) {
     return {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: [
             'Only relevant when the axis `type` is *date*.',
@@ -37,7 +36,6 @@ function axisPeriod(axis) {
 function axisPeriod0(axis) {
     return {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Only relevant when the axis `type` is *date*.',
@@ -56,7 +54,6 @@ function axisPeriodAlignment(axis) {
             'start', 'middle', 'end'
         ],
         dflt: 'middle',
-        role: 'style',
         editType: 'calc',
         description: [
             'Only relevant when the axis `type` is *date*.',
@@ -75,7 +72,6 @@ module.exports = {
     x0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         anim: true,
         description: [
@@ -88,7 +84,6 @@ module.exports = {
     dx: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         anim: true,
         description: [
@@ -105,7 +100,6 @@ module.exports = {
     y0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         anim: true,
         description: [
@@ -118,7 +112,6 @@ module.exports = {
     dy: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         anim: true,
         description: [
@@ -136,7 +129,6 @@ module.exports = {
 
     stackgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -155,7 +147,6 @@ module.exports = {
     },
     orientation: {
         valType: 'enumerated',
-        role: 'info',
         values: ['v', 'h'],
         editType: 'calc',
         description: [
@@ -170,7 +161,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
         dflt: '',
-        role: 'info',
         editType: 'calc',
         description: [
             'Only relevant when `stackgroup` is used, and only the first',
@@ -188,7 +178,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['infer zero', 'interpolate'],
         dflt: 'infer zero',
-        role: 'info',
         editType: 'calc',
         description: [
             'Only relevant when `stackgroup` is used, and only the first',
@@ -207,7 +196,6 @@ module.exports = {
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -227,7 +215,6 @@ module.exports = {
     }),
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'style',
@@ -244,7 +231,6 @@ module.exports = {
         valType: 'flaglist',
         flags: ['lines', 'markers', 'text'],
         extras: ['none'],
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines the drawing mode for this scatter trace.',
@@ -259,7 +245,6 @@ module.exports = {
     hoveron: {
         valType: 'flaglist',
         flags: ['points', 'fills'],
-        role: 'info',
         editType: 'style',
         description: [
             'Do the hover effects highlight individual points (markers or',
@@ -274,7 +259,6 @@ module.exports = {
     line: {
         color: {
             valType: 'color',
-            role: 'style',
             editType: 'style',
             anim: true,
             description: 'Sets the line color.'
@@ -283,7 +267,6 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 2,
-            role: 'style',
             editType: 'style',
             anim: true,
             description: 'Sets the line width (in px).'
@@ -292,7 +275,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
-            role: 'style',
             editType: 'plot',
             description: [
                 'Determines the line shape.',
@@ -305,7 +287,6 @@ module.exports = {
             min: 0,
             max: 1.3,
             dflt: 1,
-            role: 'style',
             editType: 'plot',
             description: [
                 'Has an effect only if `shape` is set to *spline*',
@@ -317,7 +298,6 @@ module.exports = {
         simplify: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Simplifies lines by removing nearly-collinear points. When transitioning',
@@ -331,7 +311,6 @@ module.exports = {
     connectgaps: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not gaps',
@@ -342,7 +321,6 @@ module.exports = {
     cliponaxis: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines whether or not markers and text nodes',
@@ -355,7 +333,6 @@ module.exports = {
     fill: {
         valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the area to fill with a solid color.',
@@ -382,7 +359,6 @@ module.exports = {
     },
     fillcolor: {
         valType: 'color',
-        role: 'style',
         editType: 'style',
         anim: true,
         description: [
@@ -397,7 +373,6 @@ module.exports = {
             values: Drawing.symbolList,
             dflt: 'circle',
             arrayOk: true,
-            role: 'style',
             editType: 'style',
             description: [
                 'Sets the marker symbol type.',
@@ -412,7 +387,6 @@ module.exports = {
             min: 0,
             max: 1,
             arrayOk: true,
-            role: 'style',
             editType: 'style',
             anim: true,
             description: 'Sets the marker opacity.'
@@ -422,7 +396,6 @@ module.exports = {
             min: 0,
             dflt: 6,
             arrayOk: true,
-            role: 'style',
             editType: 'calc',
             anim: true,
             description: 'Sets the marker size (in px).'
@@ -431,7 +404,6 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 0,
-            role: 'style',
             editType: 'plot',
             description: [
                 'Sets a maximum number of points to be drawn on the graph.',
@@ -441,7 +413,6 @@ module.exports = {
         sizeref: {
             valType: 'number',
             dflt: 1,
-            role: 'style',
             editType: 'calc',
             description: [
                 'Has an effect only if `marker.size` is set to a numerical array.',
@@ -453,7 +424,6 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 0,
-            role: 'style',
             editType: 'calc',
             description: [
                 'Has an effect only if `marker.size` is set to a numerical array.',
@@ -464,7 +434,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['diameter', 'area'],
             dflt: 'diameter',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Has an effect only if `marker.size` is set to a numerical array.',
@@ -478,7 +447,6 @@ module.exports = {
                 valType: 'number',
                 min: 0,
                 arrayOk: true,
-                role: 'style',
                 editType: 'style',
                 anim: true,
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
@@ -493,7 +461,6 @@ module.exports = {
                 values: ['radial', 'horizontal', 'vertical', 'none'],
                 arrayOk: true,
                 dflt: 'none',
-                role: 'style',
                 editType: 'calc',
                 description: [
                     'Sets the type of gradient used to fill the markers'
@@ -502,7 +469,6 @@ module.exports = {
             color: {
                 valType: 'color',
                 arrayOk: true,
-                role: 'style',
                 editType: 'calc',
                 description: [
                     'Sets the final color of the gradient fill:',
@@ -522,20 +488,17 @@ module.exports = {
                 valType: 'number',
                 min: 0,
                 max: 1,
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker opacity of selected points.'
             },
             color: {
                 valType: 'color',
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker color of selected points.'
             },
             size: {
                 valType: 'number',
                 min: 0,
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker size of selected points.'
             },
@@ -544,7 +507,6 @@ module.exports = {
         textfont: {
             color: {
                 valType: 'color',
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the text font color of selected points.'
             },
@@ -558,20 +520,17 @@ module.exports = {
                 valType: 'number',
                 min: 0,
                 max: 1,
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker opacity of unselected points, applied only when a selection exists.'
             },
             color: {
                 valType: 'color',
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker color of unselected points, applied only when a selection exists.'
             },
             size: {
                 valType: 'number',
                 min: 0,
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the marker size of unselected points, applied only when a selection exists.'
             },
@@ -580,7 +539,6 @@ module.exports = {
         textfont: {
             color: {
                 valType: 'color',
-                role: 'style',
                 editType: 'style',
                 description: 'Sets the text font color of unselected points, applied only when a selection exists.'
             },
@@ -598,7 +556,6 @@ module.exports = {
         ],
         dflt: 'middle center',
         arrayOk: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the positions of the `text` elements',
