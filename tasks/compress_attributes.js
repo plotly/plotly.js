@@ -33,11 +33,12 @@ var regexStr = [
 var regex = new RegExp(regexStr, 'g');
 
 module.exports = function() {
-    return through(function(buf, enc, next) {
-        this.push(
-            buf.toString('utf-8')
-               .replace(regex, '')
-        );
+    var allChunks = [];
+    return through(function(chunk, enc, next) {
+        allChunks.push(chunk);
         next();
+    }, function(done) {
+        this.push(Buffer.concat(allChunks).toString().replace(regex, ''));
+        done();
     });
 };
