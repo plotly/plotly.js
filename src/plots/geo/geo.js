@@ -660,7 +660,6 @@ proto.render = function() {
 
 // Helper that wraps d3[geo + /* Projection name /*]() which:
 //
-// - adds 'fitExtent' (available in d3 v4)
 // - adds 'getPath', 'getBounds' convenience methods
 // - scopes logic related to 'clipAngle'
 // - adds 'isLonLatOverEdges' method
@@ -714,31 +713,6 @@ function getProjection(geoLayout) {
 
     projection.getBounds = function(object) {
         return projection.getPath().bounds(object);
-    };
-
-    // adapted from d3 v4:
-    // https://github.com/d3/d3-geo/blob/master/src/projection/fit.js
-    projection.fitExtent = function(extent, object) {
-        var w = extent[1][0] - extent[0][0];
-        var h = extent[1][1] - extent[0][1];
-        var clip = projection.clipExtent && projection.clipExtent();
-
-        projection
-            .scale(150)
-            .translate([0, 0]);
-
-        if(clip) projection.clipExtent(null);
-
-        var b = projection.getBounds(object);
-        var k = Math.min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1]));
-        var x = +extent[0][0] + (w - k * (b[1][0] + b[0][0])) / 2;
-        var y = +extent[0][1] + (h - k * (b[1][1] + b[0][1])) / 2;
-
-        if(clip) projection.clipExtent(clip);
-
-        return projection
-            .scale(k * 150)
-            .translate([x, y]);
     };
 
     projection.precision(constants.precision);
