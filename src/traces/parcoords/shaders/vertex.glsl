@@ -13,7 +13,7 @@ uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
 uniform vec2 resolution, viewBoxPos, viewBoxSize;
 uniform sampler2D mask, palette;
 uniform float maskHeight;
-uniform float drwLayer; // 0: context, 1: focus, 2: pick
+uniform float drwLayer; /* 0: context, 1: focus, 2: pick */
 uniform vec4 contextColor;
 
 bool isPick    = (drwLayer > 1.5);
