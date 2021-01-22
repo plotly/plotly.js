@@ -39,7 +39,6 @@ module.exports = {
     },
     data: {
         valType: 'any',
-        role: 'object',
         description: [
             'A list of traces this frame modifies. The format is identical to the',
             'normal trace definition.'
@@ -47,7 +46,6 @@ module.exports = {
     },
     layout: {
         valType: 'any',
-        role: 'object',
         description: [
             'Layout properties which this frame modifies. The format is identical',
             'to the normal layout definition.'
