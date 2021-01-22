@@ -1905,7 +1905,7 @@ plots.autoMargin = function(gd, id, o) {
             if(pad === undefined) {
                 // if no explicit pad is given, use 12px unless there's a
                 // specified margin that's smaller than that
-                pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
+                pad = Math.min(0, margin.l, margin.r, margin.t, margin.b);
             }
 
             // if the item is too big, just give it enough automargin to
@@ -2008,6 +2008,10 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pb) && pushMargin[k2].t) {
                     var ft = pushMargin[k2].t.val;
                     var pt = pushMargin[k2].t.size;
+                    if (k2 === "legend" && pt >30) {
+                        pt = 30;
+                    }
+
                     if(ft > fb) {
                         var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
                         var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
@@ -2055,7 +2059,7 @@ plots.doAutoMargin = function(gd) {
     gs.l = Math.round(ml);
     gs.r = Math.round(mr);
     gs.t = Math.round(mt);
-    gs.b = Math.round(mb);
+    gs.b = Math.round(mb) + 5;
     gs.p = Math.round(margin.pad);
     gs.w = Math.round(width) - gs.l - gs.r;
     gs.h = Math.round(height) - gs.t - gs.b;
@@ -2073,7 +2077,7 @@ plots.doAutoMargin = function(gd) {
         // but let's keep things on the safe side until we fix our
         // auto-margin pipeline problems:
         // https://github.com/plotly/plotly.js/issues/2704
-        var maxNumberOfRedraws = 3 * (1 + Object.keys(pushMarginIds).length);
+        var maxNumberOfRedraws = 1 * (1 + Object.keys(pushMarginIds).length);
 
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
             return Registry.call('_doPlot', gd);
