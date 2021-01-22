@@ -18,6 +18,7 @@ module.exports = overrideAll({
 // TODO: only right is supported currently
 //     orient: {
 //         valType: 'enumerated',
+//         role: 'info',
 //         values: ['left', 'right', 'top', 'bottom'],
 //         dflt: 'right',
 //         description: [

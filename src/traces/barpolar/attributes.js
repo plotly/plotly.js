@@ -24,6 +24,7 @@ module.exports = {
 
     // orientation: {
     //     valType: 'enumerated',
+    //     role: 'info',
     //     values: ['radial', 'angular'],
     //     editType: 'calc+clearAxisTypes',
     //     description: 'Sets the orientation of the bars.'
