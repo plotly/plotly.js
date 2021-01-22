@@ -2877,7 +2877,8 @@ describe('plot_api edit_types', function() {
 
         editTypes.update(flags, {
             valType: 'boolean',
-            dflt: true
+            dflt: true,
+            role: 'style'
         });
 
         expect(flags).toEqual({calc: false, style: true});
@@ -2897,7 +2898,8 @@ describe('plot_api edit_types', function() {
         editTypes.update(flags, {
             editType: 'calc+style',
             valType: 'number',
-            dflt: 1
+            dflt: 1,
+            role: 'style'
         });
 
         expect(flags).toEqual({calc: true, legend: true, style: true});
