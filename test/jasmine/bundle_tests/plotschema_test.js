@@ -78,6 +78,7 @@ describe('plot schema', function() {
             function(attr) {
                 if(isValObject(attr)) {
                     expect(deprecatedRoles.indexOf(attr.role) === -1).toBe(true, attr);
+                    expect(attr.role).toBeUndefined(attr);
                 }
             }
         );
@@ -232,10 +233,10 @@ describe('plot schema', function() {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
-                        expect(VALTYPES.indexOf(dAttr.valType) !== -1)
-                            .toBe(true, attrString + ': ' + dAttrName);
-                        expect(deprecatedRoles.indexOf(dAttr.role) === -1)
-                            .toBe(true, attrString + ': ' + dAttrName);
+                        var msg = attrString + ': ' + dAttrName;
+                        expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true, msg);
+                        expect(deprecatedRoles.indexOf(dAttr.role) === -1).toBe(true, msg);
+                        expect(dAttr.role).toBeUndefined(msg);
                     });
                 }
             }
