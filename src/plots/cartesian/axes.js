@@ -102,7 +102,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     if(!extraOption) extraOption = dflt;
     axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
 
-    // data-ref annotations are not supported in heatmapgl yet
+    // data-ref annotations are not supported in gl2d yet
 
     attrDef[refAttr] = {
         valType: 'enumerated',

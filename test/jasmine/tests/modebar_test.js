@@ -521,7 +521,7 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (heatmapgl version)', function() {
+        it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d'],

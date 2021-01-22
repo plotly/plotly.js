@@ -426,6 +426,7 @@ var list = [
     'gl2d_parcoords_tick_format',
     'gl2d_period_positioning',
     'gl2d_point-selection',
+    'gl2d_pointcloud-basic',
     'gl2d_rgb_dont_accept_alpha_scattergl',
     'gl2d_scatter_fill_self_next',
     'gl2d_scatter_fill_self_next_vs_nogl',
@@ -1513,6 +1514,7 @@ figs['gl2d_parcoords_style_labels'] = require('@mocks/gl2d_parcoords_style_label
 figs['gl2d_parcoords_tick_format'] = require('@mocks/gl2d_parcoords_tick_format');
 figs['gl2d_period_positioning'] = require('@mocks/gl2d_period_positioning');
 figs['gl2d_point-selection'] = require('@mocks/gl2d_point-selection');
+// figs['gl2d_pointcloud-basic'] = require('@mocks/gl2d_pointcloud-basic');
 // figs['gl2d_rgb_dont_accept_alpha_scattergl'] = require('@mocks/gl2d_rgb_dont_accept_alpha_scattergl');
 figs['gl2d_scatter_fill_self_next'] = require('@mocks/gl2d_scatter_fill_self_next');
 figs['gl2d_scatter_fill_self_next_vs_nogl'] = require('@mocks/gl2d_scatter_fill_self_next_vs_nogl');

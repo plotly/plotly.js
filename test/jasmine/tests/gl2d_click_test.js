@@ -387,6 +387,33 @@ describe('Test hover and click interactions', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should output correct event data for pointcloud', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_pointcloud-basic.json'));
+
+        _mock.layout.hoverlabel = { font: {size: 8} };
+        _mock.data[2].hoverlabel = {
+            bgcolor: ['red', 'green', 'blue']
+        };
+
+        var run = makeRunner([540, 150], {
+            x: 4.5,
+            y: 9,
+            curveNumber: 2,
+            pointNumber: 1,
+            bgcolor: 'rgb(0, 128, 0)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 8,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'pointcloud'
+        });
+
+        Plotly.newPlot(gd, _mock)
+        .then(run)
+        .then(done, done.fail);
+    });
+
     it('@gl scattergl should propagate marker colors to hover labels', function(done) {
         var _mock = Lib.extendDeep({}, mock0);
         _mock.layout.width = 800;

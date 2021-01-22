@@ -467,11 +467,11 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadHeatmapgl = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
+    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
     var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadHeatmapgl;
+    var hadBgLayer = hadCartesian || hadGL2D;
     var hasBgLayer = hasCartesian || hasGL2D;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
