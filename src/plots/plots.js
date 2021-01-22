@@ -468,11 +468,11 @@ plots.supplyDefaults = function(gd, opts) {
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     var hadHeatmapgl = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasHeatmapgl = !!(newFullLayout._has && newFullLayout._has('gl2d'));
+    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
     var hadBgLayer = hadCartesian || hadHeatmapgl;
-    var hasBgLayer = hasCartesian || hasHeatmapgl;
+    var hasBgLayer = hasCartesian || hasGL2D;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
