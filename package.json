@@ -54,6 +54,7 @@
   "browserify": {
     "transform": [
       "glslify",
+      "./tasks/compress_headers.js",
       "./tasks/compress_attributes.js"
     ]
   },
