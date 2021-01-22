@@ -25,7 +25,7 @@ describe('plot schema', function() {
     var isPlainObject = Lib.isPlainObject;
 
     var VALTYPES = Object.keys(valObjects);
-    var ROLES = ['info', 'style', 'data'];
+    var deprecatedRoles = ['info', 'style', 'data'];
     var editType = plotSchema.defs.editType;
 
     function assertTraceSchema(callback) {
@@ -73,11 +73,11 @@ describe('plot schema', function() {
         );
     });
 
-    it('all attributes should only have valid `role`', function() {
+    it('all attributes should not have valid a deprecated `role`', function() {
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true, attr);
+                    expect(deprecatedRoles.indexOf(attr.role) === -1).toBe(true, attr);
                 }
             }
         );
@@ -223,7 +223,7 @@ describe('plot schema', function() {
         );
     });
 
-    it('deprecated attributes should have a `valType` and `role`', function() {
+    it('deprecated attributes should have a `valType` and not any deprecated roles', function() {
         var DEPRECATED = '_deprecated';
 
         assertPlotSchema(
@@ -234,7 +234,7 @@ describe('plot schema', function() {
 
                         expect(VALTYPES.indexOf(dAttr.valType) !== -1)
                             .toBe(true, attrString + ': ' + dAttrName);
-                        expect(ROLES.indexOf(dAttr.role) !== -1)
+                        expect(deprecatedRoles.indexOf(dAttr.role) === -1)
                             .toBe(true, attrString + ': ' + dAttrName);
                     });
                 }

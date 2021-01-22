@@ -48,6 +48,7 @@ module.exports = function() {
                 .replace(makeJoinedArrayRegex('description'), '')
                 .replace(makeArrayRegex('requiredOpts'), '')
                 .replace(makeArrayRegex('otherOpts'), '')
+                .replace(makeStringRegex('role'), '')
                 .replace(makeStringRegex('hrName'), '')
         );
         done();
