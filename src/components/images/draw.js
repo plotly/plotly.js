@@ -237,7 +237,7 @@ module.exports = function draw(gd) {
         var subplotObj = fullLayout._plots[subplot];
 
         // filter out overlaid plots (which have their images on the main plot)
-        // and heatmapgl plots (which don't support below images, at least not yet)
+        // and gl2d plots (which don't support below images, at least not yet)
         if(!subplotObj.imagelayer) continue;
 
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
