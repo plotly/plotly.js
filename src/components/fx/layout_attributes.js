@@ -20,7 +20,8 @@ fontAttrs.size.dflt = constants.HOVERFONTSIZE;
 module.exports = {
     clickmode: {
         valType: 'flaglist',
-        flags: ['event', 'select'],
+        role: 'info',
+        flags: ['event', 'select', 'anywhere'],
         dflt: 'event',
         editType: 'plot',
         extras: ['none'],
@@ -37,11 +38,17 @@ module.exports = {
             'explicitly setting `hovermode`: *closest* when using this feature.',
             'Selection events are sent accordingly as long as *event* flag is set as well.',
             'When the *event* flag is missing, `plotly_click` and `plotly_selected`',
-            'events are not fired.'
+            'events are not fired.',
+            'The *anywhere* flag extends the *select* flag by allowing to trigger a',
+            'click event anywhere in the plot. The click event will always include *x*',
+            'and *y* coordinates and if a data point is below the cursor it will also',
+            'include information about the data point. When specifying *anywhere* the',
+            '*select* flag becomes superfluous.'
         ].join(' ')
     },
     dragmode: {
         valType: 'enumerated',
+        role: 'info',
         values: [
             'zoom',
             'pan',
@@ -67,6 +74,7 @@ module.exports = {
     },
     hovermode: {
         valType: 'enumerated',
+        role: 'info',
         values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
         editType: 'modebar',
         description: [
@@ -94,6 +102,7 @@ module.exports = {
         valType: 'integer',
         min: -1,
         dflt: 20,
+        role: 'info',
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data',
@@ -108,6 +117,7 @@ module.exports = {
         valType: 'integer',
         min: -1,
         dflt: 20,
+        role: 'info',
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data to draw',
@@ -120,6 +130,7 @@ module.exports = {
     hoverlabel: {
         bgcolor: {
             valType: 'color',
+            role: 'style',
             editType: 'none',
             description: [
                 'Sets the background color of all hover labels on graph'
@@ -127,6 +138,7 @@ module.exports = {
         },
         bordercolor: {
             valType: 'color',
+            role: 'style',
             editType: 'none',
             description: [
                 'Sets the border color of all hover labels on graph.'
@@ -137,6 +149,7 @@ module.exports = {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
             dflt: 'auto',
+            role: 'style',
             editType: 'none',
             description: [
                 'Sets the horizontal alignment of the text content within hover label box.',
@@ -147,6 +160,7 @@ module.exports = {
             valType: 'integer',
             min: -1,
             dflt: 15,
+            role: 'style',
             editType: 'none',
             description: [
                 'Sets the default length (in number of characters) of the trace name in',
@@ -161,6 +175,7 @@ module.exports = {
     },
     selectdirection: {
         valType: 'enumerated',
+        role: 'info',
         values: ['h', 'v', 'd', 'any'],
         dflt: 'any',
         description: [
