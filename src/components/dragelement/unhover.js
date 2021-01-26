@@ -34,7 +34,7 @@ unhover.raw = function raw(gd, evt) {
     var oldhoverdata = gd._hoverdata;
 
     if(!evt) evt = {};
-    if(evt.target &&
+    if(evt.target && !gd._dragged &&
        Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return;
     }

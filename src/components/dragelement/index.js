@@ -180,7 +180,7 @@ dragElement.init = function init(options) {
 
         if(dx || dy) {
             gd._dragged = true;
-            dragElement.unhover(gd);
+            dragElement.unhover(gd, e);
         }
 
         if(gd._dragged && options.moveFn && !rightClick) {
