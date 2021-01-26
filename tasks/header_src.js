@@ -6,7 +6,7 @@ var glob = require('glob');
 var constants = require('./util/constants');
 var common = require('./util/common');
 
-(function updateHeadersInSrcAndLibFiles() {
+function updateHeadersInSrcAndLibFiles() {
     var srcGlob = path.join(constants.pathToSrc, '**/*.js');
     var libGlob = path.join(constants.pathToLib, '**/*.js');
 
@@ -60,4 +60,6 @@ var common = require('./util/common');
 
         return (header.value.replace(regex, '') === licenseStr.replace(regex, ''));
     }
-})();
+}
+
+updateHeadersInSrcAndLibFiles();

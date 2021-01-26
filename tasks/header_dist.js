@@ -2,7 +2,7 @@ var prependFile = require('prepend-file');
 var constants = require('./util/constants');
 var common = require('./util/common');
 
-(function addHeadersInDistFiles() {
+function addHeadersInDistFiles() {
     function _prepend(path, header) {
         prependFile(path, header + '\n', common.throwOnError);
     }
@@ -28,4 +28,6 @@ var common = require('./util/common');
             .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
         _prepend(pathObj.distMin, headerDistMin);
     });
-})();
+}
+
+addHeadersInDistFiles();
