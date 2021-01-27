@@ -28,37 +28,32 @@ function updateHeadersInSrcAndLibFiles() {
                     throw new Error(file + ' : has no header information.');
                 }
 
-                // if header and license are the same, do nothing
-                if(isCorrect(header)) return;
-
-                // if header and license only differ by date, update header
-                else if(hasWrongDate(header)) {
+                // if header and license are the same remove the header!
+                if(isRedundant(header)) {
                     var codeLines = code.split('\n');
 
                     codeLines.splice(header.loc.start.line - 1, header.loc.end.line);
 
-                    var newCode = licenseSrc + '\n' + codeLines.join('\n');
+                    var i;
+                    for(i = 0; i < codeLines.length; i++) {
+                        if(codeLines[i]) {
+                            break;
+                        }
+                    }
+
+                    var newCode = codeLines.splice(i).join('\n');
 
                     common.writeFile(file, newCode);
-                } else {
-                    // otherwise, throw an error
-                    throw new Error(file + ' : has wrong header information.');
                 }
             });
         });
     });
 
-    function isCorrect(header) {
+    function isRedundant(header) {
         return (
             header.value.replace(/\s+$/gm, '') ===
             licenseStr.replace(/\s+$/gm, '')
         );
-    }
-
-    function hasWrongDate(header) {
-        var regex = /Copyright 20[0-9][0-9]-20[0-9][0-9]/g;
-
-        return (header.value.replace(regex, '') === licenseStr.replace(regex, ''));
     }
 }
 
