@@ -92,15 +92,12 @@ function assertJasmineSuites() {
 
 /*
  * tests about the contents of source (and lib) files:
- * - check for header comment
  * - check that we don't have any features that break in IE
  * - check that we don't use getComputedStyle unexpectedly
  * - check that require statements use lowercase (to match assertFileNames)
  *   or match the case of the source file
  */
 function assertSrcContents() {
-    var licenseSrc = constants.licenseSrc;
-    var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
     var logs = [];
 
     // These are forbidden in IE *only in SVG* but since
@@ -174,17 +171,6 @@ function assertSrcContents() {
                     }
                 }
             });
-
-            var header = comments[0];
-
-            if(!header || header.loc.start.line > 1) {
-                logs.push(file + ' : has no header information.');
-                return;
-            }
-
-            if(header.value !== licenseStr) {
-                logs.push(file + ' : has incorrect header information.');
-            }
         });
 
         /*
