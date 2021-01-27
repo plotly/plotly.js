@@ -1,48 +1,12 @@
 var path = require('path');
 var fs = require('fs');
-
-var prependFile = require('prepend-file');
 var falafel = require('falafel');
 var glob = require('glob');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
 
-// main
-addHeadersInDistFiles();
-updateHeadersInSrcFiles();
-
-// add headers to dist files
-function addHeadersInDistFiles() {
-    function _prepend(path, header) {
-        prependFile(path, header + '\n', common.throwOnError);
-    }
-
-    // add header to main dist bundles
-    var pathsDist = [
-        constants.pathToPlotlyDistMin,
-        constants.pathToPlotlyDist,
-        constants.pathToPlotlyDistWithMeta,
-        constants.pathToPlotlyGeoAssetsDist
-    ];
-    pathsDist.forEach(function(path) {
-        _prepend(path, constants.licenseDist);
-    });
-
-    // add header and bundle name to partial bundle
-    constants.partialBundlePaths.forEach(function(pathObj) {
-        var headerDist = constants.licenseDist
-            .replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
-        _prepend(pathObj.dist, headerDist);
-
-        var headerDistMin = constants.licenseDist
-            .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
-        _prepend(pathObj.distMin, headerDistMin);
-    });
-}
-
-// add or update header to src/ lib/ files
-function updateHeadersInSrcFiles() {
+function updateHeadersInSrcAndLibFiles() {
     var srcGlob = path.join(constants.pathToSrc, '**/*.js');
     var libGlob = path.join(constants.pathToLib, '**/*.js');
 
@@ -97,3 +61,5 @@ function updateHeadersInSrcFiles() {
         return (header.value.replace(regex, '') === licenseStr.replace(regex, ''));
     }
 }
+
+updateHeadersInSrcAndLibFiles();

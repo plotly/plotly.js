@@ -23,10 +23,11 @@
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
-    "header": "node tasks/header.js",
+    "header-dist": "node tasks/header_dist.js",
+    "header-src": "node tasks/header_src.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
-    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header && npm run stats",
+    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
     "cibuild": "npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
@@ -46,7 +47,7 @@
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 12 --npm 6.14 && npm-link-check && npm ls --prod",
-    "version": "npm run build && npm run no-bad-char && git add -A dist src build",
+    "version": "npm run build && npm run no-bad-char && git add -A dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
     "postshrinkwrap": "chttps ."
