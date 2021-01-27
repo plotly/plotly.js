@@ -24,7 +24,6 @@
     "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header-dist": "node tasks/header_dist.js",
-    "header-src": "node tasks/header_src.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
     "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
@@ -55,7 +54,6 @@
   "browserify": {
     "transform": [
       "glslify",
-      "./tasks/compress_headers.js",
       "./tasks/compress_attributes.js"
     ]
   },
