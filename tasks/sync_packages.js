@@ -239,7 +239,7 @@ function syncLocalesPkg(d) {
     }
 
     function writeMain(cb) {
-        var cnt = [constants.licenseSrc, ''];
+        var cnt = [constants.licenseDist, ''];
         localeFiles.forEach(function(f) {
             var n = path.basename(f, '.js');
             cnt.push('exports[\'' + n + '\'] = require(\'./' + n + '.js\');');
