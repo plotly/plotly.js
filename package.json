@@ -26,8 +26,9 @@
     "header-dist": "node tasks/header_dist.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
-    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
+    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run strip-comments && npm run header-dist && npm run stats",
     "cibuild": "npm run preprocess && node tasks/cibundle.js",
+    "strip-comments": "node tasks/strip_comments.js",
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
@@ -170,6 +171,7 @@
     "read-last-lines": "^1.7.2",
     "requirejs": "^2.3.6",
     "run-series": "^1.1.9",
+    "strip-comments": "^2.0.1",
     "through2": "^4.0.2",
     "true-case-path": "^2.2.1",
     "watchify": "^3.11.1"
