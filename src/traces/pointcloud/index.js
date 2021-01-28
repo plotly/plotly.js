@@ -1,5 +1,10 @@
 'use strict';
 
+var deprecationWarning = [
+    '*pointcloud* trace is deprecated!',
+    'Please consider switching to the *scattergl* trace type.'
+].join(' ');
+
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -14,6 +19,7 @@ module.exports = {
     categories: ['gl', 'gl2d', 'showLegend'],
     meta: {
         description: [
+            deprecationWarning,
             'The data visualized as a point cloud set in `x` and `y`',
             'using the WebGl plotting engine.'
         ].join(' ')
