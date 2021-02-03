@@ -7,6 +7,8 @@ var glob = require('glob');
 var common = require('./util/common');
 var constants = require('./util/constants');
 var pkg = require('../package.json');
+var rc = pkg.version.split('-')[1];
+var tag = rc ? (' --tag ' + rc.split('.')[0]) : '';
 
 var year = (new Date()).getFullYear();
 
@@ -306,6 +308,6 @@ function _publishToNPM(d, pkgPath) {
             cb();
             return;
         }
-        exec('npm publish', {cwd: pkgPath}, cb).stdout.pipe(process.stdout);
+        exec('npm publish' + tag, {cwd: pkgPath}, cb).stdout.pipe(process.stdout);
     };
 }
