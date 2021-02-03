@@ -49,6 +49,11 @@ module.exports = {
         editType: 'plot',
         description: 'Sets the font for the `dimension` range values.'
     }),
+    colXPositions: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: 'X positions of the columns. Columns are evenly spread if this is null'
+    },
 
     dimensions: templatedArray('dimension', {
         label: {

@@ -183,6 +183,7 @@ function model(layout, d, i) {
         key: i,
         colCount: dimensions.filter(helpers.isVisible).length,
         dimensions: dimensions,
+        colXPositions: trace.colXPositions,
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
         lines: lines,
@@ -213,6 +214,9 @@ function viewModel(state, callbacks, model) {
     var canvasPixelRatio = model.canvasPixelRatio;
 
     var xScale = function(d) {return width * d / Math.max(1, model.colCount - 1);};
+    if (model.colXPositions) {
+        xScale = function(d) {return model.colXPositions[d]};
+    }
 
     var unitPad = c.verticalPadding / height;
     var _unitToPaddedPx = unitToPaddedPx(height, c.verticalPadding);
