@@ -9,6 +9,59 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.0.0] -- UNRELEASED
+
+### Added
+ - Removed usage of function constructors from `basic`, `cartesian`, `finance`, `geo`, and `mapbox`
+   partial bundles and added tests to ensure that they will not again do so in the future [#5359, #5383, #5387],
+   with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
+ - Add `strict` partial bundle [#5413, #5444], which includes
+   the maximal subset of the library which does not rely on function constructors
+ - Implement "fast" `zsmooth` option for `image` trace [#5354, #5386],
+   with thanks to @almarklein for the contribution!
+
+### Removed
+ - Drop support for old browsers IE9 and IE10 [#5376, #5380, #5460]
+ - Stop exporting v3 of d3 under `Plotly.d3` [#5400, #5406]
+ - Stop attaching `_has*` plot types to `fullLayout` [#5409]
+ - Reduce the number of exported methods from `Plotly.Fx` and `Plotly.Plots` in the API [#5420]
+ - Drop `Plotly.plot` from the API [#5412, #5370, #5393]
+ - Drop `Plotly.Queue` from the API [#5423]
+ - Drop non-object `role` keys from attribute definition [#5425, #5432]
+ - Drop deprecated `contourgl` and `area` traces as well as deprecated legacy
+   pre-`scatterpolar` polar-related attributes `bar.t`, `bar.r`,
+   `scatter.t`, `scatter.r`, `layout.radialaxis`, `layout.angularaxis` and
+   `gd.framework` [#5399, #5408, #5409, #5398, #5438]
+
+### Deprecated
+ - Deprecate `heatmapgl` and `pointcloud` trace types for later removal [#5447]
+
+### Changed
+ - Add major versions e.g. "latest-v2" when publishing latest to CDN and keep "latest" for v1 [#5462]
+ - Switch to `native-promise-only` module to handle es6 promises [#5358]
+ - Switch to `probe-image-size` module to get width and height of images [#5388]
+ - Relax test for plain objects to enable validation in node.js and multiple window contexts [#5411]
+ - Fire `plotly_unhover` event when dragging [#5407],
+   with thanks to @rreusser for the contribution!
+ - Include transforms and calendars in partial bundles [#5379, #5422]
+ - Require unminified `mapbox-gl` dependency for unminified bundles and
+   revisit compression options for minified bundles [#5449]
+ - Remove header comments from the source files and only add headers to the top of
+   dist files at build time [#5436, #5446]
+ - Guard against unexpected characters at build time [#5424]
+ - More maintenance work listed under the [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60)!
+
+### Fixed
+ - Fix "toself" `fill` for `scattergl` traces to handle multiple polygons [#5355],
+   with thanks to @ruijin for the contribution!
+ - Fix element targeting on hover in shadow DOM [#5256],
+   with thanks to @dbluhm for the contribution!
+ - Fix displaying zero `threshold` for `indicator` trace [#5430]
+ - Avoid duplicate keys in object literals within plotly builds [#5458]
+ - Improve attribute compression and avoid redundant copyright comments in non-minified
+   bundles [#5426, #5429, #5439]
+
+
 ## [1.58.4] -- 2020-12-21
 
 ### Fixed
