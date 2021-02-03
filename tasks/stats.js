@@ -6,7 +6,7 @@ var prettySize = require('prettysize');
 
 var common = require('./util/common');
 var constants = require('./util/constants');
-var pkg = require('../package.json');
+var pkgVersion = require('../package.json').version;
 
 var pathDistREADME = path.join(constants.pathToDist, 'README.md');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
@@ -74,7 +74,7 @@ function getInfoContent() {
         'Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.',
         'Many other localizations are available - here is an example using Swiss-German (de-CH),',
         'see the contents of this directory for the full list.',
-        'They are also available on our CDN as ' + cdnRoot + 'locale-de-ch-' + 'latest' + '.js OR ' + cdnRoot + 'locale-de-ch-' + pkg.version + '.js',
+        'They are also available on our CDN as ' + cdnRoot + 'locale-de-ch-' + 'latest' + '.js OR ' + cdnRoot + 'locale-de-ch-' + pkgVersion + '.js',
         'Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.',
         '',
         '*After* the plotly.js script tag, add:',
@@ -109,12 +109,12 @@ function getMainBundleInfo() {
         '',
         'It be can imported as minified javascript',
         '- using dist file `dist/plotly.min.js`',
-        '- using CDN URL ' + cdnRoot + 'latest' + MINJS + ' OR ' + cdnRoot + pkg.version + MINJS,
+        '- using CDN URL ' + cdnRoot + 'latest' + MINJS + ' OR ' + cdnRoot + pkgVersion + MINJS,
         '',
         'or as raw javascript:',
         '- using the `plotly.js-dist` npm package (starting in `v1.39.0`)',
         '- using dist file `dist/plotly.js`',
-        '- using CDN URL ' + cdnRoot + 'latest' + JS + ' OR ' + cdnRoot + pkg.version + JS,
+        '- using CDN URL ' + cdnRoot + 'latest' + JS + ' OR ' + cdnRoot + pkgVersion + JS,
         '- using CommonJS with `require(\'plotly.js\')`',
         '',
         'If you would like to have access to the attribute meta information ' +
@@ -187,8 +187,8 @@ function makeBundleInfo(pathObj) {
         '| ------ | --- |',
         '| Latest | ' + cdnRoot + name + '-' + 'latest' + JS + ' |',
         '| Latest minified | ' + cdnRoot + name + '-' + 'latest' + MINJS + ' |',
-        '| Tagged | ' + cdnRoot + name + '-' + pkg.version + JS + ' |',
-        '| Tagged minified | ' + cdnRoot + name + '-' + pkg.version + MINJS + ' |',
+        '| Tagged | ' + cdnRoot + name + '-' + pkgVersion + JS + ' |',
+        '| Tagged minified | ' + cdnRoot + name + '-' + pkgVersion + MINJS + ' |',
         '',
         '#### npm package (starting in `v1.39.0`)',
         '',
