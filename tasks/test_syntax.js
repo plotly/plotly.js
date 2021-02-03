@@ -304,6 +304,7 @@ function assertES5() {
     var CLIEngine = eslint.CLIEngine;
 
     var cli = new CLIEngine({
+        allowInlineConfig: false,
         useEslintrc: false,
         ignore: false,
         parserOptions: {
