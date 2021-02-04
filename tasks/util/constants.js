@@ -85,8 +85,6 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
-    pathToRequireJS: path.join(pathToRoot, 'node_modules', 'requirejs', 'require.js'),
-    pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
 
     // this mapbox access token is 'public', no need to hide it
     // more info: https://www.mapbox.com/help/define-access-token/

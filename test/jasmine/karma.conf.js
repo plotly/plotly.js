@@ -306,15 +306,6 @@ func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
-        case 'requirejs':
-            // browserified custom_matchers doesn't work with this route
-            // so clear them out of the files and preprocessors
-            func.defaultConfig.files = [
-                constants.pathToRequireJS,
-                constants.pathToRequireJSFixture
-            ];
-            delete func.defaultConfig.preprocessors[pathToCustomMatchers];
-            break;
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
