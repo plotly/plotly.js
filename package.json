@@ -21,7 +21,7 @@
     "plotly"
   ],
   "scripts": {
-    "preprocess": "node tasks/preprocess.js",
+    "preprocess": "./tasks/vendor_to_dist.sh && node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header-dist": "node tasks/header_dist.js",
     "stats": "node tasks/stats.js",
