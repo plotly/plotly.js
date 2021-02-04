@@ -17,7 +17,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
  - Add `strict` partial bundle [[#5413](https://github.com/plotly/plotly.js/pull/5413), [#5444](https://github.com/plotly/plotly.js/pull/5444)], which includes
    the maximal subset of the library which does not rely on function constructors
- - Implement "fast" `zsmooth` option for `image` trace [[#5354](https://github.com/plotly/plotly.js/pull/5354), [#$1](https://github.com/plotly/plotly.js/pull/$1)],
+ - Implement "fast" `zsmooth` option for `image` trace [[#5354](https://github.com/plotly/plotly.js/pull/5354), [#5386](https://github.com/plotly/plotly.js/pull/5386)],
    with thanks to @almarklein for the contribution!
 
 ### Removed
