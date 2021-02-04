@@ -5,7 +5,6 @@ var falafel = require('falafel');
 var glob = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
-var eslint = require('eslint');
 var trueCasePath = require('true-case-path').trueCasePathSync;
 
 var common = require('./util/common');
@@ -27,7 +26,6 @@ assertSrcContents();
 assertFileNames();
 assertTrailingNewLine();
 assertCircularDeps();
-assertES5();
 
 
 // check for for focus and exclude jasmine blocks
@@ -298,39 +296,6 @@ function assertCircularDeps() {
         log('circular dependencies: ' + circularDeps.length, logs);
     });
 }
-
-// Ensure no ES6 has snuck through into the build:
-function assertES5() {
-    var CLIEngine = eslint.CLIEngine;
-
-    var cli = new CLIEngine({
-        allowInlineConfig: false,
-        useEslintrc: false,
-        ignore: false,
-        parserOptions: {
-            ecmaVersion: 5
-        }
-    });
-
-    var files = constants.partialBundlePaths.map(function(f) { return f.dist; });
-    files.unshift(constants.pathToPlotlyBuild, constants.pathToPlotlyDist);
-
-    var report = cli.executeOnFiles(files);
-    var formatter = cli.getFormatter();
-
-    var errors = [];
-    if(report.errorCount > 0) {
-        console.log(formatter(report.results));
-
-        // It doesn't work well to pass formatted logs into this,
-        // so instead pass the empty string in a way that causes
-        // the test to fail
-        errors.push('');
-    }
-
-    log('es5-only syntax', errors);
-}
-
 
 function combineGlobs(arr) {
     return '{' + arr.join(',') + '}';
