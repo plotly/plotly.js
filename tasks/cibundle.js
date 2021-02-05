@@ -7,7 +7,7 @@ var _bundle = require('./util/browserify_wrapper');
  * Outputs:
  *
  *  - plotly.js bundle in build/
- *  - plotly-geo-assets.js bundle in dist/ (in accordance with test/image/index.html)
+ *  - plotly-geo-assets.js bundle in build/ (in accordance with test/image/index.html)
  *  - plotly.min.js bundle in build/ (for minified_bundle test)
  */
 
