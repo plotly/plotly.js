@@ -77,6 +77,16 @@ module.exports = {
             'or remain *constant* independent of the symbol size on the graph.'
         ].join(' ')
     },
+    itemsymbol: {
+        valType: 'enumerated',
+        values: ['trace', 'constant'],
+        dflt: 'trace',
+        editType: 'legend',
+        description: [
+            'Determines if the legend items symbols use the symbol of the first point in each *trace*',
+            'or use a *constant* circle symbol.'
+        ].join(' ')
+    },
     itemwidth: {
         valType: 'number',
         min: 30,
