@@ -204,7 +204,7 @@ module.exports = function style(s, gd, legend) {
             if(constantItemSizing && valToBound && cst !== undefined) {
                 valToBound = cst;
             }
-            
+
             if(constantItemSymbol && attrIn === 'marker.symbol') {
                 valToBound = 'circle';
             }
