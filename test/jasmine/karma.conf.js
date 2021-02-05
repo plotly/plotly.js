@@ -307,7 +307,7 @@ func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'minified_bundle':
-            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
+            func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'plotschema':
