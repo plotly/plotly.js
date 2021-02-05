@@ -12,7 +12,7 @@ var theLatest = 'latest' + (
     (majorVersion === '1') ? '' : ('-v' + majorVersion)
 );
 
-var pathDistREADME = path.join(constants.pathToDist, 'README.md');
+var pathDistREADME = path.join(constants.pathToRoot, 'dist_readme.md');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
 
 var ENC = 'utf-8';

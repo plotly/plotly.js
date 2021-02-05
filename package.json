@@ -48,7 +48,7 @@
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 12 --npm 6.14 && npm-link-check && npm ls --prod",
-    "version": "npm run build && npm run no-bad-char && git add -A dist build src/version.js",
+    "version": "npm run build && npm run no-bad-char && git add -A dist_readme.md build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
     "postshrinkwrap": "chttps ."
