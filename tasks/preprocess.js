@@ -24,11 +24,11 @@ function makeBuildCSS() {
     });
 }
 
-// copy topojson files from sane-topojson to dist/
+// copy topojson files from sane-topojson to vendor/
 function copyTopojsonFiles() {
     fs.copy(
         constants.pathToTopojsonSrc,
-        constants.pathToTopojsonDist,
+        constants.pathToTopojsonVendor,
         { clobber: true },
         common.throwOnError
     );
