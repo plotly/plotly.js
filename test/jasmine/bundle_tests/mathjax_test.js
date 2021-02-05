@@ -24,7 +24,7 @@ describe('Test MathJax:', function() {
         mathJaxScriptTag.onerror = function() {
             fail('MathJax failed to load');
         };
-        mathJaxScriptTag.src = '/base/dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
+        mathJaxScriptTag.src = '/base/vendor/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
         document.body.appendChild(mathJaxScriptTag);
     });
 
