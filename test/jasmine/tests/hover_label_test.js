@@ -3632,6 +3632,55 @@ describe('hover updates', function() {
         })
         .then(done, done.fail);
     });
+
+    it('drag should trigger unhover', function(done) {
+        var data = [{y: [1]}];
+
+        var layout = {
+            hovermode: 'x',
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        var gd = createGraphDiv();
+
+        var hoverHandler = jasmine.createSpy('hover');
+        var unhoverHandler = jasmine.createSpy('unhover');
+
+        var hoverPt = [200, 100];
+        var dragPt = [210, 100];
+
+        function hover() {
+            mouseEvent('mousemove', hoverPt[0], hoverPt[1]);
+            Lib.clearThrottle();
+        }
+
+        function drag() {
+            mouseEvent('mousedown', hoverPt[0], hoverPt[1]);
+            mouseEvent('mousemove', dragPt[0], dragPt[1]);
+            mouseEvent('mouseup', dragPt[0], dragPt[1]);
+            Lib.clearThrottle();
+        }
+
+        Plotly.react(gd, data, layout)
+            .then(function() {
+                gd.on('plotly_hover', hoverHandler);
+                gd.on('plotly_unhover', unhoverHandler);
+            })
+            .then(hover)
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalled();
+                expect(unhoverHandler).not.toHaveBeenCalled();
+            })
+            .then(drag)
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalled();
+                expect(unhoverHandler).toHaveBeenCalled();
+            })
+            .then(done, done.fail);
+    });
 });
 
 describe('Test hover label custom styling:', function() {

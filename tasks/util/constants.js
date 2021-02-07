@@ -99,15 +99,6 @@ module.exports = {
     uglifyOptions: {
         ecma: 5,
         mangle: true,
-        compress: {
-            // see full list of compress option
-            // https://github.com/fabiosantoscode/terser#compress-options
-            //
-            // need to turn off 'typeofs' to make mapbox-gl work in
-            // minified bundles, for more info see:
-            // https://github.com/plotly/plotly.js/issues/2787
-            typeofs: false
-        },
         output: {
             beautify: false,
             ascii_only: true
@@ -124,14 +115,4 @@ module.exports = {
         '* Licensed under the MIT license',
         '*/'
     ].join('\n'),
-
-    licenseSrc: [
-        '/**',
-        '* Copyright 2012-' + year + ', Plotly, Inc.',
-        '* All rights reserved.',
-        '*',
-        '* This source code is licensed under the MIT license found in the',
-        '* LICENSE file in the root directory of this source tree.',
-        '*/'
-    ].join('\n')
 };

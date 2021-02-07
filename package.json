@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.58.4",
+  "version": "2.0.0-rc.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -23,16 +23,18 @@
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
-    "header": "node tasks/header.js",
+    "header-dist": "node tasks/header_dist.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
-    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header && npm run stats",
+    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
     "cibuild": "npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
     "no-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: error}' $(find dist -type f -iname '*.js' | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js | grep -v MathJax.js)",
     "no-bad-char": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-misleading-character-class: error}' $(find dist -type f -iname '*.js' | grep plotly)",
+    "no-dup-keys": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-dupe-keys: error}' $(find dist -type f -iname '*.js' | grep plotly)",
+    "no-es6-dist": "node tasks/no_es6_dist.js",
     "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
@@ -46,7 +48,7 @@
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 12 --npm 6.14 && npm-link-check && npm ls --prod",
-    "version": "npm run build && npm run no-bad-char && git add -A dist src build",
+    "version": "npm run build && npm run no-bad-char && git add -A dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
     "postshrinkwrap": "chttps ."
@@ -54,7 +56,6 @@
   "browserify": {
     "transform": [
       "glslify",
-      "./tasks/compress_headers.js",
       "./tasks/compress_attributes.js"
     ]
   },
@@ -82,7 +83,7 @@
     "fast-isnumeric": "^1.1.4",
     "gl-cone3d": "^1.5.2",
     "gl-error3d": "^1.0.16",
-    "gl-heatmap2d": "^1.1.0",
+    "gl-heatmap2d": "^1.1.1",
     "gl-line3d": "1.2.1",
     "gl-mat4": "^1.2.0",
     "gl-mesh3d": "^2.3.1",
