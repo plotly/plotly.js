@@ -12,7 +12,6 @@ fontAttrs.size.dflt = constants.HOVERFONTSIZE;
 module.exports = {
     clickmode: {
         valType: 'flaglist',
-        role: 'info',
         flags: ['event', 'select', 'anywhere'],
         dflt: 'event',
         editType: 'plot',
