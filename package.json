@@ -21,7 +21,7 @@
     "plotly"
   ],
   "scripts": {
-    "preprocess": "export NODE_OPTIONS='--max-old-space-size=4096' && node tasks/preprocess.js",
+    "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header-dist": "node tasks/header_dist.js",
     "stats": "node tasks/stats.js",
