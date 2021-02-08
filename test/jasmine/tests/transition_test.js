@@ -12,7 +12,13 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
-function runTests(transitionDuration) {
+[0, 20].forEach(function(transitionDuration) {
+    // Run the whole set of tests twice: once with zero duration and once with
+    // nonzero duration since the behavior should be identical, but there's a
+    // very real possibility of race conditions or other timing issues.
+    //
+    // And of course, remember to put the async loop in a closure:
+
     describe('Plots.transition (duration = ' + transitionDuration + ')', function() {
         'use strict';
 
@@ -258,17 +264,8 @@ function runTests(transitionDuration) {
                 .then(done, done.fail);
         });
     });
-}
+});
 
-for(var i = 0; i < 2; i++) {
-    var duration = i * 20;
-    // Run the whole set of tests twice: once with zero duration and once with
-    // nonzero duration since the behavior should be identical, but there's a
-    // very real possibility of race conditions or other timing issues.
-    //
-    // And of course, remember to put the async loop in a closure:
-    runTests(duration);
-}
 
 describe('Plotly.react transitions:', function() {
     var gd;
