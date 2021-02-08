@@ -840,7 +840,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
+    it('@flaky should not transition layout when axis auto-ranged value do not changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 
