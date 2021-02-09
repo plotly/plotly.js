@@ -960,7 +960,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             var yr0 = [-0.211, 3.211];
 
             var specs = [{
-                desc: '@flaky zoombox on xy',
+                desc: 'zoombox on xy',
                 drag: ['xy', 'nsew', 30, 30],
                 exp: [
                     [['xaxis', 'xaxis2', 'xaxis3'], [1.457, 2.328]],
@@ -1094,7 +1094,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 var msg = 'after ' + s.desc;
                 var msg2 = ['after dblclick on subplot', s.dblclickSubplot, msg].join(' ');
 
-                it(s.desc, function(done) {
+                it('@flaky ' + s.desc, function(done) {
                     makePlot(data, layout, s).then(function() {
                         assertRanges('base', [
                             [['xaxis', 'xaxis2', 'xaxis3'], xr0],
@@ -1194,7 +1194,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             specs.forEach(function(s) {
                 var msg = 'after ' + s.desc;
 
-                it(s.desc, function(done) {
+                it('@flaky ' + s.desc, function(done) {
                     makePlot(data, layout, s).then(function() {
                         assertRanges('base', [
                             [['xaxis'], xr0],
@@ -1331,7 +1331,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             specs.forEach(function(s) {
                 var msg = 'after ' + s.desc;
 
-                it(s.desc, function(done) {
+                it('@flaky ' + s.desc, function(done) {
                     makePlot(data, layout, s).then(function() {
                         assertRanges('base', [
                             [['yaxis', 'xaxis2'], rm0],
@@ -1412,7 +1412,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 var msg2 = ['after dblclick on subplot', s.dblclickSubplot, msg].join(' ');
                 var spmatch = s.dblclickSubplot.match(constants.SUBPLOT_PATTERN);
 
-                it(s.desc, function(done) {
+                it('@flaky ' + s.desc, function(done) {
                     makePlot(data, layout, s).then(function() {
                         assertRanges('base', [
                             [['xaxis', 'yaxis'], rng0.xy],

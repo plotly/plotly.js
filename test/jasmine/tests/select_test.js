@@ -1420,7 +1420,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done, done.fail);
     });
 
-    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+    it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 
@@ -2456,7 +2456,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false].forEach(function(hasCssTransform) {
-        it('should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@flaky should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
