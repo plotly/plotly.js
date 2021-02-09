@@ -126,6 +126,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
  */
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
+    if(!fullLayout._subplots) return;
     var subplots = fullLayout._subplots.cartesian;
     var calcdata = gd.calcdata;
     var i;
