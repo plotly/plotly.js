@@ -75,7 +75,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    image)
+    stable-image)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
         npm run test-image -- $SUITE --filter --skip-flaky || EXIT_STATE=$?
         exit $EXIT_STATE
@@ -88,13 +88,13 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    bundle)
+    jasmine-bundle)
         set_tz
         npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    syntax)
+    source-syntax)
         npm run lint        || EXIT_STATE=$?
         npm run test-syntax || EXIT_STATE=$?
         exit $EXIT_STATE
