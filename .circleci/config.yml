@@ -181,6 +181,8 @@ jobs:
           command: npm run no-es6-dist
       - run:
           name: Test plotly bundles againt duplicate keys
+          environment:
+            NODE_OPTIONS: --max_old_space_size=4096
           command: npm run no-dup-keys
 
 workflows:
