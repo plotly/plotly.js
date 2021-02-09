@@ -1825,7 +1825,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to select and then clear using API', function(done) {
+    it('@gl should be able to select and then clear using API', function(done) {
         function _assert(msg, exp) {
             return function() {
                 var uid = gd._fullData[0].uid;
