@@ -40,7 +40,7 @@ jobs:
           paths:
             - plotly.js
 
-  test-jasmine:
+  no-gl-test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -50,10 +50,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 1)
-          command: ./.circleci/test.sh jasmine
+          name: Run jasmine tests (part A)
+          command: ./.circleci/test.sh no-gl-jasmine
 
-  test-jasmine2:
+  webgl-test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -63,10 +63,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 2)
-          command: ./.circleci/test.sh jasmine2
+          name: Run jasmine tests (part B)
+          command: ./.circleci/test.sh webgl-jasmine
 
-  test-jasmine3:
+  no-gl-flaky-test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -75,8 +75,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 3)
-          command: ./.circleci/test.sh jasmine3
+          name: Run jasmine tests (part C)
+          command: ./.circleci/test.sh no-gl-flaky-jasmine
 
   test-image:
     docker:
@@ -92,13 +92,13 @@ jobs:
             supervisord &
             npm run docker -- setup
       - run:
-          name: Run image tests
+          name: Run image tests (part A)
           command: ./.circleci/test.sh image
       - store_artifacts:
           path: build
           destination: /
 
-  test-image2:
+  flaky-test-image:
     docker:
       - image: plotly/testbed:latest
     working_directory: /var/www/streambed/image_server/plotly.js/
@@ -111,8 +111,8 @@ jobs:
             supervisord &
             npm run docker -- setup
       - run:
-          name: Run image tests
-          command: ./.circleci/test.sh image2
+          name: Run image tests (part B)
+          command: ./.circleci/test.sh flaky-image
       - store_artifacts:
           path: build
           destination: /
@@ -191,19 +191,19 @@ workflows:
       - test-bundle:
           requires:
             - build
-      - test-jasmine:
+      - no-gl-test-jasmine:
           requires:
             - build
-      - test-jasmine2:
+      - webgl-test-jasmine:
           requires:
             - build
-      - test-jasmine3:
+      - no-gl-flaky-test-jasmine:
           requires:
             - build
       - test-image:
           requires:
             - build
-      - test-image2:
+      - flaky-test-image:
           requires:
             - build
       - test-syntax:
