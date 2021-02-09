@@ -8,7 +8,7 @@ version: 2.0
 # https://hub.docker.com/r/circleci/node/tags/
 
 jobs:
-  build:
+  install-and-cibuild:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
@@ -40,7 +40,7 @@ jobs:
           paths:
             - plotly.js
 
-  no-gl-test-jasmine:
+  no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -53,7 +53,7 @@ jobs:
           name: Run jasmine tests (part A)
           command: ./.circleci/test.sh no-gl-jasmine
 
-  webgl-test-jasmine:
+  webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -66,7 +66,7 @@ jobs:
           name: Run jasmine tests (part B)
           command: ./.circleci/test.sh webgl-jasmine
 
-  no-gl-flaky-test-jasmine:
+  no-gl-flaky-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -78,7 +78,7 @@ jobs:
           name: Run jasmine tests (part C)
           command: ./.circleci/test.sh no-gl-flaky-jasmine
 
-  test-image:
+  stable-image:
     docker:
       - image: plotly/testbed:latest
     parallelism: 4
@@ -98,7 +98,7 @@ jobs:
           path: build
           destination: /
 
-  flaky-test-image:
+  flaky-image:
     docker:
       - image: plotly/testbed:latest
     working_directory: /var/www/streambed/image_server/plotly.js/
@@ -117,7 +117,7 @@ jobs:
           path: build
           destination: /
 
-  test-syntax:
+  source-syntax:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
@@ -125,10 +125,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run syntax tests
+          name: Run syntax tests on source files
           command: ./.circleci/test.sh syntax
 
-  test-bundle:
+  jasmine-bundle:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -137,10 +137,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run test-bundle
-          command: ./.circleci/test.sh bundle
+          name: Run jasmine tests (part D)
+          command: ./.circleci/test.sh jasmine-bundle
 
-  publish:
+  publish-dist:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
@@ -187,28 +187,28 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      - test-bundle:
+      - install-and-cibuild
+      - jasmine-bundle:
           requires:
-            - build
-      - no-gl-test-jasmine:
+            - install-and-cibuild
+      - no-gl-jasmine:
           requires:
-            - build
-      - webgl-test-jasmine:
+            - install-and-cibuild
+      - webgl-jasmine:
           requires:
-            - build
-      - no-gl-flaky-test-jasmine:
+            - install-and-cibuild
+      - no-gl-flaky-jasmine:
           requires:
-            - build
-      - test-image:
+            - install-and-cibuild
+      - stable-image:
           requires:
-            - build
-      - flaky-test-image:
+            - install-and-cibuild
+      - flaky-image:
           requires:
-            - build
-      - test-syntax:
+            - install-and-cibuild
+      - source-syntax:
           requires:
-            - build
-      - publish:
+            - install-and-cibuild
+      - publish-dist:
           requires:
-            - build
+            - install-and-cibuild
