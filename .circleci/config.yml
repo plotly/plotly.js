@@ -174,14 +174,14 @@ jobs:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
       - run:
-          name: Test plotly bundles againt duplicate keys
-          command: npm run no-dup-keys
-      - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
+      - run:
+          name: Test plotly bundles againt duplicate keys
+          command: npm run no-dup-keys
 
 workflows:
   version: 2
