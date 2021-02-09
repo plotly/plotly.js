@@ -12,7 +12,7 @@ var theLatest = 'latest' + (
     (majorVersion === '1') ? '' : ('-v' + majorVersion)
 );
 
-var pathDistREADME = path.join(constants.pathToRoot, 'dist_readme.md');
+var pathDistREADME = path.join(constants.pathToDist, 'README.md');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
 
 var ENC = 'utf-8';
@@ -58,7 +58,7 @@ function getInfoContent() {
         '<script src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
         '```',
         '',
-        'You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        'You can get the relevant MathJax files (version 2) from the internet.',
         '',
         'By default, plotly.js will modify the global MathJax configuration on load.',
         'This can lead to undesirable behavior if plotly.js is loaded alongside',
