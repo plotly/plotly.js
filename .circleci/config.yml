@@ -184,6 +184,9 @@ jobs:
           environment:
             NODE_OPTIONS: --max_old_space_size=4096
           command: npm run no-dup-keys
+      - run:
+          name: Test plotly.min.js import using requirejs
+          command: npm run test-requirejs
 
 workflows:
   version: 2
