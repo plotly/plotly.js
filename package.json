@@ -21,13 +21,13 @@
     "plotly"
   ],
   "scripts": {
-    "preprocess": "./tasks/vendor_to_dist.sh && node tasks/preprocess.js",
+    "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header-dist": "node tasks/header_dist.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
-    "build": "npm run preprocess && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
-    "cibuild": "npm run preprocess && node tasks/cibundle.js",
+    "build": "node tasks/empty_dist.js && npm run preprocess && node tasks/topojson_dist.js && npm run find-strings && npm run bundle && npm run header-dist && npm run stats",
+    "cibuild": "node tasks/empty_dist.js && npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
