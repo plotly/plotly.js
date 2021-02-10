@@ -87,7 +87,7 @@ function getExtraText(trace, pt, pointData, labels) {
     if(hasLocation) {
         text.push(pt.loc);
     } else if(hasLon && hasLat) {
-        text.push('(' + format(pointData.lonLabel) + ', ' + format(pointData.latLabel) + ')');
+        text.push('(' + format(pointData.latLabel) + ', ' + format(pointData.lonLabel) + ')');
     } else if(hasLon) {
         text.push(labels.lon + format(pointData.lonLabel));
     } else if(hasLat) {
