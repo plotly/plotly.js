@@ -31,7 +31,7 @@
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
-    "no-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: error}' $(find dist -type f -iname '*.js' | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js | grep -v MathJax.js)",
+    "no-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: error}' $(find dist -type f -iname '*.js' | grep -v plotly-gl* | grep -v plotly-with-meta.* | grep -v plotly.js | grep -v plotly.min.js)",
     "no-bad-char": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-misleading-character-class: error}' $(find dist -type f -iname '*.js' | grep plotly)",
     "no-dup-keys": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-dupe-keys: error}' $(find dist -type f -iname '*.js' | grep plotly)",
     "no-es6-dist": "node tasks/no_es6_dist.js",
