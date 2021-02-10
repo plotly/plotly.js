@@ -93,7 +93,7 @@ jobs:
             npm run docker -- setup
       - run:
           name: Run image tests (part A)
-          command: ./.circleci/test.sh image
+          command: ./.circleci/test.sh stable-image
       - store_artifacts:
           path: build
           destination: /
@@ -126,7 +126,7 @@ jobs:
           at: ~/
       - run:
           name: Run syntax tests on source files
-          command: ./.circleci/test.sh syntax
+          command: ./.circleci/test.sh source-syntax
 
   jasmine-bundle:
     docker:
