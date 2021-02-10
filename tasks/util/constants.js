@@ -6,6 +6,7 @@ var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
+var pathToVendor = path.join(pathToRoot, 'vendor/');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
@@ -44,12 +45,14 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
+    pathToVendor: pathToVendor,
     pathToDist: pathToDist,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
+    pathToPlotlyBuildMin: path.join(pathToBuild, 'plotly.min.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
@@ -62,6 +65,7 @@ module.exports = {
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
+    pathToTopojsonVendor: path.join(pathToVendor, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
@@ -82,8 +86,6 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
-    pathToRequireJS: path.join(pathToRoot, 'node_modules', 'requirejs', 'require.js'),
-    pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
 
     // this mapbox access token is 'public', no need to hide it
     // more info: https://www.mapbox.com/help/define-access-token/

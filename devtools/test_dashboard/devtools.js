@@ -19,7 +19,7 @@ var Tabs = {
         Plotly.setPlotConfig({
 
             // use local topojson files
-            topojsonURL: '../../dist/topojson/',
+            topojsonURL: '../../vendor/topojson/',
 
             // register mapbox access token
             // run `npm run preset` if you haven't yet
