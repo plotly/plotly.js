@@ -65,7 +65,6 @@ module.exports = {
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
-    pathToTopojsonVendor: path.join(pathToVendor, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
