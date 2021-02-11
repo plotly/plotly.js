@@ -6,7 +6,6 @@ var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
-var pathToVendor = path.join(pathToRoot, 'vendor/');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
@@ -45,7 +44,6 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
-    pathToVendor: pathToVendor,
     pathToDist: pathToDist,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
