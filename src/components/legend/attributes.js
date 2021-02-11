@@ -2,7 +2,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
-
+var Drawing = require('../drawing');
 
 module.exports = {
     bgcolor: {
@@ -79,12 +79,12 @@ module.exports = {
     },
     itemsymbol: {
         valType: 'enumerated',
-        values: ['trace', 'circle'],
+        values: ['trace', ...Drawing.symbolList],
         dflt: 'trace',
         editType: 'legend',
         description: [
             'Determines if the legend items symbols use the symbol of the first point in each *trace*',
-            'or use a circle symbol.'
+            'or the specified symbol name.'
         ].join(' ')
     },
     itemwidth: {
