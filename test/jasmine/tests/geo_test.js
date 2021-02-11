@@ -24,7 +24,7 @@ var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
 Plotly.setPlotConfig({
-    topojsonURL: '/base/vendor/topojson/'
+    topojsonURL: '/base/node_modules/sane-topojson/dist/'
 });
 
 function move(fromX, fromY, toX, toY, delay) {
