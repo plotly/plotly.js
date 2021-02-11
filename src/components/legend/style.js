@@ -25,7 +25,7 @@ module.exports = function style(s, gd, legend) {
     var fullLayout = gd._fullLayout;
     if(!legend) legend = fullLayout.legend;
     var constantItemSizing = legend.itemsizing === 'constant';
-    var constantItemSymbol = legend.itemsymbol === 'constant';
+    var customItemSymbol = legend.itemsymbol && legend.itemsymbol !== 'trace';
     var itemWidth = legend.itemwidth;
     var centerPos = (itemWidth + constants.itemGap * 2) / 2;
     var centerTransform = strTranslate(centerPos, 0);
@@ -205,8 +205,8 @@ module.exports = function style(s, gd, legend) {
                 valToBound = cst;
             }
 
-            if(constantItemSymbol && attrIn === 'marker.symbol') {
-                valToBound = 'circle';
+            if(customItemSymbol && attrIn === 'marker.symbol') {
+                valToBound = legend.itemsymbol;
             }
 
             if(bounds) {
