@@ -5,7 +5,6 @@
 var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
-var constants = require('@src/plots/geo/constants');
 var Lib = require('@src/lib');
 var d3 = require('../../test/strict-d3');
 var d3Json = d3.json;
@@ -20,7 +19,7 @@ var Tabs = {
         Plotly.setPlotConfig({
 
             // use local topojson files
-            topojsonURL: constants.pathToTopojsonSrc,
+            topojsonURL: '/node_modules/sane-topojson/dist/',
 
             // register mapbox access token
             // run `npm run preset` if you haven't yet

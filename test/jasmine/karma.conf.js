@@ -121,6 +121,7 @@ var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
+var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
 var pathToMathJax = path.join(constants.pathToVendor, 'extras', 'mathjax');
 
 var reporters = [];
@@ -179,11 +180,11 @@ func.defaultConfig = {
     files: [
         pathToCustomMatchers,
         pathToUnpolyfill,
-        // available to fetch from /base/path/to/mathjax
+        // available to fetch from /base/vendor/extras/mathjax/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax + '/**', included: false, watched: false, served: true},
-        // available to fetch local topojson files
-        {pattern: constants.pathToTopojsonVendor + '/**', included: false, watched: false, served: true}
+        // available to fetch from /base/node_modules/sane-topojson/dist/
+        {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
 
     // list of files / pattern to exclude
