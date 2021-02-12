@@ -171,6 +171,12 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
       - run:
+          name: Test validation using node.js and jsdom
+          command: npm run test-plain-obj
+      - run:
+          name: Test plotly.min.js import using requirejs
+          command: npm run test-requirejs
+      - run:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
       - run:
@@ -184,9 +190,6 @@ jobs:
           environment:
             NODE_OPTIONS: --max_old_space_size=4096
           command: npm run no-dup-keys
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
 
 workflows:
   version: 2
