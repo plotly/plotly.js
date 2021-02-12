@@ -19,7 +19,7 @@ define(function(require) {
     if(plotly) {
         console.log(plotly);
     } else {
-        console.error('Error: loading with requirejs');
+        throw 'Error: loading with requirejs';
     }
 
     // The value returned from the function is
