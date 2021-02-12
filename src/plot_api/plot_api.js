@@ -223,8 +223,10 @@ function _doPlot(gd, data, layout, config) {
 
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                .attr('width', fullLayout.width * gd._context.plotGlPixelRatio)
+                .attr('height', fullLayout.height * gd._context.plotGlPixelRatio)
+                .style('width', fullLayout.width + 'px')
+                .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
