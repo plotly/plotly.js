@@ -453,6 +453,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
+            d.viewModel.plotGlPixelRatio = plotGlPixelRatio;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
 

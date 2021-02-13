@@ -241,6 +241,7 @@ module.exports = function(canvasGL, d) {
     var isPick = d.pick;
 
     var regl = d.regl;
+    var plotGlPixelRatio = d.viewModel.plotGlPixelRatio;
 
     var renderState = {
         currentRafs: {},
@@ -317,7 +318,7 @@ module.exports = function(canvasGL, d) {
         frag: fragmentShaderSource,
 
         primitive: 'lines',
-        lineWidth: 1,
+        lineWidth: plotGlPixelRatio,
         attributes: attributes,
         uniforms: {
             resolution: regl.prop('resolution'),
