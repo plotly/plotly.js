@@ -85,7 +85,7 @@ module.exports = function calc(gd, trace) {
     if(!hasTooManyPoints) {
         ppad = calcMarkerSize(trace, len);
     } else if(opts.marker) {
-        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+        ppad = opts.marker.sizeAvg || Math.max(opts.marker.size, 3);
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
