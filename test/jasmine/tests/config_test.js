@@ -640,7 +640,7 @@ describe('config argument', function() {
                     checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
 
                     var canvases = document.getElementsByTagName('canvas');
-                    checkElementsSize(canvases, elWidth / 2, elHeight / 2);
+                    checkElementsSize(canvases, elWidth, elHeight);
                 })
                 .catch(failTest);
             }
