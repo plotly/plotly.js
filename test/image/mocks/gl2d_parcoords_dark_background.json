@@ -1,0 +1,25 @@
+{
+  "layout": {
+    "width": 284,
+    "height": 400,
+    "font": {"color": "white"},
+    "paper_bgcolor": "black"
+  },
+
+  "data": [
+    {
+      "type" : "parcoords",
+      "dimensions" : [
+        {
+          "label" : "Dimension A",
+          "constraintrange": [1.75, 3.25],
+          "values" : [4, 3, 2, 1, 0]
+        },
+        {
+          "label" : "Dimension B",
+          "values" : [0, 1, 2, 3, 4]
+        }
+      ]
+    }
+  ]
+}
