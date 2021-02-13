@@ -221,7 +221,7 @@ function _doPlot(gd, data, layout, config) {
                 });
         }
 
-        var plotGlPixelRatio = gd._context.plotGlPixelRatio
+        var plotGlPixelRatio = gd._context.plotGlPixelRatio;
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
                 .attr('width', fullLayout.width * plotGlPixelRatio)
