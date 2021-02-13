@@ -198,12 +198,12 @@ describe('Test gl plot side effects', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(1200);
 
             return Plotly.relayout(gd, {width: 300});
         })
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
         })
         .then(done, done.fail);
     });
